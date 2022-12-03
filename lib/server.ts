@@ -24,7 +24,7 @@ export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
         throw new HeaderInvalid("can't providing multiple access token");
       }
       if (!key) {
-        return { prisma, user: { login: false, permission: {}, allowNsfw: false } };
+        return { prisma, auth: { login: false, permission: {}, allowNsfw: false, user: null } };
       }
       if (!key.startsWith('Bearer ')) {
         throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
@@ -32,7 +32,7 @@ export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
 
       return {
         prisma,
-        user: await auth.byToken(key.slice('Bearer '.length)),
+        auth: await auth.byToken(key.slice('Bearer '.length)),
       };
     },
   });

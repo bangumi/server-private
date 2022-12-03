@@ -13,6 +13,7 @@ type Episode {
 }
 
 type Query {
+  me: User
   subject(id: Int!): Subject
 }
 
@@ -27,4 +28,10 @@ type Subject {
   id: Int
   name: String
   name_cn: String
+}
+
+type User {
+  ID: Int
+  nickname: String
+  username: String
 }

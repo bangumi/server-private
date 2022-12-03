@@ -87,7 +87,7 @@ export const SubjectByIDQuery = extendType({
           return null;
         }
 
-        if (subject.subject_nsfw && !ctx.user.allowNsfw) {
+        if (subject.subject_nsfw && !ctx.auth.allowNsfw) {
           return null;
         }
 
