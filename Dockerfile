@@ -4,6 +4,20 @@ WORKDIR /usr/src/app
 
 COPY . ./
 
+# generate prisma client
+
+RUN yarn &&\
+    rm node_modules -rf &&\
+    yarn --prod
+
+##############
+
+FROM node:lts-slim
+
+WORKDIR /usr/src/app
+
+COPY --from=builder . ./
+
 RUN yarn
 
 ENV NODE_ENV=production
