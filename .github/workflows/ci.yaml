@@ -47,9 +47,12 @@ jobs:
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
 
-      - run: yarn test
+      - run: yarn test --coverage
         env:
           'DATABASE_URL': 'mysql://user:password@127.0.0.1:3306/bangumi'
+
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v3
 
   build:
     runs-on: ubuntu-latest
