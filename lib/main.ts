@@ -2,11 +2,14 @@ import AltairFastify from 'altair-fastify-plugin';
 import mercurius from 'mercurius';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { default as fastify } from 'fastify';
+import { createError } from '@fastify/error';
 
 import { schema } from './graphql/schema';
 import type { Context } from './graphql/context';
 import prisma from './prisma';
 import * as auth from './auth';
+
+const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
 
 function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
   const server = fastify(opts);
@@ -18,13 +21,13 @@ function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
     context: async (request: FastifyRequest): Promise<Context> => {
       const key = request.headers.authorization;
       if (Array.isArray(key)) {
-        throw new Error("can't providing multiple access token");
+        throw new HeaderInvalid("can't providing multiple access token");
       }
       if (!key) {
         return { prisma, user: { login: false, permission: {}, allowNsfw: false } };
       }
       if (!key.startsWith('Bearer ')) {
-        throw new Error('authorization header should have "Bearer ${TOKEN}" format');
+        throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
       }
 
       return {
