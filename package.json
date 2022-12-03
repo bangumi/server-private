@@ -1,0 +1,59 @@
+{
+  "name": "bangumi-contrib",
+  "version": "0.0.1",
+  "description": "",
+  "private": true,
+  "type": "module",
+  "main": "dist/main.js",
+  "engines": {
+    "node": "^18.0.0"
+  },
+  "scripts": {
+    "format": "prettier -w ./",
+    "lint": "eslint --ext ts ./",
+    "build": "nest build",
+    "start": "cross-env NODE_OPTIONS=\"--enable-source-maps --experimental-specifier-resolution=node\"  node --loader ts-node/esm lib/main.ts",
+    "dev": "yarn start --watch",
+    "prepare": "husky install"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@prisma/client": "^4.7.1",
+    "@types/node": "^18.11.10",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.29.0",
+    "eslint-import-resolver-typescript": "^3.5.2",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.5.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.4",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.0",
+    "prisma": "^4.5.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "~4.9.3"
+  },
+  "dependencies": {
+    "@apollo/server": "^4",
+    "cross-env": "^7.0.3",
+    "fastify": "^4.10.2",
+    "got": "^12.5.3",
+    "graphql": "^16.6.0",
+    "graphql-relay": "^0.10.0",
+    "ioredis": "^5.2.4",
+    "log4js": "^6.7.1",
+    "nexus": "^1.3.0",
+    "p-limit": "^4.0.0",
+    "ts-node": "^10.9.1",
+    "winston": "^3.8.2"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "tabWidth": 2,
+    "trailingComma": "all"
+  }
+}

@@ -1,0 +1,29 @@
+name: release
+
+on:
+  push:
+    branches:
+      - "**"
+      - "!renovate/**"
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: "bangumi/chii"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          push: true
+          tags: ghcr.io/trim21/bangumi-workers:latest
