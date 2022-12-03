@@ -18,6 +18,7 @@ export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
     schema,
     path: '/v0/graphql',
     graphiql: false,
+    allowBatchedQueries: true,
     context: async (request: FastifyRequest): Promise<Context> => {
       const key = request.headers.authorization;
       if (Array.isArray(key)) {

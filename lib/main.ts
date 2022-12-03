@@ -2,7 +2,7 @@ import { createServer } from './server';
 import { logger } from './logger';
 
 const server = createServer({
-  logger,
+  logger: logger.child({ name: 'fastify' }, { level: 'warn' }),
   disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
 });
 
