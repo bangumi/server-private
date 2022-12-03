@@ -130,7 +130,7 @@ model chii_episodes {
   ep_id         Int     @id @default(autoincrement()) @db.UnsignedMediumInt
   ep_subject_id Int     @db.UnsignedMediumInt
   ep_sort       Float   @default(0) @db.Float
-  ep_type       Boolean
+  ep_type       Int
   ep_disc       Int     @default(0) @db.UnsignedTinyInt
   ep_name       String  @db.VarChar(80)
   ep_name_cn    String  @db.VarChar(80)
