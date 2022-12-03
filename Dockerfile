@@ -1,4 +1,4 @@
-FROM node:lts-slim as builder
+FROM node:18-slim as builder
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ RUN yarn &&\
 
 ##############
 
-FROM node:lts-slim
+FROM node:18-slim
 
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
