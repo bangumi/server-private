@@ -140,7 +140,7 @@ export type chii_episodes = {
   ep_id: number
   ep_subject_id: number
   ep_sort: number
-  ep_type: boolean
+  ep_type: number
   ep_disc: number
   ep_name: string
   ep_name_cn: string
@@ -9929,6 +9929,7 @@ export namespace Prisma {
     ep_id: number | null
     ep_subject_id: number | null
     ep_sort: number | null
+    ep_type: number | null
     ep_disc: number | null
     ep_rate: number | null
     ep_comment: number | null
@@ -9943,6 +9944,7 @@ export namespace Prisma {
     ep_id: number | null
     ep_subject_id: number | null
     ep_sort: number | null
+    ep_type: number | null
     ep_disc: number | null
     ep_rate: number | null
     ep_comment: number | null
@@ -9957,7 +9959,7 @@ export namespace Prisma {
     ep_id: number | null
     ep_subject_id: number | null
     ep_sort: number | null
-    ep_type: boolean | null
+    ep_type: number | null
     ep_disc: number | null
     ep_name: string | null
     ep_name_cn: string | null
@@ -9978,7 +9980,7 @@ export namespace Prisma {
     ep_id: number | null
     ep_subject_id: number | null
     ep_sort: number | null
-    ep_type: boolean | null
+    ep_type: number | null
     ep_disc: number | null
     ep_name: string | null
     ep_name_cn: string | null
@@ -10022,6 +10024,7 @@ export namespace Prisma {
     ep_id?: true
     ep_subject_id?: true
     ep_sort?: true
+    ep_type?: true
     ep_disc?: true
     ep_rate?: true
     ep_comment?: true
@@ -10036,6 +10039,7 @@ export namespace Prisma {
     ep_id?: true
     ep_subject_id?: true
     ep_sort?: true
+    ep_type?: true
     ep_disc?: true
     ep_rate?: true
     ep_comment?: true
@@ -10206,7 +10210,7 @@ export namespace Prisma {
     ep_id: number
     ep_subject_id: number
     ep_sort: number
-    ep_type: boolean
+    ep_type: number
     ep_disc: number
     ep_name: string
     ep_name_cn: string
@@ -42675,7 +42679,7 @@ export namespace Prisma {
     ep_id?: IntFilter | number
     ep_subject_id?: IntFilter | number
     ep_sort?: FloatFilter | number
-    ep_type?: BoolFilter | boolean
+    ep_type?: IntFilter | number
     ep_disc?: IntFilter | number
     ep_name?: StringFilter | string
     ep_name_cn?: StringFilter | string
@@ -42750,7 +42754,7 @@ export namespace Prisma {
     ep_id?: IntWithAggregatesFilter | number
     ep_subject_id?: IntWithAggregatesFilter | number
     ep_sort?: FloatWithAggregatesFilter | number
-    ep_type?: BoolWithAggregatesFilter | boolean
+    ep_type?: IntWithAggregatesFilter | number
     ep_disc?: IntWithAggregatesFilter | number
     ep_name?: StringWithAggregatesFilter | string
     ep_name_cn?: StringWithAggregatesFilter | string
@@ -45317,7 +45321,7 @@ export namespace Prisma {
   export type chii_episodesCreateInput = {
     ep_subject_id: number
     ep_sort?: number
-    ep_type: boolean
+    ep_type: number
     ep_disc?: number
     ep_name: string
     ep_name_cn: string
@@ -45338,7 +45342,7 @@ export namespace Prisma {
     ep_id?: number
     ep_subject_id: number
     ep_sort?: number
-    ep_type: boolean
+    ep_type: number
     ep_disc?: number
     ep_name: string
     ep_name_cn: string
@@ -45358,7 +45362,7 @@ export namespace Prisma {
   export type chii_episodesUpdateInput = {
     ep_subject_id?: IntFieldUpdateOperationsInput | number
     ep_sort?: FloatFieldUpdateOperationsInput | number
-    ep_type?: BoolFieldUpdateOperationsInput | boolean
+    ep_type?: IntFieldUpdateOperationsInput | number
     ep_disc?: IntFieldUpdateOperationsInput | number
     ep_name?: StringFieldUpdateOperationsInput | string
     ep_name_cn?: StringFieldUpdateOperationsInput | string
@@ -45379,7 +45383,7 @@ export namespace Prisma {
     ep_id?: IntFieldUpdateOperationsInput | number
     ep_subject_id?: IntFieldUpdateOperationsInput | number
     ep_sort?: FloatFieldUpdateOperationsInput | number
-    ep_type?: BoolFieldUpdateOperationsInput | boolean
+    ep_type?: IntFieldUpdateOperationsInput | number
     ep_disc?: IntFieldUpdateOperationsInput | number
     ep_name?: StringFieldUpdateOperationsInput | string
     ep_name_cn?: StringFieldUpdateOperationsInput | string
@@ -45400,7 +45404,7 @@ export namespace Prisma {
     ep_id?: number
     ep_subject_id: number
     ep_sort?: number
-    ep_type: boolean
+    ep_type: number
     ep_disc?: number
     ep_name: string
     ep_name_cn: string
@@ -45420,7 +45424,7 @@ export namespace Prisma {
   export type chii_episodesUpdateManyMutationInput = {
     ep_subject_id?: IntFieldUpdateOperationsInput | number
     ep_sort?: FloatFieldUpdateOperationsInput | number
-    ep_type?: BoolFieldUpdateOperationsInput | boolean
+    ep_type?: IntFieldUpdateOperationsInput | number
     ep_disc?: IntFieldUpdateOperationsInput | number
     ep_name?: StringFieldUpdateOperationsInput | string
     ep_name_cn?: StringFieldUpdateOperationsInput | string
@@ -45441,7 +45445,7 @@ export namespace Prisma {
     ep_id?: IntFieldUpdateOperationsInput | number
     ep_subject_id?: IntFieldUpdateOperationsInput | number
     ep_sort?: FloatFieldUpdateOperationsInput | number
-    ep_type?: BoolFieldUpdateOperationsInput | boolean
+    ep_type?: IntFieldUpdateOperationsInput | number
     ep_disc?: IntFieldUpdateOperationsInput | number
     ep_name?: StringFieldUpdateOperationsInput | string
     ep_name_cn?: StringFieldUpdateOperationsInput | string
@@ -48527,6 +48531,7 @@ export namespace Prisma {
     ep_id?: SortOrder
     ep_subject_id?: SortOrder
     ep_sort?: SortOrder
+    ep_type?: SortOrder
     ep_disc?: SortOrder
     ep_rate?: SortOrder
     ep_comment?: SortOrder
@@ -48583,6 +48588,7 @@ export namespace Prisma {
     ep_id?: SortOrder
     ep_subject_id?: SortOrder
     ep_sort?: SortOrder
+    ep_type?: SortOrder
     ep_disc?: SortOrder
     ep_rate?: SortOrder
     ep_comment?: SortOrder

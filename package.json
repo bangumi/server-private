@@ -12,7 +12,7 @@
     "format": "prettier -w ./",
     "lint": "eslint --ext ts ./",
     "start": "cross-env NODE_OPTIONS=\"--enable-source-maps --experimental-specifier-resolution=node\"  node --loader ts-node/esm lib/main.ts",
-    "dev": "yarn start --watch",
+    "dev": "nodemon lib/main.ts",
     "prepare": "husky install"
   },
   "author": "",
