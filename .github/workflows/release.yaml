@@ -2,9 +2,8 @@ name: release
 
 on:
   push:
-    branches:
-      - "**"
-      - "!renovate/**"
+    tags:
+      - v*
 
 jobs:
   docker:
