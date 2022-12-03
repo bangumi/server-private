@@ -15,11 +15,9 @@ RUN yarn &&\
 FROM node:lts-slim
 
 WORKDIR /usr/src/app
+ENV NODE_ENV=production
+ENTRYPOINT [ "node", "--loader=ts-node/esm", "--experimental-specifier-resolution=node", "--enable-source-maps", "lib/main.ts" ]
 
 COPY --from=builder . ./
 
-RUN yarn
 
-ENV NODE_ENV=production
-
-ENTRYPOINT [ "node", "--loader=ts-node/esm", "--experimental-specifier-resolution=node", "--enable-source-maps", "lib/main.ts" ]
