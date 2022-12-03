@@ -19,11 +19,27 @@
     "*.{ts,md,html,json,cjs,mjs,js,yml,yaml,graphql}": "prettier -w",
     "*.ts": "eslint --fix"
   },
+  "nodemonConfig": {
+    "restartable": "rs",
+    "ignore": [
+      ".git",
+      "node_modules/**/node_modules"
+    ],
+    "watch": [
+      "lib/**/*",
+      "lib/*"
+    ],
+    "execMap": {
+      "ts": "node --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
+    },
+    "ext": "ts,js,json"
+  },
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "@prisma/client": "^4.7.1",
     "@types/node": "^18.11.10",
+    "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "eslint": "^8.29.0",
