@@ -3,13 +3,13 @@
 
 
 type Episode {
-  description: String
-  duration: String
-  id: Int
-  name: String
-  name_cn: String
-  sort: Float
-  type: String
+  description: String!
+  duration: String!
+  id: Int!
+  name: String!
+  name_cn: String!
+  sort: Float!
+  type: String!
 }
 
 type Query {
@@ -25,13 +25,13 @@ type Subject {
     offset: Int! = 0
     type: Int
   ): [Episode!]
-  id: Int
-  name: String
-  name_cn: String
+  id: Int!
+  name: String!
+  name_cn: String!
 }
 
 type User {
-  ID: Int
-  nickname: String
-  username: String
+  ID: Int!
+  nickname: String!
+  username: String!
 }

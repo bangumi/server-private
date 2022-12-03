@@ -5,9 +5,9 @@ import type { Context } from '../context';
 export const User = objectType({
   name: 'User',
   definition(t) {
-    t.nullable.int('ID');
-    t.nullable.string('username');
-    t.nullable.string('nickname');
+    t.nonNull.int('ID');
+    t.nonNull.string('username');
+    t.nonNull.string('nickname');
   },
 });
 

@@ -5,22 +5,22 @@ import type { Context } from '../context';
 export const Episode = objectType({
   name: 'Episode',
   definition(t) {
-    t.int('id');
-    t.string('name');
-    t.string('name_cn');
-    t.string('description');
-    t.string('type');
-    t.string('duration');
-    t.float('sort');
+    t.nonNull.int('id');
+    t.nonNull.string('name');
+    t.nonNull.string('name_cn');
+    t.nonNull.string('description');
+    t.nonNull.string('type');
+    t.nonNull.string('duration');
+    t.nonNull.float('sort');
   },
 });
 
 export const Subject = objectType({
   name: 'Subject',
   definition(t) {
-    t.int('id');
-    t.string('name');
-    t.string('name_cn');
+    t.nonNull.int('id');
+    t.nonNull.string('name');
+    t.nonNull.string('name_cn');
     t.list.nonNull.field('episodes', {
       type: Episode,
       args: {
