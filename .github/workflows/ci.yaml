@@ -1,13 +1,12 @@
-name: CI
+name: ci
 
 on:
   pull_request:
     branches:
-      - '**'
+      - 'master'
   push:
     branches:
-      - '**'
-      - '!renovate/**'
+      - 'master'
 
 jobs:
   lint:
