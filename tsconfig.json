@@ -16,6 +16,7 @@
     "noUncheckedIndexedAccess": true,
     "strictNullChecks": true,
     "outDir": "./dist",
+    "isolatedModules": true,
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true
