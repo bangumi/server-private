@@ -13,25 +13,30 @@ function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
 
   server.register(mercurius, {
     schema,
-    path: '/graphql',
+    path: '/v0/graphql',
     graphiql: false,
     context: async (request: FastifyRequest): Promise<Context> => {
-      const key = request.headers['api-key'];
+      const key = request.headers.authorization;
       if (Array.isArray(key)) {
         throw new Error("can't providing multiple access token");
       }
+      if (!key) {
+        return { prisma, user: { login: false, permission: {}, allowNsfw: false } };
+      }
+      if (!key.startsWith('Bearer ')) {
+        throw new Error('authorization header should have "Bearer ${TOKEN}" format');
+      }
+
       return {
         prisma,
-        user: await auth.byToken(key),
+        user: await auth.byToken(key.slice('Bearer '.length)),
       };
     },
   });
   // @ts-ignore
   server.register(AltairFastify, {
-    path: '/',
-    baseURL: '/',
-    // 'endpointURL' should be the same as the mercurius 'path'
-    endpointURL: '/graphql',
+    path: '/v0/graphql-ui',
+    endpointURL: '/v0/graphql',
     initialSettings: {
       theme: 'dark',
       plugin: {
