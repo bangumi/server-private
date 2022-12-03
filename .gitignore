@@ -3,3 +3,4 @@ node_modules/*
 .idea
 dist
 yarn-error.log
+lib/generated/
