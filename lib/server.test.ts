@@ -66,7 +66,7 @@ describe('auth', () => {
     });
   });
 
-  test('should return current user', async () => {
+  test('should return error', async () => {
     await expect(
       testClient.query(
         gql`
