@@ -3,11 +3,11 @@ name: CI
 on:
   pull_request:
     branches:
-      - "**"
+      - '**'
   push:
     branches:
-      - "**"
-      - "!renovate/**"
+      - '**'
+      - '!renovate/**'
 
 jobs:
   lint:
@@ -19,7 +19,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: "lts/*"
+          node-version: 'lts/*'
           cache: yarn
 
       - run: yarn

@@ -51,8 +51,9 @@
     "winston": "^3.8.2"
   },
   "prettier": {
-    "printWidth": 120,
-    "tabWidth": 2,
+    "printWidth": 100,
+    "singleQuote": true,
+    "semi": true,
     "trailingComma": "all"
   }
 }
