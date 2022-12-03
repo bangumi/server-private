@@ -11,12 +11,12 @@
   "scripts": {
     "format": "prettier -w ./",
     "lint": "eslint --ext ts ./",
-    "start": "cross-env NODE_OPTIONS=\"--enable-source-maps --experimental-specifier-resolution=node\"  node --loader ts-node/esm lib/main.ts",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps lib/main.ts",
     "dev": "nodemon lib/main.ts",
     "prepare": "prisma generate && husky install"
   },
   "lint-staged": {
-    "*.{ts,html,json,cjs,mjs,js,yml,yaml,graphql}": "prettier -w",
+    "*.{ts,md,html,json,cjs,mjs,js,yml,yaml,graphql}": "prettier -w",
     "*.ts": "eslint --fix"
   },
   "author": "",
@@ -42,11 +42,8 @@
   },
   "dependencies": {
     "altair-fastify-plugin": "^5.0.6",
-    "cross-env": "^7.0.3",
     "fastify": "^4.10.2",
-    "got": "^12.5.3",
     "graphql": "^16.6.0",
-    "graphql-relay": "^0.10.0",
     "ioredis": "^5.2.4",
     "mercurius": "^11.4.0",
     "nexus": "^1.3.0",
