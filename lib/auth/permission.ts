@@ -43,5 +43,10 @@ export async function getPermission(userGroup: number): Promise<Permission> {
     return {};
   }
 
-  return php.unserialize(permission.usr_grp_perm);
+  return Object.fromEntries(
+    Object.entries(php.unserialize(permission.usr_grp_perm)).map(([key, value]) => [
+      key,
+      value === '1',
+    ]),
+  );
 }

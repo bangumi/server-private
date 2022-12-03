@@ -10,7 +10,7 @@ export interface Auth {
   permission: Permission;
 }
 
-export async function byToken(access_token: string): Promise<Auth> {
+export async function byToken(access_token: string | undefined): Promise<Auth> {
   if (!access_token) {
     return {
       login: false,
