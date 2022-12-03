@@ -1,15 +1,52 @@
-import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
+import AltairFastify from 'altair-fastify-plugin';
+import mercurius from 'mercurius';
+import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
+import { default as fastify } from 'fastify';
 
-import { schema } from "./graphql/schema";
-import type { Context } from "./graphql/context";
-import { createContext } from "./graphql/context";
-import { logger } from "./logger";
+import { schema } from './graphql/schema';
+import type { Context } from './graphql/context';
+import prisma from './prisma';
+import * as auth from './auth';
 
-const server = new ApolloServer<Context>({
-  schema,
+function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
+  const server = fastify(opts);
+
+  server.register(mercurius, {
+    schema,
+    path: '/graphql',
+    graphiql: false,
+    context: async (request: FastifyRequest): Promise<Context> => {
+      const key = request.headers['api-key'];
+      if (Array.isArray(key)) {
+        throw new Error("can't providing multiple access token");
+      }
+      return {
+        prisma,
+        user: await auth.byToken(key),
+      };
+    },
+  });
+  // @ts-ignore
+  server.register(AltairFastify, {
+    path: '/',
+    baseURL: '/',
+    // 'endpointURL' should be the same as the mercurius 'path'
+    endpointURL: '/graphql',
+    initialSettings: {
+      theme: 'dark',
+      plugin: {
+        list: ['altair-graphql-plugin-graphql-explorer'],
+      },
+    },
+  });
+
+  return server;
+}
+
+const server = createServer({
+  logger: { level: 'info' },
+  disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
 });
 
-await startStandaloneServer<Context>(server, { listen: { port: 4000 }, context: createContext });
-
-logger.info("apollo server listen at http://127.0.0.1:4000");
+const port = 4000;
+await server.listen({ port, host: '0.0.0.0' });

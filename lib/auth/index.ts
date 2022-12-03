@@ -35,7 +35,7 @@ export async function byToken(access_token: string | undefined): Promise<Auth> {
   });
 
   if (!user) {
-    logger.error('missing user', token.user_id);
+    logger.error('missing user %s', token.user_id);
     throw new Error("can't find user by access token");
   }
 

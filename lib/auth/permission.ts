@@ -1,6 +1,9 @@
 import * as php from 'php-serialize';
+import NodeCache from 'node-cache';
 
 import prisma from '../prisma';
+
+const cache = new NodeCache({ stdTTL: 60 * 10 });
 
 export interface Permission {
   user_list?: boolean;
@@ -38,15 +41,24 @@ export interface Permission {
 }
 
 export async function getPermission(userGroup: number): Promise<Permission> {
+  const cached = cache.get(userGroup);
+  if (cached) {
+    return cached;
+  }
+
   const permission = await prisma.chii_usergroup.findFirst({ where: { usr_grp_id: userGroup } });
   if (!permission) {
     return {};
   }
 
-  return Object.fromEntries(
+  const p = Object.fromEntries(
     Object.entries(php.unserialize(permission.usr_grp_perm)).map(([key, value]) => [
       key,
       value === '1',
     ]),
   );
+
+  cache.set(userGroup, p);
+
+  return p;
 }
