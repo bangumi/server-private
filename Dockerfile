@@ -1,4 +1,4 @@
-FROM node:18-slim as builder
+FROM node:19-slim as builder
 
 WORKDIR /usr/src/app
 
@@ -12,7 +12,7 @@ RUN yarn &&\
 
 ##############
 
-FROM node:18-slim
+FROM node:19-slim
 
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
