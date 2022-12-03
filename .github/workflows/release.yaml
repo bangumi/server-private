@@ -12,10 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-
       - run: echo "VERSION=$(npm version --json|jq .graphql -r)" >> $GITHUB_ENV
       - run: docker build -t ghcr.io/bangumi/graphql:${{ env.VERSION }} .
-
 
       - uses: docker/login-action@v2
         with:
