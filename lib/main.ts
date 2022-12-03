@@ -2,7 +2,7 @@ import { createServer } from './server';
 import { logger } from './logger';
 
 const server = createServer({
-  logger: { level: 'info' },
+  logger,
   disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
 });
 
