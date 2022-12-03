@@ -5,6 +5,7 @@ module.exports = {
     'plugin:import/typescript',
     'plugin:promise/recommended',
     'plugin:n/recommended',
+    'prettier',
   ],
   plugins: ['@typescript-eslint', 'import'],
   ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*'],
