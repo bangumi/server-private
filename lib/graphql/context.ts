@@ -1,3 +1,5 @@
+import type { IncomingMessage } from "http";
+
 import type { PrismaClient } from "../generated/client";
 import prisma from "../prisma";
 import type { Auth } from "../auth";
@@ -8,11 +10,7 @@ export interface Context {
   prisma: PrismaClient;
 }
 
-export async function createContext({
-  req,
-}: {
-  req: { headers: Record<string, string | string[] | undefined> };
-}): Promise<Context> {
+export async function createContext({ req }: { req: IncomingMessage }): Promise<Context> {
   const key = req.headers["API-KEY"];
   if (key === undefined) {
     return {
