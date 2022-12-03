@@ -1,9 +1,8 @@
 import { createError } from '@fastify/error';
 
 import prisma from '../prisma';
-import { getPermission, Permission } from './permission';
-
-export { Permission };
+import type { Permission } from './permission';
+import { getPermission } from './permission';
 
 export interface Auth {
   login: boolean;
