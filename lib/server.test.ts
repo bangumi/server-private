@@ -65,4 +65,26 @@ describe('auth', () => {
       },
     });
   });
+
+  test('should return current user', async () => {
+    await expect(
+      testClient.query(
+        gql`
+          query {
+            me {
+              ID
+            }
+          }
+        `,
+        {
+          headers: { authorization: 'Bearer a' },
+        },
+      ),
+    ).resolves.toEqual({
+      code: 'TOKEN_INVALID',
+      error: 'Unauthorized',
+      message: "can't find user by access token",
+      statusCode: 401,
+    });
+  });
 });
