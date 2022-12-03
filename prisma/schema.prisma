@@ -1,0 +1,743 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model chii_apps {
+  app_id        Int     @id @default(autoincrement()) @db.MediumInt
+  app_type      Boolean
+  app_creator   Int     @db.MediumInt
+  app_name      String  @db.VarChar(255)
+  app_desc      String  @db.MediumText
+  app_url       String  @db.VarChar(2000)
+  app_collects  Int     @db.MediumInt
+  app_status    Boolean
+  app_timestamp Int
+  app_lasttouch Int
+  app_ban       Boolean
+
+  @@index([app_ban], map: "app_ban")
+  @@index([app_status], map: "app_status")
+  @@index([app_type, app_creator], map: "app_type")
+}
+
+model chii_characters {
+  crt_id        Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  crt_name      String  @db.VarChar(255)
+  crt_role      Int     @db.UnsignedTinyInt
+  crt_infobox   String  @db.MediumText
+  crt_summary   String  @db.MediumText
+  crt_img       String  @db.VarChar(255)
+  crt_comment   Int     @default(0) @db.UnsignedMediumInt
+  crt_collects  Int     @db.UnsignedMediumInt
+  crt_dateline  Int     @db.UnsignedInt
+  crt_lastpost  Int     @db.UnsignedInt
+  crt_lock      Int     @default(0) @db.TinyInt
+  crt_img_anidb String  @db.VarChar(255)
+  crt_anidb_id  Int     @db.UnsignedMediumInt
+  crt_ban       Int     @default(0) @db.UnsignedTinyInt
+  crt_redirect  Int     @default(0) @db.UnsignedInt
+  crt_nsfw      Boolean
+
+  @@index([crt_ban], map: "crt_ban")
+  @@index([crt_lock], map: "crt_lock")
+  @@index([crt_role], map: "crt_role")
+}
+
+model chii_crt_cast_index {
+  crt_id          Int    @db.UnsignedMediumInt
+  prsn_id         Int    @db.UnsignedMediumInt
+  subject_id      Int    @db.UnsignedMediumInt
+  subject_type_id Int    @db.UnsignedTinyInt
+  summary         String @db.VarChar(255)
+
+  @@id([crt_id, prsn_id, subject_id])
+  @@index([prsn_id], map: "prsn_id")
+  @@index([subject_id], map: "subject_id")
+  @@index([subject_type_id], map: "subject_type_id")
+}
+
+model chii_crt_comments {
+  crt_pst_id       Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  crt_pst_mid      Int    @db.UnsignedMediumInt
+  crt_pst_uid      Int    @db.UnsignedMediumInt
+  crt_pst_related  Int    @default(0) @db.UnsignedMediumInt
+  crt_pst_dateline Int    @db.UnsignedInt
+  crt_pst_content  String @db.MediumText
+
+  @@index([crt_pst_mid], map: "cmt_crt_id")
+  @@index([crt_pst_related], map: "crt_pst_related")
+  @@index([crt_pst_uid], map: "crt_pst_uid")
+}
+
+model chii_crt_subject_index {
+  crt_id          Int    @db.UnsignedMediumInt
+  subject_id      Int    @db.UnsignedMediumInt
+  subject_type_id Int    @db.UnsignedTinyInt
+  crt_type        Int    @db.UnsignedTinyInt
+  ctr_appear_eps  String @db.MediumText
+  crt_order       Int    @db.UnsignedTinyInt
+
+  @@id([crt_id, subject_id])
+  @@index([crt_type], map: "crt_type")
+  @@index([subject_id], map: "subject_id")
+  @@index([subject_type_id], map: "subject_type_id")
+}
+
+model chii_ep_comments {
+  ep_pst_id       Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  ep_pst_mid      Int    @db.UnsignedMediumInt
+  ep_pst_uid      Int    @db.UnsignedMediumInt
+  ep_pst_related  Int    @default(0) @db.UnsignedMediumInt
+  ep_pst_dateline Int    @db.UnsignedInt
+  ep_pst_content  String @db.MediumText
+
+  @@index([ep_pst_mid], map: "ep_cmt_crt_id")
+  @@index([ep_pst_related], map: "ep_pst_related")
+  @@index([ep_pst_uid], map: "ep_pst_uid")
+}
+
+model chii_ep_revisions {
+  ep_rev_id        Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  rev_sid          Int     @db.UnsignedMediumInt
+  rev_eids         String  @db.VarChar(255)
+  rev_ep_infobox   String  @db.MediumText
+  rev_creator      Int     @db.UnsignedMediumInt
+  rev_version      Boolean @default(false)
+  rev_dateline     Int     @db.UnsignedInt
+  rev_edit_summary String  @db.VarChar(200)
+
+  @@index([rev_sid, rev_creator], map: "rev_sid")
+}
+
+model chii_ep_status {
+  ep_stt_id        Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  ep_stt_uid       Int     @db.UnsignedMediumInt
+  ep_stt_sid       Int     @db.UnsignedMediumInt
+  ep_stt_on_prg    Boolean @default(false)
+  ep_stt_status    String  @db.MediumText
+  ep_stt_lasttouch Int     @db.UnsignedInt
+
+  @@unique([ep_stt_uid, ep_stt_sid], map: "ep_stt_uniq")
+}
+
+model chii_episodes {
+  ep_id         Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  ep_subject_id Int     @db.UnsignedMediumInt
+  ep_sort       Float   @default(0) @db.Float
+  ep_type       Boolean
+  ep_disc       Int     @default(0) @db.UnsignedTinyInt
+  ep_name       String  @db.VarChar(80)
+  ep_name_cn    String  @db.VarChar(80)
+  ep_rate       Int     @db.TinyInt
+  ep_duration   String  @db.VarChar(80)
+  ep_airdate    String  @db.VarChar(80)
+  ep_online     String  @db.MediumText
+  ep_comment    Int     @db.UnsignedMediumInt
+  ep_resources  Int     @db.UnsignedMediumInt
+  ep_desc       String  @db.MediumText
+  ep_dateline   Int     @db.UnsignedInt
+  ep_lastpost   Int     @db.UnsignedInt
+  ep_lock       Int     @default(0) @db.UnsignedTinyInt
+  ep_ban        Int     @default(0) @db.UnsignedTinyInt
+
+  @@index([ep_ban], map: "ep_ban")
+  @@index([ep_disc], map: "ep_disc")
+  @@index([ep_lastpost], map: "ep_lastpost")
+  @@index([ep_sort], map: "ep_sort")
+  @@index([ep_subject_id], map: "ep_subject_id")
+  @@index([ep_subject_id, ep_ban, ep_sort], map: "ep_subject_id_2")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chii_friends {
+  frd_uid         Int    @default(0) @db.UnsignedMediumInt
+  frd_fid         Int    @default(0) @db.UnsignedMediumInt
+  frd_grade       Int    @default(1) @db.UnsignedTinyInt
+  frd_dateline    Int    @default(0) @db.UnsignedInt
+  frd_description String @db.Char(255)
+
+  @@index([frd_fid], map: "frd_fid")
+  @@index([frd_uid], map: "uid")
+  @@ignore
+}
+
+model chii_group_members {
+  gmb_uid       Int     @default(0) @db.MediumInt
+  gmb_gid       Int     @default(0) @db.SmallInt
+  gmb_moderator Boolean @default(false)
+  gmb_dateline  Int     @default(0) @db.UnsignedInt
+
+  @@id([gmb_uid, gmb_gid])
+}
+
+model chii_group_posts {
+  grp_pst_id       Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  grp_pst_mid      Int     @db.UnsignedMediumInt
+  grp_pst_uid      Int     @db.UnsignedMediumInt
+  grp_pst_related  Int     @default(0) @db.UnsignedMediumInt
+  grp_pst_content  String  @db.MediumText
+  grp_pst_state    Boolean
+  grp_pst_dateline Int     @default(0) @db.UnsignedInt
+
+  @@index([grp_pst_related], map: "grp_pst_related")
+  @@index([grp_pst_uid], map: "grp_pst_uid")
+  @@index([grp_pst_mid], map: "pss_topic_id")
+}
+
+model chii_group_topics {
+  grp_tpc_id       Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  grp_tpc_gid      Int     @db.UnsignedMediumInt
+  grp_tpc_uid      Int     @db.UnsignedMediumInt
+  grp_tpc_title    String  @db.VarChar(80)
+  grp_tpc_dateline Int     @default(0) @db.UnsignedInt
+  grp_tpc_lastpost Int     @default(0) @db.UnsignedInt
+  grp_tpc_replies  Int     @default(0) @db.UnsignedMediumInt
+  grp_tpc_state    Boolean
+  grp_tpc_display  Boolean @default(true)
+
+  @@index([grp_tpc_display], map: "grp_tpc_display")
+  @@index([grp_tpc_gid], map: "grp_tpc_gid")
+  @@index([grp_tpc_lastpost], map: "grp_tpc_lastpost")
+  @@index([grp_tpc_uid], map: "grp_tpc_uid")
+}
+
+model chii_groups {
+  grp_id         Int     @id @default(autoincrement()) @db.UnsignedSmallInt
+  grp_cat        Int     @default(0) @db.UnsignedSmallInt
+  grp_name       String  @db.Char(50)
+  grp_title      String  @db.Char(50)
+  grp_icon       String  @db.VarChar(255)
+  grp_creator    Int     @default(0) @db.UnsignedMediumInt
+  grp_topics     Int     @default(0) @db.UnsignedMediumInt
+  grp_posts      Int     @default(0) @db.UnsignedMediumInt
+  grp_members    Int     @default(1) @db.UnsignedMediumInt
+  grp_desc       String  @db.Text
+  grp_lastpost   Int     @db.UnsignedInt
+  grp_builddate  Int     @db.UnsignedInt
+  grp_accessible Boolean @default(true)
+  grp_nsfw       Boolean
+}
+
+model chii_index {
+  idx_id            Int     @unique(map: "mid") @default(autoincrement()) @db.MediumInt
+  idx_type          Int     @default(0) @db.UnsignedTinyInt
+  idx_title         String  @db.VarChar(80)
+  idx_desc          String  @db.MediumText
+  idx_replies       Int     @default(0) @db.UnsignedMediumInt
+  idx_subject_total Int     @default(0) @db.UnsignedMediumInt
+  idx_collects      Int     @default(0) @db.MediumInt
+  idx_stats         String  @db.MediumText
+  idx_dateline      Int
+  idx_lasttouch     Int     @db.UnsignedInt
+  idx_uid           Int     @db.MediumInt
+  idx_ban           Boolean @default(false)
+
+  @@index([idx_ban], map: "idx_ban")
+  @@index([idx_collects], map: "idx_collects")
+  @@index([idx_type], map: "idx_type")
+  @@index([idx_uid], map: "idx_uid")
+}
+
+model chii_index_collects {
+  idx_clt_id       Int @id @default(autoincrement()) @db.UnsignedMediumInt
+  idx_clt_mid      Int @db.UnsignedMediumInt
+  idx_clt_uid      Int @db.UnsignedMediumInt
+  idx_clt_dateline Int @db.UnsignedInt
+
+  @@index([idx_clt_mid, idx_clt_uid], map: "idx_clt_mid")
+}
+
+model chii_index_comments {
+  idx_pst_id       Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  idx_pst_mid      Int    @db.UnsignedMediumInt
+  idx_pst_uid      Int    @db.UnsignedMediumInt
+  idx_pst_related  Int    @default(0) @db.UnsignedMediumInt
+  idx_pst_dateline Int    @db.UnsignedInt
+  idx_pst_content  String @db.MediumText
+
+  @@index([idx_pst_mid], map: "idx_pst_mid")
+  @@index([idx_pst_related], map: "idx_pst_related")
+  @@index([idx_pst_uid], map: "idx_pst_uid")
+}
+
+model chii_index_related {
+  idx_rlt_id       Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  idx_rlt_cat      Int    @db.TinyInt
+  idx_rlt_rid      Int    @db.UnsignedMediumInt
+  idx_rlt_type     Int    @db.UnsignedSmallInt
+  idx_rlt_sid      Int    @db.UnsignedMediumInt
+  idx_rlt_order    Int    @default(0) @db.UnsignedMediumInt
+  idx_rlt_comment  String @db.MediumText
+  idx_rlt_dateline Int    @db.UnsignedInt
+
+  @@index([idx_rlt_rid, idx_rlt_cat, idx_rlt_order, idx_rlt_sid], map: "idx_order")
+  @@index([idx_rlt_cat], map: "idx_rlt_cat")
+  @@index([idx_rlt_rid, idx_rlt_type], map: "idx_rlt_rid")
+  @@index([idx_rlt_rid, idx_rlt_sid], map: "idx_rlt_sid")
+  @@index([idx_rlt_sid], map: "idx_rlt_sid_2")
+}
+
+model chii_memberfields {
+  uid       Int    @id @default(0) @db.UnsignedMediumInt
+  site      String @default("") @db.VarChar(75)
+  location  String @default("") @db.VarChar(30)
+  bio       String @db.Text
+  privacy   String @db.MediumText
+  blocklist String @db.MediumText
+}
+
+model chii_members {
+  uid            Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  username       String  @unique(map: "username") @default("") @db.Char(15)
+  nickname       String  @db.VarChar(30)
+  avatar         String  @db.VarChar(255)
+  groupid        Int     @default(0) @db.UnsignedSmallInt
+  regdate        Int     @default(0) @db.UnsignedInt
+  lastvisit      Int     @default(0) @db.UnsignedInt
+  lastactivity   Int     @default(0) @db.UnsignedInt
+  lastpost       Int     @default(0) @db.UnsignedInt
+  dateformat     String  @default("") @db.Char(10)
+  timeformat     Boolean @default(false)
+  timeoffset     String  @default("") @db.Char(4)
+  newpm          Boolean @default(false)
+  new_notify     Int     @default(0) @db.UnsignedSmallInt
+  sign           String  @db.VarChar(255)
+  password_crypt String  @db.Char(64)
+  email          String  @default("") @db.Char(50)
+}
+
+model chii_oauth_access_tokens {
+  id           Int      @id @default(autoincrement()) @db.MediumInt
+  type         Boolean  @default(false)
+  access_token String   @unique(map: "access_token") @db.VarChar(40)
+  client_id    String   @db.VarChar(80)
+  user_id      String?  @db.VarChar(80)
+  expires      DateTime @default(now()) @db.Timestamp(0)
+  scope        String?  @db.VarChar(4000)
+  info         String   @db.VarChar(255)
+
+  @@index([type], map: "type")
+}
+
+model chii_oauth_clients {
+  app_id        Int     @id @db.MediumInt
+  client_id     String  @db.VarChar(80)
+  client_secret String? @db.VarChar(80)
+  redirect_uri  String? @db.VarChar(2000)
+  grant_types   String? @db.VarChar(80)
+  scope         String? @db.VarChar(4000)
+  user_id       String? @db.VarChar(80)
+
+  @@index([client_id], map: "client_id")
+}
+
+model chii_os_web_sessions {
+  key        String @id @db.Char(64)
+  user_id    Int    @db.UnsignedInt
+  value      Bytes  @db.MediumBlob
+  created_at BigInt
+  expired_at BigInt
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chii_person_alias {
+  prsn_cat   chii_person_alias_prsn_cat
+  prsn_id    Int                        @db.UnsignedMediumInt
+  alias_name String                     @db.VarChar(255)
+  alias_type Int                        @db.UnsignedTinyInt
+  alias_key  String                     @db.VarChar(10)
+
+  @@index([prsn_cat, prsn_id], map: "prsn_cat")
+  @@index([prsn_id], map: "prsn_id")
+  @@ignore
+}
+
+model chii_person_collects {
+  prsn_clt_id       Int                               @id @default(autoincrement()) @db.UnsignedMediumInt
+  prsn_clt_cat      chii_person_collects_prsn_clt_cat
+  prsn_clt_mid      Int                               @db.UnsignedMediumInt
+  prsn_clt_uid      Int                               @db.UnsignedMediumInt
+  prsn_clt_dateline Int                               @db.UnsignedInt
+
+  @@index([prsn_clt_cat, prsn_clt_mid], map: "prsn_clt_cat")
+  @@index([prsn_clt_mid], map: "prsn_clt_mid")
+  @@index([prsn_clt_uid], map: "prsn_clt_uid")
+}
+
+model chii_person_cs_index {
+  prsn_type       chii_person_cs_index_prsn_type
+  prsn_id         Int                            @db.UnsignedMediumInt
+  prsn_position   Int                            @db.UnsignedSmallInt
+  subject_id      Int                            @db.UnsignedMediumInt
+  subject_type_id Int                            @db.UnsignedTinyInt
+  summary         String                         @db.MediumText
+  prsn_appear_eps String                         @db.MediumText
+
+  @@id([prsn_type, prsn_id, subject_id, prsn_position])
+  @@index([prsn_id], map: "prsn_id")
+  @@index([prsn_position], map: "prsn_position")
+  @@index([subject_id], map: "subject_id")
+  @@index([subject_type_id], map: "subject_type_id")
+}
+
+model chii_person_fields {
+  prsn_cat   chii_person_fields_prsn_cat
+  prsn_id    Int                         @db.UnsignedInt
+  gender     Int                         @db.UnsignedTinyInt
+  bloodtype  Int                         @db.UnsignedTinyInt
+  birth_year Int                         @db.Year
+  birth_mon  Int                         @db.UnsignedTinyInt
+  birth_day  Int                         @db.UnsignedTinyInt
+
+  @@id([prsn_cat, prsn_id])
+  @@index([prsn_id], map: "prsn_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chii_person_relationship {
+  prsn_type       chii_person_relationship_prsn_type
+  prsn_id         Int                                      @db.UnsignedMediumInt
+  relat_prsn_type chii_person_relationship_relat_prsn_type
+  relat_prsn_id   Int                                      @db.UnsignedMediumInt
+  relat_type      Int                                      @db.UnsignedSmallInt
+
+  @@index([prsn_type, prsn_id], map: "prsn_type")
+  @@index([relat_prsn_type, relat_prsn_id], map: "relat_prsn_type")
+  @@ignore
+}
+
+model chii_persons {
+  prsn_id          Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  prsn_name        String  @db.VarChar(255)
+  prsn_type        Int     @db.UnsignedTinyInt
+  prsn_infobox     String  @db.MediumText
+  prsn_producer    Boolean
+  prsn_mangaka     Boolean
+  prsn_artist      Boolean
+  prsn_seiyu       Boolean
+  prsn_writer      Int     @default(0) @db.TinyInt
+  prsn_illustrator Int     @default(0) @db.TinyInt
+  prsn_actor       Boolean
+  prsn_summary     String  @db.MediumText
+  prsn_img         String  @db.VarChar(255)
+  prsn_img_anidb   String  @db.VarChar(255)
+  prsn_comment     Int     @db.UnsignedMediumInt
+  prsn_collects    Int     @db.UnsignedMediumInt
+  prsn_dateline    Int     @db.UnsignedInt
+  prsn_lastpost    Int     @db.UnsignedInt
+  prsn_lock        Int     @db.TinyInt
+  prsn_anidb_id    Int     @db.UnsignedMediumInt
+  prsn_ban         Int     @default(0) @db.UnsignedTinyInt
+  prsn_redirect    Int     @default(0) @db.UnsignedInt
+  prsn_nsfw        Boolean
+
+  @@index([prsn_actor], map: "prsn_actor")
+  @@index([prsn_artist], map: "prsn_artist")
+  @@index([prsn_ban], map: "prsn_ban")
+  @@index([prsn_illustrator], map: "prsn_illustrator")
+  @@index([prsn_lock], map: "prsn_lock")
+  @@index([prsn_mangaka], map: "prsn_mangaka")
+  @@index([prsn_producer], map: "prsn_producer")
+  @@index([prsn_seiyu], map: "prsn_seiyu")
+  @@index([prsn_type], map: "prsn_type")
+  @@index([prsn_writer], map: "prsn_writer")
+}
+
+model chii_prsn_comments {
+  prsn_pst_id       Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  prsn_pst_mid      Int    @db.UnsignedMediumInt
+  prsn_pst_uid      Int    @db.UnsignedMediumInt
+  prsn_pst_related  Int    @default(0) @db.UnsignedMediumInt
+  prsn_pst_dateline Int    @db.UnsignedInt
+  prsn_pst_content  String @db.MediumText
+
+  @@index([prsn_pst_mid], map: "cmt_prsn_id")
+  @@index([prsn_pst_related], map: "prsn_pst_related")
+  @@index([prsn_pst_uid], map: "prsn_pst_uid")
+}
+
+model chii_rev_history {
+  rev_id           Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  rev_type         Int    @db.UnsignedTinyInt
+  rev_mid          Int    @db.UnsignedMediumInt
+  rev_text_id      Int    @db.UnsignedMediumInt
+  rev_dateline     Int    @db.UnsignedInt
+  rev_creator      Int    @db.UnsignedMediumInt
+  rev_edit_summary String @db.VarChar(200)
+
+  @@index([rev_creator], map: "rev_crt_creator")
+  @@index([rev_type, rev_mid], map: "rev_crt_id")
+  @@index([rev_id, rev_type, rev_creator], map: "rev_id")
+}
+
+model chii_rev_text {
+  rev_text_id Int   @id @default(autoincrement()) @db.UnsignedMediumInt
+  rev_text    Bytes @db.MediumBlob
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model chii_subject_alias {
+  subject_id      Int    @db.UnsignedInt
+  alias_name      String @db.VarChar(255)
+  subject_type_id Int    @default(0) @db.UnsignedTinyInt
+  alias_type      Int    @default(0) @db.UnsignedTinyInt
+  alias_key       String @db.VarChar(10)
+
+  @@index([subject_id], map: "subject_id")
+  @@ignore
+}
+
+model chii_subject_fields {
+  field_sid      Int      @id @default(autoincrement()) @db.UnsignedMediumInt
+  field_tid      Int      @default(0) @db.UnsignedSmallInt
+  field_tags     String   @db.MediumText
+  field_rate_1   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_2   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_3   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_4   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_5   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_6   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_7   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_8   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_9   Int      @default(0) @db.UnsignedMediumInt
+  field_rate_10  Int      @default(0) @db.UnsignedMediumInt
+  field_airtime  Boolean
+  field_rank     Int      @default(0) @db.UnsignedInt
+  field_year     Int      @db.Year
+  field_mon      Int      @db.TinyInt
+  field_week_day Boolean
+  field_date     DateTime @db.Date
+  field_redirect Int      @default(0) @db.UnsignedMediumInt
+
+  @@index([field_date], map: "field_date")
+  @@index([field_rank], map: "field_rank")
+  @@index([field_year], map: "field_year")
+  @@index([field_year, field_mon], map: "field_year_mon")
+  @@index([field_sid, field_date], map: "query_date")
+  @@index([field_tid], map: "sort_id")
+  @@index([field_airtime], map: "subject_airtime")
+}
+
+model chii_subject_interests {
+  interest_id               Int     @id @default(autoincrement()) @db.UnsignedInt
+  interest_uid              Int     @db.UnsignedMediumInt
+  interest_subject_id       Int     @db.UnsignedMediumInt
+  interest_subject_type     Int     @default(0) @db.UnsignedSmallInt
+  interest_rate             Int     @default(0) @db.UnsignedTinyInt
+  interest_type             Boolean @default(false)
+  interest_has_comment      Boolean
+  interest_comment          String  @db.MediumText
+  interest_tag              String  @db.MediumText
+  interest_ep_status        Int     @default(0) @db.UnsignedMediumInt
+  interest_vol_status       Int     @db.UnsignedMediumInt
+  interest_wish_dateline    Int     @db.UnsignedInt
+  interest_doing_dateline   Int     @db.UnsignedInt
+  interest_collect_dateline Int     @db.UnsignedInt
+  interest_on_hold_dateline Int     @db.UnsignedInt
+  interest_dropped_dateline Int     @db.UnsignedInt
+  interest_create_ip        String  @db.Char(15)
+  interest_lasttouch_ip     String  @db.Char(15)
+  interest_lasttouch        Int     @default(0) @db.UnsignedInt
+  interest_private          Boolean
+
+  @@unique([interest_uid, interest_subject_id], map: "user_interest")
+  @@index([interest_collect_dateline], map: "interest_collect_dateline")
+  @@index([interest_uid, interest_private], map: "interest_id")
+  @@index([interest_lasttouch], map: "interest_lasttouch")
+  @@index([interest_private], map: "interest_private")
+  @@index([interest_rate], map: "interest_rate")
+  @@index([interest_subject_id, interest_type], map: "interest_subject_id")
+  @@index([interest_subject_id], map: "interest_subject_id_2")
+  @@index([interest_subject_type], map: "interest_subject_type")
+  @@index([interest_type], map: "interest_type")
+  @@index([interest_type, interest_uid], map: "interest_type_2")
+  @@index([interest_uid], map: "interest_uid")
+  @@index([interest_uid, interest_private, interest_lasttouch], map: "interest_uid_2")
+  @@index([interest_subject_id, interest_type, interest_private, interest_collect_dateline], map: "subject_collect")
+  @@index([interest_subject_id, interest_has_comment, interest_private, interest_lasttouch], map: "subject_comment")
+  @@index([interest_subject_id, interest_private, interest_lasttouch], map: "subject_lasttouch")
+  @@index([interest_subject_id, interest_rate, interest_private], map: "subject_rate")
+  @@index([interest_subject_type, interest_type, interest_uid], map: "tag_subject_id")
+  @@index([interest_subject_id, interest_subject_type, interest_doing_dateline], map: "top_subject")
+  @@index([interest_subject_type, interest_type, interest_uid, interest_private], map: "user_collect_latest")
+  @@index([interest_subject_type, interest_type, interest_uid, interest_private, interest_collect_dateline], map: "user_collect_type")
+  @@index([interest_subject_type, interest_uid], map: "user_collects")
+}
+
+model chii_subject_posts {
+  sbj_pst_id       Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  sbj_pst_mid      Int     @db.UnsignedMediumInt
+  sbj_pst_uid      Int     @db.UnsignedMediumInt
+  sbj_pst_related  Int     @default(0) @db.UnsignedMediumInt
+  sbj_pst_content  String  @db.MediumText
+  sbj_pst_state    Boolean
+  sbj_pst_dateline Int     @default(0) @db.UnsignedInt
+
+  @@index([sbj_pst_mid], map: "pss_topic_id")
+  @@index([sbj_pst_related], map: "sbj_pst_related")
+  @@index([sbj_pst_uid], map: "sbj_pst_uid")
+}
+
+model chii_subject_relations {
+  rlt_subject_id              Int     @db.UnsignedMediumInt
+  rlt_subject_type_id         Int     @db.UnsignedTinyInt
+  rlt_relation_type           Int     @db.UnsignedSmallInt
+  rlt_related_subject_id      Int     @db.UnsignedMediumInt
+  rlt_related_subject_type_id Int     @db.UnsignedTinyInt
+  rlt_vice_versa              Boolean
+  rlt_order                   Int     @db.UnsignedTinyInt
+
+  @@unique([rlt_subject_id, rlt_related_subject_id, rlt_vice_versa], map: "rlt_subject_id")
+  @@index([rlt_related_subject_type_id, rlt_order], map: "rlt_related_subject_type_id")
+  @@index([rlt_relation_type, rlt_subject_id, rlt_related_subject_id], map: "rlt_relation_type")
+  @@index([rlt_subject_type_id], map: "rlt_subject_type_id")
+}
+
+model chii_subject_revisions {
+  rev_id            Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  rev_type          Int    @default(1) @db.UnsignedTinyInt
+  rev_subject_id    Int    @db.UnsignedMediumInt
+  rev_type_id       Int    @default(0) @db.UnsignedSmallInt
+  rev_creator       Int    @db.UnsignedMediumInt
+  rev_dateline      Int    @default(0) @db.UnsignedInt
+  rev_name          String @db.VarChar(80)
+  rev_name_cn       String @db.VarChar(80)
+  rev_field_infobox String @db.MediumText
+  rev_field_summary String @db.MediumText
+  rev_vote_field    String @db.MediumText
+  rev_field_eps     Int    @db.UnsignedMediumInt
+  rev_edit_summary  String @db.VarChar(200)
+  rev_platform      Int    @db.UnsignedSmallInt
+
+  @@index([rev_creator, rev_id], map: "rev_creator")
+  @@index([rev_dateline], map: "rev_dateline")
+  @@index([rev_subject_id, rev_creator], map: "rev_subject_id")
+  @@index([rev_type], map: "rev_type")
+}
+
+model chii_subject_topics {
+  sbj_tpc_id         Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  sbj_tpc_subject_id Int     @db.UnsignedMediumInt
+  sbj_tpc_uid        Int     @db.UnsignedMediumInt
+  sbj_tpc_title      String  @db.VarChar(80)
+  sbj_tpc_dateline   Int     @default(0) @db.UnsignedInt
+  sbj_tpc_lastpost   Int     @default(0) @db.UnsignedInt
+  sbj_tpc_replies    Int     @default(0) @db.UnsignedMediumInt
+  sbj_tpc_state      Boolean
+  sbj_tpc_display    Boolean @default(true)
+
+  @@index([sbj_tpc_lastpost, sbj_tpc_subject_id, sbj_tpc_display], map: "sbj_tpc_lastpost")
+  @@index([sbj_tpc_uid], map: "sbj_tpc_uid")
+  @@index([sbj_tpc_display], map: "tpc_display")
+  @@index([sbj_tpc_subject_id], map: "tpc_subject_id")
+}
+
+model chii_subjects {
+  subject_id           Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+  subject_type_id      Int     @default(0) @db.UnsignedSmallInt
+  subject_name         String  @db.VarChar(80)
+  subject_name_cn      String  @db.VarChar(80)
+  subject_uid          String  @db.VarChar(20)
+  subject_creator      Int     @db.UnsignedMediumInt
+  subject_dateline     Int     @default(0) @db.UnsignedInt
+  subject_image        String  @db.VarChar(255)
+  subject_platform     Int     @default(0) @db.UnsignedSmallInt
+  field_infobox        String  @db.MediumText
+  field_summary        String  @db.MediumText
+  field_5              String  @db.MediumText
+  field_volumes        Int     @default(0) @db.UnsignedMediumInt
+  field_eps            Int     @default(0) @db.UnsignedMediumInt
+  subject_wish         Int     @default(0) @db.UnsignedMediumInt
+  subject_collect      Int     @default(0) @db.UnsignedMediumInt
+  subject_doing        Int     @default(0) @db.UnsignedMediumInt
+  subject_on_hold      Int     @default(0) @db.UnsignedMediumInt
+  subject_dropped      Int     @default(0) @db.UnsignedMediumInt
+  subject_series       Boolean @default(false)
+  subject_series_entry Int     @default(0) @db.UnsignedMediumInt
+  subject_idx_cn       String  @db.VarChar(1)
+  subject_airtime      Boolean
+  subject_nsfw         Boolean
+  subject_ban          Boolean @default(false)
+
+  @@index([subject_ban, subject_type_id, subject_series, subject_platform], map: "browser")
+  @@index([subject_ban, subject_type_id, subject_series, subject_platform, subject_name], map: "order_by_name")
+  @@index([subject_airtime], map: "subject_airtime")
+  @@index([subject_ban], map: "subject_ban")
+  @@index([subject_creator], map: "subject_creator")
+  @@index([subject_idx_cn, subject_type_id], map: "subject_idx_cn")
+  @@index([subject_name], map: "subject_name")
+  @@index([subject_name_cn], map: "subject_name_cn")
+  @@index([subject_nsfw], map: "subject_nsfw")
+  @@index([subject_platform], map: "subject_platform")
+  @@index([subject_series], map: "subject_series")
+  @@index([subject_series_entry], map: "subject_series_entry")
+  @@index([subject_type_id], map: "subject_type_id")
+}
+
+model chii_timeline {
+  tml_id       Int    @id @default(autoincrement()) @db.UnsignedInt
+  tml_uid      Int    @default(0) @db.UnsignedMediumInt
+  tml_cat      Int    @db.UnsignedSmallInt
+  tml_type     Int    @default(0) @db.UnsignedSmallInt
+  tml_related  String @default("0") @db.Char(255)
+  tml_memo     String @db.MediumText
+  tml_img      String @db.MediumText
+  tml_batch    Int    @db.UnsignedTinyInt
+  tml_source   Int    @default(0) @db.UnsignedTinyInt
+  tml_replies  Int    @db.UnsignedMediumInt
+  tml_dateline Int    @default(0) @db.UnsignedInt
+  tml_status   Int    @default(0) @db.UnsignedTinyInt
+
+  @@index([tml_uid, tml_cat], map: "query_tml_cat")
+  @@index([tml_batch], map: "tml_batch")
+  @@index([tml_cat], map: "tml_cat")
+  @@index([tml_uid], map: "tml_uid")
+}
+
+model chii_usergroup {
+  usr_grp_id       Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  usr_grp_name     String @db.VarChar(255)
+  usr_grp_perm     String @db.MediumText
+  usr_grp_dateline Int    @db.UnsignedInt
+}
+
+model example {
+  id   Int      @id @default(autoincrement()) @db.UnsignedMediumInt
+  time DateTime @default(now()) @db.DateTime(0)
+}
+
+enum chii_person_alias_prsn_cat {
+  prsn
+  crt
+}
+
+enum chii_person_cs_index_prsn_type {
+  prsn
+  crt
+}
+
+enum chii_person_fields_prsn_cat {
+  prsn
+  crt
+}
+
+enum chii_person_relationship_prsn_type {
+  prsn
+  crt
+}
+
+enum chii_person_collects_prsn_clt_cat {
+  prsn
+  crt
+}
+
+enum chii_person_relationship_relat_prsn_type {
+  prsn
+  crt
+}
