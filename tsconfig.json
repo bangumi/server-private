@@ -8,6 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": false,
+    "useUnknownInCatchVariables": true,
     "esModuleInterop": false,
     "target": "ES2022",
     "sourceMap": true,
