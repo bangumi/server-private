@@ -11,18 +11,7 @@ export interface Context {
 }
 
 export async function createContext({ req }: { req: IncomingMessage }): Promise<Context> {
-  const key = req.headers['API-KEY'];
-  if (key === undefined) {
-    return {
-      user: {
-        login: false,
-        permission: {},
-        allowNsfw: false,
-      },
-      prisma,
-    };
-  }
-
+  const key = req.headers['api-key'];
   if (Array.isArray(key)) {
     throw new Error("can't providing multiple access token");
   }
