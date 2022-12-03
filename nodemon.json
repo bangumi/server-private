@@ -1,9 +1,0 @@
-{
-  "restartable": "rs",
-  "ignore": [".git", "node_modules/**/node_modules"],
-  "watch": ["lib/**/*", "lib/*"],
-  "execMap": {
-    "ts": "node --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
-  },
-  "ext": "ts,js,json"
-}
