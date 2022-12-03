@@ -1,5 +1,6 @@
+import { createError } from '@fastify/error';
+
 import prisma from '../prisma';
-import { logger } from '../logger';
 import { getPermission, Permission } from './permission';
 
 export { Permission };
@@ -9,6 +10,8 @@ export interface Auth {
   allowNsfw: boolean;
   permission: Permission;
 }
+
+const TokenNotValidError = createError('TOKEN_INVALID', "can't find user by access token", 401);
 
 export async function byToken(access_token: string | undefined): Promise<Auth> {
   if (!access_token) {
@@ -23,11 +26,7 @@ export async function byToken(access_token: string | undefined): Promise<Auth> {
   });
 
   if (!token) {
-    return {
-      login: false,
-      permission: {},
-      allowNsfw: false,
-    };
+    throw new TokenNotValidError();
   }
 
   const user = await prisma.chii_members.findFirst({
@@ -35,8 +34,9 @@ export async function byToken(access_token: string | undefined): Promise<Auth> {
   });
 
   if (!user) {
-    logger.error('missing user %s', token.user_id);
-    throw new Error("can't find user by access token");
+    throw new Error(
+      'missing user, please report a issue at https://github.com/bangumi/GraphQL/issues',
+    );
   }
 
   return {
