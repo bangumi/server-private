@@ -19,7 +19,10 @@ const server = createServer({
   },
 });
 
-const port = 4000;
-await server.listen({ port, host: '0.0.0.0' });
-logger.info('server started at http://0.0.0.0:4000');
-logger.info('visit http://127.0.0.1:4000/v0/altair/');
+const port = process.env.PORT ? parseInt(process.env.PORT) : 4000;
+const host = process.env.HOST ?? '0.0.0.0';
+
+await server.listen({ port, host });
+
+logger.info(`server started at http://${host}:${port}`);
+logger.info(`visit http://127.0.0.1:${port}/v0/altair/`);
