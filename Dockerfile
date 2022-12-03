@@ -18,6 +18,6 @@ WORKDIR /usr/src/app
 ENV NODE_ENV=production
 ENTRYPOINT [ "node", "--loader=ts-node/esm", "--experimental-specifier-resolution=node", "--enable-source-maps", "lib/main.ts" ]
 
-COPY --from=builder . ./
+COPY --from=builder /usr/src/app/ ./
 
 
