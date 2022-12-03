@@ -11,7 +11,6 @@
   "scripts": {
     "format": "prettier -w ./",
     "lint": "eslint --ext ts ./",
-    "build": "nest build",
     "start": "cross-env NODE_OPTIONS=\"--enable-source-maps --experimental-specifier-resolution=node\"  node --loader ts-node/esm lib/main.ts",
     "dev": "yarn start --watch",
     "prepare": "husky install"
