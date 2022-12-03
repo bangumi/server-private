@@ -35,7 +35,8 @@ function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
   });
   // @ts-ignore
   server.register(AltairFastify, {
-    path: '/v0/graphql-ui',
+    path: '/v0/altair/',
+    baseURL: '/v0/altair/',
     endpointURL: '/v0/graphql',
     initialSettings: {
       theme: 'dark',
