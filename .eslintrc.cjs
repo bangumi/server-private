@@ -19,6 +19,8 @@ module.exports = {
     node: true,
   },
   rules: {
+    quotes: 'off',
+    '@typescript-eslint/quotes': 'off',
     'n/no-missing-import': 'off',
     'linebreak-style': ['error', 'unix'],
     indent: ['error', 2],
@@ -27,8 +29,6 @@ module.exports = {
     'promise/catch-or-return': ['error', { allowFinally: true }],
     '@typescript-eslint/object-curly-spacing': ['error', 'always'],
     '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
-    '@typescript-eslint/quotes': ['error', 'double', { avoidEscape: true }],
-    quotes: ['error', 'double', { avoidEscape: true }],
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {
