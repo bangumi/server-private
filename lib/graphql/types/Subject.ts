@@ -2,7 +2,7 @@ import { nonNull, objectType, extendType, intArg } from 'nexus';
 
 import type { Context } from '../context';
 
-export const Episode = objectType({
+const Episode = objectType({
   name: 'Episode',
   definition(t) {
     t.nonNull.int('id');
@@ -15,7 +15,7 @@ export const Episode = objectType({
   },
 });
 
-export const Subject = objectType({
+const Subject = objectType({
   name: 'Subject',
   definition(t) {
     t.nonNull.int('id');
@@ -69,8 +69,7 @@ export const Subject = objectType({
   },
 });
 
-// get Unique Link
-export const SubjectByIDQuery = extendType({
+const SubjectByIDQuery = extendType({
   type: 'Query',
   definition(t) {
     t.field('subject', {
@@ -100,3 +99,5 @@ export const SubjectByIDQuery = extendType({
     });
   },
 });
+
+export default [Episode, Subject, SubjectByIDQuery];

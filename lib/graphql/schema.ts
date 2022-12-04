@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 import { makeSchema } from 'nexus';
 
-import * as types from './types/index';
+import types from './types/index';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
