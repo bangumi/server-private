@@ -5,7 +5,6 @@
  * Do not make changes to this file directly
  */
 
-/* eslint-disable */
 import type { NexusGenTypes } from './typeDefs';
 
 declare global {

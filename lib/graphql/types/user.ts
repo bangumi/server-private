@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'node:url';
+import * as path from 'node:path';
 
 import { objectType, extendType } from 'nexus';
 
@@ -15,19 +16,10 @@ const Avatar = objectType({
   },
 });
 
-// keep this synced with user fields definition
-export interface IUser {
-  ID: number;
-  username: string;
-  nickname: string;
-  // internal property to return avatar
-  img?: string;
-}
-
 const User = objectType({
   name: 'User',
   sourceType: {
-    module: __filename,
+    module: path.resolve(path.dirname(__filename), '../..', 'auth', 'index.ts'),
     export: 'IUser',
   },
   definition(t) {

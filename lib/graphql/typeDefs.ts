@@ -6,7 +6,7 @@
  */
 
 import type { Context } from './context';
-import type { IUser } from './types/user';
+import type { IUser } from './../auth/index';
 
 export interface NexusGenInputs {}
 
