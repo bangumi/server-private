@@ -1,7 +1,7 @@
 import type { PrismaClient } from '../generated/client';
-import type { Auth } from '../auth';
+import type { IAuth } from '../auth';
 
 export interface Context {
-  auth: Auth;
+  auth: IAuth;
   prisma: PrismaClient;
 }

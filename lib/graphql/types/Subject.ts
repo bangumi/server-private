@@ -1,6 +1,7 @@
 import { nonNull, objectType, extendType, intArg } from 'nexus';
 
 import type { Context } from '../context';
+import type { chii_episodes } from '../../generated/client';
 
 const Episode = objectType({
   name: 'Episode',
@@ -9,7 +10,7 @@ const Episode = objectType({
     t.nonNull.string('name');
     t.nonNull.string('name_cn');
     t.nonNull.string('description');
-    t.nonNull.string('type');
+    t.nonNull.int('type');
     t.nonNull.string('duration');
     t.nonNull.float('sort');
   },
@@ -34,26 +35,22 @@ const Subject = objectType({
         ),
         type: intArg(),
       },
-      async resolve(
-        parent: { id: number },
-        { limit, offset, type = undefined }: { limit: number; offset: number; type?: number },
-        { prisma }: Context,
-      ) {
+      async resolve(parent, { limit, offset, type }, { prisma }) {
         if (offset < 0) {
           const count = await prisma.chii_episodes.count({
-            where: { ep_type: type, ep_subject_id: parent.id },
+            where: { ep_type: type ? type : undefined, ep_subject_id: parent.id },
           });
           offset = count + offset;
         }
 
-        return (
-          await prisma.chii_episodes.findMany({
-            orderBy: { ep_sort: 'asc' },
-            where: { ep_type: type, ep_subject_id: parent.id },
-            skip: offset,
-            take: limit,
-          })
-        ).map((e) => {
+        const episodes = await prisma.chii_episodes.findMany({
+          orderBy: { ep_sort: 'asc' },
+          where: { ep_type: type ? type : undefined, ep_subject_id: parent.id },
+          skip: offset,
+          take: limit,
+        });
+
+        return episodes.map((e: chii_episodes) => {
           return {
             id: e.ep_id,
             name: e.ep_name,

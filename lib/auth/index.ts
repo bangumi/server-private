@@ -4,23 +4,23 @@ import prisma from '../prisma';
 import type { Permission } from './permission';
 import { getPermission } from './permission';
 
-export interface User {
+export interface IUser {
   ID: number;
   username: string;
   nickname: string;
   img: string;
 }
 
-export interface Auth {
+export interface IAuth {
   login: boolean;
   allowNsfw: boolean;
   permission: Permission;
-  user: null | User;
+  user: null | IUser;
 }
 
 const TokenNotValidError = createError('TOKEN_INVALID', "can't find user by access token", 401);
 
-export async function byToken(access_token: string | undefined): Promise<Auth> {
+export async function byToken(access_token: string | undefined): Promise<IAuth> {
   if (!access_token) {
     return {
       user: null,
