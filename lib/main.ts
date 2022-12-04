@@ -2,9 +2,10 @@ import { nanoid } from 'nanoid';
 
 import { createServer } from './server';
 import { logger } from './logger';
+import { production } from './config';
 
 const server = createServer({
-  logger: logger.child({ name: 'fastify' }, { level: 'warn' }),
+  logger: logger.child({ name: 'fastify' }, { level: production ? 'warn' : 'info' }),
   disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
   genReqId: (req): string => {
     if (!req.headers.cf_ray) {
