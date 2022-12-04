@@ -1,6 +1,10 @@
+import { fileURLToPath } from 'node:url';
+
 import { objectType, extendType } from 'nexus';
 
 import type { Context } from '../context';
+
+const __filename = fileURLToPath(new URL(import.meta.url));
 
 const Avatar = objectType({
   name: 'Avatar',
@@ -11,8 +15,21 @@ const Avatar = objectType({
   },
 });
 
+// keep this synced with user fields definition
+export interface IUser {
+  ID: number;
+  username: string;
+  nickname: string;
+  // internal property to return avatar
+  img?: string;
+}
+
 const User = objectType({
   name: 'User',
+  sourceType: {
+    module: __filename,
+    export: 'IUser',
+  },
   definition(t) {
     t.nonNull.int('ID');
     t.nonNull.string('username');

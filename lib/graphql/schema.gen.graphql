@@ -15,7 +15,7 @@ type Episode {
   name: String!
   name_cn: String!
   sort: Float!
-  type: String!
+  type: Int!
 }
 
 type Query {
