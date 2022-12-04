@@ -1,19 +1,18 @@
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
+import { fastify } from 'fastify';
 import mercurius from 'mercurius';
 import AltairFastify from 'altair-fastify-plugin';
-import { createError } from '@fastify/error';
-import { fastify } from 'fastify';
+import swagger from '@fastify/swagger';
+import swaggerUI from '@fastify/swagger-ui';
 
 import { schema } from './graphql/schema';
 import type { Context } from './graphql/context';
 import prisma from './prisma';
 import * as auth from './auth';
+import * as rest from './rest';
+import { pkg } from './config';
 
-const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
-
-const tokenPrefix = 'Bearer ';
-
-export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
+export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const server = fastify(opts);
 
   server.register(mercurius, {
@@ -22,20 +21,9 @@ export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
     graphiql: false,
     allowBatchedQueries: true,
     context: async (request: FastifyRequest): Promise<Context> => {
-      const key = request.headers.authorization;
-      if (Array.isArray(key)) {
-        throw new HeaderInvalid("can't providing multiple access token");
-      }
-      if (!key) {
-        return { prisma, auth: { login: false, permission: {}, allowNsfw: false, user: null } };
-      }
-      if (!key.startsWith(tokenPrefix)) {
-        throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
-      }
-
       return {
         prisma,
-        auth: await auth.byToken(key.slice(tokenPrefix.length)),
+        auth: await auth.byHeader(request.headers.authorization),
       };
     },
   });
@@ -49,6 +37,25 @@ export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
       'plugin.list': ['altair-graphql-plugin-graphql-explorer'],
     },
   });
+
+  await server.register(swagger, {
+    openapi: {
+      info: {
+        version: pkg.version,
+        title: 'hello',
+      },
+    },
+  });
+
+  await server.register(swaggerUI, {
+    routePrefix: '/documentation',
+    uiConfig: {
+      deepLinking: true,
+      layout: 'BaseLayout',
+    },
+  });
+
+  await server.register(rest.setup, { prefix: '/v1' });
 
   return server;
 }
