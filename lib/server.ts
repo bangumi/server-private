@@ -11,6 +11,8 @@ import * as auth from './auth';
 
 const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
 
+const tokenPrefix = 'Bearer ';
+
 export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
   const server = fastify(opts);
 
@@ -27,26 +29,24 @@ export function createServer(opts: FastifyServerOptions = {}): FastifyInstance {
       if (!key) {
         return { prisma, auth: { login: false, permission: {}, allowNsfw: false, user: null } };
       }
-      if (!key.startsWith('Bearer ')) {
+      if (!key.startsWith(tokenPrefix)) {
         throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
       }
 
       return {
         prisma,
-        auth: await auth.byToken(key.slice('Bearer '.length)),
+        auth: await auth.byToken(key.slice(tokenPrefix.length)),
       };
     },
   });
-  // @ts-ignore
+
   server.register(AltairFastify, {
     path: '/v0/altair/',
     baseURL: '/v0/altair/',
     endpointURL: '/v0/graphql',
     initialSettings: {
       theme: 'dark',
-      plugin: {
-        list: ['altair-graphql-plugin-graphql-explorer'],
-      },
+      'plugin.list': ['altair-graphql-plugin-graphql-explorer'],
     },
   });
 
