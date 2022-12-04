@@ -4,7 +4,7 @@ import { gql } from 'graphql-tag';
 
 import { createServer } from './server';
 
-const testClient = createMercuriusTestClient(createServer(), { url: '/v0/graphql' });
+const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
 
 describe('auth', () => {
   test('should return current user', async () => {

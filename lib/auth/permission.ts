@@ -40,7 +40,7 @@ export interface Permission {
   app_erase?: boolean;
 }
 
-export async function getPermission(userGroup: number): Promise<Permission> {
+export async function getPermission(userGroup: number): Promise<Readonly<Permission>> {
   const cached = cache.get(userGroup);
   if (cached) {
     return cached;
@@ -51,11 +51,13 @@ export async function getPermission(userGroup: number): Promise<Permission> {
     return {};
   }
 
-  const p = Object.fromEntries(
-    Object.entries(php.unserialize(permission.usr_grp_perm)).map(([key, value]) => [
-      key,
-      value === '1',
-    ]),
+  const p = Object.freeze(
+    Object.fromEntries(
+      Object.entries(php.unserialize(permission.usr_grp_perm)).map(([key, value]) => [
+        key,
+        value === '1',
+      ]),
+    ),
   );
 
   cache.set(userGroup, p);

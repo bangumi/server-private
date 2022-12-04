@@ -14,11 +14,28 @@ export interface IUser {
 export interface IAuth {
   login: boolean;
   allowNsfw: boolean;
-  permission: Permission;
+  permission: Readonly<Permission>;
   user: null | IUser;
 }
 
-const TokenNotValidError = createError('TOKEN_INVALID', "can't find user by access token", 401);
+export const TokenNotValidError = createError(
+  'TOKEN_INVALID',
+  "can't find user by access token",
+  401,
+);
+
+export async function byHeader(key: string | string[] | undefined): Promise<IAuth> {
+  if (Array.isArray(key)) {
+    throw new HeaderInvalid("can't providing multiple access token");
+  }
+  if (!key) {
+    return { login: false, permission: {}, allowNsfw: false, user: null };
+  }
+  if (!key.startsWith(tokenPrefix)) {
+    throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
+  }
+  return await byToken(key.slice(tokenPrefix.length));
+}
 
 export async function byToken(access_token: string | undefined): Promise<IAuth> {
   if (!access_token) {
@@ -59,3 +76,6 @@ export async function byToken(access_token: string | undefined): Promise<IAuth> 
     allowNsfw: user.regdate - Date.now() / 1000 <= 60 * 60 * 24 * 90,
   };
 }
+
+export const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
+export const tokenPrefix = 'Bearer ';

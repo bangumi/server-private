@@ -24,7 +24,7 @@ module.exports = {
     '@typescript-eslint/quotes': 'off',
     'n/no-missing-import': 'off',
     'linebreak-style': ['error', 'unix'],
-    indent: ['error', 2],
+    indent: 'off',
     'array-element-newline': ['error', 'consistent'],
     'array-bracket-newline': ['error', 'consistent'],
     'promise/catch-or-return': ['error', { allowFinally: true }],
