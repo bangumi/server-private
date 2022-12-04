@@ -6,21 +6,59 @@ import { createServer } from './server';
 
 const testClient = createMercuriusTestClient(createServer(), { url: '/v0/graphql' });
 
-test('should works', async () => {
-  await expect(
-    testClient.query(
+describe('subject', () => {
+  test('should get', async () => {
+    await expect(
+      testClient.query(
+        gql`
+          query {
+            subject(id: 8) {
+              name_cn
+            }
+          }
+        `,
+      ),
+    ).resolves.toEqual({
+      data: {
+        subject: { name_cn: 'Code Geass 反叛的鲁路修R2' },
+      },
+    });
+  });
+
+  test('should get episodes, limit', async () => {
+    const query = await testClient.query(
       gql`
         query {
           subject(id: 8) {
-            name_cn
+            id
+            episodes(limit: 3) {
+              id
+            }
           }
         }
       `,
-    ),
-  ).resolves.toEqual({
-    data: {
-      subject: { name_cn: 'Code Geass 反叛的鲁路修R2' },
-    },
+    );
+
+    expect(query.data.subject.id).toBe(8);
+    expect(query.data.subject.episodes).toHaveLength(3);
+  });
+
+  test('should get episodes, -offset', async () => {
+    const query = await testClient.query(
+      gql`
+        query {
+          subject(id: 8) {
+            id
+            episodes(offset: -3) {
+              id
+            }
+          }
+        }
+      `,
+    );
+
+    expect(query.data.subject.id).toBe(8);
+    expect(query.data.subject.episodes).toHaveLength(3);
   });
 });
 
