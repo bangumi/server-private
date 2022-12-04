@@ -1,11 +1,7 @@
-import { fileURLToPath } from 'node:url';
-import * as path from 'node:path';
-
 import { objectType, extendType } from 'nexus';
 
 import type { Context } from '../context';
-
-const __filename = fileURLToPath(new URL(import.meta.url));
+import type { IUser } from '../../auth';
 
 const Avatar = objectType({
   name: 'Avatar',
@@ -18,17 +14,13 @@ const Avatar = objectType({
 
 const User = objectType({
   name: 'User',
-  sourceType: {
-    module: path.resolve(path.dirname(__filename), '../..', 'auth', 'index.ts'),
-    export: 'IUser',
-  },
   definition(t) {
     t.nonNull.int('ID');
     t.nonNull.string('username');
     t.nonNull.string('nickname');
     t.nonNull.field('avatar', {
       type: Avatar,
-      resolve(parent) {
+      resolve(parent: IUser) {
         const img = parent.img || 'icon.jpg';
 
         return {
