@@ -2,6 +2,12 @@
 ### Do not make changes to this file directly
 
 
+type Avatar {
+  large: String!
+  medium: String!
+  small: String!
+}
+
 type Episode {
   description: String!
   duration: String!
@@ -32,6 +38,7 @@ type Subject {
 
 type User {
   ID: Int!
+  avatar: Avatar!
   nickname: String!
   username: String!
 }

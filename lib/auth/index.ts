@@ -8,6 +8,7 @@ export interface User {
   ID: number;
   username: string;
   nickname: string;
+  img: string;
 }
 
 export interface Auth {
@@ -47,7 +48,12 @@ export async function byToken(access_token: string | undefined): Promise<Auth> {
   }
 
   return {
-    user: { ID: user.uid, nickname: user.nickname, username: user.username },
+    user: {
+      ID: user.uid,
+      nickname: user.nickname,
+      username: user.username,
+      img: user.avatar,
+    },
     login: true,
     permission: await getPermission(user.groupid),
     allowNsfw: user.regdate - Date.now() / 1000 <= 60 * 60 * 24 * 90,
