@@ -2,7 +2,7 @@ import { objectType, extendType } from 'nexus';
 
 import type { Context } from '../context';
 
-export const User = objectType({
+const User = objectType({
   name: 'User',
   definition(t) {
     t.nonNull.int('ID');
@@ -11,7 +11,7 @@ export const User = objectType({
   },
 });
 
-export const GetCurrentUser = extendType({
+const GetCurrentUser = extendType({
   type: 'Query',
   definition(t) {
     t.nullable.field('me', {
@@ -22,3 +22,5 @@ export const GetCurrentUser = extendType({
     });
   },
 });
+
+export default [User, GetCurrentUser];
