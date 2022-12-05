@@ -127,24 +127,24 @@ model chii_ep_status {
 }
 
 model chii_episodes {
-  ep_id         Int     @id @default(autoincrement()) @db.UnsignedMediumInt
-  ep_subject_id Int     @db.UnsignedMediumInt
-  ep_sort       Float   @default(0) @db.Float
+  ep_id         Int    @id @default(autoincrement()) @db.UnsignedMediumInt
+  ep_subject_id Int    @db.UnsignedMediumInt
+  ep_sort       Float  @default(0) @db.Float
   ep_type       Int
-  ep_disc       Int     @default(0) @db.UnsignedTinyInt
-  ep_name       String  @db.VarChar(80)
-  ep_name_cn    String  @db.VarChar(80)
-  ep_rate       Int     @db.TinyInt
-  ep_duration   String  @db.VarChar(80)
-  ep_airdate    String  @db.VarChar(80)
-  ep_online     String  @db.MediumText
-  ep_comment    Int     @db.UnsignedMediumInt
-  ep_resources  Int     @db.UnsignedMediumInt
-  ep_desc       String  @db.MediumText
-  ep_dateline   Int     @db.UnsignedInt
-  ep_lastpost   Int     @db.UnsignedInt
-  ep_lock       Int     @default(0) @db.UnsignedTinyInt
-  ep_ban        Int     @default(0) @db.UnsignedTinyInt
+  ep_disc       Int    @default(0) @db.UnsignedTinyInt
+  ep_name       String @db.VarChar(80)
+  ep_name_cn    String @db.VarChar(80)
+  ep_rate       Int    @db.TinyInt
+  ep_duration   String @db.VarChar(80)
+  ep_airdate    String @db.VarChar(80)
+  ep_online     String @db.MediumText
+  ep_comment    Int    @db.UnsignedMediumInt
+  ep_resources  Int    @db.UnsignedMediumInt
+  ep_desc       String @db.MediumText
+  ep_dateline   Int    @db.UnsignedInt
+  ep_lastpost   Int    @db.UnsignedInt
+  ep_lock       Int    @default(0) @db.UnsignedTinyInt
+  ep_ban        Int    @default(0) @db.UnsignedTinyInt
 
   @@index([ep_ban], map: "ep_ban")
   @@index([ep_disc], map: "ep_disc")

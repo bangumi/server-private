@@ -16,7 +16,8 @@
     "prepare": "prisma generate && husky install"
   },
   "lint-staged": {
-    "*.{ts,md,html,json,cjs,mjs,js,yml,yaml}": "prettier -w",
+    "*.{ts,md,html,json,cjs,mjs,js,yml,yaml,prisma}": "prettier -w",
+    "Dockerfile": "prettier -w",
     "*.ts": "eslint --fix"
   },
   "nodemonConfig": {
@@ -62,6 +63,8 @@
     "mercurius-integration-testing": "^6.0.1",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.0",
+    "prettier-plugin-prisma": "^4.4.0",
+    "prettier-plugin-sh": "^0.12.8",
     "prisma": "^4.7.1",
     "typescript": "~4.9.3"
   },
