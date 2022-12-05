@@ -15,6 +15,7 @@
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": true,
     "strictNullChecks": true,
+    "lib": ["ES2021"],
     "outDir": "./dist",
     "isolatedModules": true,
     "baseUrl": "./",
