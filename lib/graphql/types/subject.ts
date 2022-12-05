@@ -38,14 +38,14 @@ const Subject = objectType({
       async resolve(parent, { limit, offset, type }, { prisma }) {
         if (offset < 0) {
           const count = await prisma.chii_episodes.count({
-            where: { ep_type: type ? type : undefined, ep_subject_id: parent.id },
+            where: { ep_type: type ?? undefined, ep_subject_id: parent.id },
           });
           offset = count + offset;
         }
 
         const episodes = await prisma.chii_episodes.findMany({
           orderBy: { ep_sort: 'asc' },
-          where: { ep_type: type ? type : undefined, ep_subject_id: parent.id },
+          where: { ep_type: type ?? undefined, ep_subject_id: parent.id },
           skip: offset,
           take: limit,
         });

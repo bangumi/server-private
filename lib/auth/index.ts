@@ -55,7 +55,7 @@ export async function byToken(access_token: string | undefined): Promise<IAuth> 
   }
 
   const user = await prisma.chii_members.findFirst({
-    where: { uid: parseInt(token.user_id!) },
+    where: { uid: Number.parseInt(token.user_id!) },
   });
 
   if (!user) {

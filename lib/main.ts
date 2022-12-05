@@ -20,7 +20,7 @@ const server = await createServer({
   },
 });
 
-const port = process.env.PORT ? parseInt(process.env.PORT) : 4000;
+const port = process.env.PORT ? Number.parseInt(process.env.PORT) : 4000;
 const host = process.env.HOST ?? '0.0.0.0';
 
 await server.listen({ port, host });
