@@ -6,9 +6,9 @@ COPY . ./
 
 # generate prisma client
 
-RUN yarn &&\
-    rm node_modules -rf &&\
-    yarn --prod
+RUN yarn \
+  && rm node_modules -rf \
+  && yarn --prod
 
 ##############
 
@@ -19,5 +19,3 @@ ENV NODE_ENV=production
 ENTRYPOINT [ "node", "--no-warnings", "--loader=ts-node/esm", "--experimental-specifier-resolution=node", "--enable-source-maps", "lib/main.ts" ]
 
 COPY --from=builder /usr/src/app/ ./
-
-
