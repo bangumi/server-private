@@ -12,7 +12,7 @@
     "format": "prettier -w ./",
     "lint": "eslint --ext ts ./",
     "start": "nodemon",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest",
     "prepare": "prisma generate && husky install"
   },
   "lint-staged": {

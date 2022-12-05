@@ -4,6 +4,7 @@ import type { Config } from 'jest';
 export default {
   // preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
+  testPathIgnorePatterns: ['dist'],
   coveragePathIgnorePatterns: ['/node_modules/', 'lib/generated/'],
   coverageProvider: 'v8',
   extensionsToTreatAsEsm: ['.ts'],
