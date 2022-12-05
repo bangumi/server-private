@@ -11,8 +11,7 @@
   "scripts": {
     "format": "prettier -w ./",
     "lint": "eslint --ext ts ./",
-    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps lib/main.ts",
-    "dev": "nodemon lib/main.ts",
+    "start": "nodemon",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "prepare": "prisma generate && husky install"
   },
@@ -30,7 +29,7 @@
       "lib"
     ],
     "execMap": {
-      "ts": "node -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
+      "ts": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
     },
     "ext": "ts,js,json"
   },
