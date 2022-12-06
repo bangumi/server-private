@@ -117,4 +117,13 @@ module.exports = {
       typescript: {},
     },
   },
+
+  overrides: [
+    {
+      files: ['lib/rest/api/**/*'],
+      rules: {
+        'import/no-unused-modules': 'off',
+      },
+    },
+  ],
 };

@@ -1,16 +1,18 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 import mercurius from 'mercurius';
 import AltairFastify from 'altair-fastify-plugin';
 import swagger from '@fastify/swagger';
-import swaggerUI from '@fastify/swagger-ui';
 
 import { schema } from './graphql/schema';
 import type { Context } from './graphql/context';
 import prisma from './prisma';
 import * as auth from './auth';
 import * as rest from './rest';
-import { pkg } from './config';
+import { pkg, projectRoot } from './config';
 
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const server = fastify(opts);
@@ -38,20 +40,22 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     },
   });
 
+  const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
+
+  server.get('/', (_, res) => {
+    res.type('text/html').send(swaggerUI);
+  });
+
+  server.get('/openapi.json', () => {
+    return server.swagger();
+  });
+
   await server.register(swagger, {
     openapi: {
       info: {
         version: pkg.version,
         title: 'hello',
       },
-    },
-  });
-
-  await server.register(swaggerUI, {
-    routePrefix: '/documentation',
-    uiConfig: {
-      deepLinking: true,
-      layout: 'BaseLayout',
     },
   });
 

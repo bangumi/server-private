@@ -32,7 +32,7 @@
     "execMap": {
       "ts": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
     },
-    "ext": "ts,js,json"
+    "ext": "ts,js,json,html"
   },
   "author": "",
   "license": "MIT",
@@ -42,6 +42,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@jest/globals": "^29.3.1",
     "@prisma/client": "^4.7.1",
+    "@types/bcrypt": "^5.0.0",
     "@types/node": "^18.11.10",
     "@types/ws": "^8.5.3",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
@@ -69,12 +70,14 @@
     "typescript": "~4.9.3"
   },
   "dependencies": {
+    "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.1.0",
     "@fastify/swagger": "^8.2.0",
-    "@fastify/swagger-ui": "^1.3.0",
     "@fastify/type-provider-typebox": "^2.4.0",
+    "@root/walk": "^1.1.0",
     "@sinclair/typebox": "^0.25.10",
     "altair-fastify-plugin": "^5.0.6",
+    "bcrypt": "^5.1.0",
     "fastify": "^4.10.2",
     "graphql": "^16.6.0",
     "ioredis": "^5.2.4",
