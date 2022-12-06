@@ -14,3 +14,5 @@ export const projectRoot = url.fileURLToPath(new URL('..', import.meta.url));
 export const pkg = JSON.parse(
   fs.readFileSync(path.resolve(projectRoot, 'package.json'), 'utf8'),
 ) as { version: string };
+
+export const redisPrefix = `graphql-${pkg.version}`;

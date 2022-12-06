@@ -16,6 +16,7 @@ describe('login auth flow', () => {
 
   test('login', async () => {
     const app = await createServer();
+
     const res = await app.inject({
       url: '/v0.5/login',
       method: 'post',

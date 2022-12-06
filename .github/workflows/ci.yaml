@@ -48,7 +48,8 @@ jobs:
 
       - run: yarn test --coverage
         env:
-          'DATABASE_URL': 'mysql://user:password@127.0.0.1:3306/bangumi'
+          DATABASE_URL: 'mysql://user:password@127.0.0.1:3306/bangumi'
+          REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3

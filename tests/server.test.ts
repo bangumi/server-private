@@ -62,12 +62,7 @@ describe('auth', () => {
           headers: { authorization: 'Bearer a' },
         },
       ),
-    ).resolves.toEqual({
-      code: 'TOKEN_INVALID',
-      error: 'Unauthorized',
-      message: "can't find user by access token",
-      statusCode: 401,
-    });
+    ).resolves.toMatchSnapshot();
   });
 });
 
