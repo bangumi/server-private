@@ -2,6 +2,7 @@ import * as php from 'php-serialize';
 import NodeCache from 'node-cache';
 
 import prisma from '../prisma';
+import { logger } from '../logger';
 
 const cache = new NodeCache({ stdTTL: 60 * 10 });
 
@@ -48,6 +49,7 @@ export async function getPermission(userGroup: number): Promise<Readonly<Permiss
 
   const permission = await prisma.chii_usergroup.findFirst({ where: { usr_grp_id: userGroup } });
   if (!permission) {
+    logger.warn("can't find permission for userGroup %d", userGroup);
     return {};
   }
 

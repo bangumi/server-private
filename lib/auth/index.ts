@@ -54,8 +54,12 @@ export async function byToken(access_token: string | undefined): Promise<IAuth> 
     throw new TokenNotValidError();
   }
 
+  return await byUserID(Number.parseInt(token.user_id!));
+}
+
+export async function byUserID(userID: number): Promise<IAuth> {
   const user = await prisma.chii_members.findFirst({
-    where: { uid: Number.parseInt(token.user_id!) },
+    where: { uid: userID },
   });
 
   if (!user) {
