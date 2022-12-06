@@ -7,8 +7,9 @@ import { redisPrefix } from '../config';
 import type { IUser, Permission } from '../orm';
 import { fetchPermission, fetchUser } from '../orm';
 
-export const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
-export const tokenPrefix = 'Bearer ';
+const tokenPrefix = 'Bearer ';
+const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
+const TokenNotValidError = createError('TOKEN_INVALID', "can't find user by access token", 401);
 
 export interface IAuth {
   login: boolean;
@@ -17,13 +18,7 @@ export interface IAuth {
   user: null | IUser;
 }
 
-export const TokenNotValidError = createError(
-  'TOKEN_INVALID',
-  "can't find user by access token",
-  401,
-);
-
-export function checkHTTPHeader(key: string): string {
+function checkHTTPHeader(key: string): string {
   if (!key.startsWith(tokenPrefix)) {
     throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
   }
@@ -37,11 +32,12 @@ export function checkHTTPHeader(key: string): string {
 }
 
 export async function byHeader(key: string | string[] | undefined): Promise<IAuth> {
-  if (Array.isArray(key)) {
-    throw new HeaderInvalid("can't providing multiple access token");
-  }
   if (!key) {
     return emptyAuth();
+  }
+
+  if (Array.isArray(key)) {
+    throw new HeaderInvalid("can't providing multiple access token");
   }
 
   return await byToken(checkHTTPHeader(key));
@@ -64,6 +60,20 @@ export async function byToken(access_token: string): Promise<IAuth> {
   }
 
   const u = await fetchUser(Number.parseInt(token.user_id));
+
+  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
+
+  return await userToAuth(u);
+}
+
+export async function byUserID(userID: number): Promise<IAuth> {
+  const key = `${redisPrefix}-auth-user-id-${userID}`;
+  const cached = await redis.get(key);
+  if (cached) {
+    return await userToAuth(JSON.parse(cached) as IUser);
+  }
+
+  const u = await fetchUser(userID);
 
   await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
 
@@ -105,18 +115,4 @@ async function userToAuth(user: IUser): Promise<IAuth> {
     permission: await getPermission(user.groupID),
     allowNsfw: user.regTime - Date.now() / 1000 <= 60 * 60 * 24 * 90,
   };
-}
-
-export async function byUserID(userID: number): Promise<IAuth> {
-  const key = `${redisPrefix}-auth-user-id-${userID}`;
-  const cached = await redis.get(key);
-  if (cached) {
-    return await userToAuth(JSON.parse(cached) as IUser);
-  }
-
-  const u = await fetchUser(userID);
-
-  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
-
-  return await userToAuth(u);
 }

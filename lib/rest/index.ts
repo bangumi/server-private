@@ -11,7 +11,6 @@ import * as auth from '../auth';
 import { walk } from '../utils';
 import type { App } from './type';
 import prisma from '../prisma';
-import { checkHTTPHeader } from '../auth';
 import type { IUser } from '../orm';
 
 const setups: ((app: App) => void)[] = [];
@@ -42,8 +41,7 @@ export function setup(app: FastifyInstance) {
 
   app.addHook('preHandler', async (req) => {
     if (req.headers.authorization) {
-      const token = checkHTTPHeader(req.headers.authorization);
-      const a = await auth.byToken(token);
+      const a = await auth.byHeader(req.headers.authorization);
       req.user = a.user;
       req.auth = a;
 
