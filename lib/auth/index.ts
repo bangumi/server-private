@@ -18,19 +18,6 @@ export interface IAuth {
   user: null | IUser;
 }
 
-function checkHTTPHeader(key: string): string {
-  if (!key.startsWith(tokenPrefix)) {
-    throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
-  }
-
-  const token = key.slice(tokenPrefix.length);
-  if (!token) {
-    throw new HeaderInvalid('authorization header missing token');
-  }
-
-  return token;
-}
-
 export async function byHeader(key: string | string[] | undefined): Promise<IAuth> {
   if (!key) {
     return emptyAuth();
@@ -40,7 +27,16 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
     throw new HeaderInvalid("can't providing multiple access token");
   }
 
-  return await byToken(checkHTTPHeader(key));
+  if (!key.startsWith(tokenPrefix)) {
+    throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
+  }
+
+  const token = key.slice(tokenPrefix.length);
+  if (!token) {
+    throw new HeaderInvalid('authorization header missing token');
+  }
+
+  return await byToken(token);
 }
 
 export async function byToken(access_token: string): Promise<IAuth> {
