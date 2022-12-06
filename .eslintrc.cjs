@@ -120,6 +120,34 @@ module.exports = {
 
   overrides: [
     {
+      files: ['lib/**/*'],
+      parserOptions: {
+        project: './lib/tsconfig.json',
+      },
+      settings: {
+        'import/parsers': {
+          '@typescript-eslint/parser': ['.ts'],
+        },
+        'import/resolver': {
+          typescript: {},
+        },
+      },
+    },
+    {
+      files: ['tests/**/*'],
+      parserOptions: {
+        project: './tests/tsconfig.json',
+      },
+      settings: {
+        'import/parsers': {
+          '@typescript-eslint/parser': ['.ts'],
+        },
+        'import/resolver': {
+          typescript: {},
+        },
+      },
+    },
+    {
       files: ['lib/rest/api/**/*'],
       rules: {
         'import/no-unused-modules': 'off',
