@@ -11,4 +11,5 @@ export default {
   transform: {
     '\\.[jt]s$': 'babel-jest',
   },
+  setupFilesAfterEnv: ['./tests/setup.ts'],
 } satisfies Config;

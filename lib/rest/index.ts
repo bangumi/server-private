@@ -6,11 +6,13 @@ import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Cookie from '@fastify/cookie';
 
 import { projectRoot } from '../config';
-import type { IAuth, IUser } from '../auth';
+import type { IAuth } from '../auth';
 import * as auth from '../auth';
 import { walk } from '../utils';
 import type { App } from './type';
 import prisma from '../prisma';
+import { checkHTTPHeader } from '../auth';
+import type { IUser } from '../orm';
 
 const setups: ((app: App) => void)[] = [];
 
@@ -40,10 +42,14 @@ export function setup(app: FastifyInstance) {
 
   app.addHook('preHandler', async (req) => {
     if (req.headers.authorization) {
-      const a = await auth.byHeader(req.headers.authorization);
+      const token = checkHTTPHeader(req.headers.authorization);
+      const a = await auth.byToken(token);
       req.user = a.user;
       req.auth = a;
+
+      return;
     }
+
     if (req.cookies.sessionID) {
       const session = await prisma.chii_os_web_sessions.findFirst({
         where: { key: req.cookies.sessionID },

@@ -1,10 +1,37 @@
 import * as php from 'php-serialize';
-import NodeCache from 'node-cache';
 
-import prisma from '../prisma';
-import { logger } from '../logger';
+import prisma from './prisma';
+import { logger } from './logger';
 
-const cache = new NodeCache({ stdTTL: 60 * 10 });
+export interface IUser {
+  ID: number;
+  username: string;
+  nickname: string;
+  groupID: number;
+  img: string;
+  regTime: number;
+}
+
+export async function fetchUser(userID: number): Promise<IUser> {
+  const user = await prisma.chii_members.findFirst({
+    where: { uid: userID },
+  });
+
+  if (!user) {
+    throw new Error(
+      'missing user, please report a issue at https://github.com/bangumi/GraphQL/issues',
+    );
+  }
+
+  return {
+    ID: user.uid,
+    nickname: user.nickname,
+    username: user.username,
+    img: user.avatar,
+    groupID: user.groupid,
+    regTime: user.regdate,
+  };
+}
 
 export interface Permission {
   user_list?: boolean;
@@ -41,27 +68,18 @@ export interface Permission {
   app_erase?: boolean;
 }
 
-export async function getPermission(userGroup: number): Promise<Readonly<Permission>> {
-  const cached = cache.get(userGroup);
-  if (cached) {
-    return cached;
-  }
-
+export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
   const permission = await prisma.chii_usergroup.findFirst({ where: { usr_grp_id: userGroup } });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
     return {};
   }
 
-  const p = Object.freeze(
+  return Object.freeze(
     Object.fromEntries(
       Object.entries(
         php.unserialize(permission.usr_grp_perm) as Record<keyof Permission, string>,
       ).map(([key, value]) => [key, value === '1']),
     ),
   );
-
-  cache.set(userGroup, p);
-
-  return p;
 }
