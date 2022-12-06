@@ -99,7 +99,7 @@ export async function getPermission(userGroup?: number): Promise<Readonly<Permis
   return p;
 }
 
-export function emptyAuth(): IAuth {
+function emptyAuth(): IAuth {
   return {
     user: null,
     login: true,
