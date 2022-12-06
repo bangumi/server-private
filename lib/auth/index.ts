@@ -82,7 +82,7 @@ export async function byUserID(userID: number): Promise<IAuth> {
 
 const permissionCache = new NodeCache({ stdTTL: 60 * 10 });
 
-export async function getPermission(userGroup?: number): Promise<Readonly<Permission>> {
+async function getPermission(userGroup?: number): Promise<Readonly<Permission>> {
   if (!userGroup) {
     return {};
   }
