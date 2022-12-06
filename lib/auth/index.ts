@@ -8,8 +8,13 @@ import type { IUser, Permission } from '../orm';
 import { fetchPermission, fetchUser } from '../orm';
 
 const tokenPrefix = 'Bearer ';
-const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
-const MissingUserError = createError('USER_MISSING', "can't find user by access token", 401);
+const HeaderInvalidError = createError('AUTHORIZATION_INVALID', '%s', 401);
+const TokenNotValidError = createError(
+  'TOKEN_INVALID',
+  "can't find access token or it has been expired",
+  401,
+);
+const MissingUserError = createError('MISSING_USER', "can't find user", 500);
 
 export interface IAuth {
   login: boolean;
@@ -24,16 +29,16 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   }
 
   if (Array.isArray(key)) {
-    throw new HeaderInvalid("can't providing multiple access token");
+    throw new HeaderInvalidError("can't providing multiple access token");
   }
 
   if (!key.startsWith(tokenPrefix)) {
-    throw new HeaderInvalid('authorization header should have "Bearer ${TOKEN}" format');
+    throw new HeaderInvalidError('authorization header should have "Bearer ${TOKEN}" format');
   }
 
   const token = key.slice(tokenPrefix.length);
   if (!token) {
-    throw new HeaderInvalid('authorization header missing token');
+    throw new HeaderInvalidError('authorization header missing token');
   }
 
   return await byToken(token);
@@ -52,10 +57,13 @@ export async function byToken(access_token: string): Promise<IAuth> {
   });
 
   if (!token) {
-    throw new MissingUserError();
+    throw new TokenNotValidError();
   }
 
   const u = await fetchUser(Number.parseInt(token.user_id));
+  if (!u) {
+    throw new MissingUserError();
+  }
 
   await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
 
@@ -70,6 +78,9 @@ export async function byUserID(userID: number): Promise<IAuth> {
   }
 
   const u = await fetchUser(userID);
+  if (!u) {
+    throw new MissingUserError();
+  }
 
   await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
 

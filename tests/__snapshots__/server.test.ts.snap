@@ -2,9 +2,9 @@
 
 exports[`auth should return error 1`] = `
 {
-  "code": "USER_MISSING",
+  "code": "TOKEN_INVALID",
   "error": "Unauthorized",
-  "message": "can't find user by access token",
+  "message": "can't find access token or it has been expired",
   "statusCode": 401,
 }
 `;

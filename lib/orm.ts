@@ -12,15 +12,13 @@ export interface IUser {
   regTime: number;
 }
 
-export async function fetchUser(userID: number): Promise<IUser> {
+export async function fetchUser(userID: number): Promise<IUser | null> {
   const user = await prisma.chii_members.findFirst({
     where: { uid: userID },
   });
 
   if (!user) {
-    throw new Error(
-      'missing user, please report a issue at https://github.com/bangumi/GraphQL/issues',
-    );
+    return null;
   }
 
   return {
