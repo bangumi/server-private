@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid';
 
+import redis from './redis';
 import { createServer } from './server';
 import { logger } from './logger';
 import { production } from './config';
@@ -23,6 +24,7 @@ const server = await createServer({
 const port = process.env.PORT ? Number.parseInt(process.env.PORT) : 4000;
 const host = process.env.HOST ?? '0.0.0.0';
 
+await redis.connect();
 await server.listen({ port, host });
 
 logger.info(`server started at http://${host}:${port}`);

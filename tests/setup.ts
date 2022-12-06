@@ -1,8 +1,7 @@
-import { jest } from '@jest/globals';
-import MockRedis from 'ioredis-mock';
+import { afterAll } from '@jest/globals';
 
-jest.unstable_mockModule('../lib/redis', () => {
-  return {
-    default: new MockRedis(),
-  };
+import redis from '../lib/redis';
+
+afterAll(async () => {
+  await redis.quit();
 });
