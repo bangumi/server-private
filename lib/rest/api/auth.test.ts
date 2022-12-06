@@ -25,7 +25,9 @@ describe('login auth flow', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual(treeHoleUser);
 
-    const cookieValue = res.cookies.find((x) => x.name === 'sessionID')?.value;
+    const cookieValue = (res.cookies as Array<{ name: string; value: string }>).find(
+      (x) => x.name === 'sessionID',
+    )?.value;
     if (cookieValue === undefined) {
       expect(cookieValue).toBeDefined();
       // ts type narrow helper
