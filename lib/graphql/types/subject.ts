@@ -31,7 +31,19 @@ const Subject = objectType({
     t.nonNull.int('id');
     t.nonNull.string('name');
     t.nonNull.string('name_cn');
-    t.list.nonNull.field('tags', { type: SubjectTag });
+    t.list.nonNull.field('tags', {
+      type: SubjectTag,
+      args: {
+        limit: intArg({ default: 0 }),
+      },
+      resolve({ tags }: { tags: unknown[] }, { limit }: { limit?: number }) {
+        if (limit && limit > 0) {
+          return tags.slice(0, limit);
+        }
+
+        return tags;
+      },
+    });
     t.list.nonNull.field('episodes', {
       type: Episode,
       args: {
