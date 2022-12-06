@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auth should return error 1`] = `
+{
+  "code": "USER_MISSING",
+  "error": "Unauthorized",
+  "message": "can't find user by access token",
+  "statusCode": 401,
+}
+`;

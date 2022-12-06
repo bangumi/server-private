@@ -9,7 +9,7 @@ import { fetchPermission, fetchUser } from '../orm';
 
 const tokenPrefix = 'Bearer ';
 const HeaderInvalid = createError('AUTHORIZATION_INVALID', '%s', 401);
-const TokenNotValidError = createError('TOKEN_INVALID', "can't find user by access token", 401);
+const MissingUserError = createError('USER_MISSING', "can't find user by access token", 401);
 
 export interface IAuth {
   login: boolean;
@@ -52,7 +52,7 @@ export async function byToken(access_token: string): Promise<IAuth> {
   });
 
   if (!token) {
-    throw new TokenNotValidError();
+    throw new MissingUserError();
   }
 
   const u = await fetchUser(Number.parseInt(token.user_id));
