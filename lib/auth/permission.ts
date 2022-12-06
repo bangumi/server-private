@@ -55,10 +55,9 @@ export async function getPermission(userGroup: number): Promise<Readonly<Permiss
 
   const p = Object.freeze(
     Object.fromEntries(
-      Object.entries(php.unserialize(permission.usr_grp_perm)).map(([key, value]) => [
-        key,
-        value === '1',
-      ]),
+      Object.entries(
+        php.unserialize(permission.usr_grp_perm) as Record<keyof Permission, string>,
+      ).map(([key, value]) => [key, value === '1']),
     ),
   );
 

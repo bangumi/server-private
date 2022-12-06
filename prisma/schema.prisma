@@ -317,7 +317,7 @@ model chii_oauth_access_tokens {
   type         Boolean  @default(false)
   access_token String   @unique(map: "access_token") @db.VarChar(40)
   client_id    String   @db.VarChar(80)
-  user_id      String?  @db.VarChar(80)
+  user_id      String   @db.VarChar(80)
   expires      DateTime @default(now()) @db.Timestamp(0)
   scope        String?  @db.VarChar(4000)
   info         String   @db.VarChar(255)

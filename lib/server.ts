@@ -17,7 +17,7 @@ import { pkg, projectRoot } from './config';
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const server = fastify(opts);
 
-  server.register(mercurius, {
+  await server.register(mercurius, {
     schema,
     path: '/v0/graphql',
     graphiql: false,
@@ -30,7 +30,7 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     },
   });
 
-  server.register(AltairFastify, {
+  await server.register(AltairFastify, {
     path: '/v0/altair/',
     baseURL: '/v0/altair/',
     endpointURL: '/v0/graphql',
@@ -43,7 +43,8 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
 
   server.get('/', (_, res) => {
-    res.type('text/html').send(swaggerUI);
+    void res.type('text/html');
+    void res.send(swaggerUI);
   });
 
   server.get('/openapi.json', () => {

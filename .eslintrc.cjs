@@ -6,6 +6,9 @@ module.exports = {
     'plugin:promise/recommended',
     'plugin:n/recommended',
     'plugin:unicorn/recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:@typescript-eslint/strict',
     'prettier',
   ],
   plugins: ['@typescript-eslint', 'import', 'unicorn'],
@@ -48,6 +51,8 @@ module.exports = {
     'array-element-newline': ['error', 'consistent'],
     'array-bracket-newline': ['error', 'consistent'],
     'promise/catch-or-return': ['error', { allowFinally: true }],
+    '@typescript-eslint/restrict-plus-operands': ['error', { checkCompoundAssignments: true }],
+    '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
     '@typescript-eslint/object-curly-spacing': ['error', 'always'],
     '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
     '@typescript-eslint/member-delimiter-style': [
@@ -117,34 +122,14 @@ module.exports = {
       typescript: {},
     },
   },
-
   overrides: [
     {
-      files: ['lib/**/*'],
-      parserOptions: {
-        project: './lib/tsconfig.json',
-      },
-      settings: {
-        'import/parsers': {
-          '@typescript-eslint/parser': ['.ts'],
-        },
-        'import/resolver': {
-          typescript: {},
-        },
-      },
-    },
-    {
       files: ['tests/**/*'],
-      parserOptions: {
-        project: './tests/tsconfig.json',
-      },
-      settings: {
-        'import/parsers': {
-          '@typescript-eslint/parser': ['.ts'],
-        },
-        'import/resolver': {
-          typescript: {},
-        },
+      rules: {
+        '@typescript-eslint/no-unnecessary-condition': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
       },
     },
     {

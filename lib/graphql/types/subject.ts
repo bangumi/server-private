@@ -35,7 +35,11 @@ const Subject = objectType({
         ),
         type: intArg(),
       },
-      async resolve(parent, { limit, offset, type }, { prisma }) {
+      async resolve(
+        parent: { id: number },
+        { limit, offset, type }: { limit: number; offset: number; type: number | undefined },
+        { prisma }: Context,
+      ) {
         if (offset < 0) {
           const count = await prisma.chii_episodes.count({
             where: { ep_type: type ?? undefined, ep_subject_id: parent.id },
@@ -72,7 +76,7 @@ const SubjectByIDQuery = extendType({
     t.field('subject', {
       type: Subject,
       args: { id: nonNull(intArg()) },
-      async resolve(_parent, { id }, ctx: Context) {
+      async resolve(_parent, { id }: { id: number }, ctx: Context) {
         const subject = await ctx.prisma.chii_subjects.findUnique({
           where: {
             subject_id: id,

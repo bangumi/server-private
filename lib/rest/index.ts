@@ -33,7 +33,7 @@ for await (const file of walk(path.resolve(projectRoot, 'lib/rest/api'))) {
 }
 
 export function setup(app: FastifyInstance) {
-  app.register(Cookie, {
+  void app.register(Cookie, {
     hook: 'preHandler', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
     parseOptions: {}, // options for parsing cookies
   });

@@ -38,7 +38,7 @@ const GetCurrentUser = extendType({
   definition(t) {
     t.nullable.field('me', {
       type: User,
-      async resolve(_parent, _args, { auth }: Context) {
+      resolve(_parent, _args, { auth }: Context) {
         return auth.user;
       },
     });

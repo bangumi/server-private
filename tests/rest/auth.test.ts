@@ -25,7 +25,7 @@ describe('login auth flow', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual(treeHoleUser);
 
-    const cookieValue = (res.cookies as Array<{ name: string; value: string }>).find(
+    const cookieValue = (res.cookies as { name: string; value: string }[]).find(
       (x) => x.name === 'sessionID',
     )?.value;
 
@@ -34,7 +34,7 @@ describe('login auth flow', () => {
     const currentRes = await app.inject({
       method: 'get',
       url: '/v1/me',
-      cookies: { sessionID: cookieValue },
+      cookies: { sessionID: cookieValue! },
     });
 
     expect(currentRes.json()).toEqual({ data: treeHoleUser });
