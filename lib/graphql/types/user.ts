@@ -1,7 +1,7 @@
 import { objectType, extendType } from 'nexus';
 
 import type { Context } from '../context';
-import type { IUser } from '../../auth';
+import type { IUser } from '../../orm';
 
 const Avatar = objectType({
   name: 'Avatar',

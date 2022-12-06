@@ -1,14 +1,13 @@
 import { describe, test, expect } from '@jest/globals';
-import { fastify } from 'fastify';
 
-import { setup } from '../../lib/rest';
+import { createServer } from '../../lib/server';
 
 describe('rest', () => {
-  const app = setup(fastify());
-
   test('should return null user', async () => {
+    const app = await createServer();
+
     const res = await app.inject({
-      url: '/me',
+      url: '/v0.5/me',
     });
 
     expect(res.json()).toEqual({ data: undefined });
@@ -16,8 +15,10 @@ describe('rest', () => {
   });
 
   test('should return current user', async () => {
+    const app = await createServer();
+
     const res = await app.inject({
-      url: '/me',
+      url: '/v0.5/me',
       headers: { authorization: 'Bearer a_development_access_token' },
     });
 
