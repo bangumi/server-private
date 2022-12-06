@@ -27,7 +27,7 @@ export function setup(app: App) {
         operationId: 'auth-login',
         tags: [Tag.Auth],
         response: {
-          200: User,
+          200: t.Ref(User),
         },
         body: t.Object({
           email: t.String({ minLength: 1 }),

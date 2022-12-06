@@ -5,6 +5,7 @@ import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fast
 import { fastify } from 'fastify';
 import mercurius from 'mercurius';
 import AltairFastify from 'altair-fastify-plugin';
+import type { JSONObject } from '@fastify/swagger';
 import swagger from '@fastify/swagger';
 import type { OpenAPIV3 } from 'openapi-types';
 
@@ -76,6 +77,24 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
 
   await server.register(swagger, {
     openapi,
+
+    refResolver: {
+      clone: true,
+      buildLocalReference: (
+        json: JSONObject,
+        baseUri: unknown,
+        /** `fragment` is the `$ref` string when the `$ref` is a relative reference. */
+        fragment: string,
+        /** `i` is a local counter to generate a unique key. */
+        i: number,
+      ): string => {
+        const id = json.$id;
+        if (typeof id === 'string') {
+          return id;
+        }
+        return `def-${i}`;
+      },
+    },
   });
 
   await server.register(rest.setup, { prefix: '/v0.5' });

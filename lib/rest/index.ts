@@ -8,6 +8,7 @@ import Cookie from '@fastify/cookie';
 import { projectRoot } from '../config';
 import type { IAuth } from '../auth';
 import * as auth from '../auth';
+import { ErrorRes, User } from '../types/user';
 import { walk } from '../utils';
 import type { App } from './type';
 import prisma from '../prisma';
@@ -34,6 +35,9 @@ for await (const file of walk(path.resolve(projectRoot, 'lib/rest/api'))) {
 }
 
 export function setup(app: FastifyInstance) {
+  app.addSchema(User);
+  app.addSchema(ErrorRes);
+
   void app.register(Cookie, {
     hook: 'preHandler', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
     parseOptions: {}, // options for parsing cookies
