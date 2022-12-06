@@ -1,4 +1,5 @@
 import { nonNull, objectType, extendType, intArg } from 'nexus';
+import * as php from 'php-serialize';
 
 import type { Context } from '../context';
 import type { chii_episodes } from '../../generated/client';
@@ -16,12 +17,21 @@ const Episode = objectType({
   },
 });
 
+const SubjectTag = objectType({
+  name: 'SubjectTag',
+  definition(t) {
+    t.nonNull.string('name');
+    t.nonNull.int('count');
+  },
+});
+
 const Subject = objectType({
   name: 'Subject',
   definition(t) {
     t.nonNull.int('id');
     t.nonNull.string('name');
     t.nonNull.string('name_cn');
+    t.list.nonNull.field('tags', { type: SubjectTag });
     t.list.nonNull.field('episodes', {
       type: Episode,
       args: {
@@ -76,18 +86,24 @@ const SubjectByIDQuery = extendType({
     t.field('subject', {
       type: Subject,
       args: { id: nonNull(intArg()) },
-      async resolve(_parent, { id }: { id: number }, ctx: Context) {
-        const subject = await ctx.prisma.chii_subjects.findUnique({
+      async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw }, prisma }: Context) {
+        const subject = await prisma.chii_subjects.findUnique({
           where: {
             subject_id: id,
           },
         });
 
-        if (!subject) {
+        const fields = await prisma.chii_subject_fields.findUnique({
+          where: {
+            field_sid: id,
+          },
+        });
+
+        if (!subject || !fields) {
           return null;
         }
 
-        if (subject.subject_nsfw && !ctx.auth.allowNsfw) {
+        if (subject.subject_nsfw && !allowNsfw) {
           return null;
         }
 
@@ -95,6 +111,12 @@ const SubjectByIDQuery = extendType({
           id: subject.subject_id,
           name: subject.subject_name,
           name_cn: subject.subject_name_cn,
+          tags: (
+            php.unserialize(fields.field_tags) as { tag_name: string | undefined; result: string }[]
+          )
+            .filter((x) => x.tag_name !== undefined)
+            .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
+            .filter((x) => !Number.isNaN(x.count)),
         };
       },
     });

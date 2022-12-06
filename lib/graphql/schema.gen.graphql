@@ -34,6 +34,12 @@ type Subject {
   id: Int!
   name: String!
   name_cn: String!
+  tags: [SubjectTag!]
+}
+
+type SubjectTag {
+  count: Int!
+  name: String!
 }
 
 type User {
