@@ -17,7 +17,7 @@ describe('login auth flow', () => {
   test('login', async () => {
     const app = await createServer();
     const res = await app.inject({
-      url: '/v1/login',
+      url: '/v0.5/login',
       method: 'post',
       payload: { email: 'treeholechan@gmail.com', password: 'lovemeplease' },
     });
@@ -33,7 +33,7 @@ describe('login auth flow', () => {
 
     const currentRes = await app.inject({
       method: 'get',
-      url: '/v1/me',
+      url: '/v0.5/me',
       cookies: { sessionID: cookieValue! },
     });
 

@@ -59,7 +59,7 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     },
   });
 
-  await server.register(rest.setup, { prefix: '/v1' });
+  await server.register(rest.setup, { prefix: '/v0.5' });
 
   return server;
 }
