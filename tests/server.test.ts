@@ -177,4 +177,21 @@ describe('subject', () => {
     expect(query.data.subject.id).toBe(8);
     expect(query.data.subject.episodes).toHaveLength(3);
   });
+
+  test('should subject tags', async () => {
+    const query = await testClient.query(
+      gql`
+        query {
+          subject(id: 8) {
+            tags(limit: 3) {
+              name
+              count
+            }
+          }
+        }
+      `,
+    );
+
+    expect(query.data.subject).toMatchSnapshot();
+  });
 });
