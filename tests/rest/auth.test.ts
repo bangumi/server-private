@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from '@jest/globals';
 
-import prisma from '../../prisma';
-import { createServer } from '../../server';
+import prisma from '../../lib/prisma';
+import { createServer } from '../../lib/server';
 
 const treeHoleUser = { ID: 382951, nickname: '树洞酱', username: '382951' };
 
@@ -28,11 +28,8 @@ describe('login auth flow', () => {
     const cookieValue = (res.cookies as Array<{ name: string; value: string }>).find(
       (x) => x.name === 'sessionID',
     )?.value;
-    if (cookieValue === undefined) {
-      expect(cookieValue).toBeDefined();
-      // ts type narrow helper
-      throw new Error('undefined');
-    }
+
+    expect(cookieValue).toBeDefined();
 
     const currentRes = await app.inject({
       method: 'get',

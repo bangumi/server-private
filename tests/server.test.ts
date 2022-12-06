@@ -2,7 +2,7 @@ import { createMercuriusTestClient } from 'mercurius-integration-testing';
 import { describe, expect, test } from '@jest/globals';
 import { gql } from 'graphql-tag';
 
-import { createServer } from './server';
+import { createServer } from '../lib/server';
 
 const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
 

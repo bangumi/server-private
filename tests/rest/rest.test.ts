@@ -1,7 +1,7 @@
 import { describe, test, expect } from '@jest/globals';
 import { fastify } from 'fastify';
 
-import { setup } from '.';
+import { setup } from '../../lib/rest';
 
 describe('rest', () => {
   const app = setup(fastify());

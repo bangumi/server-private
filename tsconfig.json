@@ -1,26 +1,26 @@
 {
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "composite": false,
     "module": "ES2022",
-    "moduleResolution": "Node",
-    "declaration": true,
-    "removeComments": true,
-    "inlineSources": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "useUnknownInCatchVariables": true,
-    "esModuleInterop": true,
     "target": "ES2022",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "noUncheckedIndexedAccess": true,
-    "strictNullChecks": true,
     "lib": ["ES2022"],
-    "outDir": "./dist",
-    "isolatedModules": true,
-    "baseUrl": "./",
-    "incremental": true,
+    "skipLibCheck": true,
+    "moduleResolution": "Node",
     "noEmit": true,
-    "skipLibCheck": true
-  }
+    "rootDir": "."
+  },
+  "files": ["jest.config.ts"],
+  "exclude": ["**/node_modules/*"],
+  "references": [
+    {
+      "path": "./lib"
+    },
+    {
+      "path": "./tests"
+    }
+  ]
 }

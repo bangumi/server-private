@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { comparePassword } from './login';
+import { comparePassword } from '../../lib/rest/api/login';
 
 describe('compare password', () => {
   test('should pass', async () => {

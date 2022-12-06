@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
 
-import { randomBase62String } from './index';
+import { randomBase62String } from '../lib/utils';
 
 describe('random should not have bias', () => {
   const step = 1000;
