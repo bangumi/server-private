@@ -34,7 +34,7 @@ type Subject {
   id: Int!
   name: String!
   name_cn: String!
-  tags: [SubjectTag!]
+  tags(limit: Int = 0): [SubjectTag!]
 }
 
 type SubjectTag {
