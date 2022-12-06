@@ -8,6 +8,7 @@ import type { IUser, Permission } from '../orm';
 import { fetchPermission, fetchUser } from '../orm';
 
 const tokenPrefix = 'Bearer ';
+export const NeedLoginError = createError('NEED_LOGIN', 'you need to login before %s', 401);
 const HeaderInvalidError = createError('AUTHORIZATION_INVALID', '%s', 401);
 const TokenNotValidError = createError(
   'TOKEN_INVALID',

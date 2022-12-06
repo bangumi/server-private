@@ -1,8 +1,9 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { Tag } from '../../openapi/tag';
+import { Security, Tag } from '../../openapi';
 import { User } from '../../types/user';
 import type { App } from '../type';
+import { NeedLoginError } from '../../auth';
 
 export function setup(app: App) {
   app.get(
@@ -13,13 +14,17 @@ export function setup(app: App) {
         tags: [Tag.Auth],
         response: {
           200: t.Object({
-            data: t.Optional(User),
+            data: User,
           }),
         },
+        security: [{ [Security.HTTPBearer]: [] }],
       },
     },
     (req) => {
-      return { data: req.user ?? undefined };
+      if (!req.user) {
+        throw new NeedLoginError('getting current user');
+      }
+      return { data: req.user };
     },
   );
 }

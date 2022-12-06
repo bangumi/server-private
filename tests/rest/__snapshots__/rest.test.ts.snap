@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rest should return null user 1`] = `
+{
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before getting current user",
+  "statusCode": 401,
+}
+`;

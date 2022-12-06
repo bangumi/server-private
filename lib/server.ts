@@ -6,6 +6,7 @@ import { fastify } from 'fastify';
 import mercurius from 'mercurius';
 import AltairFastify from 'altair-fastify-plugin';
 import swagger from '@fastify/swagger';
+import type { OpenAPIV3 } from 'openapi-types';
 
 import { schema } from './graphql/schema';
 import type { Context } from './graphql/context';
@@ -13,6 +14,7 @@ import prisma from './prisma';
 import * as auth from './auth';
 import * as rest from './rest';
 import { pkg, projectRoot } from './config';
+import { Security } from './openapi';
 
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const server = fastify(opts);
@@ -50,13 +52,30 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     return server.swagger();
   });
 
-  await server.register(swagger, {
-    openapi: {
-      info: {
-        version: pkg.version,
-        title: 'hello',
+  const openapi: Partial<OpenAPIV3.Document> = {
+    info: {
+      version: pkg.version,
+      title: 'hello',
+    },
+    components: {
+      securitySchemes: {
+        [Security.OptionalHTTPBearer]: {
+          type: 'http',
+          description:
+            '不强制要求用户认证，但是可能看不到某些敏感内容内容（如 NSFW 或者仅用户自己可见的收藏）',
+          scheme: 'Bearer',
+        },
+        [Security.HTTPBearer]: {
+          type: 'http',
+          description: '需要使用 access token 进行认证',
+          scheme: 'Bearer',
+        },
       },
     },
+  };
+
+  await server.register(swagger, {
+    openapi,
   });
 
   await server.register(rest.setup, { prefix: '/v0.5' });
