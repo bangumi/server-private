@@ -10,8 +10,8 @@ describe('rest', () => {
       url: '/v0.5/me',
     });
 
-    expect(res.json()).toEqual({ data: undefined });
-    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(401);
   });
 
   test('should return current user', async () => {

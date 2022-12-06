@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { Type as t } from '@sinclair/typebox';
 import { createError } from '@fastify/error';
 
-import { Tag } from '../../openapi/tag';
+import { Tag } from '../../openapi';
 import type { IUser } from '../../types/user';
 import { User } from '../../types/user';
 import prisma from '../../prisma';
