@@ -8,3 +8,22 @@ exports[`auth should return error 1`] = `
   "statusCode": 401,
 }
 `;
+
+exports[`subject should subject tags 1`] = `
+{
+  "tags": [
+    {
+      "count": 1645,
+      "name": "叛逆的鲁鲁修",
+    },
+    {
+      "count": 1229,
+      "name": "SUNRISE",
+    },
+    {
+      "count": 936,
+      "name": "反逆のルルーシュ",
+    },
+  ],
+}
+`;
