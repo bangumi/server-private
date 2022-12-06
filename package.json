@@ -1,6 +1,6 @@
 {
   "name": "graphql",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "",
   "private": true,
   "type": "module",
