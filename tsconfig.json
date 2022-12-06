@@ -20,6 +20,7 @@
     "isolatedModules": true,
     "baseUrl": "./",
     "incremental": true,
+    "noEmit": true,
     "skipLibCheck": true
   }
 }
