@@ -18,7 +18,7 @@ export function setup(app: App) {
         },
       },
     },
-    async (req) => {
+    (req) => {
       return { data: req.user ?? undefined };
     },
   );

@@ -67,7 +67,7 @@ export function setup(app: App) {
         },
       });
 
-      res.cookie(CookieKey, token, { sameSite: 'strict' });
+      void res.cookie(CookieKey, token, { sameSite: 'strict' });
 
       return { ID: user.uid, username: user.username, nickname: user.nickname };
     },
@@ -75,7 +75,7 @@ export function setup(app: App) {
 }
 
 function processPassword(s: string): string {
-  return crypto.createHash('md5').update(s).digest().toString('hex');
+  return crypto.createHash('md5').update(s).digest('hex');
 }
 
 export async function comparePassword(hashed: string, input: string): Promise<boolean> {

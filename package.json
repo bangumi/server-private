@@ -13,6 +13,7 @@
     "lint": "eslint --ext ts ./",
     "start": "nodemon",
     "test": "NODE_OPTIONS=\"--experimental-vm-modules --no-warnings\" jest",
+    "run-file": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
     "prepare": "prisma generate && husky install"
   },
   "lint-staged": {
