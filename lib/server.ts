@@ -43,8 +43,7 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
 
   server.get('/', (_, res) => {
-    void res.type('text/html');
-    void res.send(swaggerUI);
+    void res.type('text/html').send(swaggerUI);
   });
 
   server.get('/openapi.json', () => {
