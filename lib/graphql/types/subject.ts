@@ -105,9 +105,9 @@ const SubjectByIDQuery = extendType({
           },
         });
 
-        const fields = await prisma.chii_subject_fields.findUnique({
+        const fields = await prisma.subjectFields.findUnique({
           where: {
-            field_sid: id,
+            subject_id: id,
           },
         });
 
