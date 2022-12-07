@@ -1,5 +1,6 @@
 node_modules/*
-.vscode
+.vscode/
+!.vscode/extensions.json
 .idea
 dist
 yarn-error.log
