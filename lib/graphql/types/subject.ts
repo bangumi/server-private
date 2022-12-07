@@ -105,17 +105,21 @@ const SubjectByIDQuery = extendType({
           },
         });
 
+        if (!subject) {
+          return null;
+        }
+
+        if (subject.subject_nsfw && !allowNsfw) {
+          return null;
+        }
+
         const fields = await prisma.subjectFields.findUnique({
           where: {
             subject_id: id,
           },
         });
 
-        if (!subject || !fields) {
-          return null;
-        }
-
-        if (subject.subject_nsfw && !allowNsfw) {
+        if (!fields) {
           return null;
         }
 
