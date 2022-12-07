@@ -99,7 +99,7 @@ const SubjectByIDQuery = extendType({
       type: Subject,
       args: { id: nonNull(intArg()) },
       async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw }, prisma }: Context) {
-        const subject = await prisma.chii_subjects.findUnique({
+        const subject = await prisma.subjects.findUnique({
           where: {
             subject_id: id,
           },

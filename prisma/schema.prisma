@@ -293,8 +293,8 @@ model chii_memberfields {
   blocklist String @db.MediumText
 }
 
-model chii_members {
-  uid            Int     @id @default(autoincrement()) @db.UnsignedMediumInt
+model Members {
+  id             Int     @id @default(autoincrement()) @map("uid") @db.UnsignedMediumInt
   username       String  @unique(map: "username") @default("") @db.Char(15)
   nickname       String  @db.VarChar(30)
   avatar         String  @db.VarChar(255)
@@ -311,6 +311,8 @@ model chii_members {
   sign           String  @db.VarChar(255)
   password_crypt String  @db.Char(64)
   email          String  @default("") @db.Char(50)
+
+  @@map("chii_members")
 }
 
 model chii_oauth_access_tokens {
@@ -639,7 +641,8 @@ model chii_subject_topics {
   @@index([sbj_tpc_subject_id], map: "tpc_subject_id")
 }
 
-model chii_subjects {
+model Subjects {
+
   subject_id           Int     @id @default(autoincrement()) @db.UnsignedMediumInt
   subject_type_id      Int     @default(0) @db.UnsignedSmallInt
   subject_name         String  @db.VarChar(80)
@@ -679,6 +682,7 @@ model chii_subjects {
   @@index([subject_series], map: "subject_series")
   @@index([subject_series_entry], map: "subject_series_entry")
   @@index([subject_type_id], map: "subject_type_id")
+  @@map("chii_subjects")
 }
 
 model chii_timeline {

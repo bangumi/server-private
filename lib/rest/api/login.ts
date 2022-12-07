@@ -36,7 +36,7 @@ export function setup(app: App) {
       },
     },
     async function handler({ body: { email, password } }, res): Promise<IUser> {
-      const user = await prisma.chii_members.findFirst({ where: { email } });
+      const user = await prisma.members.findFirst({ where: { email } });
 
       if (!user) {
         throw new EmailPasswordNotMatch();
@@ -52,7 +52,7 @@ export function setup(app: App) {
 
       const value = {
         reg_time: user.regdate,
-        user_id: user.uid,
+        user_id: user.id,
         created_at: now,
         expired_at: now + 60 * 60 * 24 * 7,
       };
@@ -60,7 +60,7 @@ export function setup(app: App) {
       await prisma.chii_os_web_sessions.create({
         data: {
           value: Buffer.from(JSON.stringify(value)),
-          user_id: user.uid,
+          user_id: user.id,
           created_at: value.created_at,
           expired_at: value.expired_at,
           key: token,
@@ -69,7 +69,7 @@ export function setup(app: App) {
 
       void res.cookie(CookieKey, token, { sameSite: 'strict' });
 
-      return { ID: user.uid, username: user.username, nickname: user.nickname };
+      return { ID: user.id, username: user.username, nickname: user.nickname };
     },
   );
 }
