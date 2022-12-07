@@ -8,6 +8,8 @@ import AltairFastify from 'altair-fastify-plugin';
 import type { JSONObject } from '@fastify/swagger';
 import swagger from '@fastify/swagger';
 import type { OpenAPIV3 } from 'openapi-types';
+import metricsPlugin from 'fastify-metrics';
+import { register } from 'prom-client';
 
 import { schema } from './graphql/schema';
 import type { Context } from './graphql/context';
@@ -19,6 +21,24 @@ import { Security } from './openapi';
 
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const server = fastify(opts);
+
+  server.get('/metrics', async (_req, res) => {
+    const prismaMetrics = await prisma.$metrics.prometheus();
+    const appMetrics = await register.metrics();
+    return res.send(appMetrics + prismaMetrics);
+  });
+
+  await server.register(metricsPlugin, {
+    endpoint: null,
+    routeMetrics: {
+      groupStatusCodes: true,
+      overrides: {
+        histogram: {
+          buckets: [0.05, 0.1, 0.3, 0.5, 0.75, 1, 2, 3],
+        },
+      },
+    },
+  });
 
   await server.register(mercurius, {
     schema,
