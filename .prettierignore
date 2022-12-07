@@ -2,3 +2,4 @@ lib/generated/
 dist/
 *.graphql
 coverage/
+.husky/_/
