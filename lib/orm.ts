@@ -13,8 +13,8 @@ export interface IUser {
 }
 
 export async function fetchUser(userID: number): Promise<IUser | null> {
-  const user = await prisma.chii_members.findFirst({
-    where: { uid: userID },
+  const user = await prisma.members.findFirst({
+    where: { id: userID },
   });
 
   if (!user) {
@@ -22,7 +22,7 @@ export async function fetchUser(userID: number): Promise<IUser | null> {
   }
 
   return {
-    ID: user.uid,
+    ID: user.id,
     nickname: user.nickname,
     username: user.username,
     img: user.avatar,
