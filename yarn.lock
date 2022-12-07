@@ -1426,10 +1426,10 @@
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.24.51.tgz#645f33fe4e02defe26f2f5c0410e1c094eac7f5f"
   integrity sha512-1P1OROm/rdubP5aFDSZQILU0vrLCJ4fvHt6EoqHEM+2D/G5MK3bIaymUKLit8Js9gbns5UyJnkP/TZROLw4tUA==
 
-"@sinclair/typebox@^0.25.10":
-  version "0.25.10"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.10.tgz#98b928abc37c57bafc98147b02a1e5ae76950163"
-  integrity sha512-B7yEaT5yPZUS7kL/Ogh94n7Rb7p1DJEjCqOaPMuwAy4XXnlZchFrxIeE5pbrPsHOn5NMhWZtOnKtksaNQzCq1A==
+"@sinclair/typebox@^0.25.11":
+  version "0.25.11"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.11.tgz#476bad310092de48af7a9807ecd75019ac01f3d7"
+  integrity sha512-GgUJN0Drvh74i8gOl2S8SkHuAgkZJtzzd6EmfBVxpNDB6QmzXdZ3tyUt02Kr42X58as5I187CKiWpLCMJmdLbw==
 
 "@sinonjs/commons@^1.7.0":
   version "1.8.6"
@@ -1740,19 +1740,19 @@ ajv@^8.0.0, ajv@^8.10.0, ajv@^8.11.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-altair-fastify-plugin@^5.0.8:
-  version "5.0.8"
-  resolved "https://registry.yarnpkg.com/altair-fastify-plugin/-/altair-fastify-plugin-5.0.8.tgz#385069173d9242e3cce8d2ef711858d6aa02ad8e"
-  integrity sha512-M+6ZfhXsWjWT+D0RW0jXdUO8aRwAwHoHMSDabgw69URcLVx46OUdNVZd7JG+WWzQoJqTEQIx5ujJ9dds0l77lg==
+altair-fastify-plugin@^5.0.9:
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/altair-fastify-plugin/-/altair-fastify-plugin-5.0.9.tgz#ba582f24806e4565dd398963dab6ef97b7fdc66c"
+  integrity sha512-0HX1keLelqHIm3aUNP09fpjeXGoWjZjhHT9TxsGOi3+rO6Y0ACGbY4Uhm2IwqKNwReC9FSEzIh5hYd4lmUaL2w==
   dependencies:
     "@fastify/static" "^6.4.0"
-    altair-static "^5.0.8"
+    altair-static "^5.0.9"
     fastify-plugin "^2.3.4"
 
-altair-static@^5.0.8:
-  version "5.0.8"
-  resolved "https://registry.yarnpkg.com/altair-static/-/altair-static-5.0.8.tgz#3a25ab74ff6b89767552340d4c60f9b7069cddee"
-  integrity sha512-eW2CZL3O301sHw13E57ADs4yRRXZUP7Rk5wR1WaByD2jTRnpPTbfj4gD69P1uF4T9qX0H8lUxvJ+2DwDcXl4+g==
+altair-static@^5.0.9:
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/altair-static/-/altair-static-5.0.9.tgz#af1b1180ae15778e49c3f04c61ef6ba0f78251e9"
+  integrity sha512-magJa3fCg8yk2J0jjsRzQIh2pQQvaXZDKzxunHosrlKWRGAAeTGbVTc2Xe1Vsd2RdAmzPWQxSX5cpQvrWtYIrA==
 
 ansi-escapes@^4.2.1, ansi-escapes@^4.3.0:
   version "4.3.2"
@@ -4820,10 +4820,10 @@ prettier-plugin-sh@^0.12.8:
     sh-syntax "^0.3.6"
     synckit "^0.8.1"
 
-prettier@^2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.0.tgz#c7df58393c9ba77d6fba3921ae01faf994fb9dc9"
-  integrity sha512-9Lmg8hTFZKG0Asr/kW9Bp8tJjRVluO8EJQVfY2T7FMw9T5jy4I/Uvx0Rca/XWf50QQ1/SS48+6IJWnrb+2yemA==
+prettier@^2.8.1:
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.8.1.tgz#4e1fd11c34e2421bc1da9aea9bd8127cd0a35efc"
+  integrity sha512-lqGoSJBQNJidqCHE80vqZJHWHRFoNYsSpP9AjFhlhi9ODCJA541svILes/+/1GM3VaL/abZi7cpFzOpdR9UPKg==
 
 pretty-format@^29.3.1:
   version "29.3.1"
