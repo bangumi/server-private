@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should auth current auth 1`] = `
+{
+  "ID": 382951,
+  "groupID": 10,
+  "img": "000/38/29/382951.jpg?r=1571167246",
+  "nickname": "树洞酱",
+  "regTime": 1512262276,
+  "username": "382951",
+}
+`;
+
+exports[`should auth current auth 2`] = `
+{
+  "ID": 382951,
+  "groupID": 10,
+  "img": "000/38/29/382951.jpg?r=1571167246",
+  "nickname": "树洞酱",
+  "regTime": 1512262276,
+  "username": "382951",
+}
+`;
