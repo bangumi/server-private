@@ -25,6 +25,7 @@ model chii_apps {
   @@index([app_ban], map: "app_ban")
   @@index([app_status], map: "app_status")
   @@index([app_type, app_creator], map: "app_type")
+  @@ignore()
 }
 
 model chii_characters {
@@ -48,6 +49,7 @@ model chii_characters {
   @@index([crt_ban], map: "crt_ban")
   @@index([crt_lock], map: "crt_lock")
   @@index([crt_role], map: "crt_role")
+  @@ignore()
 }
 
 model chii_crt_cast_index {
@@ -61,6 +63,7 @@ model chii_crt_cast_index {
   @@index([prsn_id], map: "prsn_id")
   @@index([subject_id], map: "subject_id")
   @@index([subject_type_id], map: "subject_type_id")
+  @@ignore()
 }
 
 model chii_crt_comments {
@@ -74,6 +77,7 @@ model chii_crt_comments {
   @@index([crt_pst_mid], map: "cmt_crt_id")
   @@index([crt_pst_related], map: "crt_pst_related")
   @@index([crt_pst_uid], map: "crt_pst_uid")
+  @@ignore()
 }
 
 model chii_crt_subject_index {
@@ -88,6 +92,7 @@ model chii_crt_subject_index {
   @@index([crt_type], map: "crt_type")
   @@index([subject_id], map: "subject_id")
   @@index([subject_type_id], map: "subject_type_id")
+  @@ignore()
 }
 
 model chii_ep_comments {
@@ -101,6 +106,7 @@ model chii_ep_comments {
   @@index([ep_pst_mid], map: "ep_cmt_crt_id")
   @@index([ep_pst_related], map: "ep_pst_related")
   @@index([ep_pst_uid], map: "ep_pst_uid")
+  @@ignore()
 }
 
 model chii_ep_revisions {
@@ -114,6 +120,7 @@ model chii_ep_revisions {
   rev_edit_summary String  @db.VarChar(200)
 
   @@index([rev_sid, rev_creator], map: "rev_sid")
+  @@ignore()
 }
 
 model chii_ep_status {
@@ -125,6 +132,7 @@ model chii_ep_status {
   ep_stt_lasttouch Int     @db.UnsignedInt
 
   @@unique([ep_stt_uid, ep_stt_sid], map: "ep_stt_uniq")
+  @@ignore()
 }
 
 model chii_episodes {
@@ -165,7 +173,7 @@ model chii_friends {
 
   @@index([frd_fid], map: "frd_fid")
   @@index([frd_uid], map: "uid")
-  @@ignore
+  @@ignore()
 }
 
 model chii_group_members {
@@ -175,6 +183,7 @@ model chii_group_members {
   gmb_dateline  Int     @default(0) @db.UnsignedInt
 
   @@id([gmb_uid, gmb_gid])
+  @@ignore()
 }
 
 model chii_group_posts {
@@ -189,6 +198,7 @@ model chii_group_posts {
   @@index([grp_pst_related], map: "grp_pst_related")
   @@index([grp_pst_uid], map: "grp_pst_uid")
   @@index([grp_pst_mid], map: "pss_topic_id")
+  @@ignore()
 }
 
 model chii_group_topics {
@@ -206,6 +216,7 @@ model chii_group_topics {
   @@index([grp_tpc_gid], map: "grp_tpc_gid")
   @@index([grp_tpc_lastpost], map: "grp_tpc_lastpost")
   @@index([grp_tpc_uid], map: "grp_tpc_uid")
+  @@ignore()
 }
 
 model chii_groups {
@@ -223,6 +234,8 @@ model chii_groups {
   grp_builddate  Int     @db.UnsignedInt
   grp_accessible Boolean @default(true)
   grp_nsfw       Boolean
+
+  @@ignore()
 }
 
 model chii_index {
@@ -243,6 +256,7 @@ model chii_index {
   @@index([idx_collects], map: "idx_collects")
   @@index([idx_type], map: "idx_type")
   @@index([idx_uid], map: "idx_uid")
+  @@ignore()
 }
 
 model chii_index_collects {
@@ -252,6 +266,7 @@ model chii_index_collects {
   idx_clt_dateline Int @db.UnsignedInt
 
   @@index([idx_clt_mid, idx_clt_uid], map: "idx_clt_mid")
+  @@ignore()
 }
 
 model chii_index_comments {
@@ -265,6 +280,7 @@ model chii_index_comments {
   @@index([idx_pst_mid], map: "idx_pst_mid")
   @@index([idx_pst_related], map: "idx_pst_related")
   @@index([idx_pst_uid], map: "idx_pst_uid")
+  @@ignore()
 }
 
 model chii_index_related {
@@ -282,6 +298,7 @@ model chii_index_related {
   @@index([idx_rlt_rid, idx_rlt_type], map: "idx_rlt_rid")
   @@index([idx_rlt_rid, idx_rlt_sid], map: "idx_rlt_sid")
   @@index([idx_rlt_sid], map: "idx_rlt_sid_2")
+  @@ignore()
 }
 
 model chii_memberfields {
@@ -291,6 +308,8 @@ model chii_memberfields {
   bio       String @db.Text
   privacy   String @db.MediumText
   blocklist String @db.MediumText
+
+  @@ignore()
 }
 
 model Members {
@@ -338,6 +357,7 @@ model chii_oauth_clients {
   user_id       String? @db.VarChar(80)
 
   @@index([client_id], map: "client_id")
+  @@ignore()
 }
 
 model chii_os_web_sessions {
@@ -358,7 +378,7 @@ model chii_person_alias {
 
   @@index([prsn_cat, prsn_id], map: "prsn_cat")
   @@index([prsn_id], map: "prsn_id")
-  @@ignore
+  @@ignore()
 }
 
 model chii_person_collects {
@@ -371,6 +391,7 @@ model chii_person_collects {
   @@index([prsn_clt_cat, prsn_clt_mid], map: "prsn_clt_cat")
   @@index([prsn_clt_mid], map: "prsn_clt_mid")
   @@index([prsn_clt_uid], map: "prsn_clt_uid")
+  @@ignore()
 }
 
 model chii_person_cs_index {
@@ -387,6 +408,7 @@ model chii_person_cs_index {
   @@index([prsn_position], map: "prsn_position")
   @@index([subject_id], map: "subject_id")
   @@index([subject_type_id], map: "subject_type_id")
+  @@ignore()
 }
 
 model chii_person_fields {
@@ -400,6 +422,7 @@ model chii_person_fields {
 
   @@id([prsn_cat, prsn_id])
   @@index([prsn_id], map: "prsn_id")
+  @@ignore()
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
@@ -412,7 +435,7 @@ model chii_person_relationship {
 
   @@index([prsn_type, prsn_id], map: "prsn_type")
   @@index([relat_prsn_type, relat_prsn_id], map: "relat_prsn_type")
-  @@ignore
+  @@ignore()
 }
 
 model chii_persons {
@@ -450,6 +473,7 @@ model chii_persons {
   @@index([prsn_seiyu], map: "prsn_seiyu")
   @@index([prsn_type], map: "prsn_type")
   @@index([prsn_writer], map: "prsn_writer")
+  @@ignore()
 }
 
 model chii_prsn_comments {
@@ -463,6 +487,7 @@ model chii_prsn_comments {
   @@index([prsn_pst_mid], map: "cmt_prsn_id")
   @@index([prsn_pst_related], map: "prsn_pst_related")
   @@index([prsn_pst_uid], map: "prsn_pst_uid")
+  @@ignore()
 }
 
 model chii_rev_history {
@@ -477,11 +502,14 @@ model chii_rev_history {
   @@index([rev_creator], map: "rev_crt_creator")
   @@index([rev_type, rev_mid], map: "rev_crt_id")
   @@index([rev_id, rev_type, rev_creator], map: "rev_id")
+  @@ignore()
 }
 
 model chii_rev_text {
   rev_text_id Int   @id @default(autoincrement()) @db.UnsignedMediumInt
   rev_text    Bytes @db.MediumBlob
+
+  @@ignore()
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
@@ -493,11 +521,11 @@ model chii_subject_alias {
   alias_key       String @db.VarChar(10)
 
   @@index([subject_id], map: "subject_id")
-  @@ignore
+  @@ignore()
 }
 
-model chii_subject_fields {
-  field_sid      Int      @id @default(autoincrement()) @db.UnsignedMediumInt
+model subjectFields {
+  subject_id     Int      @id @default(autoincrement()) @map("field_sid") @db.UnsignedMediumInt
   field_tid      Int      @default(0) @db.UnsignedSmallInt
   field_tags     String   @db.MediumText
   field_rate_1   Int      @default(0) @db.UnsignedMediumInt
@@ -522,9 +550,10 @@ model chii_subject_fields {
   @@index([field_rank], map: "field_rank")
   @@index([field_year], map: "field_year")
   @@index([field_year, field_mon], map: "field_year_mon")
-  @@index([field_sid, field_date], map: "query_date")
+  @@index([subject_id, field_date], map: "query_date")
   @@index([field_tid], map: "sort_id")
   @@index([field_airtime], map: "subject_airtime")
+  @@map("chii_subject_fields")
 }
 
 model chii_subject_interests {
@@ -571,6 +600,7 @@ model chii_subject_interests {
   @@index([interest_subject_type, interest_type, interest_uid, interest_private], map: "user_collect_latest")
   @@index([interest_subject_type, interest_type, interest_uid, interest_private, interest_collect_dateline], map: "user_collect_type")
   @@index([interest_subject_type, interest_uid], map: "user_collects")
+  @@ignore()
 }
 
 model chii_subject_posts {
@@ -585,6 +615,7 @@ model chii_subject_posts {
   @@index([sbj_pst_mid], map: "pss_topic_id")
   @@index([sbj_pst_related], map: "sbj_pst_related")
   @@index([sbj_pst_uid], map: "sbj_pst_uid")
+  @@ignore()
 }
 
 model chii_subject_relations {
@@ -600,6 +631,7 @@ model chii_subject_relations {
   @@index([rlt_related_subject_type_id, rlt_order], map: "rlt_related_subject_type_id")
   @@index([rlt_relation_type, rlt_subject_id, rlt_related_subject_id], map: "rlt_relation_type")
   @@index([rlt_subject_type_id], map: "rlt_subject_type_id")
+  @@ignore()
 }
 
 model chii_subject_revisions {
@@ -622,6 +654,7 @@ model chii_subject_revisions {
   @@index([rev_dateline], map: "rev_dateline")
   @@index([rev_subject_id, rev_creator], map: "rev_subject_id")
   @@index([rev_type], map: "rev_type")
+  @@ignore()
 }
 
 model chii_subject_topics {
@@ -639,10 +672,10 @@ model chii_subject_topics {
   @@index([sbj_tpc_uid], map: "sbj_tpc_uid")
   @@index([sbj_tpc_display], map: "tpc_display")
   @@index([sbj_tpc_subject_id], map: "tpc_subject_id")
+  @@ignore()
 }
 
 model Subjects {
-
   subject_id           Int     @id @default(autoincrement()) @db.UnsignedMediumInt
   subject_type_id      Int     @default(0) @db.UnsignedSmallInt
   subject_name         String  @db.VarChar(80)
@@ -703,18 +736,16 @@ model chii_timeline {
   @@index([tml_batch], map: "tml_batch")
   @@index([tml_cat], map: "tml_cat")
   @@index([tml_uid], map: "tml_uid")
+  @@ignore()
 }
 
-model chii_usergroup {
+model UserGroups {
   usr_grp_id       Int    @id @default(autoincrement()) @db.UnsignedMediumInt
   usr_grp_name     String @db.VarChar(255)
   usr_grp_perm     String @db.MediumText
   usr_grp_dateline Int    @db.UnsignedInt
-}
 
-model example {
-  id   Int      @id @default(autoincrement()) @db.UnsignedMediumInt
-  time DateTime @default(now()) @db.DateTime(0)
+  @@map("chii_usergroup")
 }
 
 enum chii_person_alias_prsn_cat {

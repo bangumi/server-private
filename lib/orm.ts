@@ -67,7 +67,7 @@ export interface Permission {
 }
 
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
-  const permission = await prisma.chii_usergroup.findFirst({ where: { usr_grp_id: userGroup } });
+  const permission = await prisma.userGroups.findFirst({ where: { usr_grp_id: userGroup } });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
     return {};
