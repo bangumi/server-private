@@ -7,7 +7,7 @@ test('should fetch user', async () => {
 });
 
 test('should fetch permission', async () => {
-  expect(Object.keys(await fetchPermission(0))).toHaveLength(0);
+  await expect(fetchPermission(0)).resolves.toEqual({});
 });
 
 test('should fallback to empty permission', async () => {
