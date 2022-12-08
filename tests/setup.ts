@@ -1,13 +1,21 @@
-import { jest, beforeEach } from '@jest/globals';
-import MockRedis from 'ioredis-mock';
+import { beforeEach, afterAll, afterEach, beforeAll } from '@jest/globals';
 import { register } from 'prom-client';
 
-jest.unstable_mockModule('../lib/redis', () => {
-  return {
-    default: new MockRedis(),
-  };
+import redis from '../lib/redis';
+
+beforeAll(async () => {
+  await redis.flushdb('SYNC');
 });
 
-beforeEach(() => {
+beforeEach(async () => {
+  await redis.flushdb('SYNC');
   register.clear();
+});
+
+afterEach(async () => {
+  await redis.flushdb('SYNC');
+});
+
+afterAll(async () => {
+  await redis.quit();
 });
