@@ -1,25 +1,51 @@
 import * as crypto from 'node:crypto';
 
 import * as bcrypt from 'bcrypt';
+import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { createError } from '@fastify/error';
+import httpCodes from 'http-status-codes';
 
+import { redisPrefix } from '../../config';
 import { Tag } from '../../openapi';
+import redis from '../../redis';
 import type { IUser } from '../../types/user';
 import { User } from '../../types/user';
 import prisma from '../../prisma';
 import { randomBase62String } from '../../utils';
 import type { App } from '../type';
+import Limiter from '../../utils/rate-limit';
 
 const CookieKey = 'sessionID';
+
+const TooManyRequestsError = createError(
+  'TOO_MANY_REQUESTS',
+  'too many failed login attempts',
+  httpCodes.TOO_MANY_REQUESTS,
+);
 
 const EmailPasswordNotMatch = createError(
   'EMAIL_PASSWORD_MISMATCH',
   'email does not exists or email and password not match',
-  401,
+  httpCodes.UNAUTHORIZED,
 );
 
+const emailPassMismatchError = t.Object({
+  title: t.String(),
+  description: t.String(),
+  detail: t.Object({
+    remain: t.Integer({ description: '剩余可用登录次数。' }),
+  }),
+});
+
 export function setup(app: App) {
+  // 10 calls per 600s
+  const limiter = new Limiter({
+    redisClient: redis,
+    limit: 10,
+    duration: 600,
+  });
+
   app.post(
     '/login',
     {
@@ -27,7 +53,8 @@ export function setup(app: App) {
         operationId: 'auth-login',
         tags: [Tag.Auth],
         response: {
-          200: t.Ref(User),
+          [httpCodes.OK]: t.Ref(User),
+          [httpCodes.UNAUTHORIZED]: emailPassMismatchError,
         },
         body: t.Object({
           email: t.String({ minLength: 1 }),
@@ -35,11 +62,21 @@ export function setup(app: App) {
         }),
       },
     },
-    async function handler({ body: { email, password } }, res): Promise<IUser> {
+    async function handler({ body: { email, password }, ip }, res): Promise<IUser> {
+      const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${ip}`);
+      if (remain <= 0) {
+        void res.header('Retry-After', reset);
+        throw new TooManyRequestsError();
+      }
+
       const user = await prisma.members.findFirst({ where: { email } });
 
       if (!user) {
-        throw new EmailPasswordNotMatch();
+        return res.code(401).send({
+          title: '',
+          description: '',
+          detail: { remain },
+        } satisfies Static<typeof emailPassMismatchError>);
       }
 
       if (!(await comparePassword(user.password_crypt, password))) {

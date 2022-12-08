@@ -1,6 +1,13 @@
-import { describe, test, expect } from '@jest/globals';
+import { describe, test, expect, jest } from '@jest/globals';
+import MockRedis from 'ioredis-mock';
 
 import * as auth from '../lib/auth';
+
+jest.unstable_mockModule('../lib/redis', () => {
+  return {
+    default: new MockRedis(),
+  };
+});
 
 describe('should auth', () => {
   test('current auth', async () => {
