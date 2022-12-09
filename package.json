@@ -25,6 +25,7 @@
   "nodemonConfig": {
     "restartable": "rs",
     "ignore": [
+      "**.test.ts",
       ".git",
       "node_modules/**"
     ],

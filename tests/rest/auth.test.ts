@@ -42,12 +42,38 @@ describe('login auth flow', () => {
 
     expect(cookieValue).toBeDefined();
 
+    if (!cookieValue) {
+      throw new Error('no cookies return');
+    }
+
     const currentRes = await app.inject({
       method: 'get',
       url: '/p1/me',
-      cookies: { sessionID: cookieValue! },
+      cookies: { sessionID: cookieValue },
     });
 
     expect(currentRes.json()).toEqual(treeHoleUser);
+
+    const logout = await app.inject({
+      method: 'post',
+      url: '/p1/logout',
+      cookies: { sessionID: cookieValue },
+    });
+
+    expect(logout.statusCode).toBe(200);
+    expect(logout.cookies).toContainEqual(
+      expect.objectContaining({
+        name: 'sessionID',
+        value: '',
+      }),
+    );
+
+    const currentUser2 = await app.inject({
+      method: 'get',
+      url: '/p1/me',
+      cookies: { sessionID: cookieValue },
+    });
+
+    expect(currentUser2.statusCode).toBe(401);
   });
 });

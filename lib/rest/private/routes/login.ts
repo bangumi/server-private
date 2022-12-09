@@ -5,6 +5,7 @@ import { Type as t } from '@sinclair/typebox';
 import { createError } from '@fastify/error';
 import httpCodes from 'http-status-codes';
 
+import { NeedLoginError } from '../../../auth';
 import { redisPrefix } from '../../../config';
 import { HCaptcha } from '../../../externals/hcaptcha';
 import { logger } from '../../../logger';
@@ -13,9 +14,9 @@ import redis from '../../../redis';
 import type { IUser } from '../../../types';
 import { ErrorRes, formatError, User } from '../../../types';
 import prisma from '../../../prisma';
-import { randomBase62String } from '../../../utils';
 import type { App } from '../../type';
 import Limiter from '../../../utils/rate-limit';
+import * as session from '../../../auth/session';
 
 const CookieKey = 'sessionID';
 
@@ -53,13 +54,45 @@ export async function setup(app: App) {
   app.addSchema(ErrorRes);
 
   app.post(
+    '/logout',
+    {
+      schema: {
+        description: '登出',
+        operationId: 'logout',
+        tags: [Tag.Auth],
+        response: {
+          200: {},
+          401: t.Ref(ErrorRes, {
+            description: '未登录',
+            'x-examples': {
+              NeedLoginError: { value: formatError(NeedLoginError('logout')) },
+            },
+          }),
+        },
+      },
+    },
+    async (req, res) => {
+      if (!req.user) {
+        throw new NeedLoginError('logout');
+      }
+
+      if (!req.cookies.sessionID) {
+        throw new Error('missing cookies sessionID');
+      }
+
+      void res.clearCookie(CookieKey);
+      await session.revoke(req.cookies.sessionID);
+    },
+  );
+
+  app.post(
     '/login',
     {
       schema: {
         description: `需要 [hCaptcha的验证码](https://docs.hcaptcha.com/#add-the-hcaptcha-widget-to-your-webpage)
 
 site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
-        operationId: 'auth-login',
+        operationId: 'login',
         tags: [Tag.Auth],
         response: {
           200: t.Ref(User, {
@@ -118,34 +151,16 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
       }
 
       const user = await prisma.members.findFirst({ where: { email } });
-
       if (!user) {
         throw new UsernameOrPasswordError();
       }
-
       if (!(await comparePassword(user.password_crypt, password))) {
         throw new UsernameOrPasswordError();
       }
 
-      const now = Math.trunc(Date.now() / 1000);
-
-      const token = randomBase62String(32);
-
-      const value = {
-        reg_time: user.regdate,
-        user_id: user.id,
-        created_at: now,
-        expired_at: now + 60 * 60 * 24 * 7,
-      };
-
-      await prisma.chii_os_web_sessions.create({
-        data: {
-          value: Buffer.from(JSON.stringify(value)),
-          user_id: user.id,
-          created_at: value.created_at,
-          expired_at: value.expired_at,
-          key: token,
-        },
+      const token = await session.create({
+        id: user.id,
+        regTime: user.regdate,
       });
 
       void res.cookie(CookieKey, token, { sameSite: 'strict' });
