@@ -1,19 +1,20 @@
-import { beforeEach, afterAll, afterEach, beforeAll } from '@jest/globals';
+import { beforeEach, afterAll, jest } from '@jest/globals';
 import { register } from 'prom-client';
 
 import redis from '../lib/redis';
 
-beforeAll(async () => {
-  await redis.flushdb('SYNC');
+jest.unstable_mockModule('../lib/externals/hcaptcha', () => {
+  return {
+    HCaptcha: class {
+      verify(res: string): Promise<boolean> {
+        return Promise.resolve(res === 'fake-response');
+      }
+    },
+  };
 });
 
-beforeEach(async () => {
-  await redis.flushdb('SYNC');
+beforeEach(() => {
   register.clear();
-});
-
-afterEach(async () => {
-  await redis.flushdb('SYNC');
 });
 
 afterAll(async () => {

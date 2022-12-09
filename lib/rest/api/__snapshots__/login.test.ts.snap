@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should failed on too many requests 1`] = `
+exports[`login should failed on too many requests 1`] = `
 {
   "code": "TOO_MANY_REQUESTS",
   "error": "Too Many Requests",

@@ -12,5 +12,5 @@ export default {
     '\\.[jt]s$': 'babel-jest',
   },
   setupFiles: ['dotenv/config'],
-  setupFilesAfterEnv: ['./tests/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
 } satisfies Config;

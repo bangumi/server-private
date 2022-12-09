@@ -1,7 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 
 import { Security, Tag } from '../../openapi';
-import { ErrorRes, User } from '../../types/user';
+import { ErrorRes, formatError, User } from '../../types';
 import type { App } from '../type';
 import { NeedLoginError } from '../../auth';
 
@@ -16,7 +16,7 @@ export function setup(app: App) {
           200: t.Object({
             data: t.Ref(User),
           }),
-          401: t.Ref(ErrorRes),
+          401: t.Ref(ErrorRes, { examples: [formatError(NeedLoginError())] }),
         },
         security: [{ [Security.HTTPBearer]: [] }],
       },

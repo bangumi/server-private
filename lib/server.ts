@@ -19,8 +19,28 @@ import * as rest from './rest';
 import { pkg, projectRoot } from './config';
 import { Security } from './openapi';
 
+declare module 'fastify' {
+  interface FastifyRequest {
+    // use clientIp privided by cloudflare
+    clientIP: string;
+  }
+}
+
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const server = fastify(opts);
+
+  server.decorateRequest('clientIP', '');
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  server.addHook('preHandler', async (req) => {
+    const cfClientIp = req.headers['cf-connecting-ip'] as string | undefined;
+    if (cfClientIp) {
+      req.clientIP = cfClientIp;
+      return;
+    }
+
+    req.clientIP = req.ip;
+  });
 
   server.get('/metrics', async (_req, res) => {
     const prismaMetrics = await prisma.$metrics.prometheus();
@@ -97,7 +117,6 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
 
   await server.register(swagger, {
     openapi,
-
     refResolver: {
       clone: true,
       buildLocalReference: (
