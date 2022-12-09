@@ -1,8 +1,8 @@
 import { expect, test, vi } from 'vitest';
 
-import type { HCaptcha } from './hcaptcha';
+import type * as hCaptchaModule from './hcaptcha';
 
-const hCaptcha = await vi.importActual<{ HCaptcha: typeof HCaptcha }>('./hcaptcha');
+const hCaptcha = await vi.importActual<typeof hCaptchaModule>('./hcaptcha');
 
 const client = new hCaptcha.HCaptcha();
 
