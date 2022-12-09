@@ -13,9 +13,7 @@ export function setup(app: App) {
         operationId: 'get-current-user',
         tags: [Tag.Auth],
         response: {
-          200: t.Object({
-            data: t.Ref(User),
-          }),
+          200: t.Ref(User),
           401: t.Ref(ErrorRes, { examples: [formatError(NeedLoginError())] }),
         },
         security: [{ [Security.HTTPBearer]: [] }],
@@ -25,7 +23,7 @@ export function setup(app: App) {
       if (!req.user) {
         throw new NeedLoginError('getting current user');
       }
-      return { data: req.user };
+      return req.user;
     },
   );
 }

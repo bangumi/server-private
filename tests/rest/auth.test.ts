@@ -8,22 +8,13 @@ const treeHoleUser = { ID: 382951, nickname: '树洞酱', username: '382951' };
 const fakeIP = 'fake-client-ip-should-not-fail';
 describe('login auth flow', () => {
   beforeEach(async () => {
-    for (const key of await redis.keys('*')) {
-      if (key.includes(fakeIP)) {
-        await redis.del(key);
-      }
-    }
-
+    await redis.flushdb('SYNC');
     await prisma.chii_os_web_sessions.deleteMany();
   });
 
   afterEach(async () => {
     await prisma.chii_os_web_sessions.deleteMany();
-    for (const key of await redis.keys('*')) {
-      if (key.includes(fakeIP)) {
-        await redis.del(key);
-      }
-    }
+    await redis.flushdb('SYNC');
   });
 
   test('login', async () => {
@@ -57,6 +48,6 @@ describe('login auth flow', () => {
       cookies: { sessionID: cookieValue! },
     });
 
-    expect(currentRes.json()).toEqual({ data: treeHoleUser });
+    expect(currentRes.json()).toEqual(treeHoleUser);
   });
 });

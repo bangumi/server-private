@@ -1,16 +1,19 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
+import prisma from '../../prisma';
 import redis from '../../redis';
 import { createServer } from '../../server';
 import { comparePassword } from './login';
 
 describe('login', () => {
   beforeEach(async () => {
-    for (const key of await redis.keys('*')) {
-      if (key.includes('-1122')) {
-        await redis.del(key);
-      }
-    }
+    await redis.flushdb('SYNC');
+    await prisma.chii_os_web_sessions.deleteMany();
+  });
+
+  afterEach(async () => {
+    await redis.flushdb('SYNC');
+    await prisma.chii_os_web_sessions.deleteMany();
   });
 
   test('should failed on too many requests', async () => {

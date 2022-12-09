@@ -22,7 +22,7 @@ describe('rest', () => {
       headers: { authorization: 'Bearer a_development_access_token' },
     });
 
-    expect(res.json()).toEqual({ data: { ID: 382951, username: '382951', nickname: '树洞酱' } });
+    expect(res.json()).toEqual({ ID: 382951, username: '382951', nickname: '树洞酱' });
     expect(res.statusCode).toBe(200);
   });
 
