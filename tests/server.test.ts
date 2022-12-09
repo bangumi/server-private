@@ -1,5 +1,5 @@
 import { createMercuriusTestClient } from 'mercurius-integration-testing';
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from 'vitest';
 // remember to wrap all graphql string with gql,
 // so vscode, webstorm and prettier will know the string content
 // is graphql and support language specific features

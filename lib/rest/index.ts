@@ -1,39 +1,15 @@
-import * as url from 'node:url';
-import * as path from 'node:path';
-
 import type { FastifyInstance } from 'fastify';
 import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import Cookie from '@fastify/cookie';
 
-import { projectRoot } from '../config';
 import type { IAuth } from '../auth';
 import * as auth from '../auth';
 import { logger } from '../logger';
-import { ErrorRes, User } from '../types';
-import { walk } from '../utils';
-import type { App } from './type';
-import prisma from '../prisma';
 import type { IUser } from '../orm';
-
-const setups: { setup: (app: App) => Promise<void>; file: string }[] = [];
-
-for await (const file of walk(path.resolve(projectRoot, 'lib/rest/api'))) {
-  if (!file.endsWith('.ts')) {
-    continue;
-  }
-
-  if (file.endsWith('.test.ts')) {
-    continue;
-  }
-
-  const api = (await import(url.pathToFileURL(file).toString())) as {
-    setup?: (app: FastifyInstance) => Promise<void>;
-  };
-  const setup = api.setup;
-  if (setup) {
-    setups.push({ setup, file });
-  }
-}
+import { ErrorRes, User } from '../types';
+import prisma from '../prisma';
+import * as login from './api/login';
+import * as me from './api/me';
 
 export async function setup(app: FastifyInstance) {
   app.addSchema(User);
@@ -73,10 +49,9 @@ export async function setup(app: FastifyInstance) {
   });
 
   const server = app.withTypeProvider<TypeBoxTypeProvider>();
-  for (const setup of setups) {
-    logger.debug(`setup ${setup.file}`);
-    await setup.setup(server);
-  }
+
+  login.setup(server);
+  me.setup(server);
 
   return app;
 }

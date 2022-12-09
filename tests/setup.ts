@@ -1,9 +1,9 @@
-import { beforeEach, afterAll, jest } from '@jest/globals';
+import { beforeEach, afterAll, vi } from 'vitest';
 import { register } from 'prom-client';
 
 import redis from '../lib/redis';
 
-jest.unstable_mockModule('../lib/externals/hcaptcha', () => {
+vi.mock('../lib/externals/hcaptcha', () => {
   return {
     HCaptcha: class {
       verify(res: string): Promise<boolean> {

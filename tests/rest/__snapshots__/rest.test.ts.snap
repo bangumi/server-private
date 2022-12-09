@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`rest should return null user 1`] = `
+exports[`rest > should return null user 1`] = `
 {
   "code": "NEED_LOGIN",
   "error": "Unauthorized",

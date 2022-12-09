@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`graphql should return error 1`] = `
+exports[`graphql > should return error 1`] = `
 {
   "code": "TOKEN_INVALID",
   "error": "Unauthorized",
@@ -9,7 +9,7 @@ exports[`graphql should return error 1`] = `
 }
 `;
 
-exports[`subject should subject tags 1`] = `
+exports[`subject > should subject tags 1`] = `
 {
   "tags": [
     {
