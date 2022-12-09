@@ -73,7 +73,10 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
               'X-RateLimit-Limit': t.Integer({ description: 'total limit per 10 minutes' }),
               'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
             },
-            examples: [formatError(CaptchaError()), formatError(UsernameOrPasswordError())],
+            'x-examples': {
+              CaptchaError: { value: formatError(CaptchaError()) },
+              UsernameOrPasswordError: { value: formatError(UsernameOrPasswordError()) },
+            },
           }),
           429: t.Ref(ErrorRes, {
             description: '失败次数太多，需要过一段时间再重试',

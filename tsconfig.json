@@ -19,5 +19,5 @@
     "baseUrl": "."
   },
   "include": ["./lib", "./tests"],
-  "files": ["jest.config.ts"]
+  "files": ["vitest.config.ts"]
 }

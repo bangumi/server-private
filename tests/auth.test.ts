@@ -1,9 +1,9 @@
-import { describe, test, expect, jest } from '@jest/globals';
+import { describe, test, expect, vi } from 'vitest';
 import MockRedis from 'ioredis-mock';
 
 import * as auth from '../lib/auth';
 
-jest.unstable_mockModule('../lib/redis', () => {
+vi.mock('../lib/redis', () => {
   return {
     default: new MockRedis(),
   };
