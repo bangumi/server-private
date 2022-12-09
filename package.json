@@ -41,9 +41,9 @@
   "devDependencies": {
     "@prisma/client": "^4.7.1",
     "@types/bcrypt": "^5.0.0",
-    "@types/node": "^18.11.11",
-    "@typescript-eslint/eslint-plugin": "^5.45.1",
-    "@typescript-eslint/parser": "^5.45.1",
+    "@types/node": "^18.11.12",
+    "@typescript-eslint/eslint-plugin": "^5.46.0",
+    "@typescript-eslint/parser": "^5.46.0",
     "@vitest/coverage-c8": "^0.25.6",
     "dotenv": "^16.0.3",
     "eslint": "^8.29.0",
@@ -64,13 +64,13 @@
     "prettier-plugin-prisma": "^4.4.0",
     "prettier-plugin-sh": "^0.12.8",
     "prisma": "^4.7.1",
-    "typescript": "~4.9.3",
+    "typescript": "~4.9.4",
     "vite": "^3.2.5",
     "vitest": "^0.25.6"
   },
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
-    "@fastify/error": "^3.1.0",
+    "@fastify/error": "^3.2.0",
     "@fastify/swagger": "^8.2.0",
     "@fastify/type-provider-typebox": "^2.4.0",
     "@sinclair/typebox": "^0.25.11",
@@ -90,7 +90,7 @@
     "pino": "^8.7.0",
     "prom-client": "^14.1.0",
     "ts-node": "^10.9.1",
-    "undici": "^5.13.0"
+    "undici": "^5.14.0"
   },
   "prettier": {
     "printWidth": 100,
