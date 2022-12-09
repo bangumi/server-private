@@ -124,10 +124,10 @@
     readable-stream "^4.0.0"
     send "^0.18.0"
 
-"@fastify/swagger@^8.2.0":
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/@fastify/swagger/-/swagger-8.2.0.tgz#dcd3233c9911f965668c85a4d7d02a491bafe2ef"
-  integrity sha512-AnVQjuBxvJ7TVEtmCi2f1WSGGdQlXD3MJ6pt34fp1JYm2OZj3ZQ7n4D0ODUrjdKSLIapTH2PdlXZ2iXPE2OZlQ==
+"@fastify/swagger@^8.2.1":
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/@fastify/swagger/-/swagger-8.2.1.tgz#a5f744868c25c49bde2469f5412ce0405aac150a"
+  integrity sha512-nYP/3ncrI5YmaGiJf6m+CLdFrdlWSsASHBPqP9uN9/oFFwDJwdUtq0ylmvObxzqWNVt9zT50iT/uvIndVEsvbg==
   dependencies:
     fastify-plugin "^4.0.0"
     json-schema-resolver "^2.0.0"
@@ -283,10 +283,10 @@
   resolved "https://registry.yarnpkg.com/@prisma/prisma-fmt-wasm/-/prisma-fmt-wasm-4.4.0-66.f352a33b70356f46311da8b00d83386dd9f145d6.tgz#d0ab2f4bac76da2767e242ced74b4257e839befe"
   integrity sha512-Hc2i5nfAt3nLDUkQNWJcKFJaA9Avd5zz6t85w9SW7P0vGtFXScQ+xIu6znbULr9bc0pgTWejY1We2u/7EMxHWw==
 
-"@sinclair/typebox@^0.25.11":
-  version "0.25.11"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.11.tgz#476bad310092de48af7a9807ecd75019ac01f3d7"
-  integrity sha512-GgUJN0Drvh74i8gOl2S8SkHuAgkZJtzzd6EmfBVxpNDB6QmzXdZ3tyUt02Kr42X58as5I187CKiWpLCMJmdLbw==
+"@sinclair/typebox@^0.25.12":
+  version "0.25.12"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.25.12.tgz#3157d3be38a1df18f784640bb19739a38436366c"
+  integrity sha512-xm46HDwYz69z8xcNh9esHYKpvhXmA02sD+K9cur6XZvwjZTSBJ8PNbK5xeSO0IYZqRzpxkXYsbpsF/hF0WdPew==
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.9"
@@ -2907,10 +2907,15 @@ open@^8.4.0:
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
 
-openapi-types@^12.0.0, openapi-types@^12.0.2:
+openapi-types@^12.0.0:
   version "12.0.2"
   resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-12.0.2.tgz#b752ab0a463c594fd7e3142e0e5983a9645503f6"
   integrity sha512-GuTo7FyZjOIWVhIhQSWJVaws6A82sWIGyQogxxYBYKZ0NBdyP2CYSIgOwFfSB+UVoPExk/YzFpyYitHS8KVZtA==
+
+openapi-types@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-12.1.0.tgz#bd01acc937b73c9f6db2ac2031bf0231e21ebff0"
+  integrity sha512-XpeCy01X6L5EpP+6Hc3jWN7rMZJ+/k1lwki/kTmWzbVhdPie3jd5O2ZtedEx8Yp58icJ0osVldLMrTB/zslQXA==
 
 optionator@^0.9.1:
   version "0.9.1"
