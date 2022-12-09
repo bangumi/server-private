@@ -12,6 +12,25 @@ export interface IUser {
   regTime: number;
 }
 
+export async function fetchUserByUsername(username: string): Promise<IUser | null> {
+  const user = await prisma.members.findFirst({
+    where: { username },
+  });
+
+  if (!user) {
+    return null;
+  }
+
+  return {
+    ID: user.id,
+    nickname: user.nickname,
+    username: user.username,
+    img: user.avatar,
+    groupID: user.groupid,
+    regTime: user.regdate,
+  };
+}
+
 export async function fetchUser(userID: number): Promise<IUser | null> {
   const user = await prisma.members.findFirst({
     where: { id: userID },

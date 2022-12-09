@@ -10,6 +10,7 @@ import { ErrorRes, User } from '../types';
 import prisma from '../prisma';
 import * as login from './api/login';
 import * as me from './api/me';
+import * as userApi from './api/user';
 
 export async function setup(app: FastifyInstance) {
   app.addSchema(User);
@@ -52,6 +53,7 @@ export async function setup(app: FastifyInstance) {
 
   login.setup(server);
   me.setup(server);
+  userApi.setup(server);
 
   return app;
 }
