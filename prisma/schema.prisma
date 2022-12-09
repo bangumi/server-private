@@ -216,7 +216,6 @@ model chii_group_topics {
   @@index([grp_tpc_gid], map: "grp_tpc_gid")
   @@index([grp_tpc_lastpost], map: "grp_tpc_lastpost")
   @@index([grp_tpc_uid], map: "grp_tpc_uid")
-  @@ignore()
 }
 
 model chii_groups {
@@ -234,8 +233,6 @@ model chii_groups {
   grp_builddate  Int     @db.UnsignedInt
   grp_accessible Boolean @default(true)
   grp_nsfw       Boolean
-
-  @@ignore()
 }
 
 model chii_index {
@@ -672,7 +669,6 @@ model chii_subject_topics {
   @@index([sbj_tpc_uid], map: "sbj_tpc_uid")
   @@index([sbj_tpc_display], map: "tpc_display")
   @@index([sbj_tpc_subject_id], map: "tpc_subject_id")
-  @@ignore()
 }
 
 model Subjects {

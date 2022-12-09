@@ -12,3 +12,7 @@ export type App = FastifyInstance<
   FastifyBaseLogger,
   TypeBoxTypeProvider
 >;
+
+export interface Option {
+  tags?: string[];
+}

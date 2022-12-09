@@ -17,7 +17,5 @@
     "noEmit": true,
     "rootDir": ".",
     "baseUrl": "."
-  },
-  "include": ["./lib", "./tests"],
-  "files": ["vitest.config.ts"]
+  }
 }

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
-import prisma from '../../prisma';
-import redis from '../../redis';
-import { createServer } from '../../server';
+import prisma from '../../../prisma';
+import redis from '../../../redis';
+import { createServer } from '../../../server';
 import { comparePassword } from './login';
 
 describe('login', () => {
@@ -21,11 +21,8 @@ describe('login', () => {
 
     const opt = {
       method: 'post',
-      url: '/v0.5/login',
+      url: '/p1/login',
       payload: { email: 'ee', password: 'eepp', 'h-captcha-response': 'fake-response' },
-      headers: {
-        'cf-connecting-ip': '1-1122',
-      },
     } as const;
 
     const login = () => app.inject(opt);
@@ -45,14 +42,11 @@ describe('login', () => {
 
     const res = await app.inject({
       method: 'post',
-      url: '/v0.5/login',
+      url: '/p1/login',
       payload: {
         email: 'treeholechan@gmail.com',
         password: 'lovemeplease',
         'h-captcha-response': 'fake-response',
-      },
-      headers: {
-        'cf-connecting-ip': '2-1122',
       },
     });
 
