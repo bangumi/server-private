@@ -31,6 +31,7 @@ module.exports = {
     'unicorn/numeric-separators-style': 'off',
     'unicorn/prevent-abbreviations': 'off',
     'unicorn/better-regex': 'error',
+    'unicorn/prefer-ternary': 'off',
     'unicorn/no-instanceof-array': 'error',
     'unicorn/no-new-array': 'error',
     'unicorn/no-new-buffer': 'error',

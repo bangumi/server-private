@@ -8,13 +8,14 @@ import Cookie from '@fastify/cookie';
 import { projectRoot } from '../config';
 import type { IAuth } from '../auth';
 import * as auth from '../auth';
-import { ErrorRes, User } from '../types/user';
+import { logger } from '../logger';
+import { ErrorRes, User } from '../types';
 import { walk } from '../utils';
 import type { App } from './type';
 import prisma from '../prisma';
 import type { IUser } from '../orm';
 
-const setups: ((app: App) => void)[] = [];
+const setups: { setup: (app: App) => Promise<void>; file: string }[] = [];
 
 for await (const file of walk(path.resolve(projectRoot, 'lib/rest/api'))) {
   if (!file.endsWith('.ts')) {
@@ -26,24 +27,29 @@ for await (const file of walk(path.resolve(projectRoot, 'lib/rest/api'))) {
   }
 
   const api = (await import(url.pathToFileURL(file).toString())) as {
-    setup?: (app: FastifyInstance) => void;
+    setup?: (app: FastifyInstance) => Promise<void>;
   };
   const setup = api.setup;
   if (setup) {
-    setups.push(setup);
+    setups.push({ setup, file });
   }
 }
 
-export function setup(app: FastifyInstance) {
+export async function setup(app: FastifyInstance) {
   app.addSchema(User);
   app.addSchema(ErrorRes);
 
-  void app.register(Cookie, {
+  app.decorateRequest('user', null);
+  app.decorateRequest('auth', null);
+
+  await app.register(Cookie, {
     hook: 'preHandler', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
     parseOptions: {}, // options for parsing cookies
   });
 
-  app.addHook('preHandler', async (req) => {
+  logger.debug('setup rest routes');
+
+  void app.addHook('preHandler', async (req) => {
     if (req.headers.authorization) {
       const a = await auth.byHeader(req.headers.authorization);
       req.user = a.user;
@@ -68,7 +74,8 @@ export function setup(app: FastifyInstance) {
 
   const server = app.withTypeProvider<TypeBoxTypeProvider>();
   for (const setup of setups) {
-    setup(server);
+    logger.debug(`setup ${setup.file}`);
+    await setup.setup(server);
   }
 
   return app;

@@ -91,7 +91,8 @@
     "php-serialize": "^4.0.2",
     "pino": "^8.7.0",
     "prom-client": "^14.1.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "undici": "^5.13.0"
   },
   "prettier": {
     "printWidth": 100,
