@@ -24,6 +24,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    curly: ['error'],
     'no-new-object': 'error',
     'no-new-wrappers': 'error',
     'unicorn/no-null': 'off',

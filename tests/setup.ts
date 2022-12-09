@@ -1,5 +1,4 @@
-import { beforeEach, vi } from 'vitest';
-import { register } from 'prom-client';
+import { vi } from 'vitest';
 import MockRedis from 'ioredis-mock';
 
 vi.mock('../lib/redis', () => {
@@ -16,8 +15,4 @@ vi.mock('../lib/externals/hcaptcha', () => {
       }
     },
   };
-});
-
-beforeEach(() => {
-  register.clear();
 });
