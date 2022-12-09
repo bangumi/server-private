@@ -1,0 +1,18 @@
+// Vitest Snapshot v1
+
+exports[`should get user 1`] = `
+{
+  "ID": 382951,
+  "nickname": "树洞酱",
+  "username": "382951",
+}
+`;
+
+exports[`should get user 2`] = `
+{
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "user not found",
+  "statusCode": 404,
+}
+`;
