@@ -21,7 +21,7 @@ describe('login auth flow', () => {
     const app = await createServer();
 
     const res = await app.inject({
-      url: '/v0.5/login',
+      url: '/p1/login',
       method: 'post',
       payload: {
         email: 'treeholechan@gmail.com',
@@ -44,7 +44,7 @@ describe('login auth flow', () => {
 
     const currentRes = await app.inject({
       method: 'get',
-      url: '/v0.5/me',
+      url: '/p1/me',
       cookies: { sessionID: cookieValue! },
     });
 

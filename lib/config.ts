@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 
+import type { RedisOptions } from 'ioredis';
+
 import { logger } from './logger';
 
 export const production = process.env.NODE_ENV === 'production';
@@ -27,4 +29,5 @@ export const redisOption = {
   db: u.pathname ? Number.parseInt(u.pathname.slice(1)) : 0,
   username: username,
   password: password,
-} as const;
+  lazyConnect: true,
+} satisfies RedisOptions;

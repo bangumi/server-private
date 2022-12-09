@@ -9,13 +9,6 @@ import { createServer } from '../lib/server';
 
 const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
 
-describe('rest', () => {
-  test('should build openapi', async () => {
-    const app = await createServer();
-    expect(app.swagger()).toMatchObject({ info: { title: 'hello' } });
-  });
-});
-
 describe('graphql', () => {
   test('should return current user', async () => {
     await expect(

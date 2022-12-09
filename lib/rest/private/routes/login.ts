@@ -5,17 +5,17 @@ import { Type as t } from '@sinclair/typebox';
 import { createError } from '@fastify/error';
 import httpCodes from 'http-status-codes';
 
-import { redisPrefix } from '../../config';
-import { HCaptcha } from '../../externals/hcaptcha';
-import { logger } from '../../logger';
-import { Tag } from '../../openapi';
-import redis from '../../redis';
-import type { IUser } from '../../types';
-import { ErrorRes, formatError, User } from '../../types';
-import prisma from '../../prisma';
-import { randomBase62String } from '../../utils';
-import type { App } from '../type';
-import Limiter from '../../utils/rate-limit';
+import { redisPrefix } from '../../../config';
+import { HCaptcha } from '../../../externals/hcaptcha';
+import { logger } from '../../../logger';
+import { Tag } from '../../../openapi';
+import redis from '../../../redis';
+import type { IUser } from '../../../types';
+import { ErrorRes, formatError, User } from '../../../types';
+import prisma from '../../../prisma';
+import { randomBase62String } from '../../../utils';
+import type { App } from '../../type';
+import Limiter from '../../../utils/rate-limit';
 
 const CookieKey = 'sessionID';
 
@@ -35,7 +35,8 @@ const UsernameOrPasswordError = createError(
 
 const LimitInTimeWindow = 10;
 
-export function setup(app: App) {
+// eslint-disable-next-line @typescript-eslint/require-await
+export async function setup(app: App) {
   // 10 calls per 600s
   const limiter = new Limiter({
     redisClient: redis,
@@ -47,6 +48,9 @@ export function setup(app: App) {
     logger.warn('MISSING env, will fallback to testing key');
   }
   const hCaptcha = new HCaptcha({ secretKey: process.env.HCAPTCHA_SECRET_KEY });
+
+  app.addSchema(User);
+  app.addSchema(ErrorRes);
 
   app.post(
     '/login',
