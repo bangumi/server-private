@@ -5,6 +5,7 @@ import AltairFastify from 'altair-fastify-plugin';
 import metricsPlugin from 'fastify-metrics';
 import { register } from 'prom-client';
 
+import { testing } from './config';
 import { schema } from './graphql/schema';
 import type { Context } from './graphql/context';
 import prisma from './prisma';
@@ -40,17 +41,19 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     return res.send(appMetrics + prismaMetrics);
   });
 
-  await server.register(metricsPlugin, {
-    endpoint: null,
-    routeMetrics: {
-      groupStatusCodes: true,
-      overrides: {
-        histogram: {
-          buckets: [0.05, 0.1, 0.3, 0.5, 0.75, 1, 2, 3],
+  if (!testing) {
+    await server.register(metricsPlugin, {
+      endpoint: null,
+      routeMetrics: {
+        groupStatusCodes: true,
+        overrides: {
+          histogram: {
+            buckets: [0.05, 0.1, 0.3, 0.5, 0.75, 1, 2, 3],
+          },
         },
       },
-    },
-  });
+    });
+  }
 
   await server.register(mercurius, {
     schema,

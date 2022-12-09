@@ -12,6 +12,8 @@ if (production) {
   logger.info('running in production');
 }
 
+export const testing = process.env.NODE_ENV === 'test';
+
 export const projectRoot = url.fileURLToPath(new URL('..', import.meta.url));
 export const pkg = JSON.parse(
   fs.readFileSync(path.resolve(projectRoot, 'package.json'), 'utf8'),
