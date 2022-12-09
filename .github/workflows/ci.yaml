@@ -49,8 +49,7 @@ jobs:
       - run: yarn test --coverage
         env:
           DATABASE_URL: 'mysql://user:password@127.0.0.1:3306/bangumi'
-          REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
-          HCAPTCHA_SECRET_KEY: '0xC0908FF5497ed9c0997934713b52657f67fC7eaB'
+          HCAPTCHA_SECRET_KEY: '0x0000000000000000000000000000000000000000'
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3

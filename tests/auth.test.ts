@@ -1,13 +1,6 @@
-import { describe, test, expect, vi } from 'vitest';
-import MockRedis from 'ioredis-mock';
+import { describe, test, expect } from 'vitest';
 
 import * as auth from '../lib/auth';
-
-vi.mock('../lib/redis', () => {
-  return {
-    default: new MockRedis(),
-  };
-});
 
 describe('should auth', () => {
   test('current auth', async () => {
