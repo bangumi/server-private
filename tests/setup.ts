@@ -1,7 +1,12 @@
-import { beforeEach, afterAll, vi } from 'vitest';
+import { beforeEach, vi } from 'vitest';
 import { register } from 'prom-client';
+import MockRedis from 'ioredis-mock';
 
-import redis from '../lib/redis';
+vi.mock('../lib/redis', () => {
+  return {
+    default: new MockRedis(),
+  };
+});
 
 vi.mock('../lib/externals/hcaptcha', () => {
   return {
@@ -15,8 +20,4 @@ vi.mock('../lib/externals/hcaptcha', () => {
 
 beforeEach(() => {
   register.clear();
-});
-
-afterAll(async () => {
-  await redis.quit();
 });
