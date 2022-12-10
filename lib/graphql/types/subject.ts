@@ -1,8 +1,8 @@
 import { nonNull, objectType, extendType, intArg } from 'nexus';
 import * as php from 'php-serialize';
 
-import type { Context } from '../context';
 import type { chii_episodes } from '../../generated/client';
+import type { Context } from '../context';
 
 const Episode = objectType({
   name: 'Episode',

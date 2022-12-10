@@ -1,9 +1,9 @@
 import { Type as t } from '@sinclair/typebox';
 
+import { NeedLoginError } from '../../auth';
 import { Tag } from '../../openapi';
 import { ErrorRes, formatError, User } from '../../types';
 import type { Option, App } from '../type';
-import { NeedLoginError } from '../../auth';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App, { tags = [] }: Option) {

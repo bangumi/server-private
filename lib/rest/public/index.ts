@@ -2,8 +2,8 @@ import type { FastifyInstance } from 'fastify';
 
 import * as auth from '../../auth';
 import * as me from '../routes/me';
-import * as userApi from './routes/user';
 import * as swagger from '../swagger';
+import * as userApi from './routes/user';
 
 export async function setup(app: FastifyInstance) {
   await swagger.publicAPI(app);

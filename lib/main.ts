@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
 
-import { createServer } from './server';
-import { logger } from './logger';
 import { production } from './config';
+import { logger } from './logger';
+import { createServer } from './server';
 
 const server = await createServer({
   logger: logger.child({ name: 'fastify' }, { level: production ? 'warn' : 'info' }),

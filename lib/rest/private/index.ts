@@ -1,11 +1,11 @@
 import Cookie from '@fastify/cookie';
 
-import * as group from './routes/topics';
-import * as login from './routes/login';
+import * as session from '../../auth/session';
 import * as me from '../routes/me';
 import * as swagger from '../swagger';
-import * as session from '../../auth/session';
 import type { App } from '../type';
+import * as login from './routes/login';
+import * as group from './routes/topics';
 
 export async function setup(app: App) {
   await swagger.privateAPI(app);

@@ -1,15 +1,15 @@
+import AltairFastify from 'altair-fastify-plugin';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
-import mercurius from 'mercurius';
-import AltairFastify from 'altair-fastify-plugin';
 import metricsPlugin from 'fastify-metrics';
+import mercurius from 'mercurius';
 import { register } from 'prom-client';
 
-import { testing } from './config';
-import { schema } from './graphql/schema';
-import type { Context } from './graphql/context';
-import prisma from './prisma';
 import * as auth from './auth';
+import { testing } from './config';
+import type { Context } from './graphql/context';
+import { schema } from './graphql/schema';
+import prisma from './prisma';
 import * as rest from './rest';
 
 declare module 'fastify' {
