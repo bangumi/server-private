@@ -17,7 +17,7 @@ export async function setup(app: App, { tags = [] }: Option) {
         params: t.Object({
           username: t.String({ minLength: 1, maxLength: 32 }),
         }),
-        operationId: 'get-user',
+        operationId: 'getUser',
         tags,
         response: {
           200: t.Ref(User),
