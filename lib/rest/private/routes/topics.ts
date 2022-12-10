@@ -35,6 +35,7 @@ export async function setup(app: App) {
               id: t.Integer(),
               name: t.String(),
               nsfw: t.Boolean(),
+              title: t.String(),
               summary: t.String(),
               createdAt: t.Integer(),
             }),

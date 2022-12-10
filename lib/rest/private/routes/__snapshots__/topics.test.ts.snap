@@ -17,6 +17,7 @@ exports[`group topics > should fetch group profile 1`] = `
     "name": "sandbox",
     "nsfw": false,
     "summary": "[s]非[/s]官方沙盒",
+    "title": "沙盒",
   },
   "inGroup": false,
   "recentAddedMembers": [
