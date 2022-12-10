@@ -22,6 +22,7 @@ const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type ICreator = Static<typeof Creator>;
 export const Creator = t.Object(
   {
     id: t.Integer({ examples: [1] }),

@@ -156,7 +156,7 @@ export interface ITopic {
   repliesCount: number;
 }
 
-export async function fetchTopic(
+export async function fetchTopicList(
   type: 'group' | 'subject',
   id: number,
   { limit = 30, offset = 0 }: Page,
@@ -164,14 +164,14 @@ export async function fetchTopic(
 ): Promise<[number, ITopic[]]> {
   if (type === 'group') {
     const where = {
-      grp_tpc_gid: id,
-      grp_tpc_display: { in: display },
+      gid: id,
+      display: { in: display },
     } as const;
 
-    const total = await prisma.chii_group_topics.count({ where });
-    const topics = await prisma.chii_group_topics.findMany({
+    const total = await prisma.groupTopics.count({ where });
+    const topics = await prisma.groupTopics.findMany({
       where,
-      orderBy: { grp_tpc_dateline: 'desc' },
+      orderBy: { dateline: 'desc' },
       skip: offset,
       take: limit,
     });
@@ -180,12 +180,12 @@ export async function fetchTopic(
       total,
       topics.map((x) => {
         return {
-          id: x.grp_tpc_id,
-          parentID: x.grp_tpc_gid,
-          creatorID: x.grp_tpc_uid,
-          title: x.grp_tpc_title,
-          lastRepliedAt: x.grp_tpc_dateline,
-          repliesCount: x.grp_tpc_replies,
+          id: x.id,
+          parentID: x.gid,
+          creatorID: x.uid,
+          title: x.title,
+          lastRepliedAt: x.dateline,
+          repliesCount: x.replies,
         };
       }),
     ];
@@ -247,6 +247,27 @@ interface IGroup {
   summary: string;
   title: string;
   createdAt: number;
+  icon: string;
+}
+
+export async function fetchGroupByID(id: number): Promise<IGroup | null> {
+  const group = await prisma.chii_groups.findFirst({
+    where: { grp_id: id },
+  });
+
+  if (!group) {
+    return null;
+  }
+
+  return {
+    id: group.grp_id,
+    name: group.grp_name,
+    title: group.grp_title,
+    nsfw: group.grp_nsfw,
+    summary: group.grp_desc,
+    createdAt: group.grp_builddate,
+    icon: group.grp_icon,
+  } satisfies IGroup;
 }
 
 export async function fetchGroup(name: string): Promise<IGroup | null> {
@@ -264,6 +285,104 @@ export async function fetchGroup(name: string): Promise<IGroup | null> {
     title: group.grp_title,
     nsfw: group.grp_nsfw,
     summary: group.grp_desc,
+    icon: group.grp_icon,
     createdAt: group.grp_builddate,
   } satisfies IGroup;
+}
+
+interface IBaseReply {
+  id: number;
+  text: string;
+  creatorID: number;
+  state: number;
+  createdAt: number;
+}
+
+interface ISubReply extends IBaseReply {
+  repliedTo: number;
+}
+
+export interface IReply extends IBaseReply {
+  replies: ISubReply[];
+}
+
+interface ITopicDetails {
+  id: number;
+  title: string;
+  text: string;
+  state: number;
+  // group ID or subject ID
+  parentID: number;
+  replies: IReply[];
+}
+
+export async function fetchTopicDetails(type: 'group', id: number): Promise<ITopicDetails | null> {
+  const topic = await prisma.groupTopics.findFirst({
+    where: { id: id },
+  });
+
+  if (!topic) {
+    return null;
+  }
+
+  const replies = await prisma.groupPosts.findMany({
+    where: {
+      mid: topic.id,
+    },
+  });
+
+  const top = replies.shift();
+  if (!top) {
+    throw new UnexpectedNotFoundError(`top reply of topic(${type}) ${id}`);
+  }
+
+  const subReplies: Record<number, ISubReply[]> = {};
+
+  for (const x of replies.filter((x) => x.related !== 0)) {
+    const sub: ISubReply = {
+      id: x.id,
+      repliedTo: x.related,
+      creatorID: x.uid,
+      text: x.content,
+      state: x.state,
+      createdAt: x.dateline,
+    };
+
+    subReplies[x.related] ??= [];
+    subReplies[x.related]?.push(sub);
+  }
+
+  const topLevelReplies = replies
+    .filter((x) => x.related === 0)
+    .map(function (x): IReply {
+      return {
+        id: x.id,
+        replies: subReplies[x.id] ?? ([] as ISubReply[]),
+        creatorID: x.uid,
+        text: x.content,
+        state: x.state,
+        createdAt: x.dateline,
+      };
+    });
+
+  return {
+    id: topic.id,
+    title: topic.title,
+    parentID: topic.gid,
+    text: top.content,
+    state: topic.state,
+    replies: topLevelReplies,
+  } satisfies ITopicDetails;
+}
+
+export async function fetchFriends(id?: number): Promise<Record<number, boolean>> {
+  if (!id) {
+    return {};
+  }
+
+  const friends = await prisma.friends.findMany({
+    where: { frd_uid: id },
+  });
+
+  return Object.fromEntries(friends.map((x) => [x.frd_fid, true]));
 }

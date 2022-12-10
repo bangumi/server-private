@@ -32,4 +32,12 @@ describe('group topics', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should fetch topic details', async () => {
+    const app = await createServer();
+
+    const res = await app.inject('/p1/groups/-/topics/371602');
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
 });
