@@ -14,7 +14,7 @@ export async function setup(app: App, { tags = [] }: Option) {
     '/me',
     {
       schema: {
-        operationId: 'get-current-user',
+        operationId: 'getCurrentUser',
         tags: [Tag.Auth, ...tags],
         response: {
           200: t.Ref(User),

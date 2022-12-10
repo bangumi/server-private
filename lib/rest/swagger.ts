@@ -3,11 +3,13 @@ import path from 'node:path';
 
 import type { JSONObject } from '@fastify/swagger';
 import swagger from '@fastify/swagger';
-import type { FastifyInstance } from 'fastify';
+import { Type as t } from '@sinclair/typebox';
+import type { FastifySchema, FastifyInstance } from 'fastify';
 import type { OpenAPIV3 } from 'openapi-types';
 
 import { pkg, projectRoot } from '../config';
 import { Security } from '../openapi';
+import { ErrorRes } from '../types';
 
 const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
 
@@ -21,9 +23,40 @@ export function addRoute(app: FastifyInstance) {
   });
 }
 
+type transformer = <S extends FastifySchema = FastifySchema>({
+  schema,
+  url,
+}: {
+  schema: S;
+  url: string;
+}) => { schema: JSONObject; url: string };
+
+const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
+
+const transform: transformer = ({ schema, url }) => {
+  if (!schema.operationId) {
+    throw new Error(`missing operationId on router ${url}`);
+  }
+
+  for (const x of schema.operationId) {
+    if (!validChars.includes(x)) {
+      throw new Error(`invalid operationId ${schema.operationId} on router ${url}`);
+    }
+  }
+
+  const response = schema.response as Record<number, unknown>;
+  if (!response[500]) {
+    response[500] = t.Ref(ErrorRes, {
+      description: '意料之外的服务器错误',
+    });
+  }
+  return { schema: schema as unknown as JSONObject, url };
+};
+
 export async function addPlugin(app: FastifyInstance, openapi: Partial<OpenAPIV3.Document>) {
   await app.register(swagger, {
     openapi,
+    transform,
     refResolver: {
       clone: true,
       buildLocalReference: (
