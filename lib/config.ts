@@ -5,13 +5,7 @@ import url from 'node:url';
 
 import type { RedisOptions } from 'ioredis';
 
-import { logger } from './logger';
-
 export const production = process.env.NODE_ENV === 'production';
-if (production) {
-  logger.info('running in production');
-}
-
 export const testing = process.env.NODE_ENV === 'test';
 
 export const projectRoot = url.fileURLToPath(new URL('..', import.meta.url));

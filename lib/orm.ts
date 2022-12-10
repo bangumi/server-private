@@ -156,8 +156,9 @@ export interface ITopic {
   id: number;
   parentID: number;
   creatorID: number;
+  updatedAt: number;
+  createdAt: number;
   title: string;
-  lastRepliedAt: number;
   repliesCount: number;
 }
 
@@ -189,7 +190,8 @@ export async function fetchTopicList(
           parentID: x.gid,
           creatorID: x.uid,
           title: x.title,
-          lastRepliedAt: x.dateline,
+          createdAt: x.dateline,
+          updatedAt: x.lastpost,
           repliesCount: x.replies,
         };
       }),
@@ -214,7 +216,8 @@ export async function fetchTopicList(
         parentID: x.sbj_tpc_subject_id,
         creatorID: x.sbj_tpc_uid,
         title: x.sbj_tpc_title,
-        lastRepliedAt: x.sbj_tpc_dateline,
+        updatedAt: x.sbj_tpc_dateline,
+        createdAt: x.sbj_tpc_lastpost,
         repliesCount: x.sbj_tpc_replies,
       };
     }),

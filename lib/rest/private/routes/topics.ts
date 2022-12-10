@@ -47,12 +47,17 @@ export async function setup(app: App) {
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
+        querystring: t.Object({
+          limit: t.Optional(t.Integer({ default: 20 })),
+          offset: t.Optional(t.Integer({ default: 0 })),
+        }),
         response: {
           200: t.Object({
             recentAddedMembers: t.Array(Creator),
             topics: t.Array(t.Ref(Topic)),
             inGroup: t.Boolean({ description: '是否已经加入小组' }),
             group: Group,
+            totalTopics: t.Integer(),
           }),
           404: t.Ref(ErrorRes, {
             description: '小组不存在',
@@ -63,27 +68,24 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params, auth }) => {
+    async ({ params, auth, query }) => {
       const group = await fetchGroup(params.groupName);
 
       if (!group) {
         throw new NotFoundError('group');
       }
 
-      const [total, topics] = await fetchTopicList(
-        'group',
-        group.id,
-        { limit: 20 },
-        {
-          display: rule.ListTopicDisplays(auth),
-        },
-      );
+      const [total, topicList] = await fetchTopicList('group', group.id, query, {
+        display: rule.ListTopicDisplays(auth),
+      });
+
+      const topics = await addCreators(topicList, group.id);
 
       return {
         group: { ...group, icon: groupIcon(group.icon) },
-        total,
+        totalTopics: total,
         inGroup: auth.user?.id ? await fetchIfInGroup(group.id, auth.user.id) : false,
-        topics: await addCreators(topics, group.id),
+        topics,
         recentAddedMembers: await fetchRecentMember(group.id),
       };
     },
@@ -296,7 +298,7 @@ async function addCreators(topics: ITopic[], parentID: number): Promise<Static<t
     return {
       ...x,
       creator: userToResCreator(x.creator),
-      lastRepliedAt: new Date(x.lastRepliedAt * 1000).toISOString(),
+      updatedAt: x.updatedAt,
       parentID,
     };
   });

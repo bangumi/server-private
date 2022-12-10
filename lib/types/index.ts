@@ -41,8 +41,11 @@ export const Topic = t.Object(
   {
     id: t.Integer({ description: 'topic id' }),
     creator: Creator,
+    title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
-    lastRepliedAt: t.String({ description: '最后回复时间，unix time stamp', format: 'date-time' }),
+    createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
+    updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
+    repliesCount: t.Integer(),
   },
   { $id: 'Topic', title: 'Topic' },
 );
