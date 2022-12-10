@@ -1,5 +1,5 @@
-import { vi } from 'vitest';
 import MockRedis from 'ioredis-mock';
+import { vi } from 'vitest';
 
 vi.mock('../lib/redis', () => {
   return {

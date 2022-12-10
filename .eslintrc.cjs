@@ -112,6 +112,10 @@ module.exports = {
     'import/order': [
       'error',
       {
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
         'newlines-between': 'always',
         groups: ['builtin', 'external', ['index', 'sibling', 'parent'], 'internal', 'object'],
       },

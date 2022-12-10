@@ -1,11 +1,11 @@
 import { createError } from '@fastify/error';
 import NodeCache from 'node-cache';
 
-import prisma from '../prisma';
-import redis from '../redis';
 import { redisPrefix } from '../config';
 import type { IUser, Permission } from '../orm';
 import { fetchPermission, fetchUser } from '../orm';
+import prisma from '../prisma';
+import redis from '../redis';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError = createError('NEED_LOGIN', 'you need to login before %s', 401);
