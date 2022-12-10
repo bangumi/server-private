@@ -7,7 +7,7 @@ export async function create(user: { id: number; regTime: number }): Promise<str
   const now = Math.trunc(Date.now() / 1000);
   const token = randomBase62String(32);
   const value = {
-    reg_time: user.regTime,
+    reg_time: new Date(user.regTime * 1000).toISOString(),
     user_id: user.id,
     created_at: now,
     expired_at: now + 60 * 60 * 24 * 7,

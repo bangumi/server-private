@@ -25,5 +25,6 @@ const host = process.env.HOST ?? '0.0.0.0';
 
 await server.listen({ port, host });
 
-logger.info(`server started at http://${host}:${port}`);
-logger.info(`visit http://127.0.0.1:${port}/v0/altair/`);
+logger.info(`GraphQL UI  http://127.0.0.1:${port}/v0/altair/`);
+logger.info(`public API  http://127.0.0.1:${port}/v0.5/`);
+logger.info(`private API http://127.0.0.1:${port}/p1/`);
