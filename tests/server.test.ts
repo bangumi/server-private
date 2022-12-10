@@ -16,7 +16,7 @@ describe('graphql', () => {
         gql`
           query {
             me {
-              ID
+              id
             }
           }
         `,
@@ -34,7 +34,7 @@ describe('graphql', () => {
         gql`
           query {
             me {
-              ID
+              id
               username
               nickname
             }
@@ -46,7 +46,7 @@ describe('graphql', () => {
       ),
     ).resolves.toEqual({
       data: {
-        me: { ID: 382951, username: '382951', nickname: '树洞酱' },
+        me: { id: 382951, username: '382951', nickname: '树洞酱' },
       },
     });
   });
@@ -57,7 +57,7 @@ describe('graphql', () => {
         gql`
           query {
             me {
-              ID
+              id
             }
           }
         `,

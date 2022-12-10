@@ -43,8 +43,8 @@ type SubjectTag {
 }
 
 type User {
-  ID: Int!
   avatar: Avatar!
+  id: Int!
   nickname: String!
   username: String!
 }
