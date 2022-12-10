@@ -2,7 +2,7 @@
 
 exports[`should get user 1`] = `
 {
-  "ID": 382951,
+  "id": 382951,
   "nickname": "树洞酱",
   "username": "382951",
 }

@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, test } from 'vitest';
 import prisma from '../../lib/prisma';
 import { createServer } from '../../lib/server';
 
-const treeHoleUser = { ID: 382951, nickname: '树洞酱', username: '382951' };
+const treeHoleUser = { id: 382951, nickname: '树洞酱', username: '382951' };
 const fakeIP = 'fake-client-ip-should-not-fail';
 
 beforeEach(async () => {

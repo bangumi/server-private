@@ -1,22 +1,22 @@
 import * as crypto from 'node:crypto';
 
-import * as bcrypt from 'bcrypt';
-import { Type as t } from '@sinclair/typebox';
 import { createError } from '@fastify/error';
+import { Type as t } from '@sinclair/typebox';
+import * as bcrypt from 'bcrypt';
 import httpCodes from 'http-status-codes';
 
 import { NeedLoginError } from '../../../auth';
+import * as session from '../../../auth/session';
 import { redisPrefix } from '../../../config';
 import { HCaptcha } from '../../../externals/hcaptcha';
 import { logger } from '../../../logger';
 import { Tag } from '../../../openapi';
+import prisma from '../../../prisma';
 import redis from '../../../redis';
 import type { IUser } from '../../../types';
 import { ErrorRes, formatError, User } from '../../../types';
-import prisma from '../../../prisma';
-import type { App } from '../../type';
 import Limiter from '../../../utils/rate-limit';
-import * as session from '../../../auth/session';
+import type { App } from '../../type';
 
 const CookieKey = 'sessionID';
 
@@ -165,7 +165,7 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
 
       void res.cookie(CookieKey, token, { sameSite: 'strict' });
 
-      return { ID: user.id, username: user.username, nickname: user.nickname };
+      return user;
     },
   );
 }

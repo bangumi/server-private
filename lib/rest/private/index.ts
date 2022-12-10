@@ -1,5 +1,6 @@
 import Cookie from '@fastify/cookie';
 
+import * as group from './routes/topics';
 import * as login from './routes/login';
 import * as me from '../routes/me';
 import * as swagger from '../swagger';
@@ -28,4 +29,5 @@ export async function setup(app: App) {
 
   await app.register(login.setup);
   await app.register(me.setup);
+  await app.register(group.setup);
 }
