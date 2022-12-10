@@ -30,6 +30,7 @@ export async function setup(app: App) {
           200: t.Object({
             recentAddedMembers: t.Array(Creator),
             topics: t.Array(t.Ref(Topic)),
+            inGroup: t.Boolean({ description: '是否已经加入小组' }),
             group: t.Object({
               id: t.Integer(),
               name: t.String(),
@@ -66,6 +67,7 @@ export async function setup(app: App) {
       return {
         group: group,
         total,
+        inGroup: auth.user?.id ? await fetchIfInGroup(group.id, auth.user.id) : false,
         topics: await addCreators(topics, group.id),
         recentAddedMembers: await fetchRecentMember(group.id),
       };
@@ -168,6 +170,14 @@ async function addCreators(topics: ITopic[], parentID: number): Promise<Static<t
       parentID,
     };
   });
+}
+
+async function fetchIfInGroup(groupID: number, userID: number): Promise<boolean> {
+  const count = await prisma.groupMembers.count({
+    where: { gmb_gid: groupID, gmb_uid: userID },
+  });
+
+  return Boolean(count);
 }
 
 async function fetchRecentMember(groupID: number): Promise<Static<typeof Creator>[]> {

@@ -18,6 +18,7 @@ exports[`group topics > should fetch group profile 1`] = `
     "nsfw": false,
     "summary": "[s]非[/s]官方沙盒",
   },
+  "inGroup": false,
   "recentAddedMembers": [
     {
       "avatar": {
