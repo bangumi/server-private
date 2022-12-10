@@ -9,6 +9,7 @@ exports[`should get user 1`] = `
   },
   "id": 382951,
   "nickname": "树洞酱",
+  "sign": "treeholechan@gmail.com 密码:lovemeplease",
   "user_group": 10,
   "username": "382951",
 }

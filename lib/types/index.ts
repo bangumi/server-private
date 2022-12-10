@@ -19,28 +19,16 @@ export const User = t.Object(
     username: t.String({ examples: ['sai'] }),
     nickname: t.String({ examples: ['Sai🖖'] }),
     avatar: Avatar,
+    sign: t.String(),
     user_group: t.Integer(),
   },
   { $id: 'User', title: 'User' },
 );
 
-export type ICreator = Static<typeof Creator>;
-export const Creator = t.Object(
-  {
-    id: t.Integer({ examples: [1] }),
-    username: t.String({ examples: ['sai'] }),
-    avatar: Avatar,
-    nickname: t.String({ examples: ['Sai🖖'] }),
-    sign: t.String(),
-    user_group: t.Integer(),
-  },
-  { $id: 'Creator', title: 'Creator', description: 'a slim user object to contain basic info' },
-);
-
 export const Topic = t.Object(
   {
     id: t.Integer({ description: 'topic id' }),
-    creator: Creator,
+    creator: User,
     title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
