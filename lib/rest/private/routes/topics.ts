@@ -1,6 +1,7 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
+import { rule } from '../../../auth/rule';
 import { NotFoundError } from '../../../errors';
 import { Tag } from '../../../openapi';
 import type { ITopic } from '../../../orm';
@@ -39,14 +40,16 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params, query }) => {
+    async ({ params, query, auth }) => {
       const group = await fetchGroup(params.groupName);
 
       if (!group) {
         throw new NotFoundError('group');
       }
 
-      const [total, topics] = await fetchTopic('group', group.id, query);
+      const [total, topics] = await fetchTopic('group', group.id, query, {
+        display: rule.ListTopicDisplays(auth),
+      });
 
       return { total, data: await addCreators(topics, group.id) };
     },
@@ -77,14 +80,18 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { subjectID }, query }) => {
+    async ({ params: { subjectID }, query, auth }) => {
       const subject = await fetchSubject(subjectID);
-
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+      if (subject.nsfw && !auth.allowNsfw) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
 
-      const [total, topics] = await fetchTopic('subject', subjectID, query);
+      const [total, topics] = await fetchTopic('subject', subjectID, query, {
+        display: rule.ListTopicDisplays(auth),
+      });
       return { total, data: await addCreators(topics, subjectID) };
     },
   );

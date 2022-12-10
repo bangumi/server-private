@@ -1,5 +1,6 @@
 import Cookie from '@fastify/cookie';
 
+import { emptyAuth } from '../../auth';
 import * as session from '../../auth/session';
 import * as me from '../routes/me';
 import * as swagger from '../swagger';
@@ -16,15 +17,19 @@ export async function setup(app: App) {
   });
 
   void app.addHook('preHandler', async (req) => {
-    if (req.cookies.sessionID) {
-      const a = await session.get(req.cookies.sessionID);
-      if (!a) {
-        return;
-      }
-
-      req.user = a.user;
-      req.auth = a;
+    if (!req.cookies.sessionID) {
+      req.user = null;
+      req.auth = emptyAuth();
+      return;
     }
+
+    const a = await session.get(req.cookies.sessionID);
+    if (!a) {
+      return;
+    }
+
+    req.user = a.user;
+    req.auth = a;
   });
 
   await app.register(login.setup);
