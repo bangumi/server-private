@@ -62,6 +62,7 @@ exports[`group topics > should fetch group profile 1`] = `
   ],
   "topics": [
     {
+      "createdAt": 1657885648,
       "creator": {
         "avatar": {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -75,10 +76,13 @@ exports[`group topics > should fetch group profile 1`] = `
         "username": "287622",
       },
       "id": 371602,
-      "lastRepliedAt": "2022-07-15T11:47:28.000Z",
       "parentID": 4215,
+      "repliesCount": 2,
+      "title": "tes",
+      "updatedAt": 1662283112,
     },
   ],
+  "totalTopics": 1,
 }
 `;
 
@@ -260,6 +264,7 @@ exports[`group topics > should return data 1`] = `
 {
   "data": [
     {
+      "createdAt": 1657885648,
       "creator": {
         "avatar": {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -273,8 +278,10 @@ exports[`group topics > should return data 1`] = `
         "username": "287622",
       },
       "id": 371602,
-      "lastRepliedAt": "2022-07-15T11:47:28.000Z",
       "parentID": 4215,
+      "repliesCount": 2,
+      "title": "tes",
+      "updatedAt": 1662283112,
     },
   ],
   "total": 1,

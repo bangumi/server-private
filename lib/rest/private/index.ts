@@ -5,6 +5,7 @@ import * as session from '../../auth/session';
 import * as me from '../routes/me';
 import * as swagger from '../swagger';
 import type { App } from '../type';
+import { CookieKey } from './routes/login';
 import * as login from './routes/login';
 import * as group from './routes/topics';
 
@@ -16,7 +17,7 @@ export async function setup(app: App) {
     parseOptions: {}, // options for parsing cookies
   });
 
-  void app.addHook('preHandler', async (req) => {
+  void app.addHook('preHandler', async (req, res) => {
     if (!req.cookies.sessionID) {
       req.user = null;
       req.auth = emptyAuth();
@@ -25,6 +26,9 @@ export async function setup(app: App) {
 
     const a = await session.get(req.cookies.sessionID);
     if (!a) {
+      void res.clearCookie(CookieKey);
+      req.user = null;
+      req.auth = emptyAuth();
       return;
     }
 

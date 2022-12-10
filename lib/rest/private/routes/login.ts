@@ -19,7 +19,7 @@ import { ErrorRes, formatError, User } from '../../../types';
 import Limiter from '../../../utils/rate-limit';
 import type { App } from '../../type';
 
-const CookieKey = 'sessionID';
+export const CookieKey = 'sessionID';
 
 const TooManyRequestsError = createError(
   'TOO_MANY_REQUESTS',
