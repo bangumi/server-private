@@ -4,7 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import { rule } from '../../../auth/rule';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
 import { Tag } from '../../../openapi';
-import type { ITopic, IUser } from '../../../orm';
+import type { ITopic, IUser, Page } from '../../../orm';
 import {
   addCreator,
   fetchGroup,
@@ -18,19 +18,34 @@ import {
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
 import type { ICreator } from '../../../types';
-import { Creator, ErrorRes, formatError, Paged, Topic } from '../../../types';
+import { Avatar, Creator, ErrorRes, formatError, Paged, Topic } from '../../../types';
 import type { App } from '../../type';
 
-const Group = t.Object({
-  id: t.Integer(),
-  name: t.String(),
-  nsfw: t.Boolean(),
-  title: t.String(),
-  icon: t.String(),
-  description: t.String(),
-  totalMembers: t.Integer(),
-  createdAt: t.Integer(),
-});
+const Group = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    nsfw: t.Boolean(),
+    title: t.String(),
+    icon: t.String(),
+    description: t.String(),
+    totalMembers: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'Group' },
+);
+
+type IGroupMember = Static<typeof GroupMember>;
+const GroupMember = t.Object(
+  {
+    avatar: Avatar,
+    id: t.Integer(),
+    nickname: t.String(),
+    username: t.String(),
+    joinedAt: t.Integer(),
+  },
+  { $id: 'GroupMember' },
+);
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -53,7 +68,7 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Object({
-            recentAddedMembers: t.Array(Creator),
+            recentAddedMembers: t.Array(GroupMember),
             topics: t.Array(t.Ref(Topic)),
             inGroup: t.Boolean({ description: '是否已经加入小组' }),
             group: Group,
@@ -91,14 +106,6 @@ export async function setup(app: App) {
     },
   );
 
-  const richCreator = Creator;
-  // t.Intersect([
-  //   Creator,
-  //   t.Object({
-  //     isFriend: t.Boolean(),
-  //   }),
-  // ]);
-
   app.get(
     '/groups/-/topics/:id',
     {
@@ -113,7 +120,7 @@ export async function setup(app: App) {
           200: t.Object({
             id: t.Integer(),
             group: Group,
-            creator: richCreator,
+            creator: Creator,
             title: t.String(),
             text: t.String(),
             state: t.Integer(),
@@ -125,14 +132,14 @@ export async function setup(app: App) {
                 replies: t.Array(
                   t.Object({
                     id: t.Integer(),
-                    creator: richCreator,
+                    creator: Creator,
                     createdAt: t.Integer(),
                     isFriend: t.Boolean(),
                     text: t.String(),
                     state: t.Integer(),
                   }),
                 ),
-                creator: richCreator,
+                creator: Creator,
                 createdAt: t.Integer(),
                 text: t.String(),
                 state: t.Integer(),
@@ -206,6 +213,56 @@ export async function setup(app: App) {
           }),
         state: topic.state,
       };
+    },
+  );
+
+  app.addSchema(GroupMember);
+
+  app.get(
+    '/groups/:groupName/members',
+    {
+      schema: {
+        description: '获取帖子列表',
+        operationId: 'listGroupMembersByName',
+        tags: [Tag.Topic],
+        params: t.Object({
+          groupName: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          type: t.Optional(
+            t.Enum(
+              {
+                mod: 'mod',
+                normal: 'normal',
+                all: 'all',
+              } as const,
+              { default: 'all' },
+            ),
+          ),
+          limit: t.Optional(t.Integer({ default: 30 })),
+          offset: t.Optional(t.Integer({ default: 0 })),
+        }),
+        response: {
+          200: Paged(t.Ref(GroupMember)),
+          404: t.Ref(ErrorRes, {
+            description: '小组不存在',
+            'x-examples': {
+              NotFoundError: { value: formatError(NotFoundError('topic')) },
+            },
+          }),
+        },
+      },
+    },
+    async ({ params, query: { type = 'all', limit, offset } }) => {
+      const group = await fetchGroup(params.groupName);
+
+      if (!group) {
+        throw new NotFoundError('group');
+      }
+
+      const [total, members] = await fetchGroupMemberList(group.id, { type, limit, offset });
+
+      return { total, data: members };
     },
   );
 
@@ -312,10 +369,20 @@ async function fetchIfInGroup(groupID: number, userID: number): Promise<boolean>
   return Boolean(count);
 }
 
-async function fetchRecentMember(groupID: number): Promise<Static<typeof Creator>[]> {
+async function fetchGroupMemberList(
+  groupID: number,
+  { limit = 30, offset = 0, type }: Page & { type: 'mod' | 'normal' | 'all' },
+): Promise<[number, IGroupMember[]]> {
+  const where = {
+    gmb_gid: groupID,
+    gmb_moderator: type === 'all' ? undefined : type === 'mod',
+  } as const;
+  const total = await prisma.groupMembers.count({ where });
+
   const members = await prisma.groupMembers.findMany({
-    where: { gmb_gid: groupID },
-    take: 6,
+    where,
+    take: limit,
+    skip: offset,
     orderBy: {
       gmb_dateline: 'desc',
     },
@@ -323,14 +390,29 @@ async function fetchRecentMember(groupID: number): Promise<Static<typeof Creator
 
   const users = await fetchUsers(members.map((x) => x.gmb_uid));
 
-  return members.map((x) => {
-    const user = users[x.gmb_uid];
-    if (!user) {
-      throw new UnexpectedNotFoundError(`user ${x.gmb_uid}`);
-    }
+  return [
+    total,
+    members.map(function (x): IGroupMember {
+      const user = users[x.gmb_uid];
+      if (!user) {
+        throw new UnexpectedNotFoundError(`user ${x.gmb_uid}`);
+      }
 
-    return userToResCreator(user);
-  });
+      return {
+        avatar: avatar(user.img),
+        id: user.id,
+        joinedAt: x.gmb_dateline,
+        nickname: user.nickname,
+        username: user.username,
+      };
+    }),
+  ];
+}
+
+async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
+  const [_, members] = await fetchGroupMemberList(groupID, { limit: 6, type: 'all' });
+
+  return members;
 }
 
 export function userToResCreator(user: IUser): ICreator {

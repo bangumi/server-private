@@ -3,7 +3,7 @@ import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
-const Avatar = t.Object(
+export const Avatar = t.Object(
   {
     small: t.String(),
     medium: t.String({ examples: ['sai'] }),
