@@ -245,7 +245,7 @@ interface IGroup {
   name: string;
   nsfw: boolean;
   summary: string;
-
+  title: string;
   createdAt: number;
 }
 
@@ -261,6 +261,7 @@ export async function fetchGroup(name: string): Promise<IGroup | null> {
   return {
     id: group.grp_id,
     name: group.grp_name,
+    title: group.grp_title,
     nsfw: group.grp_nsfw,
     summary: group.grp_desc,
     createdAt: group.grp_builddate,
