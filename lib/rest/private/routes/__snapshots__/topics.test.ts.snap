@@ -9,6 +9,67 @@ exports[`group topics > should failed on not found group 1`] = `
 }
 `;
 
+exports[`group topics > should fetch group profile 1`] = `
+{
+  "group": {
+    "createdAt": 1531631310,
+    "id": 4215,
+    "name": "sandbox",
+    "nsfw": false,
+    "summary": "[s]非[/s]官方沙盒",
+  },
+  "recentAddedMembers": [
+    {
+      "avatar": {
+        "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+        "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+        "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+      },
+      "id": 382951,
+      "nickname": "树洞酱",
+      "username": "382951",
+    },
+    {
+      "avatar": {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 427613,
+      "nickname": "nickname 427613",
+      "username": "427613",
+    },
+    {
+      "avatar": {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "nickname": "nickname 287622",
+      "username": "287622",
+    },
+  ],
+  "topics": [
+    {
+      "creator": {
+        "avatar": {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 287622,
+        "nickname": "nickname 287622",
+        "username": "287622",
+      },
+      "id": 371602,
+      "lastRepliedAt": "2022-07-15T11:47:28.000Z",
+      "parentID": 4215,
+    },
+  ],
+}
+`;
+
 exports[`group topics > should return data 1`] = `
 {
   "data": [

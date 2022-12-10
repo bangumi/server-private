@@ -24,4 +24,12 @@ describe('group topics', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should fetch group profile', async () => {
+    const app = await createServer();
+
+    const res = await app.inject('/p1/groups/sandbox/profile');
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
 });

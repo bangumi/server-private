@@ -22,7 +22,7 @@ const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
-const Creator = t.Object(
+export const Creator = t.Object(
   {
     id: t.Integer({ examples: [1] }),
     username: t.String({ examples: ['sai'] }),
