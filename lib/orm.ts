@@ -5,7 +5,7 @@ import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
 
-interface Page {
+export interface Page {
   limit?: number;
   offset?: number;
 }
