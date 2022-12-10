@@ -4,12 +4,32 @@ import { Type as t } from '@sinclair/typebox';
 import { rule } from '../../../auth/rule';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
 import { Tag } from '../../../openapi';
-import type { ITopic } from '../../../orm';
-import { addCreator, fetchGroup, fetchSubject, fetchTopic, fetchUsers } from '../../../orm';
+import type { ITopic, IUser } from '../../../orm';
+import {
+  addCreator,
+  fetchGroup,
+  fetchSubject,
+  fetchTopicList,
+  fetchTopicDetails,
+  fetchUsers,
+  fetchGroupByID,
+  fetchFriends,
+} from '../../../orm';
 import prisma from '../../../prisma';
-import { avatar } from '../../../response';
+import { avatar, groupIcon } from '../../../response';
+import type { ICreator } from '../../../types';
 import { Creator, ErrorRes, formatError, Paged, Topic } from '../../../types';
 import type { App } from '../../type';
+
+const Group = t.Object({
+  id: t.Integer(),
+  name: t.String(),
+  nsfw: t.Boolean(),
+  title: t.String(),
+  icon: t.String(),
+  summary: t.String(),
+  createdAt: t.Integer(),
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -31,14 +51,7 @@ export async function setup(app: App) {
             recentAddedMembers: t.Array(Creator),
             topics: t.Array(t.Ref(Topic)),
             inGroup: t.Boolean({ description: '是否已经加入小组' }),
-            group: t.Object({
-              id: t.Integer(),
-              name: t.String(),
-              nsfw: t.Boolean(),
-              title: t.String(),
-              summary: t.String(),
-              createdAt: t.Integer(),
-            }),
+            group: Group,
           }),
           404: t.Ref(ErrorRes, {
             description: '小组不存在',
@@ -56,7 +69,7 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
-      const [total, topics] = await fetchTopic(
+      const [total, topics] = await fetchTopicList(
         'group',
         group.id,
         { limit: 20 },
@@ -66,11 +79,115 @@ export async function setup(app: App) {
       );
 
       return {
-        group: group,
+        group: { ...group, icon: groupIcon(group.icon) },
         total,
         inGroup: auth.user?.id ? await fetchIfInGroup(group.id, auth.user.id) : false,
         topics: await addCreators(topics, group.id),
         recentAddedMembers: await fetchRecentMember(group.id),
+      };
+    },
+  );
+
+  app.get(
+    '/groups/-/topics/:id',
+    {
+      schema: {
+        description: '获取帖子列表',
+        operationId: 'getGroupTopic',
+        tags: [Tag.Topic],
+        params: t.Object({
+          id: t.Integer({}),
+        }),
+        response: {
+          200: t.Object({
+            group: Group,
+            replies: t.Array(
+              t.Object({
+                id: t.Integer(),
+                replies: t.Array(
+                  t.Object({
+                    id: t.Integer(),
+                    creator: t.Intersect([
+                      Creator,
+                      t.Object({
+                        isFriend: t.Boolean(),
+                      }),
+                    ]),
+                    createdAt: t.Integer(),
+                    text: t.String(),
+                    state: t.Integer(),
+                  }),
+                ),
+                creator: t.Intersect([
+                  Creator,
+                  t.Object({
+                    isFriend: t.Boolean(),
+                  }),
+                ]),
+                createdAt: t.Integer(),
+                text: t.String(),
+                state: t.Integer(),
+              }),
+            ),
+          }),
+          404: t.Ref(ErrorRes, {
+            description: '小组不存在',
+            'x-examples': {
+              NotFoundError: { value: formatError(NotFoundError('topic')) },
+            },
+          }),
+        },
+      },
+    },
+    async ({ params: { id }, auth }) => {
+      const topic = await fetchTopicDetails('group', id);
+      if (!topic) {
+        throw new NotFoundError(`topic ${id}`);
+      }
+
+      const group = await fetchGroupByID(topic.parentID);
+      if (!group) {
+        throw new UnexpectedNotFoundError(`group ${topic.parentID}`);
+      }
+
+      const userIds: number[] = topic.replies.flatMap((x) => [
+        x.creatorID,
+        ...x.replies.map((x) => x.creatorID),
+      ]);
+
+      const friends = await fetchFriends(auth.user?.id);
+      const users = await fetchUsers(userIds);
+
+      return {
+        group: { ...group, icon: groupIcon(group.icon) },
+        replies: topic.replies
+          .map((x) => rule.filterReply(x))
+          .map((x) => {
+            const user = users[x.creatorID];
+            if (!user) {
+              throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
+            }
+            return {
+              ...x,
+              replies: x.replies.map((x) => {
+                const user = users[x.creatorID];
+                if (!user) {
+                  throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
+                }
+                return {
+                  ...x,
+                  creator: {
+                    isFriend: friends[x.creatorID] ?? false,
+                    ...userToResCreator(user),
+                  },
+                };
+              }),
+              creator: {
+                isFriend: friends[x.creatorID] ?? false,
+                ...userToResCreator(user),
+              },
+            };
+          }),
       };
     },
   );
@@ -107,7 +224,7 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
-      const [total, topics] = await fetchTopic('group', group.id, query, {
+      const [total, topics] = await fetchTopicList('group', group.id, query, {
         display: rule.ListTopicDisplays(auth),
       });
 
@@ -149,7 +266,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      const [total, topics] = await fetchTopic('subject', subjectID, query, {
+      const [total, topics] = await fetchTopicList('subject', subjectID, query, {
         display: rule.ListTopicDisplays(auth),
       });
       return { total, data: await addCreators(topics, subjectID) };
@@ -198,11 +315,15 @@ async function fetchRecentMember(groupID: number): Promise<Static<typeof Creator
       throw new UnexpectedNotFoundError(`user ${x.gmb_uid}`);
     }
 
-    return {
-      avatar: avatar(user.img),
-      username: user.username,
-      nickname: user.nickname,
-      id: user.id,
-    };
+    return userToResCreator(user);
   });
+}
+
+function userToResCreator(user: IUser): ICreator {
+  return {
+    avatar: avatar(user.img),
+    username: user.username,
+    nickname: user.nickname,
+    id: user.id,
+  };
 }

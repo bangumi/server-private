@@ -164,16 +164,17 @@ model chii_episodes {
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model chii_friends {
+model Friends {
   frd_uid         Int    @default(0) @db.UnsignedMediumInt
   frd_fid         Int    @default(0) @db.UnsignedMediumInt
   frd_grade       Int    @default(1) @db.UnsignedTinyInt
   frd_dateline    Int    @default(0) @db.UnsignedInt
   frd_description String @db.Char(255)
 
+  @@unique([frd_uid, frd_fid])
   @@index([frd_fid], map: "frd_fid")
   @@index([frd_uid], map: "uid")
-  @@ignore()
+  @@map("chii_friends")
 }
 
 model GroupMembers {
@@ -186,36 +187,40 @@ model GroupMembers {
   @@map("chii_group_members")
 }
 
-model chii_group_posts {
-  grp_pst_id       Int     @id @default(autoincrement()) @db.UnsignedMediumInt
-  grp_pst_mid      Int     @db.UnsignedMediumInt
-  grp_pst_uid      Int     @db.UnsignedMediumInt
-  grp_pst_related  Int     @default(0) @db.UnsignedMediumInt
-  grp_pst_content  String  @db.MediumText
-  grp_pst_state    Boolean
-  grp_pst_dateline Int     @default(0) @db.UnsignedInt
+model GroupPosts {
+  id       Int    @id @default(autoincrement()) @map("grp_pst_id") @db.UnsignedMediumInt
+  mid      Int    @map("grp_pst_mid") @db.UnsignedMediumInt
+  uid      Int    @map("grp_pst_uid") @db.UnsignedMediumInt
+  related  Int    @default(0) @map("grp_pst_related") @db.UnsignedMediumInt
+  content  String @map("grp_pst_content") @db.MediumText
+  state    Int    @map("grp_pst_state")
+  dateline Int    @default(0) @map("grp_pst_dateline") @db.UnsignedInt
 
-  @@index([grp_pst_related], map: "grp_pst_related")
-  @@index([grp_pst_uid], map: "grp_pst_uid")
-  @@index([grp_pst_mid], map: "pss_topic_id")
-  @@ignore()
+  author GroupTopics @relation(fields: [id], references: [id])
+
+  @@index([related], map: "grp_pst_related")
+  @@index([uid], map: "grp_pst_uid")
+  @@index([mid], map: "pss_topic_id")
+  @@map("chii_group_posts")
 }
 
-model chii_group_topics {
-  grp_tpc_id       Int     @id @default(autoincrement()) @db.UnsignedMediumInt
-  grp_tpc_gid      Int     @db.UnsignedMediumInt
-  grp_tpc_uid      Int     @db.UnsignedMediumInt
-  grp_tpc_title    String  @db.VarChar(80)
-  grp_tpc_dateline Int     @default(0) @db.UnsignedInt
-  grp_tpc_lastpost Int     @default(0) @db.UnsignedInt
-  grp_tpc_replies  Int     @default(0) @db.UnsignedMediumInt
-  grp_tpc_state    Boolean
-  grp_tpc_display  Int     @default(0)
+model GroupTopics {
+  id         Int          @id @default(autoincrement()) @map("grp_tpc_id") @db.UnsignedMediumInt
+  gid        Int          @map("grp_tpc_gid") @db.UnsignedMediumInt
+  uid        Int          @map("grp_tpc_uid") @db.UnsignedMediumInt
+  title      String       @map("grp_tpc_title") @db.VarChar(80)
+  dateline   Int          @default(0) @map("grp_tpc_dateline") @db.UnsignedInt
+  lastpost   Int          @default(0) @map("grp_tpc_lastpost") @db.UnsignedInt
+  replies    Int          @default(0) @map("grp_tpc_replies") @db.UnsignedMediumInt
+  state      Int          @map("grp_tpc_state")
+  display    Int          @default(0) @map("grp_tpc_display")
+  GroupPosts GroupPosts[]
 
-  @@index([grp_tpc_display], map: "grp_tpc_display")
-  @@index([grp_tpc_gid], map: "grp_tpc_gid")
-  @@index([grp_tpc_lastpost], map: "grp_tpc_lastpost")
-  @@index([grp_tpc_uid], map: "grp_tpc_uid")
+  @@index([display], map: "grp_tpc_display")
+  @@index([gid], map: "grp_tpc_gid")
+  @@index([lastpost], map: "grp_tpc_lastpost")
+  @@index([uid], map: "grp_tpc_uid")
+  @@map("chii_group_topics")
 }
 
 model chii_groups {

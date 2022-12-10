@@ -11,3 +11,7 @@ export function avatar(s: string): { small: string; medium: string; large: strin
     small: `${baseAvatarUrl}/s/${s}`,
   };
 }
+
+export function groupIcon(s: string): string {
+  return 'https://lain.bgm.tv/pic/icon/s/' + s;
+}

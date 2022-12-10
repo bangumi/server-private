@@ -13,6 +13,7 @@ exports[`group topics > should fetch group profile 1`] = `
 {
   "group": {
     "createdAt": 1531631310,
+    "icon": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
     "id": 4215,
     "name": "sandbox",
     "nsfw": false,
@@ -67,6 +68,148 @@ exports[`group topics > should fetch group profile 1`] = `
       "id": 371602,
       "lastRepliedAt": "2022-07-15T11:47:28.000Z",
       "parentID": 4215,
+    },
+  ],
+}
+`;
+
+exports[`group topics > should fetch topic details 1`] = `
+{
+  "group": {
+    "createdAt": 1531631310,
+    "icon": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+    "id": 4215,
+    "name": "sandbox",
+    "nsfw": false,
+    "summary": "[s]非[/s]官方沙盒",
+    "title": "沙盒",
+  },
+  "replies": [
+    {
+      "createdAt": 1658030918,
+      "creator": {
+        "avatar": {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 287622,
+        "isFriend": false,
+        "nickname": "nickname 287622",
+        "username": "287622",
+      },
+      "id": 2056216,
+      "replies": [],
+      "state": 6,
+      "text": "",
+    },
+    {
+      "createdAt": 1662276469,
+      "creator": {
+        "avatar": {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 287622,
+        "isFriend": false,
+        "nickname": "nickname 287622",
+        "username": "287622",
+      },
+      "id": 2092004,
+      "replies": [],
+      "state": 7,
+      "text": "",
+    },
+    {
+      "createdAt": 1662282514,
+      "creator": {
+        "avatar": {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 1,
+        "isFriend": false,
+        "nickname": "nickname 1",
+        "username": "1",
+      },
+      "id": 2092065,
+      "replies": [],
+      "state": 5,
+      "text": "",
+    },
+    {
+      "createdAt": 1662282518,
+      "creator": {
+        "avatar": {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 1,
+        "isFriend": false,
+        "nickname": "nickname 1",
+        "username": "1",
+      },
+      "id": 2092066,
+      "replies": [],
+      "state": 1,
+      "text": "",
+    },
+    {
+      "createdAt": 1662282523,
+      "creator": {
+        "avatar": {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 1,
+        "isFriend": false,
+        "nickname": "nickname 1",
+        "username": "1",
+      },
+      "id": 2092067,
+      "replies": [],
+      "state": 2,
+      "text": "",
+    },
+    {
+      "createdAt": 1662282554,
+      "creator": {
+        "avatar": {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 287622,
+        "isFriend": false,
+        "nickname": "nickname 287622",
+        "username": "287622",
+      },
+      "id": 2092069,
+      "replies": [
+        {
+          "createdAt": 1662283112,
+          "creator": {
+            "avatar": {
+              "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+              "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+              "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+            },
+            "id": 287622,
+            "isFriend": false,
+            "nickname": "nickname 287622",
+            "username": "287622",
+          },
+          "id": 2092074,
+          "state": 0,
+          "text": "sub",
+        },
+      ],
+      "state": 0,
+      "text": "q",
     },
   ],
 }
