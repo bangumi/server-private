@@ -30,7 +30,7 @@ test('should pass login/logout authorization flow', async () => {
     },
   });
 
-  expect(res.json()).toEqual(treeHoleUser);
+  expect(res.json()).toMatchObject(treeHoleUser);
   expect(res.statusCode).toBe(200);
 
   const cookieValue = (res.cookies as { name: string; value: string }[]).find(
@@ -49,7 +49,7 @@ test('should pass login/logout authorization flow', async () => {
     cookies: { sessionID: cookieValue },
   });
 
-  expect(currentRes.json()).toEqual(treeHoleUser);
+  expect(currentRes.json()).toMatchObject(treeHoleUser);
 
   const logout = await app.inject({
     method: 'post',

@@ -13,6 +13,7 @@ import { logger } from '../../../logger';
 import { Tag } from '../../../openapi';
 import prisma from '../../../prisma';
 import redis from '../../../redis';
+import { avatar } from '../../../response';
 import type { IUser } from '../../../types';
 import { ErrorRes, formatError, User } from '../../../types';
 import Limiter from '../../../utils/rate-limit';
@@ -165,7 +166,11 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
 
       void res.cookie(CookieKey, token, { sameSite: 'strict' });
 
-      return user;
+      return {
+        ...user,
+        user_group: user.groupid,
+        avatar: avatar(user.avatar),
+      };
     },
   );
 }

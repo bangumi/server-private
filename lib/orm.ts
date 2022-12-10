@@ -17,6 +17,7 @@ export interface IUser {
   groupID: number;
   img: string;
   regTime: number;
+  sign: string;
 }
 
 export async function fetchUserByUsername(username: string): Promise<IUser | null> {
@@ -35,6 +36,7 @@ export async function fetchUserByUsername(username: string): Promise<IUser | nul
     img: user.avatar,
     groupID: user.groupid,
     regTime: user.regdate,
+    sign: user.sign,
   };
 }
 
@@ -54,6 +56,7 @@ export async function fetchUser(userID: number): Promise<IUser | null> {
     img: user.avatar,
     groupID: user.groupid,
     regTime: user.regdate,
+    sign: user.sign,
   };
 }
 
@@ -142,6 +145,8 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
         img: user.avatar,
         groupID: user.groupid,
         regTime: user.regdate,
+        sign: user.sign,
+        user_group: user.groupid,
       },
     ]),
   );
@@ -244,9 +249,10 @@ interface IGroup {
   id: number;
   name: string;
   nsfw: boolean;
-  summary: string;
+  description: string;
   title: string;
   createdAt: number;
+  totalMembers: number;
   icon: string;
 }
 
@@ -264,9 +270,10 @@ export async function fetchGroupByID(id: number): Promise<IGroup | null> {
     name: group.grp_name,
     title: group.grp_title,
     nsfw: group.grp_nsfw,
-    summary: group.grp_desc,
+    description: group.grp_desc,
     createdAt: group.grp_builddate,
     icon: group.grp_icon,
+    totalMembers: group.grp_members,
   } satisfies IGroup;
 }
 
@@ -284,9 +291,10 @@ export async function fetchGroup(name: string): Promise<IGroup | null> {
     name: group.grp_name,
     title: group.grp_title,
     nsfw: group.grp_nsfw,
-    summary: group.grp_desc,
+    description: group.grp_desc,
     icon: group.grp_icon,
     createdAt: group.grp_builddate,
+    totalMembers: group.grp_members,
   } satisfies IGroup;
 }
 
@@ -311,6 +319,8 @@ interface ITopicDetails {
   title: string;
   text: string;
   state: number;
+  createdAt: number;
+  creatorID: number;
   // group ID or subject ID
   parentID: number;
   replies: IReply[];
@@ -372,6 +382,8 @@ export async function fetchTopicDetails(type: 'group', id: number): Promise<ITop
     text: top.content,
     state: topic.state,
     replies: topLevelReplies,
+    creatorID: top.uid,
+    createdAt: top.dateline,
   } satisfies ITopicDetails;
 }
 

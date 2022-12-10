@@ -3,16 +3,6 @@ import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
-export type IUser = Static<typeof User>;
-export const User = t.Object(
-  {
-    id: t.Integer({ examples: [1] }),
-    username: t.String({ examples: ['sai'] }),
-    nickname: t.String({ examples: ['Sai🖖'] }),
-  },
-  { $id: 'User', title: 'User' },
-);
-
 const Avatar = t.Object(
   {
     small: t.String(),
@@ -22,6 +12,18 @@ const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type IUser = Static<typeof User>;
+export const User = t.Object(
+  {
+    id: t.Integer({ examples: [1] }),
+    username: t.String({ examples: ['sai'] }),
+    nickname: t.String({ examples: ['Sai🖖'] }),
+    avatar: Avatar,
+    user_group: t.Integer(),
+  },
+  { $id: 'User', title: 'User' },
+);
+
 export type ICreator = Static<typeof Creator>;
 export const Creator = t.Object(
   {
@@ -29,6 +31,8 @@ export const Creator = t.Object(
     username: t.String({ examples: ['sai'] }),
     avatar: Avatar,
     nickname: t.String({ examples: ['Sai🖖'] }),
+    sign: t.String(),
+    user_group: t.Integer(),
   },
   { $id: 'Creator', title: 'Creator', description: 'a slim user object to contain basic info' },
 );
