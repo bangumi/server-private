@@ -210,7 +210,7 @@ model chii_group_topics {
   grp_tpc_lastpost Int     @default(0) @db.UnsignedInt
   grp_tpc_replies  Int     @default(0) @db.UnsignedMediumInt
   grp_tpc_state    Boolean
-  grp_tpc_display  Boolean @default(true)
+  grp_tpc_display  Int     @default(0)
 
   @@index([grp_tpc_display], map: "grp_tpc_display")
   @@index([grp_tpc_gid], map: "grp_tpc_gid")
@@ -663,7 +663,7 @@ model chii_subject_topics {
   sbj_tpc_lastpost   Int     @default(0) @db.UnsignedInt
   sbj_tpc_replies    Int     @default(0) @db.UnsignedMediumInt
   sbj_tpc_state      Boolean
-  sbj_tpc_display    Boolean @default(true)
+  sbj_tpc_display    Int     @default(0)
 
   @@index([sbj_tpc_lastpost, sbj_tpc_subject_id, sbj_tpc_display], map: "sbj_tpc_lastpost")
   @@index([sbj_tpc_uid], map: "sbj_tpc_uid")

@@ -1,5 +1,6 @@
 import * as php from 'php-serialize';
 
+import type { TopicDisplay } from './auth/rule';
 import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
@@ -159,14 +160,17 @@ export async function fetchTopic(
   type: 'group' | 'subject',
   id: number,
   { limit = 30, offset = 0 }: Page,
+  { display }: { display: TopicDisplay[] },
 ): Promise<[number, ITopic[]]> {
   if (type === 'group') {
-    const total = await prisma.chii_group_topics.count({
-      where: { grp_tpc_gid: id },
-    });
+    const where = {
+      grp_tpc_gid: id,
+      grp_tpc_display: { in: display },
+    } as const;
 
+    const total = await prisma.chii_group_topics.count({ where });
     const topics = await prisma.chii_group_topics.findMany({
-      where: { grp_tpc_gid: id },
+      where,
       orderBy: { grp_tpc_dateline: 'desc' },
       skip: offset,
       take: limit,
@@ -187,10 +191,11 @@ export async function fetchTopic(
     ];
   }
 
-  const total = await prisma.chii_subject_topics.count({ where: { sbj_tpc_subject_id: id } });
+  const where = { sbj_tpc_subject_id: id, sbj_tpc_display: { in: display } } as const;
+  const total = await prisma.chii_subject_topics.count({ where });
 
   const topics = await prisma.chii_subject_topics.findMany({
-    where: { sbj_tpc_subject_id: id },
+    where,
     orderBy: { sbj_tpc_dateline: 'desc' },
     skip: offset,
     take: limit,
@@ -220,8 +225,18 @@ export async function fetchSubject(id: number) {
     return null;
   }
 
+  const f = await prisma.subjectFields.findFirst({
+    where: { subject_id: id },
+  });
+
+  if (!f) {
+    throw new UnexpectedNotFoundError(`subject fields ${id}`);
+  }
+
   return {
     id: subject.subject_id,
+    nsfw: subject.subject_nsfw,
+    redirect: f.field_redirect,
   };
 }
 
@@ -236,5 +251,7 @@ export async function fetchGroup(name: string) {
 
   return {
     id: group.grp_id,
+    name: group.grp_name,
+    nsfw: group.grp_nsfw,
   };
 }
