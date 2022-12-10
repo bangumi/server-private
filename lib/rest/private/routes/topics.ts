@@ -17,8 +17,7 @@ import {
 } from '../../../orm';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
-import type { ICreator } from '../../../types';
-import { Avatar, Creator, ErrorRes, formatError, Paged, Topic } from '../../../types';
+import { Avatar, User, ErrorRes, formatError, Paged, Topic } from '../../../types';
 import type { App } from '../../type';
 
 const Group = t.Object(
@@ -120,7 +119,7 @@ export async function setup(app: App) {
           200: t.Object({
             id: t.Integer(),
             group: Group,
-            creator: Creator,
+            creator: User,
             title: t.String(),
             text: t.String(),
             state: t.Integer(),
@@ -132,14 +131,14 @@ export async function setup(app: App) {
                 replies: t.Array(
                   t.Object({
                     id: t.Integer(),
-                    creator: Creator,
+                    creator: User,
                     createdAt: t.Integer(),
                     isFriend: t.Boolean(),
                     text: t.String(),
                     state: t.Integer(),
                   }),
                 ),
-                creator: Creator,
+                creator: User,
                 createdAt: t.Integer(),
                 text: t.String(),
                 state: t.Integer(),
@@ -415,7 +414,7 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
   return members;
 }
 
-export function userToResCreator(user: IUser): ICreator {
+export function userToResCreator(user: IUser): Static<typeof User> {
   return {
     avatar: avatar(user.img),
     username: user.username,
