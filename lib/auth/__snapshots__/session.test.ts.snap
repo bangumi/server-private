@@ -7,6 +7,7 @@ exports[`should create and get session 1`] = `
   "img": "000/38/29/382951.jpg?r=1571167246",
   "nickname": "树洞酱",
   "regTime": 1512262276,
+  "sign": "treeholechan@gmail.com 密码:lovemeplease",
   "username": "382951",
 }
 `;

@@ -27,7 +27,8 @@ const Group = t.Object({
   nsfw: t.Boolean(),
   title: t.String(),
   icon: t.String(),
-  summary: t.String(),
+  description: t.String(),
+  totalMembers: t.Integer(),
   createdAt: t.Integer(),
 });
 
@@ -88,6 +89,14 @@ export async function setup(app: App) {
     },
   );
 
+  const richCreator = Creator;
+  // t.Intersect([
+  //   Creator,
+  //   t.Object({
+  //     isFriend: t.Boolean(),
+  //   }),
+  // ]);
+
   app.get(
     '/groups/-/topics/:id',
     {
@@ -100,30 +109,28 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Object({
+            id: t.Integer(),
             group: Group,
+            creator: richCreator,
+            title: t.String(),
+            text: t.String(),
+            state: t.Integer(),
+            createdAt: t.Integer(),
             replies: t.Array(
               t.Object({
                 id: t.Integer(),
+                isFriend: t.Boolean(),
                 replies: t.Array(
                   t.Object({
                     id: t.Integer(),
-                    creator: t.Intersect([
-                      Creator,
-                      t.Object({
-                        isFriend: t.Boolean(),
-                      }),
-                    ]),
+                    creator: richCreator,
                     createdAt: t.Integer(),
+                    isFriend: t.Boolean(),
                     text: t.String(),
                     state: t.Integer(),
                   }),
                 ),
-                creator: t.Intersect([
-                  Creator,
-                  t.Object({
-                    isFriend: t.Boolean(),
-                  }),
-                ]),
+                creator: richCreator,
                 createdAt: t.Integer(),
                 text: t.String(),
                 state: t.Integer(),
@@ -150,15 +157,23 @@ export async function setup(app: App) {
         throw new UnexpectedNotFoundError(`group ${topic.parentID}`);
       }
 
-      const userIds: number[] = topic.replies.flatMap((x) => [
-        x.creatorID,
-        ...x.replies.map((x) => x.creatorID),
-      ]);
+      const userIds: number[] = [
+        topic.creatorID,
+        ...topic.replies.flatMap((x) => [x.creatorID, ...x.replies.map((x) => x.creatorID)]),
+      ];
 
       const friends = await fetchFriends(auth.user?.id);
-      const users = await fetchUsers(userIds);
+      const users = await fetchUsers([...new Set(userIds)]);
+
+      const creator = users[topic.creatorID];
+      if (!creator) {
+        throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
+      }
 
       return {
+        ...topic,
+        creator: userToResCreator(creator),
+        text: topic.text,
         group: { ...group, icon: groupIcon(group.icon) },
         replies: topic.replies
           .map((x) => rule.filterReply(x))
@@ -168,6 +183,7 @@ export async function setup(app: App) {
               throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
             }
             return {
+              isFriend: friends[x.creatorID] ?? false,
               ...x,
               replies: x.replies.map((x) => {
                 const user = users[x.creatorID];
@@ -175,11 +191,9 @@ export async function setup(app: App) {
                   throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
                 }
                 return {
+                  isFriend: friends[x.creatorID] ?? false,
                   ...x,
-                  creator: {
-                    isFriend: friends[x.creatorID] ?? false,
-                    ...userToResCreator(user),
-                  },
+                  creator: userToResCreator(user),
                 };
               }),
               creator: {
@@ -188,6 +202,7 @@ export async function setup(app: App) {
               },
             };
           }),
+        state: topic.state,
       };
     },
   );
@@ -280,10 +295,7 @@ async function addCreators(topics: ITopic[], parentID: number): Promise<Static<t
   return withCreator.map((x) => {
     return {
       ...x,
-      creator: {
-        ...x.creator,
-        avatar: avatar(x.creator.img),
-      },
+      creator: userToResCreator(x.creator),
       lastRepliedAt: new Date(x.lastRepliedAt * 1000).toISOString(),
       parentID,
     };
@@ -319,11 +331,13 @@ async function fetchRecentMember(groupID: number): Promise<Static<typeof Creator
   });
 }
 
-function userToResCreator(user: IUser): ICreator {
+export function userToResCreator(user: IUser): ICreator {
   return {
     avatar: avatar(user.img),
     username: user.username,
     nickname: user.nickname,
     id: user.id,
+    sign: user.sign,
+    user_group: user.groupID,
   };
 }
