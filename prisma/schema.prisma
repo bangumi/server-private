@@ -176,14 +176,14 @@ model chii_friends {
   @@ignore()
 }
 
-model chii_group_members {
+model GroupMembers {
   gmb_uid       Int     @default(0) @db.MediumInt
   gmb_gid       Int     @default(0) @db.SmallInt
   gmb_moderator Boolean @default(false)
   gmb_dateline  Int     @default(0) @db.UnsignedInt
 
   @@id([gmb_uid, gmb_gid])
-  @@ignore()
+  @@map("chii_group_members")
 }
 
 model chii_group_posts {

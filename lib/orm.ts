@@ -123,7 +123,7 @@ export async function addCreator<T extends { creatorID: number }>(
   });
 }
 
-async function fetchUsers(userIDs: number[]): Promise<Record<number, IUser>> {
+export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUser>> {
   if (userIDs.length === 0) {
     return {};
   }
@@ -240,7 +240,16 @@ export async function fetchSubject(id: number) {
   };
 }
 
-export async function fetchGroup(name: string) {
+interface IGroup {
+  id: number;
+  name: string;
+  nsfw: boolean;
+  summary: string;
+
+  createdAt: number;
+}
+
+export async function fetchGroup(name: string): Promise<IGroup | null> {
   const group = await prisma.chii_groups.findFirst({
     where: { grp_name: name },
   });
@@ -253,5 +262,7 @@ export async function fetchGroup(name: string) {
     id: group.grp_id,
     name: group.grp_name,
     nsfw: group.grp_nsfw,
-  };
+    summary: group.grp_desc,
+    createdAt: group.grp_builddate,
+  } satisfies IGroup;
 }
