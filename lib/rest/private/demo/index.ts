@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import fastifyView from '@fastify/view';
+import { fastifyView } from '@fastify/view';
 import handlebars from 'handlebars';
 
 import { production, projectRoot } from '../../../config';

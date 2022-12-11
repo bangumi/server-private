@@ -7,7 +7,7 @@ import type { IAuth } from './index';
 
 export async function create(user: { id: number; regTime: number }): Promise<string> {
   const now = dayjs().unix();
-  const token = randomBase62String(32);
+  const token = await randomBase62String(32);
   const value = {
     reg_time: dayjs().toISOString(),
     user_id: user.id,
