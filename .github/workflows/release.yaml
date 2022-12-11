@@ -21,3 +21,11 @@ jobs:
           password: ${{ github.token }}
 
       - run: docker push ghcr.io/bangumi/graphql:${{ env.VERSION }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: ./
+          file: ${{ matrix.dockerfile }}
+          tags: ghcr.io/bangumi/graphql:${{ env.VERSION }},ghcr.io/bangumi/graphql:latest
