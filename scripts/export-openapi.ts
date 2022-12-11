@@ -1,6 +1,8 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
+import * as yaml from 'js-yaml';
+
 import { projectRoot } from '../lib/config';
 import { createServer } from '../lib/server';
 
@@ -10,12 +12,16 @@ const app = await createServer();
 
 const pub = await app.inject('/v0.5/openapi.json');
 await fs.writeFile(
-  path.resolve(projectRoot, 'dist', 'public.json'),
-  JSON.stringify(pub.json(), null, 2),
+  path.resolve(projectRoot, 'dist', 'public.yaml'),
+  yaml.dump(pub.json(), {
+    indent: 2,
+  }),
 );
 
 const pri = await app.inject('/p1/openapi.json');
 await fs.writeFile(
-  path.resolve(projectRoot, 'dist', 'private.json'),
-  JSON.stringify(pri.json(), null, 2),
+  path.resolve(projectRoot, 'dist', 'private.yaml'),
+  yaml.dump(pri.json(), {
+    indent: 2,
+  }),
 );
