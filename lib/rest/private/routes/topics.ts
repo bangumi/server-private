@@ -44,6 +44,20 @@ const GroupMember = t.Object(
 export async function setup(app: App) {
   app.addSchema(ErrorRes);
   app.addSchema(Topic);
+  app.addSchema(Group);
+
+  const GroupProfile = t.Object(
+    {
+      recentAddedMembers: t.Array(t.Ref(GroupMember)),
+      topics: t.Array(t.Ref(Topic)),
+      inGroup: t.Boolean({ description: '是否已经加入小组' }),
+      group: t.Ref(Group),
+      totalTopics: t.Integer(),
+    },
+    { $id: 'GroupProfile' },
+  );
+
+  app.addSchema(GroupProfile);
 
   app.get(
     '/groups/:groupName/profile',
@@ -60,13 +74,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: t.Object({
-            recentAddedMembers: t.Array(GroupMember),
-            topics: t.Array(t.Ref(Topic)),
-            inGroup: t.Boolean({ description: '是否已经加入小组' }),
-            group: Group,
-            totalTopics: t.Integer(),
-          }),
+          200: t.Ref(GroupProfile),
           404: t.Ref(ErrorRes, {
             description: '小组不存在',
             'x-examples': {
@@ -99,6 +107,41 @@ export async function setup(app: App) {
     },
   );
 
+  const TopicDetail = t.Object(
+    {
+      id: t.Integer(),
+      group: t.Ref(Group),
+      creator: t.Ref(ResUser),
+      title: t.String(),
+      text: t.String(),
+      state: t.Integer(),
+      createdAt: t.Integer(),
+      replies: t.Array(
+        t.Object({
+          id: t.Integer(),
+          isFriend: t.Boolean(),
+          replies: t.Array(
+            t.Object({
+              id: t.Integer(),
+              creator: t.Ref(ResUser),
+              createdAt: t.Integer(),
+              isFriend: t.Boolean(),
+              text: t.String(),
+              state: t.Integer(),
+            }),
+          ),
+          creator: t.Ref(ResUser),
+          createdAt: t.Integer(),
+          text: t.String(),
+          state: t.Integer(),
+        }),
+      ),
+    },
+    { $id: 'TopicDetail' },
+  );
+
+  app.addSchema(TopicDetail);
+
   app.get(
     '/groups/-/topics/:id',
     {
@@ -110,35 +153,7 @@ export async function setup(app: App) {
           id: t.Integer({}),
         }),
         response: {
-          200: t.Object({
-            id: t.Integer(),
-            group: Group,
-            creator: ResUser,
-            title: t.String(),
-            text: t.String(),
-            state: t.Integer(),
-            createdAt: t.Integer(),
-            replies: t.Array(
-              t.Object({
-                id: t.Integer(),
-                isFriend: t.Boolean(),
-                replies: t.Array(
-                  t.Object({
-                    id: t.Integer(),
-                    creator: ResUser,
-                    createdAt: t.Integer(),
-                    isFriend: t.Boolean(),
-                    text: t.String(),
-                    state: t.Integer(),
-                  }),
-                ),
-                creator: ResUser,
-                createdAt: t.Integer(),
-                text: t.String(),
-                state: t.Integer(),
-              }),
-            ),
-          }),
+          200: t.Ref(TopicDetail),
           404: t.Ref(ErrorRes, {
             description: '小组不存在',
             'x-examples': {
