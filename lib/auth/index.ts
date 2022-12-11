@@ -1,4 +1,5 @@
 import { createError } from '@fastify/error';
+import dayjs from 'dayjs';
 import NodeCache from 'node-cache';
 
 import { redisPrefix } from '../config';
@@ -141,7 +142,7 @@ async function userToAuth(user: IUser): Promise<IAuth> {
     userID: user.id,
     login: true,
     permission: await getPermission(user.groupID),
-    allowNsfw: user.regTime - Date.now() / 1000 <= 60 * 60 * 24 * 90,
+    allowNsfw: user.regTime - dayjs().unix() <= 60 * 60 * 24 * 90,
     groupID: user.groupID,
   };
 }
