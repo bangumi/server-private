@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { expect, test, afterEach, beforeEach } from 'vitest';
 
 import prisma from '../prisma';
@@ -14,7 +15,7 @@ afterEach(async () => {
 test('should create and get session', async () => {
   const token = await create({
     id: 382951,
-    regTime: Math.trunc(new Date('2010-01-10 10:05:20').getTime() / 1000),
+    regTime: dayjs('2010-01-10 10:05:20').unix(),
   });
 
   const session = await prisma.chii_os_web_sessions.findFirst({ where: { key: token } });
@@ -38,8 +39,8 @@ test('should revoke session', async () => {
       key: token,
       value: Buffer.from(''),
       user_id: 0,
-      created_at: Math.trunc(Date.now() / 1000),
-      expired_at: Math.trunc(Date.now() / 1000) + 60 * 60 * 242 * 30,
+      created_at: dayjs().unix(),
+      expired_at: dayjs().unix() + 60 * 60 * 242 * 30,
     },
   });
 
