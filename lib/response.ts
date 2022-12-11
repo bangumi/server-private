@@ -1,6 +1,8 @@
+import type { IAvatar } from './types';
+
 const baseAvatarUrl = 'https://lain.bgm.tv/pic/user';
 
-export function avatar(s: string): { small: string; medium: string; large: string } {
+export function avatar(s: string): IAvatar {
   if (!s) {
     s = 'icon.jpg';
   }

@@ -36,13 +36,14 @@ export enum UserGroup {
 }
 
 export interface IAuth {
+  userID: number;
   login: boolean;
   allowNsfw: boolean;
   permission: Readonly<Permission>;
-  user: null | IUser;
+  groupID: UserGroup;
 }
 
-export async function byHeader(key: string | string[] | undefined): Promise<IAuth> {
+export async function byHeader(key: string | string[] | undefined): Promise<IAuth | null> {
   if (!key) {
     return emptyAuth();
   }
@@ -63,7 +64,7 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
-export async function byToken(access_token: string): Promise<IAuth> {
+export async function byToken(access_token: string): Promise<IAuth | null> {
   const key = `${redisPrefix}-auth-access-token-${access_token}`;
   const cached = await redis.get(key);
   if (cached) {
@@ -127,18 +128,20 @@ async function getPermission(userGroup?: number): Promise<Readonly<Permission>> 
 
 export function emptyAuth(): IAuth {
   return {
-    user: null,
-    login: true,
+    userID: 0,
+    login: false,
     permission: {},
     allowNsfw: false,
+    groupID: 0,
   };
 }
 
 async function userToAuth(user: IUser): Promise<IAuth> {
   return {
-    user: user,
+    userID: user.id,
     login: true,
     permission: await getPermission(user.groupID),
     allowNsfw: user.regTime - Date.now() / 1000 <= 60 * 60 * 24 * 90,
+    groupID: user.groupID,
   };
 }

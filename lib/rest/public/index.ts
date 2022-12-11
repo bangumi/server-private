@@ -11,13 +11,15 @@ export async function setup(app: FastifyInstance) {
 
   void app.addHook('preHandler', async (req) => {
     if (!req.headers.authorization) {
-      req.user = null;
       req.auth = emptyAuth();
       return;
     }
 
     const a = await auth.byHeader(req.headers.authorization);
-    req.user = a.user;
+    if (!a) {
+      req.auth = emptyAuth();
+      return;
+    }
     req.auth = a;
   });
 

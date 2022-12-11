@@ -3,6 +3,7 @@ import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
+export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
   {
     small: t.String(),
@@ -12,8 +13,8 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
-export type IUser = Static<typeof User>;
-export const User = t.Object(
+export type IResUser = Static<typeof ResUser>;
+export const ResUser = t.Object(
   {
     id: t.Integer({ examples: [1] }),
     username: t.String({ examples: ['sai'] }),
@@ -28,7 +29,7 @@ export const User = t.Object(
 export const Topic = t.Object(
   {
     id: t.Integer({ description: 'topic id' }),
-    creator: User,
+    creator: ResUser,
     title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),

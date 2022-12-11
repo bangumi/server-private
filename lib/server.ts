@@ -5,6 +5,7 @@ import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
 import { register } from 'prom-client';
 
+import { emptyAuth } from './auth';
 import * as auth from './auth';
 import { testing } from './config';
 import type { Context } from './graphql/context';
@@ -61,10 +62,12 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     graphiql: false,
     allowBatchedQueries: true,
     context: async (request: FastifyRequest): Promise<Context> => {
-      return {
-        prisma,
-        auth: await auth.byHeader(request.headers.authorization),
-      };
+      const a = await auth.byHeader(request.headers.authorization);
+      if (a) {
+        return { prisma, auth: a };
+      }
+
+      return { prisma, auth: emptyAuth() };
     },
   });
 

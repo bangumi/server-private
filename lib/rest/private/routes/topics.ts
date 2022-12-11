@@ -1,7 +1,7 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { NotAllowedError, UserGroup } from '../../../auth';
+import { NotAllowedError } from '../../../auth';
 import { ReplyState, rule, TopicDisplay } from '../../../auth/rule';
 import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
@@ -21,7 +21,7 @@ import {
 import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
-import { Avatar, ErrorRes, formatError, Paged, Topic, User } from '../../../types';
+import { Avatar, ErrorRes, formatError, Paged, Topic, ResUser } from '../../../types';
 import type { App } from '../../type';
 
 const Group = t.Object(
@@ -102,7 +102,7 @@ export async function setup(app: App) {
       return {
         group: { ...group, icon: groupIcon(group.icon) },
         totalTopics: total,
-        inGroup: auth.user?.id ? await fetchIfInGroup(group.id, auth.user.id) : false,
+        inGroup: auth.login ? await fetchIfInGroup(group.id, auth.userID) : false,
         topics,
         recentAddedMembers: await fetchRecentMember(group.id),
       };
@@ -123,7 +123,7 @@ export async function setup(app: App) {
           200: t.Object({
             id: t.Integer(),
             group: Group,
-            creator: User,
+            creator: ResUser,
             title: t.String(),
             text: t.String(),
             state: t.Integer(),
@@ -135,14 +135,14 @@ export async function setup(app: App) {
                 replies: t.Array(
                   t.Object({
                     id: t.Integer(),
-                    creator: User,
+                    creator: ResUser,
                     createdAt: t.Integer(),
                     isFriend: t.Boolean(),
                     text: t.String(),
                     state: t.Integer(),
                   }),
                 ),
-                creator: User,
+                creator: ResUser,
                 createdAt: t.Integer(),
                 text: t.String(),
                 state: t.Integer(),
@@ -174,7 +174,7 @@ export async function setup(app: App) {
         ...topic.replies.flatMap((x) => [x.creatorID, ...x.replies.map((x) => x.creatorID)]),
       ];
 
-      const friends = await fetchFriends(auth.user?.id);
+      const friends = await fetchFriends(auth.userID);
       const users = await fetchUsers([...new Set(userIds)]);
 
       const creator = users[topic.creatorID];
@@ -374,12 +374,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('creating a post')],
     },
     async ({ auth, body: { content, title }, params: { groupName } }) => {
-      if (!auth.user) {
-        // ts type error here
-        throw new Error('user should login');
-      }
-
-      if ([UserGroup.Banned, UserGroup.Quite, UserGroup.Unknown].includes(auth.user.groupID)) {
+      if (auth.permission.ban_post) {
         throw new NotAllowedError('create posts');
       }
 
@@ -398,7 +393,7 @@ export async function setup(app: App) {
         title,
         content,
         display,
-        userID: auth.user.id,
+        userID: auth.userID,
         groupID: group.id,
         state: ReplyState.Normal,
       });
@@ -473,7 +468,7 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
   return members;
 }
 
-export function userToResCreator(user: IUser): Static<typeof User> {
+export function userToResCreator(user: IUser): Static<typeof ResUser> {
   return {
     avatar: avatar(user.img),
     username: user.username,

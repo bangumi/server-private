@@ -21,10 +21,14 @@ test('should create and get session', async () => {
 
   expect(session).toBeDefined();
 
-  const s = await get(token);
+  const auth = await get(token);
 
-  expect(s?.user).toBeDefined();
-  expect(s?.user).toMatchSnapshot();
+  expect(auth).toBeDefined();
+  expect(auth).toMatchObject({
+    login: true,
+    groupID: 10,
+    userID: 382951,
+  });
 });
 
 test('should revoke session', async () => {
