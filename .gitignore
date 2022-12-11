@@ -1,6 +1,7 @@
 node_modules/*
-.vscode/
-!.vscode/extensions.json
+# all files in .vscode except .vscode/extensions.json
+.vscode/settings.json
+.vscode/launch.json
 .idea
 dist
 yarn-error.log
