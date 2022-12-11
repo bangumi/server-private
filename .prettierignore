@@ -3,3 +3,4 @@ dist/
 *.graphql
 coverage/
 .husky/_/
+*.hbs
