@@ -1,6 +1,6 @@
-import { pino } from 'pino';
+import process from 'node:process';
 
-import { production } from './config';
+import { pino } from 'pino';
 
 export const logger = pino({
   level: 'info',
@@ -8,14 +8,18 @@ export const logger = pino({
   timestamp() {
     return `,"time":"${new Date().toISOString()}"`;
   },
-  transport: production
-    ? undefined
-    : {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
+  /**
+   * 使用 config.ts 的 production 变量会导致循环 import，所以直接从环境变量中读取
+   */
+  transport:
+    process.env.NODE_ENV === 'production'
+      ? undefined
+      : {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+          },
         },
-      },
   formatters: {
     level(level) {
       return { level };
