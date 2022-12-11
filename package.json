@@ -74,6 +74,7 @@
     "ajv": "^8.11.2",
     "altair-fastify-plugin": "^5.0.9",
     "bcrypt": "^5.1.0",
+    "dayjs": "^1.11.7",
     "fastify": "^4.10.2",
     "fastify-metrics": "^10.0.0",
     "graphql": "^16.6.0",
@@ -89,6 +90,7 @@
     "pino": "^8.7.0",
     "pino-pretty": "^9.1.1",
     "prom-client": "^14.1.0",
+    "re2": "^1.18.0",
     "ts-node": "^10.9.1",
     "undici": "^5.14.0"
   },

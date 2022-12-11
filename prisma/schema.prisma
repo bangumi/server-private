@@ -196,8 +196,6 @@ model GroupPosts {
   state    Int    @map("grp_pst_state")
   dateline Int    @default(0) @map("grp_pst_dateline") @db.UnsignedInt
 
-  author GroupTopics @relation(fields: [id], references: [id])
-
   @@index([related], map: "grp_pst_related")
   @@index([uid], map: "grp_pst_uid")
   @@index([mid], map: "pss_topic_id")
@@ -205,16 +203,15 @@ model GroupPosts {
 }
 
 model GroupTopics {
-  id         Int          @id @default(autoincrement()) @map("grp_tpc_id") @db.UnsignedMediumInt
-  gid        Int          @map("grp_tpc_gid") @db.UnsignedMediumInt
-  uid        Int          @map("grp_tpc_uid") @db.UnsignedMediumInt
-  title      String       @map("grp_tpc_title") @db.VarChar(80)
-  dateline   Int          @default(0) @map("grp_tpc_dateline") @db.UnsignedInt
-  lastpost   Int          @default(0) @map("grp_tpc_lastpost") @db.UnsignedInt
-  replies    Int          @default(0) @map("grp_tpc_replies") @db.UnsignedMediumInt
-  state      Int          @map("grp_tpc_state")
-  display    Int          @default(0) @map("grp_tpc_display")
-  GroupPosts GroupPosts[]
+  id       Int    @id @default(autoincrement()) @map("grp_tpc_id") @db.UnsignedMediumInt
+  gid      Int    @map("grp_tpc_gid") @db.UnsignedMediumInt
+  uid      Int    @map("grp_tpc_uid") @db.UnsignedMediumInt
+  title    String @map("grp_tpc_title") @db.VarChar(80)
+  dateline Int    @default(0) @map("grp_tpc_dateline") @db.UnsignedInt
+  lastpost Int    @default(0) @map("grp_tpc_lastpost") @db.UnsignedInt
+  replies  Int    @default(0) @map("grp_tpc_replies") @db.UnsignedMediumInt
+  state    Int    @map("grp_tpc_state")
+  display  Int    @default(0) @map("grp_tpc_display")
 
   @@index([display], map: "grp_tpc_display")
   @@index([gid], map: "grp_tpc_gid")
