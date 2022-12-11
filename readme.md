@@ -1,5 +1,8 @@
 # GraphQL server
 
+[![production version](https://img.shields.io/badge/dynamic/json?label=production&query=info.version&url=https%3A%2F%2Fnext.bgm.tv%2Fp1%2Fopenapi.json)](https://next.bgm.tv/p1/)
+![Codecov](https://img.shields.io/codecov/c/github/bangumi/GraphQL)
+
 mercurius + nexus + prisma
 
 <https://api.bgm.tv/v0/altair/>
