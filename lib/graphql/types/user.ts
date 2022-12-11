@@ -1,6 +1,9 @@
 import { objectType, extendType } from 'nexus';
 
+import { fetchUser } from '../../orm';
 import type { IUser } from '../../orm';
+import { avatar } from '../../response';
+import type { IAvatar } from '../../types';
 import type { Context } from '../context';
 
 const Avatar = objectType({
@@ -38,8 +41,22 @@ const GetCurrentUser = extendType({
   definition(t) {
     t.nullable.field('me', {
       type: User,
-      resolve(_parent, _args, { auth }: Context) {
-        return auth.user;
+      async resolve(
+        _parent,
+        _args,
+        { auth }: Context,
+      ): Promise<{ id: number; username: string; avatar: IAvatar; nickname: string } | null> {
+        const user = await fetchUser(auth.userID);
+        if (!user) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          avatar: avatar(user.img),
+          nickname: user.nickname,
+          username: user.username,
+        };
       },
     });
   },

@@ -19,7 +19,6 @@ export async function setup(app: App) {
 
   void app.addHook('preHandler', async (req, res) => {
     if (!req.cookies.sessionID) {
-      req.user = null;
       req.auth = emptyAuth();
       return;
     }
@@ -27,12 +26,10 @@ export async function setup(app: App) {
     const a = await session.get(req.cookies.sessionID);
     if (!a) {
       void res.clearCookie(CookieKey);
-      req.user = null;
       req.auth = emptyAuth();
       return;
     }
 
-    req.user = a.user;
     req.auth = a;
   });
 

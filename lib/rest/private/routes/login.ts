@@ -13,8 +13,8 @@ import { Tag } from '../../../openapi';
 import prisma from '../../../prisma';
 import redis from '../../../redis';
 import { avatar } from '../../../response';
-import type { IUser } from '../../../types';
-import { ErrorRes, formatError, User } from '../../../types';
+import type { IResUser } from '../../../types';
+import { ErrorRes, formatError, ResUser } from '../../../types';
 import Limiter from '../../../utils/rate-limit';
 import type { App } from '../../type';
 
@@ -47,7 +47,7 @@ export async function setup(app: App) {
 
   const hCaptcha = new HCaptcha(hCaptchaConfigKey);
 
-  app.addSchema(User);
+  app.addSchema(ResUser);
   app.addSchema(ErrorRes);
 
   app.post(
@@ -69,7 +69,7 @@ export async function setup(app: App) {
       },
     },
     async (req, res) => {
-      if (!req.user) {
+      if (!req.auth.login) {
         throw new NeedLoginError('logout');
       }
 
@@ -92,7 +92,7 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
         operationId: 'login',
         tags: [Tag.Auth],
         response: {
-          200: t.Ref(User, {
+          200: t.Ref(ResUser, {
             headers: {
               'Set-Cookie': t.String({ description: 'example: "sessionID=12345abc"' }),
             },
@@ -143,7 +143,7 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
     async function handler(
       { body: { email, password, 'h-captcha-response': hCaptchaResponse }, clientIP },
       res,
-    ): Promise<IUser> {
+    ): Promise<IResUser> {
       const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${clientIP}`);
       void res.headers({
         'X-RateLimit-Remaining': remain,

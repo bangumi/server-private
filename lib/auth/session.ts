@@ -30,12 +30,12 @@ export async function create(user: { id: number; regTime: number }): Promise<str
  * TODO: add cache
  * @param sessionID store in user cookies
  */
-export async function get(sessionID: string): Promise<IAuth | undefined> {
+export async function get(sessionID: string): Promise<IAuth | null> {
   const session = await prisma.chii_os_web_sessions.findFirst({
     where: { key: sessionID, expired_at: { gte: Math.trunc(Date.now() / 1000) } },
   });
   if (!session) {
-    return;
+    return null;
   }
 
   return await auth.byUserID(session.user_id);

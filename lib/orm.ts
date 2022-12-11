@@ -62,44 +62,50 @@ export async function fetchUser(userID: number): Promise<IUser | null> {
 }
 
 export interface Permission {
-  user_list?: boolean;
+  app_erase?: boolean;
+  ban_post?: boolean;
+  ban_visit?: boolean;
+  doujin_subject_erase?: boolean;
+  doujin_subject_lock?: boolean;
+  ep_edit?: boolean;
+  ep_erase?: boolean;
+  ep_lock?: boolean;
+  ep_merge?: boolean;
+  ep_move?: boolean;
+  manage_app?: boolean;
+  manage_report?: boolean;
+  manage_topic_state?: boolean;
+  manage_user?: boolean;
   manage_user_group?: boolean;
   manage_user_photo?: boolean;
-  manage_topic_state?: boolean;
-  manage_report?: boolean;
-  user_ban?: boolean;
-  manage_user?: boolean;
-  user_group?: boolean;
-  user_wiki_approve?: boolean;
-  doujin_subject_erase?: boolean;
-  user_wiki_apply?: boolean;
-  doujin_subject_lock?: boolean;
-  subject_edit?: boolean;
-  subject_lock?: boolean;
-  subject_refresh?: boolean;
-  subject_related?: boolean;
-  subject_merge?: boolean;
-  subject_erase?: boolean;
-  subject_cover_lock?: boolean;
-  subject_cover_erase?: boolean;
   mono_edit?: boolean;
+  mono_erase?: boolean;
   mono_lock?: boolean;
   mono_merge?: boolean;
-  mono_erase?: boolean;
-  ep_edit?: boolean;
-  ep_move?: boolean;
-  ep_merge?: boolean;
-  ep_lock?: boolean;
-  ep_erase?: boolean;
   report?: boolean;
-  manage_app?: boolean;
-  app_erase?: boolean;
+  subject_cover_erase?: boolean;
+  subject_cover_lock?: boolean;
+  subject_edit?: boolean;
+  subject_erase?: boolean;
+  subject_lock?: boolean;
+  subject_merge?: boolean;
+  subject_refresh?: boolean;
+  subject_related?: boolean;
+  user_ban?: boolean;
+  user_group?: boolean;
+  user_list?: boolean;
+  user_wiki_apply?: boolean;
+  user_wiki_approve?: boolean;
 }
 
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
   const permission = await prisma.userGroups.findFirst({ where: { usr_grp_id: userGroup } });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
+    return {};
+  }
+
+  if (!permission.usr_grp_perm) {
     return {};
   }
 
