@@ -1,23 +1,27 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { rule } from '../../../auth/rule';
+import { NotAllowedError, UserGroup } from '../../../auth';
+import { ReplyState, rule, TopicDisplay } from '../../../auth/rule';
+import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
 import { Tag } from '../../../openapi';
 import type { ITopic, IUser, Page } from '../../../orm';
 import {
   addCreator,
-  fetchGroup,
-  fetchSubject,
-  fetchTopicList,
-  fetchTopicDetails,
-  fetchUsers,
-  fetchGroupByID,
+  createPostInGroup,
   fetchFriends,
+  fetchGroup,
+  fetchGroupByID,
+  fetchSubject,
+  fetchTopicDetails,
+  fetchTopicList,
+  fetchUsers,
 } from '../../../orm';
+import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
-import { Avatar, User, ErrorRes, formatError, Paged, Topic } from '../../../types';
+import { Avatar, ErrorRes, formatError, Paged, Topic, User } from '../../../types';
 import type { App } from '../../type';
 
 const Group = t.Object(
@@ -343,6 +347,61 @@ export async function setup(app: App) {
         display: rule.ListTopicDisplays(auth),
       });
       return { total, data: await addCreators(topics, subjectID) };
+    },
+  );
+
+  app.post(
+    '/groups/:groupName/topics',
+    {
+      schema: {
+        operationId: 'createNewGroupTopic',
+        params: t.Object({
+          groupName: t.String({ minLength: 1, examples: ['sandbox'] }),
+        }),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new post topic id' }),
+          }),
+        },
+        body: t.Object(
+          {
+            title: t.String({ minLength: 1 }),
+            content: t.String({ minLength: 1 }),
+          },
+          { examples: [{ title: 'post title', content: 'post contents' }] },
+        ),
+      },
+      preHandler: [requireLogin('creating a post')],
+    },
+    async ({ auth, body: { content, title }, params: { groupName } }) => {
+      if (!auth.user) {
+        // ts type error here
+        throw new Error('user should login');
+      }
+
+      if ([UserGroup.Banned, UserGroup.Quite, UserGroup.Unknown].includes(auth.user.groupID)) {
+        throw new NotAllowedError('create posts');
+      }
+
+      const group = await fetchGroup(groupName);
+      if (!group) {
+        throw new NotFoundError(`group ${groupName}`);
+      }
+
+      let display = TopicDisplay.Normal;
+
+      if (dam.needReview(title) || dam.needReview(content)) {
+        display = TopicDisplay.Review;
+      }
+
+      return await createPostInGroup({
+        title,
+        content,
+        display,
+        userID: auth.user.id,
+        groupID: group.id,
+        state: ReplyState.Normal,
+      });
     },
   );
 }

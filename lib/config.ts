@@ -72,7 +72,7 @@ if (fs.existsSync(configFilePath)) {
   configFileContent = fs.readFileSync(configFilePath, 'utf8');
 }
 
-const fileConfig = yaml.load(configFileContent) as Static<typeof configFileType>;
+export const fileConfig = yaml.load(configFileContent) as Static<typeof configFileType>;
 
 // validate config file
 

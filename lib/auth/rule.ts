@@ -7,8 +7,8 @@ export enum TopicDisplay {
   Review = 2,
 }
 
-enum ReplyState {
-  None = 0, // 正常
+export enum ReplyState {
+  Normal = 0, // 正常
   // AdminCloseTopic 管理员关闭主题 https://bgm.tv/subject/topic/12629#post_108127
   AdminCloseTopic = 1, // 关闭
   AdminReopen = 2, // 重开

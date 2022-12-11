@@ -13,6 +13,8 @@ import { ErrorRes } from '../types';
 
 const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
 
+const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
+
 export function addRoute(app: FastifyInstance) {
   app.get('/', (_, res) => {
     void res.type('text/html').send(swaggerUI);
@@ -20,6 +22,24 @@ export function addRoute(app: FastifyInstance) {
 
   app.get('/openapi.json', () => {
     return app.swagger();
+  });
+
+  app.addHook('onRoute', (route) => {
+    if (!route.schema) {
+      return;
+    }
+
+    if (!route.schema.operationId) {
+      if (!route.schema.operationId) {
+        throw new Error(`missing operationId on router ${route.url}`);
+      }
+
+      for (const x of route.schema.operationId) {
+        if (!validChars.includes(x)) {
+          throw new Error(`invalid operationId ${route.schema.operationId} on router ${route.url}`);
+        }
+      }
+    }
   });
 }
 
@@ -31,25 +51,14 @@ type transformer = <S extends FastifySchema = FastifySchema>({
   url: string;
 }) => { schema: JSONObject; url: string };
 
-const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
-
 const transform: transformer = ({ schema, url }) => {
-  if (!schema.operationId) {
-    throw new Error(`missing operationId on router ${url}`);
-  }
-
-  for (const x of schema.operationId) {
-    if (!validChars.includes(x)) {
-      throw new Error(`invalid operationId ${schema.operationId} on router ${url}`);
-    }
-  }
-
-  const response = schema.response as Record<number, unknown>;
+  const response = (schema.response ?? {}) as Record<number, unknown>;
   if (!response[500]) {
     response[500] = t.Ref(ErrorRes, {
       description: '意料之外的服务器错误',
     });
   }
+  schema.response = response;
   return { schema: schema as unknown as JSONObject, url };
 };
 

@@ -122,11 +122,22 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
             examples: [formatError(TooManyRequestsError())],
           }),
         },
-        body: t.Object({
-          email: t.String({ minLength: 1 }),
-          password: t.String({ minLength: 1 }),
-          'h-captcha-response': t.String({ minLength: 1 }),
-        }),
+        body: t.Object(
+          {
+            email: t.String({ minLength: 1 }),
+            password: t.String({ minLength: 1 }),
+            'h-captcha-response': t.String({ minLength: 1 }),
+          },
+          {
+            examples: [
+              {
+                email: 'treeholechan@gmail.com',
+                password: 'lovemeplease',
+                'h-captcha-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
+            ],
+          },
+        ),
       },
     },
     async function handler(

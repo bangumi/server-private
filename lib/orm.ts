@@ -1,6 +1,7 @@
+import dayjs from 'dayjs';
 import * as php from 'php-serialize';
 
-import type { TopicDisplay } from './auth/rule';
+import type { ReplyState, TopicDisplay } from './auth/rule';
 import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
@@ -400,4 +401,45 @@ export async function fetchFriends(id?: number): Promise<Record<number, boolean>
   });
 
   return Object.fromEntries(friends.map((x) => [x.frd_fid, true]));
+}
+
+interface PostCreation {
+  title: string;
+  content: string;
+  groupID: number;
+  userID: number;
+  display: TopicDisplay;
+  state: ReplyState;
+}
+
+export async function createPostInGroup(post: PostCreation): Promise<{ id: number }> {
+  const now = dayjs();
+
+  return await prisma.$transaction(async (t) => {
+    const topic = await t.groupTopics.create({
+      data: {
+        title: post.title,
+        gid: post.groupID,
+        uid: post.userID,
+        state: post.state,
+        lastpost: now.unix(),
+        dateline: now.unix(),
+        replies: 0,
+        display: 0,
+      },
+    });
+
+    await t.groupPosts.create({
+      data: {
+        mid: topic.id,
+        dateline: now.unix(),
+        state: post.state,
+        uid: post.userID,
+        content: post.content,
+        related: 0,
+      },
+    });
+
+    return { id: topic.id };
+  });
 }

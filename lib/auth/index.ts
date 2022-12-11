@@ -9,6 +9,7 @@ import redis from '../redis';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError = createError('NEED_LOGIN', 'you need to login before %s', 401);
+export const NotAllowedError = createError('NEED_LOGIN', `you don't have permission to %s`, 401);
 const HeaderInvalidError = createError('AUTHORIZATION_INVALID', '%s', 401);
 const TokenNotValidError = createError(
   'TOKEN_INVALID',
@@ -16,6 +17,23 @@ const TokenNotValidError = createError(
   401,
 );
 const MissingUserError = createError('MISSING_USER', "can't find user", 500);
+
+export enum UserGroup {
+  Unknown = 0,
+  Admin = 1,
+  BangumiAdmin,
+  WindowAdmin,
+  Quite,
+  Banned,
+  // 不太清除具体是什么
+  _6,
+  // 不太清除具体是什么
+  _7,
+  CharacterAdmin,
+  WikiAdmin,
+  Normal,
+  WikiEditor,
+}
 
 export interface IAuth {
   login: boolean;
