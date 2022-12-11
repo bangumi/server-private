@@ -264,6 +264,7 @@ interface IGroup {
   createdAt: number;
   totalMembers: number;
   icon: string;
+  accessible: boolean;
 }
 
 export async function fetchGroupByID(id: number): Promise<IGroup | null> {
@@ -284,6 +285,7 @@ export async function fetchGroupByID(id: number): Promise<IGroup | null> {
     createdAt: group.grp_builddate,
     icon: group.grp_icon,
     totalMembers: group.grp_members,
+    accessible: group.grp_accessible,
   } satisfies IGroup;
 }
 
@@ -305,6 +307,7 @@ export async function fetchGroup(name: string): Promise<IGroup | null> {
     icon: group.grp_icon,
     createdAt: group.grp_builddate,
     totalMembers: group.grp_members,
+    accessible: group.grp_accessible,
   } satisfies IGroup;
 }
 
@@ -448,4 +451,12 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
 
     return { id: topic.id };
   });
+}
+
+export async function isMemberInGroup(gid: number, uid: number): Promise<boolean> {
+  const inGroup = await prisma.groupMembers.findFirst({
+    where: { gmb_gid: gid, gmb_uid: uid },
+  });
+
+  return Boolean(inGroup);
 }

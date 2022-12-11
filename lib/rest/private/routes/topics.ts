@@ -7,17 +7,7 @@ import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
 import { Tag } from '../../../openapi';
 import type { ITopic, IUser, Page } from '../../../orm';
-import {
-  addCreator,
-  createPostInGroup,
-  fetchFriends,
-  fetchGroup,
-  fetchGroupByID,
-  fetchSubject,
-  fetchTopicDetails,
-  fetchTopicList,
-  fetchUsers,
-} from '../../../orm';
+import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
@@ -87,13 +77,13 @@ export async function setup(app: App) {
       },
     },
     async ({ params, auth, query }) => {
-      const group = await fetchGroup(params.groupName);
+      const group = await orm.fetchGroup(params.groupName);
 
       if (!group) {
         throw new NotFoundError('group');
       }
 
-      const [total, topicList] = await fetchTopicList('group', group.id, query, {
+      const [total, topicList] = await orm.fetchTopicList('group', group.id, query, {
         display: rule.ListTopicDisplays(auth),
       });
 
@@ -159,12 +149,12 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { id }, auth }) => {
-      const topic = await fetchTopicDetails('group', id);
+      const topic = await orm.fetchTopicDetails('group', id);
       if (!topic) {
         throw new NotFoundError(`topic ${id}`);
       }
 
-      const group = await fetchGroupByID(topic.parentID);
+      const group = await orm.fetchGroupByID(topic.parentID);
       if (!group) {
         throw new UnexpectedNotFoundError(`group ${topic.parentID}`);
       }
@@ -174,8 +164,8 @@ export async function setup(app: App) {
         ...topic.replies.flatMap((x) => [x.creatorID, ...x.replies.map((x) => x.creatorID)]),
       ];
 
-      const friends = await fetchFriends(auth.userID);
-      const users = await fetchUsers([...new Set(userIds)]);
+      const friends = await orm.fetchFriends(auth.userID);
+      const users = await orm.fetchUsers([...new Set(userIds)]);
 
       const creator = users[topic.creatorID];
       if (!creator) {
@@ -257,7 +247,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params, query: { type = 'all', limit, offset } }) => {
-      const group = await fetchGroup(params.groupName);
+      const group = await orm.fetchGroup(params.groupName);
 
       if (!group) {
         throw new NotFoundError('group');
@@ -295,13 +285,13 @@ export async function setup(app: App) {
       },
     },
     async ({ params, query, auth }) => {
-      const group = await fetchGroup(params.groupName);
+      const group = await orm.fetchGroup(params.groupName);
 
       if (!group) {
         throw new NotFoundError('group');
       }
 
-      const [total, topics] = await fetchTopicList('group', group.id, query, {
+      const [total, topics] = await orm.fetchTopicList('group', group.id, query, {
         display: rule.ListTopicDisplays(auth),
       });
 
@@ -335,7 +325,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID }, query, auth }) => {
-      const subject = await fetchSubject(subjectID);
+      const subject = await orm.fetchSubject(subjectID);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -343,7 +333,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      const [total, topics] = await fetchTopicList('subject', subjectID, query, {
+      const [total, topics] = await orm.fetchTopicList('subject', subjectID, query, {
         display: rule.ListTopicDisplays(auth),
       });
       return { total, data: await addCreators(topics, subjectID) };
@@ -378,7 +368,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('create posts');
       }
 
-      const group = await fetchGroup(groupName);
+      const group = await orm.fetchGroup(groupName);
       if (!group) {
         throw new NotFoundError(`group ${groupName}`);
       }
@@ -389,7 +379,11 @@ export async function setup(app: App) {
         display = TopicDisplay.Review;
       }
 
-      return await createPostInGroup({
+      if (!group.accessible && !(await orm.isMemberInGroup(group.id, auth.userID))) {
+        throw new NotAllowedError('create posts, join group first');
+      }
+
+      return await orm.createPostInGroup({
         title,
         content,
         display,
@@ -402,7 +396,7 @@ export async function setup(app: App) {
 }
 
 async function addCreators(topics: ITopic[], parentID: number): Promise<Static<typeof Topic>[]> {
-  const withCreator = await addCreator(topics);
+  const withCreator = await orm.addCreator(topics);
 
   return withCreator.map((x) => {
     return {
@@ -441,7 +435,7 @@ async function fetchGroupMemberList(
     },
   });
 
-  const users = await fetchUsers(members.map((x) => x.gmb_uid));
+  const users = await orm.fetchUsers(members.map((x) => x.gmb_uid));
 
   return [
     total,
