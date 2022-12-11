@@ -1,20 +1,18 @@
 import type { Dispatcher } from 'undici';
 import { request, Client, ProxyAgent } from 'undici';
 
-const VerifyURL = 'https://hcaptcha.com/siteverify';
+import { HTTPS_PROXY } from '../config';
 
-interface Config {
-  secretKey?: string;
-}
+const VerifyURL = 'https://hcaptcha.com/siteverify';
 
 export class HCaptcha {
   private readonly secretKey: string;
   private readonly client: Dispatcher;
 
-  constructor({ secretKey = '0x0000000000000000000000000000000000000000' }: Config = {}) {
+  constructor(secretKey: string) {
     this.secretKey = secretKey;
-    if (process.env.HTTPS_PROXY) {
-      this.client = new ProxyAgent(process.env.HTTPS_PROXY);
+    if (HTTPS_PROXY) {
+      this.client = new ProxyAgent(HTTPS_PROXY);
     } else {
       this.client = new Client('https://hcaptcha.com', { pipelining: 2 });
     }

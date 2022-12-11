@@ -7,9 +7,8 @@ import httpCodes from 'http-status-codes';
 
 import { NeedLoginError } from '../../../auth';
 import * as session from '../../../auth/session';
-import { redisPrefix } from '../../../config';
+import { hCaptchaConfigKey, redisPrefix } from '../../../config';
 import { HCaptcha } from '../../../externals/hcaptcha';
-import { logger } from '../../../logger';
 import { Tag } from '../../../openapi';
 import prisma from '../../../prisma';
 import redis from '../../../redis';
@@ -46,10 +45,7 @@ export async function setup(app: App) {
     duration: 600,
   });
 
-  if (!process.env.HCAPTCHA_SECRET_KEY) {
-    logger.warn('MISSING env, will fallback to testing key');
-  }
-  const hCaptcha = new HCaptcha({ secretKey: process.env.HCAPTCHA_SECRET_KEY });
+  const hCaptcha = new HCaptcha(hCaptchaConfigKey);
 
   app.addSchema(User);
   app.addSchema(ErrorRes);

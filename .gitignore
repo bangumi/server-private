@@ -6,3 +6,4 @@ dist
 yarn-error.log
 lib/generated/
 coverage/
+config.yaml
