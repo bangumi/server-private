@@ -29,6 +29,10 @@ export function addRoute(app: FastifyInstance) {
       return;
     }
 
+    if (route.schema.hide) {
+      return;
+    }
+
     if (!route.schema.operationId) {
       if (!route.schema.operationId) {
         throw new Error(`missing operationId on router ${route.url}`);

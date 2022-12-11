@@ -19,7 +19,7 @@ export async function setup(app: App) {
     defaultContext: { production },
   });
 
-  app.get('/', async (req, res) => {
+  app.get('/', { schema: { hide: true } }, async (req, res) => {
     if (req.auth.login) {
       const user = await fetchUser(req.auth.userID);
       await res.view('index', { user });
