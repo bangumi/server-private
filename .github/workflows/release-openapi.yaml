@@ -31,7 +31,7 @@ jobs:
         with:
           path: dev-docs
           token: ${{ secrets.PAT }}
-          title: Update Openapi Specification from bangumi/server
+          title: Update Openapi Specification from bangumi/GraphQL
           push-to-fork: Trim21-bot/dev-docs
-          branch: 'update-upstream'
+          branch: 'update-upstream-graphql'
           author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
