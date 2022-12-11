@@ -52,6 +52,10 @@ type transformer = <S extends FastifySchema = FastifySchema>({
 }) => { schema: JSONObject; url: string };
 
 const transform: transformer = ({ schema, url }) => {
+  if (!schema) {
+    return { schema, url };
+  }
+
   const response = (schema.response ?? {}) as Record<number, unknown>;
   if (!response[500]) {
     response[500] = t.Ref(ErrorRes, {

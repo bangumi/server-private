@@ -1,0 +1,78 @@
+<script src='https://js.hcaptcha.com/1/api.js?hl=zh-CN' defer></script>
+<div class='row'>
+  <ul class='list-group error-details'></ul>
+</div>
+<div class='row'>
+  <form>
+    <div class='mb-3'>
+      <label for='exampleInputEmail1' class='form-label'>Email address</label>
+      <input
+        type='email'
+        class='form-control'
+        name='email'
+        id='exampleInputEmail1'
+        aria-describedby='emailHelp'
+      />
+      <div id='emailHelp' class='form-text'>email</div>
+    </div>
+    <div class='mb-3'>
+      <label for='exampleInputPassword1' class='form-label'>Password</label>
+      <input
+        type='password'
+        name='password'
+        class='form-control'
+        id='exampleInputPassword1'
+      />
+    </div>
+    <div class='mb-3'>
+      {{#if production}}
+        <div class='h-captcha' data-sitekey='4874acee-9c6e-4e47-99ad-e2ea1606961f'></div>
+      {{else}}
+        <div class='h-captcha' data-sitekey='10000000-ffff-ffff-ffff-000000000001'></div>
+      {{/if}}
+    </div>
+    <button type='submit' class='btn btn-primary'>Submit</button>
+  </form>
+</div>
+<script>
+  $(document).ready(function() {
+    $("form").on("submit", function(e) {
+      e.preventDefault();
+      $(".error-details").html("");
+      const data = {};
+      Array.from($("form").serializeArray()).forEach(({ name, value }, index) => {
+        data[name] =
+          value;
+      });
+
+      async function submit() {
+        const res = await fetch('/p1/login', {
+          method: "post",
+          headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data),
+        });
+        if
+        (res.status > 300) {
+          hcaptcha.reset();
+          const d = await res.json();
+          if (res.status === 401) {
+            const remain = res.headers.get('X-RateLimit-Remaining');
+            $(".error-details").append(`<li
+      class="m-1 list-group-item list-group-item-danger">${d.message}</li>`).append(`<li class="m-1
+      list-group-item list-group-item-danger">剩余登录次数: ${remain}</li>`);
+          } else {
+            console.log(d);
+            d.details.forEach((detail, index) => {
+              $(".error-details").prepend(`<li
+      class="m-1 list-group-item list-group-item-danger">${detail}</li>`);
+            });
+          }
+        } else {
+          console.log(await res.json());
+          location.href = '/p1/demo/';
+        }
+      }
+
+      submit();
+    });
+  });
+</script>

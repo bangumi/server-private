@@ -5,6 +5,7 @@ import * as session from '../../auth/session';
 import * as me from '../routes/me';
 import * as swagger from '../swagger';
 import type { App } from '../type';
+import * as demo from './demo';
 import { CookieKey } from './routes/login';
 import * as login from './routes/login';
 import * as group from './routes/topics';
@@ -36,4 +37,5 @@ export async function setup(app: App) {
   await app.register(login.setup);
   await app.register(me.setup);
   await app.register(group.setup);
+  await app.register(demo.setup, { prefix: '/demo' });
 }
