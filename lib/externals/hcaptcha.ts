@@ -1,5 +1,7 @@
-import type { Dispatcher } from 'undici';
-import { request, Client, ProxyAgent } from 'undici';
+import type { OptionsInit } from 'got';
+import { Options } from 'got';
+import * as got from 'got';
+import ProxyAgent from 'proxy-agent';
 
 import { HTTPS_PROXY } from '../config';
 
@@ -7,28 +9,33 @@ const VerifyURL = 'https://hcaptcha.com/siteverify';
 
 export class HCaptcha {
   private readonly secretKey: string;
-  private readonly client: Dispatcher;
+  private readonly client: got.Got;
 
   constructor(secretKey: string) {
     this.secretKey = secretKey;
+
+    const opt: OptionsInit = {};
     if (HTTPS_PROXY) {
-      this.client = new ProxyAgent(HTTPS_PROXY);
-    } else {
-      this.client = new Client('https://hcaptcha.com', { pipelining: 2 });
+      const agent = new ProxyAgent(HTTPS_PROXY);
+      opt.agent = { http: agent, https: agent };
     }
+
+    this.client = got.create({
+      options: new Options(VerifyURL, opt),
+      handlers: [],
+      mutableDefaults: false,
+    });
   }
 
   async verify(response: string): Promise<boolean> {
-    const { body } = await request(VerifyURL, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-      body: `secret=${this.secretKey}&response=${encodeURIComponent(response)}`,
-      dispatcher: this.client,
-    });
-
-    const data = (await body.json()) as { success: boolean };
+    const data = await this.client
+      .post(VerifyURL, {
+        form: {
+          secret: this.secretKey,
+          response,
+        },
+      })
+      .json<{ success: boolean }>();
 
     return data.success;
   }
