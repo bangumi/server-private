@@ -9,6 +9,9 @@ vi.mock('../lib/redis', () => {
 
 vi.mock('../lib/externals/hcaptcha', () => {
   return {
+    createHCaptchaDriver: () => {
+      return { verify: (res: string) => Promise.resolve(res === 'fake-response') };
+    },
     HCaptcha: class {
       verify(res: string): Promise<boolean> {
         return Promise.resolve(res === 'fake-response');

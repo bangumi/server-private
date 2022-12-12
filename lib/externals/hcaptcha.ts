@@ -3,9 +3,21 @@ import { Options } from 'got';
 import * as got from 'got';
 import ProxyAgent from 'proxy-agent';
 
-import { HTTPS_PROXY } from '../config';
+import { HTTPS_PROXY, stage } from '../config';
 
 const VerifyURL = 'https://hcaptcha.com/siteverify';
+
+export function createHCaptchaDriver(secretKey: string) {
+  if (stage) {
+    return {
+      verify(): Promise<boolean> {
+        return Promise.resolve(true);
+      },
+    };
+  }
+
+  return new HCaptcha(secretKey);
+}
 
 export class HCaptcha {
   private readonly secretKey: string;
