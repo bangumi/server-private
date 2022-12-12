@@ -2,8 +2,8 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 export const Doujin = t.Object({
-  id: t.String(),
-  name: t.String(),
+  id: t.Integer(),
+  name: t.Optional(t.String()),
   title: t.String(),
 });
 
@@ -18,7 +18,7 @@ export const Mono = t.Object({
 export type MonoMemo = Static<typeof Mono>;
 
 export const Index = t.Object({
-  idx_id: t.String(),
+  idx_id: t.Integer(),
   idx_title: t.String(),
   idx_desc: t.String(),
 });
@@ -28,22 +28,26 @@ export const Index = t.Object({
  */
 export type IndexMemo = Static<typeof Index>;
 
-/**
- * cat=TimelineType.Relation && type == 2
- */
-export const Relation = t.Object({
+const relation = t.Object({
   uid: t.String(),
   username: t.String(),
   nickname: t.String(),
 });
+
+/**
+ * cat=TimelineType.Relation && type == 2
+ */
+export const Relation = t.Union([t.Record(t.String(), relation), relation]);
 export type RelationMemo = Static<typeof Relation>;
 
-export const Group = t.Object({
+const group = t.Object({
   grp_id: t.String(),
   grp_name: t.String(),
   grp_title: t.String(),
   grp_desc: t.String(),
 });
+
+export const Group = t.Union([t.Record(t.String(), group), group]);
 
 export type GroupMemo = Static<typeof Group>;
 

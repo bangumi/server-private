@@ -92,9 +92,10 @@ const validator: Record<
 export const timeline = {
   convertFromOrm(s: Prisma.Timeline): Timeline {
     if (s.cat === TimelineCat.Relation && (s.type === 2 || s.type === 3 || s.type === 4)) {
+      // @ts-expect-error 写一个 type safe的太麻烦了，直接忽略了
       return {
         cat: TimelineCat.Relation,
-        type: 0,
+        type: s.type,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         memo: php.unserialize(s.memo),
         id: s.id,
@@ -109,17 +110,49 @@ export const timeline = {
         };
       }
       return { cat: TimelineCat.Say, type: 0, memo: s.memo, id: s.id };
+    } else if (s.cat === TimelineCat.Index) {
+      const memo = php.unserialize(s.memo) as IndexMemo;
+      if (typeof memo.idx_id === 'string') {
+        memo.idx_id = Number.parseInt(memo.idx_id);
+      }
+      return { cat: s.cat, type: 0, memo: memo, id: s.id };
+    } else if (s.cat === TimelineCat.Doujin) {
+      const memo = php.unserialize(s.memo) as DoujinMemo;
+      if (typeof memo.id === 'string') {
+        memo.id = Number.parseInt(memo.id);
+      }
+      return { cat: s.cat, type: s.type as 0, memo: memo, id: s.id };
+    } else if (s.cat === TimelineCat.Progress) {
+      const memo = php.unserialize(s.memo) as ProgressMemo;
+      if (typeof memo.subject_id === 'string') {
+        memo.subject_id = Number.parseInt(memo.subject_id);
+      }
+
+      if (typeof memo.eps_total === 'string') {
+        memo.eps_total = Number.parseInt(memo.eps_total);
+      }
+
+      if (memo.vols_total === '??') {
+        memo.vols_total = undefined;
+      }
+
+      for (const [key, value] of Object.entries(memo)) {
+        // eslint-disable-next-line   @typescript-eslint/no-unnecessary-condition
+        if (value === null) {
+          // @ts-expect-error php null
+          memo[key] = undefined;
+        }
+      }
+
+      return { cat: s.cat, type: s.type as 0, memo: memo, id: s.id };
     } else if (
       s.cat === TimelineCat.Wiki ||
-      s.cat === TimelineCat.Doujin ||
       s.cat === TimelineCat.Mono ||
       s.cat === TimelineCat.Subject ||
-      s.cat === TimelineCat.Blog ||
-      s.cat === TimelineCat.Index ||
-      s.cat === TimelineCat.Progress
+      s.cat === TimelineCat.Blog
     ) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat: s.cat, type: 0, memo: php.unserialize(s.memo), id: s.id };
+      return { cat: s.cat, type: s.type as 0, memo: php.unserialize(s.memo), id: s.id };
     }
 
     throw new Error(`unexpected cat ${s.cat} type ${s.type}`);
@@ -131,7 +164,10 @@ export const timeline = {
       const valid = [...C.Errors(t.memo)];
       if (valid.length > 0) {
         throw new TypeError(
-          'not valid:\n' + JSON.stringify(t.memo) + '\n' + valid.map((x) => x.message).join('\n'),
+          'not valid:\n' +
+            JSON.stringify(t) +
+            '\n' +
+            valid.map((x) => `${x.path}: ${x.message}`).join('\n'),
         );
       }
     }

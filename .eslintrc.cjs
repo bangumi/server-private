@@ -27,6 +27,7 @@ module.exports = {
     'unused-imports/no-unused-imports': 'error',
     curly: ['error'],
     'tsdoc/syntax': 'error',
+    'unicorn/prefer-switch': 'off',
     'no-new-object': 'error',
     'no-console': 'error',
     'no-new-wrappers': 'error',
