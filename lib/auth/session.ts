@@ -30,7 +30,8 @@ export async function create(user: { id: number; regTime: number }): Promise<str
 
 /**
  * TODO: add cache
- * @param sessionID store in user cookies
+ *
+ * @param sessionID - Store in user cookies
  */
 export async function get(sessionID: string): Promise<IAuth | null> {
   const session = await prisma.chii_os_web_sessions.findFirst({

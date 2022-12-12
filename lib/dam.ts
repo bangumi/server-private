@@ -1,6 +1,4 @@
-/**
- * 敏感词过滤
- */
+/** 敏感词过滤 */
 import RE2 from 're2';
 
 import { fileConfig } from './config';
