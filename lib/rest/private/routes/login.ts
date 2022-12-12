@@ -84,6 +84,7 @@ export async function setup(app: App) {
     },
   );
 
+  app.addSchema(ValidationError);
   app.post(
     '/login',
     {
