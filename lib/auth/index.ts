@@ -19,7 +19,7 @@ const TokenNotValidError = createError(
 );
 const MissingUserError = createError('MISSING_USER', "can't find user", 500);
 
-export enum UserGroup {
+export const enum UserGroup {
   Unknown = 0,
   Admin = 1,
   BangumiAdmin,

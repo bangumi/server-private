@@ -14,7 +14,8 @@
     "start": "nodemon",
     "test": "vitest --run",
     "vitest": "vitest",
-    "run-file": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
+    "run-file": "node --no-warnings -r dotenv/config --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
+    "e": "TS_NODE_PROJECT=tsconfig.prod.json node --no-warnings --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
     "prepare": "prisma generate && husky install"
   },
   "nodemonConfig": {
@@ -63,10 +64,10 @@
     "prettier-plugin-prisma": "^4.4.0",
     "prettier-plugin-sh": "^0.12.8",
     "prisma": "^4.7.1",
-    "typescript": "~4.9.4",
     "vite": "^4.0.0",
     "vitest": "^0.25.7"
   },
+  "$comment": "keep dependencies @types in 'dependencies' so we don't need to enable tsconfig isolateModules",
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.2.0",
@@ -95,6 +96,7 @@
     "pino-pretty": "^9.1.1",
     "prom-client": "^14.1.0",
     "re2": "^1.18.0",
+    "typescript": "~4.9.4",
     "ts-node": "^10.9.1",
     "undici": "^5.14.0"
   },

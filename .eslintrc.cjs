@@ -120,6 +120,14 @@ module.exports = {
         groups: ['builtin', 'external', ['index', 'sibling', 'parent'], 'internal', 'object'],
       },
     ],
+    'no-restricted-syntax': [
+      'error',
+      // ban just non-const enums
+      {
+        selector: 'TSEnumDeclaration:not([const=true])',
+        message: "use 'const enum'",
+      },
+    ],
   },
   settings: {
     'import/parsers': {
