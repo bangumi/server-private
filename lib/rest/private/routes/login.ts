@@ -7,7 +7,7 @@ import httpCodes from 'http-status-codes';
 
 import { NeedLoginError } from '../../../auth';
 import * as session from '../../../auth/session';
-import { hCaptchaConfigKey, redisPrefix } from '../../../config';
+import { HCAPTCHA_SECRET_KEY, redisPrefix } from '../../../config';
 import { createHCaptchaDriver } from '../../../externals/hcaptcha';
 import { Tag } from '../../../openapi';
 import prisma from '../../../prisma';
@@ -45,7 +45,7 @@ export async function setup(app: App) {
     duration: 600,
   });
 
-  const hCaptcha = createHCaptchaDriver(hCaptchaConfigKey);
+  const hCaptcha = createHCaptchaDriver(HCAPTCHA_SECRET_KEY);
 
   app.addSchema(ResUser);
   app.addSchema(ErrorRes);
