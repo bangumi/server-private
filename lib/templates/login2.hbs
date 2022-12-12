@@ -26,11 +26,7 @@
       />
     </div>
     <div class='mb-3'>
-      {{#if production}}
-        <div class="cf-turnstile" data-sitekey="{{ TURNSTILE_SITE_KEY }}" data-theme='light'></div>
-      {{else}}
-        <div class="cf-turnstile" data-sitekey="1x00000000000000000000AA" data-theme='light'></div>
-      {{/if}}
+      <div class="cf-turnstile" data-sitekey="{{ TURNSTILE_SITE_KEY }}" data-theme='light'></div>
     </div>
     <button type='submit' class='btn btn-primary'>Submit</button>
   </form>
