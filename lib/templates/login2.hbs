@@ -53,7 +53,7 @@
         });
         if
         (res.status > 300) {
-          hcaptcha.reset();
+          turnstile.reset();
           const d = await res.json();
           if (res.status === 401) {
             const remain = res.headers.get('X-RateLimit-Remaining');
