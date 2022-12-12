@@ -8,9 +8,9 @@ import { HTTPS_PROXY, stage } from '../config';
 const VerifyURL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 /**
- * return a fake or testing cloudflare turnstile captcha driver
+ * Return a fake or testing cloudflare turnstile captcha driver
+ *
  * @see https://developers.cloudflare.com/turnstile/frequently-asked-questions/#are-there-sitekeys-and-secret-keys-that-can-be-used-for-testing
- * @param secretKey
  */
 export function createTurnstileDriver(secretKey: string) {
   if (stage) {

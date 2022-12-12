@@ -8,9 +8,7 @@ export const logger = pino({
   timestamp() {
     return `,"time":"${new Date().toISOString()}"`;
   },
-  /**
-   * 使用 config.ts 的 production 变量会导致循环 import，所以直接从环境变量中读取
-   */
+  /** 使用 config.ts 的 production 变量会导致循环 import，所以直接从环境变量中读取 */
   transport:
     process.env.NODE_ENV === 'production'
       ? undefined

@@ -1,20 +1,16 @@
 /**
- * 从环境变量和 `projectRoot/config.yaml` 读取配置
- * 可以设置的值
- *   env.NODE_ENV 'production' | 'stage' | 'test'
- *    在测试时会被 vitest 会设置此环境变量为 'test'，在生产环境会被设置为 'production', 在测试部属环境被会设置为 stage
+ * 从环境变量和 `projectRoot/config.yaml` 读取配置 可以设置的值 env.NODE_ENV 'production' | 'stage' | 'test' 在测试时会被
+ * vitest 会设置此环境变量为 'test'，在生产环境会被设置为 'production', 在测试部属环境被会设置为 stage
  *
- *   env.REDIS_URI 默认 'redis://127.0.0.1:3306/0'
+ * Env.REDIS_URI 默认 'redis://127.0.0.1:3306/0'
  *
- *   env.HCAPTCHA_SECRET_KEY 默认为 hCaptcha 的开发用key '0x0000000000000000000000000000000000000000'
+ * Env.HCAPTCHA_SECRET_KEY 默认为 hCaptcha 的开发用key '0x0000000000000000000000000000000000000000'
  *
- *   env.HTTPS_PROXY 默认为空，如果设置了的话，会作为 hCaptcha 的代理
+ * Env.HTTPS_PROXY 默认为空，如果设置了的话，会作为 hCaptcha 的代理
  *
- *   env.DATABASE_URL
- *     prisma 会使用这个环境变量，未在这个文件内读取
+ * Env.DATABASE_URL prisma 会使用这个环境变量，未在这个文件内读取
  *
  * 配置文件见 `configFileType` 变量，定义了配置文件的 json schema
- *
  */
 import fs from 'node:fs';
 import path from 'node:path';
