@@ -26,7 +26,8 @@
       />
     </div>
     <div class='mb-3'>
-      <div class="cf-turnstile" data-sitekey="{{ TURNSTILE_SITE_KEY }}" data-theme='light'></div>
+      <div class="cf-turnstile" data-action='login' data-sitekey="{{ TURNSTILE_SITE_KEY }}"
+           data-theme='light'></div>
     </div>
     <button type='submit' class='btn btn-primary'>Submit</button>
   </form>
@@ -38,9 +39,12 @@
       $(".error-details").html("");
       const data = {};
       Array.from($("form").serializeArray()).forEach(({ name, value }, index) => {
-        data[name] =
-          value;
+        data[name] = value;
       });
+
+      if (!'cf-turnstile-response' in data) {
+        return;
+      }
 
       async function submit() {
         const res = await fetch('/p1/login2', {

@@ -15,7 +15,7 @@ import prisma from '../../../prisma';
 import redis from '../../../redis';
 import { avatar } from '../../../response';
 import type { IResUser } from '../../../types';
-import { ErrorRes, formatError, formatErrors, ResUser } from '../../../types';
+import { ErrorRes, formatError, formatErrors, ResUser, ValidationError } from '../../../types';
 import Limiter from '../../../utils/rate-limit';
 import type { App } from '../../type';
 
@@ -50,6 +50,7 @@ export async function setup(app: App) {
 
   app.addSchema(ResUser);
   app.addSchema(ErrorRes);
+  app.addSchema(ValidationError);
 
   app.post(
     '/logout',
@@ -98,7 +99,7 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
               'Set-Cookie': t.String({ description: 'example: "sessionID=12345abc"' }),
             },
           }),
-          400: t.Ref(ErrorRes, {
+          400: t.Ref(ValidationError, {
             description: '缺少字段等',
           }),
           401: t.Ref(ErrorRes, {
@@ -196,9 +197,7 @@ site-key 是 \`0x4AAAAAAAAu7JMNAS8r2xDe\``,
               'Set-Cookie': t.String({ description: 'example: "sessionID=12345abc"' }),
             },
           }),
-          400: t.Ref(ErrorRes, {
-            description: '缺少字段等',
-          }),
+          400: t.Ref(ValidationError),
           401: t.Ref(ErrorRes, {
             description: '验证码错误/账号密码不匹配',
             headers: {
