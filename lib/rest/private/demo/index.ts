@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fastifyView } from '@fastify/view';
 import handlebars from 'handlebars';
 
-import { production, projectRoot } from '../../../config';
+import { production, projectRoot, TURNSTILE_SITE_KEY } from '../../../config';
 import { fetchUser } from '../../../orm';
 import { avatar } from '../../../response';
 import type { App } from '../../type';
@@ -35,6 +35,6 @@ export async function setup(app: App) {
   });
 
   app.get('/login2', { schema: { hide: true } }, async (req, res) => {
-    await res.view('login2');
+    await res.view('login2', { TURNSTILE_SITE_KEY });
   });
 }

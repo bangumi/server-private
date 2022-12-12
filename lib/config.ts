@@ -64,6 +64,7 @@ export const hCaptchaConfigKey =
 
 export const TURNSTILE_SECRET_KEY =
   process.env.TURNSTILE_SECRET_KEY ?? '1x0000000000000000000000000000000AA';
+export const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY ?? '1x00000000000000000000AA';
 
 export const HTTPS_PROXY = process.env.HTTPS_PROXY ?? '';
 
