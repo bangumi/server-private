@@ -27,13 +27,18 @@ import Ajv from 'ajv';
 import type { RedisOptions } from 'ioredis';
 import * as yaml from 'js-yaml';
 
-import { logger } from './logger';
-
 // read from env
 
-export const production = process.env.NODE_ENV === 'production';
-export const stage = process.env.NODE_ENV === 'stage';
-export const testing = process.env.NODE_ENV === 'test';
+const {
+  HCAPTCHA_SECRET_KEY = '0x0000000000000000000000000000000000000000',
+  HTTPS_PROXY = '',
+  NODE_ENV,
+  REDIS_URI,
+} = process.env;
+
+export const production = NODE_ENV === 'production';
+export const stage = NODE_ENV === 'stage';
+export const testing = NODE_ENV === 'test';
 
 export const projectRoot = url.fileURLToPath(new URL('..', import.meta.url));
 export const pkg = JSON.parse(
@@ -42,7 +47,7 @@ export const pkg = JSON.parse(
 
 export const redisPrefix = `graphql-${pkg.version}`;
 
-const u = url.parse(process.env.REDIS_URI ?? 'redis://127.0.0.1:3306/0');
+const u = url.parse(REDIS_URI ?? 'redis://127.0.0.1:3306/0');
 
 const [username, password] = (u.auth ?? '').split(':', 2);
 
@@ -50,19 +55,12 @@ export const redisOption = {
   host: u.hostname ?? '127.0.0.1',
   port: u.port ? Number.parseInt(u.port) : 3306,
   db: u.pathname ? Number.parseInt(u.pathname.slice(1)) : 0,
-  username: username,
-  password: password,
+  username,
+  password,
   lazyConnect: true,
 } satisfies RedisOptions;
 
-if (!process.env.HCAPTCHA_SECRET_KEY) {
-  logger.warn('MISSING env, will fallback to hcaptcha testing key');
-}
-
-export const hCaptchaConfigKey =
-  process.env.HCAPTCHA_SECRET_KEY ?? '0x0000000000000000000000000000000000000000';
-
-export const HTTPS_PROXY = process.env.HTTPS_PROXY ?? '';
+export { HCAPTCHA_SECRET_KEY, HTTPS_PROXY };
 
 // read config file
 
@@ -77,15 +75,13 @@ export const fileConfig = yaml.load(configFileContent) as Static<typeof configFi
 
 // validate config file
 
-const ajv = new Ajv({ allErrors: true });
-
 const configFileType = t.Object({
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
   disable_words: t.Optional(t.String()),
   banned_domain: t.Optional(t.String()),
 });
 
-const schema = ajv.compile(configFileType);
+const schema = new Ajv({ allErrors: true }).compile(configFileType);
 
 const valid = schema(fileConfig);
 
