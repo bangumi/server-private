@@ -84,7 +84,6 @@ export async function setup(app: App) {
     },
   );
 
-  app.addSchema(ValidationError);
   app.post(
     '/login',
     {
@@ -187,8 +186,10 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
       schema: {
         description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
 
-site-key 是 \`0x4AAAAAAAAu7JMNAS8r2xDe\``,
-        operationId: 'login',
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
+        operationId: 'login2',
         tags: [Tag.Auth],
         response: {
           200: t.Ref(ResUser, {
