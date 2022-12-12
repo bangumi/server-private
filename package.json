@@ -31,7 +31,7 @@
     "execMap": {
       "ts": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
     },
-    "ext": "ts,js,json,html,hbs"
+    "ext": "ts,js,json,html"
   },
   "author": "",
   "license": "MIT",
@@ -67,7 +67,6 @@
     "vite": "^4.0.0",
     "vitest": "^0.25.7"
   },
-  "$comment": "keep dependencies @types in 'dependencies' so we don't need to enable tsconfig isolateModules",
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.2.0",
@@ -81,6 +80,7 @@
     "dayjs": "^1.11.7",
     "fastify": "^4.10.2",
     "fastify-metrics": "^10.0.0",
+    "got": "^12.5.3",
     "graphql": "^16.6.0",
     "handlebars": "^4.7.7",
     "http-status-codes": "^2.2.0",
@@ -95,10 +95,10 @@
     "pino": "^8.7.0",
     "pino-pretty": "^9.1.1",
     "prom-client": "^14.1.0",
+    "proxy-agent": "^5.0.0",
     "re2": "^1.18.0",
     "ts-node": "^10.9.1",
-    "typescript": "~4.9.4",
-    "undici": "^5.14.0"
+    "typescript": "^4.9.4"
   },
   "prettier": {
     "printWidth": 100,
