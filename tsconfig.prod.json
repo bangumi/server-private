@@ -1,0 +1,10 @@
+// production tsconfig, ignore missing lib types
+
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "strict": false,
+    "skipLibCheck": true
+  }
+}

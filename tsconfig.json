@@ -12,8 +12,10 @@
     "lib": ["ES2022"],
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "isolatedModules": true,
-    "declaration": true,
+    "isolatedModules": false,
+    "preserveConstEnums": false,
+    "sourceMap": true,
+    "declaration": false,
     "noEmit": true,
     "rootDir": ".",
     "baseUrl": "."

@@ -1,13 +1,13 @@
 import type { IReply } from '../orm';
 import type { IAuth } from './index';
 
-export enum TopicDisplay {
+export const enum TopicDisplay {
   Ban = 0,
   Normal = 1,
   Review = 2,
 }
 
-export enum ReplyState {
+export const enum ReplyState {
   Normal = 0, // 正常
   // AdminCloseTopic 管理员关闭主题 https://bgm.tv/subject/topic/12629#post_108127
   AdminCloseTopic = 1, // 关闭
