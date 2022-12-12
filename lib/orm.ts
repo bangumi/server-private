@@ -434,7 +434,7 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
         lastpost: now.unix(),
         dateline: now.unix(),
         replies: 0,
-        display: 0,
+        display: post.display,
       },
     });
 
