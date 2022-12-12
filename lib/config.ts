@@ -32,6 +32,8 @@ import * as yaml from 'js-yaml';
 const {
   HCAPTCHA_SECRET_KEY = '0x0000000000000000000000000000000000000000',
   HTTPS_PROXY = '',
+  TURNSTILE_SECRET_KEY = '1x0000000000000000000000000000000AA',
+  TURNSTILE_SITE_KEY = '1x00000000000000000000AA',
   NODE_ENV,
   REDIS_URI,
 } = process.env;
@@ -60,7 +62,7 @@ export const redisOption = {
   lazyConnect: true,
 } satisfies RedisOptions;
 
-export { HCAPTCHA_SECRET_KEY, HTTPS_PROXY };
+export { HCAPTCHA_SECRET_KEY, HTTPS_PROXY, TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY };
 
 // read config file
 
