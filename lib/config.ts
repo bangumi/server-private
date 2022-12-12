@@ -1,8 +1,8 @@
 /**
  * 从环境变量和 `projectRoot/config.yaml` 读取配置
  * 可以设置的值
- *   env.NODE_ENV 'production' 或者 'test'
- *    在测试时会被 vitest 会设置此环境变量为 'test'，在生产环境会被设置为 'production'
+ *   env.NODE_ENV 'production' | 'stage' | 'test'
+ *    在测试时会被 vitest 会设置此环境变量为 'test'，在生产环境会被设置为 'production', 在测试部属环境被会设置为 stage
  *
  *   env.REDIS_URI 默认 'redis://127.0.0.1:3306/0'
  *
@@ -32,6 +32,7 @@ import { logger } from './logger';
 // read from env
 
 export const production = process.env.NODE_ENV === 'production';
+export const stage = process.env.NODE_ENV === 'stage';
 export const testing = process.env.NODE_ENV === 'test';
 
 export const projectRoot = url.fileURLToPath(new URL('..', import.meta.url));
