@@ -14,7 +14,7 @@ import prisma from '../../../prisma';
 import redis from '../../../redis';
 import { avatar } from '../../../response';
 import type { IResUser } from '../../../types';
-import { ErrorRes, formatError, ResUser } from '../../../types';
+import { ErrorRes, formatError, formatErrors, ResUser } from '../../../types';
 import Limiter from '../../../utils/rate-limit';
 import type { App } from '../../type';
 
@@ -28,8 +28,8 @@ const TooManyRequestsError = createError(
 
 const CaptchaError = createError('CAPTCHA_ERROR', 'wrong captcha', httpCodes.UNAUTHORIZED);
 
-const UsernameOrPasswordError = createError(
-  'USERNAME_PASSWORD_ERROR',
+const EmailOrPasswordError = createError(
+  'EMAIL_PASSWORD_ERROR',
   'email does not exists or email and password not match',
   httpCodes.UNAUTHORIZED,
 );
@@ -107,10 +107,7 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
               'X-RateLimit-Limit': t.Integer({ description: 'total limit per 10 minutes' }),
               'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
             },
-            'x-examples': {
-              CaptchaError: { value: formatError(CaptchaError()) },
-              UsernameOrPasswordError: { value: formatError(UsernameOrPasswordError()) },
-            },
+            'x-examples': formatErrors(new CaptchaError(), new EmailOrPasswordError()),
           }),
           429: t.Ref(ErrorRes, {
             description: '失败次数太多，需要过一段时间再重试',
@@ -160,10 +157,10 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
 
       const user = await prisma.members.findFirst({ where: { email } });
       if (!user) {
-        throw new UsernameOrPasswordError();
+        throw new EmailOrPasswordError();
       }
       if (!(await comparePassword(user.password_crypt, password))) {
-        throw new UsernameOrPasswordError();
+        throw new EmailOrPasswordError();
       }
 
       const token = await session.create({

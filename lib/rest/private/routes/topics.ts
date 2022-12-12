@@ -5,7 +5,7 @@ import { NotAllowedError } from '../../../auth';
 import { ReplyState, rule, TopicDisplay } from '../../../auth/rule';
 import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
-import { Tag } from '../../../openapi';
+import { Security, Tag } from '../../../openapi';
 import type { ITopic, IUser, Page } from '../../../orm';
 import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
@@ -368,6 +368,7 @@ export async function setup(app: App) {
             id: t.Integer({ description: 'new post topic id' }),
           }),
         },
+        security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
           {
             title: t.String({ minLength: 1 }),

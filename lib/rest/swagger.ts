@@ -10,6 +10,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { pkg, projectRoot } from '../config';
 import { Security } from '../openapi';
 import { ErrorRes } from '../types';
+import { CookieKey } from './private/routes/login';
 
 const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
 
@@ -101,6 +102,16 @@ export async function privateAPI(app: FastifyInstance) {
     info: {
       version: pkg.version,
       title: 'hello',
+    },
+    components: {
+      securitySchemes: {
+        [Security.CookiesSession]: {
+          type: 'apiKey',
+          in: 'cookie',
+          name: CookieKey,
+          description: '使用 [login](#/auth/login) 登录',
+        },
+      },
     },
   });
 }

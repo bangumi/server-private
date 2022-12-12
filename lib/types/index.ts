@@ -64,3 +64,13 @@ export function formatError(e: FastifyError): Static<typeof ErrorRes> {
     statusCode: statusCode,
   };
 }
+
+export function formatErrors(
+  ...errors: FastifyError[]
+): Record<string, { value: Static<typeof ErrorRes> }> {
+  return Object.fromEntries(
+    errors.map((e) => {
+      return [e.code, { value: formatError(e) }];
+    }),
+  );
+}
