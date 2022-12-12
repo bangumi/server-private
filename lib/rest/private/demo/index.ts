@@ -33,4 +33,8 @@ export async function setup(app: App) {
   app.get('/login', { schema: { hide: true } }, async (req, res) => {
     await res.view('login', {});
   });
+
+  app.get('/login2', { schema: { hide: true } }, async (req, res) => {
+    await res.view('login2');
+  });
 }

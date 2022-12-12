@@ -62,6 +62,9 @@ if (!process.env.HCAPTCHA_SECRET_KEY) {
 export const hCaptchaConfigKey =
   process.env.HCAPTCHA_SECRET_KEY ?? '0x0000000000000000000000000000000000000000';
 
+export const TURNSTILE_SECRET_KEY =
+  process.env.TURNSTILE_SECRET_KEY ?? '1x0000000000000000000000000000000AA';
+
 export const HTTPS_PROXY = process.env.HTTPS_PROXY ?? '';
 
 // read config file
