@@ -7,7 +7,7 @@ import httpCodes from 'http-status-codes';
 
 import { NeedLoginError } from '../../../auth';
 import * as session from '../../../auth/session';
-import { hCaptchaConfigKey, redisPrefix, TURNSTILE_SECRET_KEY } from '../../../config';
+import { HCAPTCHA_SECRET_KEY, redisPrefix, TURNSTILE_SECRET_KEY } from '../../../config';
 import { createHCaptchaDriver } from '../../../externals/hcaptcha';
 import { createTurnstileDriver } from '../../../externals/turnstile';
 import { Tag } from '../../../openapi';
@@ -46,7 +46,7 @@ export async function setup(app: App) {
     duration: 600,
   });
 
-  const hCaptcha = createHCaptchaDriver(hCaptchaConfigKey);
+  const hCaptcha = createHCaptchaDriver(HCAPTCHA_SECRET_KEY);
 
   app.addSchema(ResUser);
   app.addSchema(ErrorRes);
@@ -84,6 +84,7 @@ export async function setup(app: App) {
     },
   );
 
+  app.addSchema(ValidationError);
   app.post(
     '/login',
     {
@@ -99,9 +100,7 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
               'Set-Cookie': t.String({ description: 'example: "sessionID=12345abc"' }),
             },
           }),
-          400: t.Ref(ValidationError, {
-            description: '缺少字段等',
-          }),
+          400: t.Ref(ValidationError),
           401: t.Ref(ErrorRes, {
             description: '验证码错误/账号密码不匹配',
             headers: {

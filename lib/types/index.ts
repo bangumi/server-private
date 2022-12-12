@@ -51,7 +51,7 @@ export const ValidationError = t.Object(
     message: t.String(),
     statusCode: t.Integer(),
   },
-  { $id: 'ValidationError', description: 'fastify validation error response' },
+  { $id: 'ValidationError', description: `request data validation error` },
 );
 
 export const ErrorRes = t.Object(
