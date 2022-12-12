@@ -107,6 +107,35 @@ export async function setup(app: App) {
     },
   );
 
+  const SubReply = t.Object(
+    {
+      id: t.Integer(),
+      creator: t.Ref(ResUser),
+      createdAt: t.Integer(),
+      isFriend: t.Boolean(),
+      text: t.String(),
+      state: t.Integer(),
+    },
+    { $id: 'SubReply' },
+  );
+
+  app.addSchema(SubReply);
+
+  const Reply = t.Object(
+    {
+      id: t.Integer(),
+      isFriend: t.Boolean(),
+      replies: t.Array(t.Ref(SubReply)),
+      creator: t.Ref(ResUser),
+      createdAt: t.Integer(),
+      text: t.String(),
+      state: t.Integer(),
+    },
+    { $id: 'Reply' },
+  );
+
+  app.addSchema(Reply);
+
   const TopicDetail = t.Object(
     {
       id: t.Integer(),
@@ -116,26 +145,7 @@ export async function setup(app: App) {
       text: t.String(),
       state: t.Integer(),
       createdAt: t.Integer(),
-      replies: t.Array(
-        t.Object({
-          id: t.Integer(),
-          isFriend: t.Boolean(),
-          replies: t.Array(
-            t.Object({
-              id: t.Integer(),
-              creator: t.Ref(ResUser),
-              createdAt: t.Integer(),
-              isFriend: t.Boolean(),
-              text: t.String(),
-              state: t.Integer(),
-            }),
-          ),
-          creator: t.Ref(ResUser),
-          createdAt: t.Integer(),
-          text: t.String(),
-          state: t.Integer(),
-        }),
-      ),
+      replies: t.Array(t.Ref(Reply)),
     },
     { $id: 'TopicDetail' },
   );
@@ -147,7 +157,7 @@ export async function setup(app: App) {
     {
       schema: {
         description: '获取帖子列表',
-        operationId: 'getGroupTopic',
+        operationId: 'getGroupTopicDetail',
         tags: [Tag.Topic],
         params: t.Object({
           id: t.Integer({}),
