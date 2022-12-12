@@ -45,6 +45,15 @@ export const Paged = <T extends TSchema>(type: T) =>
     total: t.Integer(),
   });
 
+export const ValidationError = t.Object(
+  {
+    error: t.String(),
+    message: t.String(),
+    statusCode: t.Integer(),
+  },
+  { $id: 'ValidationError', description: `request data validation error` },
+);
+
 export const ErrorRes = t.Object(
   {
     code: t.String(),
