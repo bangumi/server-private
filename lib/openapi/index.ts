@@ -6,4 +6,5 @@ export const Tag = {
 export const Security = {
   HTTPBearer: 'HTTPBearer',
   OptionalHTTPBearer: 'OptionalHTTPBearer',
+  CookiesSession: 'CookiesSession',
 } as const;
