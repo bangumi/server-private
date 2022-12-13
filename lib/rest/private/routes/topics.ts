@@ -442,6 +442,14 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a reply')],
     },
+    /**
+     * TODO: 给被回复人发送通知
+     *
+     * @param auth -
+     * @param content - 回帖内容
+     * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
+     * @param topicID - 帖子 ID
+     */
     async ({ auth, body: { content, relatedID = 0 }, params: { topicID } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
