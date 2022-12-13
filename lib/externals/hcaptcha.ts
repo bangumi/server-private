@@ -1,9 +1,5 @@
-import type { OptionsInit } from 'got';
-import { Options } from 'got';
-import * as got from 'got';
-import ProxyAgent from 'proxy-agent';
-
-import { HTTPS_PROXY, stage } from '../config';
+import { stage } from '../config';
+import { WithHttpClient } from './base';
 
 const VerifyURL = 'https://hcaptcha.com/siteverify';
 
@@ -19,24 +15,13 @@ export function createHCaptchaDriver(secretKey: string) {
   return new HCaptcha(secretKey);
 }
 
-export class HCaptcha {
+export class HCaptcha extends WithHttpClient {
   private readonly secretKey: string;
-  private readonly client: got.Got;
 
   constructor(secretKey: string) {
+    super(VerifyURL);
+
     this.secretKey = secretKey;
-
-    const opt: OptionsInit = {};
-    if (HTTPS_PROXY) {
-      const agent = new ProxyAgent(HTTPS_PROXY);
-      opt.agent = { http: agent, https: agent };
-    }
-
-    this.client = got.create({
-      options: new Options(VerifyURL, opt),
-      handlers: [],
-      mutableDefaults: false,
-    });
   }
 
   async verify(response: string): Promise<boolean> {
@@ -45,6 +30,9 @@ export class HCaptcha {
         form: {
           secret: this.secretKey,
           response,
+        },
+        timeout: {
+          request: 30000,
         },
       })
       .json<{ success: boolean }>();

@@ -1,9 +1,5 @@
-import type { OptionsInit } from 'got';
-import { Options } from 'got';
-import * as got from 'got';
-import ProxyAgent from 'proxy-agent';
-
-import { HTTPS_PROXY, stage } from '../config';
+import { stage } from '../config';
+import { WithHttpClient } from './base';
 
 const VerifyURL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
@@ -24,24 +20,13 @@ export function createTurnstileDriver(secretKey: string) {
   return new Turnstile(secretKey);
 }
 
-export class Turnstile {
+export class Turnstile extends WithHttpClient {
   private readonly secretKey: string;
-  private readonly client: got.Got;
 
   constructor(secretKey: string) {
+    super(VerifyURL);
+
     this.secretKey = secretKey;
-
-    const opt: OptionsInit = {};
-    if (HTTPS_PROXY) {
-      const agent = new ProxyAgent(HTTPS_PROXY);
-      opt.agent = { http: agent, https: agent };
-    }
-
-    this.client = got.create({
-      options: new Options(VerifyURL, opt),
-      handlers: [],
-      mutableDefaults: false,
-    });
   }
 
   async verify(response: string): Promise<boolean> {
@@ -50,6 +35,9 @@ export class Turnstile {
         form: {
           secret: this.secretKey,
           response,
+        },
+        timeout: {
+          request: 3000,
         },
       })
       .json<{ success: boolean }>();
