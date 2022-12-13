@@ -7,16 +7,8 @@ import { createServer } from './server';
 const server = await createServer({
   logger: logger.child({ name: 'fastify' }, { level: production ? 'warn' : 'info' }),
   disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
-  genReqId: (req): string => {
-    if (!req.headers.cf_ray) {
-      return nanoid();
-    }
-
-    if (Array.isArray(req.headers.cf_ray)) {
-      return req.headers.cf_ray.join(';');
-    }
-
-    return req.headers.cf_ray;
+  genReqId: (): string => {
+    return `dummy-ray-${nanoid()}`;
   },
 });
 

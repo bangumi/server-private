@@ -26,7 +26,8 @@
       "node_modules/**"
     ],
     "watch": [
-      "lib"
+      "lib",
+      ".env"
     ],
     "execMap": {
       "ts": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
