@@ -419,6 +419,59 @@ export async function setup(app: App) {
       });
     },
   );
+
+  app.post(
+    '/groups/-/topics/:topicID/replies',
+    {
+      schema: {
+        operationId: 'createGroupReply',
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602] }),
+        }),
+        response: {
+          200: t.Null(),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+        body: t.Object(
+          {
+            relatedID: t.Integer({ examples: [0], default: 0 }),
+            content: t.String({ minLength: 1 }),
+          },
+          { examples: [{ content: 'post contents' }] },
+        ),
+      },
+      preHandler: [requireLogin('creating a reply')],
+    },
+    async ({ auth, body: { content, relatedID = 0 }, params: { topicID } }) => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+
+      const topic = await orm.fetchTopicDetails('group', topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+
+      if (relatedID) {
+        const parents = topic.replies.flatMap((x) => {
+          return [x.id, x.replies.map((x) => x.id)];
+        });
+
+        if (!parents.includes(relatedID)) {
+          throw new NotFoundError(`parent topic id ${relatedID}`);
+        }
+      }
+
+      await orm.createTopicReply({
+        topicID: topicID,
+        userID: auth.userID,
+        relatedID,
+        content,
+      });
+
+      return null;
+    },
+  );
 }
 
 async function addCreators(topics: ITopic[], parentID: number): Promise<Static<typeof Topic>[]> {
