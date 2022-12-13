@@ -36,13 +36,13 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     req.clientIP = req.ip;
   });
 
-  server.get('/metrics', async (_req, res) => {
-    const prismaMetrics = await prisma.$metrics.prometheus();
-    const appMetrics = await register.metrics();
-    return res.send(appMetrics + prismaMetrics);
-  });
-
   if (!testing) {
+    server.get('/metrics', async (_req, res) => {
+      const prismaMetrics = await prisma.$metrics.prometheus();
+      const appMetrics = await register.metrics();
+      return res.send(appMetrics + prismaMetrics);
+    });
+
     await server.register(metricsPlugin, {
       endpoint: null,
       routeMetrics: {
