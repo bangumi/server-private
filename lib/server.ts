@@ -7,7 +7,7 @@ import { register } from 'prom-client';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
-import { testing } from './config';
+import { production, stage, testing } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
 import prisma from './prisma';
@@ -21,6 +21,10 @@ declare module 'fastify' {
 }
 
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
+  if (production || stage) {
+    opts.requestIdHeader ??= 'cf-ray';
+  }
+
   const server = fastify(opts);
 
   server.decorateRequest('clientIP', '');
