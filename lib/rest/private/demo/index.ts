@@ -8,7 +8,6 @@ import { fetchUser } from '../../../orm';
 import { avatar } from '../../../response';
 import type { App } from '../../type';
 
-
 export async function setup(app: App) {
   const liquid = new Liquid({
     root: path.resolve(projectRoot, 'lib/templates'),
