@@ -1,10 +1,7 @@
-<html lang='en'>
-<head>
-  {% include 'partial/head' %}
-</head>
-<body>
-{% include 'partial/header' %}
+{% assign title = 'user' %}
+{% layout 'layout' %}
 
+{% block content %}
 <div class='container mt-5'>
   <div class='container mt-5'>
     {{ user.username }} 已经登录
@@ -17,5 +14,4 @@
     }
   </script>
 </div>
-</body>
-</html>
+{% endblock %}

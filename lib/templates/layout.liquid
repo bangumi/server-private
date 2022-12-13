@@ -1,0 +1,13 @@
+<html lang='en'>
+  <head>
+    {% include 'partial/head' %}
+    {% block head %}
+    {% endblock %}
+  </head>
+  <body>
+    {% include 'partial/header' %}
+
+    {% block content -%}
+    {%- endblock %}
+  </body>
+</html>
