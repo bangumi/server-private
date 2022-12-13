@@ -160,7 +160,7 @@ export async function setup(app: App) {
         operationId: 'getGroupTopicDetail',
         tags: [Tag.Topic],
         params: t.Object({
-          id: t.Integer({}),
+          id: t.Integer({ examples: [371602] }),
         }),
         response: {
           200: t.Ref(TopicDetail),

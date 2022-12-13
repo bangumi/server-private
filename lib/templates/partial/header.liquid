@@ -1,3 +1,29 @@
+<style>
+  #header {
+    position: relative;
+    height: 50px;
+    background: #fcfcfc;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 0 0 1px rgba(250, 250, 250, 0.8);
+    background: linear-gradient(top, #fcfcfc, #fafaf9);
+  }
+
+  #header a.avatar {
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3), 0 0 2px rgba(0, 0, 0, 0.3) inset;
+    border-radius: 3px;
+  }
+
+  #header a.avatar img {
+    padding: 5px;
+    min-width: 50px;
+  }
+
+  div.bg {
+    background: url('https://bgm.tv/img/rc3/bg_musume.png') 0 -10px no-repeat;
+    width: 40px;
+    height: 50px;
+  }
+</style>
 <div id='header' class='container-fluid'>
   <div class='row d-flex justify-content-around h-100'>
     <div class='col-6'>
@@ -7,7 +33,6 @@
             <div class='bg musume_0'></div>
           </a>
         </div>
-        {{ title }}
         <div class='col-5 d-flex align-content-around align-items-center'>demo</div>
       </div>
     </div>

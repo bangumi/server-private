@@ -1,13 +1,12 @@
-<html lang='en'>
-<head>
-  {% include 'partial/head' %}
-</head>
-<body>
-{% include 'partial/header' %}
+{% assign title = 'login' %}
+{% layout 'layout' %}
 
+{% block head %}
+<script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>
+{% endblock %}
+
+{% block content %}
 <div class='container mt-5'>
-  <script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>
-
   <div class='row'>
     <ul class='list-group error-details'></ul>
   </div>
@@ -16,37 +15,37 @@
       <div class='mb-3'>
         <label for='exampleInputEmail1' class='form-label'>Email address</label>
         <input
-            type='email'
-            class='form-control'
-            name='email'
-            id='exampleInputEmail1'
-            aria-describedby='emailHelp'
+          type='email'
+          class='form-control'
+          name='email'
+          id='exampleInputEmail1'
+          aria-describedby='emailHelp'
         >
         <div id='emailHelp' class='form-text'>email</div>
       </div>
       <div class='mb-3'>
         <label for='exampleInputPassword1' class='form-label'>Password</label>
         <input
-            type='password'
-            name='password'
-            class='form-control'
-            id='exampleInputPassword1'
+          type='password'
+          name='password'
+          class='form-control'
+          id='exampleInputPassword1'
         >
       </div>
       <div class='mb-3'>
         <div
-            class='cf-turnstile'
-            data-action='login'
-            data-sitekey='{{ TURNSTILE_SITE_KEY }}'
-            data-theme='light'
+          class='cf-turnstile'
+          data-action='login'
+          data-sitekey='{{ TURNSTILE_SITE_KEY }}'
+          data-theme='light'
         ></div>
       </div>
       <button type='submit' class='btn btn-primary'>Submit</button>
     </form>
   </div>
   <script>
-    $(document).ready(function() {
-      $('form').on('submit', function(e) {
+    $(document).ready(function () {
+      $('form').on('submit', function (e) {
         e.preventDefault();
         $('.error-details').html('');
         const data = {};
@@ -90,6 +89,4 @@
     });
   </script>
 </div>
-</body>
-</html>
-
+{% endblock %}
