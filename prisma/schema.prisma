@@ -187,6 +187,7 @@ model GroupMembers {
   @@map("chii_group_members")
 }
 
+// 回复
 model GroupPosts {
   id       Int    @id @default(autoincrement()) @map("grp_pst_id") @db.UnsignedMediumInt
   mid      Int    @map("grp_pst_mid") @db.UnsignedMediumInt
