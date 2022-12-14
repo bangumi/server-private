@@ -1,4 +1,7 @@
+import crypto from 'node:crypto';
+
 import { createError } from '@fastify/error';
+import * as bcrypt from 'bcrypt';
 import dayjs from 'dayjs';
 import NodeCache from 'node-cache';
 
@@ -145,4 +148,12 @@ async function userToAuth(user: IUser): Promise<IAuth> {
     allowNsfw: user.regTime - dayjs().unix() <= 60 * 60 * 24 * 90,
     groupID: user.groupID,
   };
+}
+
+function processPassword(s: string): string {
+  return crypto.createHash('md5').update(s).digest('hex');
+}
+
+export async function comparePassword(hashed: string, input: string): Promise<boolean> {
+  return bcrypt.compare(processPassword(input), hashed);
 }
