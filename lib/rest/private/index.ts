@@ -9,6 +9,7 @@ import * as demo from './demo';
 import { CookieKey } from './routes/login';
 import * as login from './routes/login';
 import * as group from './routes/topics';
+import * as user from './routes/user';
 
 export async function setup(app: App) {
   await swagger.privateAPI(app);
@@ -37,5 +38,6 @@ export async function setup(app: App) {
   await app.register(login.setup);
   await app.register(me.setup);
   await app.register(group.setup);
+  await app.register(user.setup);
   await app.register(demo.setup, { prefix: '/demo' });
 }
