@@ -1,4 +1,5 @@
 import type { Dayjs } from 'dayjs';
+import * as lodash from 'lodash-es';
 
 import type { Prisma } from './generated/client';
 import prisma from './prisma';
@@ -85,6 +86,43 @@ export async function count(userID: number): Promise<number> {
   const u = await prisma.members.findFirst({ where: { id: userID } });
 
   return u?.new_notify ?? 0;
+}
+
+export interface INotify {
+  id: number;
+  type: Type;
+  createdAt: number;
+  fromUid: number;
+}
+
+interface Filter {
+  unread?: boolean;
+}
+
+/** 返回通知 */
+export async function list(userID: number, { unread = true }: Filter = {}): Promise<INotify[]> {
+  const notifications = await prisma.notify.findMany({
+    where: { uid: userID, unread },
+    orderBy: { dateline: 'desc' },
+    take: 30,
+  });
+
+  if (notifications.length === 0) {
+    return [];
+  }
+
+  const fieldIds = lodash.uniq(notifications.map((x) => x.notify_field_id));
+
+  await prisma.notifyField.findMany({ where: { id: { in: fieldIds } } });
+
+  return notifications.map((x) => {
+    return {
+      id: x.id,
+      type: x.type,
+      createdAt: x.dateline,
+      fromUid: x.from_uid,
+    } satisfies INotify;
+  });
 }
 
 const _settings = {

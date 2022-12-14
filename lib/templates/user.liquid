@@ -8,6 +8,20 @@
   {% if notifyCount %}
     <div class='row'>{{ notifyCount }} 条新通知</div>
   {% endif %}
+
+  {% if notify.length %}
+    <div class='row'>
+      <ul class='list-group'>
+        {% for x in notify %}
+          <li class='list-group-item'>
+            <span>time={{ x.createdAt | date: "'%Y-%m-%d %H:%M:%S'" }}</span>
+            <span>id={{ x.id }}</span>
+            <span>type={{ x.type }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
   <div class='row'>
     <button class='btn btn-danger' onclick='logout()'>登出</button>
   </div>
@@ -18,4 +32,24 @@
     }
   </script>
 </div>
+
+<script>
+  const wsUrl = function () {
+    var loc = new URL('/p1/sub/notify', window.location);
+
+    if (loc.protocol === 'https') {
+      return 'wss' + loc.toString().slice('https'.length);
+    }
+
+    return 'ws' + loc.toString().slice('http'.length);
+  };
+
+  console.log(wsUrl());
+
+  const webSocket = new WebSocket(wsUrl());
+
+  webSocket.addEventListener('message', (ev) => {
+    console.log(ev);
+  });
+</script>
 {% endblock %}

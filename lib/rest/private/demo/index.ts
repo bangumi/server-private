@@ -26,9 +26,17 @@ export async function setup(app: App) {
   app.get('/', { schema: { hide: true } }, async (req, res) => {
     if (req.auth.login) {
       const user = await fetchUser(req.auth.userID);
+      const notifyCount = await Notify.count(req.auth.userID);
+
+      let notify: Notify.INotify[] = [];
+      if (notifyCount) {
+        notify = await Notify.list(req.auth.userID);
+      }
+
       await res.view('user', {
         user: { ...user, avatar: avatar(user?.img ?? '') },
-        notifyCount: await Notify.count(req.auth.userID),
+        notifyCount,
+        notify,
       });
     } else {
       await res.view('login', { TURNSTILE_SITE_KEY });
