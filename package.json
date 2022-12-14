@@ -59,6 +59,7 @@
     "graphql-tag": "^2.12.6",
     "husky": "^8.0.2",
     "ioredis-mock": "^8.2.2",
+    "jest-mock-extended": "^3.0.1",
     "lint-staged": "^13.1.0",
     "mercurius-integration-testing": "^6.0.1",
     "nodemon": "^2.0.20",

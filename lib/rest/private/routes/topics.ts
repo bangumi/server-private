@@ -11,7 +11,7 @@ import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
-import { createTopicReply, ReplyState } from '../../../topic';
+import * as Topic from '../../../topic';
 import * as res from '../../../types/res';
 import type { App } from '../../type';
 
@@ -429,7 +429,7 @@ export async function setup(app: App) {
         display,
         userID: auth.userID,
         groupID: group.id,
-        state: ReplyState.Normal,
+        state: Topic.ReplyState.Normal,
       });
     },
   );
@@ -488,7 +488,8 @@ export async function setup(app: App) {
         }
       }
 
-      const t = await createTopicReply({
+      const t = await Topic.createTopicReply({
+        type: Topic.Type.group,
         topicID: topicID,
         userID: auth.userID,
         relatedID,
