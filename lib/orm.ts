@@ -493,8 +493,8 @@ export async function createTopicReply({
   content: string;
   relatedID?: number;
   state?: ReplyState;
-}): Promise<void> {
-  await prisma.groupPosts.create({
+}): Promise<number> {
+  const { id } = await prisma.groupPosts.create({
     data: {
       mid: topicID,
       content,
@@ -504,4 +504,6 @@ export async function createTopicReply({
       dateline: dayjs().unix(),
     },
   });
+
+  return id;
 }

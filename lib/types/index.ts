@@ -26,7 +26,7 @@ export const ResUser = t.Object(
   { $id: 'User', title: 'User' },
 );
 
-export const Topic = t.Object(
+export const TopicRes = t.Object(
   {
     id: t.Integer({ description: 'topic id' }),
     creator: ResUser,
