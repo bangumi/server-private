@@ -11,7 +11,8 @@ import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
-import { Avatar, ErrorRes, formatError, Paged, Topic, ResUser } from '../../../types';
+import { Topic, TopicType } from '../../../topic';
+import { Avatar, ErrorRes, formatError, Paged, ResUser, TopicRes } from '../../../types';
 import type { App } from '../../type';
 
 const Group = t.Object(
@@ -43,13 +44,13 @@ const GroupMember = t.Object(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(ErrorRes);
-  app.addSchema(Topic);
+  app.addSchema(TopicRes);
   app.addSchema(Group);
 
   const GroupProfile = t.Object(
     {
       recentAddedMembers: t.Array(t.Ref(GroupMember)),
-      topics: t.Array(t.Ref(Topic)),
+      topics: t.Array(t.Ref(TopicRes)),
       inGroup: t.Boolean({ description: '是否已经加入小组' }),
       group: t.Ref(Group),
       totalTopics: t.Integer(),
@@ -120,6 +121,19 @@ export async function setup(app: App) {
   );
 
   app.addSchema(SubReply);
+
+  const BasicReply = t.Object(
+    {
+      id: t.Integer(),
+      creator: t.Ref(ResUser),
+      createdAt: t.Integer(),
+      text: t.String(),
+      state: t.Integer(),
+    },
+    { $id: 'BasicReply' },
+  );
+
+  app.addSchema(BasicReply);
 
   const Reply = t.Object(
     {
@@ -299,7 +313,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: Paged(t.Ref(Topic)),
+          200: Paged(t.Ref(TopicRes)),
           404: t.Ref(ErrorRes, {
             description: '小组不存在',
             'x-examples': {
@@ -339,7 +353,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: Paged(t.Ref(Topic)),
+          200: Paged(t.Ref(TopicRes)),
           404: t.Ref(ErrorRes, {
             description: '条目不存在',
             'x-examples': {
@@ -429,7 +443,7 @@ export async function setup(app: App) {
           topicID: t.Integer({ examples: [371602] }),
         }),
         response: {
-          200: t.Null(),
+          200: t.Ref(BasicReply),
         },
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
@@ -450,7 +464,11 @@ export async function setup(app: App) {
      * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
      * @param topicID - 帖子 ID
      */
-    async ({ auth, body: { content, relatedID = 0 }, params: { topicID } }) => {
+    async ({
+      auth,
+      body: { content, relatedID = 0 },
+      params: { topicID },
+    }): Promise<Static<typeof BasicReply>> => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
       }
@@ -470,19 +488,30 @@ export async function setup(app: App) {
         }
       }
 
-      await orm.createTopicReply({
+      const newPostID = await orm.createTopicReply({
         topicID: topicID,
         userID: auth.userID,
         relatedID,
         content,
       });
 
-      return null;
+      const t = await Topic.getPost(TopicType.group, newPostID);
+      if (!t) {
+        throw new Error('unexpected non-existing topic');
+      }
+
+      return {
+        id: t.id,
+        state: t.state,
+        createdAt: t.createdAt,
+        text: t.content,
+        creator: userToResCreator(t.user),
+      };
     },
   );
 }
 
-async function addCreators(topics: ITopic[], parentID: number): Promise<Static<typeof Topic>[]> {
+async function addCreators(topics: ITopic[], parentID: number): Promise<Static<typeof TopicRes>[]> {
   const withCreator = await orm.addCreator(topics);
 
   return withCreator.map((x) => {
