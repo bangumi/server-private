@@ -127,6 +127,7 @@ export async function createTopicReply({
           type: notifyType,
           postID: post.id,
           topicID: topic.id,
+          title: topic.title,
         });
       }
 
