@@ -9,7 +9,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 
 import { pkg, projectRoot } from '../config';
 import { Security } from '../openapi';
-import { ErrorRes } from '../types';
+import * as res from '../types/res';
 import { CookieKey } from './private/routes/login';
 
 const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
@@ -64,7 +64,7 @@ const transform: transformer = ({ schema, url }) => {
 
   const response = (schema.response ?? {}) as Record<number, unknown>;
   if (!response[500]) {
-    response[500] = t.Ref(ErrorRes, {
+    response[500] = t.Ref(res.Error, {
       description: '意料之外的服务器错误',
     });
   }

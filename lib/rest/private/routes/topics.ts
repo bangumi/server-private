@@ -11,8 +11,8 @@ import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
-import { Topic, TopicType } from '../../../topic';
-import { Avatar, ErrorRes, formatError, Paged, ResUser, TopicRes } from '../../../types';
+import * as Topic from '../../../topic';
+import * as res from '../../../types/res';
 import type { App } from '../../type';
 
 const Group = t.Object(
@@ -32,7 +32,7 @@ const Group = t.Object(
 type IGroupMember = Static<typeof GroupMember>;
 const GroupMember = t.Object(
   {
-    avatar: Avatar,
+    avatar: res.Avatar,
     id: t.Integer(),
     nickname: t.String(),
     username: t.String(),
@@ -43,14 +43,14 @@ const GroupMember = t.Object(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(ErrorRes);
-  app.addSchema(TopicRes);
+  app.addSchema(res.Error);
+  app.addSchema(res.Topic);
   app.addSchema(Group);
 
   const GroupProfile = t.Object(
     {
       recentAddedMembers: t.Array(t.Ref(GroupMember)),
-      topics: t.Array(t.Ref(TopicRes)),
+      topics: t.Array(t.Ref(res.Topic)),
       inGroup: t.Boolean({ description: '是否已经加入小组' }),
       group: t.Ref(Group),
       totalTopics: t.Integer(),
@@ -76,10 +76,10 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Ref(GroupProfile),
-          404: t.Ref(ErrorRes, {
+          404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
             },
           }),
         },
@@ -111,7 +111,7 @@ export async function setup(app: App) {
   const SubReply = t.Object(
     {
       id: t.Integer(),
-      creator: t.Ref(ResUser),
+      creator: t.Ref(res.User),
       createdAt: t.Integer(),
       isFriend: t.Boolean(),
       text: t.String(),
@@ -125,7 +125,7 @@ export async function setup(app: App) {
   const BasicReply = t.Object(
     {
       id: t.Integer(),
-      creator: t.Ref(ResUser),
+      creator: t.Ref(res.User),
       createdAt: t.Integer(),
       text: t.String(),
       state: t.Integer(),
@@ -140,7 +140,7 @@ export async function setup(app: App) {
       id: t.Integer(),
       isFriend: t.Boolean(),
       replies: t.Array(t.Ref(SubReply)),
-      creator: t.Ref(ResUser),
+      creator: t.Ref(res.User),
       createdAt: t.Integer(),
       text: t.String(),
       state: t.Integer(),
@@ -154,7 +154,7 @@ export async function setup(app: App) {
     {
       id: t.Integer(),
       group: t.Ref(Group),
-      creator: t.Ref(ResUser),
+      creator: t.Ref(res.User),
       title: t.String(),
       text: t.String(),
       state: t.Integer(),
@@ -178,10 +178,10 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Ref(TopicDetail),
-          404: t.Ref(ErrorRes, {
+          404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
             },
           }),
         },
@@ -275,11 +275,11 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: Paged(t.Ref(GroupMember)),
-          404: t.Ref(ErrorRes, {
+          200: res.Paged(t.Ref(GroupMember)),
+          404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
             },
           }),
         },
@@ -313,11 +313,11 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: Paged(t.Ref(TopicRes)),
-          404: t.Ref(ErrorRes, {
+          200: res.Paged(t.Ref(res.Topic)),
+          404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
             },
           }),
         },
@@ -353,11 +353,11 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: Paged(t.Ref(TopicRes)),
-          404: t.Ref(ErrorRes, {
+          200: res.Paged(t.Ref(res.Topic)),
+          404: t.Ref(res.Error, {
             description: '条目不存在',
             'x-examples': {
-              NotFoundError: { value: formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
             },
           }),
         },
@@ -495,7 +495,7 @@ export async function setup(app: App) {
         content,
       });
 
-      const t = await Topic.getPost(TopicType.group, newPostID);
+      const t = await Topic.getPost(Topic.Type.group, newPostID);
       if (!t) {
         throw new Error('unexpected non-existing topic');
       }
@@ -511,7 +511,10 @@ export async function setup(app: App) {
   );
 }
 
-async function addCreators(topics: ITopic[], parentID: number): Promise<Static<typeof TopicRes>[]> {
+async function addCreators(
+  topics: ITopic[],
+  parentID: number,
+): Promise<Static<typeof res.Topic>[]> {
   const withCreator = await orm.addCreator(topics);
 
   return withCreator.map((x) => {
@@ -578,7 +581,7 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
   return members;
 }
 
-export function userToResCreator(user: IUser): Static<typeof ResUser> {
+export function userToResCreator(user: IUser): Static<typeof res.User> {
   return {
     avatar: avatar(user.img),
     username: user.username,

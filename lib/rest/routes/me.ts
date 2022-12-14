@@ -4,14 +4,14 @@ import { NeedLoginError } from '../../auth';
 import { UnexpectedNotFoundError } from '../../errors';
 import { Tag } from '../../openapi';
 import { fetchUser } from '../../orm';
-import { ErrorRes, formatError, ResUser } from '../../types';
+import * as res from '../../types/res';
 import { userToResCreator } from '../private/routes/topics';
 import type { Option, App } from '../type';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App, { tags = [] }: Option) {
-  app.addSchema(ResUser);
-  app.addSchema(ErrorRes);
+  app.addSchema(res.User);
+  app.addSchema(res.Error);
 
   app.get(
     '/me',
@@ -20,8 +20,8 @@ export async function setup(app: App, { tags = [] }: Option) {
         operationId: 'getCurrentUser',
         tags: [Tag.Auth, ...tags],
         response: {
-          200: t.Ref(ResUser),
-          401: t.Ref(ErrorRes, { examples: [formatError(NeedLoginError())] }),
+          200: t.Ref(res.User),
+          401: t.Ref(res.Error, { examples: [res.formatError(NeedLoginError())] }),
         },
       },
     },

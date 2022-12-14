@@ -14,8 +14,7 @@ import { Tag } from '../../../openapi';
 import prisma from '../../../prisma';
 import redis from '../../../redis';
 import { avatar } from '../../../response';
-import type { IResUser } from '../../../types';
-import { ErrorRes, formatError, formatErrors, ResUser, ValidationError } from '../../../types';
+import * as res from '../../../types/res';
 import Limiter from '../../../utils/rate-limit';
 import type { App } from '../../type';
 
@@ -48,9 +47,9 @@ export async function setup(app: App) {
 
   const hCaptcha = createHCaptchaDriver(HCAPTCHA_SECRET_KEY);
 
-  app.addSchema(ResUser);
-  app.addSchema(ErrorRes);
-  app.addSchema(ValidationError);
+  app.addSchema(res.User);
+  app.addSchema(res.Error);
+  app.addSchema(res.ValidationError);
 
   app.post(
     '/logout',
@@ -61,10 +60,10 @@ export async function setup(app: App) {
         tags: [Tag.Auth],
         response: {
           200: {},
-          401: t.Ref(ErrorRes, {
+          401: t.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
-              NeedLoginError: { value: formatError(NeedLoginError('logout')) },
+              NeedLoginError: { value: res.formatError(NeedLoginError('logout')) },
             },
           }),
         },
@@ -94,29 +93,29 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
         operationId: 'login',
         tags: [Tag.Auth],
         response: {
-          200: t.Ref(ResUser, {
+          200: t.Ref(res.User, {
             headers: {
               'Set-Cookie': t.String({ description: 'example: "sessionID=12345abc"' }),
             },
           }),
-          400: t.Ref(ValidationError),
-          401: t.Ref(ErrorRes, {
+          400: t.Ref(res.ValidationError),
+          401: t.Ref(res.Error, {
             description: '验证码错误/账号密码不匹配',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
               'X-RateLimit-Limit': t.Integer({ description: 'total limit per 10 minutes' }),
               'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
             },
-            'x-examples': formatErrors(new CaptchaError(), new EmailOrPasswordError()),
+            'x-examples': res.formatErrors(new CaptchaError(), new EmailOrPasswordError()),
           }),
-          429: t.Ref(ErrorRes, {
+          429: t.Ref(res.Error, {
             description: '失败次数太多，需要过一段时间再重试',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
               'X-RateLimit-Limit': t.Integer({ description: 'limit per 10 minutes' }),
               'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
             },
-            examples: [formatError(TooManyRequestsError())],
+            examples: [res.formatError(TooManyRequestsError())],
           }),
         },
         body: t.Object(
@@ -139,10 +138,10 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
     },
     async function handler(
       { body: { email, password, 'h-captcha-response': hCaptchaResponse }, clientIP },
-      res,
-    ): Promise<IResUser> {
+      reply,
+    ): Promise<res.IUser> {
       const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${clientIP}`);
-      void res.headers({
+      void reply.headers({
         'X-RateLimit-Remaining': remain,
         'X-RateLimit-Limit': LimitInTimeWindow,
         'X-RateLimit-Reset': reset,
@@ -168,7 +167,7 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
         regTime: user.regdate,
       });
 
-      void res.cookie(CookieKey, token, { sameSite: 'strict' });
+      void reply.cookie(CookieKey, token, { sameSite: 'strict' });
 
       return {
         ...user,
@@ -192,29 +191,29 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         operationId: 'login2',
         tags: [Tag.Auth],
         response: {
-          200: t.Ref(ResUser, {
+          200: t.Ref(res.User, {
             headers: {
               'Set-Cookie': t.String({ description: 'example: "sessionID=12345abc"' }),
             },
           }),
-          400: t.Ref(ValidationError),
-          401: t.Ref(ErrorRes, {
+          400: t.Ref(res.ValidationError),
+          401: t.Ref(res.Error, {
             description: '验证码错误/账号密码不匹配',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
               'X-RateLimit-Limit': t.Integer({ description: 'total limit per 10 minutes' }),
               'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
             },
-            'x-examples': formatErrors(new CaptchaError(), new EmailOrPasswordError()),
+            'x-examples': res.formatErrors(new CaptchaError(), new EmailOrPasswordError()),
           }),
-          429: t.Ref(ErrorRes, {
+          429: t.Ref(res.Error, {
             description: '失败次数太多，需要过一段时间再重试',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
               'X-RateLimit-Limit': t.Integer({ description: 'limit per 10 minutes' }),
               'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
             },
-            examples: [formatError(TooManyRequestsError())],
+            examples: [res.formatError(TooManyRequestsError())],
           }),
         },
         body: t.Object(
@@ -237,10 +236,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
     },
     async function handler(
       { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, clientIP },
-      res,
-    ): Promise<IResUser> {
+      reply,
+    ): Promise<res.IUser> {
       const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${clientIP}`);
-      void res.headers({
+      void reply.headers({
         'X-RateLimit-Remaining': remain,
         'X-RateLimit-Limit': LimitInTimeWindow,
         'X-RateLimit-Reset': reset,
@@ -266,7 +265,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         regTime: user.regdate,
       });
 
-      void res.cookie(CookieKey, token, { sameSite: 'strict' });
+      void reply.cookie(CookieKey, token, { sameSite: 'strict' });
 
       return {
         ...user,
