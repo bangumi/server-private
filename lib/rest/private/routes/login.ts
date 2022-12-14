@@ -1,11 +1,8 @@
-import * as crypto from 'node:crypto';
-
 import { createError } from '@fastify/error';
 import { Type as t } from '@sinclair/typebox';
-import * as bcrypt from 'bcrypt';
 import httpCodes from 'http-status-codes';
 
-import { NeedLoginError } from '../../../auth';
+import { comparePassword, NeedLoginError } from '../../../auth';
 import * as session from '../../../auth/session';
 import { HCAPTCHA_SECRET_KEY, redisPrefix, TURNSTILE_SECRET_KEY } from '../../../config';
 import { createHCaptchaDriver } from '../../../externals/hcaptcha';
@@ -274,12 +271,4 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       };
     },
   );
-}
-
-function processPassword(s: string): string {
-  return crypto.createHash('md5').update(s).digest('hex');
-}
-
-export async function comparePassword(hashed: string, input: string): Promise<boolean> {
-  return bcrypt.compare(processPassword(input), hashed);
 }
