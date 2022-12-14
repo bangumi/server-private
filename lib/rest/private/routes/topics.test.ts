@@ -4,9 +4,9 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import type { IAuth } from '../../../auth';
 import { UserGroup } from '../../../auth';
-import { ReplyState } from '../../../auth/rule';
 import * as orm from '../../../orm';
 import { createServer } from '../../../server';
+import { ReplyState } from '../../../topic';
 import * as Topic from '../../../topic';
 import * as topicAPI from './topics';
 
@@ -127,30 +127,44 @@ describe('create group post', () => {
 });
 
 describe('create group post reply', () => {
-  const createTopicReply = vi.fn().mockResolvedValue({ id: 1 });
-  vi.spyOn(orm, 'createTopicReply').mockImplementation(createTopicReply);
+  const createTopicReply = vi.fn().mockResolvedValue({
+    id: 6,
+    content: '',
+    state: ReplyState.Normal,
+    createdAt: dayjs('2021-10-21').unix(),
+    type: Topic.Type.group,
+    topicID: 371602,
+    user: {
+      img: '',
+      username: 'u',
+      groupID: UserGroup.Normal,
+      id: 9,
+      nickname: 'n',
+      regTime: dayjs('2008-10-01').unix(),
+      sign: '',
+    },
+  });
+  const getPostMock = vi.fn().mockResolvedValue({
+    id: 6,
+    content: '',
+    state: ReplyState.Normal,
+    createdAt: dayjs('2021-10-21').unix(),
+    type: Topic.Type.group,
+    topicID: 371602,
+    user: {
+      img: '',
+      username: 'u',
+      groupID: UserGroup.Normal,
+      id: 9,
+      nickname: 'n',
+      regTime: dayjs('2008-10-01').unix(),
+      sign: '',
+    },
+  });
 
   beforeEach(() => {
-    vi.spyOn(Topic, 'getPost').mockImplementation((() => {
-      return Promise.resolve({
-        id: 6,
-        content: '',
-        state: ReplyState.Normal,
-        createdAt: dayjs('2021-10-21').unix(),
-        type: Topic.Type.group,
-        topicID: 371602,
-        user: {
-          img: '',
-          username: 'u',
-          groupID: UserGroup.Normal,
-          id: 9,
-          nickname: 'n',
-          regTime: dayjs('2008-10-01').unix(),
-          sign: '',
-        },
-      });
-    }) satisfies typeof Topic.getPost);
-
+    vi.spyOn(Topic, 'getPost').mockImplementation(getPostMock);
+    vi.spyOn(Topic, 'createTopicReply').mockImplementation(createTopicReply);
     vi.spyOn(orm, 'fetchTopicDetails').mockImplementationOnce(
       (type: 'group', id: number): ReturnType<typeof orm['fetchTopicDetails']> => {
         if (id !== 371602) {

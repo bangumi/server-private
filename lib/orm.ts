@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import * as php from 'php-serialize';
 
-import { ReplyState } from './auth/rule';
 import type { TopicDisplay } from './auth/rule';
 import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
+import type { ReplyState } from './topic';
 
 export interface Page {
   limit?: number;
@@ -340,25 +340,6 @@ interface ITopicDetails {
   replies: IReply[];
 }
 
-interface ITopicBasicInfo {
-  id: number;
-  state: ReplyState;
-}
-
-export async function fetchTopicBasicInfo(
-  type: 'group',
-  id: number,
-): Promise<ITopicBasicInfo | null> {
-  const topic = await prisma.groupTopics.findFirst({
-    where: { id: id },
-  });
-
-  if (!topic) {
-    return null;
-  }
-  return { id: topic.id, state: topic.state };
-}
-
 export async function fetchTopicDetails(type: 'group', id: number): Promise<ITopicDetails | null> {
   const topic = await prisma.groupTopics.findFirst({
     where: { id: id },
@@ -481,29 +462,11 @@ export async function isMemberInGroup(gid: number, uid: number): Promise<boolean
   return Boolean(inGroup);
 }
 
-export async function createTopicReply({
-  topicID,
-  userID,
-  relatedID = 0,
-  content,
-  state = ReplyState.Normal,
-}: {
-  topicID: number;
-  userID: number;
-  content: string;
-  relatedID?: number;
-  state?: ReplyState;
-}): Promise<number> {
-  const { id } = await prisma.groupPosts.create({
-    data: {
-      mid: topicID,
-      content,
-      uid: userID,
-      related: relatedID,
-      state,
-      dateline: dayjs().unix(),
-    },
-  });
+export async function fetchUserX(id: number): Promise<IUser> {
+  const u = await fetchUser(id);
+  if (!u) {
+    throw new UnexpectedNotFoundError(`user ${id}`);
+  }
 
-  return id;
+  return u;
 }
