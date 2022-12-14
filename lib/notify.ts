@@ -45,7 +45,7 @@ export async function create(
     data: {
       uid: destUserID,
       from_uid: sourceUserID,
-      read: false,
+      unread: true,
       dateline: now.unix(),
       type,
       mid,
@@ -53,7 +53,7 @@ export async function create(
     },
   });
 
-  const unread = await t.notify.count({ where: { uid: destUserID, read: false } });
+  const unread = await t.notify.count({ where: { uid: destUserID, unread: true } });
 
   await t.members.update({
     where: { id: destUserID },
