@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from '../../../auth';
-import { ReplyState, rule, TopicDisplay } from '../../../auth/rule';
+import { rule, TopicDisplay } from '../../../auth/rule';
 import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
 import { Security, Tag } from '../../../openapi';
@@ -11,7 +11,7 @@ import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
-import * as Topic from '../../../topic';
+import { createTopicReply, ReplyState } from '../../../topic';
 import * as res from '../../../types/res';
 import type { App } from '../../type';
 
@@ -488,17 +488,12 @@ export async function setup(app: App) {
         }
       }
 
-      const newPostID = await orm.createTopicReply({
+      const t = await createTopicReply({
         topicID: topicID,
         userID: auth.userID,
         relatedID,
         content,
       });
-
-      const t = await Topic.getPost(Topic.Type.group, newPostID);
-      if (!t) {
-        throw new Error('unexpected non-existing topic');
-      }
 
       return {
         id: t.id,
