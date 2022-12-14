@@ -9,6 +9,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Notify {
+  id         Int     @id @default(autoincrement()) @map("nt_id") @db.UnsignedMediumInt
+  uid        Int     @map("nt_uid") @db.UnsignedMediumInt
+  from_uid   Int     @map("nt_from_uid") @db.UnsignedMediumInt
+  read       Boolean @default(false) @map("nt_status") @db.UnsignedTinyInt
+  type       Int     @map("nt_type") @db.UnsignedTinyInt
+  mid        Int     @map("nt_mid") @db.UnsignedMediumInt
+  related_id Int     @map("nt_related_id") @db.UnsignedInt
+  dateline   Int     @map("nt_dateline") @db.UnsignedInt
+
+  @@map(name: "chii_notify")
+}
+
+model PrivateMessage {
+  id           Int       @id @default(autoincrement()) @map("msg_id") @db.UnsignedInt
+  sid          Int       @default(0) @map("msg_sid") @db.UnsignedInt
+  rid          Int       @default(0) @map("msg_rid") @db.UnsignedInt
+  folder       pm_folder @default(inbox) @map("msg_folder")
+  new          Int       @default(0) @map("msg_new") @db.TinyInt
+  title        String    @map("msg_title") @db.VarChar(75)
+  dateline     Int       @default(0) @map("msg_dateline") @db.UnsignedInt
+  message      String    @map("msg_message") @db.Text
+  related_main Int       @default(0) @map("msg_related_main") @db.UnsignedInt
+  related      Int       @map("msg_related") @db.UnsignedInt
+  sdeleted     Int       @default(0) @map("msg_sdeleted") @db.TinyInt
+  rdeleted     Int       @default(0) @map("msg_rdeleted") @db.TinyInt
+
+  @@map(name: "chii_pms")
+}
+
+enum pm_folder {
+  inbox
+  outbox
+}
+
 model chii_apps {
   app_id        Int     @id @default(autoincrement()) @db.MediumInt
   app_type      Boolean
