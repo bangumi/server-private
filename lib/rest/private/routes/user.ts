@@ -1,4 +1,4 @@
-import { setInterval, clearInterval } from 'node:timers';
+import { clearTimeout, setTimeout } from 'node:timers';
 
 import fastifyWebsocket from '@fastify/websocket';
 import { Type as t } from '@sinclair/typebox';
@@ -44,16 +44,20 @@ export async function setup(app: App) {
     },
     (conn, req) => {
       const userID = req.auth.userID;
-      const exec = async () => {
+
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      let interval = setTimeout(async function repeat(): Promise<void> {
+        if (conn.closed) {
+          return;
+        }
         const count = await Notify.count(userID);
         conn.socket.send(JSON.stringify({ count }));
-      };
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        interval = setTimeout(repeat, 5000);
+      });
 
-      void exec();
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      const interval = setInterval(exec, 5000);
       conn.socket.on('close', () => {
-        clearInterval(interval);
+        clearTimeout(interval);
       });
     },
   );
