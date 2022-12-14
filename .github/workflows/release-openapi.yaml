@@ -24,7 +24,7 @@ jobs:
           repository: 'bangumi/dev-docs'
           path: dev-docs
 
-      - run: cp ./dist/private.yaml ./dev-docs/api1.yaml
+      - run: cp ./dist/private.yaml ./dev-docs/api.yaml
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
