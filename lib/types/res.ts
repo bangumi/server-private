@@ -13,8 +13,8 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
-export type IResUser = Static<typeof ResUser>;
-export const ResUser = t.Object(
+export type IUser = Static<typeof User>;
+export const User = t.Object(
   {
     id: t.Integer({ examples: [1] }),
     username: t.String({ examples: ['sai'] }),
@@ -26,10 +26,10 @@ export const ResUser = t.Object(
   { $id: 'User', title: 'User' },
 );
 
-export const TopicRes = t.Object(
+export const Topic = t.Object(
   {
     id: t.Integer({ description: 'topic id' }),
-    creator: ResUser,
+    creator: User,
     title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
@@ -54,7 +54,7 @@ export const ValidationError = t.Object(
   { $id: 'ValidationError', description: `request data validation error` },
 );
 
-export const ErrorRes = t.Object(
+export const Error = t.Object(
   {
     code: t.String(),
     error: t.String(),
@@ -64,7 +64,7 @@ export const ErrorRes = t.Object(
   { $id: 'Error', description: 'fastify default error response' },
 );
 
-export function formatError(e: FastifyError): Static<typeof ErrorRes> {
+export function formatError(e: FastifyError): Static<typeof Error> {
   const statusCode = e.statusCode ?? 500;
   return {
     code: e.code,
@@ -76,7 +76,7 @@ export function formatError(e: FastifyError): Static<typeof ErrorRes> {
 
 export function formatErrors(
   ...errors: FastifyError[]
-): Record<string, { value: Static<typeof ErrorRes> }> {
+): Record<string, { value: Static<typeof Error> }> {
   return Object.fromEntries(
     errors.map((e) => {
       return [e.code, { value: formatError(e) }];

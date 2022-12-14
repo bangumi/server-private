@@ -2,14 +2,14 @@ import { Type as t } from '@sinclair/typebox';
 
 import { NotFoundError } from '../../../errors';
 import { fetchUserByUsername } from '../../../orm';
-import { ErrorRes, ResUser } from '../../../types';
+import * as res from '../../../types/res';
 import { userToResCreator } from '../../private/routes/topics';
 import type { Option, App } from '../../type';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App, { tags = [] }: Option) {
-  app.addSchema(ResUser);
-  app.addSchema(ErrorRes);
+  app.addSchema(res.User);
+  app.addSchema(res.Error);
 
   app.get(
     '/users/:username',
@@ -21,8 +21,8 @@ export async function setup(app: App, { tags = [] }: Option) {
         operationId: 'getUser',
         tags,
         response: {
-          200: t.Ref(ResUser),
-          404: t.Ref(ErrorRes, { description: 'user not found' }),
+          200: t.Ref(res.User),
+          404: t.Ref(res.Error, { description: 'user not found' }),
         },
       },
     },
