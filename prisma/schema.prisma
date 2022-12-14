@@ -13,7 +13,7 @@ model Notify {
   id         Int     @id @default(autoincrement()) @map("nt_id") @db.UnsignedMediumInt
   uid        Int     @map("nt_uid") @db.UnsignedMediumInt
   from_uid   Int     @map("nt_from_uid") @db.UnsignedMediumInt
-  read       Boolean @default(false) @map("nt_status") @db.UnsignedTinyInt
+  unread     Boolean @default(false) @map("nt_status") @db.UnsignedTinyInt
   type       Int     @map("nt_type") @db.UnsignedTinyInt
   mid        Int     @map("nt_mid") @db.UnsignedMediumInt
   related_id Int     @map("nt_related_id") @db.UnsignedInt
