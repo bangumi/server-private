@@ -55,11 +55,7 @@ export async function create(
 export async function count(auth: IAuth): Promise<number> {
   const u = await prisma.members.findFirst({ where: { id: auth.userID } });
 
-  if (u?.newpm) {
-    return 0;
-  }
-
-  return prisma.notify.count({ where: { uid: auth.userID, read: false } });
+  return u?.new_notify ?? 0;
 }
 
 const _settings = {
