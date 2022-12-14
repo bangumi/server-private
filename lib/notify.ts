@@ -19,24 +19,26 @@ export const enum Type {
   CharacterPostReply = 6,
 }
 
-/** Used in transaction */
+interface Creation {
+  destUserID: number;
+  sourceUserID: number;
+  now: Dayjs;
+  type: Type;
+  /** 对应回帖所对应 post id */
+  postID: number;
+  /** 帖子 id, 章节 id ... */
+  topicID: number;
+}
+
+/**
+ * Used in transaction
+ *
+ * !!! 注意，数据库中的 related_id 和 回帖时的 related_id 含义不同 !!! 数据库中的 related_id 含义为回复人的新回复的 id !!! 而 mid
+ * 则是帖子/章节/日志的 id
+ */
 export async function create(
   t: Prisma.TransactionClient,
-  {
-    destUserID,
-    sourceUserID,
-    now,
-    type,
-    mid,
-    relatedID,
-  }: {
-    destUserID: number;
-    sourceUserID: number;
-    now: Dayjs;
-    type: Type;
-    mid: number;
-    relatedID: number;
-  },
+  { destUserID, sourceUserID, now, type, postID, topicID }: Creation,
 ): Promise<void> {
   if (destUserID === sourceUserID) {
     return;
@@ -48,8 +50,8 @@ export async function create(
       unread: true,
       dateline: now.unix(),
       type,
-      mid,
-      related_id: relatedID,
+      mid: postID,
+      related_id: topicID,
     },
   });
 
@@ -72,7 +74,7 @@ const _settings = {
     url: 'SITE_URL/group/topic/',
     url_mobile: 'MOBILE_URL/topic/group/',
     anchor: '#post_',
-    desc: '在你的小组话题 <a href="%2$s%3$s" class="nt_link link_%4$s" target="_blank">%1$s</a> 中发表了新回复',
+    desc: '在你的小组话题 <a href="${url}${main_id}" class="nt_link link_${anchor}s" target="_blank">${title}s</a> 中发表了新回复',
     id: 1,
     hash: 1,
     merge: 1,

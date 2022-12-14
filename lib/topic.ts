@@ -99,26 +99,8 @@ export async function createTopicReply({
 
         dstUserID = replied.uid;
       }
-
-      if (dstUserID !== userID) {
-        const notifyType =
-          relatedID === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
-        await Notify.create(t, {
-          destUserID: dstUserID,
-          sourceUserID: userID,
-          now,
-          type: notifyType,
-          mid: topicID,
-          relatedID,
-        });
-      }
-
-      await t.groupTopics.update({
-        where: { id: topic.id },
-        data: { replies: { increment: 1 } },
-      });
-
-      return t.groupPosts.create({
+      // 创建回帖
+      const post = await t.groupPosts.create({
         data: {
           mid: topicID,
           content,
@@ -128,6 +110,27 @@ export async function createTopicReply({
           dateline: scopeUpdateTime(now.unix(), topicType, topic),
         },
       });
+
+      await t.groupTopics.update({
+        where: { id: topic.id },
+        data: { replies: { increment: 1 } },
+      });
+
+      // 发送通知
+      if (dstUserID !== userID) {
+        const notifyType =
+          relatedID === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
+        await Notify.create(t, {
+          destUserID: dstUserID,
+          sourceUserID: userID,
+          now,
+          type: notifyType,
+          postID: post.id,
+          topicID: topic.id,
+        });
+      }
+
+      return post;
     });
 
     return {
