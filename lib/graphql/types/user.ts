@@ -46,6 +46,10 @@ const GetCurrentUser = extendType({
         _args,
         { auth }: Context,
       ): Promise<{ id: number; username: string; avatar: res.IAvatar; nickname: string } | null> {
+        if (!auth.userID) {
+          return null;
+        }
+
         const user = await fetchUser(auth.userID);
         if (!user) {
           return null;

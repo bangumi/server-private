@@ -43,6 +43,9 @@ export async function fetchUserByUsername(username: string): Promise<IUser | nul
 }
 
 export async function fetchUser(userID: number): Promise<IUser | null> {
+  if (!userID) {
+    throw new Error(`undefined user id ${userID}`);
+  }
   const user = await prisma.members.findFirst({
     where: { id: userID },
   });

@@ -1,0 +1,21 @@
+// Vitest Snapshot v1
+
+exports[`create topic reply 1`] = `
+{
+  "content": undefined,
+  "createdAt": undefined,
+  "id": 2,
+  "state": undefined,
+  "topicID": undefined,
+  "type": "group",
+  "user": {
+    "groupID": 0,
+    "id": 1,
+    "img": "",
+    "nickname": "nickname 1",
+    "regTime": 0,
+    "sign": "sing 1",
+    "username": "1",
+  },
+}
+`;
