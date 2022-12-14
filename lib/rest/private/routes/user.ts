@@ -21,8 +21,11 @@ export async function setup(app: App) {
     {
       websocket: true,
       schema: {
-        description:
-          '使用 websocket 订阅通知\n\nopenapi不能很好的描述websocket api，但是这个api只会返回一种数据',
+        description: [
+          '使用 websocket 订阅通知',
+          'openapi不能很好的描述websocket api，但是这个api只会返回一种数据',
+          'swagger 的 `Try it out` 不支持 websocket，所以会直接显示为 404 响应',
+        ].join('\n\n'),
         operationId: 'subscribeNotify',
         tags: [Tag.User],
         response: {
