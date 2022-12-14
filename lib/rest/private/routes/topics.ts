@@ -451,7 +451,15 @@ export async function setup(app: App) {
             relatedID: t.Integer({ examples: [0], default: 0 }),
             content: t.String({ minLength: 1 }),
           },
-          { examples: [{ content: 'post contents' }] },
+          {
+            examples: [
+              { content: 'post contents' },
+              {
+                content: 'post contents',
+                relatedID: 0,
+              },
+            ],
+          },
         ),
       },
       preHandler: [requireLogin('creating a reply')],

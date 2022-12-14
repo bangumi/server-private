@@ -3,8 +3,12 @@
 
 {% block content %}
 <div class='container mt-5'>
-  <div class='container mt-5'>
-    {{ user.username }} 已经登录
+  <div class='row'>{{ user.username }} 已经登录</div>
+  <div class='row'>user id {{ user.id }}</div>
+  {% if notifyCount %}
+    <div class='row'>{{ notifyCount }} 条新通知</div>
+  {% endif %}
+  <div class='row'>
     <button class='btn btn-danger' onclick='logout()'>登出</button>
   </div>
   <script>

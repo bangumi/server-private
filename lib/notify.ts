@@ -1,6 +1,5 @@
 import type { Dayjs } from 'dayjs';
 
-import type { IAuth } from './auth';
 import type { Prisma } from './generated/client';
 import prisma from './prisma';
 
@@ -39,6 +38,9 @@ export async function create(
     relatedID: number;
   },
 ): Promise<void> {
+  if (destUserID === sourceUserID) {
+    return;
+  }
   await t.notify.create({
     data: {
       uid: destUserID,
@@ -50,10 +52,17 @@ export async function create(
       related_id: relatedID,
     },
   });
+
+  const unread = await t.notify.count({ where: { uid: destUserID, read: false } });
+
+  await t.members.update({
+    where: { id: destUserID },
+    data: { new_notify: unread },
+  });
 }
 
-export async function count(auth: IAuth): Promise<number> {
-  const u = await prisma.members.findFirst({ where: { id: auth.userID } });
+export async function count(userID: number): Promise<number> {
+  const u = await prisma.members.findFirst({ where: { id: userID } });
 
   return u?.new_notify ?? 0;
 }
