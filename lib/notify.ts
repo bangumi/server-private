@@ -28,21 +28,31 @@ interface Creation {
   postID: number;
   /** 帖子 id, 章节 id ... */
   topicID: number;
+  title: string;
 }
 
-/**
- * Used in transaction
- *
- * !!! 注意，数据库中的 related_id 和 回帖时的 related_id 含义不同 !!! 数据库中的 related_id 含义为回复人的新回复的 id !!! 而 mid
- * 则是帖子/章节/日志的 id
- */
+/** Used in transaction */
 export async function create(
   t: Prisma.TransactionClient,
-  { destUserID, sourceUserID, now, type, postID, topicID }: Creation,
+  { destUserID, sourceUserID, now, type, postID, topicID, title }: Creation,
 ): Promise<void> {
   if (destUserID === sourceUserID) {
     return;
   }
+
+  const hash = hashType(type);
+  let notifyField = await t.notifyField.findFirst({ where: { hash, mid: topicID } });
+
+  if (!notifyField) {
+    notifyField = await t.notifyField.create({
+      data: {
+        title: title,
+        hash,
+        mid: topicID,
+      },
+    });
+  }
+
   await t.notify.create({
     data: {
       uid: destUserID,
@@ -50,8 +60,8 @@ export async function create(
       unread: true,
       dateline: now.unix(),
       type,
-      mid: postID,
-      related_id: topicID,
+      notify_field_id: notifyField.id,
+      related_id: postID,
     },
   });
 
@@ -61,6 +71,14 @@ export async function create(
     where: { id: destUserID },
     data: { new_notify: unread },
   });
+}
+
+/** 计算 notifyField 的 hash 字段，参照 settings */
+function hashType(t: Type): number {
+  if (t % 2 === 0) {
+    return t - 1;
+  }
+  return t;
 }
 
 export async function count(userID: number): Promise<number> {
