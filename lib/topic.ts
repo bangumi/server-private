@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 
-import { UnexpectedNotFoundError, UnimplementedError } from './errors';
+import { NotFoundError, UnimplementedError } from './errors';
 import type * as Prisma from './generated/client';
+import * as Notify from './notify';
 import type { IUser } from './orm';
 import { fetchUserX } from './orm';
 import prisma from './prisma';
@@ -65,31 +66,53 @@ export async function getPost(type: Type, id: number): Promise<IPost | null> {
 }
 
 export async function createTopicReply({
-  type,
+  topicType,
   topicID,
   userID,
   relatedID = 0,
   content,
   state = ReplyState.Normal,
 }: {
-  type: Type;
+  topicType: Type;
   topicID: number;
   userID: number;
   content: string;
   relatedID?: number;
   state?: ReplyState;
 }): Promise<IPost> {
-  if (type === Type.group) {
+  const now = dayjs();
+  if (topicType === Type.group) {
     const p = await prisma.$transaction(async (t) => {
       const topic = await t.groupTopics.findFirst({ where: { id: topicID } });
 
       if (!topic) {
-        throw new UnexpectedNotFoundError(`group topic ${topicID}`);
+        throw new NotFoundError(`group topic ${topicID}`);
       }
+
+      let dstUserID = topic.uid;
+
+      if (relatedID === 0) {
+        const replied = await t.groupPosts.findFirst({ where: { id: relatedID } });
+        if (!replied || replied.mid !== topic.id) {
+          throw new NotFoundError(`topic ${relatedID} in ${topic.id}`);
+        }
+
+        dstUserID = replied.uid;
+      }
+
+      const notifyType = relatedID === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
+      await Notify.create(t, {
+        destUserID: dstUserID,
+        sourceUserID: userID,
+        now,
+        type: notifyType,
+        mid: topicID,
+        relatedID,
+      });
 
       await t.groupTopics.update({
         where: { id: topic.id },
-        data: { replies: topic.replies + 1 },
+        data: { replies: { increment: 1 } },
       });
 
       return t.groupPosts.create({
@@ -99,7 +122,7 @@ export async function createTopicReply({
           uid: userID,
           related: relatedID,
           state,
-          dateline: scopeUpdateTime(dayjs().unix(), type, topic),
+          dateline: scopeUpdateTime(now.unix(), topicType, topic),
         },
       });
     });
