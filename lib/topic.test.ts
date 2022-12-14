@@ -20,7 +20,7 @@ afterAll(() => {
 
 test('create topic reply', async () => {
   const r = await Topic.createTopicReply({
-    type: Topic.Type.group,
+    topicType: Topic.Type.group,
     topicID: 10,
     content: 'c',
     userID: 1,

@@ -489,7 +489,7 @@ export async function setup(app: App) {
       }
 
       const t = await Topic.createTopicReply({
-        type: Topic.Type.group,
+        topicType: Topic.Type.group,
         topicID: topicID,
         userID: auth.userID,
         relatedID,
