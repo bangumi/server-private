@@ -44,12 +44,23 @@
     return 'ws' + loc.toString().slice('http'.length);
   };
 
-  console.log(wsUrl());
+  function conn() {
+    const webSocket = new WebSocket(wsUrl());
 
-  const webSocket = new WebSocket(wsUrl());
+    webSocket.addEventListener('message', (ev) => {
+      console.log(ev);
+    });
 
-  webSocket.addEventListener('message', (ev) => {
-    console.log(ev);
-  });
+    webSocket.addEventListener('close', () => {
+      console.log('ws connection closed, reconnect in 5s');
+      setTimeout(() => {
+        console.log('re-connecting websocket');
+        conn();
+      }, 5000);
+    });
+  }
+
+  console.log('connecting websocket');
+  conn();
 </script>
 {% endblock %}
