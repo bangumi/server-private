@@ -91,7 +91,7 @@ export async function createTopicReply({
 
       let dstUserID = topic.uid;
 
-      if (relatedID === 0) {
+      if (relatedID !== 0) {
         const replied = await t.groupPosts.findFirst({ where: { id: relatedID } });
         if (!replied || replied.mid !== topic.id) {
           throw new NotFoundError(`topic ${relatedID} in ${topic.id}`);
@@ -100,15 +100,18 @@ export async function createTopicReply({
         dstUserID = replied.uid;
       }
 
-      const notifyType = relatedID === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
-      await Notify.create(t, {
-        destUserID: dstUserID,
-        sourceUserID: userID,
-        now,
-        type: notifyType,
-        mid: topicID,
-        relatedID,
-      });
+      if (dstUserID !== userID) {
+        const notifyType =
+          relatedID === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
+        await Notify.create(t, {
+          destUserID: dstUserID,
+          sourceUserID: userID,
+          now,
+          type: notifyType,
+          mid: topicID,
+          relatedID,
+        });
+      }
 
       await t.groupTopics.update({
         where: { id: topic.id },

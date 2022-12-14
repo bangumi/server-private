@@ -4,6 +4,7 @@ import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
 import { production, projectRoot, TURNSTILE_SITE_KEY } from '../../../config';
+import * as Notify from '../../../notify';
 import { fetchUser } from '../../../orm';
 import { avatar } from '../../../response';
 import type { App } from '../../type';
@@ -25,7 +26,10 @@ export async function setup(app: App) {
   app.get('/', { schema: { hide: true } }, async (req, res) => {
     if (req.auth.login) {
       const user = await fetchUser(req.auth.userID);
-      await res.view('user', { user: { ...user, avatar: avatar(user?.img ?? '') } });
+      await res.view('user', {
+        user: { ...user, avatar: avatar(user?.img ?? '') },
+        notifyCount: await Notify.count(req.auth.userID),
+      });
     } else {
       await res.view('login', { TURNSTILE_SITE_KEY });
     }
