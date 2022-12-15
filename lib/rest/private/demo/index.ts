@@ -30,7 +30,7 @@ export async function setup(app: App) {
 
       let notify: Notify.INotify[] = [];
       if (notifyCount) {
-        notify = await Notify.list(req.auth.userID);
+        notify = await Notify.list(req.auth.userID, { unread: true, limit: 20 });
       }
 
       await res.view('user', {

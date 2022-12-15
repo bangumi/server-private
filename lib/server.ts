@@ -1,3 +1,4 @@
+import type Ajv from 'ajv';
 import AltairFastify from 'altair-fastify-plugin';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
@@ -23,6 +24,20 @@ declare module 'fastify' {
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   if (production || stage) {
     opts.requestIdHeader ??= 'cf-ray';
+  }
+
+  if (opts.ajv?.plugins?.length) {
+    opts.ajv.plugins.push(function (ajv: Ajv) {
+      ajv.addKeyword({ keyword: 'x-examples' });
+    });
+  } else {
+    opts.ajv = {
+      plugins: [
+        function (ajv: Ajv) {
+          ajv.addKeyword({ keyword: 'x-examples' });
+        },
+      ],
+    };
   }
 
   const server = fastify(opts);

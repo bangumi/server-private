@@ -1,7 +1,7 @@
 import type { Dayjs } from 'dayjs';
 import * as lodash from 'lodash-es';
 
-import type { Prisma } from './generated/client';
+import type * as Prisma from './generated/client';
 import prisma from './prisma';
 
 /**
@@ -34,7 +34,7 @@ interface Creation {
 
 /** Used in transaction */
 export async function create(
-  t: Prisma.TransactionClient,
+  t: Prisma.Prisma.TransactionClient,
   { destUserID, sourceUserID, now, type, postID, topicID, title }: Creation,
 ): Promise<void> {
   if (destUserID === sourceUserID) {
@@ -42,14 +42,14 @@ export async function create(
   }
 
   const hash = hashType(type);
-  let notifyField = await t.notifyField.findFirst({ where: { hash, mid: topicID } });
+  let notifyField = await t.notifyField.findFirst({ where: { hash, topicID } });
 
   if (!notifyField) {
     notifyField = await t.notifyField.create({
       data: {
         title: title,
         hash,
-        mid: topicID,
+        topicID,
       },
     });
   }
@@ -62,7 +62,7 @@ export async function create(
       dateline: now.unix(),
       type,
       notify_field_id: notifyField.id,
-      related_id: postID,
+      postID,
     },
   });
 
@@ -88,23 +88,49 @@ export async function count(userID: number): Promise<number> {
   return u?.new_notify ?? 0;
 }
 
+export async function markAllAsRead(userID: number, id: number[] | undefined): Promise<void> {
+  await prisma.$transaction(async (t) => {
+    await t.notify.updateMany({
+      where: {
+        uid: userID,
+        id: id ? { in: id } : undefined,
+      },
+      data: { unread: false },
+    });
+
+    const c = await t.notify.count({ where: { id: userID, unread: true } });
+
+    await t.members.update({
+      where: { id: userID },
+      data: { new_notify: c },
+    });
+  });
+}
+
 export interface INotify {
   id: number;
   type: Type;
   createdAt: number;
   fromUid: number;
+  title: string;
+  topicID: number;
+  postID: number;
 }
 
 interface Filter {
   unread?: boolean;
+  limit: number;
 }
 
 /** 返回通知 */
-export async function list(userID: number, { unread = true }: Filter = {}): Promise<INotify[]> {
-  const notifications = await prisma.notify.findMany({
+export async function list(
+  userID: number,
+  { unread = true, limit = 30 }: Filter,
+): Promise<INotify[]> {
+  const notifications: Prisma.Notify[] = await prisma.notify.findMany({
     where: { uid: userID, unread },
     orderBy: { dateline: 'desc' },
-    take: 30,
+    take: limit,
   });
 
   if (notifications.length === 0) {
@@ -113,14 +139,24 @@ export async function list(userID: number, { unread = true }: Filter = {}): Prom
 
   const fieldIds = lodash.uniq(notifications.map((x) => x.notify_field_id));
 
-  await prisma.notifyField.findMany({ where: { id: { in: fieldIds } } });
+  const fields = await prisma.notifyField.findMany({
+    where: {
+      id: { in: fieldIds },
+    },
+  });
+
+  const fieldMap = Object.fromEntries(fields.map((x) => [x.id, x]));
 
   return notifications.map((x) => {
+    const field = fieldMap[x.notify_field_id];
     return {
       id: x.id,
       type: x.type,
       createdAt: x.dateline,
       fromUid: x.from_uid,
+      title: field?.title ?? '',
+      topicID: field?.topicID ?? 0,
+      postID: x.postID,
     } satisfies INotify;
   });
 }
