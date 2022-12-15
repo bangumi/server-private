@@ -38,7 +38,7 @@ export async function setup(app: App) {
     '/notify',
     {
       schema: {
-        description: '获取未读通知',
+        summary: '获取未读通知',
         operationId: 'listNotice',
         tags: [Tag.User],
         security: [{ [Security.CookiesSession]: [] }],
@@ -87,6 +87,7 @@ export async function setup(app: App) {
     '/clear-notify',
     {
       schema: {
+        summary: '标记通知为已读',
         description: ['标记通知为已读', '不传id时会清空所有未读通知'].join('\n\n'),
         operationId: 'clearNotice',
         tags: [Tag.User],
@@ -129,9 +130,9 @@ export async function setup(app: App) {
     {
       websocket: true,
       schema: {
+        summary: '使用 websocket 订阅通知',
         description: [
-          '使用 websocket 订阅通知',
-          'openapi不能很好的描述websocket api，但是这个api只会返回一种数据',
+          'openapi不能很好的描述websocket api，但是这个 api 只会返回一种数据',
           'swagger 的 `Try it out` 不支持 websocket，所以会直接显示为 404 响应',
         ].join('\n\n'),
         operationId: 'subscribeNotify',
