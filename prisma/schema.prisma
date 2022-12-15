@@ -16,17 +16,17 @@ model Notify {
   unread          Boolean @default(false) @map("nt_status") @db.UnsignedTinyInt
   type            Int     @map("nt_type") @db.UnsignedTinyInt
   notify_field_id Int     @map("nt_mid") @db.UnsignedMediumInt
-  related_id      Int     @map("nt_related_id") @db.UnsignedInt
+  postID          Int     @map("nt_related_id") @db.UnsignedInt
   dateline        Int     @map("nt_dateline") @db.UnsignedInt
 
   @@map(name: "chii_notify")
 }
 
 model NotifyField {
-  id    Int    @id @default(autoincrement()) @map("ntf_id") @db.UnsignedMediumInt
-  hash  Int    @default(0) @map("ntf_hash") @db.UnsignedTinyInt
-  mid   Int    @map("ntf_rid") @db.UnsignedInt
-  title String @map("ntf_title") @db.VarChar(255)
+  id      Int    @id @default(autoincrement()) @map("ntf_id") @db.UnsignedMediumInt
+  hash    Int    @default(0) @map("ntf_hash") @db.UnsignedTinyInt
+  topicID Int    @map("ntf_rid") @db.UnsignedInt
+  title   String @map("ntf_title") @db.VarChar(255)
   //  id         Int     @id @default(autoincrement()) @map("nt_id") @db.UnsignedMediumInt
   //  uid        Int     @map("nt_uid") @db.UnsignedMediumInt
   //  from_uid   Int     @map("nt_from_uid") @db.UnsignedMediumInt
