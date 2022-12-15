@@ -60,4 +60,5 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: docker build .
+      - run: docker build -t tmp .
+      - run: docker run tmp --help
