@@ -6,9 +6,7 @@ COPY . ./
 
 # generate prisma client
 
-RUN yarn \
-  && rm node_modules -rf \
-  && yarn --prod
+RUN yarn --prod
 
 ##############
 
