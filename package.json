@@ -16,7 +16,8 @@
     "vitest": "vitest",
     "run-file": "node --no-warnings -r dotenv/config --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
     "e": "TS_NODE_PROJECT=tsconfig.prod.json node --no-warnings --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
-    "prepare": "prisma generate && husky install"
+    "postinstall": "prisma generate",
+    "prepare": "husky install"
   },
   "nodemonConfig": {
     "restartable": "rs",
@@ -37,7 +38,6 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@prisma/client": "^4.7.1",
     "@shopify/prettier-plugin-liquid": "^1.0.2",
     "@types/bcrypt": "^5.0.0",
     "@types/ioredis-mock": "^8.2.1",
@@ -80,6 +80,7 @@
     "@fastify/type-provider-typebox": "^2.4.0",
     "@fastify/view": "^7.3.0",
     "@fastify/websocket": "^7.1.1",
+    "@prisma/client": "^4.7.1",
     "@sinclair/typebox": "^0.25.13",
     "ajv": "^8.11.2",
     "altair-fastify-plugin": "^5.0.9",
