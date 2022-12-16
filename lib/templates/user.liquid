@@ -34,13 +34,8 @@
 </div>
 
 <script>
-  const wsUrl = function () {
-    var loc = new URL('/p1/sub/notify', window.location);
-
-    if (loc.protocol === 'https') {
-      return 'wss' + loc.toString().slice('https'.length);
-    }
-
+  const wsUrl = function() {
+    const loc = new URL('/p1/sub/notify', window.location);
     return 'ws' + loc.toString().slice('http'.length);
   };
 

@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 
+import { NotAllowedError } from './auth';
 import { NotFoundError, UnimplementedError } from './errors';
 import type * as Prisma from './generated/client';
 import * as Notify from './notify';
@@ -89,6 +90,10 @@ export async function createTopicReply({
         throw new NotFoundError(`group topic ${topicID}`);
       }
 
+      if (topic.state === ReplyState.AdminCloseTopic) {
+        throw new NotAllowedError('reply to a closed topic');
+      }
+
       let dstUserID = topic.uid;
 
       if (relatedID !== 0) {
@@ -107,13 +112,21 @@ export async function createTopicReply({
           uid: userID,
           related: relatedID,
           state,
-          dateline: scopeUpdateTime(now.unix(), topicType, topic),
+          dateline: now.unix(),
         },
       });
 
+      const topicUpdate: Prisma.Prisma.GroupTopicsUpdateArgs['data'] = {
+        replies: { increment: 1 },
+      };
+
+      if (topic.state !== ReplyState.AdminSilentTopic) {
+        topicUpdate.dateline = scopeUpdateTime(now.unix(), topicType, topic);
+      }
+
       await t.groupTopics.update({
         where: { id: topic.id },
-        data: { replies: { increment: 1 } },
+        data: topicUpdate,
       });
 
       // 发送通知
