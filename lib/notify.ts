@@ -66,7 +66,7 @@ export async function create(
     },
   });
 
-  const unread = await t.notify.count({ where: { uid: destUserID, unread: true } });
+  const unread = await countNotifyRecord(t, destUserID);
 
   await t.members.update({
     where: { id: destUserID },
@@ -82,6 +82,15 @@ function hashType(t: Type): number {
   return t;
 }
 
+/** @internal 从 notify 表中读取真正的未读通知数量 */
+async function countNotifyRecord(
+  t: Prisma.Prisma.TransactionClient,
+  userID: number,
+): Promise<number> {
+  return t.notify.count({ where: { uid: userID, unread: true } });
+}
+
+/** 从用户表的 new_notify 读取未读通知缓存。 */
 export async function count(userID: number): Promise<number> {
   const u = await prisma.members.findFirst({ where: { id: userID } });
 
@@ -98,7 +107,7 @@ export async function markAllAsRead(userID: number, id: number[] | undefined): P
       data: { unread: false },
     });
 
-    const c = await t.notify.count({ where: { id: userID, unread: true } });
+    const c = await countNotifyRecord(t, userID);
 
     await t.members.update({
       where: { id: userID },
