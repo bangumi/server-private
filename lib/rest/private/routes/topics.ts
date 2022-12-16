@@ -7,11 +7,14 @@ import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
 import { Security, Tag } from '../../../openapi';
 import type { ITopic, IUser, Page } from '../../../orm';
+import { isMemberInGroup } from '../../../orm';
 import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
+import { NotJoinPrivateGroupError } from '../../../topic';
 import * as Topic from '../../../topic';
+import { formatErrors } from '../../../types/res';
 import * as res from '../../../types/res';
 import type { App } from '../../type';
 
@@ -330,6 +333,10 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
+      if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
+          throw new NotJoinPrivateGroupError(group.name);
+        }
+
       const [total, topics] = await orm.fetchTopicList('group', group.id, query, {
         display: rule.ListTopicDisplays(auth),
       });
@@ -444,6 +451,9 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Ref(BasicReply),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
+          }),
         },
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(

@@ -1,3 +1,4 @@
+import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 
 import { NotAllowedError } from './auth';
@@ -66,6 +67,12 @@ export async function getPost(type: Type, id: number): Promise<IPost | null> {
   throw new UnimplementedError(`topic ${type}`);
 }
 
+export const NotJoinPrivateGroupError = createError(
+  'NOT_JOIN_PRIVATE_GROUP_ERROR',
+  `you need to join private group '%s' before you create a post or reply`,
+  401,
+);
+
 export async function createTopicReply({
   topicType,
   topicID,
@@ -94,8 +101,22 @@ export async function createTopicReply({
         throw new NotAllowedError('reply to a closed topic');
       }
 
-      let dstUserID = topic.uid;
+      const group = await t.chii_groups.findFirstOrThrow({
+        where: { grp_id: topic.gid },
+      });
 
+      if (!group.grp_accessible && 
+          !(await t.groupMembers.count({
+            where: {
+              gmb_gid: group.grp_id,
+              gmb_uid: userID,
+            },
+          }))
+        ) {
+          throw new NotJoinPrivateGroupError(group.grp_name);
+        }
+
+      let dstUserID = topic.uid;
       if (relatedID !== 0) {
         const replied = await t.groupPosts.findFirst({ where: { id: relatedID } });
         if (!replied || replied.mid !== topic.id) {
