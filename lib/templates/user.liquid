@@ -46,12 +46,14 @@
       console.log(ev);
     });
 
+    const rand = 5000 + Math.random() * 10000;
+
     webSocket.addEventListener('close', () => {
-      console.log('ws connection closed, reconnect in 5s');
+      console.log(`ws connection closed, reconnect in ${rand / 1000}s`);
       setTimeout(() => {
         console.log('re-connecting websocket');
         conn();
-      }, 5000);
+      }, rand);
     });
   }
 
