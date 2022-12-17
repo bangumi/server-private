@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 
 import { production } from './config';
 import { logger } from './logger';
+import { Subscriber } from './redis';
 import { createServer } from './server';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
@@ -17,6 +18,10 @@ const server = await createServer({
   genReqId: (): string => {
     return `dummy-ray-${nanoid()}`;
   },
+});
+
+server.addHook('onReady', async () => {
+  await Subscriber.psubscribe(`event-user-notify-*`);
 });
 
 const port = process.env.PORT ? Number.parseInt(process.env.PORT) : 4000;
