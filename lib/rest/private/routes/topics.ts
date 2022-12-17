@@ -334,8 +334,8 @@ export async function setup(app: App) {
       }
 
       if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
-          throw new NotJoinPrivateGroupError(group.name);
-        }
+        throw new NotJoinPrivateGroupError(group.name);
+      }
 
       const [total, topics] = await orm.fetchTopicList('group', group.id, query, {
         display: rule.ListTopicDisplays(auth),

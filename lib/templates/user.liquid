@@ -34,7 +34,7 @@
 </div>
 
 <script>
-  const wsUrl = function() {
+  const wsUrl = function () {
     const loc = new URL('/p1/sub/notify', window.location);
     return 'ws' + loc.toString().slice('http'.length);
   };

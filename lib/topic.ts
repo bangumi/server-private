@@ -105,16 +105,17 @@ export async function createTopicReply({
         where: { grp_id: topic.gid },
       });
 
-      if (!group.grp_accessible && 
-          !(await t.groupMembers.count({
-            where: {
-              gmb_gid: group.grp_id,
-              gmb_uid: userID,
-            },
-          }))
-        ) {
-          throw new NotJoinPrivateGroupError(group.grp_name);
-        }
+      if (
+        !group.grp_accessible &&
+        !(await t.groupMembers.count({
+          where: {
+            gmb_gid: group.grp_id,
+            gmb_uid: userID,
+          },
+        }))
+      ) {
+        throw new NotJoinPrivateGroupError(group.grp_name);
+      }
 
       let dstUserID = topic.uid;
       if (relatedID !== 0) {
