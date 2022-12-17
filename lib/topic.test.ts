@@ -25,7 +25,7 @@ test('create topic reply', async () => {
     content: 'c',
     userID: 1,
     state: Topic.ReplyState.Normal,
-    relatedID: 0,
+    replyTo: 0,
   });
 
   expect(transaction).toBeCalledTimes(1);

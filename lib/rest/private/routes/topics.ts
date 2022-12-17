@@ -458,7 +458,13 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
           {
-            relatedID: t.Integer({ examples: [0], default: 0 }),
+            replyTo: t.Optional(
+              t.Integer({
+                examples: [0],
+                default: 0,
+                description: '被回复的 topic ID, `0` 代表回复楼主',
+              }),
+            ),
             content: t.String({ minLength: 1 }),
           },
           {
@@ -466,7 +472,7 @@ export async function setup(app: App) {
               { content: 'post contents' },
               {
                 content: 'post contents',
-                relatedID: 0,
+                replyTo: 2,
               },
             ],
           },
@@ -475,8 +481,6 @@ export async function setup(app: App) {
       preHandler: [requireLogin('creating a reply')],
     },
     /**
-     * TODO: 给被回复人发送通知
-     *
      * @param auth -
      * @param content - 回帖内容
      * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
@@ -484,7 +488,7 @@ export async function setup(app: App) {
      */
     async ({
       auth,
-      body: { content, relatedID = 0 },
+      body: { content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
       if (auth.permission.ban_post) {
@@ -496,13 +500,15 @@ export async function setup(app: App) {
         throw new NotFoundError(`topic ${topicID}`);
       }
 
-      if (relatedID) {
-        const parents = topic.replies.flatMap((x) => {
-          return [x.id, x.replies.map((x) => x.id)];
-        });
+      if (replyTo) {
+        const parents = topic.replies
+          .map((x) => {
+            return [x.id, x.replies.map((x) => x.id)];
+          })
+          .flat(3);
 
-        if (!parents.includes(relatedID)) {
-          throw new NotFoundError(`parent topic id ${relatedID}`);
+        if (!parents.includes(replyTo)) {
+          throw new NotFoundError(`parent topic id ${replyTo}`);
         }
       }
 
@@ -510,7 +516,7 @@ export async function setup(app: App) {
         topicType: Topic.Type.group,
         topicID: topicID,
         userID: auth.userID,
-        relatedID,
+        replyTo,
         content,
       });
 

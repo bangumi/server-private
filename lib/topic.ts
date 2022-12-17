@@ -77,7 +77,7 @@ export async function createTopicReply({
   topicType,
   topicID,
   userID,
-  relatedID = 0,
+  replyTo,
   content,
   state = ReplyState.Normal,
 }: {
@@ -85,7 +85,7 @@ export async function createTopicReply({
   topicID: number;
   userID: number;
   content: string;
-  relatedID?: number;
+  replyTo: number;
   state?: ReplyState;
 }): Promise<IPost> {
   const now = dayjs();
@@ -117,22 +117,25 @@ export async function createTopicReply({
         throw new NotJoinPrivateGroupError(group.grp_name);
       }
 
+      let parentID = 0;
       let dstUserID = topic.uid;
-      if (relatedID !== 0) {
-        const replied = await t.groupPosts.findFirst({ where: { id: relatedID } });
+      if (replyTo !== 0) {
+        const replied = await t.groupPosts.findFirst({ where: { id: replyTo, mid: topic.id } });
         if (!replied || replied.mid !== topic.id) {
-          throw new NotFoundError(`topic ${relatedID} in ${topic.id}`);
+          throw new NotFoundError(`topic ${replyTo} in ${topic.id}`);
         }
 
         dstUserID = replied.uid;
+        parentID = replied.related || replied.id;
       }
+
       // 创建回帖
       const post = await t.groupPosts.create({
         data: {
           mid: topicID,
           content,
           uid: userID,
-          related: relatedID,
+          related: parentID,
           state,
           dateline: now.unix(),
         },
@@ -153,8 +156,7 @@ export async function createTopicReply({
 
       // 发送通知
       if (dstUserID !== userID) {
-        const notifyType =
-          relatedID === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
+        const notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
         await Notify.create(t, {
           destUserID: dstUserID,
           sourceUserID: userID,

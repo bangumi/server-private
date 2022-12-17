@@ -275,7 +275,7 @@ describe('create group post reply', () => {
       method: 'post',
       payload: {
         content: 'post contents',
-        relatedID: 11,
+        replyTo: 11,
       },
     });
 
