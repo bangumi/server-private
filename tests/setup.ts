@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 vi.mock('../lib/redis', () => {
   return {
     default: new MockRedis(),
+    Subscriber: new MockRedis(),
   };
 });
 

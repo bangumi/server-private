@@ -1,5 +1,3 @@
-import { clearTimeout, setTimeout } from 'node:timers';
-
 import fastifyWebsocket from '@fastify/websocket';
 import { Type as t } from '@sinclair/typebox';
 
@@ -9,6 +7,7 @@ import * as Notify from '../../../notify';
 import { Security, Tag } from '../../../openapi';
 import { fetchUsers } from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
+import { Subscriber } from '../../../redis';
 import { Paged } from '../../../types/res';
 import * as res from '../../../types/res';
 import type { App } from '../../type';
@@ -155,19 +154,20 @@ export async function setup(app: App) {
     (conn, req) => {
       const userID = req.auth.userID;
 
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      let interval = setTimeout(async function repeat(): Promise<void> {
-        if (conn.closed) {
+      const watch = `event-user-notify-${userID}`;
+
+      const callback = (pattern: string, ch: string, msg: string) => {
+        if (ch !== watch) {
           return;
         }
-        const count = await Notify.count(userID);
+        const { count } = JSON.parse(msg) as { count: number };
         conn.socket.send(JSON.stringify({ count }));
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        interval = setTimeout(repeat, 5000);
-      });
+      };
+
+      Subscriber.addListener('pmessage', callback);
 
       conn.socket.on('close', () => {
-        clearTimeout(interval);
+        Subscriber.removeListener('pmessage', callback);
       });
     },
   );
