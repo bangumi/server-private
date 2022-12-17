@@ -12,7 +12,6 @@ import { production, stage, testing } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
 import prisma from './prisma';
-import { Subscriber } from './redis';
 import * as rest from './rest';
 
 declare module 'fastify' {
@@ -42,10 +41,6 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   }
 
   const server = fastify(opts);
-
-  server.addHook('onReady', async () => {
-    await Subscriber.psubscribe(`event-user-notify-*`);
-  });
 
   server.decorateRequest('clientIP', '');
 
