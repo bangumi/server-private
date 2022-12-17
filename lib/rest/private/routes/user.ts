@@ -160,7 +160,7 @@ export async function setup(app: App) {
         if (ch !== watch) {
           return;
         }
-        const { count } = JSON.parse(msg) as { count: number };
+        const { new_notify: count } = JSON.parse(msg) as { new_notify: number };
         conn.socket.send(JSON.stringify({ count }));
       };
 
