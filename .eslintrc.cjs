@@ -11,7 +11,7 @@ module.exports = {
     'plugin:@typescript-eslint/strict',
     'prettier',
   ],
-  plugins: ['@typescript-eslint', 'import', 'unicorn', 'tsdoc'],
+  plugins: ['@typescript-eslint', 'import', 'unicorn', 'tsdoc', 'unused-imports'],
   ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -24,6 +24,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    'unused-imports/no-unused-imports': 'error',
     curly: ['error'],
     'tsdoc/syntax': 'error',
     'no-new-object': 'error',

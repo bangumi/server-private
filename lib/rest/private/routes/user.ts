@@ -1,7 +1,9 @@
 import fastifyWebsocket from '@fastify/websocket';
 import { Type as t } from '@sinclair/typebox';
+import fastifySocketIO from 'fastify-socket.io';
 
 import { NeedLoginError } from '../../../auth';
+import * as session from '../../../auth/session';
 import { UnexpectedNotFoundError } from '../../../errors';
 import * as Notify from '../../../notify';
 import { Security, Tag } from '../../../openapi';
@@ -123,6 +125,48 @@ export async function setup(app: App) {
       await Notify.markAllAsRead(userID, id);
     },
   );
+
+  await app.register(fastifySocketIO, {
+    path: '/p1/socket-io/',
+  });
+
+  app.io.on('connection', async (socket) => {
+    if (!socket.request.headers.cookie) {
+      socket.disconnect(true);
+      return;
+    }
+
+    const cookie = app.parseCookie(socket.request.headers.cookie);
+
+    if (!cookie.sessionID) {
+      socket.disconnect(true);
+      return;
+    }
+
+    const a = await session.get(cookie.sessionID);
+
+    if (!a) {
+      socket.disconnect(true);
+      return;
+    }
+
+    const userID = a.userID;
+    const watch = `event-user-notify-${userID}`;
+
+    const callback = (pattern: string, ch: string, msg: string) => {
+      if (ch !== watch) {
+        return;
+      }
+      const { new_notify: count } = JSON.parse(msg) as { new_notify: number };
+      socket.emit('notify', JSON.stringify({ count }));
+    };
+
+    Subscriber.addListener('pmessage', callback);
+
+    socket.on('disconnect', () => {
+      Subscriber.removeListener('pmessage', callback);
+    });
+  });
 
   app.get(
     '/sub/notify',

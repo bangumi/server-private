@@ -33,31 +33,30 @@
   </script>
 </div>
 
-<script>
-  const wsUrl = function () {
-    const loc = new URL('/p1/sub/notify', window.location);
-    return 'ws' + loc.toString().slice('http'.length);
-  };
+<script type='module'>
+  import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
 
   function conn() {
-    const webSocket = new WebSocket(wsUrl());
+    const socket = io(location.host, {
+      path: '/p1/socket-io/',
+    });
 
-    webSocket.addEventListener('message', (ev) => {
+    socket.on('notify', (ev) => {
       console.log(ev);
     });
 
     const rand = 5000 + Math.random() * 10000;
 
-    webSocket.addEventListener('close', () => {
+    socket.on('disconnect', () => {
       console.log(`ws connection closed, reconnect in ${rand / 1000}s`);
       setTimeout(() => {
-        console.log('re-connecting websocket');
+        console.log('re-connecting socket.io');
         conn();
       }, rand);
     });
   }
 
-  console.log('connecting websocket');
+  console.log('connecting socket.io');
   conn();
 </script>
 {% endblock %}
