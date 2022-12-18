@@ -1,18 +1,18 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
-import prisma from '../../../prisma';
 import redis from '../../../redis';
 import { createServer } from '../../../server';
+import { SessionRepo } from '../../../torm';
 
 describe('login', () => {
   beforeEach(async () => {
     await redis.flushdb('SYNC');
-    await prisma.chii_os_web_sessions.deleteMany();
+    await SessionRepo.createQueryBuilder().where('true').delete().execute();
   });
 
   afterEach(async () => {
     await redis.flushdb('SYNC');
-    await prisma.chii_os_web_sessions.deleteMany();
+    await SessionRepo.createQueryBuilder().where('true').delete().execute();
   });
 
   test('should failed on too many requests', async () => {

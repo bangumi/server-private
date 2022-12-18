@@ -6,6 +6,7 @@ import { UnreachableError } from './errors';
 import type * as Prisma from './generated/client';
 import * as orm from './orm';
 import prisma from './prisma';
+import { UserFieldRepo } from './torm';
 
 /**
  * `nt_type`
@@ -180,7 +181,7 @@ interface PrivacySetting {
 }
 
 async function userNotifySetting(userID: number): Promise<PrivacySetting> {
-  const f = await prisma.memberFields.findFirstOrThrow({ where: { uid: userID } });
+  const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
 
   const field = php.unserialize(f.privacy) as Record<number, number>;
 

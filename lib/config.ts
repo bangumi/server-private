@@ -32,6 +32,11 @@ const {
   TURNSTILE_SITE_KEY = '1x00000000000000000000AA',
   NODE_ENV,
   REDIS_URI,
+  MYSQL_HOST,
+  MYSQL_PORT = '3306',
+  MYSQL_USER,
+  MYSQL_PASS,
+  MYSQL_DB,
 } = process.env;
 
 export const production = NODE_ENV === 'production';
@@ -58,7 +63,17 @@ export const redisOption = {
   lazyConnect: true,
 } satisfies RedisOptions;
 
-export { HCAPTCHA_SECRET_KEY, HTTPS_PROXY, TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY };
+export {
+  HCAPTCHA_SECRET_KEY,
+  HTTPS_PROXY,
+  TURNSTILE_SITE_KEY,
+  TURNSTILE_SECRET_KEY,
+  MYSQL_HOST,
+  MYSQL_PORT,
+  MYSQL_USER,
+  MYSQL_PASS,
+  MYSQL_DB,
+};
 
 // read config file
 

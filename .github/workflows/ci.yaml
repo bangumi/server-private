@@ -51,6 +51,11 @@ jobs:
         env:
           DATABASE_URL: 'mysql://user:password@127.0.0.1:3306/bangumi'
           HCAPTCHA_SECRET_KEY: '0x0000000000000000000000000000000000000000'
+          MYSQL_HOST: '127.0.0.1'
+          MYSQL_PORT: '3306'
+          MYSQL_USER: 'user'
+          MYSQL_PASS: 'password'
+          MYSQL_DB: 'bangumi'
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3

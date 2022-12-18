@@ -1,5 +1,7 @@
 import MockRedis from 'ioredis-mock';
-import { vi } from 'vitest';
+import { beforeAll, vi } from 'vitest';
+
+import { AppDataSource } from '../lib/torm';
 
 vi.mock('../lib/redis', () => {
   return {
@@ -32,4 +34,8 @@ vi.mock('../lib/externals/turnstile', () => {
       }
     },
   };
+});
+
+beforeAll(async () => {
+  await AppDataSource.initialize();
 });
