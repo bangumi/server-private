@@ -36,27 +36,15 @@
 <script type='module'>
   import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
 
-  function conn() {
-    const socket = io(location.host, {
-      path: '/p1/socket-io/',
-    });
+  const socket = io(location.host, {
+    path: '/p1/socket-io/',
+    reconnection: true,
+    reconnectionDelay: 5000,
+    reconnectionDelayMax: 10000,
+  });
 
-    socket.on('notify', (ev) => {
-      console.log(ev);
-    });
-
-    const rand = 5000 + Math.random() * 10000;
-
-    socket.on('disconnect', () => {
-      console.log(`ws connection closed, reconnect in ${rand / 1000}s`);
-      setTimeout(() => {
-        console.log('re-connecting socket.io');
-        conn();
-      }, rand);
-    });
-  }
-
-  console.log('connecting socket.io');
-  conn();
+  socket.on('notify', (ev) => {
+    console.log(ev);
+  });
 </script>
 {% endblock %}
