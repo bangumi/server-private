@@ -13,6 +13,7 @@ import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
 import prisma from './prisma';
 import * as rest from './rest';
+import { repo } from './torm';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -83,10 +84,10 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     context: async (request: FastifyRequest): Promise<Context> => {
       const a = await auth.byHeader(request.headers.authorization);
       if (a) {
-        return { prisma, auth: a };
+        return { repo, prisma, auth: a };
       }
 
-      return { prisma, auth: emptyAuth() };
+      return { repo, prisma, auth: emptyAuth() };
     },
   });
 
