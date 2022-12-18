@@ -21,6 +21,27 @@ function createServerWithAuth(auth: IAuth) {
   return app;
 }
 
+const expectedTopic = {
+  createdAt: 1657885648,
+  creator: {
+    avatar: {
+      large: 'https://lain.bgm.tv/pic/user/l/icon.jpg',
+      medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
+      small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
+    },
+    id: 287622,
+    nickname: 'nickname 287622',
+    sign: 'sing 287622',
+    user_group: 0,
+    username: '287622',
+  },
+  id: 371602,
+  parentID: 4215,
+  repliesCount: 2,
+  title: 'tes',
+  updatedAt: 1662283112,
+};
+
 describe('group topics', () => {
   test('should failed on not found group', async () => {
     const app = await createServer();
@@ -39,17 +60,30 @@ describe('group topics', () => {
     const res = await app.inject({
       url: '/p1/groups/sandbox/topics',
     });
+    const data = res.json();
 
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toMatchSnapshot();
+    expect(data.data).toContainEqual(expectedTopic);
   });
 
   test('should fetch group profile', async () => {
     const app = await createServer();
 
     const res = await app.inject('/p1/groups/sandbox/profile');
+    const data = res.json();
+
     expect(res.statusCode).toBe(200);
-    expect(res.json()).toMatchSnapshot();
+    expect(data.group).toEqual({
+      createdAt: 1531631310,
+      description: '[s]非[/s]官方沙盒',
+      icon: 'https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345',
+      id: 4215,
+      name: 'sandbox',
+      nsfw: false,
+      title: '沙盒',
+      totalMembers: 3,
+    });
+    expect(data.topics).toContainEqual(expectedTopic);
   });
 
   test('should fetch topic details', async () => {

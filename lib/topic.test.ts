@@ -1,7 +1,7 @@
 import { test, vi, expect, afterAll, afterEach } from 'vitest';
 
 import * as Topic from './topic';
-import { AppDataSource } from './torm/index';
+import { AppDataSource } from './torm';
 
 const transaction = vi.fn().mockResolvedValue({
   id: 2,
