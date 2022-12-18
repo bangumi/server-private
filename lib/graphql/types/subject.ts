@@ -1,6 +1,7 @@
 import { nonNull, objectType, extendType, intArg } from 'nexus';
 import * as php from 'php-serialize';
 
+import { SubjectRepo } from '../../torm';
 import type * as entity from '../../torm/entity';
 import type { Context } from '../context';
 
@@ -98,10 +99,10 @@ const SubjectByIDQuery = extendType({
     t.field('subject', {
       type: Subject,
       args: { id: nonNull(intArg()) },
-      async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw }, prisma }: Context) {
-        const subject = await prisma.subjects.findUnique({
+      async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw }, repo }: Context) {
+        const subject = await SubjectRepo.findOne({
           where: {
-            subject_id: id,
+            id,
           },
         });
 
@@ -109,11 +110,11 @@ const SubjectByIDQuery = extendType({
           return null;
         }
 
-        if (subject.subject_nsfw && !allowNsfw) {
+        if (subject.subjectNsfw && !allowNsfw) {
           return null;
         }
 
-        const fields = await prisma.subjectFields.findUnique({
+        const fields = await repo.SubjectFields.findOne({
           where: {
             subject_id: id,
           },
@@ -124,11 +125,11 @@ const SubjectByIDQuery = extendType({
         }
 
         return {
-          id: subject.subject_id,
-          name: subject.subject_name,
-          name_cn: subject.subject_name_cn,
+          id: subject.id,
+          name: subject.subjectName,
+          name_cn: subject.subjectNameCn,
           tags: (
-            php.unserialize(fields.field_tags) as { tag_name: string | undefined; result: string }[]
+            php.unserialize(fields.fieldTags) as { tag_name: string | undefined; result: string }[]
           )
             .filter((x) => x.tag_name !== undefined)
             .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))

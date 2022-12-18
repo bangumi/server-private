@@ -43,38 +43,6 @@ model GroupTopics {
   @@map("chii_group_topics")
 }
 
-model subjectFields {
-  subject_id     Int      @id @default(autoincrement()) @map("field_sid") @db.UnsignedMediumInt
-  field_tid      Int      @default(0) @db.UnsignedSmallInt
-  field_tags     String   @db.MediumText
-  field_rate_1   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_2   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_3   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_4   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_5   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_6   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_7   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_8   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_9   Int      @default(0) @db.UnsignedMediumInt
-  field_rate_10  Int      @default(0) @db.UnsignedMediumInt
-  field_airtime  Boolean
-  field_rank     Int      @default(0) @db.UnsignedInt
-  field_year     Int      @db.Year
-  field_mon      Int      @db.TinyInt
-  field_week_day Boolean
-  field_date     DateTime @db.Date
-  field_redirect Int      @default(0) @db.UnsignedMediumInt
-
-  @@index([field_date], map: "field_date")
-  @@index([field_rank], map: "field_rank")
-  @@index([field_year], map: "field_year")
-  @@index([field_year, field_mon], map: "field_year_mon")
-  @@index([subject_id, field_date], map: "query_date")
-  @@index([field_tid], map: "sort_id")
-  @@index([field_airtime], map: "subject_airtime")
-  @@map("chii_subject_fields")
-}
-
 model chii_subject_topics {
   sbj_tpc_id         Int     @id @default(autoincrement()) @db.UnsignedMediumInt
   sbj_tpc_subject_id Int     @db.UnsignedMediumInt
@@ -90,47 +58,4 @@ model chii_subject_topics {
   @@index([sbj_tpc_uid], map: "sbj_tpc_uid")
   @@index([sbj_tpc_display], map: "tpc_display")
   @@index([sbj_tpc_subject_id], map: "tpc_subject_id")
-}
-
-model Subjects {
-  subject_id           Int     @id @default(autoincrement()) @db.UnsignedMediumInt
-  subject_type_id      Int     @default(0) @db.UnsignedSmallInt
-  subject_name         String  @db.VarChar(80)
-  subject_name_cn      String  @db.VarChar(80)
-  subject_uid          String  @db.VarChar(20)
-  subject_creator      Int     @db.UnsignedMediumInt
-  subject_dateline     Int     @default(0) @db.UnsignedInt
-  subject_image        String  @db.VarChar(255)
-  subject_platform     Int     @default(0) @db.UnsignedSmallInt
-  field_infobox        String  @db.MediumText
-  field_summary        String  @db.MediumText
-  field_5              String  @db.MediumText
-  field_volumes        Int     @default(0) @db.UnsignedMediumInt
-  field_eps            Int     @default(0) @db.UnsignedMediumInt
-  subject_wish         Int     @default(0) @db.UnsignedMediumInt
-  subject_collect      Int     @default(0) @db.UnsignedMediumInt
-  subject_doing        Int     @default(0) @db.UnsignedMediumInt
-  subject_on_hold      Int     @default(0) @db.UnsignedMediumInt
-  subject_dropped      Int     @default(0) @db.UnsignedMediumInt
-  subject_series       Boolean @default(false)
-  subject_series_entry Int     @default(0) @db.UnsignedMediumInt
-  subject_idx_cn       String  @db.VarChar(1)
-  subject_airtime      Boolean
-  subject_nsfw         Boolean
-  subject_ban          Boolean @default(false)
-
-  @@index([subject_ban, subject_type_id, subject_series, subject_platform], map: "browser")
-  @@index([subject_ban, subject_type_id, subject_series, subject_platform, subject_name], map: "order_by_name")
-  @@index([subject_airtime], map: "subject_airtime")
-  @@index([subject_ban], map: "subject_ban")
-  @@index([subject_creator], map: "subject_creator")
-  @@index([subject_idx_cn, subject_type_id], map: "subject_idx_cn")
-  @@index([subject_name], map: "subject_name")
-  @@index([subject_name_cn], map: "subject_name_cn")
-  @@index([subject_nsfw], map: "subject_nsfw")
-  @@index([subject_platform], map: "subject_platform")
-  @@index([subject_series], map: "subject_series")
-  @@index([subject_series_entry], map: "subject_series_entry")
-  @@index([subject_type_id], map: "subject_type_id")
-  @@map("chii_subjects")
 }

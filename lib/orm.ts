@@ -7,7 +7,15 @@ import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
 import type { ReplyState } from './topic';
-import { FriendRepo, GroupMemberRepo, GroupRepo, UserGroupRepo, UserRepo } from './torm';
+import {
+  FriendRepo,
+  GroupMemberRepo,
+  GroupRepo,
+  SubjectFieldsRepo,
+  SubjectRepo,
+  UserGroupRepo,
+  UserRepo,
+} from './torm';
 
 export interface Page {
   limit?: number;
@@ -238,15 +246,15 @@ export async function fetchTopicList(
 }
 
 export async function fetchSubject(id: number) {
-  const subject = await prisma.subjects.findFirst({
-    where: { subject_id: id },
+  const subject = await SubjectRepo.findOne({
+    where: { id },
   });
 
   if (!subject) {
     return null;
   }
 
-  const f = await prisma.subjectFields.findFirst({
+  const f = await SubjectFieldsRepo.findOne({
     where: { subject_id: id },
   });
 
@@ -255,9 +263,9 @@ export async function fetchSubject(id: number) {
   }
 
   return {
-    id: subject.subject_id,
-    nsfw: subject.subject_nsfw,
-    redirect: f.field_redirect,
+    id: subject.id,
+    nsfw: subject.subjectNsfw,
+    redirect: f.fieldRedirect,
   };
 }
 
