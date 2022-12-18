@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, Index } from 'typeorm';
 
 @Entity('chii_groups', { schema: 'bangumi' })
 export class Group {
@@ -79,4 +79,98 @@ export class GroupMembers {
 
   @Column('int', { name: 'gmb_dateline', unsigned: true, default: () => "'0'" })
   gmbDateline!: number;
+}
+
+@Index('grp_tpc_gid', ['gid'], {})
+@Index('grp_tpc_display', ['display'], {})
+@Index('grp_tpc_uid', ['uid'], {})
+@Index('grp_tpc_lastpost', ['lastpost'], {})
+@Entity('chii_group_topics', { schema: 'bangumi' })
+export class GroupTopic {
+  @PrimaryGeneratedColumn({
+    type: 'mediumint',
+    name: 'grp_tpc_id',
+    unsigned: true,
+  })
+  id!: number;
+
+  @Column('mediumint', { name: 'grp_tpc_gid', unsigned: true })
+  gid!: number;
+
+  @Column('mediumint', { name: 'grp_tpc_uid', unsigned: true })
+  uid!: number;
+
+  @Column('varchar', { name: 'grp_tpc_title', length: 80 })
+  title!: string;
+
+  @Column('int', {
+    name: 'grp_tpc_dateline',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  dateline!: number;
+
+  @Column('int', {
+    name: 'grp_tpc_lastpost',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  lastpost!: number;
+
+  @Column('mediumint', {
+    name: 'grp_tpc_replies',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  replies!: number;
+
+  @Column('tinyint', { name: 'grp_tpc_state', unsigned: true })
+  state!: number;
+
+  @Column('tinyint', {
+    name: 'grp_tpc_display',
+    unsigned: true,
+    default: () => "'1'",
+  })
+  display!: number;
+}
+
+@Index('pss_topic_id', ['mid'], {})
+@Index('grp_pst_related', ['related'], {})
+@Index('grp_pst_uid', ['uid'], {})
+@Entity('chii_group_posts', { schema: 'bangumi' })
+export class GroupPost {
+  @PrimaryGeneratedColumn({
+    type: 'mediumint',
+    name: 'grp_pst_id',
+    unsigned: true,
+  })
+  id!: number;
+
+  @Column('mediumint', { name: 'grp_pst_mid', unsigned: true })
+  mid!: number;
+
+  @Column('mediumint', { name: 'grp_pst_uid', unsigned: true })
+  uid!: number;
+
+  @Column('mediumint', {
+    name: 'grp_pst_related',
+    comment: '关联回复ID',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  related!: number;
+
+  @Column('mediumtext', { name: 'grp_pst_content' })
+  content!: string;
+
+  @Column('tinyint', { name: 'grp_pst_state', unsigned: true })
+  state!: number;
+
+  @Column('int', {
+    name: 'grp_pst_dateline',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  dateline!: number;
 }

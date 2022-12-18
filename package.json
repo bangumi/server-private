@@ -16,7 +16,6 @@
     "vitest": "vitest",
     "run-file": "node --no-warnings -r dotenv/config --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
     "e": "TS_NODE_PROJECT=tsconfig.prod.json node --no-warnings --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
-    "postinstall": "prisma generate",
     "prepare": "husky install"
   },
   "nodemonConfig": {
@@ -67,9 +66,7 @@
     "p-limit": "^4.0.0",
     "prettier": "^2.8.1",
     "prettier-plugin-jsdoc": "^0.4.2",
-    "prettier-plugin-prisma": "^4.4.0",
     "prettier-plugin-sh": "^0.12.8",
-    "prisma": "^4.7.1",
     "vite": "^4.0.1",
     "vitest": "^0.25.8"
   },
@@ -79,7 +76,6 @@
     "@fastify/swagger": "^8.2.1",
     "@fastify/type-provider-typebox": "^2.4.0",
     "@fastify/view": "^7.3.0",
-    "@prisma/client": "^4.7.1",
     "@sinclair/typebox": "^0.25.13",
     "ajv": "^8.11.2",
     "altair-fastify-plugin": "^5.0.9",

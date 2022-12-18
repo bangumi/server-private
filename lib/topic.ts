@@ -3,13 +3,12 @@ import dayjs from 'dayjs';
 
 import { NotAllowedError } from './auth';
 import { NotFoundError, UnimplementedError } from './errors';
-import type * as Prisma from './generated/client';
 import * as Notify from './notify';
 import type { IUser } from './orm';
 import * as orm from './orm';
 import { fetchUserX } from './orm';
-import prisma from './prisma';
-import { GroupRepo } from './torm';
+import { AppDataSource, GroupPostRepo, GroupRepo } from './torm';
+import * as entity from './torm/entity';
 
 export const enum Type {
   group = 'group',
@@ -40,7 +39,7 @@ interface IPost {
 }
 
 async function getSubjectTopic(id: number): Promise<IPost | null> {
-  const p = await prisma.groupPosts.findFirst({
+  const p = await GroupPostRepo.findOne({
     where: {
       id,
     },
@@ -92,8 +91,10 @@ export async function createTopicReply({
 }): Promise<IPost> {
   const now = dayjs();
   if (topicType === Type.group) {
-    const p = await prisma.$transaction(async (t) => {
-      const topic = await t.groupTopics.findFirst({ where: { id: topicID } });
+    const p = await AppDataSource.transaction(async (t) => {
+      const GroupPostRepo = t.getRepository(entity.GroupPost);
+      const GroupTopicRepo = t.getRepository(entity.GroupTopic);
+      const topic = await GroupTopicRepo.findOne({ where: { id: topicID } });
 
       if (!topic) {
         throw new NotFoundError(`group topic ${topicID}`);
@@ -114,7 +115,7 @@ export async function createTopicReply({
       let parentID = 0;
       let dstUserID = topic.uid;
       if (replyTo !== 0) {
-        const replied = await t.groupPosts.findFirst({ where: { id: replyTo, mid: topic.id } });
+        const replied = await GroupPostRepo.findOne({ where: { id: replyTo, mid: topic.id } });
         if (!replied || replied.mid !== topic.id) {
           throw new NotFoundError(`topic ${replyTo} in ${topic.id}`);
         }
@@ -124,29 +125,25 @@ export async function createTopicReply({
       }
 
       // 创建回帖
-      const post = await t.groupPosts.create({
-        data: {
-          mid: topicID,
-          content,
-          uid: userID,
-          related: parentID,
-          state,
-          dateline: now.unix(),
-        },
+      const post = await GroupPostRepo.save({
+        mid: topicID,
+        content,
+        uid: userID,
+        related: parentID,
+        state,
+        dateline: now.unix(),
       });
 
-      const topicUpdate: Prisma.Prisma.GroupTopicsUpdateArgs['data'] = {
-        replies: { increment: 1 },
+      const topicUpdate = {
+        replies: topic.replies + 1,
+        dateline: undefined as undefined | number,
       };
 
       if (topic.state !== ReplyState.AdminSilentTopic) {
         topicUpdate.dateline = scopeUpdateTime(now.unix(), topicType, topic);
       }
 
-      await t.groupTopics.update({
-        where: { id: topic.id },
-        data: topicUpdate,
-      });
+      await GroupTopicRepo.update({ id: topic.id }, topicUpdate);
 
       // 发送通知
       if (dstUserID !== userID) {
@@ -179,7 +176,7 @@ export async function createTopicReply({
   throw new UnimplementedError('creating group reply');
 }
 
-function scopeUpdateTime(timestamp: number, type: Type, main_info: Prisma.GroupTopics): number {
+function scopeUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
   if (type === Type.group && [364].includes(main_info.id) && main_info.replies > 0) {
     const $created_at = main_info.dateline;
     const $created_hours = (timestamp - $created_at) / 3600;

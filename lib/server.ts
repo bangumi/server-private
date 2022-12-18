@@ -4,14 +4,12 @@ import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fast
 import { fastify } from 'fastify';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
-import { register } from 'prom-client';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
 import { production, stage, testing } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
-import prisma from './prisma';
 import * as rest from './rest';
 import { repo } from './torm';
 
@@ -57,14 +55,7 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   });
 
   if (!testing) {
-    server.get('/metrics', async (_req, res) => {
-      const prismaMetrics = await prisma.$metrics.prometheus();
-      const appMetrics = await register.metrics();
-      return res.send(appMetrics + prismaMetrics);
-    });
-
     await server.register(metricsPlugin, {
-      endpoint: null,
       routeMetrics: {
         groupStatusCodes: true,
         overrides: {
@@ -84,10 +75,10 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     context: async (request: FastifyRequest): Promise<Context> => {
       const a = await auth.byHeader(request.headers.authorization);
       if (a) {
-        return { repo, prisma, auth: a };
+        return { repo, auth: a };
       }
 
-      return { repo, prisma, auth: emptyAuth() };
+      return { repo, auth: emptyAuth() };
     },
   });
 

@@ -3,19 +3,22 @@ import * as php from 'php-serialize';
 import * as typeorm from 'typeorm';
 
 import type { TopicDisplay } from './auth/rule';
-import { UnexpectedNotFoundError } from './errors';
+import { UnexpectedNotFoundError, UnimplementedError } from './errors';
 import { logger } from './logger';
-import prisma from './prisma';
 import type { ReplyState } from './topic';
 import {
+  AppDataSource,
   FriendRepo,
   GroupMemberRepo,
+  GroupPostRepo,
   GroupRepo,
+  GroupTopicRepo,
   SubjectFieldsRepo,
   SubjectRepo,
   UserGroupRepo,
   UserRepo,
 } from './torm';
+import * as entity from './torm/entity';
 
 export interface Page {
   limit?: number;
@@ -189,42 +192,19 @@ export async function fetchTopicList(
   { limit = 30, offset = 0 }: Page,
   { display }: { display: TopicDisplay[] },
 ): Promise<[number, ITopic[]]> {
-  if (type === 'group') {
-    const where = {
-      gid: id,
-      display: { in: display },
-    } as const;
-
-    const total = await prisma.groupTopics.count({ where });
-    const topics = await prisma.groupTopics.findMany({
-      where,
-      orderBy: { dateline: 'desc' },
-      skip: offset,
-      take: limit,
-    });
-
-    return [
-      total,
-      topics.map((x) => {
-        return {
-          id: x.id,
-          parentID: x.gid,
-          creatorID: x.uid,
-          title: x.title,
-          createdAt: x.dateline,
-          updatedAt: x.lastpost,
-          repliesCount: x.replies,
-        };
-      }),
-    ];
+  if (type !== 'group') {
+    throw new UnimplementedError(`topic type ${type}`);
   }
 
-  const where = { sbj_tpc_subject_id: id, sbj_tpc_display: { in: display } } as const;
-  const total = await prisma.chii_subject_topics.count({ where });
+  const where = {
+    gid: id,
+    display: typeorm.In(display),
+  } as const;
 
-  const topics = await prisma.chii_subject_topics.findMany({
+  const total = await GroupTopicRepo.count({ where });
+  const topics = await GroupTopicRepo.find({
     where,
-    orderBy: { sbj_tpc_dateline: 'desc' },
+    order: { dateline: 'desc' },
     skip: offset,
     take: limit,
   });
@@ -233,13 +213,13 @@ export async function fetchTopicList(
     total,
     topics.map((x) => {
       return {
-        id: x.sbj_tpc_id,
-        parentID: x.sbj_tpc_subject_id,
-        creatorID: x.sbj_tpc_uid,
-        title: x.sbj_tpc_title,
-        updatedAt: x.sbj_tpc_dateline,
-        createdAt: x.sbj_tpc_lastpost,
-        repliesCount: x.sbj_tpc_replies,
+        id: x.id,
+        parentID: x.gid,
+        creatorID: x.uid,
+        title: x.title,
+        createdAt: x.dateline,
+        updatedAt: x.lastpost,
+        repliesCount: x.replies,
       };
     }),
   ];
@@ -354,7 +334,7 @@ interface ITopicDetails {
 }
 
 export async function fetchTopicDetails(type: 'group', id: number): Promise<ITopicDetails | null> {
-  const topic = await prisma.groupTopics.findFirst({
+  const topic = await GroupTopicRepo.findOne({
     where: { id: id },
   });
 
@@ -362,7 +342,7 @@ export async function fetchTopicDetails(type: 'group', id: number): Promise<ITop
     return null;
   }
 
-  const replies = await prisma.groupPosts.findMany({
+  const replies = await GroupPostRepo.find({
     where: {
       mid: topic.id,
     },
@@ -447,29 +427,28 @@ interface PostCreation {
 export async function createPostInGroup(post: PostCreation): Promise<{ id: number }> {
   const now = dayjs();
 
-  return await prisma.$transaction(async (t) => {
-    const topic = await t.groupTopics.create({
-      data: {
-        title: post.title,
-        gid: post.groupID,
-        uid: post.userID,
-        state: post.state,
-        lastpost: now.unix(),
-        dateline: now.unix(),
-        replies: 0,
-        display: post.display,
-      },
+  return await AppDataSource.transaction(async (t) => {
+    const GroupTopicRepo = t.getRepository(entity.GroupTopic);
+    const GroupPostRepo = t.getRepository(entity.GroupPost);
+
+    const topic = await GroupTopicRepo.save({
+      title: post.title,
+      gid: post.groupID,
+      uid: post.userID,
+      state: post.state,
+      lastpost: now.unix(),
+      dateline: now.unix(),
+      replies: 0,
+      display: post.display,
     });
 
-    await t.groupPosts.create({
-      data: {
-        mid: topic.id,
-        dateline: now.unix(),
-        state: post.state,
-        uid: post.userID,
-        content: post.content,
-        related: 0,
-      },
+    await GroupPostRepo.insert({
+      mid: topic.id,
+      dateline: now.unix(),
+      state: post.state,
+      uid: post.userID,
+      content: post.content,
+      related: 0,
     });
 
     return { id: topic.id };
