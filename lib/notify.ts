@@ -1,8 +1,10 @@
 import type { Dayjs } from 'dayjs';
 import * as lodash from 'lodash-es';
+import * as php from 'php-serialize';
 
 import { UnreachableError } from './errors';
 import type * as Prisma from './generated/client';
+import * as orm from './orm';
 import prisma from './prisma';
 
 /**
@@ -68,6 +70,24 @@ export async function create(
 ): Promise<void> {
   if (destUserID === sourceUserID) {
     return;
+  }
+
+  const setting = await userNotifySetting(destUserID);
+
+  if (setting.blockedUsers.includes(sourceUserID)) {
+    return;
+  }
+
+  if (setting.CommentNotification === PrivacyFilter.None) {
+    return;
+  }
+
+  if (setting.CommentNotification === PrivacyFilter.Friends) {
+    const isFriend = await orm.isFriends(destUserID, sourceUserID);
+
+    if (!isFriend) {
+      return;
+    }
   }
 
   const hash = hashType(type);
@@ -137,6 +157,45 @@ export async function markAllAsRead(userID: number, id: number[] | undefined): P
   });
 }
 
+const enum PrivacyFilter {
+  All = 0,
+  Friends = 1,
+  None = 2,
+}
+
+type UserPrivacySettingsField = number;
+
+const UserPrivacyReceivePrivateMessage: UserPrivacySettingsField = 1;
+const UserPrivacyReceiveTimelineReply: UserPrivacySettingsField = 30;
+const UserPrivacyReceiveMentionNotification: UserPrivacySettingsField = 20;
+const UserPrivacyReceiveCommentNotification: UserPrivacySettingsField = 21;
+
+interface PrivacySetting {
+  TimelineReply: PrivacyFilter;
+  CommentNotification: PrivacyFilter;
+  MentionNotification: PrivacyFilter;
+  PrivateMessage: PrivacyFilter;
+
+  blockedUsers: number[];
+}
+
+async function userNotifySetting(userID: number): Promise<PrivacySetting> {
+  const f = await prisma.memberFields.findFirstOrThrow({ where: { uid: userID } });
+
+  const field = php.unserialize(f.privacy) as Record<number, number>;
+
+  return {
+    PrivateMessage: field[UserPrivacyReceivePrivateMessage] as PrivacyFilter,
+    TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,
+    MentionNotification: field[UserPrivacyReceiveMentionNotification] as PrivacyFilter,
+    CommentNotification: field[UserPrivacyReceiveCommentNotification] as PrivacyFilter,
+    blockedUsers: f.blocklist
+      .split(',')
+      .map((x) => x.trim())
+      .map((x) => Number.parseInt(x)),
+  };
+}
+
 export interface INotify {
   id: number;
   type: Type;
@@ -203,8 +262,10 @@ function hashType(t: Type): number {
 
 interface setting {
   url: string;
+
   prefix: string;
   suffix: string;
+
   append?: string;
   url_mobile?: string;
   anchor: string;

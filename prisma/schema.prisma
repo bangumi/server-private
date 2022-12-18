@@ -353,7 +353,7 @@ model chii_index_related {
   @@ignore()
 }
 
-model chii_memberfields {
+model MemberFields {
   uid       Int    @id @default(0) @db.UnsignedMediumInt
   site      String @default("") @db.VarChar(75)
   location  String @default("") @db.VarChar(30)
@@ -361,7 +361,7 @@ model chii_memberfields {
   privacy   String @db.MediumText
   blocklist String @db.MediumText
 
-  @@ignore()
+  @@map("chii_memberfields")
 }
 
 model Members {
