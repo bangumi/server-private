@@ -49,7 +49,6 @@ jobs:
       - run: yarn test --coverage
         timeout-minutes: 10
         env:
-          DATABASE_URL: 'mysql://user:password@127.0.0.1:3306/bangumi'
           HCAPTCHA_SECRET_KEY: '0x0000000000000000000000000000000000000000'
           MYSQL_HOST: '127.0.0.1'
           MYSQL_PORT: '3306'
@@ -65,5 +64,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: docker build -t tmp .
+      - run: docker build -t base-image -f etc/base.dockerfile .
+      - run: docker build -t tmp -f etc/main.dockerfile .
       - run: docker run tmp --help

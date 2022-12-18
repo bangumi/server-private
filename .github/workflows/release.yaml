@@ -8,10 +8,17 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    env:
+      IMAGE: 'ghcr.io/${{ github.actor }}/graphql'
+
     steps:
       - uses: actions/checkout@v3
-
       - run: echo "VERSION=$(npm version --json|jq .graphql -r)" >> $GITHUB_ENV
+
+      - run: |
+          LONG_TAG=${{ hashFiles('yarn.lock') }}
+
+          echo "TAG_HASH=1-${LONG_TAG:0:10}" >> $GITHUB_ENV
 
       - uses: docker/login-action@v2
         with:
@@ -19,9 +26,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          push: true
-          context: ./
-          tags: ghcr.io/bangumi/graphql:${{ env.VERSION }},ghcr.io/bangumi/graphql:latest
+      - run: |
+          if ! docker pull ${{ env.IMAGE }}:base-${TAG_HASH}; then
+            echo "build base docker image"
+            docker build -t ${{ env.IMAGE }}:base-${TAG_HASH} -f etc/base.dockerfile .
+            docker push ${{ env.IMAGE }}:base-${TAG_HASH}
+          fi
+
+          docker tag ${{ env.IMAGE }}:base-${TAG_HASH} base-image
+        name: build base docker image
+
+      - name: docker build
+        run: docker build -t ${{ env.IMAGE }}:latest -f etc/main.dockerfile .
+
+      - run: docker tag  '${{ env.IMAGE }}:latest' '${{ env.IMAGE }}:${{ env.VERSION }}'
+      - run: docker push '${{ env.IMAGE }}:latest'
+      - run: docker push '${{ env.IMAGE }}:${{ env.VERSION }}'
