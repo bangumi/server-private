@@ -12,6 +12,7 @@ import {
   UserGroup,
   GroupMembers,
   Group,
+  Episode,
 } from './entity';
 
 export const AppDataSource = new DataSource({
@@ -33,12 +34,15 @@ export const AppDataSource = new DataSource({
     Friends,
     Group,
     GroupMembers,
+    Episode,
   ],
 });
 
 // const UserRepo = AppDataSource.getRepository(User);
 export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const FriendRepo = AppDataSource.getRepository(Friends);
+
+export const EpisodeRepo = AppDataSource.getRepository(Episode);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
@@ -49,3 +53,16 @@ export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
 
 export const GroupRepo = AppDataSource.getRepository(Group);
 export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
+
+export const repo = {
+  UserField: UserFieldRepo,
+  Friend: FriendRepo,
+  Episode: EpisodeRepo,
+  AccessToken: AccessTokenRepo,
+  Session: SessionRepo,
+  UserGroup: UserGroupRepo,
+  Notify: NotifyRepo,
+  NotifyField: NotifyFieldRepo,
+  Group: GroupRepo,
+  GroupMember: GroupMemberRepo,
+} as const;

@@ -1,7 +1,7 @@
 import { nonNull, objectType, extendType, intArg } from 'nexus';
 import * as php from 'php-serialize';
 
-import type { chii_episodes } from '../../generated/client';
+import type * as entity from '../../torm/entity';
 import type { Context } from '../context';
 
 const Episode = objectType({
@@ -60,31 +60,31 @@ const Subject = objectType({
       async resolve(
         parent: { id: number },
         { limit, offset, type }: { limit: number; offset: number; type: number | undefined },
-        { prisma }: Context,
+        { repo }: Context,
       ) {
         if (offset < 0) {
-          const count = await prisma.chii_episodes.count({
-            where: { ep_type: type ?? undefined, ep_subject_id: parent.id },
+          const count = await repo.Episode.count({
+            where: { epType: type ?? undefined, epSubjectId: parent.id },
           });
           offset = count + offset;
         }
 
-        const episodes = await prisma.chii_episodes.findMany({
-          orderBy: { ep_sort: 'asc' },
-          where: { ep_type: type ?? undefined, ep_subject_id: parent.id },
+        const episodes = await repo.Episode.find({
+          order: { epSort: 'asc' },
+          where: { epType: type ?? undefined, epSubjectId: parent.id },
           skip: offset,
           take: limit,
         });
 
-        return episodes.map((e: chii_episodes) => {
+        return episodes.map((e: entity.Episode) => {
           return {
-            id: e.ep_id,
-            name: e.ep_name,
-            name_cn: e.ep_name_cn,
-            description: e.ep_desc,
-            type: e.ep_type,
-            duration: e.ep_duration,
-            sort: e.ep_sort,
+            id: e.id,
+            name: e.epName,
+            name_cn: e.epNameCn,
+            description: e.epDesc,
+            type: e.epType,
+            duration: e.epDuration,
+            sort: e.epSort,
           };
         });
       },
