@@ -4,6 +4,7 @@ import { production } from './config';
 import { logger } from './logger';
 import { Subscriber } from './redis';
 import { createServer } from './server';
+import { AppDataSource } from './torm';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console
@@ -22,6 +23,7 @@ const server = await createServer({
 
 server.addHook('onReady', async () => {
   await Subscriber.psubscribe(`event-user-notify-*`);
+  await AppDataSource.initialize();
 });
 
 const port = process.env.PORT ? Number.parseInt(process.env.PORT) : 4000;

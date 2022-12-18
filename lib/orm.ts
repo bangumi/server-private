@@ -6,6 +6,7 @@ import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
 import type { ReplyState } from './topic';
+import { UserGroupRepo } from './torm';
 
 export interface Page {
   limit?: number;
@@ -103,20 +104,20 @@ export interface Permission {
 }
 
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
-  const permission = await prisma.userGroups.findFirst({ where: { usr_grp_id: userGroup } });
+  const permission = await UserGroupRepo.findOne({ where: { id: userGroup } });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
     return {};
   }
 
-  if (!permission.usr_grp_perm) {
+  if (!permission.Permission) {
     return {};
   }
 
   return Object.freeze(
     Object.fromEntries(
       Object.entries(
-        php.unserialize(permission.usr_grp_perm) as Record<keyof Permission, string>,
+        php.unserialize(permission.Permission) as Record<keyof Permission, string>,
       ).map(([key, value]) => [key, value === '1']),
     ),
   );

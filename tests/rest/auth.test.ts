@@ -1,17 +1,17 @@
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
-import prisma from '../../lib/prisma';
 import { createServer } from '../../lib/server';
+import { SessionRepo } from '../../lib/torm';
 
 const treeHoleUser = { id: 382951, nickname: '树洞酱', username: '382951' };
 const fakeIP = 'fake-client-ip-should-not-fail';
 
 beforeEach(async () => {
-  await prisma.chii_os_web_sessions.deleteMany();
+  await SessionRepo.createQueryBuilder().where('true').delete().execute();
 });
 
 afterEach(async () => {
-  await prisma.chii_os_web_sessions.deleteMany();
+  await SessionRepo.createQueryBuilder().where('true').delete().execute();
 });
 
 test('should pass login/logout authorization flow', async () => {

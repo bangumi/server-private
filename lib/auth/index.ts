@@ -4,12 +4,13 @@ import { createError } from '@fastify/error';
 import * as bcrypt from 'bcrypt';
 import dayjs from 'dayjs';
 import NodeCache from 'node-cache';
+import { FindOperator } from 'typeorm';
 
 import { redisPrefix } from '../config';
 import type { IUser, Permission } from '../orm';
 import { fetchPermission, fetchUser } from '../orm';
-import prisma from '../prisma';
 import redis from '../redis';
+import { AccessTokenRepo } from '../torm';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError = createError('NEED_LOGIN', 'you need to login before %s', 401);
@@ -68,23 +69,27 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
-export async function byToken(access_token: string): Promise<IAuth | null> {
-  const key = `${redisPrefix}-auth-access-token-${access_token}`;
+export async function byToken(accessToken: string): Promise<IAuth | null> {
+  const key = `${redisPrefix}-auth-access-token-${accessToken}`;
   const cached = await redis.get(key);
   if (cached) {
     const user = JSON.parse(cached) as IUser;
     return await userToAuth(user);
   }
 
-  const token = await prisma.chii_oauth_access_tokens.findFirst({
-    where: { access_token, expires: { gte: new Date() } },
+  const token = await AccessTokenRepo.findOne({
+    where: { accessToken, expires: new FindOperator<Date>('moreThanOrEqual', new Date()) },
   });
 
   if (!token) {
     throw new TokenNotValidError();
   }
 
-  const u = await fetchUser(Number.parseInt(token.user_id));
+  if (!token.userId) {
+    throw new Error('access token without user id');
+  }
+
+  const u = await fetchUser(Number.parseInt(token.userId));
   if (!u) {
     throw new MissingUserError();
   }
