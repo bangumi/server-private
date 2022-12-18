@@ -34,7 +34,9 @@
 </div>
 
 <script type='module'>
-  import { io } from 'https://cdn.socket.io/4.4.1/socket.io.esm.min.js';
+  import {
+    io,
+  } from 'https://cdn.jsdelivr.net/npm/socket.io-client@4.5.4/dist/socket.io.esm.min.js';
 
   const socket = io(location.host, {
     path: '/p1/socket-io/',
