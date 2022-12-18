@@ -78,7 +78,7 @@ export async function createTopicReply({
   topicType,
   topicID,
   userID,
-  replyTo,
+  replyTo = 0,
   content,
   state = ReplyState.Normal,
 }: {
@@ -86,7 +86,7 @@ export async function createTopicReply({
   topicID: number;
   userID: number;
   content: string;
-  replyTo: number;
+  replyTo?: number;
   state?: ReplyState;
 }): Promise<IPost> {
   const now = dayjs();

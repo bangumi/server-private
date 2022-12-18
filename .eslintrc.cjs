@@ -136,12 +136,13 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['tests/**/*'],
+      files: ['tests/**/*', '*.test.ts'],
       rules: {
         '@typescript-eslint/no-unnecessary-condition': 'off',
         '@typescript-eslint/no-unsafe-call': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
         '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
       },
     },
     {
