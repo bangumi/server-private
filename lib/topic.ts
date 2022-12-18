@@ -6,8 +6,10 @@ import { NotFoundError, UnimplementedError } from './errors';
 import type * as Prisma from './generated/client';
 import * as Notify from './notify';
 import type { IUser } from './orm';
+import * as orm from './orm';
 import { fetchUserX } from './orm';
 import prisma from './prisma';
+import { GroupRepo } from './torm';
 
 export const enum Type {
   group = 'group',
@@ -101,20 +103,12 @@ export async function createTopicReply({
         throw new NotAllowedError('reply to a closed topic');
       }
 
-      const group = await t.chii_groups.findFirstOrThrow({
-        where: { grp_id: topic.gid },
+      const group = await GroupRepo.findOneOrFail({
+        where: { id: topic.gid },
       });
 
-      if (
-        !group.grp_accessible &&
-        !(await t.groupMembers.count({
-          where: {
-            gmb_gid: group.grp_id,
-            gmb_uid: userID,
-          },
-        }))
-      ) {
-        throw new NotJoinPrivateGroupError(group.grp_name);
+      if (!group.accessible && !(await orm.isMemberInGroup(group.id, userID))) {
+        throw new NotJoinPrivateGroupError(group.name);
       }
 
       let parentID = 0;
