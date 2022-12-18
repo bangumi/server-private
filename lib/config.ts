@@ -8,8 +8,6 @@
  *
  * Env.HTTPS_PROXY 默认为空，如果设置了的话，会作为 hCaptcha 的代理
  *
- * Env.DATABASE_URL prisma 会使用这个环境变量，未在这个文件内读取
- *
  * 配置文件见 `configFileType` 变量，定义了配置文件的 json schema
  */
 import fs from 'node:fs';
