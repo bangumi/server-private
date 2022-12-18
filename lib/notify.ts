@@ -7,8 +7,7 @@ import type { Repository } from 'typeorm/repository/Repository';
 import { UnreachableError } from './errors';
 import type * as Prisma from './generated/client';
 import * as orm from './orm';
-import prisma from './prisma';
-import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo } from './torm';
+import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './torm';
 import type { Notify } from './torm/entity';
 import * as entity from './torm/entity';
 
@@ -118,10 +117,7 @@ export async function create(
 
   const unread = await countNotifyRecord(NotifyRepo, destUserID);
 
-  await t.members.update({
-    where: { id: destUserID },
-    data: { new_notify: unread },
-  });
+  await UserRepo.update({ id: destUserID }, { newNotify: unread });
 }
 
 /** @internal 从 notify 表中读取真正的未读通知数量 */
@@ -131,9 +127,9 @@ async function countNotifyRecord(repo: Repository<entity.Notify>, userID: number
 
 /** 从用户表的 new_notify 读取未读通知缓存。 */
 export async function count(userID: number): Promise<number> {
-  const u = await prisma.members.findFirst({ where: { id: userID } });
+  const u = await UserRepo.findOne({ where: { id: userID } });
 
-  return u?.new_notify ?? 0;
+  return u?.newNotify ?? 0;
 }
 
 export async function markAllAsRead(userID: number, id: number[] | undefined): Promise<void> {

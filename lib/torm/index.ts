@@ -38,7 +38,7 @@ export const AppDataSource = new DataSource({
   ],
 });
 
-// const UserRepo = AppDataSource.getRepository(User);
+export const UserRepo = AppDataSource.getRepository(User);
 export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const FriendRepo = AppDataSource.getRepository(Friends);
 

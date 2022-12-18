@@ -8,9 +8,9 @@ import { HCAPTCHA_SECRET_KEY, redisPrefix, TURNSTILE_SECRET_KEY } from '../../..
 import { createHCaptchaDriver } from '../../../externals/hcaptcha';
 import { createTurnstileDriver } from '../../../externals/turnstile';
 import { Tag } from '../../../openapi';
-import prisma from '../../../prisma';
 import redis from '../../../redis';
 import { avatar } from '../../../response';
+import { UserRepo } from '../../../torm';
 import * as res from '../../../types/res';
 import Limiter from '../../../utils/rate-limit';
 import type { App } from '../../type';
@@ -151,11 +151,11 @@ site-key 是 \`4874acee-9c6e-4e47-99ad-e2ea1606961f\``,
         throw new CaptchaError();
       }
 
-      const user = await prisma.members.findFirst({ where: { email } });
+      const user = await UserRepo.findOne({ where: { email } });
       if (!user) {
         throw new EmailOrPasswordError();
       }
-      if (!(await comparePassword(user.password_crypt, password))) {
+      if (!(await comparePassword(user.passwordCrypt, password))) {
         throw new EmailOrPasswordError();
       }
 
@@ -249,11 +249,11 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new CaptchaError();
       }
 
-      const user = await prisma.members.findFirst({ where: { email } });
+      const user = await UserRepo.findOne({ where: { email } });
       if (!user) {
         throw new EmailOrPasswordError();
       }
-      if (!(await comparePassword(user.password_crypt, password))) {
+      if (!(await comparePassword(user.passwordCrypt, password))) {
         throw new EmailOrPasswordError();
       }
 
