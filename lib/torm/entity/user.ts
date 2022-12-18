@@ -4,7 +4,7 @@ import { Column, Entity, Index, OneToOne, PrimaryGeneratedColumn } from 'typeorm
 @Entity('chii_members', { schema: 'bangumi' })
 export class User {
   @PrimaryGeneratedColumn({ type: 'mediumint', name: 'uid', unsigned: true })
-  uid!: number;
+  id!: number;
 
   @Column('char', { name: 'username', unique: true, length: 15 })
   username!: string;

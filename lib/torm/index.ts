@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 
 import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '../config';
 import { OauthAccessTokens, WebSessions } from './entity/auth';
+import { Notify, NotifyField } from './entity/notify';
 import { User, UserField, UserGroup } from './entity/user';
 
 export const AppDataSource = new DataSource({
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   password: MYSQL_PASS,
   database: MYSQL_DB,
   synchronize: false,
-  entities: [User, UserField, OauthAccessTokens, WebSessions, UserGroup],
+  entities: [User, UserField, OauthAccessTokens, WebSessions, UserGroup, Notify, NotifyField],
 });
 
 // const UserRepo = AppDataSource.getRepository(User);
@@ -20,3 +21,6 @@ export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
 export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
+
+export const NotifyRepo = AppDataSource.getRepository(Notify);
+export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);

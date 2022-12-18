@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FindOperator } from 'typeorm';
+import * as typeorm from 'typeorm';
 
 import { SessionRepo } from '../torm';
 import { randomBase62String } from '../utils';
@@ -34,7 +34,7 @@ export async function create(user: { id: number; regTime: number }): Promise<str
  */
 export async function get(sessionID: string): Promise<IAuth | null> {
   const session = await SessionRepo.findOne({
-    where: { key: sessionID, expiredAt: new FindOperator('moreThanOrEqual', dayjs().unix()) },
+    where: { key: sessionID, expiredAt: typeorm.MoreThanOrEqual(dayjs().unix()) },
   });
   if (!session) {
     return null;
