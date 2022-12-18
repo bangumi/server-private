@@ -1,0 +1,68 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("msg_sdeleted", ["msgSdeleted", "msgRdeleted"], {})
+@Index("msgfromid", ["msgSid", "msgFolder", "msgDateline"], {})
+@Index("msgtoid", ["msgRid", "msgFolder", "msgDateline"], {})
+@Index("pm_related", ["msgRelated"], {})
+@Entity("chii_pms", { schema: "bangumi" })
+export class ChiiPms {
+  @PrimaryGeneratedColumn({ type: "int", name: "msg_id", unsigned: true })
+  msgId: number;
+
+  @Column("mediumint", {
+    name: "msg_sid",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  msgSid: number;
+
+  @Column("mediumint", {
+    name: "msg_rid",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  msgRid: number;
+
+  @Column("enum", {
+    name: "msg_folder",
+    enum: ["inbox", "outbox"],
+    default: () => "'inbox'",
+  })
+  msgFolder: "inbox" | "outbox";
+
+  @Column("tinyint", { name: "msg_new", width: 1, default: () => "'0'" })
+  msgNew: boolean;
+
+  @Column("varchar", { name: "msg_title", length: 75 })
+  msgTitle: string;
+
+  @Column("int", { name: "msg_dateline", unsigned: true, default: () => "'0'" })
+  msgDateline: number;
+
+  @Column("text", { name: "msg_message" })
+  msgMessage: string;
+
+  @Column("int", {
+    name: "msg_related_main",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  msgRelatedMain: number;
+
+  @Column("int", { name: "msg_related", unsigned: true })
+  msgRelated: number;
+
+  @Column("tinyint", {
+    name: "msg_sdeleted",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  msgSdeleted: number;
+
+  @Column("tinyint", {
+    name: "msg_rdeleted",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  msgRdeleted: number;
+}

@@ -1,0 +1,14 @@
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+
+@Entity("chii_rev_text", { schema: "bangumi" })
+export class ChiiRevText {
+  @PrimaryGeneratedColumn({
+    type: "mediumint",
+    name: "rev_text_id",
+    unsigned: true,
+  })
+  revTextId: number;
+
+  @Column("mediumblob", { name: "rev_text" })
+  revText: Buffer;
+}

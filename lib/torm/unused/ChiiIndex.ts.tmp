@@ -1,0 +1,63 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("mid", ["idxId"], { unique: true })
+@Index("idx_ban", ["idxBan"], {})
+@Index("idx_type", ["idxType"], {})
+@Index("idx_uid", ["idxUid"], {})
+@Index("idx_collects", ["idxCollects"], {})
+@Entity("chii_index", { schema: "bangumi" })
+export class ChiiIndex {
+  @PrimaryGeneratedColumn({
+    type: "mediumint",
+    name: "idx_id",
+    comment: "自动id",
+  })
+  idxId: number;
+
+  @Column("tinyint", { name: "idx_type", unsigned: true, default: () => "'0'" })
+  idxType: number;
+
+  @Column("varchar", { name: "idx_title", comment: "标题", length: 80 })
+  idxTitle: string;
+
+  @Column("mediumtext", { name: "idx_desc", comment: "简介" })
+  idxDesc: string;
+
+  @Column("mediumint", {
+    name: "idx_replies",
+    comment: "回复数",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  idxReplies: number;
+
+  @Column("mediumint", {
+    name: "idx_subject_total",
+    comment: "内含条目总数",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  idxSubjectTotal: number;
+
+  @Column("mediumint", {
+    name: "idx_collects",
+    comment: "收藏数",
+    default: () => "'0'",
+  })
+  idxCollects: number;
+
+  @Column("mediumtext", { name: "idx_stats" })
+  idxStats: string;
+
+  @Column("int", { name: "idx_dateline", comment: "创建时间" })
+  idxDateline: number;
+
+  @Column("int", { name: "idx_lasttouch", unsigned: true })
+  idxLasttouch: number;
+
+  @Column("mediumint", { name: "idx_uid", comment: "创建人UID" })
+  idxUid: number;
+
+  @Column("tinyint", { name: "idx_ban", unsigned: true, default: () => "'0'" })
+  idxBan: number;
+}

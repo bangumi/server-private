@@ -1,0 +1,59 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("rev_subject_id", ["revSubjectId", "revCreator"], {})
+@Index("rev_type", ["revType"], {})
+@Index("rev_dateline", ["revDateline"], {})
+@Index("rev_creator", ["revCreator", "revId"], {})
+@Entity("chii_subject_revisions", { schema: "bangumi" })
+export class ChiiSubjectRevisions {
+  @PrimaryGeneratedColumn({ type: "mediumint", name: "rev_id", unsigned: true })
+  revId: number;
+
+  @Column("tinyint", {
+    name: "rev_type",
+    comment: "修订类型",
+    unsigned: true,
+    default: () => "'1'",
+  })
+  revType: number;
+
+  @Column("mediumint", { name: "rev_subject_id", unsigned: true })
+  revSubjectId: number;
+
+  @Column("smallint", {
+    name: "rev_type_id",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  revTypeId: number;
+
+  @Column("mediumint", { name: "rev_creator", unsigned: true })
+  revCreator: number;
+
+  @Column("int", { name: "rev_dateline", unsigned: true, default: () => "'0'" })
+  revDateline: number;
+
+  @Column("varchar", { name: "rev_name", length: 80 })
+  revName: string;
+
+  @Column("varchar", { name: "rev_name_cn", length: 80 })
+  revNameCn: string;
+
+  @Column("mediumtext", { name: "rev_field_infobox" })
+  revFieldInfobox: string;
+
+  @Column("mediumtext", { name: "rev_field_summary" })
+  revFieldSummary: string;
+
+  @Column("mediumtext", { name: "rev_vote_field" })
+  revVoteField: string;
+
+  @Column("mediumint", { name: "rev_field_eps", unsigned: true })
+  revFieldEps: number;
+
+  @Column("varchar", { name: "rev_edit_summary", length: 200 })
+  revEditSummary: string;
+
+  @Column("smallint", { name: "rev_platform", unsigned: true })
+  revPlatform: number;
+}

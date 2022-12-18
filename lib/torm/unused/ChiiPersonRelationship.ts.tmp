@@ -1,0 +1,25 @@
+import { Column, Entity, Index } from "typeorm";
+
+@Index("prsn_type", ["prsnType", "prsnId"], {})
+@Index("relat_prsn_type", ["relatPrsnType", "relatPrsnId"], {})
+@Entity("chii_person_relationship", { schema: "bangumi" })
+export class ChiiPersonRelationship {
+  @Column("enum", { name: "prsn_type", enum: ["prsn", "crt"] })
+  prsnType: "prsn" | "crt";
+
+  @Column("mediumint", { name: "prsn_id", unsigned: true })
+  prsnId: number;
+
+  @Column("enum", { name: "relat_prsn_type", enum: ["prsn", "crt"] })
+  relatPrsnType: "prsn" | "crt";
+
+  @Column("mediumint", { name: "relat_prsn_id", unsigned: true })
+  relatPrsnId: number;
+
+  @Column("smallint", {
+    name: "relat_type",
+    comment: "任职于，从属,聘用,嫁给，",
+    unsigned: true,
+  })
+  relatType: number;
+}

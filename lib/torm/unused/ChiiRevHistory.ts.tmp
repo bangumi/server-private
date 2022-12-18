@@ -1,0 +1,36 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("rev_crt_id", ["revType", "revMid"], {})
+@Index("rev_crt_creator", ["revCreator"], {})
+@Index("rev_id", ["revId", "revType", "revCreator"], {})
+@Entity("chii_rev_history", { schema: "bangumi" })
+export class ChiiRevHistory {
+  @PrimaryGeneratedColumn({ type: "mediumint", name: "rev_id", unsigned: true })
+  revId: number;
+
+  @Column("tinyint", {
+    name: "rev_type",
+    comment: "条目，角色，人物",
+    unsigned: true,
+  })
+  revType: number;
+
+  @Column("mediumint", {
+    name: "rev_mid",
+    comment: "对应条目，人物的ID",
+    unsigned: true,
+  })
+  revMid: number;
+
+  @Column("mediumint", { name: "rev_text_id", unsigned: true })
+  revTextId: number;
+
+  @Column("int", { name: "rev_dateline", unsigned: true })
+  revDateline: number;
+
+  @Column("mediumint", { name: "rev_creator", unsigned: true })
+  revCreator: number;
+
+  @Column("varchar", { name: "rev_edit_summary", length: 200 })
+  revEditSummary: string;
+}
