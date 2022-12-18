@@ -2,7 +2,7 @@ openapi 没法描述 socket.io 的 api，所以单独写一个文件
 
 需要使用 `/p1/socket-io/` 作为链接的 path
 
-```js
+```ts
 import { io } from 'https://cdn.jsdelivr.net/npm/socket.io-client@4.5.4/dist/socket.io.esm.min.js';
 
 const socket = io(location.host, {
@@ -12,7 +12,7 @@ const socket = io(location.host, {
   reconnectionDelayMax: 10000,
 });
 
-socket.on('notify', (ev) => {
+socket.on('notify', (ev: { count: number }) => {
   console.log(ev);
 });
 ```
