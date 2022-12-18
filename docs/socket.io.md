@@ -7,9 +7,6 @@ import { io } from 'https://cdn.jsdelivr.net/npm/socket.io-client@4.5.4/dist/soc
 
 const socket = io(location.host, {
   path: '/p1/socket-io/',
-  reconnection: true,
-  reconnectionDelay: 5000,
-  reconnectionDelayMax: 10000,
 });
 
 socket.on('notify', (ev: { count: number }) => {
