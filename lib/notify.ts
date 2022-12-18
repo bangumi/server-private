@@ -1,12 +1,16 @@
 import type { Dayjs } from 'dayjs';
 import * as lodash from 'lodash-es';
 import * as php from 'php-serialize';
+import * as typeorm from 'typeorm';
+import type { Repository } from 'typeorm/repository/Repository';
 
 import { UnreachableError } from './errors';
 import type * as Prisma from './generated/client';
 import * as orm from './orm';
 import prisma from './prisma';
-import { UserFieldRepo } from './torm';
+import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo } from './torm';
+import type { Notify } from './torm/entity';
+import * as entity from './torm/entity';
 
 /**
  * `nt_type`
@@ -92,31 +96,27 @@ export async function create(
   }
 
   const hash = hashType(type);
-  let notifyField = await t.notifyField.findFirst({ where: { hash, topicID } });
+  let notifyField = await NotifyFieldRepo.findOne({ where: { hash, topicID } });
 
   if (!notifyField) {
-    notifyField = await t.notifyField.create({
-      data: {
-        title: title,
-        hash,
-        topicID,
-      },
+    notifyField = await NotifyFieldRepo.save({
+      title: title,
+      hash,
+      topicID,
     });
   }
 
-  await t.notify.create({
-    data: {
-      uid: destUserID,
-      from_uid: sourceUserID,
-      unread: true,
-      dateline: now.unix(),
-      type,
-      notify_field_id: notifyField.id,
-      postID,
-    },
+  await NotifyRepo.save({
+    uid: destUserID,
+    from_uid: sourceUserID,
+    unread: true,
+    dateline: now.unix(),
+    type,
+    notify_field_id: notifyField.id,
+    postID,
   });
 
-  const unread = await countNotifyRecord(t, destUserID);
+  const unread = await countNotifyRecord(NotifyRepo, destUserID);
 
   await t.members.update({
     where: { id: destUserID },
@@ -125,11 +125,8 @@ export async function create(
 }
 
 /** @internal 从 notify 表中读取真正的未读通知数量 */
-async function countNotifyRecord(
-  t: Prisma.Prisma.TransactionClient,
-  userID: number,
-): Promise<number> {
-  return t.notify.count({ where: { uid: userID, unread: true } });
+async function countNotifyRecord(repo: Repository<entity.Notify>, userID: number): Promise<number> {
+  return repo.count({ where: { uid: userID, unread: true } });
 }
 
 /** 从用户表的 new_notify 读取未读通知缓存。 */
@@ -140,21 +137,20 @@ export async function count(userID: number): Promise<number> {
 }
 
 export async function markAllAsRead(userID: number, id: number[] | undefined): Promise<void> {
-  await prisma.$transaction(async (t) => {
-    await t.notify.updateMany({
-      where: {
+  await AppDataSource.transaction(async (t) => {
+    const notifyRepo = t.getRepository(entity.Notify);
+    const memberRepo = t.getRepository(entity.User);
+    await notifyRepo.update(
+      {
         uid: userID,
-        id: id ? { in: id } : undefined,
+        id: id ? typeorm.In(id) : undefined,
       },
-      data: { unread: false },
-    });
+      { unread: false },
+    );
 
-    const c = await countNotifyRecord(t, userID);
+    const c = await countNotifyRecord(notifyRepo, userID);
 
-    await t.members.update({
-      where: { id: userID },
-      data: { new_notify: c },
-    });
+    await memberRepo.update({ id: userID }, { newNotify: c });
   });
 }
 
@@ -217,9 +213,9 @@ export async function list(
   userID: number,
   { unread = true, limit = 30 }: Filter,
 ): Promise<INotify[]> {
-  const notifications: Prisma.Notify[] = await prisma.notify.findMany({
+  const notifications: Notify[] = await NotifyRepo.find({
     where: { uid: userID, unread },
-    orderBy: { dateline: 'desc' },
+    order: { dateline: 'desc' },
     take: limit,
   });
 
@@ -229,9 +225,9 @@ export async function list(
 
   const fieldIds = lodash.uniq(notifications.map((x) => x.notify_field_id));
 
-  const fields = await prisma.notifyField.findMany({
+  const fields = await NotifyFieldRepo.find({
     where: {
-      id: { in: fieldIds },
+      id: typeorm.In(fieldIds),
     },
   });
 
