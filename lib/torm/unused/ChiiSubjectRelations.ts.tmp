@@ -1,0 +1,57 @@
+import { Column, Entity, Index } from "typeorm";
+
+@Index(
+  "rlt_subject_id",
+  ["rltSubjectId", "rltRelatedSubjectId", "rltViceVersa"],
+  { unique: true }
+)
+@Index(
+  "rlt_related_subject_type_id",
+  ["rltRelatedSubjectTypeId", "rltOrder"],
+  {}
+)
+@Index("rlt_subject_type_id", ["rltSubjectTypeId"], {})
+@Index(
+  "rlt_relation_type",
+  ["rltRelationType", "rltSubjectId", "rltRelatedSubjectId"],
+  {}
+)
+@Entity("chii_subject_relations", { schema: "bangumi" })
+export class ChiiSubjectRelations {
+  @Column("mediumint", {
+    name: "rlt_subject_id",
+    comment: "关联主 ID",
+    unsigned: true,
+  })
+  rltSubjectId: number;
+
+  @Column("tinyint", { name: "rlt_subject_type_id", unsigned: true })
+  rltSubjectTypeId: number;
+
+  @Column("smallint", {
+    name: "rlt_relation_type",
+    comment: "关联类型",
+    unsigned: true,
+  })
+  rltRelationType: number;
+
+  @Column("mediumint", {
+    name: "rlt_related_subject_id",
+    comment: "关联目标 ID",
+    unsigned: true,
+  })
+  rltRelatedSubjectId: number;
+
+  @Column("tinyint", {
+    name: "rlt_related_subject_type_id",
+    comment: "关联目标类型",
+    unsigned: true,
+  })
+  rltRelatedSubjectTypeId: number;
+
+  @Column("tinyint", { name: "rlt_vice_versa", unsigned: true })
+  rltViceVersa: number;
+
+  @Column("tinyint", { name: "rlt_order", comment: "关联排序", unsigned: true })
+  rltOrder: number;
+}

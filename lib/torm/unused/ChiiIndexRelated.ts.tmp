@@ -1,0 +1,53 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("idx_rlt_rid", ["idxRltRid", "idxRltType"], {})
+@Index("idx_rlt_sid", ["idxRltRid", "idxRltSid"], {})
+@Index("idx_rlt_sid_2", ["idxRltSid"], {})
+@Index("idx_rlt_cat", ["idxRltCat"], {})
+@Index("idx_order", ["idxRltRid", "idxRltCat", "idxRltOrder", "idxRltSid"], {})
+@Entity("chii_index_related", { schema: "bangumi" })
+export class ChiiIndexRelated {
+  @PrimaryGeneratedColumn({
+    type: "mediumint",
+    name: "idx_rlt_id",
+    unsigned: true,
+  })
+  idxRltId: number;
+
+  @Column("tinyint", { name: "idx_rlt_cat" })
+  idxRltCat: number;
+
+  @Column("mediumint", {
+    name: "idx_rlt_rid",
+    comment: "关联目录",
+    unsigned: true,
+  })
+  idxRltRid: number;
+
+  @Column("smallint", {
+    name: "idx_rlt_type",
+    comment: "关联条目类型",
+    unsigned: true,
+  })
+  idxRltType: number;
+
+  @Column("mediumint", {
+    name: "idx_rlt_sid",
+    comment: "关联条目ID",
+    unsigned: true,
+  })
+  idxRltSid: number;
+
+  @Column("mediumint", {
+    name: "idx_rlt_order",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  idxRltOrder: number;
+
+  @Column("mediumtext", { name: "idx_rlt_comment" })
+  idxRltComment: string;
+
+  @Column("int", { name: "idx_rlt_dateline", unsigned: true })
+  idxRltDateline: number;
+}

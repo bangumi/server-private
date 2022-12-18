@@ -1,0 +1,162 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("user_interest", ["interestUid", "interestSubjectId"], { unique: true })
+@Index("interest_collect_dateline", ["interestCollectDateline"], {})
+@Index("interest_id", ["interestUid", "interestPrivate"], {})
+@Index("interest_lasttouch", ["interestLasttouch"], {})
+@Index("interest_private", ["interestPrivate"], {})
+@Index("interest_rate", ["interestRate"], {})
+@Index("interest_subject_id", ["interestSubjectId", "interestType"], {})
+@Index("interest_subject_id_2", ["interestSubjectId"], {})
+@Index("interest_subject_type", ["interestSubjectType"], {})
+@Index("interest_type", ["interestType"], {})
+@Index("interest_type_2", ["interestType", "interestUid"], {})
+@Index("interest_uid", ["interestUid"], {})
+@Index(
+  "interest_uid_2",
+  ["interestUid", "interestPrivate", "interestLasttouch"],
+  {}
+)
+@Index(
+  "subject_collect",
+  [
+    "interestSubjectId",
+    "interestType",
+    "interestPrivate",
+    "interestCollectDateline",
+  ],
+  {}
+)
+@Index(
+  "subject_comment",
+  [
+    "interestSubjectId",
+    "interestHasComment",
+    "interestPrivate",
+    "interestLasttouch",
+  ],
+  {}
+)
+@Index(
+  "subject_lasttouch",
+  ["interestSubjectId", "interestPrivate", "interestLasttouch"],
+  {}
+)
+@Index(
+  "subject_rate",
+  ["interestSubjectId", "interestRate", "interestPrivate"],
+  {}
+)
+@Index(
+  "tag_subject_id",
+  ["interestSubjectType", "interestType", "interestUid"],
+  {}
+)
+@Index(
+  "top_subject",
+  ["interestSubjectId", "interestSubjectType", "interestDoingDateline"],
+  {}
+)
+@Index(
+  "user_collect_latest",
+  ["interestSubjectType", "interestType", "interestUid", "interestPrivate"],
+  {}
+)
+@Index(
+  "user_collect_type",
+  [
+    "interestSubjectType",
+    "interestType",
+    "interestUid",
+    "interestPrivate",
+    "interestCollectDateline",
+  ],
+  {}
+)
+@Index("user_collects", ["interestSubjectType", "interestUid"], {})
+@Entity("chii_subject_interests", { schema: "bangumi" })
+export class ChiiSubjectInterests {
+  @PrimaryGeneratedColumn({ type: "int", name: "interest_id", unsigned: true })
+  interestId: number;
+
+  @Column("mediumint", { name: "interest_uid", unsigned: true })
+  interestUid: number;
+
+  @Column("mediumint", { name: "interest_subject_id", unsigned: true })
+  interestSubjectId: number;
+
+  @Column("smallint", {
+    name: "interest_subject_type",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  interestSubjectType: number;
+
+  @Column("tinyint", {
+    name: "interest_rate",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  interestRate: number;
+
+  @Column("tinyint", {
+    name: "interest_type",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  interestType: number;
+
+  @Column("tinyint", { name: "interest_has_comment", unsigned: true })
+  interestHasComment: number;
+
+  @Column("mediumtext", { name: "interest_comment" })
+  interestComment: string;
+
+  @Column("mediumtext", { name: "interest_tag" })
+  interestTag: string;
+
+  @Column("mediumint", {
+    name: "interest_ep_status",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  interestEpStatus: number;
+
+  @Column("mediumint", {
+    name: "interest_vol_status",
+    comment: "卷数",
+    unsigned: true,
+  })
+  interestVolStatus: number;
+
+  @Column("int", { name: "interest_wish_dateline", unsigned: true })
+  interestWishDateline: number;
+
+  @Column("int", { name: "interest_doing_dateline", unsigned: true })
+  interestDoingDateline: number;
+
+  @Column("int", { name: "interest_collect_dateline", unsigned: true })
+  interestCollectDateline: number;
+
+  @Column("int", { name: "interest_on_hold_dateline", unsigned: true })
+  interestOnHoldDateline: number;
+
+  @Column("int", { name: "interest_dropped_dateline", unsigned: true })
+  interestDroppedDateline: number;
+
+  @Column("char", { name: "interest_create_ip", length: 15 })
+  interestCreateIp: string;
+
+  @Column("char", { name: "interest_lasttouch_ip", length: 15 })
+  interestLasttouchIp: string;
+
+  @Column("int", {
+    name: "interest_lasttouch",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  interestLasttouch: number;
+
+  @Column("tinyint", { name: "interest_private", unsigned: true })
+  interestPrivate: number;
+}

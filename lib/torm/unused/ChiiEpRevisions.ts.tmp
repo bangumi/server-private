@@ -1,0 +1,37 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("rev_sid", ["revSid", "revCreator"], {})
+@Entity("chii_ep_revisions", { schema: "bangumi" })
+export class ChiiEpRevisions {
+  @PrimaryGeneratedColumn({
+    type: "mediumint",
+    name: "ep_rev_id",
+    unsigned: true,
+  })
+  epRevId: number;
+
+  @Column("mediumint", { name: "rev_sid", unsigned: true })
+  revSid: number;
+
+  @Column("varchar", { name: "rev_eids", length: 255 })
+  revEids: string;
+
+  @Column("mediumtext", { name: "rev_ep_infobox" })
+  revEpInfobox: string;
+
+  @Column("mediumint", { name: "rev_creator", unsigned: true })
+  revCreator: number;
+
+  @Column("tinyint", {
+    name: "rev_version",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  revVersion: number;
+
+  @Column("int", { name: "rev_dateline", unsigned: true })
+  revDateline: number;
+
+  @Column("varchar", { name: "rev_edit_summary", length: 200 })
+  revEditSummary: string;
+}

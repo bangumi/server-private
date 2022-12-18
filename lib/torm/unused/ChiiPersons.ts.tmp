@@ -1,0 +1,103 @@
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+
+@Index("prsn_type", ["prsnType"], {})
+@Index("prsn_producer", ["prsnProducer"], {})
+@Index("prsn_mangaka", ["prsnMangaka"], {})
+@Index("prsn_artist", ["prsnArtist"], {})
+@Index("prsn_seiyu", ["prsnSeiyu"], {})
+@Index("prsn_writer", ["prsnWriter"], {})
+@Index("prsn_illustrator", ["prsnIllustrator"], {})
+@Index("prsn_lock", ["prsnLock"], {})
+@Index("prsn_ban", ["prsnBan"], {})
+@Index("prsn_actor", ["prsnActor"], {})
+@Entity("chii_persons", { schema: "bangumi" })
+export class ChiiPersons {
+  @PrimaryGeneratedColumn({
+    type: "mediumint",
+    name: "prsn_id",
+    unsigned: true,
+  })
+  prsnId: number;
+
+  @Column("varchar", { name: "prsn_name", length: 255 })
+  prsnName: string;
+
+  @Column("tinyint", {
+    name: "prsn_type",
+    comment: "个人，公司，组合",
+    unsigned: true,
+  })
+  prsnType: number;
+
+  @Column("mediumtext", { name: "prsn_infobox" })
+  prsnInfobox: string;
+
+  @Column("tinyint", { name: "prsn_producer", width: 1 })
+  prsnProducer: boolean;
+
+  @Column("tinyint", { name: "prsn_mangaka", width: 1 })
+  prsnMangaka: boolean;
+
+  @Column("tinyint", { name: "prsn_artist", width: 1 })
+  prsnArtist: boolean;
+
+  @Column("tinyint", { name: "prsn_seiyu", width: 1 })
+  prsnSeiyu: boolean;
+
+  @Column("tinyint", {
+    name: "prsn_writer",
+    comment: "作家",
+    default: () => "'0'",
+  })
+  prsnWriter: number;
+
+  @Column("tinyint", {
+    name: "prsn_illustrator",
+    comment: "绘师",
+    default: () => "'0'",
+  })
+  prsnIllustrator: number;
+
+  @Column("tinyint", { name: "prsn_actor", comment: "演员", width: 1 })
+  prsnActor: boolean;
+
+  @Column("mediumtext", { name: "prsn_summary" })
+  prsnSummary: string;
+
+  @Column("varchar", { name: "prsn_img", length: 255 })
+  prsnImg: string;
+
+  @Column("varchar", { name: "prsn_img_anidb", length: 255 })
+  prsnImgAnidb: string;
+
+  @Column("mediumint", { name: "prsn_comment", unsigned: true })
+  prsnComment: number;
+
+  @Column("mediumint", { name: "prsn_collects", unsigned: true })
+  prsnCollects: number;
+
+  @Column("int", { name: "prsn_dateline", unsigned: true })
+  prsnDateline: number;
+
+  @Column("int", { name: "prsn_lastpost", unsigned: true })
+  prsnLastpost: number;
+
+  @Column("tinyint", { name: "prsn_lock" })
+  prsnLock: number;
+
+  @Column("mediumint", { name: "prsn_anidb_id", unsigned: true })
+  prsnAnidbId: number;
+
+  @Column("tinyint", { name: "prsn_ban", unsigned: true, default: () => "'0'" })
+  prsnBan: number;
+
+  @Column("int", {
+    name: "prsn_redirect",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  prsnRedirect: number;
+
+  @Column("tinyint", { name: "prsn_nsfw", unsigned: true })
+  prsnNsfw: number;
+}

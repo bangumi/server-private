@@ -1,0 +1,30 @@
+import { Column, Entity, Index } from "typeorm";
+
+@Index("subject_id", ["subjectId"], {})
+@Entity("chii_subject_alias", { schema: "bangumi" })
+export class ChiiSubjectAlias {
+  @Column("int", { name: "subject_id", unsigned: true })
+  subjectId: number;
+
+  @Column("varchar", { name: "alias_name", length: 255 })
+  aliasName: string;
+
+  @Column("tinyint", {
+    name: "subject_type_id",
+    comment: "所属条目的类型",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  subjectTypeId: number;
+
+  @Column("tinyint", {
+    name: "alias_type",
+    comment: "是别名还是条目名",
+    unsigned: true,
+    default: () => "'0'",
+  })
+  aliasType: number;
+
+  @Column("varchar", { name: "alias_key", length: 10 })
+  aliasKey: string;
+}
