@@ -1,6 +1,6 @@
 // Vitest Snapshot v1
 
-exports[`create topic reply 1`] = `
+exports[`mocked > create topic reply 1`] = `
 {
   "content": undefined,
   "createdAt": undefined,
