@@ -6,7 +6,7 @@ import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
 import type { ReplyState } from './topic';
-import { UserGroupRepo } from './torm';
+import { FriendRepo, GroupMemberRepo, GroupRepo, UserGroupRepo } from './torm';
 
 export interface Page {
   limit?: number;
@@ -273,8 +273,8 @@ interface IGroup {
 }
 
 export async function fetchGroupByID(id: number): Promise<IGroup | null> {
-  const group = await prisma.chii_groups.findFirst({
-    where: { grp_id: id },
+  const group = await GroupRepo.findOne({
+    where: { id },
   });
 
   if (!group) {
@@ -282,21 +282,21 @@ export async function fetchGroupByID(id: number): Promise<IGroup | null> {
   }
 
   return {
-    id: group.grp_id,
-    name: group.grp_name,
-    title: group.grp_title,
-    nsfw: group.grp_nsfw,
-    description: group.grp_desc,
-    createdAt: group.grp_builddate,
-    icon: group.grp_icon,
-    totalMembers: group.grp_members,
-    accessible: group.grp_accessible,
+    id: group.id,
+    name: group.name,
+    title: group.title,
+    nsfw: group.nsfw,
+    description: group.description,
+    createdAt: group.builddate,
+    icon: group.icon,
+    totalMembers: group.memberCount,
+    accessible: group.accessible,
   } satisfies IGroup;
 }
 
 export async function fetchGroup(name: string): Promise<IGroup | null> {
-  const group = await prisma.chii_groups.findFirst({
-    where: { grp_name: name },
+  const group = await GroupRepo.findOne({
+    where: { name },
   });
 
   if (!group) {
@@ -304,15 +304,15 @@ export async function fetchGroup(name: string): Promise<IGroup | null> {
   }
 
   return {
-    id: group.grp_id,
-    name: group.grp_name,
-    title: group.grp_title,
-    nsfw: group.grp_nsfw,
-    description: group.grp_desc,
-    icon: group.grp_icon,
-    createdAt: group.grp_builddate,
-    totalMembers: group.grp_members,
-    accessible: group.grp_accessible,
+    id: group.id,
+    name: group.name,
+    title: group.title,
+    nsfw: group.nsfw,
+    description: group.description,
+    icon: group.icon,
+    createdAt: group.builddate,
+    totalMembers: group.memberCount,
+    accessible: group.accessible,
   } satisfies IGroup;
 }
 
@@ -410,17 +410,17 @@ export async function fetchFriends(id?: number): Promise<Record<number, boolean>
     return {};
   }
 
-  const friends = await prisma.friends.findMany({
-    where: { frd_uid: id },
+  const friends = await FriendRepo.find({
+    where: { frdUid: id },
   });
 
-  return Object.fromEntries(friends.map((x) => [x.frd_fid, true]));
+  return Object.fromEntries(friends.map((x) => [x.frdFid, true]));
 }
 
 /** Is user(another) is friend of user(userID) */
 export async function isFriends(userID: number, another: number): Promise<boolean> {
-  const friends = await prisma.friends.count({
-    where: { frd_uid: userID, frd_fid: another },
+  const friends = await FriendRepo.count({
+    where: { frdUid: userID, frdFid: another },
   });
 
   return friends !== 0;
@@ -468,8 +468,8 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
 }
 
 export async function isMemberInGroup(gid: number, uid: number): Promise<boolean> {
-  const inGroup = await prisma.groupMembers.findFirst({
-    where: { gmb_gid: gid, gmb_uid: uid },
+  const inGroup = await GroupMemberRepo.count({
+    where: { gmbGid: gid, gmbUid: uid },
   });
 
   return Boolean(inGroup);

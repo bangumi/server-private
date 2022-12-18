@@ -9,28 +9,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model PrivateMessage {
-  id           Int       @id @default(autoincrement()) @map("msg_id") @db.UnsignedInt
-  sid          Int       @default(0) @map("msg_sid") @db.UnsignedInt
-  rid          Int       @default(0) @map("msg_rid") @db.UnsignedInt
-  folder       pm_folder @default(inbox) @map("msg_folder")
-  new          Int       @default(0) @map("msg_new") @db.TinyInt
-  title        String    @map("msg_title") @db.VarChar(75)
-  dateline     Int       @default(0) @map("msg_dateline") @db.UnsignedInt
-  message      String    @map("msg_message") @db.Text
-  related_main Int       @default(0) @map("msg_related_main") @db.UnsignedInt
-  related      Int       @map("msg_related") @db.UnsignedInt
-  sdeleted     Int       @default(0) @map("msg_sdeleted") @db.TinyInt
-  rdeleted     Int       @default(0) @map("msg_rdeleted") @db.TinyInt
-
-  @@map(name: "chii_pms")
-}
-
-enum pm_folder {
-  inbox
-  outbox
-}
-
 model chii_episodes {
   ep_id         Int    @id @default(autoincrement()) @db.UnsignedMediumInt
   ep_subject_id Int    @db.UnsignedMediumInt
@@ -57,30 +35,6 @@ model chii_episodes {
   @@index([ep_sort], map: "ep_sort")
   @@index([ep_subject_id], map: "ep_subject_id")
   @@index([ep_subject_id, ep_ban, ep_sort], map: "ep_subject_id_2")
-}
-
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
-model Friends {
-  frd_uid         Int    @default(0) @db.UnsignedMediumInt
-  frd_fid         Int    @default(0) @db.UnsignedMediumInt
-  frd_grade       Int    @default(1) @db.UnsignedTinyInt
-  frd_dateline    Int    @default(0) @db.UnsignedInt
-  frd_description String @db.Char(255)
-
-  @@unique([frd_uid, frd_fid])
-  @@index([frd_fid], map: "frd_fid")
-  @@index([frd_uid], map: "uid")
-  @@map("chii_friends")
-}
-
-model GroupMembers {
-  gmb_uid       Int     @default(0) @db.MediumInt
-  gmb_gid       Int     @default(0) @db.SmallInt
-  gmb_moderator Boolean @default(false)
-  gmb_dateline  Int     @default(0) @db.UnsignedInt
-
-  @@id([gmb_uid, gmb_gid])
-  @@map("chii_group_members")
 }
 
 // 回复
@@ -115,23 +69,6 @@ model GroupTopics {
   @@index([lastpost], map: "grp_tpc_lastpost")
   @@index([uid], map: "grp_tpc_uid")
   @@map("chii_group_topics")
-}
-
-model chii_groups {
-  grp_id         Int     @id @default(autoincrement()) @db.UnsignedSmallInt
-  grp_cat        Int     @default(0) @db.UnsignedSmallInt
-  grp_name       String  @db.Char(50)
-  grp_title      String  @db.Char(50)
-  grp_icon       String  @db.VarChar(255)
-  grp_creator    Int     @default(0) @db.UnsignedMediumInt
-  grp_topics     Int     @default(0) @db.UnsignedMediumInt
-  grp_posts      Int     @default(0) @db.UnsignedMediumInt
-  grp_members    Int     @default(1) @db.UnsignedMediumInt
-  grp_desc       String  @db.Text
-  grp_lastpost   Int     @db.UnsignedInt
-  grp_builddate  Int     @db.UnsignedInt
-  grp_accessible Boolean @default(true)
-  grp_nsfw       Boolean
 }
 
 model Members {

@@ -10,10 +10,10 @@ import type { ITopic, IUser, Page } from '../../../orm';
 import { isMemberInGroup } from '../../../orm';
 import * as orm from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
-import prisma from '../../../prisma';
 import { avatar, groupIcon } from '../../../response';
 import { NotJoinPrivateGroupError } from '../../../topic';
 import * as Topic from '../../../topic';
+import { GroupMemberRepo } from '../../../torm';
 import { formatErrors } from '../../../types/res';
 import * as res from '../../../types/res';
 import type { App } from '../../type';
@@ -104,7 +104,7 @@ export async function setup(app: App) {
       return {
         group: { ...group, icon: groupIcon(group.icon) },
         totalTopics: total,
-        inGroup: auth.login ? await fetchIfInGroup(group.id, auth.userID) : false,
+        inGroup: auth.login ? await orm.isMemberInGroup(group.id, auth.userID) : false,
         topics,
         recentAddedMembers: await fetchRecentMember(group.id),
       };
@@ -547,47 +547,39 @@ async function addCreators(
   });
 }
 
-async function fetchIfInGroup(groupID: number, userID: number): Promise<boolean> {
-  const count = await prisma.groupMembers.count({
-    where: { gmb_gid: groupID, gmb_uid: userID },
-  });
-
-  return Boolean(count);
-}
-
 async function fetchGroupMemberList(
   groupID: number,
   { limit = 30, offset = 0, type }: Page & { type: 'mod' | 'normal' | 'all' },
 ): Promise<[number, IGroupMember[]]> {
   const where = {
-    gmb_gid: groupID,
-    gmb_moderator: type === 'all' ? undefined : type === 'mod',
+    gmbGid: groupID,
+    gmbModerator: type === 'all' ? undefined : type === 'mod',
   } as const;
-  const total = await prisma.groupMembers.count({ where });
+  const total = await GroupMemberRepo.count({ where });
 
-  const members = await prisma.groupMembers.findMany({
+  const members = await GroupMemberRepo.find({
     where,
     take: limit,
     skip: offset,
-    orderBy: {
-      gmb_dateline: 'desc',
+    order: {
+      gmbDateline: 'desc',
     },
   });
 
-  const users = await orm.fetchUsers(members.map((x) => x.gmb_uid));
+  const users = await orm.fetchUsers(members.map((x) => x.gmbUid));
 
   return [
     total,
     members.map(function (x): IGroupMember {
-      const user = users[x.gmb_uid];
+      const user = users[x.gmbUid];
       if (!user) {
-        throw new UnexpectedNotFoundError(`user ${x.gmb_uid}`);
+        throw new UnexpectedNotFoundError(`user ${x.gmbUid}`);
       }
 
       return {
         avatar: avatar(user.img),
         id: user.id,
-        joinedAt: x.gmb_dateline,
+        joinedAt: x.gmbDateline,
         nickname: user.nickname,
         username: user.username,
       };
