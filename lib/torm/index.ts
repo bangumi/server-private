@@ -13,6 +13,8 @@ import {
   GroupMembers,
   Group,
   Episode,
+  Subject,
+  SubjectFields,
 } from './entity';
 
 export const AppDataSource = new DataSource({
@@ -35,6 +37,8 @@ export const AppDataSource = new DataSource({
     Group,
     GroupMembers,
     Episode,
+    Subject,
+    SubjectFields,
   ],
 });
 
@@ -42,6 +46,8 @@ export const UserRepo = AppDataSource.getRepository(User);
 export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const FriendRepo = AppDataSource.getRepository(Friends);
 
+export const SubjectRepo = AppDataSource.getRepository(Subject);
+export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
@@ -57,6 +63,8 @@ export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
 export const repo = {
   UserField: UserFieldRepo,
   Friend: FriendRepo,
+  Subject: SubjectRepo,
+  SubjectFields: SubjectFieldsRepo,
   Episode: EpisodeRepo,
   AccessToken: AccessTokenRepo,
   Session: SessionRepo,
