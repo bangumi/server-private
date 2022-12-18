@@ -10,3 +10,5 @@ export class UnimplementedError extends Error {
     super('TODO: ' + msg);
   }
 }
+
+export class UnreachableError extends Error {}
