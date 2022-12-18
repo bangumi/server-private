@@ -102,12 +102,7 @@ module.exports = {
         functions: 'ignore',
       },
     ],
-    'import/no-unused-modules': [
-      1,
-      {
-        unusedExports: true,
-      },
-    ],
+    'import/first': 'error',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '_' }],
     '@typescript-eslint/strict-boolean-expressions': 'off',

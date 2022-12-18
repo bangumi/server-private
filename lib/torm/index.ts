@@ -15,6 +15,8 @@ import {
   Episode,
   Subject,
   SubjectFields,
+  GroupTopic,
+  GroupPost,
 } from './entity';
 
 export const AppDataSource = new DataSource({
@@ -39,6 +41,8 @@ export const AppDataSource = new DataSource({
     Episode,
     Subject,
     SubjectFields,
+    GroupTopic,
+    GroupPost,
   ],
 });
 
@@ -58,6 +62,8 @@ export const NotifyRepo = AppDataSource.getRepository(Notify);
 export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
 
 export const GroupRepo = AppDataSource.getRepository(Group);
+export const GroupTopicRepo = AppDataSource.getRepository(GroupTopic);
+export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
 export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
 
 export const repo = {

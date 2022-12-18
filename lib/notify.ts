@@ -5,7 +5,6 @@ import * as typeorm from 'typeorm';
 import type { Repository } from 'typeorm/repository/Repository';
 
 import { UnreachableError } from './errors';
-import type * as Prisma from './generated/client';
 import * as orm from './orm';
 import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './torm';
 import type { Notify } from './torm/entity';
@@ -69,7 +68,7 @@ interface Creation {
 
 /** Used in transaction */
 export async function create(
-  t: Prisma.Prisma.TransactionClient,
+  t: typeorm.EntityManager,
   { destUserID, sourceUserID, now, type, postID, topicID, title }: Creation,
 ): Promise<void> {
   if (destUserID === sourceUserID) {

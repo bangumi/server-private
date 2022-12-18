@@ -1,14 +1,14 @@
 import { test, vi, expect, afterAll, afterEach } from 'vitest';
 
-import prisma from './prisma';
 import * as Topic from './topic';
+import { AppDataSource } from './torm/index';
 
 const transaction = vi.fn().mockResolvedValue({
   id: 2,
   uid: 1,
 });
 
-vi.spyOn(prisma, '$transaction').mockImplementation(transaction);
+vi.spyOn(AppDataSource, 'transaction').mockImplementation(transaction);
 
 afterEach(() => {
   transaction.mockReset();
