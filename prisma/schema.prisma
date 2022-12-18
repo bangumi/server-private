@@ -43,28 +43,6 @@ model GroupTopics {
   @@map("chii_group_topics")
 }
 
-model Members {
-  id             Int     @id @default(autoincrement()) @map("uid") @db.UnsignedMediumInt
-  username       String  @unique(map: "username") @default("") @db.Char(15)
-  nickname       String  @db.VarChar(30)
-  avatar         String  @db.VarChar(255)
-  groupid        Int     @default(0) @db.UnsignedSmallInt
-  regdate        Int     @default(0) @db.UnsignedInt
-  lastvisit      Int     @default(0) @db.UnsignedInt
-  lastactivity   Int     @default(0) @db.UnsignedInt
-  lastpost       Int     @default(0) @db.UnsignedInt
-  dateformat     String  @default("") @db.Char(10)
-  timeformat     Boolean @default(false)
-  timeoffset     String  @default("") @db.Char(4)
-  newpm          Boolean @default(false)
-  new_notify     Int     @default(0) @db.UnsignedSmallInt
-  sign           String  @db.VarChar(255)
-  password_crypt String  @db.Char(64)
-  email          String  @default("") @db.Char(50)
-
-  @@map("chii_members")
-}
-
 model subjectFields {
   subject_id     Int      @id @default(autoincrement()) @map("field_sid") @db.UnsignedMediumInt
   field_tid      Int      @default(0) @db.UnsignedSmallInt
@@ -155,34 +133,4 @@ model Subjects {
   @@index([subject_series_entry], map: "subject_series_entry")
   @@index([subject_type_id], map: "subject_type_id")
   @@map("chii_subjects")
-}
-
-enum chii_person_alias_prsn_cat {
-  prsn
-  crt
-}
-
-enum chii_person_cs_index_prsn_type {
-  prsn
-  crt
-}
-
-enum chii_person_fields_prsn_cat {
-  prsn
-  crt
-}
-
-enum chii_person_relationship_prsn_type {
-  prsn
-  crt
-}
-
-enum chii_person_collects_prsn_clt_cat {
-  prsn
-  crt
-}
-
-enum chii_person_relationship_relat_prsn_type {
-  prsn
-  crt
 }

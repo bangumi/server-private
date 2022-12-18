@@ -1,12 +1,13 @@
 import dayjs from 'dayjs';
 import * as php from 'php-serialize';
+import * as typeorm from 'typeorm';
 
 import type { TopicDisplay } from './auth/rule';
 import { UnexpectedNotFoundError } from './errors';
 import { logger } from './logger';
 import prisma from './prisma';
 import type { ReplyState } from './topic';
-import { FriendRepo, GroupMemberRepo, GroupRepo, UserGroupRepo } from './torm';
+import { FriendRepo, GroupMemberRepo, GroupRepo, UserGroupRepo, UserRepo } from './torm';
 
 export interface Page {
   limit?: number;
@@ -24,7 +25,7 @@ export interface IUser {
 }
 
 export async function fetchUserByUsername(username: string): Promise<IUser | null> {
-  const user = await prisma.members.findFirst({
+  const user = await UserRepo.findOne({
     where: { username },
   });
 
@@ -47,7 +48,7 @@ export async function fetchUser(userID: number): Promise<IUser | null> {
   if (!userID) {
     throw new Error(`undefined user id ${userID}`);
   }
-  const user = await prisma.members.findFirst({
+  const user = await UserRepo.findOne({
     where: { id: userID },
   });
 
@@ -143,8 +144,8 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
     return {};
   }
 
-  const users = await prisma.members.findMany({
-    where: { id: { in: userIDs } },
+  const users = await UserRepo.find({
+    where: { id: typeorm.In(userIDs) },
   });
 
   return Object.fromEntries(
