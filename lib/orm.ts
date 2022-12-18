@@ -416,6 +416,15 @@ export async function fetchFriends(id?: number): Promise<Record<number, boolean>
   return Object.fromEntries(friends.map((x) => [x.frd_fid, true]));
 }
 
+/** Is user(another) is friend of user(userID) */
+export async function isFriends(userID: number, another: number): Promise<boolean> {
+  const friends = await prisma.friends.count({
+    where: { frd_uid: userID, frd_fid: another },
+  });
+
+  return friends !== 0;
+}
+
 interface PostCreation {
   title: string;
   content: string;
