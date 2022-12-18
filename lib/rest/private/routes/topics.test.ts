@@ -2,24 +2,14 @@ import dayjs from 'dayjs';
 import { fastify } from 'fastify';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
+import { createTestServer } from '../../../../tests/utils';
 import type { IAuth } from '../../../auth';
 import { UserGroup } from '../../../auth';
 import * as orm from '../../../orm';
 import { createServer } from '../../../server';
-import { ReplyState } from '../../../topic';
 import * as Topic from '../../../topic';
+import { ReplyState } from '../../../topic';
 import * as topicAPI from './topics';
-
-function createServerWithAuth(auth: IAuth) {
-  const app = fastify();
-
-  app.addHook('preHandler', (req, res, done) => {
-    req.auth = auth;
-    done();
-  });
-
-  return app;
-}
 
 const expectedTopic = {
   createdAt: 1657885648,
@@ -224,12 +214,14 @@ describe('create group post reply', () => {
   });
 
   test('should create group post reply', async () => {
-    const app = createServerWithAuth({
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: {},
-      allowNsfw: true,
-      userID: 100,
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        userID: 100,
+      },
     });
 
     await app.register(topicAPI.setup);
@@ -246,14 +238,16 @@ describe('create group post reply', () => {
   });
 
   test('should not create with banned user', async () => {
-    const app = createServerWithAuth({
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: {
-        ban_post: true,
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {
+          ban_post: true,
+        },
+        allowNsfw: true,
+        userID: 1,
       },
-      allowNsfw: true,
-      userID: 1,
     });
 
     await app.register(topicAPI.setup);
@@ -271,12 +265,14 @@ describe('create group post reply', () => {
   });
 
   test('should not create on non-existing topic', async () => {
-    const app = createServerWithAuth({
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: {},
-      allowNsfw: true,
-      userID: 1,
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        userID: 1,
+      },
     });
 
     await app.register(topicAPI.setup);
@@ -294,12 +290,14 @@ describe('create group post reply', () => {
   });
 
   test('should not create on non-existing topic reply', async () => {
-    const app = createServerWithAuth({
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: {},
-      allowNsfw: true,
-      userID: 1,
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        userID: 1,
+      },
     });
 
     await app.register(topicAPI.setup);
