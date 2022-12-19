@@ -198,7 +198,3 @@ describe('subject', () => {
     expect(query.data.subject).toMatchSnapshot();
   });
 });
-
-test('should fail', () => {
-  expect(false).toBe(true);
-});
