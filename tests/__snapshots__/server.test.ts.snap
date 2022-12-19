@@ -1,7 +1,7 @@
 // Vitest Snapshot v1
 
 exports[`graphql > should return error 1`] = `
-{
+Object {
   "code": "TOKEN_INVALID",
   "error": "Unauthorized",
   "message": "can't find access token or it has been expired",
@@ -10,17 +10,17 @@ exports[`graphql > should return error 1`] = `
 `;
 
 exports[`subject > should subject tags 1`] = `
-{
-  "tags": [
-    {
+Object {
+  "tags": Array [
+    Object {
       "count": 1645,
       "name": "叛逆的鲁鲁修",
     },
-    {
+    Object {
       "count": 1229,
       "name": "SUNRISE",
     },
-    {
+    Object {
       "count": 936,
       "name": "反逆のルルーシュ",
     },

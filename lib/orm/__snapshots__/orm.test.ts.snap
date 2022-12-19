@@ -1,7 +1,7 @@
 // Vitest Snapshot v1
 
 exports[`should fallback to empty permission 1`] = `
-{
+Object {
   "app_erase": true,
   "doujin_subject_lock": true,
   "ep_edit": true,
@@ -20,7 +20,7 @@ exports[`should fallback to empty permission 1`] = `
 `;
 
 exports[`should fetch user 1`] = `
-{
+Object {
   "groupID": 10,
   "id": 382951,
   "img": "000/38/29/382951.jpg?r=1571167246",

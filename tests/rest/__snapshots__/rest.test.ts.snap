@@ -1,7 +1,7 @@
 // Vitest Snapshot v1
 
 exports[`rest > should return null user 1`] = `
-{
+Object {
   "code": "NEED_LOGIN",
   "error": "Unauthorized",
   "message": "you need to login before getting current user",
