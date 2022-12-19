@@ -1,7 +1,7 @@
 // Vitest Snapshot v1
 
 exports[`create group post reply > should not create on non-existing topic 1`] = `
-{
+Object {
   "code": "NOT_FOUND",
   "error": "Not Found",
   "message": "topic 3716000 not found",
@@ -10,7 +10,7 @@ exports[`create group post reply > should not create on non-existing topic 1`] =
 `;
 
 exports[`create group post reply > should not create on non-existing topic reply 1`] = `
-{
+Object {
   "code": "NOT_FOUND",
   "error": "Not Found",
   "message": "parent topic id 11 not found",
@@ -19,7 +19,7 @@ exports[`create group post reply > should not create on non-existing topic reply
 `;
 
 exports[`group topics > should failed on not found group 1`] = `
-{
+Object {
   "code": "NOT_FOUND",
   "error": "Not Found",
   "message": "group not found",
@@ -28,10 +28,10 @@ exports[`group topics > should failed on not found group 1`] = `
 `;
 
 exports[`group topics > should fetch topic details 1`] = `
-{
+Object {
   "createdAt": 1657885648,
-  "creator": {
-    "avatar": {
+  "creator": Object {
+    "avatar": Object {
       "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
       "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
       "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
@@ -42,7 +42,7 @@ exports[`group topics > should fetch topic details 1`] = `
     "user_group": 0,
     "username": "287622",
   },
-  "group": {
+  "group": Object {
     "createdAt": 1531631310,
     "description": "[s]非[/s]官方沙盒",
     "icon": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
@@ -53,11 +53,11 @@ exports[`group topics > should fetch topic details 1`] = `
     "totalMembers": 3,
   },
   "id": 371602,
-  "replies": [
-    {
+  "replies": Array [
+    Object {
       "createdAt": 1658030918,
-      "creator": {
-        "avatar": {
+      "creator": Object {
+        "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
@@ -70,14 +70,14 @@ exports[`group topics > should fetch topic details 1`] = `
       },
       "id": 2056216,
       "isFriend": false,
-      "replies": [],
+      "replies": Array [],
       "state": 6,
       "text": "",
     },
-    {
+    Object {
       "createdAt": 1662276469,
-      "creator": {
-        "avatar": {
+      "creator": Object {
+        "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
@@ -90,14 +90,14 @@ exports[`group topics > should fetch topic details 1`] = `
       },
       "id": 2092004,
       "isFriend": false,
-      "replies": [],
+      "replies": Array [],
       "state": 7,
       "text": "",
     },
-    {
+    Object {
       "createdAt": 1662282514,
-      "creator": {
-        "avatar": {
+      "creator": Object {
+        "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
@@ -110,14 +110,14 @@ exports[`group topics > should fetch topic details 1`] = `
       },
       "id": 2092065,
       "isFriend": false,
-      "replies": [],
+      "replies": Array [],
       "state": 5,
       "text": "",
     },
-    {
+    Object {
       "createdAt": 1662282518,
-      "creator": {
-        "avatar": {
+      "creator": Object {
+        "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
@@ -130,14 +130,14 @@ exports[`group topics > should fetch topic details 1`] = `
       },
       "id": 2092066,
       "isFriend": false,
-      "replies": [],
+      "replies": Array [],
       "state": 1,
       "text": "",
     },
-    {
+    Object {
       "createdAt": 1662282523,
-      "creator": {
-        "avatar": {
+      "creator": Object {
+        "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
@@ -150,14 +150,14 @@ exports[`group topics > should fetch topic details 1`] = `
       },
       "id": 2092067,
       "isFriend": false,
-      "replies": [],
+      "replies": Array [],
       "state": 2,
       "text": "",
     },
-    {
+    Object {
       "createdAt": 1662282554,
-      "creator": {
-        "avatar": {
+      "creator": Object {
+        "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
@@ -170,11 +170,11 @@ exports[`group topics > should fetch topic details 1`] = `
       },
       "id": 2092069,
       "isFriend": false,
-      "replies": [
-        {
+      "replies": Array [
+        Object {
           "createdAt": 1662283112,
-          "creator": {
-            "avatar": {
+          "creator": Object {
+            "avatar": Object {
               "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
               "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
               "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",

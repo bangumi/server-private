@@ -10,6 +10,9 @@ export default defineConfig({
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
     threads: false,
+    snapshotFormat: {
+      printBasicPrototype: true,
+    },
     coverage: {
       provider: 'c8',
       exclude: ['/node_modules/', 'lib/generated/'],
