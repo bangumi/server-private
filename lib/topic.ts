@@ -2,7 +2,7 @@ import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 
 import { NotAllowedError } from './auth';
-import { NotFoundError, UnimplementedError } from './errors';
+import { UnimplementedError } from './errors';
 import * as Notify from './notify';
 import type { IUser } from './orm';
 import * as orm from './orm';
@@ -121,9 +121,6 @@ export async function createTopicReply({
           topicID: topic.id,
         },
       });
-      if (!replied) {
-        throw new NotFoundError(`post ${replyTo} in topic ${topic.id}`);
-      }
 
       dstUserID = replied.uid;
       parentID = replied.related || replied.id;
