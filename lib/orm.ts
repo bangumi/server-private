@@ -344,7 +344,7 @@ export async function fetchTopicDetails(type: 'group', id: number): Promise<ITop
 
   const replies = await GroupPostRepo.find({
     where: {
-      mid: topic.id,
+      topicID: topic.id,
     },
   });
 
@@ -443,7 +443,7 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
     });
 
     await GroupPostRepo.insert({
-      mid: topic.id,
+      topicID: topic.id,
       dateline: now.unix(),
       state: post.state,
       uid: post.userID,

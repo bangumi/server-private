@@ -135,7 +135,7 @@ export class GroupTopic {
   display!: number;
 }
 
-@Index('pss_topic_id', ['mid'], {})
+@Index('pss_topic_id', ['topicID'], {})
 @Index('grp_pst_related', ['related'], {})
 @Index('grp_pst_uid', ['uid'], {})
 @Entity('chii_group_posts', { schema: 'bangumi' })
@@ -148,7 +148,7 @@ export class GroupPost {
   id!: number;
 
   @Column('mediumint', { name: 'grp_pst_mid', unsigned: true })
-  mid!: number;
+  topicID!: number;
 
   @Column('mediumint', { name: 'grp_pst_uid', unsigned: true })
   uid!: number;

@@ -55,7 +55,7 @@ async function getSubjectTopic(id: number): Promise<IPost | null> {
     user: await fetchUserX(p.uid),
     createdAt: p.dateline,
     state: p.state,
-    topicID: p.mid,
+    topicID: p.topicID,
     content: p.content,
   };
 }
@@ -98,12 +98,8 @@ export async function createTopicReply({
   const p = await AppDataSource.transaction(async (t) => {
     const GroupPostRepo = t.getRepository(entity.GroupPost);
     const GroupTopicRepo = t.getRepository(entity.GroupTopic);
-    const topic = await GroupTopicRepo.findOne({ where: { id: topicID } });
 
-    if (!topic) {
-      throw new NotFoundError(`group topic ${topicID}`);
-    }
-
+    const topic = await GroupTopicRepo.findOneOrFail({ where: { id: topicID } });
     if (topic.state === ReplyState.AdminCloseTopic) {
       throw new NotAllowedError('reply to a closed topic');
     }
@@ -119,9 +115,14 @@ export async function createTopicReply({
     let parentID = 0;
     let dstUserID = topic.uid;
     if (replyTo !== 0) {
-      const replied = await GroupPostRepo.findOne({ where: { id: replyTo, mid: topic.id } });
-      if (!replied || replied.mid !== topic.id) {
-        throw new NotFoundError(`topic ${replyTo} in ${topic.id}`);
+      const replied = await GroupPostRepo.findOneOrFail({
+        where: {
+          id: replyTo,
+          topicID: topic.id,
+        },
+      });
+      if (!replied) {
+        throw new NotFoundError(`post ${replyTo} in topic ${topic.id}`);
       }
 
       dstUserID = replied.uid;
@@ -130,7 +131,7 @@ export async function createTopicReply({
 
     // 创建回帖
     const post = await GroupPostRepo.save({
-      mid: topicID,
+      topicID: topicID,
       content,
       uid: userID,
       related: parentID,
@@ -144,7 +145,7 @@ export async function createTopicReply({
     };
 
     if (topic.state !== ReplyState.AdminSilentTopic) {
-      topicUpdate.dateline = scopeUpdateTime(now.unix(), topicType, topic);
+      topicUpdate.dateline = scoredUpdateTime(now.unix(), topicType, topic);
     }
 
     await GroupTopicRepo.update({ id: topic.id }, topicUpdate);
@@ -172,12 +173,12 @@ export async function createTopicReply({
     user: await fetchUserX(p.uid),
     createdAt: p.dateline,
     state: p.state,
-    topicID: p.mid,
+    topicID: p.topicID,
     content: p.content,
   };
 }
 
-function scopeUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
+function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
   if (type === Type.group && [364].includes(main_info.id) && main_info.replies > 0) {
     const $created_at = main_info.dateline;
     const $created_hours = (timestamp - $created_at) / 3600;
