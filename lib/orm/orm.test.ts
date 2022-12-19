@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { fetchPermission, fetchUser } from './orm';
+import { fetchPermission, fetchUser } from './index';
 
 test('should fetch user', async () => {
   await expect(fetchUser(382951)).resolves.toMatchSnapshot();

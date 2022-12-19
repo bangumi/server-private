@@ -10,8 +10,8 @@ import * as auth from './auth';
 import { production, stage, testing } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
+import { repo } from './orm';
 import * as rest from './rest';
-import { repo } from './torm';
 
 declare module 'fastify' {
   interface FastifyRequest {

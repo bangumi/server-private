@@ -6,9 +6,9 @@ import type { Repository } from 'typeorm/repository/Repository';
 
 import { UnreachableError } from './error';
 import * as orm from './orm';
-import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './torm';
-import type { Notify } from './torm/entity';
-import * as entity from './torm/entity';
+import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './orm';
+import type { Notify } from './orm/entity';
+import * as entity from './orm/entity';
 
 /**
  * `nt_type`

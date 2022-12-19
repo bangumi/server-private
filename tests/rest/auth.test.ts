@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
+import { SessionRepo } from '../../lib/orm';
 import { createServer } from '../../lib/server';
-import { SessionRepo } from '../../lib/torm';
 
 const treeHoleUser = { id: 382951, nickname: '树洞酱', username: '382951' };
 const fakeIP = 'fake-client-ip-should-not-fail';

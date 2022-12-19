@@ -1,24 +1,93 @@
 import dayjs from 'dayjs';
 import * as php from 'php-serialize';
+import { DataSource } from 'typeorm';
 import * as typeorm from 'typeorm';
 
-import type { TopicDisplay } from './auth/rule';
-import { UnexpectedNotFoundError, UnimplementedError } from './error';
-import { logger } from './logger';
-import type { ReplyState } from './topic';
+import type { TopicDisplay } from '../auth/rule';
+import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '../config';
+import { UnexpectedNotFoundError, UnimplementedError } from '../error';
+import { logger } from '../logger';
+import type { ReplyState } from '../topic';
 import {
-  AppDataSource,
-  FriendRepo,
-  GroupMemberRepo,
-  GroupPostRepo,
-  GroupRepo,
-  GroupTopicRepo,
-  SubjectFieldsRepo,
-  SubjectRepo,
-  UserGroupRepo,
-  UserRepo,
-} from './torm';
-import * as entity from './torm/entity';
+  OauthAccessTokens,
+  WebSessions,
+  Notify,
+  NotifyField,
+  Friends,
+  User,
+  UserField,
+  UserGroup,
+  GroupMembers,
+  Group,
+  Episode,
+  Subject,
+  SubjectFields,
+  GroupTopic,
+  GroupPost,
+} from './entity';
+import * as entity from './entity';
+
+export const AppDataSource = new DataSource({
+  type: 'mysql',
+  host: MYSQL_HOST,
+  port: Number.parseInt(MYSQL_PORT),
+  username: MYSQL_USER,
+  password: MYSQL_PASS,
+  database: MYSQL_DB,
+  synchronize: false,
+  entities: [
+    User,
+    UserField,
+    OauthAccessTokens,
+    WebSessions,
+    UserGroup,
+    Notify,
+    NotifyField,
+    Friends,
+    Group,
+    GroupMembers,
+    Episode,
+    Subject,
+    SubjectFields,
+    GroupTopic,
+    GroupPost,
+  ],
+});
+
+export const UserRepo = AppDataSource.getRepository(User);
+export const UserFieldRepo = AppDataSource.getRepository(UserField);
+export const FriendRepo = AppDataSource.getRepository(Friends);
+
+export const SubjectRepo = AppDataSource.getRepository(Subject);
+export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
+export const EpisodeRepo = AppDataSource.getRepository(Episode);
+
+export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
+export const SessionRepo = AppDataSource.getRepository(WebSessions);
+export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
+
+export const NotifyRepo = AppDataSource.getRepository(Notify);
+export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
+
+export const GroupRepo = AppDataSource.getRepository(Group);
+export const GroupTopicRepo = AppDataSource.getRepository(GroupTopic);
+export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
+export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
+
+export const repo = {
+  UserField: UserFieldRepo,
+  Friend: FriendRepo,
+  Subject: SubjectRepo,
+  SubjectFields: SubjectFieldsRepo,
+  Episode: EpisodeRepo,
+  AccessToken: AccessTokenRepo,
+  Session: SessionRepo,
+  UserGroup: UserGroupRepo,
+  Notify: NotifyRepo,
+  NotifyField: NotifyFieldRepo,
+  Group: GroupRepo,
+  GroupMember: GroupMemberRepo,
+} as const;
 
 export interface Page {
   limit?: number;

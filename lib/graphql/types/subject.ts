@@ -1,8 +1,8 @@
 import { nonNull, objectType, extendType, intArg } from 'nexus';
 import * as php from 'php-serialize';
 
-import { SubjectRepo } from '../../torm';
-import type * as entity from '../../torm/entity';
+import { SubjectRepo } from '../../orm';
+import type * as entity from '../../orm/entity';
 import type { Context } from '../context';
 
 const Episode = objectType({

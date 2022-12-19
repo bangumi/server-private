@@ -6,9 +6,8 @@ import { UnimplementedError } from './error';
 import * as Notify from './notify';
 import type { IUser } from './orm';
 import * as orm from './orm';
-import { fetchUserX } from './orm';
-import { AppDataSource, GroupPostRepo, GroupRepo } from './torm';
-import * as entity from './torm/entity';
+import { fetchUserX, AppDataSource, GroupPostRepo, GroupRepo } from './orm';
+import * as entity from './orm/entity';
 
 export const enum Type {
   group = 'group',

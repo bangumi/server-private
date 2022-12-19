@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
+import { SessionRepo } from '../../../orm';
 import redis from '../../../redis';
 import { createServer } from '../../../server';
-import { SessionRepo } from '../../../torm';
 
 describe('login', () => {
   beforeEach(async () => {

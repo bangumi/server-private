@@ -1,7 +1,7 @@
 import MockRedis from 'ioredis-mock';
 import { beforeAll, vi } from 'vitest';
 
-import { AppDataSource } from '../lib/torm';
+import { AppDataSource } from '../lib/orm';
 
 vi.mock('../lib/redis', () => {
   return {

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as typeorm from 'typeorm';
 
-import { SessionRepo } from '../torm';
+import { SessionRepo } from '../orm';
 import { randomBase62String } from '../utils';
 import * as auth from './index';
 import type { IAuth } from './index';
