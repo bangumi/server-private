@@ -4,7 +4,7 @@ import * as php from 'php-serialize';
 import * as typeorm from 'typeorm';
 import type { Repository } from 'typeorm/repository/Repository';
 
-import { UnreachableError } from './errors';
+import { UnreachableError } from './error';
 import * as orm from './orm';
 import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './torm';
 import type { Notify } from './torm/entity';

@@ -2,7 +2,7 @@ import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 
 import { NotAllowedError } from './auth';
-import { UnimplementedError } from './errors';
+import { UnimplementedError } from './error';
 import * as Notify from './notify';
 import type { IUser } from './orm';
 import * as orm from './orm';

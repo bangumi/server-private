@@ -3,7 +3,7 @@ import * as php from 'php-serialize';
 import * as typeorm from 'typeorm';
 
 import type { TopicDisplay } from './auth/rule';
-import { UnexpectedNotFoundError, UnimplementedError } from './errors';
+import { UnexpectedNotFoundError, UnimplementedError } from './error';
 import { logger } from './logger';
 import type { ReplyState } from './topic';
 import {
