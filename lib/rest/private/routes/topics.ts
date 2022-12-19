@@ -7,15 +7,15 @@ import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
 import { Security, Tag } from '../../../openapi';
 import type { ITopic, IUser, Page } from '../../../orm';
-import { isMemberInGroup } from '../../../orm';
 import * as orm from '../../../orm';
+import { isMemberInGroup } from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import { avatar, groupIcon } from '../../../response';
-import { NotJoinPrivateGroupError } from '../../../topic';
 import * as Topic from '../../../topic';
+import { NotJoinPrivateGroupError, ReplyState } from '../../../topic';
 import { GroupMemberRepo } from '../../../torm';
-import { formatErrors } from '../../../types/res';
 import * as res from '../../../types/res';
+import { formatErrors } from '../../../types/res';
 import type { App } from '../../type';
 
 const Group = t.Object(
@@ -503,6 +503,16 @@ export async function setup(app: App) {
       if (replyTo) {
         const parents = topic.replies
           .map((x) => {
+            // 管理员操作不能回复
+            if (
+              [
+                ReplyState.AdminCloseTopic,
+                ReplyState.AdminReopen,
+                ReplyState.AdminSilentTopic,
+              ].includes(x.state)
+            ) {
+              return [];
+            }
             return [x.id, x.replies.map((x) => x.id)];
           })
           .flat(3);
