@@ -1,7 +1,7 @@
 import { describe, test, vi, expect, afterAll, afterEach } from 'vitest';
 
+import { AppDataSource, GroupPostRepo, GroupTopicRepo, UserRepo } from './orm';
 import * as Topic from './topic';
-import { AppDataSource, GroupPostRepo, GroupTopicRepo, UserRepo } from './torm';
 
 describe('mocked', () => {
   const transaction = vi.fn().mockResolvedValue({

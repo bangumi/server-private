@@ -8,9 +8,8 @@ import { FindOperator } from 'typeorm';
 
 import { redisPrefix } from '../config';
 import type { IUser, Permission } from '../orm';
-import { fetchPermission, fetchUser } from '../orm';
+import { fetchPermission, fetchUser, AccessTokenRepo } from '../orm';
 import redis from '../redis';
-import { AccessTokenRepo } from '../torm';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError = createError('NEED_LOGIN', 'you need to login before %s', 401);

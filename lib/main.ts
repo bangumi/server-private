@@ -2,9 +2,9 @@ import { nanoid } from 'nanoid';
 
 import { production } from './config';
 import { logger } from './logger';
+import { AppDataSource } from './orm';
 import { Subscriber } from './redis';
 import { createServer } from './server';
-import { AppDataSource } from './torm';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console
