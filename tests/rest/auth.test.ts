@@ -18,12 +18,12 @@ test('should pass login/logout authorization flow', async () => {
   const app = await createServer();
 
   const res = await app.inject({
-    url: '/p1/login',
+    url: '/p1/login2',
     method: 'post',
     payload: {
       email: 'treeholechan@gmail.com',
       password: 'lovemeplease',
-      'h-captcha-response': 'fake-response',
+      'cf-turnstile-response': 'fake-response',
     },
     headers: {
       'cf-connecting-ip': fakeIP,

@@ -20,8 +20,8 @@ describe('login', () => {
 
     const opt = {
       method: 'post',
-      url: '/p1/login',
-      payload: { email: 'ee', password: 'eepp', 'h-captcha-response': 'fake-response' },
+      url: '/p1/login2',
+      payload: { email: 'ee', password: 'eepp', 'cf-turnstile-response': 'fake-response' },
     } as const;
 
     const login = () => app.inject(opt);
@@ -41,11 +41,11 @@ describe('login', () => {
 
     const res = await app.inject({
       method: 'post',
-      url: '/p1/login',
+      url: '/p1/login2',
       payload: {
         email: 'treeholechan@gmail.com',
         password: 'lovemeplease',
-        'h-captcha-response': 'fake-response',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
