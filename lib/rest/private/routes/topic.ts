@@ -4,7 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import { NotAllowedError } from '../../../auth';
 import { rule, TopicDisplay } from '../../../auth/rule';
 import { dam } from '../../../dam';
-import { NotFoundError, UnexpectedNotFoundError } from '../../../errors';
+import { NotFoundError, UnexpectedNotFoundError } from '../../../error';
 import { Security, Tag } from '../../../openapi';
 import type { ITopic, IUser, Page } from '../../../orm';
 import * as orm from '../../../orm';

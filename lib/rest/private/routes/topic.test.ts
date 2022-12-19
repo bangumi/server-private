@@ -9,7 +9,7 @@ import * as orm from '../../../orm';
 import { createServer } from '../../../server';
 import * as Topic from '../../../topic';
 import { ReplyState } from '../../../topic';
-import * as topicAPI from './topics';
+import * as topicAPI from './topic';
 
 const expectedTopic = {
   createdAt: 1657885648,

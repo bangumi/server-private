@@ -3,7 +3,7 @@ import fastifySocketIO from 'fastify-socket.io';
 
 import { NeedLoginError } from '../../../auth';
 import * as session from '../../../auth/session';
-import { UnexpectedNotFoundError } from '../../../errors';
+import { UnexpectedNotFoundError } from '../../../error';
 import * as Notify from '../../../notify';
 import { Security, Tag } from '../../../openapi';
 import { fetchUsers } from '../../../orm';
@@ -11,7 +11,7 @@ import { Subscriber } from '../../../redis';
 import { Paged } from '../../../types/res';
 import * as res from '../../../types/res';
 import type { App } from '../../type';
-import { userToResCreator } from './topics';
+import { userToResCreator } from './topic';
 
 const NoticeRes = t.Object(
   {

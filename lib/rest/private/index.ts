@@ -8,7 +8,7 @@ import type { App } from '../type';
 import * as demo from './demo';
 import { CookieKey } from './routes/login';
 import * as login from './routes/login';
-import * as group from './routes/topics';
+import * as group from './routes/topic';
 import * as user from './routes/user';
 
 export async function setup(app: App) {

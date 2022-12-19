@@ -1,11 +1,11 @@
 import { Type as t } from '@sinclair/typebox';
 
 import { NeedLoginError } from '../../auth';
-import { UnexpectedNotFoundError } from '../../errors';
+import { UnexpectedNotFoundError } from '../../error';
 import { Tag } from '../../openapi';
 import { fetchUser } from '../../orm';
 import * as res from '../../types/res';
-import { userToResCreator } from '../private/routes/topics';
+import { userToResCreator } from '../private/routes/topic';
 import type { Option, App } from '../type';
 
 // eslint-disable-next-line @typescript-eslint/require-await

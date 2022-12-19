@@ -1,9 +1,9 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { NotFoundError } from '../../../errors';
+import { NotFoundError } from '../../../error';
 import { fetchUserByUsername } from '../../../orm';
 import * as res from '../../../types/res';
-import { userToResCreator } from '../../private/routes/topics';
+import { userToResCreator } from '../../private/routes/topic';
 import type { Option, App } from '../../type';
 
 // eslint-disable-next-line @typescript-eslint/require-await
