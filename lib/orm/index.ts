@@ -35,6 +35,32 @@ export const AppDataSource = new DataSource({
   password: MYSQL_PASS,
   database: MYSQL_DB,
   synchronize: false,
+  maxQueryExecutionTime: 2000,
+  logger: {
+    log(level: 'log' | 'info' | 'warn', message: unknown) {
+      if (level === 'info') {
+        logger.info(message);
+      } else if (level === 'warn') {
+        logger.warn(message);
+      } else {
+        logger.info({ log_level: level }, message?.toString());
+      }
+    },
+
+    logQuerySlow(time: number, query: string, parameters?: unknown[]) {
+      logger.warn({ time, query, parameters }, 'slow sql');
+    },
+    logQueryError(error: string | Error, query: string, parameters?: unknown[]) {
+      logger.error({ error, query, parameters }, 'query error');
+    },
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    logQuery() {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    logSchemaBuild() {},
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    logMigration() {},
+  },
   entities: [
     User,
     UserField,
