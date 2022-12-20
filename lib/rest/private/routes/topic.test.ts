@@ -234,26 +234,23 @@ describe('create group post reply', () => {
       },
     });
 
-    expect(res.json()).toMatchInlineSnapshot(`
-      Object {
-        "createdAt": 1634745600,
-        "creator": Object {
-          "avatar": Object {
-            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-          },
-          "id": 9,
-          "nickname": "n",
-          "sign": "",
-          "user_group": 10,
-          "username": "u",
+    expect(res.json()).toMatchObject({
+      creator: {
+        avatar: {
+          large: 'https://lain.bgm.tv/pic/user/l/icon.jpg',
+          medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
+          small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
         },
-        "id": 6,
-        "state": 0,
-        "text": "",
-      }
-    `);
+        id: 9,
+        nickname: 'n',
+        sign: '',
+        user_group: 10,
+        username: 'u',
+      },
+      id: 6,
+      state: 0,
+      text: '',
+    });
     expect(res.statusCode).toBe(200);
   });
 
