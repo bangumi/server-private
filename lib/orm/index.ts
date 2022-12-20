@@ -400,17 +400,16 @@ export async function fetchGroup(name: string): Promise<IGroup | null> {
   } satisfies IGroup;
 }
 
-interface IBaseReply {
+export interface IBaseReply {
   id: number;
   text: string;
   creatorID: number;
   state: number;
   createdAt: number;
-}
-
-interface ISubReply extends IBaseReply {
   repliedTo: number;
 }
+
+export type ISubReply = IBaseReply;
 
 export interface IReply extends IBaseReply {
   replies: ISubReply[];
@@ -474,6 +473,7 @@ export async function fetchTopicDetails(type: 'group', id: number): Promise<ITop
         text: x.content,
         state: x.state,
         createdAt: x.dateline,
+        repliedTo: x.related,
       };
     });
 
