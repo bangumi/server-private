@@ -3,7 +3,6 @@ import { beforeEach, expect, test, afterEach } from 'vitest';
 
 import { createTestServer } from '../../../../tests/utils';
 import { emptyAuth } from '../../../auth';
-import { logger } from '../../../logger';
 import * as Notify from '../../../notify';
 import { NotifyFieldRepo, NotifyRepo } from '../../../orm';
 import { setup } from './user';
@@ -30,7 +29,6 @@ test('should list notify', async () => {
   });
 
   const app = await createTestServer({
-    logger,
     auth: {
       ...emptyAuth(),
       login: true,
