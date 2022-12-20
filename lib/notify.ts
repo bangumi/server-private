@@ -67,10 +67,15 @@ interface Creation {
 }
 
 /** Used in transaction */
-export async function create(
-  t: typeorm.EntityManager,
-  { destUserID, sourceUserID, now, type, postID, topicID, title }: Creation,
-): Promise<void> {
+export async function create({
+  destUserID,
+  sourceUserID,
+  now,
+  type,
+  postID,
+  topicID,
+  title,
+}: Creation): Promise<void> {
   if (destUserID === sourceUserID) {
     return;
   }

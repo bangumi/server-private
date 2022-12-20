@@ -197,7 +197,7 @@ describe('create group post reply', () => {
 
         return Promise.resolve({
           replies: [],
-          creatorID: 0,
+          creatorID: 287622,
           id: id,
           title: 't',
           createdAt: dayjs().unix(),
@@ -234,6 +234,23 @@ describe('create group post reply', () => {
       },
     });
 
+    expect(res.json()).toMatchObject({
+      creator: {
+        avatar: {
+          large: 'https://lain.bgm.tv/pic/user/l/icon.jpg',
+          medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
+          small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
+        },
+        id: 9,
+        nickname: 'n',
+        sign: '',
+        user_group: 10,
+        username: 'u',
+      },
+      id: 6,
+      state: 0,
+      text: '',
+    });
     expect(res.statusCode).toBe(200);
   });
 

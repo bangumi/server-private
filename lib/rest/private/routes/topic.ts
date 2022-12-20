@@ -1,14 +1,16 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import dayjs from 'dayjs';
 
 import { NotAllowedError } from '../../../auth';
 import { rule, TopicDisplay } from '../../../auth/rule';
 import { dam } from '../../../dam';
 import { NotFoundError, UnexpectedNotFoundError } from '../../../error';
+import * as Notify from '../../../notify';
 import { Security, Tag } from '../../../openapi';
-import type { ITopic, IUser, Page } from '../../../orm';
+import type { ITopic, IUser, Page, IBaseReply } from '../../../orm';
 import * as orm from '../../../orm';
-import { isMemberInGroup, GroupMemberRepo } from '../../../orm';
+import { isMemberInGroup, GroupMemberRepo, GroupRepo } from '../../../orm';
 import { requireLogin } from '../../../pre-handler';
 import { avatar, groupIcon } from '../../../response';
 import * as Topic from '../../../topic';
@@ -498,10 +500,17 @@ export async function setup(app: App) {
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
+      if (topic.state === ReplyState.AdminCloseTopic) {
+        throw new NotAllowedError('reply to a closed topic');
+      }
 
+      const now = dayjs();
+
+      let parentID = 0;
+      let dstUserID = topic.creatorID;
       if (replyTo) {
-        const parents = topic.replies
-          .map((x) => {
+        const parents: Record<number, IBaseReply> = Object.fromEntries(
+          topic.replies.flatMap((x): [number, IBaseReply][] => {
             // 管理员操作不能回复
             if (
               [
@@ -512,21 +521,45 @@ export async function setup(app: App) {
             ) {
               return [];
             }
-            return [x.id, x.replies.map((x) => x.id)];
-          })
-          .flat(3);
+            return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
+          }),
+        );
 
-        if (!parents.includes(replyTo)) {
-          throw new NotFoundError(`parent topic id ${replyTo}`);
+        const replied = parents[replyTo];
+
+        if (!replied) {
+          throw new NotFoundError(`parent post id ${replyTo}`);
         }
+
+        dstUserID = replied.creatorID;
+        parentID = replied.repliedTo || replied.id;
+      }
+
+      const group = await GroupRepo.findOneOrFail({
+        where: { id: topic.parentID },
+      });
+
+      if (!group.accessible && !(await orm.isMemberInGroup(group.id, auth.userID))) {
+        throw new NotJoinPrivateGroupError(group.name);
       }
 
       const t = await Topic.createTopicReply({
         topicType: Topic.Type.group,
         topicID: topicID,
         userID: auth.userID,
-        replyTo,
         content,
+        parentID,
+      });
+
+      const notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
+      await Notify.create({
+        destUserID: dstUserID,
+        sourceUserID: auth.userID,
+        now,
+        type: notifyType,
+        postID: t.id,
+        topicID: topic.id,
+        title: topic.title,
       });
 
       return {

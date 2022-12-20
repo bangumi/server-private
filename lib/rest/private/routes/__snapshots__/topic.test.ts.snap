@@ -13,7 +13,7 @@ exports[`create group post reply > should not create on non-existing topic reply
 Object {
   "code": "NOT_FOUND",
   "error": "Not Found",
-  "message": "parent topic id 11 not found",
+  "message": "parent post id 11 not found",
   "statusCode": 404,
 }
 `;
