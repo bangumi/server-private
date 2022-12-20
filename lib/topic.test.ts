@@ -1,6 +1,6 @@
 import { describe, test, vi, expect, afterAll, afterEach } from 'vitest';
 
-import { AppDataSource, GroupPostRepo, GroupTopicRepo, NotifyRepo, UserRepo } from './orm';
+import { AppDataSource, GroupPostRepo, GroupTopicRepo } from './orm';
 import * as Topic from './topic';
 
 describe('mocked', () => {
@@ -39,10 +39,9 @@ describe('mocked', () => {
 });
 
 describe('should create topic reply', () => {
-  test('should create topic reply and create notify', async () => {
+  test('should create topic reply', async () => {
     /** 这个测试会修改数据库内容，所以不能 match 很多东西 */
     const topicBefore = await GroupTopicRepo.findOneOrFail({ where: { id: 375793 } });
-    const notifyBefore = await UserRepo.findOneOrFail({ where: { id: 287622 } });
 
     const r = await Topic.createTopicReply({
       topicType: Topic.Type.group,
@@ -61,12 +60,8 @@ describe('should create topic reply', () => {
       }),
     );
 
-    await NotifyRepo.findOneByOrFail({ from_uid: 1, postID: r.id });
-
     const topicAfter = await GroupTopicRepo.findOneOrFail({ where: { id: 375793 } });
-    const notifyAfter = await UserRepo.findOneOrFail({ where: { id: 287622 } });
     expect(topicAfter.replies - topicBefore.replies).toBe(1);
-    expect(notifyAfter.newNotify - notifyBefore.newNotify).toBe(1);
 
     const post = await GroupPostRepo.findOneOrFail({ where: { id: r.id } });
     expect(post.content).toBe('new content for testing');

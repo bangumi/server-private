@@ -236,13 +236,22 @@ describe('create group post reply', () => {
 
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
-        "error": "Internal Server Error",
-        "message": "Could not find any entity of type \\"UserField\\" matching: {
-          \\"where\\": {
-              \\"uid\\": 0
-          }
-      }",
-        "statusCode": 500,
+        "createdAt": 1634745600,
+        "creator": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "id": 9,
+          "nickname": "n",
+          "sign": "",
+          "user_group": 10,
+          "username": "u",
+        },
+        "id": 6,
+        "state": 0,
+        "text": "",
       }
     `);
     expect(res.statusCode).toBe(200);
