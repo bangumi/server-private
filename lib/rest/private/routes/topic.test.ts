@@ -197,7 +197,7 @@ describe('create group post reply', () => {
 
         return Promise.resolve({
           replies: [],
-          creatorID: 0,
+          creatorID: 287622,
           id: id,
           title: 't',
           createdAt: dayjs().unix(),
@@ -234,6 +234,17 @@ describe('create group post reply', () => {
       },
     });
 
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "error": "Internal Server Error",
+        "message": "Could not find any entity of type \\"UserField\\" matching: {
+          \\"where\\": {
+              \\"uid\\": 0
+          }
+      }",
+        "statusCode": 500,
+      }
+    `);
     expect(res.statusCode).toBe(200);
   });
 

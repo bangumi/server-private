@@ -1,6 +1,6 @@
 import { describe, test, vi, expect, afterAll, afterEach } from 'vitest';
 
-import { AppDataSource, GroupPostRepo, GroupTopicRepo, UserRepo } from './orm';
+import { AppDataSource, GroupPostRepo, GroupTopicRepo, NotifyRepo, UserRepo } from './orm';
 import * as Topic from './topic';
 
 describe('mocked', () => {
@@ -60,6 +60,8 @@ describe('should create topic reply', () => {
         }),
       }),
     );
+
+    await NotifyRepo.findOneByOrFail({ from_uid: 1, postID: r.id });
 
     const topicAfter = await GroupTopicRepo.findOneOrFail({ where: { id: 375793 } });
     const notifyAfter = await UserRepo.findOneOrFail({ where: { id: 287622 } });
