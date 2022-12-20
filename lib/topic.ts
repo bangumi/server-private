@@ -1,12 +1,9 @@
 import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 
-import { NotAllowedError } from './auth';
 import { UnimplementedError } from './error';
-import * as Notify from './notify';
 import type { IUser } from './orm';
-import * as orm from './orm';
-import { fetchUserX, AppDataSource, GroupPostRepo, GroupRepo } from './orm';
+import { fetchUserX, AppDataSource, GroupPostRepo } from './orm';
 import * as entity from './orm/entity';
 
 export const enum Type {
@@ -77,15 +74,15 @@ export async function createTopicReply({
   topicType,
   topicID,
   userID,
-  replyTo = 0,
   content,
+  parentID,
   state = ReplyState.Normal,
 }: {
   topicType: Type;
   topicID: number;
   userID: number;
   content: string;
-  replyTo?: number;
+  parentID: number;
   state?: ReplyState;
 }): Promise<IPost> {
   if (topicType !== Type.group) {
@@ -99,31 +96,6 @@ export async function createTopicReply({
     const GroupTopicRepo = t.getRepository(entity.GroupTopic);
 
     const topic = await GroupTopicRepo.findOneOrFail({ where: { id: topicID } });
-    if (topic.state === ReplyState.AdminCloseTopic) {
-      throw new NotAllowedError('reply to a closed topic');
-    }
-
-    const group = await GroupRepo.findOneOrFail({
-      where: { id: topic.gid },
-    });
-
-    if (!group.accessible && !(await orm.isMemberInGroup(group.id, userID))) {
-      throw new NotJoinPrivateGroupError(group.name);
-    }
-
-    let parentID = 0;
-    let dstUserID = topic.uid;
-    if (replyTo !== 0) {
-      const replied = await GroupPostRepo.findOneOrFail({
-        where: {
-          id: replyTo,
-          topicID: topic.id,
-        },
-      });
-
-      dstUserID = replied.uid;
-      parentID = replied.related || replied.id;
-    }
 
     // 创建回帖
     const post = await GroupPostRepo.save({
@@ -145,20 +117,6 @@ export async function createTopicReply({
     }
 
     await GroupTopicRepo.update({ id: topic.id }, topicUpdate);
-
-    // 发送通知
-    if (dstUserID !== userID) {
-      const notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
-      await Notify.create(t, {
-        destUserID: dstUserID,
-        sourceUserID: userID,
-        now,
-        type: notifyType,
-        postID: post.id,
-        topicID: topic.id,
-        title: topic.title,
-      });
-    }
 
     return post;
   });

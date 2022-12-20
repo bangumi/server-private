@@ -30,7 +30,7 @@ describe('mocked', () => {
       content: 'c',
       userID: 1,
       state: Topic.ReplyState.Normal,
-      replyTo: 0,
+      parentID: 6,
     });
 
     expect(transaction).toBeCalledTimes(1);
@@ -50,6 +50,7 @@ describe('should create topic reply', () => {
       content: 'new content for testing',
       userID: 1,
       state: Topic.ReplyState.Normal,
+      parentID: 0,
     });
 
     expect(r).toEqual(
