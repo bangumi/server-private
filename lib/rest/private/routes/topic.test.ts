@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { createTestServer } from '../../../../tests/utils';
 import type { IAuth } from '../../../auth';
 import { UserGroup } from '../../../auth';
+import * as Notify from '../../../notify';
 import * as orm from '../../../orm';
 import { createServer } from '../../../server';
 import * as Topic from '../../../topic';
@@ -186,9 +187,11 @@ describe('create group post reply', () => {
     },
   });
 
+  const notifyMock = vi.fn();
   beforeEach(() => {
     vi.spyOn(Topic, 'getPost').mockImplementation(getPostMock);
     vi.spyOn(Topic, 'createTopicReply').mockImplementation(createTopicReply);
+    vi.spyOn(Notify, 'create').mockImplementation(notifyMock);
     vi.spyOn(orm, 'fetchTopicDetails').mockImplementationOnce(
       (type: 'group', id: number): ReturnType<typeof orm['fetchTopicDetails']> => {
         if (id !== 371602) {
@@ -252,6 +255,13 @@ describe('create group post reply', () => {
       text: '',
     });
     expect(res.statusCode).toBe(200);
+    expect(notifyMock).toHaveBeenCalledOnce();
+    expect(notifyMock).toBeCalledWith(
+      expect.objectContaining({
+        destUserID: 287622,
+        type: Notify.Type.GroupTopicReply,
+      }),
+    );
   });
 
   test('should not create with banned user', async () => {
