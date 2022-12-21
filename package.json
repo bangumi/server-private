@@ -15,7 +15,7 @@
     "test": "vitest --run",
     "vitest": "vitest",
     "run-file": "node --no-warnings -r dotenv/config --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
-    "e": "TS_NODE_PROJECT=tsconfig.prod.json node --no-warnings --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
+    "e": "node --no-warnings --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
     "prepare": "husky install"
   },
   "nodemonConfig": {
