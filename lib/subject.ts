@@ -1,5 +1,7 @@
 // TODO: remove eslint disable later
 /* eslint-disable @typescript-eslint/no-unused-vars */
+export {};
+
 const enum SubjectType {
   Unknown = 0,
   Book = 1, // 书籍

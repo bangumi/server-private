@@ -3,7 +3,7 @@ import { TypeCompiler } from '@sinclair/typebox/compiler';
 import type { ValueError } from '@sinclair/typebox/errors';
 import * as php from 'php-serialize';
 
-import type * as Prisma from '../generated/client';
+import type * as entity from '../orm/entity';
 import type {
   BlogMemo,
   DoujinMemo,
@@ -29,20 +29,14 @@ import {
   Relation,
 } from './types';
 
-/**
- * 在数据库中存为 timeline cat
- * 根据 type 还分为不同的类型
- */
+/** 在数据库中存为 timeline cat 根据 type 还分为不同的类型 */
 const enum TimelineCat {
   Unknown = 0,
   Relation = 1, // add friends, join group
   Wiki = 2,
   Subject = 3,
   Progress = 4,
-  /**
-   * type = 2 时为 [SayEditMemo]
-   * 其他类型则是 string
-   */
+  /** Type = 2 时为 [SayEditMemo] 其他类型则是 string */
   Say = 5,
   Blog = 6,
   Index = 7,
@@ -90,7 +84,8 @@ const validator: Record<
 };
 
 export const timeline = {
-  convertFromOrm(s: Prisma.Timeline): Timeline {
+  /** 有部分 timeline 的类型不统一，需要额外判断后进行转换 */
+  convertFromOrm(s: entity.Timeline): Timeline {
     if (s.cat === TimelineCat.Relation && (s.type === 2 || s.type === 3 || s.type === 4)) {
       // @ts-expect-error 写一个 type safe的太麻烦了，直接忽略了
       return {
