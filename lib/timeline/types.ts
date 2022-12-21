@@ -23,9 +23,7 @@ export const Index = t.Object({
   idx_desc: t.String(),
 });
 
-/**
- * cat=TimelineType.Group && (type === 3 || type === 4)
- */
+/** Cat=TimelineType.Group && (type === 3 || type === 4) */
 export type IndexMemo = Static<typeof Index>;
 
 const relation = t.Object({
@@ -34,9 +32,7 @@ const relation = t.Object({
   nickname: t.String(),
 });
 
-/**
- * cat=TimelineType.Relation && type == 2
- */
+/** Cat=TimelineType.Relation && type == 2 */
 export const Relation = t.Union([t.Record(t.String(), relation), relation]);
 export type RelationMemo = Static<typeof Relation>;
 
@@ -79,9 +75,7 @@ export const Rename = t.Object({
   after: t.String(),
 });
 
-/**
- * cat=TimelineType.say, type=2
- */
+/** Cat=TimelineType.say, type=2 */
 export type RenameMemo = Static<typeof Rename>;
 
 export const Subject = t.Object({
