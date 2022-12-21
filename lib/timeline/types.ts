@@ -37,7 +37,7 @@ export const Relation = t.Union([t.Record(t.String(), relation), relation]);
 export type RelationMemo = Static<typeof Relation>;
 
 const group = t.Object({
-  grp_id: t.String(),
+  grp_id: t.Optional(t.String()),
   grp_name: t.String(),
   grp_title: t.String(),
   grp_desc: t.String(),
@@ -56,19 +56,29 @@ export const Blog = t.Object({
 export type BlogMemo = Static<typeof Blog>;
 
 export const Progress = t.Object({
-  ep_name: t.Optional(t.String()),
   vols_total: t.Optional(t.String()),
   subject_name: t.Optional(t.String()),
   eps_update: t.Optional(t.Integer()),
   vols_update: t.Optional(t.Integer()),
   eps_total: t.Optional(t.Integer()),
-  ep_sort: t.Optional(t.Integer()),
-  ep_id: t.Optional(t.Integer()),
   subject_id: t.Optional(t.Integer()),
   subject_type_id: t.Optional(t.Integer()),
+
+  // ep_name: t.Optional(t.String()),
+  // ep_sort: t.Optional(t.Integer()),
+  // ep_id: t.Optional(t.Integer()),
 });
 
 export type ProgressMemo = Static<typeof Progress>;
+
+export const Progress2 = t.Object({
+  ep_id: t.String(),
+  ep_name: t.String(),
+  ep_sort: t.String(),
+  subject_id: t.Integer(),
+  subject_name: t.String(),
+});
+export type Progress2Memo = Static<typeof Progress2>;
 
 export const Rename = t.Object({
   before: t.String(),

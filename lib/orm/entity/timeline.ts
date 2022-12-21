@@ -56,10 +56,10 @@ export class Timeline {
   @Column('int', { name: 'tml_dateline', unsigned: true, default: () => "'0'" })
   createdAt!: number;
 
-  @Column('tinyint', {
-    name: 'tml_status',
-    unsigned: true,
-    default: () => "'0'",
-  })
-  tmlStatus!: number;
+  // @Column('tinyint', {
+  //   name: 'tml_status',
+  //   unsigned: true,
+  //   default: () => "'0'",
+  // })
+  // tmlStatus!: number;
 }

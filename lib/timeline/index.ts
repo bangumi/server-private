@@ -10,6 +10,7 @@ import type {
   GroupMemo,
   IndexMemo,
   MonoMemo,
+  Progress2Memo,
   ProgressMemo,
   RelationMemo,
   RenameMemo,
@@ -17,16 +18,17 @@ import type {
   WikiMemo,
 } from './types';
 import {
+  Blog,
   Doujin,
   Group,
-  Progress,
-  Wiki,
-  Subject,
-  Blog,
   Index,
   Mono,
-  Rename,
+  Progress,
+  Progress2,
   Relation,
+  Rename,
+  Subject,
+  Wiki,
 } from './types';
 
 /** 在数据库中存为 timeline cat 根据 type 还分为不同的类型 */
@@ -46,10 +48,13 @@ const enum TimelineCat {
 
 type Timeline =
   | { cat: TimelineCat.Relation; id: number; type: 0; memo: RelationMemo }
+  | { cat: TimelineCat.Relation; id: number; type: 1; memo: string }
   | { cat: TimelineCat.Relation; id: number; type: 3 | 4; memo: GroupMemo }
+  | { cat: TimelineCat.Relation; id: number; type: 5; memo: string }
   | { cat: TimelineCat.Wiki; id: number; type: 0; memo: WikiMemo }
   | { cat: TimelineCat.Subject; id: number; type: 0; memo: SubjectMemo }
   | { cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
+  | { cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
   | { cat: TimelineCat.Say; id: number; type: 2; memo: RenameMemo }
   | { cat: TimelineCat.Say; id: number; type: 0; memo: string }
   | { cat: TimelineCat.Blog; id: number; type: 0; memo: BlogMemo }
@@ -66,12 +71,19 @@ const validator: Record<
 > = {
   [TimelineCat.Unknown]: {},
   [TimelineCat.Relation]: {
+    1: TypeCompiler.Compile(t.String()),
     2: TypeCompiler.Compile(Relation),
     3: TypeCompiler.Compile(Group),
     4: TypeCompiler.Compile(Group),
+    5: TypeCompiler.Compile(t.String()),
   },
   [TimelineCat.Subject]: { 0: TypeCompiler.Compile(Subject) },
-  [TimelineCat.Progress]: { 0: TypeCompiler.Compile(Progress) },
+  [TimelineCat.Progress]: {
+    0: TypeCompiler.Compile(Progress),
+    1: TypeCompiler.Compile(Progress2),
+    2: TypeCompiler.Compile(Progress2),
+    3: TypeCompiler.Compile(Progress2),
+  },
   [TimelineCat.Say]: {
     0: TypeCompiler.Compile(t.String()),
     2: TypeCompiler.Compile(Rename),
@@ -83,13 +95,20 @@ const validator: Record<
   [TimelineCat.Wiki]: { 0: TypeCompiler.Compile(Wiki) },
 };
 
+export class UnknownTimelineError extends Error {}
+
 export const timeline = {
   /** 有部分 timeline 的类型不统一，需要额外判断后进行转换 */
-  convertFromOrm(s: entity.Timeline): Timeline {
+  convertFromOrm(s: entity.Timeline): Timeline | null {
+    if (s.tmlBatch) {
+      return null;
+    }
+
     if (s.cat === TimelineCat.Relation && (s.type === 2 || s.type === 3 || s.type === 4)) {
-      // @ts-expect-error 写一个 type safe的太麻烦了，直接忽略了
       return {
+        // @ts-expect-error 写一个 type safe的太麻烦了，直接忽略了
         cat: TimelineCat.Relation,
+        // @ts-expect-error 写一个 type safe的太麻烦了，直接忽略了
         type: s.type,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         memo: php.unserialize(s.memo),
@@ -118,28 +137,53 @@ export const timeline = {
       }
       return { cat: s.cat, type: s.type as 0, memo: memo, id: s.id };
     } else if (s.cat === TimelineCat.Progress) {
-      const memo = php.unserialize(s.memo) as ProgressMemo;
-      if (typeof memo.subject_id === 'string') {
-        memo.subject_id = Number.parseInt(memo.subject_id);
-      }
-
-      if (typeof memo.eps_total === 'string') {
-        memo.eps_total = Number.parseInt(memo.eps_total);
-      }
-
-      if (memo.vols_total === '??') {
-        memo.vols_total = undefined;
-      }
-
-      for (const [key, value] of Object.entries(memo)) {
-        // eslint-disable-next-line   @typescript-eslint/no-unnecessary-condition
-        if (value === null) {
-          // @ts-expect-error php null
-          memo[key] = undefined;
+      if (s.type === 0) {
+        const memo = php.unserialize(s.memo) as ProgressMemo;
+        if (typeof memo.subject_id === 'string') {
+          memo.subject_id = Number.parseInt(memo.subject_id);
         }
-      }
 
-      return { cat: s.cat, type: s.type as 0, memo: memo, id: s.id };
+        if (typeof memo.eps_total === 'string') {
+          if (memo.eps_total === '??') {
+            memo.eps_total = undefined;
+          } else {
+            memo.eps_total = Number.parseInt(memo.eps_total);
+          }
+        }
+
+        if (memo.vols_total === '??') {
+          memo.vols_total = undefined;
+        }
+
+        if (typeof memo.subject_type_id === 'string') {
+          memo.subject_type_id = Number.parseInt(memo.subject_type_id);
+        }
+
+        if (typeof memo.eps_update === 'string') {
+          memo.eps_update = Number.parseInt(memo.eps_update);
+        }
+
+        if (typeof memo.vols_update === 'string') {
+          memo.vols_update = Number.parseInt(memo.vols_update);
+        }
+
+        for (const [key, value] of Object.entries(memo)) {
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          if (value === null) {
+            // @ts-expect-error php null
+            memo[key] = undefined;
+          }
+        }
+
+        return { cat: s.cat, type: s.type, memo, id: s.id };
+      } else if (s.type === 2 || s.type === 1 || s.type === 3) {
+        const memo = php.unserialize(s.memo) as Progress2Memo;
+        if (typeof memo.subject_id === 'string') {
+          memo.subject_id = Number.parseInt(memo.subject_id);
+        }
+
+        return { cat: s.cat, type: s.type, memo, id: s.id };
+      }
     } else if (
       s.cat === TimelineCat.Wiki ||
       s.cat === TimelineCat.Mono ||
@@ -148,9 +192,13 @@ export const timeline = {
     ) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return { cat: s.cat, type: s.type as 0, memo: php.unserialize(s.memo), id: s.id };
+    } else if (s.cat === TimelineCat.Relation && (s.type === 1 || s.type === 5)) {
+      return { cat: s.cat, type: s.type, memo: s.memo, id: s.id };
     }
 
-    throw new Error(`unexpected cat ${s.cat} type ${s.type}`);
+    throw new UnknownTimelineError(
+      `unexpected timeline<id=${s.id}> cat ${s.cat} type ${s.type} ${JSON.stringify(s)}`,
+    );
   },
 
   validate(t: Timeline) {
