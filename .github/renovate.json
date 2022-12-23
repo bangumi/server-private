@@ -7,11 +7,7 @@
     "github>Trim21/renovate-config:monthly"
   ],
   "rangeStrategy": "bump",
-  "packageRules": [
-    {
-      "matchManagers": ["docker"],
-      "packagePatterns": ["traefik"],
-      "allowedVersions": "/^v\\d+\\.\\d+\\.\\d+?$/"
-    }
-  ]
+  "docker": {
+    "enabled": false
+  }
 }
