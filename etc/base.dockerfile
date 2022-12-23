@@ -7,11 +7,11 @@ COPY package.json yarn.lock ./
 RUN yarn --prod \
   && rm package.json yarn.lock
 
-FROM busybox as busybox
+FROM powerman/dockerize:0.17.0 AS dockerize
 
 FROM node:18-slim
 
-COPY --from=busybox /bin/wget /usr/bin/wget
+COPY --from=dockerize /usr/local/bin/dockerize /usr/bin/dockerize
 
 COPY --from=builder /usr/src/app/ /usr/src/app
 
