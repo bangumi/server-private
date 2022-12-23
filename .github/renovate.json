@@ -7,7 +7,7 @@
     "github>Trim21/renovate-config:monthly"
   ],
   "rangeStrategy": "bump",
-  "docker": {
+  "docker-compose": {
     "enabled": false
   }
 }
