@@ -9,8 +9,9 @@
   "rangeStrategy": "bump",
   "packageRules": [
     {
+      "matchManagers": ["docker"],
       "packagePatterns": ["traefik"],
-      "versioning": "semver"
+      "allowedVersions": "/^v\\d+\\.\\d+\\.\\d+?$/"
     }
   ]
 }
