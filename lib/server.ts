@@ -15,7 +15,7 @@ import * as rest from './rest';
 
 declare module 'fastify' {
   interface FastifyRequest {
-    // use clientIp privided by cloudflare
+    // use clientIp provided by cloudflare
     clientIP: string;
   }
 }
