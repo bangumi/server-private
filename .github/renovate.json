@@ -8,7 +8,7 @@
   ],
   "rangeStrategy": "bump",
   "dockerfile": {
-    "fileMatch": ["*.dockerfile$"],
+    "fileMatch": [".*dockerfile$"],
     "enabled": true
   },
   "docker-compose": {
