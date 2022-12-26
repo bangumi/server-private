@@ -7,11 +7,11 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 @Index('subject_series_entry', ['subjectSeriesEntry'], {})
 @Index('subject_airtime', ['subjectAirtime'], {})
 @Index('subject_ban', ['subjectBan'], {})
-@Index('subject_idx_cn', ['subjectIdxCn', 'subjectTypeId'], {})
-@Index('subject_type_id', ['subjectTypeId'], {})
+@Index('subject_idx_cn', ['subjectIdxCn', 'typeID'], {})
+@Index('subject_type_id', ['typeID'], {})
 @Index('subject_name', ['name'], {})
-@Index('order_by_name', ['subjectBan', 'subjectTypeId', 'subjectSeries', 'platform', 'name'], {})
-@Index('browser', ['subjectBan', 'subjectTypeId', 'subjectSeries', 'platform'], {})
+@Index('order_by_name', ['subjectBan', 'typeID', 'subjectSeries', 'platform', 'name'], {})
+@Index('browser', ['subjectBan', 'typeID', 'subjectSeries', 'platform'], {})
 @Index('subject_nsfw', ['subjectNsfw'], {})
 @Entity('chii_subjects', { schema: 'bangumi' })
 export class Subject {
@@ -27,7 +27,7 @@ export class Subject {
     unsigned: true,
     default: () => "'0'",
   })
-  subjectTypeId!: number;
+  typeID!: number;
 
   @Column('varchar', { name: 'subject_name', length: 80 })
   name!: string;

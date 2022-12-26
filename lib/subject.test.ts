@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
-import { describe, test, vi, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import * as Subject from './subject';
+import { SubjectType } from './subject';
 
 import { AppDataSource, SubjectRevRepo } from 'app/lib/orm';
 import * as entity from 'app/lib/orm/entity';
@@ -16,7 +17,12 @@ describe('should update subject', () => {
       return await fn({
         getRepository(t: unknown) {
           if (t === entity.Subject) {
-            return { update: subjectMock };
+            return {
+              update: subjectMock,
+              findOneByOrFail() {
+                return Promise.resolve({ typeID: SubjectType.Anime });
+              },
+            };
           }
 
           if (t == entity.SubjectRev) {
@@ -56,7 +62,7 @@ describe('should update subject', () => {
       platform: 3,
       subjectID: 363612,
       summary: 'summary summary 2',
-      typeID: 0,
+      typeID: SubjectType.Anime,
     });
 
     expect(subjectMock).toBeCalledWith(

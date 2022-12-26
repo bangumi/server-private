@@ -343,6 +343,7 @@ export async function fetchSubject(id: number) {
 
   return {
     id: subject.id,
+    typeID: subject.typeID,
     platform: subject.platform,
     nsfw: subject.subjectNsfw,
     redirect: f.fieldRedirect,

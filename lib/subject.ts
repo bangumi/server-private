@@ -10,7 +10,7 @@ import wiki from 'app/lib/utils/wiki';
 import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
 import type { Wiki } from 'app/lib/utils/wiki/types';
 
-const enum SubjectType {
+export const enum SubjectType {
   Unknown = 0,
   Book = 1, // 书籍
   Anime = 2, // 动画
@@ -84,12 +84,14 @@ export async function edit({
     const SubjectRevRepo = t.getRepository(entity.SubjectRev);
     const SubjectRepo = t.getRepository(entity.Subject);
 
+    const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
+
     await SubjectRevRepo.insert({
       subjectID,
       summary,
       infobox,
       creatorID: userID,
-      typeID: SubjectType.Unknown,
+      typeID: s.typeID,
       name,
       platform,
       nameCN,
