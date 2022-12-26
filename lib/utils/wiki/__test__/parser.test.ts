@@ -9,7 +9,7 @@ import parse from '../parser';
 import { projectRoot } from 'app/lib/config';
 import { UnreachableError as UnreadableCodeError } from 'app/lib/error';
 
-const testsDir = path.resolve(projectRoot, './lib/utils/wiki/__test_-/wiki-syntax-spec/tests/');
+const testsDir = path.resolve(projectRoot, './lib/utils/wiki/__test__/wiki-syntax-spec/tests/');
 const validTestDir = path.resolve(testsDir, 'valid');
 const invalidTestDir = path.resolve(testsDir, 'invalid');
 
