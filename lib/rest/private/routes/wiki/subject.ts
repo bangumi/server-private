@@ -1,7 +1,7 @@
 import { createError } from '@fastify/error';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
-import { StatusCodes } from 'http-status-codes/build/es';
+import { StatusCodes } from 'http-status-codes';
 
 import { NotAllowedError } from 'app/lib/auth';
 import { NotFoundError } from 'app/lib/error';
@@ -14,6 +14,7 @@ import * as res from 'app/lib/types/res';
 import { formatErrors } from 'app/lib/types/res';
 import wiki from 'app/lib/utils/wiki';
 import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
+import type { Wiki } from 'app/lib/utils/wiki/types';
 
 const SubjectEdit = t.Object(
   {
@@ -69,8 +70,9 @@ export async function setup(app: App) {
 
       const body: Static<typeof SubjectEdit> = input;
 
+      let w: Wiki;
       try {
-        wiki(body.infobox);
+        w = wiki(body.infobox);
       } catch (error) {
         if (error instanceof WikiSyntaxError) {
           throw new InvalidWikiSyntaxError(error.toString());
@@ -79,9 +81,12 @@ export async function setup(app: App) {
         throw error;
       }
 
+      const nameCN: string = Subject.extractNameCN(w);
+
       await Subject.edit({
         subjectID: subjectID,
         name: body.name,
+        nameCN,
         infobox: body.infobox,
         commitMessage: body.commitMessage,
         platform: body.platform,
