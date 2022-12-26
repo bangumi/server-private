@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import yaml from 'js-yaml';
-import { describe, it, expect } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import parse from '../index';
 
@@ -18,7 +18,7 @@ const inValidTestFiles = fs.readdirSync(invalidTestDir);
 
 describe('Wiki syntax parser expected to be valid', () => {
   for (const file of validTestFiles) {
-    const [prefix, suffix, ..._] = file.split('.');
+    const [prefix, suffix] = file.split('.');
     if (suffix !== 'wiki') {
       continue;
     }
@@ -27,7 +27,7 @@ describe('Wiki syntax parser expected to be valid', () => {
       throw new UnreadableCodeError('BUG: undefined file path prefix');
     }
 
-    it(`${prefix} should be valid`, () => {
+    test(`${prefix} should be valid`, () => {
       const testFilePath = path.resolve(validTestDir, file);
       const expectedFilePath = path.resolve(validTestDir, `${prefix}.yaml`);
 
@@ -49,7 +49,7 @@ describe('Wiki syntax parser expected to be inValid', () => {
       throw new UnreadableCodeError('BUG: undefined file path prefix');
     }
 
-    it(`${prefix} should be invalid`, () => {
+    test(`${prefix} should be invalid`, () => {
       const testFilePath = path.resolve(invalidTestDir, file);
       const testContent = fs.readFileSync(testFilePath, 'utf8');
 

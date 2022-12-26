@@ -10,7 +10,8 @@ export class WikiArrayItem {
   v?: string;
 
   constructor(k?: string, v?: string) {
-    this.k = k;
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    this.k = k || undefined;
     this.v = v;
   }
 }

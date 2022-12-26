@@ -35,6 +35,7 @@ interface Create {
   summary: string;
   commitMessage: string;
   userID: number;
+  now?: dayjs.Dayjs;
 }
 
 // TODO: update subject
@@ -46,13 +47,13 @@ export async function edit({
   summary,
   commitMessage,
   userID,
+  now = dayjs(),
 }: Create): Promise<void> {
   if (!SandBox.has(subjectID)) {
     return;
   }
 
   logger.info('user %d edit subject %d', userID, subjectID);
-  const now = dayjs();
 
   let w: Wiki;
   try {
