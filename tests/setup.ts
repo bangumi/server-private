@@ -1,5 +1,5 @@
 import MockRedis from 'ioredis-mock';
-import { beforeAll, vi } from 'vitest';
+import { afterAll, beforeAll, vi } from 'vitest';
 
 import { AppDataSource } from '../lib/orm';
 
@@ -38,4 +38,8 @@ vi.mock('../lib/externals/turnstile', () => {
 
 beforeAll(async () => {
   await AppDataSource.initialize();
+});
+
+afterAll(() => {
+  vi.resetModules();
 });

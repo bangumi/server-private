@@ -38,7 +38,6 @@ interface Create {
   now?: dayjs.Dayjs;
 }
 
-// TODO: update subject
 export async function edit({
   subjectID,
   name,

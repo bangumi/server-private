@@ -45,7 +45,8 @@ https://bgm.tv/group/topic/366812#post_1923517`,
   commitMessage: '测试编辑',
 };
 
-const SubjectEdit = t.Object(
+export type ISubjectEdit = Static<typeof SubjectEdit>;
+export const SubjectEdit = t.Object(
   {
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
