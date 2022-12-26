@@ -24,6 +24,7 @@ import {
   SubjectFields,
   GroupTopic,
   GroupPost,
+  SubjectRev,
 } from './entity';
 import * as entity from './entity';
 
@@ -77,6 +78,7 @@ export const AppDataSource = new DataSource({
     SubjectFields,
     GroupTopic,
     GroupPost,
+    SubjectRev,
   ],
 });
 
@@ -87,6 +89,8 @@ export const FriendRepo = AppDataSource.getRepository(Friends);
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
+
+export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
