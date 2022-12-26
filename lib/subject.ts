@@ -124,12 +124,12 @@ export function extractNameCN(w: Wiki): string {
 
 export function extractEpisode(w: Wiki): number {
   const v = w.data.find((v) => {
-    return ['话数'].includes(v.key);
+    return ['话数', '集数'].includes(v.key);
   })?.value;
 
   if (!v) {
     return 0;
   }
 
-  return Number.parseInt(v);
+  return Number.parseInt(v) || 0;
 }
