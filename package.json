@@ -15,7 +15,7 @@
   },
   "scripts": {
     "format": "prettier -w ./",
-    "lint": "FORCE_COLOR=1 eslint --ext ts ./",
+    "lint": "eslint --ext ts ./",
     "start": "nodemon",
     "test": "vitest --run",
     "vitest": "vitest",
