@@ -9,8 +9,8 @@ export class WikiArrayItem {
   k?: string;
   v?: string;
 
-  constructor(k: string, v: string) {
-    k && (this.k = k);
+  constructor(k?: string, v?: string) {
+    this.k = k;
     this.v = v;
   }
 }
