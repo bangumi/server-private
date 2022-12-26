@@ -4,7 +4,7 @@ import path from 'node:path';
 import yaml from 'js-yaml';
 import { describe, it, expect } from 'vitest';
 
-import parse from '../parser';
+import parse from '../index';
 
 import { projectRoot } from 'app/lib/config';
 import { UnreachableError as UnreadableCodeError } from 'app/lib/error';

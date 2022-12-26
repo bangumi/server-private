@@ -1,5 +1,7 @@
+import { createError } from '@fastify/error';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { StatusCodes } from 'http-status-codes/build/es';
 
 import { NotAllowedError } from 'app/lib/auth';
 import { NotFoundError } from 'app/lib/error';
@@ -10,6 +12,8 @@ import type { App } from 'app/lib/rest/type';
 import * as Subject from 'app/lib/subject';
 import * as res from 'app/lib/types/res';
 import { formatErrors } from 'app/lib/types/res';
+import wiki from 'app/lib/utils/wiki';
+import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
 
 const SubjectEdit = t.Object(
   {
@@ -22,12 +26,14 @@ const SubjectEdit = t.Object(
   { $id: 'SubjectEdit' },
 );
 
+const InvalidWikiSyntaxError = createError('INVALID_ERROR_SYNTAX', '%s', StatusCodes.BAD_REQUEST);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
 
-  app.post(
+  app.put(
     '/subjects/:subjectID',
     {
       schema: {
@@ -41,7 +47,7 @@ export async function setup(app: App) {
         response: {
           200: t.String(),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError()),
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
           }),
         },
       },
@@ -63,7 +69,15 @@ export async function setup(app: App) {
 
       const body: Static<typeof SubjectEdit> = input;
 
-      // TODO: check wiki syntax
+      try {
+        wiki(body.infobox);
+      } catch (error) {
+        if (error instanceof WikiSyntaxError) {
+          throw new InvalidWikiSyntaxError(error.toString());
+        }
+
+        throw error;
+      }
 
       await Subject.edit({
         subjectID: subjectID,
