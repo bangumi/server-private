@@ -1,9 +1,13 @@
+import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
+import { StatusCodes } from 'http-status-codes';
 
 import { logger } from './logger';
 import { AppDataSource } from './orm';
 
 import * as entity from 'app/lib/orm/entity';
+import wiki from 'app/lib/utils/wiki';
+import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
 import type { Wiki } from 'app/lib/utils/wiki/types';
 
 const enum SubjectType {
@@ -15,12 +19,17 @@ const enum SubjectType {
   Real = 6, // 三次元
 }
 
+export const InvalidWikiSyntaxError = createError(
+  'INVALID_ERROR_SYNTAX',
+  '%s',
+  StatusCodes.BAD_REQUEST,
+);
+
 const SandBox = new Set([354677, 354677, 309445, 363612]);
 
 interface Create {
   subjectID: number;
   name: string;
-  nameCN: string;
   infobox: string;
   platform: number;
   summary: string;
@@ -32,7 +41,6 @@ interface Create {
 export async function edit({
   subjectID,
   name,
-  nameCN,
   infobox,
   platform,
   summary,
@@ -45,6 +53,32 @@ export async function edit({
 
   logger.info('user %d edit subject %d', userID, subjectID);
   const now = dayjs();
+
+  let w: Wiki;
+  try {
+    w = wiki(infobox);
+  } catch (error) {
+    if (error instanceof WikiSyntaxError) {
+      let l = '';
+      if (error.line) {
+        l = `line: ${error.line}`;
+        if (error.lino) {
+          l += `:${error.lino}`;
+        }
+      }
+
+      if (l) {
+        l = ' (' + l + ')';
+      }
+
+      throw new InvalidWikiSyntaxError(`${error.message}${l}`);
+    }
+
+    throw error;
+  }
+
+  const nameCN: string = extractNameCN(w);
+  const episodes: number = extractEpisode(w);
 
   await AppDataSource.transaction(async (t) => {
     const SubjectRevRepo = t.getRepository(entity.SubjectRev);
@@ -70,6 +104,7 @@ export async function edit({
       {
         platform,
         name: name,
+        fieldEps: episodes,
         nameCN: nameCN,
         fieldSummary: summary,
         fieldInfobox: infobox,
@@ -85,4 +120,16 @@ export function extractNameCN(w: Wiki): string {
       return v.key === '中文名';
     })?.value ?? ''
   );
+}
+
+export function extractEpisode(w: Wiki): number {
+  const v = w.data.find((v) => {
+    return ['话数'].includes(v.key);
+  })?.value;
+
+  if (!v) {
+    return 0;
+  }
+
+  return Number.parseInt(v);
 }

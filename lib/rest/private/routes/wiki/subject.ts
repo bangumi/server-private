@@ -1,7 +1,5 @@
-import { createError } from '@fastify/error';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
-import { StatusCodes } from 'http-status-codes';
 
 import { NotAllowedError } from 'app/lib/auth';
 import { NotFoundError } from 'app/lib/error';
@@ -10,11 +8,42 @@ import * as orm from 'app/lib/orm';
 import { requireLogin } from 'app/lib/pre-handler';
 import type { App } from 'app/lib/rest/type';
 import * as Subject from 'app/lib/subject';
+import { InvalidWikiSyntaxError } from 'app/lib/subject';
 import * as res from 'app/lib/types/res';
 import { formatErrors } from 'app/lib/types/res';
-import wiki from 'app/lib/utils/wiki';
-import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
-import type { Wiki } from 'app/lib/utils/wiki/types';
+
+const exampleSubjectEdit = {
+  name: '沙盒',
+  infobox: `{{Infobox animanga/TVAnime
+|中文名= 沙盒
+|别名={
+}
+|话数= 7
+|放送开始= 0000-10-06
+|放送星期= 
+|官方网站= 
+|播放电视台= 
+|其他电视台= 
+|播放结束= 
+|其他= 
+|Copyright= 
+|平台={
+[龟壳]
+[Xbox Series S]
+[Xbox Series X]
+[Xbox Series X/S]
+[PC]
+[Xbox Series X|S]
+}
+}}`,
+  platform: 0,
+  summary: `本条目是一个沙盒，可以用于尝试bgm功能。
+
+普通维基人可以随意编辑条目信息以及相关关联查看编辑效果，但是请不要完全删除沙盒说明并且不要关联非沙盒条目/人物/角色。
+
+https://bgm.tv/group/topic/366812#post_1923517`,
+  commitMessage: '测试编辑',
+};
 
 const SubjectEdit = t.Object(
   {
@@ -24,10 +53,11 @@ const SubjectEdit = t.Object(
     summary: t.String(),
     commitMessage: t.String({ minLength: 1 }),
   },
-  { $id: 'SubjectEdit' },
+  {
+    $id: 'SubjectEdit',
+    examples: [exampleSubjectEdit],
+  },
 );
-
-const InvalidWikiSyntaxError = createError('INVALID_ERROR_SYNTAX', '%s', StatusCodes.BAD_REQUEST);
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -44,9 +74,9 @@ export async function setup(app: App) {
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Ref(SubjectEdit),
+        body: t.Ref(SubjectEdit, { examples: [exampleSubjectEdit] }),
         response: {
-          200: t.String(),
+          200: t.Null(),
           401: t.Ref(res.Error, {
             'x-examples': formatErrors(InvalidWikiSyntaxError()),
           }),
@@ -54,7 +84,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a reply')],
     },
-    async ({ auth, body: input, params: { subjectID } }): Promise<string> => {
+    async ({ auth, body: input, params: { subjectID } }): Promise<void> => {
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
@@ -70,31 +100,15 @@ export async function setup(app: App) {
 
       const body: Static<typeof SubjectEdit> = input;
 
-      let w: Wiki;
-      try {
-        w = wiki(body.infobox);
-      } catch (error) {
-        if (error instanceof WikiSyntaxError) {
-          throw new InvalidWikiSyntaxError(error.toString());
-        }
-
-        throw error;
-      }
-
-      const nameCN: string = Subject.extractNameCN(w);
-
       await Subject.edit({
         subjectID: subjectID,
         name: body.name,
-        nameCN,
         infobox: body.infobox,
         commitMessage: body.commitMessage,
         platform: body.platform,
         summary: body.summary,
         userID: auth.userID,
       });
-
-      return JSON.stringify({ subjectID, body });
     },
   );
 }
