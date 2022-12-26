@@ -3,11 +3,11 @@ import path from 'node:path';
 import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
-import { production, projectRoot, TURNSTILE_SITE_KEY } from '../../../config';
-import * as Notify from '../../../notify';
-import { fetchUser } from '../../../orm';
-import { avatar } from '../../../response';
-import type { App } from '../../type';
+import { production, projectRoot, TURNSTILE_SITE_KEY } from 'app/lib/config';
+import * as Notify from 'app/lib/notify';
+import { fetchUser } from 'app/lib/orm';
+import { avatar } from 'app/lib/response';
+import type { App } from 'app/lib/rest/type';
 
 export async function setup(app: App) {
   const liquid = new Liquid({

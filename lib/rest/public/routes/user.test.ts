@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { createServer } from '../../../server';
+import { createServer } from 'app/lib/server';
 
 const app = await createServer();
 

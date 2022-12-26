@@ -1,9 +1,9 @@
 import { nonNull, objectType, extendType, intArg } from 'nexus';
 import * as php from 'php-serialize';
 
-import { SubjectRepo } from '../../orm';
-import type * as entity from '../../orm/entity';
-import type { Context } from '../context';
+import type { Context } from 'app/lib/graphql/context';
+import { SubjectRepo } from 'app/lib/orm';
+import type * as entity from 'app/lib/orm/entity';
 
 const Episode = objectType({
   name: 'Episode',

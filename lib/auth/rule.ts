@@ -1,5 +1,6 @@
-import type { IReply } from '../orm';
-import { ReplyState } from '../topic';
+import type { IReply } from 'app/lib/orm';
+import { ReplyState } from 'app/lib/topic';
+
 import type { IAuth } from './index';
 
 export const enum TopicDisplay {

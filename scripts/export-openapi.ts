@@ -4,8 +4,8 @@ import * as path from 'node:path';
 import * as yaml from 'js-yaml';
 import * as lodash from 'lodash-es';
 
-import { projectRoot } from '../lib/config';
-import { createServer } from '../lib/server';
+import { projectRoot } from 'app/lib/config';
+import { createServer } from 'app/lib/server';
 
 await fs.mkdir(path.resolve(projectRoot, 'dist'), { recursive: true });
 

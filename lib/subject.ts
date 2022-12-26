@@ -2,13 +2,13 @@ import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 import { StatusCodes } from 'http-status-codes';
 
-import { logger } from './logger';
-import { AppDataSource } from './orm';
-
 import * as entity from 'app/lib/orm/entity';
 import wiki from 'app/lib/utils/wiki';
 import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
 import type { Wiki } from 'app/lib/utils/wiki/types';
+
+import { logger } from './logger';
+import { AppDataSource } from './orm';
 
 export const enum SubjectType {
   Unknown = 0,

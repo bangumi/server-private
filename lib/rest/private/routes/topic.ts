@@ -2,22 +2,22 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 
-import { NotAllowedError } from '../../../auth';
-import { rule, TopicDisplay } from '../../../auth/rule';
-import { dam } from '../../../dam';
-import { NotFoundError, UnexpectedNotFoundError } from '../../../error';
-import * as Notify from '../../../notify';
-import { Security, Tag } from '../../../openapi';
-import type { ITopic, IUser, Page, IBaseReply } from '../../../orm';
-import * as orm from '../../../orm';
-import { isMemberInGroup, GroupMemberRepo, GroupRepo } from '../../../orm';
-import { requireLogin } from '../../../pre-handler';
-import { avatar, groupIcon } from '../../../response';
-import * as Topic from '../../../topic';
-import { NotJoinPrivateGroupError, ReplyState } from '../../../topic';
-import * as res from '../../../types/res';
-import { formatErrors } from '../../../types/res';
-import type { App } from '../../type';
+import { NotAllowedError } from 'app/lib/auth';
+import { rule, TopicDisplay } from 'app/lib/auth/rule';
+import { dam } from 'app/lib/dam';
+import { NotFoundError, UnexpectedNotFoundError } from 'app/lib/error';
+import * as Notify from 'app/lib/notify';
+import { Security, Tag } from 'app/lib/openapi';
+import type { ITopic, IUser, Page, IBaseReply } from 'app/lib/orm';
+import { isMemberInGroup, GroupMemberRepo, GroupRepo } from 'app/lib/orm';
+import * as orm from 'app/lib/orm';
+import { requireLogin } from 'app/lib/pre-handler';
+import { avatar, groupIcon } from 'app/lib/response';
+import type { App } from 'app/lib/rest/type';
+import { NotJoinPrivateGroupError, ReplyState } from 'app/lib/topic';
+import * as Topic from 'app/lib/topic';
+import { formatErrors } from 'app/lib/types/res';
+import * as res from 'app/lib/types/res';
 
 const Group = t.Object(
   {

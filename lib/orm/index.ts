@@ -3,11 +3,12 @@ import * as php from 'php-serialize';
 import { DataSource } from 'typeorm';
 import * as typeorm from 'typeorm';
 
-import type { TopicDisplay } from '../auth/rule';
-import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '../config';
-import { UnexpectedNotFoundError, UnimplementedError } from '../error';
-import { logger } from '../logger';
-import type { ReplyState } from '../topic';
+import type { TopicDisplay } from 'app/lib/auth/rule';
+import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from 'app/lib/config';
+import { UnexpectedNotFoundError, UnimplementedError } from 'app/lib/error';
+import { logger } from 'app/lib/logger';
+import type { ReplyState } from 'app/lib/topic';
+
 import {
   OauthAccessTokens,
   WebSessions,

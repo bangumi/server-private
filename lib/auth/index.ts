@@ -6,10 +6,10 @@ import dayjs from 'dayjs';
 import NodeCache from 'node-cache';
 import { FindOperator } from 'typeorm';
 
-import { redisPrefix } from '../config';
-import type { IUser, Permission } from '../orm';
-import { fetchPermission, fetchUser, AccessTokenRepo } from '../orm';
-import redis from '../redis';
+import { redisPrefix } from 'app/lib/config';
+import type { IUser, Permission } from 'app/lib/orm';
+import { fetchPermission, fetchUser, AccessTokenRepo } from 'app/lib/orm';
+import redis from 'app/lib/redis';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError = createError('NEED_LOGIN', 'you need to login before %s', 401);
