@@ -8,7 +8,7 @@ import * as orm from 'app/lib/orm';
 import { requireLogin } from 'app/lib/pre-handler';
 import type { App } from 'app/lib/rest/type';
 import * as Subject from 'app/lib/subject';
-import { InvalidWikiSyntaxError } from 'app/lib/subject';
+import { InvalidWikiSyntaxError, SandBox } from 'app/lib/subject';
 import * as res from 'app/lib/types/res';
 import { formatErrors } from 'app/lib/types/res';
 
@@ -71,6 +71,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'updateSubject',
+        description: `暂时只能修改沙盒条目 ${[...SandBox.entries()].join(',')}`,
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
