@@ -2,6 +2,8 @@ const path = require('path');
 
 const rulesDirPlugin = require('eslint-plugin-rulesdir');
 
+require('eslint-plugin-import/lib/rules/order');
+
 rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint');
 
 module.exports = {
@@ -120,6 +122,7 @@ module.exports = {
         alphabetize: {
           order: 'asc',
           caseInsensitive: true,
+          // orderImportKind: 'asc', enable this after new version of eslint-plugin-import
         },
         'newlines-between': 'always',
         groups: ['builtin', 'external', 'internal', ['index', 'sibling', 'parent'], 'object'],

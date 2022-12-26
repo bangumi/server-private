@@ -9,15 +9,15 @@ import { NotFoundError, UnexpectedNotFoundError } from 'app/lib/error';
 import * as Notify from 'app/lib/notify';
 import { Security, Tag } from 'app/lib/openapi';
 import type { ITopic, IUser, Page, IBaseReply } from 'app/lib/orm';
-import { isMemberInGroup, GroupMemberRepo, GroupRepo } from 'app/lib/orm';
 import * as orm from 'app/lib/orm';
+import { isMemberInGroup, GroupMemberRepo, GroupRepo } from 'app/lib/orm';
 import { requireLogin } from 'app/lib/pre-handler';
 import { avatar, groupIcon } from 'app/lib/response';
 import type { App } from 'app/lib/rest/type';
-import { NotJoinPrivateGroupError, ReplyState } from 'app/lib/topic';
 import * as Topic from 'app/lib/topic';
-import { formatErrors } from 'app/lib/types/res';
+import { NotJoinPrivateGroupError, ReplyState } from 'app/lib/topic';
 import * as res from 'app/lib/types/res';
+import { formatErrors } from 'app/lib/types/res';
 
 const Group = t.Object(
   {

@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 
-import { emptyAuth } from 'app/lib/auth';
 import * as auth from 'app/lib/auth';
+import { emptyAuth } from 'app/lib/auth';
 import * as me from 'app/lib/rest/routes/me';
 import * as swagger from 'app/lib/rest/swagger';
 
