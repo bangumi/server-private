@@ -71,7 +71,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'updateSubject',
-        description: `暂时只能修改沙盒条目 ${[...SandBox.entries()].join(',')}`,
+        description: `暂时只能修改沙盒条目 ${[...SandBox].sort().join(',')}`,
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
