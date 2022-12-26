@@ -1,8 +1,9 @@
 import * as typeorm from 'typeorm';
 import { expect, test } from 'vitest';
 
-import { TimelineRepo } from '../orm';
-import type { Timeline } from '../orm/entity';
+import { TimelineRepo } from 'app/lib/orm';
+import type { Timeline } from 'app/lib/orm/entity';
+
 import { timeline } from './index';
 
 test('fetch all', async () => {
