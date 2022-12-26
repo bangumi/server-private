@@ -82,7 +82,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('creating a reply')],
+      preHandler: [requireLogin('editing a subject info')],
     },
     async ({ auth, body: input, params: { subjectID } }): Promise<void> => {
       if (!auth.permission.subject_edit) {
