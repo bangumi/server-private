@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import type { ISubjectEdit } from './subject';
-import { setup } from './subject';
-
 import { UserGroup } from 'app/lib/auth';
 import * as Subject from 'app/lib/subject';
 import { createTestServer } from 'app/tests/utils';
+
+import { setup } from './subject';
+import type { ISubjectEdit } from './subject';
 
 describe('edit subject ', () => {
   const editSubject = vi.fn();

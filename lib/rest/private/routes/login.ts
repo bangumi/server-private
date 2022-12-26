@@ -2,17 +2,17 @@ import { createError } from '@fastify/error';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
-import { comparePassword, NeedLoginError } from '../../../auth';
-import * as session from '../../../auth/session';
-import { redisPrefix, TURNSTILE_SECRET_KEY } from '../../../config';
-import { createTurnstileDriver } from '../../../externals/turnstile';
-import { Tag } from '../../../openapi';
-import { UserRepo } from '../../../orm';
-import redis from '../../../redis';
-import { avatar } from '../../../response';
-import * as res from '../../../types/res';
-import Limiter from '../../../utils/rate-limit';
-import type { App } from '../../type';
+import { comparePassword, NeedLoginError } from 'app/lib/auth';
+import * as session from 'app/lib/auth/session';
+import { redisPrefix, TURNSTILE_SECRET_KEY } from 'app/lib/config';
+import { createTurnstileDriver } from 'app/lib/externals/turnstile';
+import { Tag } from 'app/lib/openapi';
+import { UserRepo } from 'app/lib/orm';
+import redis from 'app/lib/redis';
+import { avatar } from 'app/lib/response';
+import type { App } from 'app/lib/rest/type';
+import * as res from 'app/lib/types/res';
+import Limiter from 'app/lib/utils/rate-limit';
 
 export const CookieKey = 'sessionID';
 

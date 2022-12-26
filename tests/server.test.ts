@@ -5,7 +5,7 @@ import { describe, expect, test } from 'vitest';
 // so vscode, webstorm and prettier will know the string content
 // is graphql and support language specific features
 
-import { createServer } from '../lib/server';
+import { createServer } from 'app/lib/server';
 
 const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
 

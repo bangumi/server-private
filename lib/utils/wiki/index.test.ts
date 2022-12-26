@@ -4,10 +4,10 @@ import path from 'node:path';
 import yaml from 'js-yaml';
 import { describe, test, expect } from 'vitest';
 
-import parse from '../index';
-
 import { projectRoot } from 'app/lib/config';
 import { UnreachableError as UnreadableCodeError } from 'app/lib/error';
+
+import parse from './';
 
 const testsDir = path.resolve(projectRoot, './lib/utils/wiki/__test__/wiki-syntax-spec/tests/');
 const validTestDir = path.resolve(testsDir, 'valid');

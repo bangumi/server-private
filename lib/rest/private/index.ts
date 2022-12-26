@@ -1,10 +1,11 @@
 import Cookie from '@fastify/cookie';
 
-import { emptyAuth } from '../../auth';
-import * as session from '../../auth/session';
-import * as me from '../routes/me';
-import * as swagger from '../swagger';
-import type { App } from '../type';
+import { emptyAuth } from 'app/lib/auth';
+import * as session from 'app/lib/auth/session';
+import * as me from 'app/lib/rest/routes/me';
+import * as swagger from 'app/lib/rest/swagger';
+import type { App } from 'app/lib/rest/type';
+
 import * as demo from './demo';
 import { CookieKey } from './routes/login';
 import * as login from './routes/login';

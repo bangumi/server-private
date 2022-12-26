@@ -114,7 +114,7 @@ module.exports = {
           caseInsensitive: true,
         },
         'newlines-between': 'always',
-        groups: ['builtin', 'external', ['index', 'sibling', 'parent'], 'internal', 'object'],
+        groups: ['builtin', 'external', 'internal', ['index', 'sibling', 'parent'], 'object'],
       },
     ],
     'no-restricted-syntax': [

@@ -1,7 +1,8 @@
 import dayjs from 'dayjs';
 import { expect, test, afterEach, beforeEach } from 'vitest';
 
-import { SessionRepo } from '../orm';
+import { SessionRepo } from 'app/lib/orm';
+
 import { create, get, revoke } from './session';
 
 beforeEach(async () => {

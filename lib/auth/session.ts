@@ -1,8 +1,9 @@
 import dayjs from 'dayjs';
 import * as typeorm from 'typeorm';
 
-import { SessionRepo } from '../orm';
-import { randomBase62String } from '../utils';
+import { SessionRepo } from 'app/lib/orm';
+import { randomBase62String } from 'app/lib/utils';
+
 import * as auth from './index';
 import type { IAuth } from './index';
 
