@@ -1,3 +1,4 @@
+import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from 'app/lib/auth';
@@ -14,6 +15,7 @@ const SubjectEdit = t.Object(
   {
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
+    platform: t.Integer(),
     summary: t.String(),
     commitMessage: t.String({ minLength: 1 }),
   },
@@ -45,7 +47,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a reply')],
     },
-    async ({ auth, body, params: { subjectID } }): Promise<string> => {
+    async ({ auth, body: input, params: { subjectID } }): Promise<string> => {
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
@@ -59,12 +61,16 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
+      const body: Static<typeof SubjectEdit> = input;
+
+      // TODO: check wiki syntax
+
       await Subject.edit({
         subjectID: subjectID,
         name: body.name,
         infobox: body.infobox,
         commitMessage: body.commitMessage,
-        platform: s.platform, // TODO
+        platform: body.platform,
         summary: body.summary,
         userID: auth.userID,
       });

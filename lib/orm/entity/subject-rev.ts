@@ -45,6 +45,7 @@ export class SubjectRev {
   @Column('mediumtext', { name: 'rev_field_summary' })
   summary!: string;
 
+  /** @deprecated 未使用 */
   @Column('mediumtext', { name: 'rev_vote_field' })
   revVoteField!: string;
 
