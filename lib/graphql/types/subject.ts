@@ -126,8 +126,8 @@ const SubjectByIDQuery = extendType({
 
         return {
           id: subject.id,
-          name: subject.subjectName,
-          name_cn: subject.subjectNameCn,
+          name: subject.name,
+          name_cn: subject.nameCN,
           tags: (
             php.unserialize(fields.fieldTags) as { tag_name: string | undefined; result: string }[]
           )

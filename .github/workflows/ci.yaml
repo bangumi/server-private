@@ -35,6 +35,8 @@ jobs:
       - run: cd ~/dev-env && docker-compose up -d
 
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
 
       - name: Setup node
         uses: actions/setup-node@v3

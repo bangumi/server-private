@@ -4,3 +4,4 @@ export * from './user';
 export * from './notify';
 export * from './group';
 export * from './subject';
+export * from './subject-rev';
