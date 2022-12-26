@@ -1,3 +1,9 @@
+const path = require('path');
+
+const rulesDirPlugin = require('eslint-plugin-rulesdir');
+
+rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint');
+
 module.exports = {
   extends: [
     'eslint:recommended',
@@ -11,7 +17,7 @@ module.exports = {
     'plugin:@typescript-eslint/strict',
     'prettier',
   ],
-  plugins: ['@typescript-eslint', 'import', 'unicorn', 'tsdoc', 'unused-imports'],
+  plugins: ['@typescript-eslint', 'import', 'unicorn', 'tsdoc', 'unused-imports', 'rulesdir'],
   ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -24,6 +30,7 @@ module.exports = {
     node: true,
   },
   rules: {
+    'rulesdir/no-relative-parent-import': 'error',
     'unused-imports/no-unused-imports': 'error',
     curly: ['error'],
     'tsdoc/syntax': 'error',
