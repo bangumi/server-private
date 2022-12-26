@@ -1,11 +1,17 @@
 import 'dotenv/config';
 
+import * as url from 'node:url';
+
 import GithubActionsReporter from 'vitest-github-actions-reporter';
 import { defineConfig } from 'vitest/config';
 
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
 export default defineConfig({
   resolve: {
-    alias: { app: '.' },
+    alias: {
+      app: __dirname,
+    },
     extensions: ['.js', '.ts'],
   },
   test: {
