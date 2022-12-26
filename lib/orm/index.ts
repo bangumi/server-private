@@ -25,6 +25,7 @@ import {
   GroupTopic,
   GroupPost,
   Timeline,
+  SubjectRev,
 } from './entity';
 import * as entity from './entity';
 
@@ -79,6 +80,7 @@ export const AppDataSource = new DataSource({
     GroupTopic,
     GroupPost,
     Timeline,
+    SubjectRev,
   ],
 });
 
@@ -91,6 +93,8 @@ export const TimelineRepo = AppDataSource.getRepository(Timeline);
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
+
+export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
@@ -343,8 +347,11 @@ export async function fetchSubject(id: number) {
 
   return {
     id: subject.id,
+    typeID: subject.typeID,
+    platform: subject.platform,
     nsfw: subject.subjectNsfw,
     redirect: f.fieldRedirect,
+    locked: subject.locked(),
   };
 }
 

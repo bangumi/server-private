@@ -1,6 +1,7 @@
 export const Tag = {
   User: 'user',
   Auth: 'auth',
+  Wiki: 'wiki',
   Topic: 'topic',
 } as const;
 

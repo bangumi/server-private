@@ -18,6 +18,11 @@
     "declaration": false,
     "noEmit": true,
     "rootDir": ".",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      // 需要搭配 package.json 的 exports 来保证正常加载
+      // 需要设置 vitest.config.ts 的 resolve.alias 来保证在测试环境中正常加载
+      "app/*": ["./*"]
+    }
   }
 }

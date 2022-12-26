@@ -5,3 +5,4 @@ export * from './notify';
 export * from './group';
 export * from './subject';
 export * from './timeline';
+export * from './subject-rev';

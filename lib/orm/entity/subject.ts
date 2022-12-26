@@ -1,21 +1,17 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Index('subject_name_cn', ['subjectNameCn'], {})
-@Index('subject_platform', ['subjectPlatform'], {})
+@Index('subject_name_cn', ['nameCN'], {})
+@Index('subject_platform', ['platform'], {})
 @Index('subject_creator', ['subjectCreator'], {})
 @Index('subject_series', ['subjectSeries'], {})
 @Index('subject_series_entry', ['subjectSeriesEntry'], {})
 @Index('subject_airtime', ['subjectAirtime'], {})
 @Index('subject_ban', ['subjectBan'], {})
-@Index('subject_idx_cn', ['subjectIdxCn', 'subjectTypeId'], {})
-@Index('subject_type_id', ['subjectTypeId'], {})
-@Index('subject_name', ['subjectName'], {})
-@Index(
-  'order_by_name',
-  ['subjectBan', 'subjectTypeId', 'subjectSeries', 'subjectPlatform', 'subjectName'],
-  {},
-)
-@Index('browser', ['subjectBan', 'subjectTypeId', 'subjectSeries', 'subjectPlatform'], {})
+@Index('subject_idx_cn', ['subjectIdxCn', 'typeID'], {})
+@Index('subject_type_id', ['typeID'], {})
+@Index('subject_name', ['name'], {})
+@Index('order_by_name', ['subjectBan', 'typeID', 'subjectSeries', 'platform', 'name'], {})
+@Index('browser', ['subjectBan', 'typeID', 'subjectSeries', 'platform'], {})
 @Index('subject_nsfw', ['subjectNsfw'], {})
 @Entity('chii_subjects', { schema: 'bangumi' })
 export class Subject {
@@ -31,13 +27,13 @@ export class Subject {
     unsigned: true,
     default: () => "'0'",
   })
-  subjectTypeId!: number;
+  typeID!: number;
 
   @Column('varchar', { name: 'subject_name', length: 80 })
-  subjectName!: string;
+  name!: string;
 
   @Column('varchar', { name: 'subject_name_cn', length: 80 })
-  subjectNameCn!: string;
+  nameCN!: string;
 
   @Column('varchar', {
     name: 'subject_uid',
@@ -54,7 +50,7 @@ export class Subject {
     unsigned: true,
     default: () => "'0'",
   })
-  subjectDateline!: number;
+  updatedAt!: number;
 
   @Column('varchar', { name: 'subject_image', length: 255 })
   subjectImage!: string;
@@ -64,7 +60,7 @@ export class Subject {
     unsigned: true,
     default: () => "'0'",
   })
-  subjectPlatform!: number;
+  platform!: number;
 
   @Column('mediumtext', { name: 'field_infobox' })
   fieldInfobox!: string;
@@ -156,6 +152,10 @@ export class Subject {
     default: () => "'0'",
   })
   subjectBan!: number;
+
+  locked(): boolean {
+    return this.subjectBan === 2;
+  }
 }
 
 @Index('sort_id', ['fieldTid'], {})

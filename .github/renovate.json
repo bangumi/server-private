@@ -6,5 +6,12 @@
     "github>Trim21/renovate-config:app",
     "github>Trim21/renovate-config:monthly"
   ],
-  "rangeStrategy": "bump"
+  "rangeStrategy": "bump",
+  "dockerfile": {
+    "fileMatch": [".*dockerfile$"],
+    "enabled": true
+  },
+  "docker-compose": {
+    "enabled": false
+  }
 }
