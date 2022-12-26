@@ -1,7 +1,7 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('subject_name_cn', ['subjectNameCn'], {})
-@Index('subject_platform', ['subjectPlatform'], {})
+@Index('subject_platform', ['platform'], {})
 @Index('subject_creator', ['subjectCreator'], {})
 @Index('subject_series', ['subjectSeries'], {})
 @Index('subject_series_entry', ['subjectSeriesEntry'], {})
@@ -12,10 +12,10 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 @Index('subject_name', ['subjectName'], {})
 @Index(
   'order_by_name',
-  ['subjectBan', 'subjectTypeId', 'subjectSeries', 'subjectPlatform', 'subjectName'],
+  ['subjectBan', 'subjectTypeId', 'subjectSeries', 'platform', 'subjectName'],
   {},
 )
-@Index('browser', ['subjectBan', 'subjectTypeId', 'subjectSeries', 'subjectPlatform'], {})
+@Index('browser', ['subjectBan', 'subjectTypeId', 'subjectSeries', 'platform'], {})
 @Index('subject_nsfw', ['subjectNsfw'], {})
 @Entity('chii_subjects', { schema: 'bangumi' })
 export class Subject {
@@ -64,7 +64,7 @@ export class Subject {
     unsigned: true,
     default: () => "'0'",
   })
-  subjectPlatform!: number;
+  platform!: number;
 
   @Column('mediumtext', { name: 'field_infobox' })
   fieldInfobox!: string;
@@ -156,6 +156,10 @@ export class Subject {
     default: () => "'0'",
   })
   subjectBan!: number;
+
+  locked(): boolean {
+    return this.subjectBan === 2;
+  }
 }
 
 @Index('sort_id', ['fieldTid'], {})

@@ -14,15 +14,25 @@ const enum SubjectType {
 
 const SandBox = new Set([354677, 354677, 309445, 363612]);
 
-export async function edit(
-  subjectID: number,
-  name: string,
-  infobox: string,
-  platform: number,
-  summary: string,
-  commitMessage: string,
-  userID: number,
-): Promise<void> {
+interface Create {
+  subjectID: number;
+  name: string;
+  infobox: string;
+  platform: number;
+  summary: string;
+  commitMessage: string;
+  userID: number;
+}
+
+export async function edit({
+  subjectID,
+  name,
+  infobox,
+  platform,
+  summary,
+  commitMessage,
+  userID,
+}: Create): Promise<void> {
   if (!SandBox.has(subjectID)) {
     return;
   }
@@ -36,6 +46,7 @@ export async function edit(
     creatorID: userID,
     typeID: SubjectType.Unknown,
     name,
+    platform,
     nameCN: extractNameCN(infobox),
     createdAt: dayjs().unix(),
     commitMessage,

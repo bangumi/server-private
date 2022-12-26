@@ -1,5 +1,5 @@
 {
-  "name": "graphql",
+  "name": "app",
   "version": "0.0.68",
   "description": "",
   "private": true,
@@ -7,6 +7,11 @@
   "main": "lib/main.ts",
   "engines": {
     "node": "^18.0.0"
+  },
+  "exports": {
+    "./*": {
+      "import": "./*"
+    }
   },
   "scripts": {
     "format": "prettier -w ./",
@@ -27,10 +32,16 @@
     ],
     "watch": [
       "lib",
+      "package.json",
+      "tsconfig.json",
       ".env"
     ],
+    "delay": 1000,
     "execMap": {
       "ts": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
+    },
+    "env": {
+      "NODE_ENV": "development"
     },
     "ext": "ts,js,json,html"
   },

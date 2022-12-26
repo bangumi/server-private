@@ -18,6 +18,10 @@
     "declaration": false,
     "noEmit": true,
     "rootDir": ".",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      // 需要搭配 package.json 的 exports 来保证正常加载
+      "app/*": ["./*"]
+    }
   }
 }

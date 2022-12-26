@@ -343,8 +343,10 @@ export async function fetchSubject(id: number) {
 
   return {
     id: subject.id,
+    platform: subject.platform,
     nsfw: subject.subjectNsfw,
     redirect: f.fieldRedirect,
+    locked: subject.locked(),
   };
 }
 

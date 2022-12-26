@@ -16,7 +16,7 @@ export class WikiArrayItem {
 }
 
 export class WikiItem {
-  key?: string;
+  key: string;
   value?: string;
   array?: boolean;
   values?: WikiArrayItem[];

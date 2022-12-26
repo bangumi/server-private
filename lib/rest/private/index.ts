@@ -10,6 +10,7 @@ import { CookieKey } from './routes/login';
 import * as login from './routes/login';
 import * as group from './routes/topic';
 import * as user from './routes/user';
+import * as wiki from './routes/wiki';
 
 export async function setup(app: App) {
   await swagger.privateAPI(app);
@@ -40,4 +41,5 @@ export async function setup(app: App) {
   await app.register(group.setup);
   await app.register(user.setup);
   await app.register(demo.setup, { prefix: '/demo' });
+  await app.register(wiki.setup, { prefix: '/wiki' });
 }
