@@ -37,6 +37,16 @@
     <textarea name='summary' id='summary' style='width: 100%; height: 20vh'>{{ summary }}</textarea>
   </div>
   <br>
+  <div class='row'>
+    <div class='form-group'>
+      <label for='date'
+        >开播日期/连载开始日期/上映时间/发售时间，默认会从 infobox
+        中提取。填写之后会覆盖infobox内置的日期</label
+      >
+      <input class='form-control' type='text' id='date'>
+    </div>
+  </div>
+  <br>
   <div class=' row'>
     <label for='commitMessage'></label>
     <input type='text' id='commitMessage' placeholder='编辑说明'>

@@ -25,6 +25,7 @@ describe('edit subject ', () => {
         infobox: 'i',
         platform: 0,
         summary: 's',
+        date: '0000-00-00',
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
@@ -64,6 +65,7 @@ describe('edit subject ', () => {
         infobox: 'i',
         platform: 0,
         summary: 's',
+        date: '0000-00-00',
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
@@ -92,6 +94,7 @@ describe('edit subject ', () => {
       name: 'n',
       platform: 0,
       subjectID: 1,
+      date: '0000-00-00',
       summary: 's',
       userID: 100,
     });
