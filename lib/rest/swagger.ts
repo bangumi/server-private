@@ -18,7 +18,10 @@ const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
 const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
 
 export function addRoute(app: FastifyInstance) {
-  app.get('/', (_, res) => {
+  app.get('/', (req, res) => {
+    if (!req.url.endsWith('/')) {
+      return res.redirect(req.routerPath + '/');
+    }
     void res.type('text/html').send(swaggerUI);
   });
 

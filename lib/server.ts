@@ -25,6 +25,9 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     opts.requestIdHeader ??= 'cf-ray';
   }
 
+  opts.onProtoPoisoning = 'error';
+  // opts.ignoreTrailingSlash ??= true;
+
   if (opts.ajv?.plugins?.length) {
     opts.ajv.plugins.push(function (ajv: Ajv) {
       ajv.addKeyword({ keyword: 'x-examples' });

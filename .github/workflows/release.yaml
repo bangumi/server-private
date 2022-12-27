@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: echo "VERSION=$(npm version --json|jq .graphql -r)" >> $GITHUB_ENV
+      - run: echo "VERSION=v$(cat package.json | jq .version -r)" >> $GITHUB_ENV
 
       - run: |
           LONG_TAG=${{ hashFiles('yarn.lock') }}
