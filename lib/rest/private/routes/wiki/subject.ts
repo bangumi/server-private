@@ -55,8 +55,8 @@ export const SubjectEdit = t.Object(
     commitMessage: t.String({ minLength: 1 }),
   },
   {
-    $id: 'SubjectEdit',
     examples: [exampleSubjectEdit],
+    $id: 'SubjectEdit',
   },
 );
 
@@ -70,7 +70,7 @@ export async function setup(app: App) {
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'updateSubject',
+        operationId: 'putSubjectInfo',
         description: `暂时只能修改沙盒条目 ${[...SandBox].sort().join(',')}`,
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
@@ -109,6 +109,79 @@ export async function setup(app: App) {
         commitMessage: body.commitMessage,
         platform: body.platform,
         summary: body.summary,
+        userID: auth.userID,
+      });
+    },
+  );
+
+  app.patch(
+    '/subjects/:subjectID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'patchSubjectInfo',
+        description: `暂时只能修改沙盒条目 ${[...SandBox].sort().join(',')}`,
+        params: t.Object({
+          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        body: t.Object(
+          {
+            commitMessage: t.String({ minLength: 1 }),
+            subject: t.Partial(SubjectEdit, {
+              $id: undefined,
+            }),
+          },
+          {
+            examples: [
+              {
+                commitMessage: '修正笔误',
+                subject: { infobox: exampleSubjectEdit.infobox },
+              },
+            ],
+          },
+        ),
+        response: {
+          200: t.Null(),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('editing a subject info')],
+    },
+    async ({
+      auth,
+      body: { commitMessage, subject: input },
+      params: { subjectID },
+    }): Promise<void> => {
+      if (!auth.permission.subject_edit) {
+        throw new NotAllowedError('edit subject');
+      }
+
+      const s = await orm.fetchSubject(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+
+      const {
+        infobox = s.infobox,
+        name = s.name,
+        platform = s.platform,
+        summary = s.summary,
+      }: Partial<Static<typeof SubjectEdit>> = input;
+
+      await Subject.edit({
+        subjectID: subjectID,
+        name: name,
+        infobox: infobox,
+        commitMessage: commitMessage,
+        platform: platform,
+        summary: summary,
         userID: auth.userID,
       });
     },

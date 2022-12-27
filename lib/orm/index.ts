@@ -344,8 +344,11 @@ export async function fetchSubject(id: number) {
 
   return {
     id: subject.id,
+    name: subject.name,
     typeID: subject.typeID,
+    infobox: subject.fieldInfobox,
     platform: subject.platform,
+    summary: subject.fieldSummary,
     nsfw: subject.subjectNsfw,
     redirect: f.fieldRedirect,
     locked: subject.locked(),

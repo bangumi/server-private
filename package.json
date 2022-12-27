@@ -28,7 +28,9 @@
     "ignore": [
       "**.test.ts",
       ".git",
-      "node_modules/**"
+      "node_modules/**",
+      "lib/templates",
+      "lib/static"
     ],
     "watch": [
       "lib",
@@ -87,6 +89,7 @@
   "dependencies": {
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.2.0",
+    "@fastify/static": "^6.6.0",
     "@fastify/swagger": "^8.2.1",
     "@fastify/type-provider-typebox": "^2.4.0",
     "@fastify/view": "^7.3.0",

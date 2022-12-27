@@ -1,0 +1,24 @@
+{% assign title = 'edit' %}
+{% layout 'layout' %}
+
+{% block content %}
+<script src='https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js'></script>
+
+<div class='container mt-5'>
+  <div class='row'>
+    <div id='container' style='width: 800px; height: 600px; border: 1px solid grey'></div>
+  </div>
+  <div class='row'>
+    <input type='text' id='commitMessage' placeholder='简介'>
+  </div>
+  <div class='row'>
+    <button class='btn btn-primary' id='submit'>submit</button>
+  </div>
+</div>
+
+<script>
+  const infobox = ({{ infobox }});
+</script>
+
+<script src='/p1/demo/static/editor.js'></script>
+{% endblock %}
