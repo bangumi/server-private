@@ -18,7 +18,7 @@ export function extractFromString(s: string): string {
 
   for (const pattern of simple_patterns) {
     const m = pattern[Symbol.match](s);
-    if (m && m.groups) {
+    if (m?.groups) {
       year = m.groups.year;
       month = m.groups.month;
       day = m.groups.day;
