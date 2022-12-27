@@ -4,7 +4,7 @@ import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fast
 import { fastify } from 'fastify';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
-import { EntityNotFoundError } from 'typeorm';
+import { TypeORMError } from 'typeorm/error/TypeORMError';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
@@ -46,7 +46,7 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
 
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message
-    if (error instanceof EntityNotFoundError) {
+    if (error instanceof TypeORMError) {
       // Log error
       this.log.error(error);
       // Send error response
