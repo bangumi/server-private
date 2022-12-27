@@ -125,7 +125,7 @@ export async function edit({
         subject_id: subjectID,
       },
       {
-        fieldDate: date ?? extractDate(s.typeID, w),
+        fieldDate: date ?? extractDate(w),
       },
     );
   });
