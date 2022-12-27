@@ -19,11 +19,13 @@ describe('edit subject ', () => {
   });
 
   test('should need authorization', async () => {
-    const payload: ISubjectEdit = {
-      name: 'n',
-      infobox: 'i',
-      platform: 0,
-      summary: 's',
+    const payload = {
+      subject: {
+        name: 'n',
+        infobox: 'i',
+        platform: 0,
+        summary: 's',
+      } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
     const app = createTestServer({
@@ -56,11 +58,13 @@ describe('edit subject ', () => {
   });
 
   test('should update subject', async () => {
-    const payload: ISubjectEdit = {
-      name: 'n',
-      infobox: 'i',
-      platform: 0,
-      summary: 's',
+    const payload = {
+      subject: {
+        name: 'n',
+        infobox: 'i',
+        platform: 0,
+        summary: 's',
+      } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
     const app = createTestServer({

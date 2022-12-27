@@ -42,7 +42,6 @@ const exampleSubjectEdit = {
 普通维基人可以随意编辑条目信息以及相关关联查看编辑效果，但是请不要完全删除沙盒说明并且不要关联非沙盒条目/人物/角色。
 
 https://bgm.tv/group/topic/366812#post_1923517`,
-  commitMessage: '测试编辑',
 };
 
 export type ISubjectEdit = Static<typeof SubjectEdit>;
@@ -52,7 +51,6 @@ export const SubjectEdit = t.Object(
     infobox: t.String({ minLength: 1 }),
     platform: t.Integer(),
     summary: t.String(),
-    commitMessage: t.String({ minLength: 1 }),
   },
   {
     examples: [exampleSubjectEdit],
@@ -76,7 +74,20 @@ export async function setup(app: App) {
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Ref(SubjectEdit, { examples: [exampleSubjectEdit] }),
+        body: t.Object(
+          {
+            commitMessage: t.String({ minLength: 1 }),
+            subject: t.Ref(SubjectEdit),
+          },
+          {
+            examples: [
+              {
+                commitMessage: '修正笔误',
+                subject: exampleSubjectEdit,
+              },
+            ],
+          },
+        ),
         response: {
           200: t.Null(),
           401: t.Ref(res.Error, {
@@ -86,7 +97,11 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('editing a subject info')],
     },
-    async ({ auth, body: input, params: { subjectID } }): Promise<void> => {
+    async ({
+      auth,
+      body: { commitMessage, subject: input },
+      params: { subjectID },
+    }): Promise<void> => {
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
@@ -106,10 +121,10 @@ export async function setup(app: App) {
         subjectID: subjectID,
         name: body.name,
         infobox: body.infobox,
-        commitMessage: body.commitMessage,
         platform: body.platform,
         summary: body.summary,
         userID: auth.userID,
+        commitMessage,
       });
     },
   );
@@ -128,9 +143,7 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
-            subject: t.Partial(SubjectEdit, {
-              $id: undefined,
-            }),
+            subject: t.Partial(SubjectEdit, { $id: undefined }),
           },
           {
             examples: [
