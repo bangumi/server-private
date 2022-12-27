@@ -6,18 +6,50 @@
 
 <div class='container mt-5'>
   <div class='row'>
-    <div id='container' style='width: 800px; height: 600px; border: 1px solid grey'></div>
+    <label for='name'></label>
+    <input type='text' id='name' placeholder='name' value='{{ name }}'>
+  </div>
+  <br>
+  <div class='row'>
+    {% for platform in platforms %}
+      <div class='form-check-inline'>
+        <label class='form-check-label'>
+          <input
+            type='radio'
+            class='form-check-input'
+            name='platform'
+            value='{{ platform.id }}'
+            {% if platformID == platform.id %}
+              checked
+            {% endif %}
+          >
+          {{ platform.type_cn }}
+        </label>
+      </div>
+    {% endfor %}
   </div>
   <div class='row'>
-    <input type='text' id='commitMessage' placeholder='简介'>
+    <div id='infobox' style='width: 100%; height: 50vh; border: 1px solid grey'></div>
   </div>
+  <br>
+  <div class='row'>
+    <label for='summary'></label>
+    <textarea name='summary' id='summary' style='width: 100%; height: 20vh'>{{ summary }}</textarea>
+  </div>
+  <br>
+  <div class=' row'>
+    <label for='commitMessage'></label>
+    <input type='text' id='commitMessage' placeholder='编辑说明'>
+  </div>
+  <br>
   <div class='row'>
     <button class='btn btn-primary' id='submit'>submit</button>
   </div>
 </div>
 
 <script>
-  const infobox = ({{ infobox }});
+  const infobox = ({{ infobox | json }});
+  const subjectID = {{ subjectID }};
 </script>
 
 <script src='/p1/demo/static/editor.js'></script>

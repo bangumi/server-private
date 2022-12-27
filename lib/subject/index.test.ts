@@ -4,8 +4,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { AppDataSource, SubjectRevRepo } from 'app/lib/orm';
 import * as entity from 'app/lib/orm/entity';
 
-import * as Subject from './subject';
-import { SubjectType } from './subject';
+import * as Subject from '.';
+import { SubjectType } from '.';
 
 describe('should update subject', () => {
   const subjectMock = vi.fn();

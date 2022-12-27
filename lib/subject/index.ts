@@ -2,13 +2,15 @@ import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 import { StatusCodes } from 'http-status-codes';
 
+import { logger } from 'app/lib/logger';
+import { AppDataSource } from 'app/lib/orm';
 import * as entity from 'app/lib/orm/entity';
 import wiki from 'app/lib/utils/wiki';
 import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
 import type { Wiki } from 'app/lib/utils/wiki/types';
 
-import { logger } from './logger';
-import { AppDataSource } from './orm';
+import type { Platform } from './platform';
+import platform from './platform';
 
 export const enum SubjectType {
   Unknown = 0,
@@ -134,4 +136,17 @@ export function extractEpisode(w: Wiki): number {
   }
 
   return Number.parseInt(v) || 0;
+}
+
+export function platforms(typeID: SubjectType): Platform[] {
+  const s = platform[typeID];
+  if (s) {
+    return Object.values(s).sort((a, b) => a.id - b.id);
+  }
+
+  return [];
+}
+
+export function platformString(typeID: SubjectType, platformID: number): Platform | undefined {
+  return platform[typeID]?.[platformID];
 }
