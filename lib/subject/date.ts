@@ -1,13 +1,15 @@
 import type { SubjectType } from 'app/lib/subject/index';
 import type { Wiki } from 'app/lib/utils/wiki/types';
 
+const dateKeys = new Set(['放送开始', '集数', '发行日期', '开始']);
+
 export function extractDate(typeID: SubjectType, w: Wiki): string {
   const v = w.data.find((v) => {
-    return ['放送开始', '集数'].includes(v.key);
-  })?.value;
+    return dateKeys.has(v.key);
+  });
 
-  if (!v) {
-    return '0000-00-00';
+  if (v?.value) {
+    return extractFromString(v.value);
   }
 
   return '0000-00-00';
