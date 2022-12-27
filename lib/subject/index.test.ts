@@ -91,7 +91,9 @@ describe('should update subject', () => {
         subject_id: 363612,
       },
       {
-        fieldDate: '1997-11-11',
+        date: '1997-11-11',
+        year: 1997,
+        month: 11,
       },
     );
   });

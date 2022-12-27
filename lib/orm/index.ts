@@ -350,7 +350,7 @@ export async function fetchSubject(id: number) {
     platform: subject.platform,
     summary: subject.fieldSummary,
     nsfw: subject.subjectNsfw,
-    date: f.fieldDate,
+    date: f.date,
     redirect: f.fieldRedirect,
     locked: subject.locked(),
   };

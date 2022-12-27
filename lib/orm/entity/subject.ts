@@ -161,10 +161,10 @@ export class Subject {
 @Index('sort_id', ['fieldTid'], {})
 @Index('subject_airtime', ['fieldAirtime'], {})
 @Index('field_rank', ['fieldRank'], {})
-@Index('field_date', ['fieldDate'], {})
-@Index('field_year_mon', ['fieldYear', 'fieldMon'], {})
-@Index('field_year', ['fieldYear'], {})
-@Index('query_date', ['subject_id', 'fieldDate'], {})
+@Index('field_date', ['date'], {})
+@Index('field_year_mon', ['year', 'month'], {})
+@Index('field_year', ['year'], {})
+@Index('query_date', ['subject_id', 'date'], {})
 @Entity('chii_subject_fields', { schema: 'bangumi' })
 export class SubjectFields {
   @PrimaryGeneratedColumn({
@@ -261,10 +261,10 @@ export class SubjectFields {
   fieldRank!: number;
 
   @Column('year', { name: 'field_year', comment: '放送年份' })
-  fieldYear!: number;
+  year!: number;
 
   @Column('tinyint', { name: 'field_mon', comment: '放送月份' })
-  fieldMon!: number;
+  month!: number;
 
   @Column('tinyint', {
     name: 'field_week_day',
@@ -274,7 +274,7 @@ export class SubjectFields {
   fieldWeekDay!: boolean;
 
   @Column('date', { name: 'field_date', comment: '放送日期' })
-  fieldDate!: string;
+  date!: string;
 
   @Column('mediumint', {
     name: 'field_redirect',
