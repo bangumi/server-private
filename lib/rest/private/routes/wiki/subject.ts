@@ -168,12 +168,26 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
+      if (!Object.keys(input)) {
+        return;
+      }
+
       const {
         infobox = s.infobox,
         name = s.name,
         platform = s.platform,
         summary = s.summary,
       }: Partial<Static<typeof SubjectEdit>> = input;
+
+      if (
+        infobox === s.infobox &&
+        name === s.name &&
+        platform === s.platform &&
+        summary === s.summary
+      ) {
+        // no new data
+        return;
+      }
 
       await Subject.edit({
         subjectID: subjectID,
