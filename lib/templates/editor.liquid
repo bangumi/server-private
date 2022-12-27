@@ -37,6 +37,19 @@
     <textarea name='summary' id='summary' style='width: 100%; height: 20vh'>{{ summary }}</textarea>
   </div>
   <br>
+  <div class='row'>
+    <div class='form-group'>
+      <label for='date'>开播日期/连载开始日期/上映时间/发售时间</label>
+      <input
+        class='form-control'
+        type='text'
+        id='date'
+        placeholder='0000-00-00'
+        value='{{ date | default: '0000-00-00' }}'
+      >
+    </div>
+  </div>
+  <br>
   <div class=' row'>
     <label for='commitMessage'></label>
     <input type='text' id='commitMessage' placeholder='编辑说明'>

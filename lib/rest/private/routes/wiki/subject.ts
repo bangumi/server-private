@@ -50,6 +50,12 @@ export const SubjectEdit = t.Object(
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
     platform: t.Integer(),
+    date: t.Optional(
+      t.String({
+        pattern: String.raw`^\d{4}-\d{2}-\d{2}$`,
+        examples: ['0000-00-00', '2007-01-30'],
+      }),
+    ),
     summary: t.String(),
   },
   {
@@ -122,6 +128,7 @@ export async function setup(app: App) {
         name: body.name,
         infobox: body.infobox,
         platform: body.platform,
+        date: body.date,
         summary: body.summary,
         userID: auth.userID,
         commitMessage,
@@ -190,13 +197,15 @@ export async function setup(app: App) {
         name = s.name,
         platform = s.platform,
         summary = s.summary,
+        date,
       }: Partial<Static<typeof SubjectEdit>> = input;
 
       if (
         infobox === s.infobox &&
         name === s.name &&
         platform === s.platform &&
-        summary === s.summary
+        summary === s.summary &&
+        date === undefined
       ) {
         // no new data
         return;
@@ -209,6 +218,7 @@ export async function setup(app: App) {
         commitMessage: commitMessage,
         platform: platform,
         summary: summary,
+        date,
         userID: auth.userID,
       });
     },

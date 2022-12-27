@@ -1,0 +1,53 @@
+import type { SubjectType } from 'app/lib/subject/index';
+import type { Wiki } from 'app/lib/utils/wiki/types';
+
+export function extractDate(typeID: SubjectType, w: Wiki): string {
+  const v = w.data.find((v) => {
+    return ['放送开始', '集数'].includes(v.key);
+  })?.value;
+
+  if (!v) {
+    return '0000-00-00';
+  }
+
+  return '0000-00-00';
+}
+
+export function extractFromString(s: string): string {
+  let year, month, day;
+
+  for (const pattern of simple_patterns) {
+    const m = pattern[Symbol.match](s);
+    if (m && m.groups) {
+      year = m.groups.year;
+      month = m.groups.month;
+      day = m.groups.day;
+    }
+  }
+
+  if (!year || !month || !day) {
+    return '0000-00-00';
+  }
+
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+}
+
+const simple_patterns = [
+  /((?<year>\d{4})年(?<month>\d{1,2})月(?<day>\d{1,2})日)([^\d号発號]|$)/,
+  /(^[^\d-])(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})\)([^\d-]|$)/,
+  /(^[^\d/])(?<year>\d{4})\/(?<month>\d{1,2})\/(?<day>\d{1,2})\)([^\d/]|$)/,
+  /(^[^\d.])(?<year>\d{4})\.(?<month>\d{1,2})\.(?<day>\d{1,2})\)([^\d.万]|$)/,
+
+  /\((?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})\)$/, // (YYYY-MM-DD)
+  /（(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})）$/, //（YYYY-MM-DD）
+  /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})$/, // YYYY-MM-DD"
+  /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})[ ([（].*$/, // YYYY-MM-DD...
+  /^(?<year>\d{4})年(?<month>\d{1,2})月(?<day>\d{1,2})日/,
+];
+
+const simple_dash_patterns = [
+  new RegExp(String.raw`(^|[^\d])\d{4}-\d{2}-\d{2}$`), // YYYY-MM-DD"
+  new RegExp(String.raw`^\d{4}-\d{2}-\d{2}([^\d]|[ (（]|$)`), // YYYY-MM-DD ***
+  new RegExp(String.raw`\(\d{4}-\d{2}-\d{2}\)$`), // (YYYY-MM-DD)
+  new RegExp(String.raw`（\d{4}-\d{2}-\d{2}）$`), // （YYYY-MM-DD）
+];

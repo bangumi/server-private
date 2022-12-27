@@ -29,6 +29,7 @@ export function setup(app: App) {
         platforms: platforms(s.typeID),
         infobox: s.infobox,
         summary: s.summary,
+        date: s.date,
       });
     },
   );

@@ -5,6 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { logger } from 'app/lib/logger';
 import { AppDataSource } from 'app/lib/orm';
 import * as entity from 'app/lib/orm/entity';
+import { extractDate } from 'app/lib/subject/date';
 import wiki from 'app/lib/utils/wiki';
 import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
 import type { Wiki } from 'app/lib/utils/wiki/types';
@@ -37,6 +38,7 @@ interface Create {
   summary: string;
   commitMessage: string;
   userID: number;
+  date?: string;
   now?: dayjs.Dayjs;
 }
 
@@ -47,6 +49,7 @@ export async function edit({
   platform,
   summary,
   commitMessage,
+  date,
   userID,
   now = dayjs(),
 }: Create): Promise<void> {
@@ -85,6 +88,7 @@ export async function edit({
   await AppDataSource.transaction(async (t) => {
     const SubjectRevRepo = t.getRepository(entity.SubjectRev);
     const SubjectRepo = t.getRepository(entity.Subject);
+    const SubjectFieldRepo = t.getRepository(entity.SubjectFields);
 
     const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
 
@@ -113,6 +117,15 @@ export async function edit({
         fieldSummary: summary,
         fieldInfobox: infobox,
         updatedAt: now.unix(),
+      },
+    );
+
+    await SubjectFieldRepo.update(
+      {
+        subject_id: subjectID,
+      },
+      {
+        fieldDate: date ?? extractDate(s.typeID, w),
       },
     );
   });
