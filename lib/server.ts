@@ -55,6 +55,8 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
         message: 'internal database error, please contact admin',
         statusCode: 500,
       });
+
+      return;
     }
 
     return error;
