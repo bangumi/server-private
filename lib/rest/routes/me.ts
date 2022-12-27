@@ -21,7 +21,9 @@ export async function setup(app: App, { tags = [] }: Option) {
         tags: [Tag.Auth, ...tags],
         response: {
           200: t.Ref(res.User),
-          401: t.Ref(res.Error, { examples: [res.formatError(NeedLoginError())] }),
+          401: t.Ref(res.Error, {
+            examples: [res.formatError(NeedLoginError('get current user'))],
+          }),
         },
       },
     },

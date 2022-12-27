@@ -7,14 +7,27 @@ import NodeCache from 'node-cache';
 import { FindOperator } from 'typeorm';
 
 import { redisPrefix } from 'app/lib/config';
+import type { SingleMessageErrorConstructor } from 'app/lib/error';
 import type { IUser, Permission } from 'app/lib/orm';
 import { fetchPermission, fetchUser, AccessTokenRepo } from 'app/lib/orm';
 import redis from 'app/lib/redis';
 
 const tokenPrefix = 'Bearer ';
-export const NeedLoginError = createError('NEED_LOGIN', 'you need to login before %s', 401);
-export const NotAllowedError = createError('NEED_LOGIN', `you don't have permission to %s`, 401);
-const HeaderInvalidError = createError('AUTHORIZATION_INVALID', '%s', 401);
+export const NeedLoginError: SingleMessageErrorConstructor = createError(
+  'NEED_LOGIN',
+  'you need to login before %s',
+  401,
+);
+export const NotAllowedError: SingleMessageErrorConstructor = createError(
+  'NEED_LOGIN',
+  `you don't have permission to %s`,
+  401,
+);
+const HeaderInvalidError: SingleMessageErrorConstructor = createError(
+  'AUTHORIZATION_INVALID',
+  '%s',
+  401,
+);
 const TokenNotValidError = createError(
   'TOKEN_INVALID',
   "can't find access token or it has been expired",

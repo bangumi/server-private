@@ -2,10 +2,10 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from 'app/lib/auth';
-import { NotFoundError } from 'app/lib/error';
+import { BadRequestError, NotFoundError } from 'app/lib/error';
 import { Security, Tag } from 'app/lib/openapi';
 import * as orm from 'app/lib/orm';
-import { requireLogin } from 'app/lib/pre-handler';
+import { requireLogin } from 'app/lib/rest/hooks/pre-handler';
 import type { App } from 'app/lib/rest/type';
 import * as Subject from 'app/lib/subject';
 import { InvalidWikiSyntaxError, SandBox } from 'app/lib/subject';
@@ -172,17 +172,17 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
+      if (Object.keys(input).length === 0) {
+        return;
+      }
+
       const s = await orm.fetchSubject(subjectID);
       if (!s) {
-        throw new NotFoundError(`subject ${subjectID}`);
+        throw new BadRequestError(`subject ${subjectID}`);
       }
 
       if (s.locked) {
         throw new NotAllowedError('edit a locked subject');
-      }
-
-      if (!Object.keys(input)) {
-        return;
       }
 
       const {

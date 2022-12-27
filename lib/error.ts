@@ -1,9 +1,28 @@
+import type { FastifyError } from '@fastify/error';
 import { createError } from '@fastify/error';
-import httpCodes from 'http-status-codes';
+import httpCodes, { StatusCodes } from 'http-status-codes';
 
-export const NotFoundError = createError('NOT_FOUND', '%s not found', httpCodes.NOT_FOUND);
+/** Type helper to make message argument as required */
+export interface SingleMessageErrorConstructor {
+  new (msg: string): FastifyError & { statusCode: number };
+  (msg: string): FastifyError & { statusCode: number };
+}
 
-export const UnexpectedNotFoundError = createError('UNEXPECTED_NOT_FOUND', '%s not found', 500);
+export const BadRequestError: SingleMessageErrorConstructor = createError(
+  'BAD_REQUEST',
+  '%s',
+  StatusCodes.BAD_REQUEST,
+);
+export const NotFoundError: SingleMessageErrorConstructor = createError(
+  'NOT_FOUND',
+  '%s not found',
+  httpCodes.NOT_FOUND,
+);
+export const UnexpectedNotFoundError: SingleMessageErrorConstructor = createError(
+  'UNEXPECTED_NOT_FOUND',
+  '%s not found',
+  500,
+);
 
 export class UnimplementedError extends Error {
   constructor(msg: string) {

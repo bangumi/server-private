@@ -11,8 +11,8 @@ import { Security, Tag } from 'app/lib/openapi';
 import type { ITopic, IUser, Page, IBaseReply } from 'app/lib/orm';
 import * as orm from 'app/lib/orm';
 import { isMemberInGroup, GroupMemberRepo, GroupRepo } from 'app/lib/orm';
-import { requireLogin } from 'app/lib/pre-handler';
 import { avatar, groupIcon } from 'app/lib/response';
+import { requireLogin } from 'app/lib/rest/hooks/pre-handler';
 import type { App } from 'app/lib/rest/type';
 import * as Topic from 'app/lib/topic';
 import { NotJoinPrivateGroupError, ReplyState } from 'app/lib/topic';
@@ -283,7 +283,7 @@ export async function setup(app: App) {
           404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
             },
           }),
         },
