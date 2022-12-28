@@ -2,8 +2,9 @@ import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 import { StatusCodes } from 'http-status-codes';
 
+import { BadRequestError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
-import { AppDataSource } from '@app/lib/orm';
+import { AppDataSource, SubjectRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { extractDate } from '@app/lib/subject/date';
 import { DATE } from '@app/lib/utils/date';
@@ -58,8 +59,6 @@ export async function edit({
     return;
   }
 
-  logger.info('user %d edit subject %d', userID, subjectID);
-
   let w: Wiki;
   try {
     w = wiki(infobox);
@@ -83,15 +82,23 @@ export async function edit({
     throw error;
   }
 
+  const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
+
+  const availablePlatforms = platforms(s.typeID);
+
+  if (!availablePlatforms.map((x) => x.id).includes(platform)) {
+    throw new BadRequestError('platform not available');
+  }
+
   const nameCN: string = extractNameCN(w);
   const episodes: number = extractEpisode(w);
 
+  logger.info('user %d edit subject %d', userID, subjectID);
+
   await AppDataSource.transaction(async (t) => {
     const SubjectRevRepo = t.getRepository(entity.SubjectRev);
-    const SubjectRepo = t.getRepository(entity.Subject);
     const SubjectFieldRepo = t.getRepository(entity.SubjectFields);
-
-    const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
+    const SubjectRepo = t.getRepository(entity.Subject);
 
     await SubjectRevRepo.insert({
       subjectID,

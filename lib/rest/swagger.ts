@@ -115,7 +115,8 @@ export async function privateAPI(app: FastifyInstance) {
           type: 'apiKey',
           in: 'cookie',
           name: CookieKey,
-          description: '使用 [login](#/auth/login) 登录',
+          description:
+            '使用 [login](#/auth/login2) 调用 API 登录，或者 使用 [demo](/p1/demo/login) 登录',
         },
       },
     },

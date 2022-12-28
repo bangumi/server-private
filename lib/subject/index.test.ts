@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { AppDataSource, SubjectRevRepo } from '@app/lib/orm';
+import { AppDataSource, SubjectRepo, SubjectRevRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 
 import * as Subject from '.';
@@ -12,18 +12,17 @@ describe('should update subject', () => {
   const subjectFieldMock = vi.fn();
   const subjectRevMock = vi.fn();
 
+  vi.spyOn(SubjectRepo, 'findOneByOrFail').mockResolvedValue({
+    typeID: SubjectType.Anime,
+  } as entity.Subject);
+
   vi.spyOn(AppDataSource, 'transaction')
     // @ts-expect-error test, ignore type error
     .mockImplementation(async <T = unknown>(fn: (t: any) => Promise<T>): Promise<T> => {
       return await fn({
         getRepository(t: unknown) {
           if (t === entity.Subject) {
-            return {
-              update: subjectMock,
-              findOneByOrFail() {
-                return Promise.resolve({ typeID: SubjectType.Anime });
-              },
-            };
+            return { update: subjectMock };
           }
 
           if (t === entity.SubjectFields) {
