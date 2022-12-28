@@ -7,7 +7,7 @@ import { Type as t } from '@sinclair/typebox';
 import type { FastifySchema, FastifyInstance } from 'fastify';
 import type { OpenAPIV3 } from 'openapi-types';
 
-import { pkg, projectRoot } from '@app/lib/config';
+import { projectRoot, VERSION } from '@app/lib/config';
 import { Security } from '@app/lib/openapi';
 import * as res from '@app/lib/types/res';
 
@@ -104,7 +104,7 @@ export async function privateAPI(app: FastifyInstance) {
   addRoute(app);
   await addPlugin(app, {
     info: {
-      version: pkg.version,
+      version: VERSION,
       title: 'hello',
       description:
         '关于订阅通知的 socket.io 相关的文档在 <https://github.com/bangumi/GraphQL/blob/master/docs/socket.io.md>',
@@ -127,7 +127,7 @@ export async function publicAPI(app: FastifyInstance) {
   addRoute(app);
   await addPlugin(app, {
     info: {
-      version: pkg.version,
+      version: VERSION,
       title: 'hello',
     },
     components: {
