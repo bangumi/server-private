@@ -8,7 +8,7 @@ import { TypeORMError } from 'typeorm/error/TypeORMError';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
-import { production, stage, testing } from './config';
+import { production, stage, testing, VERSION } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
 import { repo } from './orm';
@@ -63,6 +63,11 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   });
 
   server.decorateRequest('clientIP', '');
+
+  server.addHook('onRequest', (req, res, done) => {
+    void res.header('x-server-version', VERSION);
+    done();
+  });
 
   // eslint-disable-next-line @typescript-eslint/require-await
   server.addHook('preHandler', async (req) => {

@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - v*
+    branches:
+      - master
 
 jobs:
   docker:
@@ -13,12 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: echo "VERSION=v$(cat package.json | jq .version -r)" >> $GITHUB_ENV
-
-      - run: |
-          LONG_TAG=${{ hashFiles('yarn.lock') }}
-
-          echo "TAG_HASH=2-${LONG_TAG:0:10}" >> $GITHUB_ENV
+        with:
+          fetch-depth: 0
 
       - uses: docker/login-action@v2
         with:
@@ -27,18 +25,41 @@ jobs:
           password: ${{ github.token }}
 
       - run: |
-          if ! docker pull ${{ env.IMAGE }}:base-${TAG_HASH}; then
+          export "TAG_HASH=2-${LONG_TAG:0:10}"
+
+          if ! docker pull "${IMAGE}:base-${TAG_HASH}"; then
             echo "build base docker image"
-            docker build -t ${{ env.IMAGE }}:base-${TAG_HASH} -f etc/base.dockerfile .
-            docker push ${{ env.IMAGE }}:base-${TAG_HASH}
+            docker build -t "${IMAGE}:base-${TAG_HASH}" -f etc/base.dockerfile .
+            docker push "${IMAGE}:base-${TAG_HASH}"
           fi
 
-          docker tag ${{ env.IMAGE }}:base-${TAG_HASH} base-image
+          docker tag "${IMAGE}:base-${TAG_HASH}" base-image
+
+        env:
+          LONG_TAG: "${{ hashFiles('yarn.lock') }}"
         name: build base docker image
 
-      - name: docker build
-        run: docker build -t ${{ env.IMAGE }}:latest -f etc/main.dockerfile .
+      - run: echo "REF=$(git describe --match='v*')" >> $GITHUB_ENV
 
-      - run: docker tag  '${{ env.IMAGE }}:latest' '${{ env.IMAGE }}:${{ env.VERSION }}'
-      - run: docker push '${{ env.IMAGE }}:latest'
-      - run: docker push '${{ env.IMAGE }}:${{ env.VERSION }}'
+      - name: docker build
+        run: docker build --build-arg "ARG_REF=${REF}" -t current -f etc/main.dockerfile .
+
+      - if: "${{ !startsWith(github.ref, 'refs/tags/') }}"
+        name: push master
+        run: |
+          docker tag current "${IMAGE}:master"
+          docker push "${IMAGE}:master"
+
+      - name: push latest tag
+        if: "${{ startsWith(github.ref, 'refs/tags/') }}"
+        run: |
+          export "VERSION=v$(cat package.json | jq .version -r)"
+          docker tag current "${IMAGE}:latest"
+          docker tag current "${IMAGE}:${VERSION}"
+          docker push "${IMAGE}:latest"
+          docker push "${IMAGE}:${VERSION}"
+
+      - name: push described tag
+        run: |
+          docker tag current "${IMAGE}:${REF}"
+          docker push "${IMAGE}:${REF}"

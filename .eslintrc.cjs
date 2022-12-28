@@ -67,6 +67,7 @@ module.exports = {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
     '@typescript-eslint/object-curly-spacing': ['error', 'always'],
     '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+    '@typescript-eslint/prefer-nullish-coalescing': 'off',
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {
