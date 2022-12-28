@@ -4,6 +4,7 @@ import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fast
 import { fastify } from 'fastify';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
+import { TypeORMError } from 'typeorm/error/TypeORMError';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
@@ -26,7 +27,6 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   }
 
   opts.onProtoPoisoning = 'error';
-  // opts.ignoreTrailingSlash ??= true;
 
   if (opts.ajv?.plugins?.length) {
     opts.ajv.plugins.push(function (ajv: Ajv) {
@@ -43,6 +43,24 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   }
 
   const server = fastify(opts);
+
+  server.setErrorHandler(function (error, request, reply) {
+    // hide TypeORM message
+    if (error instanceof TypeORMError) {
+      // Log error
+      this.log.error(error);
+      // Send error response
+      void reply.status(500).send({
+        error: 'Internal Server Error',
+        message: 'internal database error, please contact admin',
+        statusCode: 500,
+      });
+
+      return;
+    }
+
+    return error;
+  });
 
   server.decorateRequest('clientIP', '');
 

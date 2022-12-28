@@ -1,6 +1,7 @@
 import { NotFoundError } from 'app/lib/error';
 import * as orm from 'app/lib/orm';
 import type { App } from 'app/lib/rest/type';
+import { platforms } from 'app/lib/subject';
 
 export function setup(app: App) {
   app.get(
@@ -21,7 +22,15 @@ export function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      await res.view('editor', { subjectID, infobox: JSON.stringify(s.infobox) });
+      await res.view('editor', {
+        subjectID,
+        name: s.name,
+        platformID: s.platform,
+        platforms: platforms(s.typeID),
+        infobox: s.infobox,
+        summary: s.summary,
+        date: s.date,
+      });
     },
   );
 }

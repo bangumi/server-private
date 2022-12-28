@@ -4,11 +4,12 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { AppDataSource, SubjectRevRepo } from 'app/lib/orm';
 import * as entity from 'app/lib/orm/entity';
 
-import * as Subject from './subject';
-import { SubjectType } from './subject';
+import * as Subject from '.';
+import { SubjectType } from '.';
 
 describe('should update subject', () => {
   const subjectMock = vi.fn();
+  const subjectFieldMock = vi.fn();
   const subjectRevMock = vi.fn();
 
   vi.spyOn(AppDataSource, 'transaction')
@@ -23,6 +24,10 @@ describe('should update subject', () => {
                 return Promise.resolve({ typeID: SubjectType.Anime });
               },
             };
+          }
+
+          if (t === entity.SubjectFields) {
+            return { update: subjectFieldMock };
           }
 
           if (t == entity.SubjectRev) {
@@ -48,6 +53,7 @@ describe('should update subject', () => {
       summary: 'summary summary 2',
       userID: 2,
       platform: 3,
+      date: '1997-11-11',
       commitMessage: 'cm',
       now,
     });
@@ -77,6 +83,17 @@ describe('should update subject', () => {
         nameCN: '',
         platform: 3,
         updatedAt: now.unix(),
+      },
+    );
+
+    expect(subjectFieldMock).toBeCalledWith(
+      {
+        subject_id: 363612,
+      },
+      {
+        date: '1997-11-11',
+        year: 1997,
+        month: 11,
       },
     );
   });

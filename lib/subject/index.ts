@@ -2,13 +2,17 @@ import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 import { StatusCodes } from 'http-status-codes';
 
+import { logger } from 'app/lib/logger';
+import { AppDataSource } from 'app/lib/orm';
 import * as entity from 'app/lib/orm/entity';
+import { extractDate } from 'app/lib/subject/date';
+import { DATE } from 'app/lib/utils/date';
 import wiki from 'app/lib/utils/wiki';
 import { WikiSyntaxError } from 'app/lib/utils/wiki/error';
 import type { Wiki } from 'app/lib/utils/wiki/types';
 
-import { logger } from './logger';
-import { AppDataSource } from './orm';
+import type { Platform } from './platform';
+import platform from './platform';
 
 export const enum SubjectType {
   Unknown = 0,
@@ -35,6 +39,7 @@ interface Create {
   summary: string;
   commitMessage: string;
   userID: number;
+  date?: string;
   now?: dayjs.Dayjs;
 }
 
@@ -45,6 +50,7 @@ export async function edit({
   platform,
   summary,
   commitMessage,
+  date,
   userID,
   now = dayjs(),
 }: Create): Promise<void> {
@@ -83,6 +89,7 @@ export async function edit({
   await AppDataSource.transaction(async (t) => {
     const SubjectRevRepo = t.getRepository(entity.SubjectRev);
     const SubjectRepo = t.getRepository(entity.Subject);
+    const SubjectFieldRepo = t.getRepository(entity.SubjectFields);
 
     const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
 
@@ -113,6 +120,19 @@ export async function edit({
         updatedAt: now.unix(),
       },
     );
+
+    const d = DATE.parse(date ?? extractDate(w));
+
+    await SubjectFieldRepo.update(
+      {
+        subject_id: subjectID,
+      },
+      {
+        date: d.toString(),
+        year: d.year,
+        month: d.month,
+      },
+    );
   });
 }
 
@@ -134,4 +154,17 @@ export function extractEpisode(w: Wiki): number {
   }
 
   return Number.parseInt(v) || 0;
+}
+
+export function platforms(typeID: SubjectType): Platform[] {
+  const s = platform[typeID];
+  if (s) {
+    return Object.values(s).sort((a, b) => a.id - b.id);
+  }
+
+  return [];
+}
+
+export function platformString(typeID: SubjectType, platformID: number): Platform | undefined {
+  return platform[typeID]?.[platformID];
 }
