@@ -1,6 +1,6 @@
 {
   "name": "@app/lib",
-  "version": "0.0.78",
+  "version": "0.0.79",
   "description": "",
   "private": true,
   "type": "module",
