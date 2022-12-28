@@ -1,3 +1,5 @@
+import wiki, { WikiSyntaxError } from '@bgm38/wiki';
+import type { Wiki } from '@bgm38/wiki';
 import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 import { StatusCodes } from 'http-status-codes';
@@ -8,9 +10,6 @@ import { AppDataSource, SubjectRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { extractDate } from '@app/lib/subject/date';
 import { DATE } from '@app/lib/utils/date';
-import wiki from '@app/lib/utils/wiki';
-import { WikiSyntaxError } from '@app/lib/utils/wiki/error';
-import type { Wiki } from '@app/lib/utils/wiki/types';
 
 import type { Platform } from './platform';
 import platform from './platform';
