@@ -43,10 +43,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bgm38/wiki@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@bgm38/wiki/-/wiki-0.0.6.tgz#0503bd2a0b627c5551e10f185ebe8fa46dcf6662"
-  integrity sha512-G1f4pPGaJui10iDz/EfFvCFIuUpR+qHTYWuNFTJkq7gNqIziGOndSrNGxgCEeuCuoCoGLwPMMMAtWT2jNVp6Vg==
+"@bgm38/wiki@^0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@bgm38/wiki/-/wiki-0.0.7.tgz#dc09993870328f3386195ef1dd81d3903aaca8d2"
+  integrity sha512-lq42Sn5kZ4M5NZ2tbd7QP6XqlUpR5Xw5jJoT9/NhsiwaXwIE841dfn2aFZOvxNzpu2tk+7RqNMYKAiRkfdG2LA==
 
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
