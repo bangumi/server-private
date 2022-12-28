@@ -25,7 +25,7 @@ export const enum SubjectType {
 }
 
 export const InvalidWikiSyntaxError = createError(
-  'INVALID_ERROR_SYNTAX',
+  'INVALID_SYNTAX_ERROR',
   '%s',
   StatusCodes.BAD_REQUEST,
 );
