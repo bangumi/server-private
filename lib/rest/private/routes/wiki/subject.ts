@@ -4,6 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
+import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
@@ -135,6 +136,73 @@ export async function setup(app: App) {
         nsfw: s.nsfw,
         typeID: s.typeID,
       };
+    },
+  );
+
+  type IHistorySummary = Static<typeof HistorySummary>;
+  const HistorySummary = t.Object(
+    {
+      creator: t.Object({
+        username: t.String(),
+      }),
+      type: t.Integer({
+        description: '修改类型。`1` 正常修改， `11` 合并，`103` 锁定/解锁 `104` 未知',
+      }),
+      commitMessage: t.String(),
+      createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+    },
+    { $id: 'HistorySummary' },
+  );
+
+  app.addSchema(HistorySummary);
+
+  app.get(
+    '/subjects/:subjectID/history-summary',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectEditHistorySummary',
+        description: [
+          '获取当前的 wiki 信息',
+          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
+        ].join('\n\n'),
+        params: t.Object({
+          subjectID: t.Integer({ examples: [8], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Array(t.Ref(HistorySummary)),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+    },
+    async ({ params: { subjectID } }): Promise<IHistorySummary[]> => {
+      const history = await SubjectRevRepo.find({
+        take: 10,
+        order: { id: 'desc' },
+        where: { subjectID },
+      });
+
+      if (history.length === 0) {
+        return [];
+      }
+
+      const users = await orm.fetchUsers(history.map((x) => x.creatorID));
+
+      return history.map((x) => {
+        const u = users[x.creatorID];
+
+        return {
+          creator: {
+            username: u?.username ?? '',
+          },
+          type: x.type,
+          createdAt: x.createdAt,
+          commitMessage: x.commitMessage,
+        } satisfies IHistorySummary;
+      });
     },
   );
 

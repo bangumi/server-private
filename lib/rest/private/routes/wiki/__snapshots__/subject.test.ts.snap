@@ -66,3 +66,88 @@ Object {
   "typeID": 2,
 }
 `;
+
+exports[`edit subject  > should get edit history 1`] = `
+Array [
+  Object {
+    "commitMessage": "",
+    "createdAt": 1570720134,
+    "creator": Object {
+      "username": "",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "添加别名",
+    "createdAt": 1522689610,
+    "creator": Object {
+      "username": "79290",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "",
+    "createdAt": 1430296495,
+    "creator": Object {
+      "username": "189074",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "修正笔误",
+    "createdAt": 1417061160,
+    "creator": Object {
+      "username": "26862",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "内容扩充",
+    "createdAt": 1364576814,
+    "creator": Object {
+      "username": "130027",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "",
+    "createdAt": 1357187180,
+    "creator": Object {
+      "username": "104510",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "",
+    "createdAt": 1336751754,
+    "creator": Object {
+      "username": "9023",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "简介修正",
+    "createdAt": 1325596293,
+    "creator": Object {
+      "username": "8766",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "",
+    "createdAt": 1285863983,
+    "creator": Object {
+      "username": "8025",
+    },
+    "type": 1,
+  },
+  Object {
+    "commitMessage": "合并恢复版本",
+    "createdAt": 1272719723,
+    "creator": Object {
+      "username": "1",
+    },
+    "type": 1,
+  },
+]
+`;
