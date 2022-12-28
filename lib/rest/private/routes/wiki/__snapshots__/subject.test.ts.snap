@@ -1,0 +1,68 @@
+// Vitest Snapshot v1
+
+exports[`edit subject  > should get current wiki info 1`] = `
+Object {
+  "availablePlatform": Array [
+    Object {
+      "id": 0,
+      "text": "其他",
+    },
+    Object {
+      "id": 1,
+      "text": "TV",
+    },
+    Object {
+      "id": 2,
+      "text": "OVA",
+    },
+    Object {
+      "id": 3,
+      "text": "剧场版",
+    },
+    Object {
+      "id": 5,
+      "text": "WEB",
+    },
+  ],
+  "id": 8,
+  "infobox": "{{Infobox animanga/TVAnime
+|中文名= Code Geass 反叛的鲁路修R2
+|别名={
+[叛逆的鲁路修R2]
+[Code Geass: Hangyaku no Lelouch R2]
+[叛逆的勒鲁什R2]
+[叛逆的鲁鲁修R2]
+[コードギアス 反逆のルルーシュR2]
+[Code Geass: Lelouch of the Rebellion R2]
+[叛逆的勒路什R2]
+}
+|话数= 25
+|放送开始= 2008年4月6日
+|放送星期= 
+|官方网站= http://www.geass.jp/r2/
+|播放电视台= 每日放送
+|其他电视台= 
+|播放结束= 2008年9月28日
+|其他= 
+|Copyright= （C）2006 SUNRISE inc./MBS
+|导演= 谷口悟朗
+|系列构成= 大河内一楼
+|人物原案= CLAMP
+|人物设定= 木村貴宏
+|美术监督= 菱沼由典
+|色彩设计= 岩沢れい子
+|摄影监督= 大矢創太
+|音响监督= 浦上靖夫、井澤基
+|音乐= 中川幸太郎、黒石ひとみ
+|音乐制作= AUDIO PLANNING U
+|动画制作= サンライズ
+}}",
+  "name": "コードギアス 反逆のルルーシュR2",
+  "nsfw": false,
+  "platform": 1,
+  "summary": "　　“东京决战”一年后，布里塔尼亚少年鲁路修在11区（原日本国）过着平凡的学生生活。但是，鲁路修与弟弟罗洛的一次出行，遇到了黑色骑士团的余党。在与少女C.C再次结成契约之后，尘封的记忆摆在了鲁路修的面前。
+　　身为帝国王子的鲁路修，为了建立人人平等的世界、让妹妹娜娜丽幸福的世界，而使用GEASS，令人绝对服从的力量，带领黑色骑士团向帝国宣战。带上假面化名ZERO的他，却在一年前的“东京决战”中被好友朱雀击败，被帝国皇帝抹去了记忆。
+　　现在，恢复记忆的鲁路修不仅要面对帝国的强大军事力量，更要面对虚假的弟弟罗洛、失踪的妹妹娜娜丽、不知敌友的中华联盟、内部出现分歧的黑色骑士团。面对内忧外患，鲁路修走上了GEASS之力的诅咒——孤独的王之路。 ",
+  "typeID": 2,
+}
+`;

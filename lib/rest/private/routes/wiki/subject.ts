@@ -8,7 +8,7 @@ import * as orm from '@app/lib/orm';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as Subject from '@app/lib/subject';
-import { InvalidWikiSyntaxError, SandBox } from '@app/lib/subject';
+import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
 
@@ -64,10 +64,79 @@ export const SubjectEdit = t.Object(
   },
 );
 
+const Platform = t.Object(
+  {
+    id: t.Integer(),
+    text: t.String(),
+  },
+  { $id: 'WikiPlatform' },
+);
+
+export const SubjectWikiInfo = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    typeID: t.Integer(),
+    infobox: t.String(),
+    platform: t.Integer(),
+    availablePlatform: t.Array(t.Ref(Platform)),
+    summary: t.String(),
+    nsfw: t.Boolean(),
+  },
+  { $id: 'SubjectWikiInfo' },
+);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
+  app.addSchema(Platform);
+  app.addSchema(SubjectWikiInfo);
+
+  app.get(
+    '/subjects/:subjectID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectInfo',
+        description: [
+          '获取当前的 wiki 信息',
+          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
+        ].join('\n\n'),
+        params: t.Object({
+          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Ref(SubjectWikiInfo),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+    },
+    async ({ params: { subjectID } }): Promise<Static<typeof SubjectWikiInfo>> => {
+      const s = await orm.fetchSubject(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+
+      return {
+        id: s.id,
+        name: s.name,
+        infobox: s.infobox,
+        summary: s.summary,
+        platform: s.platform,
+        availablePlatform: platforms(s.typeID).map((x) => ({ id: x.id, text: x.type_cn })),
+        nsfw: s.nsfw,
+        typeID: s.typeID,
+      };
+    },
+  );
 
   app.put(
     '/subjects/:subjectID',

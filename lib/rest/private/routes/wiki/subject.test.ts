@@ -18,6 +18,15 @@ describe('edit subject ', () => {
     editSubject.mockReset();
   });
 
+  test('should get current wiki info', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should need authorization', async () => {
     const payload = {
       subject: {
