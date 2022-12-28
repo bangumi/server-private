@@ -1,16 +1,16 @@
 import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 
-import { NeedLoginError } from 'app/lib/auth';
-import * as session from 'app/lib/auth/session';
-import { UnexpectedNotFoundError } from 'app/lib/error';
-import * as Notify from 'app/lib/notify';
-import { Security, Tag } from 'app/lib/openapi';
-import { fetchUsers } from 'app/lib/orm';
-import { Subscriber } from 'app/lib/redis';
-import type { App } from 'app/lib/rest/type';
-import { Paged } from 'app/lib/types/res';
-import * as res from 'app/lib/types/res';
+import { NeedLoginError } from '@app/lib/auth';
+import * as session from '@app/lib/auth/session';
+import { UnexpectedNotFoundError } from '@app/lib/error';
+import * as Notify from '@app/lib/notify';
+import { Security, Tag } from '@app/lib/openapi';
+import { fetchUsers } from '@app/lib/orm';
+import { Subscriber } from '@app/lib/redis';
+import type { App } from '@app/lib/rest/type';
+import { Paged } from '@app/lib/types/res';
+import * as res from '@app/lib/types/res';
 
 import { userToResCreator } from './topic';
 

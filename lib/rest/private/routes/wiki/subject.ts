@@ -1,16 +1,16 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { NotAllowedError } from 'app/lib/auth';
-import { BadRequestError, NotFoundError } from 'app/lib/error';
-import { Security, Tag } from 'app/lib/openapi';
-import * as orm from 'app/lib/orm';
-import { requireLogin } from 'app/lib/rest/hooks/pre-handler';
-import type { App } from 'app/lib/rest/type';
-import * as Subject from 'app/lib/subject';
-import { InvalidWikiSyntaxError, SandBox } from 'app/lib/subject';
-import * as res from 'app/lib/types/res';
-import { formatErrors } from 'app/lib/types/res';
+import { NotAllowedError } from '@app/lib/auth';
+import { BadRequestError, NotFoundError } from '@app/lib/error';
+import { Security, Tag } from '@app/lib/openapi';
+import * as orm from '@app/lib/orm';
+import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
+import type { App } from '@app/lib/rest/type';
+import * as Subject from '@app/lib/subject';
+import { InvalidWikiSyntaxError, SandBox } from '@app/lib/subject';
+import * as res from '@app/lib/types/res';
+import { formatErrors } from '@app/lib/types/res';
 
 const exampleSubjectEdit = {
   name: '沙盒',

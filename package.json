@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "@app/lib",
   "version": "0.0.78",
   "description": "",
   "private": true,
@@ -10,7 +10,7 @@
   },
   "exports": {
     "./*": {
-      "import": "./*"
+      "import": "./lib/*"
     }
   },
   "scripts": {

@@ -1,4 +1,4 @@
-import type { Wiki } from 'app/lib/utils/wiki/types';
+import type { Wiki } from '@app/lib/utils/wiki/types';
 
 const dateKeys = new Set(['放送开始', '发行日期', '开始']);
 

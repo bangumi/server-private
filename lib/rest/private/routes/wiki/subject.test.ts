@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { UserGroup } from 'app/lib/auth';
-import * as Subject from 'app/lib/subject';
-import { createTestServer } from 'app/tests/utils';
+import { UserGroup } from '@app/lib/auth';
+import * as Subject from '@app/lib/subject';
+import { createTestServer } from '@app/tests/utils';
 
 import { setup } from './subject';
 import type { ISubjectEdit } from './subject';

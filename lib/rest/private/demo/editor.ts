@@ -1,7 +1,7 @@
-import { NotFoundError } from 'app/lib/error';
-import * as orm from 'app/lib/orm';
-import type { App } from 'app/lib/rest/type';
-import { platforms } from 'app/lib/subject';
+import { NotFoundError } from '@app/lib/error';
+import * as orm from '@app/lib/orm';
+import type { App } from '@app/lib/rest/type';
+import { platforms } from '@app/lib/subject';
 
 export function setup(app: App) {
   app.get(

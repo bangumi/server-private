@@ -2,8 +2,6 @@ const path = require('path');
 
 const rulesDirPlugin = require('eslint-plugin-rulesdir');
 
-require('eslint-plugin-import/lib/rules/order');
-
 rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint');
 
 module.exports = {

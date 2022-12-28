@@ -7,9 +7,9 @@ import { Type as t } from '@sinclair/typebox';
 import type { FastifySchema, FastifyInstance } from 'fastify';
 import type { OpenAPIV3 } from 'openapi-types';
 
-import { pkg, projectRoot } from 'app/lib/config';
-import { Security } from 'app/lib/openapi';
-import * as res from 'app/lib/types/res';
+import { pkg, projectRoot } from '@app/lib/config';
+import { Security } from '@app/lib/openapi';
+import * as res from '@app/lib/types/res';
 
 import { CookieKey } from './private/routes/login';
 

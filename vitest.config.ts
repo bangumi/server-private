@@ -10,7 +10,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
-      app: __dirname,
+      '@app': __dirname,
     },
     extensions: ['.js', '.ts'],
   },
