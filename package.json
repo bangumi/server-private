@@ -11,7 +11,7 @@
   "scripts": {
     "format": "prettier -w ./",
     "lint": "eslint --ext ts ./",
-    "start": "NODE_OPTIONS=\"-r dotenv/config --enable-source-maps\" tsx watch --clear-screen=false ./lib/main.ts",
+    "start": "NODE_OPTIONS=\"-r dotenv/config --enable-source-maps\" tsx watch --ignore='**.test.ts' --ignore=./lib/templates/ --ignore=./lib/static/ --clear-screen=false ./lib/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
     "run-file": "tsx",
