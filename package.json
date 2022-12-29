@@ -18,31 +18,6 @@
     "e": "tsx",
     "prepare": "husky install"
   },
-  "nodemonConfig": {
-    "restartable": "rs",
-    "ignore": [
-      "**.test.ts",
-      ".git",
-      "node_modules/**",
-      "lib/templates",
-      "lib/static"
-    ],
-    "watch": [
-      "lib",
-      "package.json",
-      "tsconfig.json",
-      ".env"
-    ],
-    "delay": 1000,
-    "execMap": {
-      "ts": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader --enable-source-maps"
-    },
-    "env": {
-      "NODE_ENV": "development",
-      "REF": "development"
-    },
-    "ext": "ts,js,json,html"
-  },
   "author": "",
   "license": "MIT",
   "devDependencies": {
