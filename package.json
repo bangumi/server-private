@@ -94,7 +94,6 @@
     "pino-pretty": "^9.1.1",
     "prom-client": "^14.1.0",
     "proxy-agent": "^5.0.0",
-    "re2": "^1.18.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.5.4",
     "tsx": "^3.12.1",

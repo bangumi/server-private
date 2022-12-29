@@ -1,6 +1,4 @@
 /** 敏感词过滤 */
-import RE2 from 're2';
-
 import { fileConfig } from './config';
 
 const controlPattern = /[\u200B-\u200F\u202A-\u202E\uFEFF]/;
@@ -12,21 +10,21 @@ interface Option {
 }
 
 export class Dam {
-  private readonly nsfwWord: RE2 | undefined;
-  private readonly disableWord: RE2 | undefined;
-  private readonly bannedDomain: RE2 | undefined;
+  private readonly nsfwWord: RegExp | undefined;
+  private readonly disableWord: RegExp | undefined;
+  private readonly bannedDomain: RegExp | undefined;
 
   constructor({ banned_domain, disabled_words, nsfw_word }: Option) {
     if (nsfw_word) {
-      this.nsfwWord = new RE2(nsfw_word);
+      this.nsfwWord = new RegExp(nsfw_word);
     }
 
     if (disabled_words) {
-      this.disableWord = new RE2(disabled_words);
+      this.disableWord = new RegExp(disabled_words);
     }
 
     if (banned_domain) {
-      this.bannedDomain = new RE2(banned_domain);
+      this.bannedDomain = new RegExp(banned_domain);
     }
   }
 
