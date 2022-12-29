@@ -1,9 +1,9 @@
 import type { FastifyInstance } from 'fastify';
 
-import * as auth from 'app/lib/auth';
-import { emptyAuth } from 'app/lib/auth';
-import * as me from 'app/lib/rest/routes/me';
-import * as swagger from 'app/lib/rest/swagger';
+import * as auth from '@app/lib/auth';
+import { emptyAuth } from '@app/lib/auth';
+import * as me from '@app/lib/rest/routes/me';
+import * as swagger from '@app/lib/rest/swagger';
 
 import * as userApi from './routes/user';
 

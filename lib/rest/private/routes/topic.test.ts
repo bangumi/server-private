@@ -2,14 +2,14 @@ import dayjs from 'dayjs';
 import { fastify } from 'fastify';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import type { IAuth } from 'app/lib/auth';
-import { UserGroup } from 'app/lib/auth';
-import * as Notify from 'app/lib/notify';
-import * as orm from 'app/lib/orm';
-import { createServer } from 'app/lib/server';
-import * as Topic from 'app/lib/topic';
-import { ReplyState } from 'app/lib/topic';
-import { createTestServer } from 'app/tests/utils';
+import type { IAuth } from '@app/lib/auth';
+import { UserGroup } from '@app/lib/auth';
+import * as Notify from '@app/lib/notify';
+import * as orm from '@app/lib/orm';
+import { createServer } from '@app/lib/server';
+import * as Topic from '@app/lib/topic';
+import { ReplyState } from '@app/lib/topic';
+import { createTestServer } from '@app/tests/utils';
 
 import * as topicAPI from './topic';
 

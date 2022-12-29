@@ -1,5 +1,5 @@
-import type { IReply } from 'app/lib/orm';
-import { ReplyState } from 'app/lib/topic';
+import type { IReply } from '@app/lib/orm';
+import { ReplyState } from '@app/lib/topic';
 
 import type { IAuth } from './index';
 

@@ -2,11 +2,11 @@ import process from 'node:process';
 
 import { pino } from 'pino';
 
-import { pkg, production } from './config';
+import { production, VERSION } from './config';
 
 export const logger = pino({
   level: 'info',
-  base: production ? { pid: process.pid, version: pkg.version } : undefined,
+  base: production ? { pid: process.pid, version: VERSION } : undefined,
   timestamp() {
     return `,"time":"${new Date().toISOString()}"`;
   },

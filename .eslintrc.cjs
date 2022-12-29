@@ -2,8 +2,6 @@ const path = require('path');
 
 const rulesDirPlugin = require('eslint-plugin-rulesdir');
 
-require('eslint-plugin-import/lib/rules/order');
-
 rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint');
 
 module.exports = {
@@ -70,6 +68,7 @@ module.exports = {
     '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
     '@typescript-eslint/object-curly-spacing': ['error', 'always'],
     '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+    '@typescript-eslint/prefer-nullish-coalescing': 'off',
     '@typescript-eslint/member-delimiter-style': [
       'error',
       {

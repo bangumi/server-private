@@ -10,7 +10,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console
   console.log('check ./lib/config.ts for all available env');
   // eslint-disable-next-line n/no-process-exit,unicorn/no-process-exit
-  process.exit(0);
+  process.exit();
 }
 
 const server = await createServer({

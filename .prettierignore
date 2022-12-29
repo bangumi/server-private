@@ -1,7 +1,4 @@
-lib/generated/
 dist/
 *.graphql
 coverage/
 .husky/_/
-*.hbs
-lib/utils/wiki/__test__/wiki-syntax-spec

@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import { beforeEach, expect, test, afterEach } from 'vitest';
 
-import { emptyAuth } from 'app/lib/auth';
-import * as Notify from 'app/lib/notify';
-import { NotifyFieldRepo, NotifyRepo } from 'app/lib/orm';
-import { createTestServer } from 'app/tests/utils';
+import { emptyAuth } from '@app/lib/auth';
+import * as Notify from '@app/lib/notify';
+import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm';
+import { createTestServer } from '@app/tests/utils';
 
 import { setup } from './user';
 

@@ -23,7 +23,7 @@ module.exports = {
         if (node.source.value.startsWith('../')) {
           const dstPath = path.resolve(path.dirname(filename), node.source.value);
           const should = posix.normalize(
-            posix.join('app', path.relative(rootDir, dstPath).replaceAll('\\', '/')),
+            posix.join('@app', path.relative(rootDir, dstPath).replaceAll('\\', '/')),
           );
 
           context.report({

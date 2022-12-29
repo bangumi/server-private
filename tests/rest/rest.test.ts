@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { createServer } from 'app/lib/server';
+import { createServer } from '@app/lib/server';
 
 describe('rest', () => {
   test('should return null user', async () => {

@@ -1,6 +1,6 @@
 {
-  "name": "app",
-  "version": "0.0.78",
+  "name": "graphql",
+  "version": "0.0.81",
   "description": "",
   "private": true,
   "type": "module",
@@ -8,44 +8,15 @@
   "engines": {
     "node": "^18.0.0"
   },
-  "exports": {
-    "./*": {
-      "import": "./*"
-    }
-  },
   "scripts": {
     "format": "prettier -w ./",
     "lint": "eslint --ext ts ./",
-    "start": "nodemon",
+    "start": "NODE_OPTIONS=\"-r dotenv/config --enable-source-maps\" tsx watch --ignore='**.test.ts' --ignore=./lib/templates/ --ignore=./lib/static/ --clear-screen=false ./lib/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
-    "run-file": "node --no-warnings -r dotenv/config --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
-    "e": "node --no-warnings --loader=ts-node/esm --experimental-specifier-resolution=node --enable-source-maps",
+    "run-file": "tsx",
+    "e": "tsx",
     "prepare": "husky install"
-  },
-  "nodemonConfig": {
-    "restartable": "rs",
-    "ignore": [
-      "**.test.ts",
-      ".git",
-      "node_modules/**",
-      "lib/templates",
-      "lib/static"
-    ],
-    "watch": [
-      "lib",
-      "package.json",
-      "tsconfig.json",
-      ".env"
-    ],
-    "delay": 1000,
-    "execMap": {
-      "ts": "node --no-warnings -r dotenv/config --loader ts-node/esm --experimental-specifier-resolution=node --enable-source-maps"
-    },
-    "env": {
-      "NODE_ENV": "development"
-    },
-    "ext": "ts,js,json,html"
   },
   "author": "",
   "license": "MIT",
@@ -61,6 +32,8 @@
     "@vitest/coverage-c8": "^0.26.2",
     "@vitest/ui": "^0.26.2",
     "dotenv": "^16.0.3",
+    "esbuild": "^0.16.12",
+    "esbuild-register": "^3.4.2",
     "eslint": "^8.30.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^3.5.2",
@@ -77,16 +50,18 @@
     "ioredis-mock": "^8.2.2",
     "lint-staged": "^13.1.0",
     "mercurius-integration-testing": "^6.0.1",
-    "nodemon": "^2.0.20",
     "p-limit": "^4.0.0",
     "prettier": "^2.8.1",
     "prettier-plugin-jsdoc": "^0.4.2",
     "prettier-plugin-sh": "^0.12.8",
+    "typescript": "^4.9.4",
     "vite": "^4.0.3",
     "vitest": "^0.26.2",
     "vitest-github-actions-reporter": "^0.9.0"
   },
   "dependencies": {
+    "@bgm38/wiki": "^0.0.7",
+    "@esbuild-kit/esm-loader": "^2.5.4",
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.2.0",
     "@fastify/static": "^6.6.0",
@@ -119,12 +94,10 @@
     "pino-pretty": "^9.1.1",
     "prom-client": "^14.1.0",
     "proxy-agent": "^5.0.0",
-    "re2": "^1.18.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.5.4",
-    "ts-node": "^10.9.1",
-    "typeorm": "^0.3.11",
-    "typescript": "^4.9.4"
+    "tsx": "^3.12.1",
+    "typeorm": "^0.3.11"
   },
   "prettier": {
     "plugins": [

@@ -36,10 +36,12 @@ const {
   MYSQL_USER,
   MYSQL_PASS,
   MYSQL_DB = 'bangumi',
+  REF,
 } = process.env;
 
 export const production = NODE_ENV === 'production';
 export const stage = NODE_ENV === 'stage';
+export const developing = NODE_ENV === 'development';
 export const testing = NODE_ENV === 'test';
 
 export const projectRoot = url.fileURLToPath(new URL('..', import.meta.url));
@@ -61,6 +63,8 @@ export const redisOption = {
   password,
   lazyConnect: true,
 } satisfies RedisOptions;
+
+export const VERSION = developing ? 'development' : REF || pkg.version;
 
 export {
   HTTPS_PROXY,

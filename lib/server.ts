@@ -8,7 +8,7 @@ import { TypeORMError } from 'typeorm/error/TypeORMError';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
-import { production, stage, testing } from './config';
+import { production, stage, testing, VERSION } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
 import { repo } from './orm';
@@ -16,7 +16,7 @@ import * as rest from './rest';
 
 declare module 'fastify' {
   interface FastifyRequest {
-    // use clientIp provided by cloudflare
+    /** ClientIp provided by cloudflare */
     clientIP: string;
   }
 }
@@ -45,24 +45,26 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   const server = fastify(opts);
 
   server.setErrorHandler(function (error, request, reply) {
+    request.clientIP;
     // hide TypeORM message
     if (error instanceof TypeORMError) {
-      // Log error
       this.log.error(error);
-      // Send error response
       void reply.status(500).send({
         error: 'Internal Server Error',
         message: 'internal database error, please contact admin',
         statusCode: 500,
       });
-
-      return;
+    } else {
+      void reply.send(error);
     }
-
-    return error;
   });
 
   server.decorateRequest('clientIP', '');
+
+  server.addHook('onRequest', (req, res, done) => {
+    void res.header('x-server-version', VERSION);
+    done();
+  });
 
   // eslint-disable-next-line @typescript-eslint/require-await
   server.addHook('preHandler', async (req) => {

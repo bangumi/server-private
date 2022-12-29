@@ -1,16 +1,17 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { NotAllowedError } from 'app/lib/auth';
-import { BadRequestError, NotFoundError } from 'app/lib/error';
-import { Security, Tag } from 'app/lib/openapi';
-import * as orm from 'app/lib/orm';
-import { requireLogin } from 'app/lib/rest/hooks/pre-handler';
-import type { App } from 'app/lib/rest/type';
-import * as Subject from 'app/lib/subject';
-import { InvalidWikiSyntaxError, SandBox } from 'app/lib/subject';
-import * as res from 'app/lib/types/res';
-import { formatErrors } from 'app/lib/types/res';
+import { NotAllowedError } from '@app/lib/auth';
+import { BadRequestError, NotFoundError } from '@app/lib/error';
+import { Security, Tag } from '@app/lib/openapi';
+import { SubjectRevRepo } from '@app/lib/orm';
+import * as orm from '@app/lib/orm';
+import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
+import type { App } from '@app/lib/rest/type';
+import * as Subject from '@app/lib/subject';
+import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
+import * as res from '@app/lib/types/res';
+import { formatErrors } from '@app/lib/types/res';
 
 const exampleSubjectEdit = {
   name: '沙盒',
@@ -64,10 +65,146 @@ export const SubjectEdit = t.Object(
   },
 );
 
+const Platform = t.Object(
+  {
+    id: t.Integer(),
+    text: t.String(),
+  },
+  { $id: 'WikiPlatform' },
+);
+
+export const SubjectWikiInfo = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    typeID: t.Integer(),
+    infobox: t.String(),
+    platform: t.Integer(),
+    availablePlatform: t.Array(t.Ref(Platform)),
+    summary: t.String(),
+    nsfw: t.Boolean(),
+  },
+  { $id: 'SubjectWikiInfo' },
+);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
+  app.addSchema(Platform);
+  app.addSchema(SubjectWikiInfo);
+
+  app.get(
+    '/subjects/:subjectID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectInfo',
+        description: [
+          '获取当前的 wiki 信息',
+          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
+        ].join('\n\n'),
+        params: t.Object({
+          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Ref(SubjectWikiInfo),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+    },
+    async ({ params: { subjectID } }): Promise<Static<typeof SubjectWikiInfo>> => {
+      const s = await orm.fetchSubject(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+
+      return {
+        id: s.id,
+        name: s.name,
+        infobox: s.infobox,
+        summary: s.summary,
+        platform: s.platform,
+        availablePlatform: platforms(s.typeID).map((x) => ({ id: x.id, text: x.type_cn })),
+        nsfw: s.nsfw,
+        typeID: s.typeID,
+      };
+    },
+  );
+
+  type IHistorySummary = Static<typeof HistorySummary>;
+  const HistorySummary = t.Object(
+    {
+      creator: t.Object({
+        username: t.String(),
+      }),
+      type: t.Integer({
+        description: '修改类型。`1` 正常修改， `11` 合并，`103` 锁定/解锁 `104` 未知',
+      }),
+      commitMessage: t.String(),
+      createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+    },
+    { $id: 'HistorySummary' },
+  );
+
+  app.addSchema(HistorySummary);
+
+  app.get(
+    '/subjects/:subjectID/history-summary',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectEditHistorySummary',
+        description: [
+          '获取当前的 wiki 信息',
+          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
+        ].join('\n\n'),
+        params: t.Object({
+          subjectID: t.Integer({ examples: [8], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Array(t.Ref(HistorySummary)),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+    },
+    async ({ params: { subjectID } }): Promise<IHistorySummary[]> => {
+      const history = await SubjectRevRepo.find({
+        take: 10,
+        order: { id: 'desc' },
+        where: { subjectID },
+      });
+
+      if (history.length === 0) {
+        return [];
+      }
+
+      const users = await orm.fetchUsers(history.map((x) => x.creatorID));
+
+      return history.map((x) => {
+        const u = users[x.creatorID];
+
+        return {
+          creator: {
+            username: u?.username ?? '',
+          },
+          type: x.type,
+          createdAt: x.createdAt,
+          commitMessage: x.commitMessage,
+        } satisfies IHistorySummary;
+      });
+    },
+  );
 
   app.put(
     '/subjects/:subjectID',

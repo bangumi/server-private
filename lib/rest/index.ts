@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 
-import type { IAuth } from 'app/lib/auth';
-import { logger } from 'app/lib/logger';
+import type { IAuth } from '@app/lib/auth';
+import { logger } from '@app/lib/logger';
 
 import * as privateAPI from './private';
 import * as publicAPI from './public';

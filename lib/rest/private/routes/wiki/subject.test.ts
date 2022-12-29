@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { UserGroup } from 'app/lib/auth';
-import * as Subject from 'app/lib/subject';
-import { createTestServer } from 'app/tests/utils';
+import { UserGroup } from '@app/lib/auth';
+import * as Subject from '@app/lib/subject';
+import { createTestServer } from '@app/tests/utils';
 
 import { setup } from './subject';
 import type { ISubjectEdit } from './subject';
@@ -16,6 +16,24 @@ describe('edit subject ', () => {
 
   afterEach(() => {
     editSubject.mockReset();
+  });
+
+  test('should get current wiki info', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get edit history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
   });
 
   test('should need authorization', async () => {

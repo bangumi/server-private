@@ -1,4 +1,4 @@
-import type { App } from 'app/lib/rest/type';
+import type { App } from '@app/lib/rest/type';
 
 import * as subject from './subject';
 

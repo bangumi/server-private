@@ -1,7 +1,7 @@
+import type { Wiki } from '@bgm38/wiki';
 import { test, expect } from 'vitest';
 
-import { extractDate, extractFromString } from 'app/lib/subject/date';
-import type { Wiki } from 'app/lib/utils/wiki/types';
+import { extractDate, extractFromString } from '@app/lib/subject/date';
 
 test.each([
   ['', '0000-00-00'],

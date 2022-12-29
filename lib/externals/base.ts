@@ -3,7 +3,7 @@ import { Options } from 'got';
 import * as got from 'got';
 import ProxyAgent from 'proxy-agent';
 
-import { HTTPS_PROXY } from 'app/lib/config';
+import { HTTPS_PROXY } from '@app/lib/config';
 
 export class WithHttpClient {
   protected readonly client: got.Got;

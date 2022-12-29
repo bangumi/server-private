@@ -4,11 +4,11 @@ import { fastifyStatic } from '@fastify/static';
 import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
-import { production, projectRoot, TURNSTILE_SITE_KEY } from 'app/lib/config';
-import * as Notify from 'app/lib/notify';
-import { fetchUser } from 'app/lib/orm';
-import { avatar } from 'app/lib/response';
-import type { App } from 'app/lib/rest/type';
+import { production, projectRoot, TURNSTILE_SITE_KEY } from '@app/lib/config';
+import * as Notify from '@app/lib/notify';
+import { fetchUser } from '@app/lib/orm';
+import { avatar } from '@app/lib/response';
+import type { App } from '@app/lib/rest/type';
 
 import * as editor from './editor';
 

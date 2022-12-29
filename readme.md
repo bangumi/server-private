@@ -15,6 +15,16 @@ fastify + TypeORM + mercurius + nexus
 
 <https://next.bgm.tv/p1/>
 
+## 开发
+
+复制 `.env.example` 到 `.env`，并且根据自己的开发环境设置相关的环境变量。
+
+```shell
+yarn start
+```
+
+在文件修改后会自动重启。
+
 ## 测试
 
 jest 对于 esm 的支持不好，所以使用 vitest 作为测试框架。
