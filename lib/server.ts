@@ -16,7 +16,7 @@ import * as rest from './rest';
 
 declare module 'fastify' {
   interface FastifyRequest {
-    // use clientIp provided by cloudflare
+    /** ClientIp provided by cloudflare */
     clientIP: string;
   }
 }
@@ -45,6 +45,7 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   const server = fastify(opts);
 
   server.setErrorHandler(function (error, request, reply) {
+    request.clientIP;
     // hide TypeORM message
     if (error instanceof TypeORMError) {
       this.log.error(error);
