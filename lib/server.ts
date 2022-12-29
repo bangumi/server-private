@@ -47,19 +47,15 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message
     if (error instanceof TypeORMError) {
-      // Log error
       this.log.error(error);
-      // Send error response
       void reply.status(500).send({
         error: 'Internal Server Error',
         message: 'internal database error, please contact admin',
         statusCode: 500,
       });
-
-      return;
+    } else {
+      void reply.send(error);
     }
-
-    return error;
   });
 
   server.decorateRequest('clientIP', '');
