@@ -55,24 +55,47 @@ type Timeline =
   | { batch: boolean; cat: TimelineCat.Relation; id: number; type: 0; memo: RelationMemo }
   | { batch: boolean; cat: TimelineCat.Relation; id: number; type: 1 | 5; memo: string }
   | { batch: boolean; cat: TimelineCat.Relation; id: number; type: 2 | 3 | 4; memo: GroupMemo }
-  | { batch: false; cat: TimelineCat.Wiki; id: number; type: 0; memo: WikiMemo }
-  | { batch: false; cat: TimelineCat.Subject; id: number; type: 0; memo: SubjectMemo }
-  | { batch: false; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
-  | { batch: false; cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
+  // cat=2
+  | {
+      batch: boolean;
+      cat: TimelineCat.Wiki;
+      id: number;
+      type: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+      memo: WikiMemo;
+    }
+  // cat=3
+  | { batch: boolean; cat: TimelineCat.Subject; id: number; type: number; memo: SubjectMemo }
+  // | { batch: true; cat: TimelineCat.Subject; id: number; type: 0; memo: SubjectMemo }
+  | { batch: boolean; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
+  | { batch: boolean; cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
   | { batch: boolean; cat: TimelineCat.Say; id: number; type: 2; memo: RenameMemo }
   | { batch: boolean; cat: TimelineCat.Say; id: number; type: 0 | 1; memo: string }
-  | { batch: boolean; cat: TimelineCat.Blog; id: number; type: 0; memo: BlogMemo }
-  | { batch: boolean; cat: TimelineCat.Index; id: number; type: 0; memo: IndexMemo }
-  | { batch: boolean; cat: TimelineCat.Mono; id: number; type: 0; memo: MonoMemo }
+  | { batch: boolean; cat: TimelineCat.Blog; id: number; type: 0 | 1; memo: BlogMemo }
+  // cat=7
+  | { batch: boolean; cat: TimelineCat.Index; id: number; type: 0 | 1; memo: IndexMemo }
+  // cat=8
+  | { batch: boolean; cat: TimelineCat.Mono; id: number; type: 0 | 1; memo: MonoMemo }
   | { batch: boolean; cat: TimelineCat.Doujin; id: number; type: 1 | 3 | 0; memo: DoujinMemo }
   | { batch: boolean; cat: TimelineCat.Doujin; id: number; type: 5 | 6; memo: DoujinType5Memo }
-  | { batch: true; cat: TimelineCat.Wiki; id: number; type: 0; memo: WikiMemo }
-  | { batch: true; cat: TimelineCat.Subject; id: number; type: 0; memo: SubjectMemo }
-  | { batch: true; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
-  | { batch: true; cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
-  | { batch: true; cat: TimelineCat.Blog; id: number; type: 0; memo: BlogMemo }
+  // | { batch: true; cat: TimelineCat.Wiki; id: number; type: 0; memo: WikiMemo }
+  // | { batch: true; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
+  // | { batch: true; cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
+  // | { batch: true; cat: TimelineCat.Blog; id: number; type: 0; memo: BlogMemo }
   | { batch: true; cat: TimelineCat.Index; id: number; type: 0; memo: IndexMemo }
   | { batch: true; cat: TimelineCat.Mono; id: number; type: 0; memo: MonoMemo };
+
+const batchAble: Record<TimelineCat, Set<number>> = {
+  [TimelineCat.Unknown]: new Set([]),
+  [TimelineCat.Relation]: new Set([1, 2, 3, 4, 5]),
+  [TimelineCat.Wiki]: new Set([]),
+  [TimelineCat.Subject]: new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]),
+  [TimelineCat.Progress]: new Set([]),
+  [TimelineCat.Say]: new Set([]),
+  [TimelineCat.Blog]: new Set([]),
+  [TimelineCat.Index]: new Set([]),
+  [TimelineCat.Mono]: new Set([1, 8]),
+  [TimelineCat.Doujin]: new Set([1, 3, 9]),
+};
 
 const ajv = new Ajv({
   strict: true,
@@ -82,6 +105,7 @@ const ajv = new Ajv({
 /** -1 type as match all */
 const validator: Record<TimelineCat, Record<number, ValidateFunction>> = {
   [TimelineCat.Unknown]: {},
+  // 1
   [TimelineCat.Relation]: {
     1: ajv.compile(t.String()),
     2: ajv.compile(Relation),
@@ -89,13 +113,17 @@ const validator: Record<TimelineCat, Record<number, ValidateFunction>> = {
     4: ajv.compile(Group),
     5: ajv.compile(t.String()),
   },
+  // 2
   [TimelineCat.Wiki]: {
     0: ajv.compile(Wiki),
     1: ajv.compile(Wiki),
     2: ajv.compile(Wiki),
     3: ajv.compile(Wiki),
     4: ajv.compile(Wiki),
+    5: ajv.compile(Wiki),
+    6: ajv.compile(Wiki),
   },
+  // 3
   [TimelineCat.Subject]: {
     [-1]: ajv.compile(Subject),
     0: ajv.compile(Subject),
@@ -103,26 +131,35 @@ const validator: Record<TimelineCat, Record<number, ValidateFunction>> = {
     6: ajv.compile(Subject),
     13: ajv.compile(Subject),
   },
+  // 4
   [TimelineCat.Progress]: {
     0: ajv.compile(Progress),
     1: ajv.compile(Progress2),
     2: ajv.compile(Progress2),
     3: ajv.compile(Progress2),
   },
+  // 5
   [TimelineCat.Say]: {
     0: ajv.compile(t.String()),
     1: ajv.compile(t.String()),
     2: ajv.compile(Rename),
   },
+  // 6
   [TimelineCat.Blog]: {
     0: ajv.compile(Blog),
     1: ajv.compile(Blog),
   },
-  [TimelineCat.Index]: { 0: ajv.compile(Index) },
+  // 7
+  [TimelineCat.Index]: {
+    0: ajv.compile(Index),
+    1: ajv.compile(Index),
+  },
+  // 8
   [TimelineCat.Mono]: {
     0: ajv.compile(Mono),
     1: ajv.compile(Mono),
   },
+  // 9
   [TimelineCat.Doujin]: {
     [-1]: ajv.compile(Doujin),
     0: ajv.compile(Doujin),
@@ -139,43 +176,39 @@ export class UnknownTimelineError extends Error {}
 export function convertFromOrm(s: entity.Timeline): Timeline | null {
   const batch = Boolean(s.tmlBatch);
 
-  if (s.cat === TimelineCat.Relation) {
+  const cat = s.cat;
+  const type = s.type;
+
+  if (cat === TimelineCat.Relation) {
     // 1
     const tl = convertRelationOrm(s);
     if (tl) {
       return tl;
     }
-  } else if (s.cat === TimelineCat.Say) {
-    // 2
-    if (2 === s.type) {
-      return {
-        cat: TimelineCat.Say,
-        type: s.type,
-        memo: php.unserialize(s.memo) as RenameMemo,
-        id: s.id,
-        batch,
-      };
-    } else if (s.type === 1 || s.type === 0) {
-      return { cat: TimelineCat.Say, type: s.type, memo: s.memo, id: s.id, batch: false };
-    }
-  } else if (s.cat === TimelineCat.Wiki) {
+  } else if (cat === TimelineCat.Wiki) {
     // 2
     const memo = php.unserialize(s.memo) as WikiMemo;
     // if (typeof memo.subject_id === 'string') {
     //   memo.subject_id = parseInt(memo.subject_id);
     // }
-    return { cat: s.cat, type: 0, memo: memo, id: s.id, batch };
-  } else if (s.cat === TimelineCat.Subject) {
+    if (
+      type === 0 ||
+      type === 1 ||
+      type === 2 ||
+      type === 3 ||
+      type === 4 ||
+      type === 5 ||
+      type === 6
+    ) {
+      return { cat, type, memo: memo, id: s.id, batch };
+    }
+  } else if (cat === TimelineCat.Subject) {
     // 3
     const memo = php.unserialize(s.memo) as SubjectMemo;
-    return { cat: s.cat, type: 0, memo: memo, id: s.id, batch };
-  } else if (s.cat === TimelineCat.Index) {
-    // 7
-    const memo = php.unserialize(s.memo) as IndexMemo;
-    return { cat: s.cat, type: 0, memo: memo, id: s.id, batch };
+    return { cat, type, memo: memo, id: s.id, batch };
   } else if (s.cat === TimelineCat.Progress) {
     // 4
-    if (s.type === 0) {
+    if (type === 0) {
       const memo = php.unserialize(s.memo) as ProgressMemo;
       // @ts-expect-error 需要清洗数据
       if (memo.eps_total === '??') {
@@ -186,40 +219,50 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
         memo.vols_total = undefined;
       }
 
-      // for (const [key, value] of Object.entries(memo)) {
-      //   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      //   if (value === null) {
-      //     // @ts-expect-error php null
-      //     memo[key] = undefined;
-      //   }
-      // }
-
-      return { cat: s.cat, type: s.type, memo, id: s.id, batch };
-    } else if (s.type === 2 || s.type === 1 || s.type === 3) {
+      return { cat, type, memo, id: s.id, batch };
+    } else if (type === 2 || type === 1 || type === 3) {
       const memo = php.unserialize(s.memo) as Progress2Memo;
-      return { cat: s.cat, type: s.type, memo, id: s.id, batch };
+      return { cat, type, memo, id: s.id, batch };
     }
-  } else if (s.cat === TimelineCat.Mono || s.cat === TimelineCat.Blog) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    return { cat: s.cat, type: s.type as 0, memo: php.unserialize(s.memo), id: s.id, batch };
+  } else if (cat === TimelineCat.Say) {
+    // 5
+    if (2 === type) {
+      return {
+        cat: TimelineCat.Say,
+        type,
+        memo: php.unserialize(s.memo) as RenameMemo,
+        id: s.id,
+        batch,
+      };
+    } else if (type === 1 || type === 0) {
+      return { cat, type, memo: s.memo, id: s.id, batch: false };
+    }
+  } else if (cat === TimelineCat.Blog) {
+    // 6
+    if (type === 0 || type === 1) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return { cat, type: type, memo: php.unserialize(s.memo), id: s.id, batch };
+    }
+  } else if (s.cat === TimelineCat.Index) {
+    // 7
+    const memo = php.unserialize(s.memo) as IndexMemo;
+    if (type === 0 || type === 1) {
+      return { cat, type, memo: memo, id: s.id, batch };
+    }
+  } else if (cat === TimelineCat.Mono) {
+    // 8
+    if (type === 0 || type === 1) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return { cat, type: type, memo: php.unserialize(s.memo), id: s.id, batch };
+    }
   } else if (s.cat === TimelineCat.Doujin) {
-    // if (!batch) {
-    //   const memo = php.unserialize(s.memo) as DoujinMemo;
-    //   return { cat: s.cat, type: s.type as 0, memo: memo, id: s.id, batch };
-    // } else {
-    //   const memoDict = php.unserialize(s.memo) as Record<number, DoujinMemo>;
-    // }
-    if (s.type === 0 || s.type === 1 || s.type === 3) {
+    if (type === 0 || type === 1 || type === 3) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
-    } else if (s.type === 5 || s.type === 6) {
+      return { cat, type, memo: php.unserialize(s.memo), id: s.id, batch };
+    } else if (type === 5 || type === 6) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
+      return { cat, type, memo: php.unserialize(s.memo), id: s.id, batch };
     }
-  }
-
-  if ([2832006].includes(s.id)) {
-    return null;
   }
 
   throw new UnknownTimelineError(
@@ -269,6 +312,9 @@ export function validate(t: Timeline) {
   }
 
   if (t.batch) {
+    if (!batchAble[t.cat].has(t.type)) {
+      throw new Error(`not batch-able (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true)`);
+    }
     for (const memo of Object.values(t.memo)) {
       if (validate(memo)) {
         return;

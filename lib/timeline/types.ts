@@ -43,7 +43,9 @@ export const Index = t.Object(
   { additionalProperties: false },
 );
 
-const relation = t.Object(
+/** Cat=TimelineType.Relation && type == 2 */
+export type RelationMemo = Static<typeof Relation>;
+export const Relation = t.Object(
   {
     uid: t.Integer(),
     username: t.String(),
@@ -51,12 +53,10 @@ const relation = t.Object(
   },
   { additionalProperties: false },
 );
+// const group = /;
 
-/** Cat=TimelineType.Relation && type == 2 */
-export type RelationMemo = Static<typeof Relation>;
-export const Relation = t.Union([t.Record(t.String(), relation), relation]);
-
-const group = t.Object(
+export type GroupMemo = Static<typeof Group>;
+export const Group = t.Object(
   {
     grp_id: t.Optional(t.String()),
     grp_name: t.String(),
@@ -65,9 +65,6 @@ const group = t.Object(
   },
   { additionalProperties: false },
 );
-
-export type GroupMemo = Static<typeof Group>;
-export const Group = t.Union([t.Record(t.String(), group), group]);
 
 export type BlogMemo = Static<typeof Blog>;
 export const Blog = t.Object(
@@ -121,6 +118,7 @@ export const Rename = t.Object(
   { additionalProperties: false },
 );
 
+// cat=3
 export type SubjectMemo = Static<typeof Subject>;
 export const Subject = t.Object(
   {
@@ -130,7 +128,7 @@ export const Subject = t.Object(
     subject_name_cn: t.String(),
     subject_series: t.Optional(t.String()),
     collect_comment: t.Optional(t.String()),
-    collect_rate: t.Optional(t.Integer({ maximum: 10, minimum: 0 })),
+    collect_rate: t.Optional(t.Integer()),
   },
   { additionalProperties: false },
 );
