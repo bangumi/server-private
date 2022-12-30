@@ -4,7 +4,7 @@ import { expect, test } from 'vitest';
 import { TimelineRepo } from '@app/lib/orm';
 import type { Timeline } from '@app/lib/orm/entity';
 
-import { timeline } from './index';
+import * as timeline from './index';
 
 test('fetch all', async () => {
   let looped = false;

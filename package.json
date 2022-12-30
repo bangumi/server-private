@@ -15,7 +15,7 @@
     "test": "vitest --run",
     "vitest": "vitest",
     "run-file": "tsx",
-    "e": "tsx",
+    "e": "NODE_OPTIONS=\"-r dotenv/config --enable-source-maps\" tsx",
     "prepare": "husky install"
   },
   "author": "",
