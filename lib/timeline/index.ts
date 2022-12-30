@@ -180,7 +180,10 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
     // }
     if (s.type === 0) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch: true };
+      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
+    } else if (s.type === 3) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
     }
   } else if (s.cat === TimelineCat.Progress) {
     if (s.type === 0) {
