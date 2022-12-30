@@ -60,12 +60,12 @@ type Timeline =
   | { batch: false; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
   | { batch: false; cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
   | { batch: boolean; cat: TimelineCat.Say; id: number; type: 2; memo: RenameMemo }
-  | { batch: boolean; cat: TimelineCat.Say; id: number; type: 0; memo: string }
+  | { batch: boolean; cat: TimelineCat.Say; id: number; type: 0 | 1; memo: string }
   | { batch: boolean; cat: TimelineCat.Blog; id: number; type: 0; memo: BlogMemo }
   | { batch: boolean; cat: TimelineCat.Index; id: number; type: 0; memo: IndexMemo }
   | { batch: boolean; cat: TimelineCat.Mono; id: number; type: 0; memo: MonoMemo }
   | { batch: boolean; cat: TimelineCat.Doujin; id: number; type: 1 | 3 | 0; memo: DoujinMemo }
-  | { batch: boolean; cat: TimelineCat.Doujin; id: number; type: 5; memo: DoujinType5Memo }
+  | { batch: boolean; cat: TimelineCat.Doujin; id: number; type: 5 | 6; memo: DoujinType5Memo }
   | { batch: true; cat: TimelineCat.Wiki; id: number; type: 0; memo: WikiMemo }
   | { batch: true; cat: TimelineCat.Subject; id: number; type: 0; memo: SubjectMemo }
   | { batch: true; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
@@ -140,11 +140,13 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
   const batch = Boolean(s.tmlBatch);
 
   if (s.cat === TimelineCat.Relation) {
+    // 1
     const tl = convertRelationOrm(s);
     if (tl) {
       return tl;
     }
   } else if (s.cat === TimelineCat.Say) {
+    // 2
     if (2 === s.type) {
       return {
         cat: TimelineCat.Say,
@@ -153,39 +155,26 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
         id: s.id,
         batch,
       };
-    } else if (s.type === 0) {
+    } else if (s.type === 1 || s.type === 0) {
       return { cat: TimelineCat.Say, type: s.type, memo: s.memo, id: s.id, batch: false };
     }
   } else if (s.cat === TimelineCat.Wiki) {
+    // 2
     const memo = php.unserialize(s.memo) as WikiMemo;
     // if (typeof memo.subject_id === 'string') {
     //   memo.subject_id = parseInt(memo.subject_id);
     // }
     return { cat: s.cat, type: 0, memo: memo, id: s.id, batch };
   } else if (s.cat === TimelineCat.Subject) {
+    // 3
     const memo = php.unserialize(s.memo) as SubjectMemo;
     return { cat: s.cat, type: 0, memo: memo, id: s.id, batch };
   } else if (s.cat === TimelineCat.Index) {
+    // 7
     const memo = php.unserialize(s.memo) as IndexMemo;
-    // if (typeof memo.idx_id === 'string') {
-    //   memo.idx_id = parseInt(memo.idx_id);
-    // }
     return { cat: s.cat, type: 0, memo: memo, id: s.id, batch };
-  } else if (s.cat === TimelineCat.Doujin) {
-    // if (!batch) {
-    //   const memo = php.unserialize(s.memo) as DoujinMemo;
-    //   return { cat: s.cat, type: s.type as 0, memo: memo, id: s.id, batch };
-    // } else {
-    //   const memoDict = php.unserialize(s.memo) as Record<number, DoujinMemo>;
-    // }
-    if (s.type === 0 || s.type === 1 || s.type === 3) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
-    } else if (s.type === 5) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
-    }
   } else if (s.cat === TimelineCat.Progress) {
+    // 4
     if (s.type === 0) {
       const memo = php.unserialize(s.memo) as ProgressMemo;
       // @ts-expect-error 需要清洗数据
@@ -213,6 +202,20 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
   } else if (s.cat === TimelineCat.Mono || s.cat === TimelineCat.Blog) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { cat: s.cat, type: s.type as 0, memo: php.unserialize(s.memo), id: s.id, batch };
+  } else if (s.cat === TimelineCat.Doujin) {
+    // if (!batch) {
+    //   const memo = php.unserialize(s.memo) as DoujinMemo;
+    //   return { cat: s.cat, type: s.type as 0, memo: memo, id: s.id, batch };
+    // } else {
+    //   const memoDict = php.unserialize(s.memo) as Record<number, DoujinMemo>;
+    // }
+    if (s.type === 0 || s.type === 1 || s.type === 3) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
+    } else if (s.type === 5 || s.type === 6) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
+    }
   }
 
   if ([2832006].includes(s.id)) {
