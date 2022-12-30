@@ -1,12 +1,14 @@
 import { Type as t } from '@sinclair/typebox';
-import Ajv from 'ajv';
 import type { ValidateFunction } from 'ajv';
 import * as lodash from 'lodash-es';
 import * as php from 'php-serialize';
 
 import { logger } from '@app/lib/logger';
 import type * as entity from '@app/lib/orm/entity';
+import { TimelineCat } from '@app/lib/timeline/cat';
+import { imageValidator } from '@app/lib/timeline/image';
 
+import { ajv } from './ajv';
 import type {
   BlogMemo,
   DoujinMemo,
@@ -36,25 +38,31 @@ import {
   Wiki,
 } from './types';
 
-/** 在数据库中存为 timeline cat 根据 type 还分为不同的类型 */
-const enum TimelineCat {
-  Unknown = 0,
-  Relation = 1, // add friends, join group
-  Wiki = 2,
-  Subject = 3,
-  Progress = 4,
-  /** Type = 2 时为 [SayEditMemo] 其他类型则是 string */
-  Say = 5,
-  Blog = 6,
-  Index = 7,
-  Mono = 8,
-  Doujin = 9,
-}
-
 type Timeline =
-  | { batch: boolean; cat: TimelineCat.Relation; id: number; type: 0; memo: RelationMemo }
-  | { batch: boolean; cat: TimelineCat.Relation; id: number; type: 1 | 5; memo: string }
-  | { batch: boolean; cat: TimelineCat.Relation; id: number; type: 2 | 3 | 4; memo: GroupMemo }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Relation;
+      id: number;
+      type: 0;
+      memo: RelationMemo;
+      image: unknown;
+    }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Relation;
+      id: number;
+      type: 1 | 5;
+      memo: string;
+      image: unknown;
+    }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Relation;
+      id: number;
+      type: 2 | 3 | 4;
+      memo: GroupMemo;
+      image: unknown;
+    }
   // cat=2
   | {
       batch: boolean;
@@ -62,27 +70,84 @@ type Timeline =
       id: number;
       type: 0 | 1 | 2 | 3 | 4 | 5 | 6;
       memo: WikiMemo;
+      image: unknown;
     }
   // cat=3
-  | { batch: boolean; cat: TimelineCat.Subject; id: number; type: number; memo: SubjectMemo }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Subject;
+      id: number;
+      type: number;
+      memo: SubjectMemo;
+      image: unknown;
+    }
   // | { batch: true; cat: TimelineCat.Subject; id: number; type: 0; memo: SubjectMemo }
-  | { batch: boolean; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
-  | { batch: boolean; cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
-  | { batch: boolean; cat: TimelineCat.Say; id: number; type: 2; memo: RenameMemo }
-  | { batch: boolean; cat: TimelineCat.Say; id: number; type: 0 | 1; memo: string }
-  | { batch: boolean; cat: TimelineCat.Blog; id: number; type: 0 | 1; memo: BlogMemo }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Progress;
+      id: number;
+      type: 0;
+      memo: ProgressMemo;
+      image: unknown;
+    }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Progress;
+      id: number;
+      type: 1 | 2 | 3;
+      memo: Progress2Memo;
+      image: unknown;
+    }
+  | { batch: boolean; cat: TimelineCat.Say; id: number; type: 2; memo: RenameMemo; image: unknown }
+  | { batch: boolean; cat: TimelineCat.Say; id: number; type: 0 | 1; memo: string; image: unknown }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Blog;
+      id: number;
+      type: 0 | 1;
+      memo: BlogMemo;
+      image: unknown;
+    }
   // cat=7
-  | { batch: boolean; cat: TimelineCat.Index; id: number; type: 0 | 1; memo: IndexMemo }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Index;
+      id: number;
+      type: 0 | 1;
+      memo: IndexMemo;
+      image: unknown;
+    }
   // cat=8
-  | { batch: boolean; cat: TimelineCat.Mono; id: number; type: 0 | 1; memo: MonoMemo }
-  | { batch: boolean; cat: TimelineCat.Doujin; id: number; type: 1 | 3 | 0; memo: DoujinMemo }
-  | { batch: boolean; cat: TimelineCat.Doujin; id: number; type: 5 | 6; memo: DoujinType5Memo }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Mono;
+      id: number;
+      type: 0 | 1;
+      memo: MonoMemo;
+      image: unknown;
+    }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Doujin;
+      id: number;
+      type: 1 | 3 | 0;
+      memo: DoujinMemo;
+      image: unknown;
+    }
+  | {
+      batch: boolean;
+      cat: TimelineCat.Doujin;
+      id: number;
+      type: 5 | 6;
+      memo: DoujinType5Memo;
+      image: unknown;
+    }
   // | { batch: true; cat: TimelineCat.Wiki; id: number; type: 0; memo: WikiMemo }
   // | { batch: true; cat: TimelineCat.Progress; id: number; type: 0; memo: ProgressMemo }
   // | { batch: true; cat: TimelineCat.Progress; id: number; type: 1 | 2 | 3; memo: Progress2Memo }
   // | { batch: true; cat: TimelineCat.Blog; id: number; type: 0; memo: BlogMemo }
-  | { batch: true; cat: TimelineCat.Index; id: number; type: 0; memo: IndexMemo }
-  | { batch: true; cat: TimelineCat.Mono; id: number; type: 0; memo: MonoMemo };
+  | { batch: true; cat: TimelineCat.Index; id: number; type: 0; memo: IndexMemo; image: unknown }
+  | { batch: true; cat: TimelineCat.Mono; id: number; type: 0; memo: MonoMemo; image: unknown };
 
 const batchAble: Record<TimelineCat, Set<number>> = {
   [TimelineCat.Unknown]: new Set([]),
@@ -96,11 +161,6 @@ const batchAble: Record<TimelineCat, Set<number>> = {
   [TimelineCat.Mono]: new Set([1, 8]),
   [TimelineCat.Doujin]: new Set([1, 3, 9]),
 };
-
-const ajv = new Ajv({
-  strict: true,
-  coerceTypes: true,
-});
 
 /** -1 type as match all */
 const validator: Record<TimelineCat, Record<number, ValidateFunction>> = {
@@ -179,10 +239,13 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
   const cat = s.cat;
   const type = s.type;
 
+  const image: unknown = s.img ? php.unserialize(s.img) : undefined;
+
   if (cat === TimelineCat.Relation) {
     // 1
     const tl = convertRelationOrm(s);
     if (tl) {
+      tl.image = image;
       return tl;
     }
   } else if (cat === TimelineCat.Wiki) {
@@ -200,12 +263,12 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
       type === 5 ||
       type === 6
     ) {
-      return { cat, type, memo: memo, id: s.id, batch };
+      return { cat, type, memo: memo, id: s.id, batch, image };
     }
   } else if (cat === TimelineCat.Subject) {
     // 3
     const memo = php.unserialize(s.memo) as SubjectMemo;
-    return { cat, type, memo: memo, id: s.id, batch };
+    return { cat, type, memo: memo, id: s.id, batch, image };
   } else if (s.cat === TimelineCat.Progress) {
     // 4
     if (type === 0) {
@@ -219,10 +282,10 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
         memo.vols_total = undefined;
       }
 
-      return { cat, type, memo, id: s.id, batch };
+      return { cat, type, memo, id: s.id, batch, image };
     } else if (type === 2 || type === 1 || type === 3) {
       const memo = php.unserialize(s.memo) as Progress2Memo;
-      return { cat, type, memo, id: s.id, batch };
+      return { cat, type, memo, id: s.id, batch, image };
     }
   } else if (cat === TimelineCat.Say) {
     // 5
@@ -233,35 +296,36 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
         memo: php.unserialize(s.memo) as RenameMemo,
         id: s.id,
         batch,
+        image,
       };
     } else if (type === 1 || type === 0) {
-      return { cat, type, memo: s.memo, id: s.id, batch: false };
+      return { cat, type, memo: s.memo, id: s.id, batch: false, image };
     }
   } else if (cat === TimelineCat.Blog) {
     // 6
     if (type === 0 || type === 1) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat, type: type, memo: php.unserialize(s.memo), id: s.id, batch };
+      return { cat, type: type, memo: php.unserialize(s.memo), id: s.id, batch, image };
     }
   } else if (s.cat === TimelineCat.Index) {
     // 7
     const memo = php.unserialize(s.memo) as IndexMemo;
     if (type === 0 || type === 1) {
-      return { cat, type, memo: memo, id: s.id, batch };
+      return { cat, type, memo: memo, id: s.id, batch, image };
     }
   } else if (cat === TimelineCat.Mono) {
     // 8
     if (type === 0 || type === 1) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat, type: type, memo: php.unserialize(s.memo), id: s.id, batch };
+      return { cat, type: type, memo: php.unserialize(s.memo), id: s.id, batch, image };
     }
   } else if (s.cat === TimelineCat.Doujin) {
     if (type === 0 || type === 1 || type === 3) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat, type, memo: php.unserialize(s.memo), id: s.id, batch };
+      return { cat, type, memo: php.unserialize(s.memo), id: s.id, batch, image };
     } else if (type === 5 || type === 6) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return { cat, type, memo: php.unserialize(s.memo), id: s.id, batch };
+      return { cat, type, memo: php.unserialize(s.memo), id: s.id, batch, image };
     }
   }
 
@@ -279,11 +343,19 @@ function convertRelationOrm(s: entity.Timeline): Timeline | null {
       memo: php.unserialize(s.memo),
       id: s.id,
       batch: Boolean(s.tmlBatch),
+      image: null,
     };
   }
 
   if (s.type === 1 || s.type === 5) {
-    return { cat: s.cat, type: s.type, memo: s.memo, id: s.id, batch: Boolean(s.tmlBatch) };
+    return {
+      cat: s.cat,
+      type: s.type,
+      memo: s.memo,
+      id: s.id,
+      batch: Boolean(s.tmlBatch),
+      image: null,
+    };
   }
 
   return null;
@@ -317,21 +389,19 @@ export function validate(t: Timeline) {
     }
     for (const memo of Object.values(t.memo)) {
       if (validate(memo)) {
-        return;
+        continue;
       }
       if (!validate.errors) {
-        return;
+        continue;
       }
 
       const valid = [...validate.errors];
-      if (valid.length > 0) {
-        throw new TypeError(
-          `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true) :\n` +
-            JSON.stringify(memo, null, 2) +
-            '\n' +
-            valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
-        );
-      }
+      throw new TypeError(
+        `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true) :\n` +
+          JSON.stringify(memo, null, 2) +
+          '\n' +
+          valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
+      );
     }
   } else {
     if (validate(t.memo)) {
@@ -343,7 +413,44 @@ export function validate(t: Timeline) {
     }
 
     const valid = [...validate.errors];
-    if (valid.length > 0) {
+    throw new TypeError(
+      `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=false) :\n` +
+        JSON.stringify(t, null, 2) +
+        '\n' +
+        valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
+    );
+  }
+
+  const imgValidate = imageValidator[t.cat][t.type] ?? imageValidator[t.cat][-1];
+
+  if (imgValidate) {
+    if (t.batch) {
+      for (const img of Object.values(t.image as object)) {
+        if (imgValidate(img)) {
+          continue;
+        }
+        if (!imgValidate.errors) {
+          continue;
+        }
+
+        const valid = [...imgValidate.errors];
+        throw new TypeError(
+          `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true) :\n` +
+            JSON.stringify(img, null, 2) +
+            '\n' +
+            valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
+        );
+      }
+    } else {
+      if (imgValidate(t.image)) {
+        return;
+      }
+
+      if (!imgValidate.errors) {
+        return;
+      }
+
+      const valid = [...imgValidate.errors];
       throw new TypeError(
         `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=false) :\n` +
           JSON.stringify(t, null, 2) +

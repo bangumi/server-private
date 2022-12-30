@@ -9,7 +9,7 @@ import * as timeline from '@app/lib/timeline';
 await AppDataSource.initialize();
 
 let timelines: Timeline[];
-let lastID = 0;
+let lastID = 5400182;
 
 do {
   timelines = await TimelineRepo.find({

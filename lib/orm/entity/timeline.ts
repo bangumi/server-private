@@ -33,7 +33,7 @@ export class Timeline {
   memo!: string;
 
   @Column('mediumtext', { name: 'tml_img' })
-  tmlImg!: string;
+  img!: string;
 
   @Column('tinyint', { name: 'tml_batch', unsigned: true })
   tmlBatch!: number;
