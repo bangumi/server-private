@@ -9,7 +9,7 @@ import * as timeline from '@app/lib/timeline';
 await AppDataSource.initialize();
 
 let timelines: Timeline[];
-let lastID = 5400182;
+let lastID = 11653618;
 
 do {
   timelines = await TimelineRepo.find({
@@ -20,6 +20,10 @@ do {
 
   for (const tl of timelines) {
     lastID = tl.id;
+
+    if ([9305896, 10697159, 11731732].includes(lastID)) {
+      continue;
+    }
 
     let t;
     try {

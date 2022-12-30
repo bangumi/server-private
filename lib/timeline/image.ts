@@ -69,7 +69,10 @@ export const imageValidator: Record<TimelineCat, Record<number, ValidateFunction
   // 2
   [TimelineCat.Wiki]: { [-1]: ajv.compile(t.Object({}, { additionalProperties: false })) },
   // 3
-  [TimelineCat.Subject]: { [-1]: ajv.compile(SubjectImage) },
+  [TimelineCat.Subject]: {
+    [-1]: ajv.compile(SubjectImage),
+    // 6: ajv.compile(t([t.Boolean(), SubjectImage])),
+  },
   // 4
   [TimelineCat.Progress]: { [-1]: ajv.compile(t.Object({}, { additionalProperties: false })) },
   //   0: ajv.compile(Progress),

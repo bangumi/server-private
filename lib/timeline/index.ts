@@ -6,7 +6,6 @@ import * as php from 'php-serialize';
 import { logger } from '@app/lib/logger';
 import type * as entity from '@app/lib/orm/entity';
 import { TimelineCat } from '@app/lib/timeline/cat';
-import { imageValidator } from '@app/lib/timeline/image';
 
 import { ajv } from './ajv';
 import type {
@@ -16,7 +15,6 @@ import type {
   GroupMemo,
   IndexMemo,
   MonoMemo,
-  Progress2Memo,
   ProgressMemo,
   RelationMemo,
   RenameMemo,
@@ -31,7 +29,6 @@ import {
   Index,
   Mono,
   Progress,
-  Progress2,
   Relation,
   Rename,
   Subject,
@@ -86,18 +83,18 @@ type Timeline =
       batch: boolean;
       cat: TimelineCat.Progress;
       id: number;
-      type: 0;
+      type: 0 | 1 | 2 | 3;
       memo: ProgressMemo;
       image: unknown;
     }
-  | {
-      batch: boolean;
-      cat: TimelineCat.Progress;
-      id: number;
-      type: 1 | 2 | 3;
-      memo: Progress2Memo;
-      image: unknown;
-    }
+  // | {
+  // batch: boolean;
+  // cat: TimelineCat.Progress;
+  // id: number;
+  // type: 1 | 2 | 3;
+  // memo: ProgressMemo;
+  // image: unknown;
+  // }
   | { batch: boolean; cat: TimelineCat.Say; id: number; type: 2; memo: RenameMemo; image: unknown }
   | { batch: boolean; cat: TimelineCat.Say; id: number; type: 0 | 1; memo: string; image: unknown }
   | {
@@ -194,9 +191,9 @@ const validator: Record<TimelineCat, Record<number, ValidateFunction>> = {
   // 4
   [TimelineCat.Progress]: {
     0: ajv.compile(Progress),
-    1: ajv.compile(Progress2),
-    2: ajv.compile(Progress2),
-    3: ajv.compile(Progress2),
+    1: ajv.compile(Progress),
+    2: ajv.compile(Progress),
+    3: ajv.compile(Progress),
   },
   // 5
   [TimelineCat.Say]: {
@@ -284,7 +281,7 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
 
       return { cat, type, memo, id: s.id, batch, image };
     } else if (type === 2 || type === 1 || type === 3) {
-      const memo = php.unserialize(s.memo) as Progress2Memo;
+      const memo = php.unserialize(s.memo) as ProgressMemo;
       return { cat, type, memo, id: s.id, batch, image };
     }
   } else if (cat === TimelineCat.Say) {
@@ -388,6 +385,11 @@ export function validate(t: Timeline) {
       throw new Error(`not batch-able (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true)`);
     }
     for (const memo of Object.values(t.memo)) {
+      // @ts-expect-error bad timeline
+      if (memo === false) {
+        logger.info(`bad timeline ${t.id}`);
+        continue;
+      }
       if (validate(memo)) {
         continue;
       }
@@ -400,7 +402,7 @@ export function validate(t: Timeline) {
         `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true) :\n` +
           JSON.stringify(memo, null, 2) +
           '\n' +
-          valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
+          valid.map((x) => `${x.keyword} ${x.schemaPath}: ${x.message ?? ''}`).join('\n'),
       );
     }
   } else {
@@ -417,46 +419,48 @@ export function validate(t: Timeline) {
       `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=false) :\n` +
         JSON.stringify(t, null, 2) +
         '\n' +
-        valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
+        valid.map((x) => `${x.keyword} ${x.schemaPath}: ${x.message ?? ''}`).join('\n'),
     );
   }
 
-  const imgValidate = imageValidator[t.cat][t.type] ?? imageValidator[t.cat][-1];
+  return;
 
-  if (imgValidate) {
-    if (t.batch) {
-      for (const img of Object.values(t.image as object)) {
-        if (imgValidate(img)) {
-          continue;
-        }
-        if (!imgValidate.errors) {
-          continue;
-        }
-
-        const valid = [...imgValidate.errors];
-        throw new TypeError(
-          `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true) :\n` +
-            JSON.stringify(img, null, 2) +
-            '\n' +
-            valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
-        );
-      }
-    } else {
-      if (imgValidate(t.image)) {
-        return;
-      }
-
-      if (!imgValidate.errors) {
-        return;
-      }
-
-      const valid = [...imgValidate.errors];
-      throw new TypeError(
-        `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=false) :\n` +
-          JSON.stringify(t, null, 2) +
-          '\n' +
-          valid.map((x) => `${x.keyword}: ${x.message ?? ''}`).join('\n'),
-      );
-    }
-  }
+  // const imgValidate = imageValidator[t.cat][t.type] ?? imageValidator[t.cat][-1];
+  //
+  // if (imgValidate) {
+  //   if (t.batch) {
+  //     for (const img of Object.values(t.image as object)) {
+  //       if (imgValidate(img)) {
+  //         continue;
+  //       }
+  //       if (!imgValidate.errors) {
+  //         continue;
+  //       }
+  //
+  //       const valid = [...imgValidate.errors];
+  //       throw new TypeError(
+  //         `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=true) :\n` +
+  //         JSON.stringify(img, null, 2) +
+  //         '\n' +
+  //         valid.map((x) => `${x.keyword} ${x.instancePath}: ${x.message ?? ''}`).join('\n'),
+  //       );
+  //     }
+  //   } else {
+  //     if (imgValidate(t.image)) {
+  //       return;
+  //     }
+  //
+  //     if (!imgValidate.errors) {
+  //       return;
+  //     }
+  //
+  //     const valid = [...imgValidate.errors];
+  //     throw new TypeError(
+  //       `not valid (id=${t.id}, cat=${t.cat}, type=${t.type}, batch=false) :\n` +
+  //       JSON.stringify(t, null, 2) +
+  //       '\n' +
+  //       valid.map((x) => `${x.keyword} ${x.instancePath}: ${x.message ?? ''}`).join('\n'),
+  //     );
+  //   }
+  // }
 }

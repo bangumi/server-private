@@ -77,7 +77,6 @@ export const Blog = t.Object(
 );
 
 export type ProgressMemo = Static<typeof Progress>;
-
 export const Progress = t.Object(
   {
     vols_total: t.Optional(t.String()),
@@ -87,10 +86,9 @@ export const Progress = t.Object(
     eps_total: t.Optional(t.Integer()),
     subject_id: t.Optional(t.Integer()),
     subject_type_id: t.Optional(t.Integer()),
-
-    // ep_name: t.Optional(t.String()),
-    // ep_sort: t.Optional(t.Integer()),
-    // ep_id: t.Optional(t.Integer()),
+    ep_name: t.Optional(t.String()),
+    ep_sort: t.Optional(t.Number()),
+    ep_id: t.Optional(t.Integer()),
   },
   { additionalProperties: false },
 );
