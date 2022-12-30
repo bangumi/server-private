@@ -3,7 +3,7 @@ import { TypeCompiler } from '@sinclair/typebox/compiler';
 import type { ValueError } from '@sinclair/typebox/errors';
 import * as php from 'php-serialize';
 
-import type * as entity from 'app/lib/orm/entity';
+import type * as entity from '@app/lib/orm/entity';
 
 import type {
   BlogMemo,
