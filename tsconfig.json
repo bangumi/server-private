@@ -13,7 +13,7 @@
     "lib": ["ES2022"],
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "sourceMap": true,
     "declaration": false,
     "noEmit": true,
@@ -25,6 +25,5 @@
       // 测试环境需要设置 vitest.config.ts 的 resolve.alias
       "@app/*": ["./*"]
     }
-  },
-  "exclude": ["node_modules/**/*"]
+  }
 }
