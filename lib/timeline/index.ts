@@ -178,10 +178,10 @@ export function convertFromOrm(s: entity.Timeline): Timeline | null {
     // } else {
     //   const memoDict = php.unserialize(s.memo) as Record<number, DoujinMemo>;
     // }
-    if (s.type === 0) {
+    if (s.type === 0 || s.type === 1 || s.type === 3) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
-    } else if (s.type === 3) {
+    } else if (s.type === 5) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return { cat: s.cat, type: s.type, memo: php.unserialize(s.memo), id: s.id, batch };
     }
