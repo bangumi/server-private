@@ -173,27 +173,9 @@ describe('create group post reply', () => {
       sign: '',
     },
   });
-  const getPostMock = vi.fn().mockResolvedValue({
-    id: 6,
-    content: '',
-    state: ReplyState.Normal,
-    createdAt: dayjs('2021-10-21').unix(),
-    type: Topic.Type.group,
-    topicID: 371602,
-    user: {
-      img: '',
-      username: 'u',
-      groupID: UserGroup.Normal,
-      id: 9,
-      nickname: 'n',
-      regTime: dayjs('2008-10-01').unix(),
-      sign: '',
-    },
-  });
 
   const notifyMock = vi.fn();
   beforeEach(() => {
-    vi.spyOn(Topic, 'getPost').mockImplementation(getPostMock);
     vi.spyOn(Topic, 'createTopicReply').mockImplementation(createTopicReply);
     vi.spyOn(Notify, 'create').mockImplementation(notifyMock);
     vi.spyOn(Topic, 'fetchDetail').mockImplementationOnce(

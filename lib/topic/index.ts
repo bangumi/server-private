@@ -58,28 +58,6 @@ interface IPost {
   type: Type;
 }
 
-async function getSubjectTopic(id: number): Promise<IPost | null> {
-  const p = await GroupPostRepo.findOne({
-    where: {
-      id,
-    },
-  });
-
-  if (!p) {
-    return null;
-  }
-
-  return {
-    id: p.id,
-    type: Type.group,
-    user: await fetchUserX(p.uid),
-    createdAt: p.dateline,
-    state: p.state,
-    topicID: p.topicID,
-    content: p.content,
-  };
-}
-
 export type ISubReply = IBaseReply;
 
 export interface IReply extends IBaseReply {
@@ -218,14 +196,6 @@ export async function fetchTopicList(
       };
     }),
   ];
-}
-
-export async function getPost(type: Type, id: number): Promise<IPost | null> {
-  if (type === Type.group) {
-    return await getSubjectTopic(id);
-  }
-
-  throw new UnimplementedError(`topic ${type}`);
 }
 
 export const NotJoinPrivateGroupError = createError(
