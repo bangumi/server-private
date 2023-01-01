@@ -383,6 +383,7 @@ export async function setup(app: App) {
     '/groups/:groupName/topics',
     {
       schema: {
+        tags: [Tag.Group],
         operationId: 'createNewGroupTopic',
         params: t.Object({
           groupName: t.String({ minLength: 1, examples: ['sandbox'] }),
@@ -442,6 +443,7 @@ export async function setup(app: App) {
         params: t.Object({
           topicID: t.Integer({ examples: [371602] }),
         }),
+        tags: [Tag.Group],
         response: {
           200: t.Ref(BasicReply),
           401: t.Ref(res.Error, {
