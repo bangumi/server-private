@@ -34,11 +34,7 @@ interface ICachedSession {
   userID: number;
 }
 
-/**
- * TODO: add cache
- *
- * @param sessionID - Store in user cookies
- */
+/** @param sessionID - Store in user cookies */
 export async function get(sessionID: string): Promise<IAuth | null> {
   const key = `${redisPrefix}-auth-session-${sessionID}`;
   const cached = await redis.get(key);
