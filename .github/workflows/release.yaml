@@ -13,7 +13,9 @@ jobs:
     env:
       IMAGE: 'ghcr.io/${{ github.repository_owner }}/graphql'
 
-    concurrency: release-docker
+    concurrency:
+      group: release-docker
+      cancel-in-progress: false
 
     steps:
       - uses: actions/checkout@v3
