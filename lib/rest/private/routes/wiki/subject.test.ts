@@ -53,8 +53,8 @@ describe('edit subject ', () => {
         login: true,
         permission: {},
         allowNsfw: true,
-        userID: 100,
         regTime: 0,
+        userID: 100,
       },
     });
 

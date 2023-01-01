@@ -15,12 +15,7 @@ import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import type { ITopic } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
-import {
-  fetchTopicDetails,
-  NotJoinPrivateGroupError,
-  ReplyState,
-  TopicDisplay,
-} from '@app/lib/topic';
+import { fetchDetail, NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
 
@@ -195,7 +190,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { id }, auth }) => {
-      const topic = await fetchTopicDetails(auth, 'group', id);
+      const topic = await fetchDetail(auth, 'group', id);
       if (!topic) {
         throw new NotFoundError(`topic ${id}`);
       }
@@ -497,7 +492,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('create reply');
       }
 
-      const topic = await fetchTopicDetails(auth, 'group', topicID);
+      const topic = await Topic.fetchDetail(auth, 'group', topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }

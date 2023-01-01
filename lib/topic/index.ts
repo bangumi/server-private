@@ -99,7 +99,7 @@ export interface ITopicDetails {
   replies: IReply[];
 }
 
-export async function fetchTopicDetails(
+export async function fetchDetail(
   auth: IAuth,
   type: 'group',
   id: number,
