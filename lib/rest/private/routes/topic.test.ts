@@ -100,6 +100,7 @@ describe('create group post', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: 0,
         userID: 100,
       } satisfies IAuth;
       done();
@@ -131,6 +132,7 @@ describe('create group post', () => {
           ban_post: true,
         },
         allowNsfw: true,
+        regTime: 0,
         userID: 1,
       } satisfies IAuth;
       done();
@@ -224,6 +226,7 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: 0,
         userID: 100,
       },
     });
@@ -273,6 +276,7 @@ describe('create group post reply', () => {
         permission: {
           ban_post: true,
         },
+        regTime: 0,
         allowNsfw: true,
         userID: 1,
       },
@@ -299,6 +303,7 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: 0,
         userID: 1,
       },
     });
@@ -324,6 +329,7 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: 0,
         userID: 1,
       },
     });
