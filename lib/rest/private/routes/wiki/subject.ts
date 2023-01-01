@@ -4,8 +4,8 @@ import { Type as t } from '@sinclair/typebox';
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
+import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
-import { fetchSubject, SubjectRevRepo } from '@app/lib/orm';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as Subject from '@app/lib/subject';
@@ -117,7 +117,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID } }): Promise<Static<typeof SubjectWikiInfo>> => {
-      const s = await fetchSubject(subjectID);
+      const s = await orm.fetchSubject(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -249,7 +249,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
-      const s = await fetchSubject(subjectID);
+      const s = await orm.fetchSubject(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -320,7 +320,7 @@ export async function setup(app: App) {
         return;
       }
 
-      const s = await fetchSubject(subjectID);
+      const s = await orm.fetchSubject(subjectID);
       if (!s) {
         throw new BadRequestError(`subject ${subjectID}`);
       }

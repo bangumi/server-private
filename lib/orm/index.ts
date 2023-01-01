@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as php from 'php-serialize';
-import * as typeorm from 'typeorm';
 import { DataSource } from 'typeorm';
+import * as typeorm from 'typeorm';
 
 import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '@app/lib/config';
 import { UnexpectedNotFoundError } from '@app/lib/error';
