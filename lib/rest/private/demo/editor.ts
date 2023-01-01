@@ -1,5 +1,4 @@
 import { NotFoundError } from '@app/lib/error';
-import { fetchSubject } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import type { App } from '@app/lib/rest/type';
 import { platforms } from '@app/lib/subject';
