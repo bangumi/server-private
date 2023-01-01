@@ -1,7 +1,7 @@
 import type { IAuth } from '@app/lib/auth';
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import type { IBaseReply } from '@app/lib/orm';
-import { GroupPostRepo, GroupTopicRepo, SubjectFieldsRepo, SubjectRepo } from '@app/lib/orm';
+import { GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
 import { filterReply } from '@app/lib/topic/display';
 
 export type ISubReply = IBaseReply;
@@ -99,35 +99,4 @@ export interface ITopic {
   createdAt: number;
   title: string;
   repliesCount: number;
-}
-
-export async function fetchSubject(id: number) {
-  const subject = await SubjectRepo.findOne({
-    where: { id },
-  });
-
-  if (!subject) {
-    return null;
-  }
-
-  const f = await SubjectFieldsRepo.findOne({
-    where: { subject_id: id },
-  });
-
-  if (!f) {
-    throw new UnexpectedNotFoundError(`subject fields ${id}`);
-  }
-
-  return {
-    id: subject.id,
-    name: subject.name,
-    typeID: subject.typeID,
-    infobox: subject.fieldInfobox,
-    platform: subject.platform,
-    summary: subject.fieldSummary,
-    nsfw: subject.subjectNsfw,
-    date: f.date,
-    redirect: f.fieldRedirect,
-    locked: subject.locked(),
-  };
 }

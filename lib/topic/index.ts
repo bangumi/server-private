@@ -15,7 +15,6 @@ export { fetchTopicDetails } from './topic';
 export type { ITopicDetails } from './topic';
 export type { IReply } from './topic';
 export type { ISubReply } from './topic';
-export { fetchSubject } from './topic';
 export type { ITopic } from './topic';
 
 export { ListTopicDisplays, CanViewTopicContent } from './display';

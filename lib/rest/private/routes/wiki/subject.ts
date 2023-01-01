@@ -5,12 +5,11 @@ import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import * as orm from '@app/lib/orm';
-import { SubjectRevRepo } from '@app/lib/orm';
+import { fetchSubject, SubjectRevRepo } from '@app/lib/orm';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as Subject from '@app/lib/subject';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
-import { fetchSubject } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
 

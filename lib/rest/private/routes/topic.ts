@@ -9,7 +9,7 @@ import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
 import type { IBaseReply, IUser, Page } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
-import { GroupMemberRepo, GroupRepo, isMemberInGroup } from '@app/lib/orm';
+import { fetchSubject, GroupMemberRepo, GroupRepo, isMemberInGroup } from '@app/lib/orm';
 import { avatar, groupIcon } from '@app/lib/response';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
@@ -370,7 +370,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID }, query, auth }) => {
-      const subject = await Topic.fetchSubject(subjectID);
+      const subject = await fetchSubject(subjectID);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
