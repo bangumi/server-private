@@ -3,19 +3,18 @@ import { Type as t } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 
 import { NotAllowedError } from '@app/lib/auth';
-import { rule, TopicDisplay } from '@app/lib/auth/rule';
 import { dam } from '@app/lib/dam';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
-import type { ITopic, IUser, Page, IBaseReply } from '@app/lib/orm';
+import type { IBaseReply, ITopic, IUser, Page } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
-import { isMemberInGroup, GroupMemberRepo, GroupRepo } from '@app/lib/orm';
+import { GroupMemberRepo, GroupRepo, isMemberInGroup } from '@app/lib/orm';
 import { avatar, groupIcon } from '@app/lib/response';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as Topic from '@app/lib/topic';
-import { NotJoinPrivateGroupError, ReplyState } from '@app/lib/topic';
+import { NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
 
@@ -96,9 +95,7 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
-      const [total, topicList] = await orm.fetchTopicList('group', group.id, query, {
-        display: rule.ListTopicDisplays(auth),
-      });
+      const [total, topicList] = await Topic.fetchTopicList(auth, 'group', group.id, query);
 
       const topics = await addCreators(topicList, group.id);
 
@@ -192,8 +189,12 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { id }, auth }) => {
-      const topic = await orm.fetchTopicDetails('group', id);
+      const topic = await Topic.fetchTopicDetails(auth, 'group', id);
       if (!topic) {
+        throw new NotFoundError(`topic ${id}`);
+      }
+
+      if (!Topic.CanViewTopicContent(auth, topic)) {
         throw new NotFoundError(`topic ${id}`);
       }
 
@@ -220,33 +221,31 @@ export async function setup(app: App) {
         creator: userToResCreator(creator),
         text: topic.text,
         group: { ...group, icon: groupIcon(group.icon) },
-        replies: topic.replies
-          .map((x) => rule.filterReply(x))
-          .map((x) => {
-            const user = users[x.creatorID];
-            if (!user) {
-              throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
-            }
-            return {
-              isFriend: friends[x.creatorID] ?? false,
-              ...x,
-              replies: x.replies.map((x) => {
-                const user = users[x.creatorID];
-                if (!user) {
-                  throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
-                }
-                return {
-                  isFriend: friends[x.creatorID] ?? false,
-                  ...x,
-                  creator: userToResCreator(user),
-                };
-              }),
-              creator: {
+        replies: topic.replies.map((x) => {
+          const user = users[x.creatorID];
+          if (!user) {
+            throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
+          }
+          return {
+            isFriend: friends[x.creatorID] ?? false,
+            ...x,
+            replies: x.replies.map((x) => {
+              const user = users[x.creatorID];
+              if (!user) {
+                throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
+              }
+              return {
                 isFriend: friends[x.creatorID] ?? false,
-                ...userToResCreator(user),
-              },
-            };
-          }),
+                ...x,
+                creator: userToResCreator(user),
+              };
+            }),
+            creator: {
+              isFriend: friends[x.creatorID] ?? false,
+              ...userToResCreator(user),
+            },
+          };
+        }),
         state: topic.state,
       };
     },
@@ -339,7 +338,7 @@ export async function setup(app: App) {
       }
 
       const [total, topics] = await orm.fetchTopicList('group', group.id, query, {
-        display: rule.ListTopicDisplays(auth),
+        display: Topic.ListTopicDisplays(auth),
       });
 
       return { total, data: await addCreators(topics, group.id) };
@@ -381,7 +380,7 @@ export async function setup(app: App) {
       }
 
       const [total, topics] = await orm.fetchTopicList('subject', subjectID, query, {
-        display: rule.ListTopicDisplays(auth),
+        display: Topic.ListTopicDisplays(auth),
       });
       return { total, data: await addCreators(topics, subjectID) };
     },
@@ -496,7 +495,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('create reply');
       }
 
-      const topic = await orm.fetchTopicDetails('group', topicID);
+      const topic = await Topic.fetchTopicDetails(auth, 'group', topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }

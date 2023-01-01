@@ -7,8 +7,9 @@ import { UserGroup } from '@app/lib/auth';
 import * as Notify from '@app/lib/notify';
 import * as orm from '@app/lib/orm';
 import { createServer } from '@app/lib/server';
+import type { ITopicDetails } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
-import { ReplyState } from '@app/lib/topic';
+import { ReplyState, TopicDisplay } from '@app/lib/topic';
 import { createTestServer } from '@app/tests/utils';
 
 import * as topicAPI from './topic';
@@ -101,6 +102,7 @@ describe('create group post', () => {
         permission: {},
         allowNsfw: true,
         userID: 100,
+        regTime: dayjs().unix(),
       } satisfies IAuth;
       done();
     });
@@ -132,6 +134,7 @@ describe('create group post', () => {
         },
         allowNsfw: true,
         userID: 1,
+        regTime: dayjs().unix(),
       } satisfies IAuth;
       done();
     });
@@ -193,8 +196,8 @@ describe('create group post reply', () => {
     vi.spyOn(Topic, 'getPost').mockImplementation(getPostMock);
     vi.spyOn(Topic, 'createTopicReply').mockImplementation(createTopicReply);
     vi.spyOn(Notify, 'create').mockImplementation(notifyMock);
-    vi.spyOn(orm, 'fetchTopicDetails').mockImplementationOnce(
-      (type: 'group', id: number): ReturnType<typeof orm['fetchTopicDetails']> => {
+    vi.spyOn(Topic, 'fetchTopicDetails').mockImplementationOnce(
+      (_: IAuth, type: 'group', id: number): Promise<ITopicDetails | null> => {
         if (id !== 371602) {
           return Promise.resolve(null);
         }
@@ -204,6 +207,7 @@ describe('create group post reply', () => {
           creatorID: 287622,
           id: id,
           title: 't',
+          display: TopicDisplay.Normal,
           createdAt: dayjs().unix(),
           text: 't',
           state: ReplyState.Normal,
@@ -225,6 +229,7 @@ describe('create group post reply', () => {
         permission: {},
         allowNsfw: true,
         userID: 100,
+        regTime: dayjs().unix(),
       },
     });
 
@@ -274,6 +279,7 @@ describe('create group post reply', () => {
           ban_post: true,
         },
         allowNsfw: true,
+        regTime: dayjs().unix(),
         userID: 1,
       },
     });
@@ -299,6 +305,7 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: dayjs().unix(),
         userID: 1,
       },
     });
@@ -324,6 +331,7 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: dayjs().unix(),
         userID: 1,
       },
     });

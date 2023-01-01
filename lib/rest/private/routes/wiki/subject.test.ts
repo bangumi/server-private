@@ -54,6 +54,7 @@ describe('edit subject ', () => {
         permission: {},
         allowNsfw: true,
         userID: 100,
+        regTime: 0,
       },
     });
 
@@ -93,6 +94,7 @@ describe('edit subject ', () => {
         login: true,
         permission: { subject_edit: true },
         allowNsfw: true,
+        regTime: 0,
         userID: 100,
       },
     });

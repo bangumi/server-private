@@ -57,6 +57,7 @@ export interface IAuth {
   login: boolean;
   allowNsfw: boolean;
   permission: Readonly<Permission>;
+  regTime: number;
   groupID: UserGroup;
 }
 
@@ -153,6 +154,7 @@ export function emptyAuth(): IAuth {
     login: false,
     permission: {},
     allowNsfw: false,
+    regTime: 0,
     groupID: 0,
   };
 }
@@ -164,6 +166,7 @@ async function userToAuth(user: IUser): Promise<IAuth> {
     permission: await getPermission(user.groupID),
     allowNsfw: user.regTime - dayjs().unix() <= 60 * 60 * 24 * 90,
     groupID: user.groupID,
+    regTime: user.regTime,
   };
 }
 

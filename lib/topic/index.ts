@@ -1,10 +1,20 @@
 import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 
-import { UnimplementedError } from './error';
-import type { IUser } from './orm';
-import { fetchUserX, AppDataSource, GroupPostRepo } from './orm';
-import * as entity from './orm/entity';
+import type { IAuth } from '@app/lib/auth';
+import { UnimplementedError } from '@app/lib/error';
+import type { IUser, Page, ITopic } from '@app/lib/orm';
+import * as orm from '@app/lib/orm';
+import { fetchUserX, AppDataSource, GroupPostRepo } from '@app/lib/orm';
+import * as entity from '@app/lib/orm/entity';
+import { ListTopicDisplays } from '@app/lib/topic/display';
+
+export { fetchTopicDetails } from './topic';
+export type { ITopicDetails } from './topic';
+export type { IReply } from './topic';
+export type { ISubReply } from './topic';
+
+export { ListTopicDisplays, CanViewTopicContent } from './display';
 
 export const enum Type {
   group = 'group',
@@ -22,6 +32,25 @@ export const enum ReplyState {
   AdminSilentTopic = 5, // 下沉
   UserDelete = 6, // 自行删除
   AdminDelete = 7, // 管理员删除
+}
+
+export const enum CommentState {
+  None = 0, // 正常
+  // CommentStateAdminCloseTopic 管理员关闭主题 https://bgm.tv/subject/topic/12629#post_108127
+  AdminCloseTopic = 1, // 关闭
+  AdminReopen = 2, // 重开
+  AdminPin = 3, // 置顶
+  AdminMerge = 4, // 合并
+  // CommentStateAdminSilentTopic 管理员下沉 https://bgm.tv/subject/topic/18784#post_160402
+  AdminSilentTopic = 5, // 下沉
+  UserDelete = 6, // 自行删除
+  AdminDelete = 7, // 管理员删除
+}
+
+export const enum TopicDisplay {
+  Ban = 0, // 软删除
+  Normal = 1,
+  Review = 2,
 }
 
 interface IPost {
@@ -54,6 +83,24 @@ async function getSubjectTopic(id: number): Promise<IPost | null> {
     topicID: p.topicID,
     content: p.content,
   };
+}
+
+export async function fetchTopicList(
+  auth: IAuth,
+  type: 'group' | 'subject',
+  id: number,
+  { limit = 30, offset = 0 }: Page,
+): Promise<[number, ITopic[]]> {
+  const [total, topicList] = await orm.fetchTopicList(
+    'group',
+    id,
+    { limit, offset },
+    {
+      display: ListTopicDisplays(auth),
+    },
+  );
+
+  return [total, topicList];
 }
 
 export async function getPost(type: Type, id: number): Promise<IPost | null> {
