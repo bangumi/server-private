@@ -101,8 +101,8 @@ describe('create group post', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: 0,
         userID: 100,
-        regTime: dayjs().unix(),
       } satisfies IAuth;
       done();
     });
@@ -133,8 +133,8 @@ describe('create group post', () => {
           ban_post: true,
         },
         allowNsfw: true,
+        regTime: 0,
         userID: 1,
-        regTime: dayjs().unix(),
       } satisfies IAuth;
       done();
     });
@@ -228,8 +228,8 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
+        regTime: 0,
         userID: 100,
-        regTime: dayjs().unix(),
       },
     });
 
@@ -278,8 +278,8 @@ describe('create group post reply', () => {
         permission: {
           ban_post: true,
         },
+        regTime: 0,
         allowNsfw: true,
-        regTime: dayjs().unix(),
         userID: 1,
       },
     });
@@ -305,7 +305,7 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
-        regTime: dayjs().unix(),
+        regTime: 0,
         userID: 1,
       },
     });
@@ -331,7 +331,7 @@ describe('create group post reply', () => {
         login: true,
         permission: {},
         allowNsfw: true,
-        regTime: dayjs().unix(),
+        regTime: 0,
         userID: 1,
       },
     });
