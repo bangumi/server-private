@@ -1,18 +1,22 @@
 import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
+import * as typeorm from 'typeorm';
 
 import type { IAuth } from '@app/lib/auth';
 import { UnimplementedError } from '@app/lib/error';
-import type { IUser, Page, ITopic } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
-import { fetchUserX, AppDataSource, GroupPostRepo } from '@app/lib/orm';
+import type { IUser, Page } from '@app/lib/orm';
+import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { ListTopicDisplays } from '@app/lib/topic/display';
+
+import type { ITopic } from './topic';
 
 export { fetchTopicDetails } from './topic';
 export type { ITopicDetails } from './topic';
 export type { IReply } from './topic';
 export type { ISubReply } from './topic';
+export { fetchSubject } from './topic';
+export type { ITopic } from './topic';
 
 export { ListTopicDisplays, CanViewTopicContent } from './display';
 
@@ -91,16 +95,37 @@ export async function fetchTopicList(
   id: number,
   { limit = 30, offset = 0 }: Page,
 ): Promise<[number, ITopic[]]> {
-  const [total, topicList] = await orm.fetchTopicList(
-    'group',
-    id,
-    { limit, offset },
-    {
-      display: ListTopicDisplays(auth),
-    },
-  );
+  if (type !== 'group') {
+    throw new UnimplementedError(`topic type ${type}`);
+  }
 
-  return [total, topicList];
+  const where = {
+    gid: id,
+    display: typeorm.In(ListTopicDisplays(auth)),
+  } as const;
+
+  const total = await GroupTopicRepo.count({ where });
+  const topics = await GroupTopicRepo.find({
+    where,
+    order: { dateline: 'desc' },
+    skip: offset,
+    take: limit,
+  });
+
+  return [
+    total,
+    topics.map((x) => {
+      return {
+        id: x.id,
+        parentID: x.gid,
+        creatorID: x.uid,
+        title: x.title,
+        createdAt: x.dateline,
+        updatedAt: x.lastpost,
+        repliesCount: x.replies,
+      };
+    }),
+  ];
 }
 
 export async function getPost(type: Type, id: number): Promise<IPost | null> {

@@ -4,9 +4,9 @@ import * as typeorm from 'typeorm';
 import { DataSource } from 'typeorm';
 
 import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '@app/lib/config';
-import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error';
+import { UnexpectedNotFoundError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
-import type { TopicDisplay, ReplyState, CommentState } from '@app/lib/topic';
+import type { ReplyState, TopicDisplay } from '@app/lib/topic';
 
 import * as entity from './entity';
 import {
@@ -273,87 +273,6 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
       },
     ]),
   );
-}
-
-export interface ITopic {
-  id: number;
-  parentID: number;
-  creatorID: number;
-  updatedAt: number;
-  createdAt: number;
-  title: string;
-  repliesCount: number;
-}
-
-export async function fetchTopicList(
-  type: 'group' | 'subject',
-  id: number,
-  { limit = 30, offset = 0 }: Page,
-  { display, state }: { display?: TopicDisplay[]; state?: CommentState[] },
-): Promise<[number, ITopic[]]> {
-  if (type !== 'group') {
-    throw new UnimplementedError(`topic type ${type}`);
-  }
-
-  const where = {
-    gid: id,
-    display: display ? typeorm.In(display) : undefined,
-    state: state ? typeorm.In(state) : undefined,
-  } as const;
-
-  const total = await GroupTopicRepo.count({ where });
-  const topics = await GroupTopicRepo.find({
-    where,
-    order: { dateline: 'desc' },
-    skip: offset,
-    take: limit,
-  });
-
-  return [
-    total,
-    topics.map((x) => {
-      return {
-        id: x.id,
-        parentID: x.gid,
-        creatorID: x.uid,
-        title: x.title,
-        createdAt: x.dateline,
-        updatedAt: x.lastpost,
-        repliesCount: x.replies,
-      };
-    }),
-  ];
-}
-
-export async function fetchSubject(id: number) {
-  const subject = await SubjectRepo.findOne({
-    where: { id },
-  });
-
-  if (!subject) {
-    return null;
-  }
-
-  const f = await SubjectFieldsRepo.findOne({
-    where: { subject_id: id },
-  });
-
-  if (!f) {
-    throw new UnexpectedNotFoundError(`subject fields ${id}`);
-  }
-
-  return {
-    id: subject.id,
-    name: subject.name,
-    typeID: subject.typeID,
-    infobox: subject.fieldInfobox,
-    platform: subject.platform,
-    summary: subject.fieldSummary,
-    nsfw: subject.subjectNsfw,
-    date: f.date,
-    redirect: f.fieldRedirect,
-    locked: subject.locked(),
-  };
 }
 
 interface IGroup {

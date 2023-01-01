@@ -1,7 +1,7 @@
 import { NotFoundError } from '@app/lib/error';
-import * as orm from '@app/lib/orm';
 import type { App } from '@app/lib/rest/type';
 import { platforms } from '@app/lib/subject';
+import { fetchSubject } from '@app/lib/topic';
 
 export function setup(app: App) {
   app.get(
@@ -17,7 +17,7 @@ export function setup(app: App) {
     },
     async (_, res) => {
       const subjectID = 184017;
-      const s = await orm.fetchSubject(subjectID);
+      const s = await fetchSubject(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
