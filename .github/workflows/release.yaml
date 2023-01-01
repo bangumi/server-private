@@ -43,27 +43,23 @@ jobs:
           LONG_TAG: "${{ hashFiles('yarn.lock') }}"
         name: build base docker image
 
-      - run: echo "REF=master-$(git describe --match='v*')" >> $GITHUB_ENV
+      - run: |
+          echo "REF=master" >> $GITHUB_ENV
+          echo "TAG=master-$(git describe --match='v*')" >> $GITHUB_ENV
+        if: "${{ !startsWith(github.ref, 'refs/tags/') }}"
+
+      - run: |
+          echo "REF=latest" >> $GITHUB_ENV
+          echo "TAG=v$(cat package.json | jq .version -r)" >> $GITHUB_ENV
+        if: "${{ startsWith(github.ref, 'refs/tags/') }}"
 
       - name: docker build
-        run: docker build --build-arg "ARG_REF=${REF}" -t current -f etc/main.dockerfile .
-
-      - if: "${{ !startsWith(github.ref, 'refs/tags/') }}"
-        name: push master
-        run: |
-          docker tag current "${IMAGE}:master"
-          docker push "${IMAGE}:master"
-
-      - name: push latest tag
-        if: "${{ startsWith(github.ref, 'refs/tags/') }}"
-        run: |
-          export "VERSION=v$(cat package.json | jq .version -r)"
-          docker tag current "${IMAGE}:latest"
-          docker tag current "${IMAGE}:${VERSION}"
-          docker push "${IMAGE}:latest"
-          docker push "${IMAGE}:${VERSION}"
+        run: docker build --build-arg "ARG_REF=${TAG}" -t current -f etc/main.dockerfile .
 
       - name: push described tag
         run: |
           docker tag current "${IMAGE}:${REF}"
           docker push "${IMAGE}:${REF}"
+
+          docker tag current "${IMAGE}:${TAG}"
+          docker push "${IMAGE}:${TAG}"
