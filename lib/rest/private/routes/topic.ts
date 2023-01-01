@@ -195,10 +195,6 @@ export async function setup(app: App) {
         throw new NotFoundError(`topic ${id}`);
       }
 
-      if (!Topic.CanViewTopicContent(auth, topic)) {
-        throw new NotFoundError(`topic ${id}`);
-      }
-
       const group = await orm.fetchGroupByID(topic.parentID);
       if (!group) {
         throw new UnexpectedNotFoundError(`group ${topic.parentID}`);

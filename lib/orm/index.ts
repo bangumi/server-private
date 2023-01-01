@@ -411,7 +411,7 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
     const topic = await GroupTopicRepo.save({
       title: post.title,
       gid: post.groupID,
-      uid: post.userID,
+      creatorID: post.userID,
       state: post.state,
       lastpost: now.unix(),
       dateline: now.unix(),

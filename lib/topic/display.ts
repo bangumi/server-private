@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
 import type { IAuth } from '@app/lib/auth';
-import type { ITopicDetails, IReply } from '@app/lib/topic';
+import type { IReply } from '@app/lib/topic';
 import { TopicDisplay, CommentState, ReplyState } from '@app/lib/topic';
 
 export const CanViewStateClosedTopic = 24 * 60 * 60 * 180;
@@ -20,7 +20,10 @@ export function ListTopicDisplays(u: IAuth): TopicDisplay[] {
   return [TopicDisplay.Normal];
 }
 
-export function CanViewTopicContent(u: IAuth, topic: ITopicDetails): boolean {
+export function CanViewTopicContent(
+  u: IAuth,
+  topic: { state: number; display: number; creatorID: number },
+): boolean {
   if (!u.login) {
     // 未登录用户只能看到正常帖子
     return (
@@ -58,17 +61,13 @@ export function CanViewTopicContent(u: IAuth, topic: ITopicDetails): boolean {
     return CanViewDeleteTopic(u);
   }
 
-  if (
+  return (
     topic.state === CommentState.None ||
     topic.state === CommentState.AdminReopen ||
     topic.state === CommentState.AdminMerge ||
     topic.state === CommentState.AdminPin ||
     topic.state === CommentState.AdminSilentTopic
-  ) {
-    return true;
-  }
-
-  return false;
+  );
 }
 
 function CanViewDeleteTopic(a: IAuth): boolean {

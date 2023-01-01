@@ -7,7 +7,7 @@ import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error';
 import type { IUser, Page, IBaseReply } from '@app/lib/orm';
 import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
-import { filterReply, ListTopicDisplays } from '@app/lib/topic/display';
+import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display';
 
 export { ListTopicDisplays, CanViewTopicContent } from './display';
 
@@ -112,6 +112,10 @@ export async function fetchDetail(
     return null;
   }
 
+  if (!CanViewTopicContent(auth, topic)) {
+    return null;
+  }
+
   const replies = await GroupPostRepo.find({
     where: {
       topicID: topic.id,
@@ -206,7 +210,7 @@ export async function fetchTopicList(
       return {
         id: x.id,
         parentID: x.gid,
-        creatorID: x.uid,
+        creatorID: x.creatorID,
         title: x.title,
         createdAt: x.dateline,
         updatedAt: x.lastpost,

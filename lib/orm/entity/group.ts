@@ -83,7 +83,7 @@ export class GroupMembers {
 
 @Index('grp_tpc_gid', ['gid'], {})
 @Index('grp_tpc_display', ['display'], {})
-@Index('grp_tpc_uid', ['uid'], {})
+@Index('grp_tpc_uid', ['creatorID'], {})
 @Index('grp_tpc_lastpost', ['lastpost'], {})
 @Entity('chii_group_topics', { schema: 'bangumi' })
 export class GroupTopic {
@@ -98,7 +98,7 @@ export class GroupTopic {
   gid!: number;
 
   @Column('mediumint', { name: 'grp_tpc_uid', unsigned: true })
-  uid!: number;
+  creatorID!: number;
 
   @Column('varchar', { name: 'grp_tpc_title', length: 80 })
   title!: string;
