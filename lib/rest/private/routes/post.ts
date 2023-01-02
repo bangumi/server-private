@@ -6,7 +6,6 @@ import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import * as orm from '@app/lib/orm';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
-import { BasicReply } from '@app/lib/rest/private/routes/topic';
 import type { App } from '@app/lib/rest/type';
 import * as Topic from '@app/lib/topic';
 import { ReplyState } from '@app/lib/topic';
@@ -16,7 +15,6 @@ import * as res from '@app/lib/types/res';
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
-  app.addSchema(BasicReply);
 
   app.put(
     '/groups/-/posts/:postID',
@@ -28,7 +26,7 @@ export async function setup(app: App) {
         }),
         tags: [Tag.Group],
         response: {
-          204: t.Void(),
+          200: t.Void(),
           401: t.Ref(res.Error, {
             'x-examples': formatErrors(NotAllowedError('edit reply')),
           }),

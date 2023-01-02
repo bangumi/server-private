@@ -3,8 +3,8 @@ import { Type as t } from '@sinclair/typebox';
 import dayjs from 'dayjs';
 
 import { NotAllowedError } from '@app/lib/auth';
-import { Dam, dam } from '@app/lib/dam';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
+import { dam } from '@app/lib/dam';
+import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
 import type { IBaseReply, IUser, Page } from '@app/lib/orm';
@@ -18,17 +18,6 @@ import * as Topic from '@app/lib/topic';
 import { NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
-
-export const BasicReply = t.Object(
-  {
-    id: t.Integer(),
-    creator: t.Ref(res.User),
-    createdAt: t.Integer(),
-    text: t.String(),
-    state: t.Integer(),
-  },
-  { $id: 'BasicReply' },
-);
 
 const Group = t.Object(
   {
@@ -134,6 +123,17 @@ export async function setup(app: App) {
   );
 
   app.addSchema(SubReply);
+
+  const BasicReply = t.Object(
+    {
+      id: t.Integer(),
+      creator: t.Ref(res.User),
+      createdAt: t.Integer(),
+      text: t.String(),
+      state: t.Integer(),
+    },
+    { $id: 'BasicReply' },
+  );
 
   app.addSchema(BasicReply);
 
@@ -409,10 +409,6 @@ export async function setup(app: App) {
         throw new NotAllowedError('create posts');
       }
 
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('text contains invalid invisible character');
-      }
-
       const group = await orm.fetchGroup(groupName);
       if (!group) {
         throw new NotFoundError(`group ${groupName}`);
@@ -492,10 +488,6 @@ export async function setup(app: App) {
     }): Promise<Static<typeof BasicReply>> => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
-      }
-
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('text contains invalid invisible character');
       }
 
       const topic = await Topic.fetchDetail(auth, 'group', topicID);
