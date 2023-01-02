@@ -42,3 +42,23 @@ test('should edit post', async () => {
 
   expect(pst?.content).toBe('new content');
 });
+
+test('should not edit post', async () => {
+  const app = createTestServer({
+    auth: {
+      ...emptyAuth(),
+      login: true,
+      userID: 287622 + 1,
+    },
+  });
+
+  await app.register(setup);
+
+  const res = await app.inject({
+    url: '/groups/-/posts/2177419',
+    method: 'put',
+    payload: { text: 'new content' },
+  });
+
+  expect(res.statusCode).toBe(401);
+});
