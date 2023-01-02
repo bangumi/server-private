@@ -68,7 +68,7 @@ describe('edit subject ', () => {
 
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
-        "code": "NEED_LOGIN",
+        "code": "NOT_ALLOWED",
         "error": "Unauthorized",
         "message": "you don't have permission to edit subject",
         "statusCode": 401,

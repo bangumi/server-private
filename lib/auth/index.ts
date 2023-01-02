@@ -19,7 +19,7 @@ export const NeedLoginError: SingleMessageErrorConstructor = createError(
   401,
 );
 export const NotAllowedError: SingleMessageErrorConstructor = createError(
-  'NEED_LOGIN',
+  'NOT_ALLOWED',
   `you don't have permission to %s`,
   401,
 );

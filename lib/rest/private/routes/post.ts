@@ -26,7 +26,7 @@ export async function setup(app: App) {
         }),
         tags: [Tag.Group],
         response: {
-          200: t.Void(),
+          200: t.Object({}),
           401: t.Ref(res.Error, {
             'x-examples': formatErrors(NotAllowedError('edit reply')),
           }),
@@ -48,7 +48,7 @@ export async function setup(app: App) {
      * @param text - 回帖内容
      * @param topicID - 帖子 ID
      */
-    async function ({ auth, body: { text }, params: { postID } }): Promise<void> {
+    async function ({ auth, body: { text }, params: { postID } }): Promise<Record<string, never>> {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
       }
@@ -79,9 +79,15 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a deleted reply');
       }
 
+      for (const reply of topic.replies) {
+        if (reply.id === post.id && reply.replies.length > 0) {
+          throw new NotAllowedError('edit a reply with sub-reply');
+        }
+      }
+
       await orm.GroupPostRepo.update({ id: postID }, { content: text });
 
-      return;
+      return {};
     },
   );
 }
