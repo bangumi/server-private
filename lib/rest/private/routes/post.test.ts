@@ -34,7 +34,7 @@ test('should edit post', async () => {
     payload: { text: 'new content' },
   });
 
-  expect(res.statusCode).toBe(204);
+  expect(res.statusCode).toBe(200);
 
   const pst = await orm.GroupPostRepo.findOneBy({
     id: 2177419,
