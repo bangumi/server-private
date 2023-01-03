@@ -1,8 +1,14 @@
+const { register } = require('esbuild-register/dist/node');
+
 const path = require('path');
 
 const rulesDirPlugin = require('eslint-plugin-rulesdir');
 
 rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint');
+
+register({
+  format: 'cjs',
+});
 
 module.exports = {
   extends: [
