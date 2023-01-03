@@ -4,7 +4,7 @@ import path from 'node:path';
 import type { JSONObject } from '@fastify/swagger';
 import swagger from '@fastify/swagger';
 import { Type as t } from '@sinclair/typebox';
-import type { FastifySchema, FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifySchema } from 'fastify';
 import type { OpenAPIV3 } from 'openapi-types';
 
 import { projectRoot, VERSION } from '@app/lib/config';

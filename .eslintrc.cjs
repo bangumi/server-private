@@ -23,7 +23,15 @@ module.exports = {
     'plugin:@typescript-eslint/strict',
     'prettier',
   ],
-  plugins: ['@typescript-eslint', 'import', 'unicorn', 'tsdoc', 'unused-imports', 'rulesdir'],
+  plugins: [
+    '@typescript-eslint',
+    'import',
+    'unicorn',
+    'tsdoc',
+    'unused-imports',
+    'rulesdir',
+    'simple-import-sort',
+  ],
   ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -117,21 +125,32 @@ module.exports = {
       },
     ],
     'import/first': 'error',
+    'import/no-duplicates': 'error',
+    'import/newline-after-import': 'error',
+    'simple-import-sort/imports': [
+      'error',
+      {
+        groups: [
+          // Side effect imports.
+          ['^\\u0000'],
+          // Node.js builtins prefixed with `node:`.
+          ['^node:'],
+          // Absolute imports and other imports such as Vue-style `@/foo`.
+          // Anything not matched in another group.
+          ['^'],
+          // Packages.
+          // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
+          ['^@app/.*'],
+          // Relative imports.
+          // Anything that starts with a dot.
+          ['^\\.'],
+        ],
+      },
+    ],
+    'simple-import-sort/exports': 'error',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '_' }],
     '@typescript-eslint/strict-boolean-expressions': 'off',
-    'import/order': [
-      'error',
-      {
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-          // orderImportKind: 'asc', enable this after new version of eslint-plugin-import
-        },
-        'newlines-between': 'always',
-        groups: ['builtin', 'external', 'internal', ['index', 'sibling', 'parent'], 'object'],
-      },
-    ],
     'no-restricted-syntax': [
       'error',
       // ban just non-const enums

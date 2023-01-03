@@ -1,4 +1,4 @@
-import { test, expect, beforeEach } from 'vitest';
+import { beforeEach, expect, test } from 'vitest';
 
 import { emptyAuth } from '@app/lib/auth';
 import * as orm from '@app/lib/orm';

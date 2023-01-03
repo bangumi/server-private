@@ -1,5 +1,5 @@
 import type { Wiki } from '@bgm38/wiki';
-import { test, expect } from 'vitest';
+import { expect, test } from 'vitest';
 
 import { extractDate, extractFromString } from '@app/lib/subject/date';
 

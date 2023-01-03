@@ -3,7 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { NotFoundError } from '@app/lib/error';
 import { fetchUserByUsername } from '@app/lib/orm';
 import { userToResCreator } from '@app/lib/rest/private/routes/topic';
-import type { Option, App } from '@app/lib/rest/type';
+import type { App, Option } from '@app/lib/rest/type';
 import * as res from '@app/lib/types/res';
 
 // eslint-disable-next-line @typescript-eslint/require-await

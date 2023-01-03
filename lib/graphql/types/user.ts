@@ -1,8 +1,8 @@
-import { objectType, extendType } from 'nexus';
+import { extendType, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context';
-import { fetchUser } from '@app/lib/orm';
 import type { IUser } from '@app/lib/orm';
+import { fetchUser } from '@app/lib/orm';
 import { avatar } from '@app/lib/response';
 import type * as res from '@app/lib/types/res';
 

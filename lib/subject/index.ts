@@ -1,5 +1,5 @@
-import wiki, { WikiSyntaxError } from '@bgm38/wiki';
 import type { Wiki } from '@bgm38/wiki';
+import wiki, { WikiSyntaxError } from '@bgm38/wiki';
 import { createError } from '@fastify/error';
 import dayjs from 'dayjs';
 import { StatusCodes } from 'http-status-codes';

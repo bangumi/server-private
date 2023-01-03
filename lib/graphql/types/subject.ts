@@ -1,4 +1,4 @@
-import { nonNull, objectType, extendType, intArg } from 'nexus';
+import { extendType, intArg, nonNull, objectType } from 'nexus';
 import * as php from 'php-serialize';
 
 import type { Context } from '@app/lib/graphql/context';

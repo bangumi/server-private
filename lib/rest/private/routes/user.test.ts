@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { beforeEach, expect, test, afterEach } from 'vitest';
+import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { emptyAuth } from '@app/lib/auth';
 import * as Notify from '@app/lib/notify';

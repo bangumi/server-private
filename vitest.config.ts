@@ -2,8 +2,8 @@ import 'dotenv/config';
 
 import * as url from 'node:url';
 
-import GithubActionsReporter from 'vitest-github-actions-reporter';
 import { defineConfig } from 'vitest/config';
+import GithubActionsReporter from 'vitest-github-actions-reporter';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 

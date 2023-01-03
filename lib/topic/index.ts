@@ -4,12 +4,12 @@ import * as typeorm from 'typeorm';
 
 import type { IAuth } from '@app/lib/auth';
 import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error';
-import type { IUser, Page, IBaseReply } from '@app/lib/orm';
+import type { IBaseReply, IUser, Page } from '@app/lib/orm';
 import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display';
 
-export { ListTopicDisplays, CanViewTopicContent } from './display';
+export { CanViewTopicContent, ListTopicDisplays } from './display';
 
 export const enum Type {
   group = 'group',

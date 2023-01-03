@@ -68,13 +68,13 @@ export const VERSION = developing ? 'development' : REF || pkg.version;
 
 export {
   HTTPS_PROXY,
-  TURNSTILE_SITE_KEY,
-  TURNSTILE_SECRET_KEY,
+  MYSQL_DB,
   MYSQL_HOST,
+  MYSQL_PASS,
   MYSQL_PORT,
   MYSQL_USER,
-  MYSQL_PASS,
-  MYSQL_DB,
+  TURNSTILE_SECRET_KEY,
+  TURNSTILE_SITE_KEY,
 };
 
 // read config file

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { expect, test, afterEach, beforeEach } from 'vitest';
+import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { SessionRepo } from '@app/lib/orm';
 

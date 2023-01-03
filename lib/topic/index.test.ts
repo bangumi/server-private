@@ -1,4 +1,4 @@
-import { describe, test, vi, expect, afterAll, afterEach } from 'vitest';
+import { afterAll, afterEach, describe, expect, test, vi } from 'vitest';
 
 import { AppDataSource, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
 

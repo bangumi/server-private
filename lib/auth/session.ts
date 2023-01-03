@@ -6,8 +6,8 @@ import { SessionRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
 import { randomBase62String } from '@app/lib/utils';
 
-import * as auth from './index';
 import type { IAuth } from './index';
+import * as auth from './index';
 
 export async function create(user: { id: number; regTime: number }): Promise<string> {
   const now = dayjs().unix();

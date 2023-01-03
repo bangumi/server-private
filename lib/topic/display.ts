@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 import type { IAuth } from '@app/lib/auth';
 import type { IReply } from '@app/lib/topic';
-import { TopicDisplay, CommentState, ReplyState } from '@app/lib/topic';
+import { CommentState, ReplyState, TopicDisplay } from '@app/lib/topic';
 
 export const CanViewStateClosedTopic = 24 * 60 * 60 * 180;
 export const CanViewStateDeleteTopic = 24 * 60 * 60 * 365;
