@@ -1,6 +1,6 @@
 FROM node:18-slim as builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package.json yarn.lock ./
 
@@ -11,8 +11,10 @@ FROM powerman/dockerize:0.17.0 AS dockerize
 
 FROM node:18-slim
 
-COPY --from=dockerize /usr/local/bin/dockerize /usr/bin/dockerize
-
-COPY --from=builder /usr/src/app/ /usr/src/app
+WORKDIR /app
 
 ENV NODE_ENV=production
+
+COPY --from=dockerize /usr/local/bin/dockerize /usr/bin/dockerize
+
+COPY --from=builder /app/ /app
