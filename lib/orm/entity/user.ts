@@ -1,3 +1,4 @@
+import * as lo from 'lodash-es';
 import { Column, Entity, Index, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('username', ['username'], { unique: true })
@@ -50,7 +51,14 @@ export class User {
   })
   newNotify!: number;
 
-  @Column('varchar', { name: 'sign', length: 255 })
+  @Column('varchar', {
+    name: 'sign',
+    length: 255,
+    transformer: {
+      to: (value: string) => lo.escape(value),
+      from: (value: string) => lo.unescape(value),
+    },
+  })
   sign!: string;
 
   @Column('char', { name: 'password_crypt', length: 64 })
