@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 import { createError } from '@fastify/error';
-import * as bcrypt from 'bcrypt';
+import { compare } from '@node-rs/bcrypt';
 import dayjs from 'dayjs';
 import NodeCache from 'node-cache';
 import { FindOperator } from 'typeorm';
@@ -176,5 +176,5 @@ function processPassword(s: string): string {
 }
 
 export async function comparePassword(hashed: string, input: string): Promise<boolean> {
-  return bcrypt.compare(processPassword(input), hashed);
+  return compare(processPassword(input), hashed);
 }
