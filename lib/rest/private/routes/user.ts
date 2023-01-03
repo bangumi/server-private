@@ -9,10 +9,8 @@ import { Security, Tag } from '@app/lib/openapi';
 import { fetchUsers } from '@app/lib/orm';
 import { Subscriber } from '@app/lib/redis';
 import type { App } from '@app/lib/rest/type';
-import { Paged } from '@app/lib/types/res';
+import { Paged, userToResCreator } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
-
-import { userToResCreator } from './topic';
 
 const NoticeRes = t.Object(
   {

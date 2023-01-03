@@ -11,7 +11,7 @@ export async function setup(app: FastifyInstance) {
 
   app.decorateRequest('auth', null);
 
-  await app.register(privateAPI.setup, { prefix: '/p1' });
+  await app.register(privateAPI.setup);
   await app.register(publicAPI.setup, { prefix: '/v0.5' });
 }
 

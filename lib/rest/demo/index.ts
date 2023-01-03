@@ -6,11 +6,12 @@ import { Liquid } from 'liquidjs';
 
 import { production, projectRoot, TURNSTILE_SITE_KEY } from '@app/lib/config';
 import * as Notify from '@app/lib/notify';
-import { fetchUser } from '@app/lib/orm';
-import { avatar } from '@app/lib/response';
+import { fetchUserX } from '@app/lib/orm';
 import type { App } from '@app/lib/rest/type';
+import { userToResCreator } from '@app/lib/types/res';
 
 import * as editor from './editor';
+import * as token from './token';
 
 export async function setup(app: App) {
   const liquid = new Liquid({
@@ -33,7 +34,7 @@ export async function setup(app: App) {
 
   app.get('/', { schema: { hide: true } }, async (req, res) => {
     if (req.auth.login) {
-      const user = await fetchUser(req.auth.userID);
+      const user = await fetchUserX(req.auth.userID);
       const notifyCount = await Notify.count(req.auth.userID);
 
       let notify: Notify.INotify[] = [];
@@ -42,7 +43,7 @@ export async function setup(app: App) {
       }
 
       await res.view('user', {
-        user: { ...user, avatar: avatar(user?.img ?? '') },
+        user: userToResCreator(user),
         notifyCount,
         notify,
       });
@@ -56,4 +57,5 @@ export async function setup(app: App) {
   });
 
   editor.setup(app);
+  token.setup(app);
 }

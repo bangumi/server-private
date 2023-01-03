@@ -77,15 +77,13 @@
               );
           } else {
             console.log(d);
-            d.details.forEach((detail, index) => {
-              $('.error-details').prepend(
-                `<li class="m-1 list-group-item list-group-item-danger">${detail}</li>`,
-              );
-            });
+            $('.error-details').prepend(
+              `<li class="m-1 list-group-item list-group-item-danger">${d.message}</li>`,
+            );
           }
         } else {
           console.log(await res.json());
-          location.href = '/p1/demo/';
+          location.href = '/demo/';
         }
       }
 

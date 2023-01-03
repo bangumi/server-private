@@ -10,6 +10,7 @@ import type { ReplyState, TopicDisplay } from '@app/lib/topic';
 
 import * as entity from './entity';
 import {
+  App,
   Episode,
   Friends,
   Group,
@@ -63,6 +64,7 @@ export const AppDataSource = new DataSource({
     logMigration() {},
   },
   entities: [
+    App,
     User,
     UserField,
     OauthAccessTokens,
@@ -93,6 +95,7 @@ export const EpisodeRepo = AppDataSource.getRepository(Episode);
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
+export const AppRepo = AppDataSource.getRepository(App);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
 export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
 

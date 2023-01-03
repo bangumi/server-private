@@ -1,3 +1,4 @@
+export * from './app';
 export * from './auth';
 export * from './episode';
 export * from './group';

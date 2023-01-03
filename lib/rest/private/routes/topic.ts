@@ -7,7 +7,7 @@ import { dam } from '@app/lib/dam';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
-import type { IBaseReply, IUser, Page } from '@app/lib/orm';
+import type { IBaseReply, Page } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import { GroupMemberRepo, GroupRepo, isMemberInGroup } from '@app/lib/orm';
 import { avatar, groupIcon } from '@app/lib/response';
@@ -17,7 +17,7 @@ import type { ITopic } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
 import { NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
-import { formatErrors } from '@app/lib/types/res';
+import { formatErrors, userToResCreator } from '@app/lib/types/res';
 
 const Group = t.Object(
   {
@@ -627,15 +627,4 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
   const [_, members] = await fetchGroupMemberList(groupID, { limit: 6, type: 'all' });
 
   return members;
-}
-
-export function userToResCreator(user: IUser): Static<typeof res.User> {
-  return {
-    avatar: avatar(user.img),
-    username: user.username,
-    nickname: user.nickname,
-    id: user.id,
-    sign: user.sign,
-    user_group: user.groupID,
-  };
 }

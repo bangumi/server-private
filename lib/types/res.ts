@@ -3,6 +3,9 @@ import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
+import type * as orm from '@app/lib/orm';
+import { avatar } from '@app/lib/response';
+
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
   {
@@ -82,4 +85,15 @@ export function formatErrors(
       return [e.code, { value: formatError(e) }];
     }),
   );
+}
+
+export function userToResCreator(user: orm.IUser): IUser {
+  return {
+    avatar: avatar(user.img),
+    username: user.username,
+    nickname: user.nickname,
+    id: user.id,
+    sign: user.sign,
+    user_group: user.groupID,
+  };
 }

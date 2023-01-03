@@ -1,0 +1,55 @@
+{% assign title = '个人令牌' %}
+{% layout 'layout' %}
+
+{% block content %}
+<div class='container mt-5'>
+  <div class='row'>
+    <a href='/demo/access-token/create'>创建个人令牌</a>
+  </div>
+  <br>
+  <div class='row'>
+    <ul class='list-group'>
+      {% for token in tokens %}
+        <li
+          class='list-group-item d-flex justify-content-between align-items-center'
+          id='token-{{ token.id }}'
+        >
+          <div class=''>
+            <div class='fw-bold'>{{ token.name }}</div>
+            <span>
+              创建日期： {{ token.createdAt | date: '%Y-%m-%d %H:%M:%S', 'Asia/Colombo' -}}
+            </span>
+            <span> 有效期至： {{ token.expires | date: '%Y-%m-%d %H:%M:%S', 'Asia/Colombo' }}</span>
+          </div>
+          <button class='btn btn-danger' onclick="revoke('{{ token.id }}')">delete</button>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+  async function revoke(token_id) {
+    const row = $(`#token-${token_id}`);
+    row.find('button').addClass('disabled');
+
+    const res = await fetch('/demo/access-tokens', {
+      method: 'delete',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: parseInt(token_id, 10) }),
+    });
+
+    if (res.status === 204) {
+      row.remove();
+      return;
+    }
+
+    const data = await res.json();
+    alert(JSON.stringify(data));
+    row.find('button').removeClass('disabled');
+  }
+</script>
+
+{% endblock %}
