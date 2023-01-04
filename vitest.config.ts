@@ -25,8 +25,7 @@ export default defineConfig({
     },
     coverage: {
       provider: 'c8',
-      exclude: ['/node_modules/', 'lib/generated/'],
-      reporter: ['lcov', 'text-summary', 'html-spa'],
+      reporter: ['lcov', 'text-summary'],
     },
   },
 });
