@@ -3,6 +3,7 @@ export * from './auth';
 export * from './episode';
 export * from './group';
 export * from './notify';
+export * from './oauth-client';
 export * from './subject';
 export * from './subject-rev';
 export * from './user';

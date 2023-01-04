@@ -91,11 +91,11 @@ export function setup(app: App) {
         expires: typeorm.MoreThan(new Date()),
       });
 
-      const clients = await orm.AppRepo.findBy({
-        appId: typeorm.In(tokens.map((x) => x.clientId)),
+      const clients = await orm.OauthClientRepo.findBy({
+        clientID: typeorm.In(tokens.map((x) => x.clientId)),
       });
 
-      const cm = Object.fromEntries(clients.map((x) => [x.appId, x]));
+      const cm = Object.fromEntries(clients.map((x) => [x.clientID, x]));
 
       const user = await orm.fetchUserX(req.auth.userID);
 
@@ -130,12 +130,12 @@ export function setup(app: App) {
 
 function info(
   token: entity.OauthAccessTokens,
-  client?: entity.App,
+  client?: entity.OauthClient,
 ): { createdAt: Date; name: string } {
   if (token.type === TokenType.OauthToken) {
     return {
       createdAt: dayjs(token.expires).add(-168, 'hour').toDate(),
-      name: client?.appName ?? '',
+      name: client?.app.appName ?? '',
     };
   }
 

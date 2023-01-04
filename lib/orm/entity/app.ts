@@ -6,7 +6,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('chii_apps', { schema: 'bangumi' })
 export class App {
   @PrimaryGeneratedColumn({ type: 'mediumint', name: 'app_id' })
-  appId!: number;
+  appID!: number;
 
   @Column('tinyint', { name: 'app_type', width: 1 })
   appType!: boolean;

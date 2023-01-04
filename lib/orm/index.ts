@@ -20,6 +20,7 @@ import {
   Notify,
   NotifyField,
   OauthAccessTokens,
+  OauthClient,
   Subject,
   SubjectFields,
   SubjectRev,
@@ -76,6 +77,7 @@ export const AppDataSource = new DataSource({
     Group,
     GroupMembers,
     Episode,
+    OauthClient,
     Subject,
     SubjectFields,
     GroupTopic,
@@ -96,6 +98,7 @@ export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const AppRepo = AppDataSource.getRepository(App);
+export const OauthClientRepo = AppDataSource.getRepository(OauthClient);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
 export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
 
