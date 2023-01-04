@@ -14,7 +14,7 @@ jobs:
       IMAGE: 'ghcr.io/${{ github.repository_owner }}/graphql'
 
     concurrency:
-      group: release-docker
+      group: ${{ github.workflow }}-${{ github.sha }}
       cancel-in-progress: false
 
     steps:
