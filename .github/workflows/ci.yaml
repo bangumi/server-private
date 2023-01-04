@@ -49,7 +49,6 @@ jobs:
       - run: yarn test --coverage
         timeout-minutes: 1
         env:
-          HCAPTCHA_SECRET_KEY: '0x0000000000000000000000000000000000000000'
           MYSQL_HOST: '127.0.0.1'
           MYSQL_PORT: '3306'
           MYSQL_USER: 'user'
