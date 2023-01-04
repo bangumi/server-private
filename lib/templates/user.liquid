@@ -33,7 +33,7 @@
   </div>
   <script>
     async function logout() {
-      await fetch('/p1/logout', { method: 'post' });
+      await fetch('/p1/logout', { method: 'post', credentials: 'same-origin' });
       location.reload();
     }
   </script>
@@ -47,10 +47,16 @@
     reconnection: true,
     reconnectionDelay: 5000,
     reconnectionDelayMax: 10000,
+    transports: ['websocket'],
   });
 
   socket.on('notify', (ev) => {
     console.log(ev);
+  });
+
+  socket.on('connect_error', () => {
+    // revert to classic upgrade
+    socket.io.opts.transports = ['polling', 'websocket'];
   });
 </script>
 {% endblock %}

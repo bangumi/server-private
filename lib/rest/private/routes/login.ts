@@ -10,11 +10,12 @@ import { Tag } from '@app/lib/openapi';
 import { UserRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
 import { avatar } from '@app/lib/response';
+import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as res from '@app/lib/types/res';
 import Limiter from '@app/lib/utils/rate-limit';
 
-export const CookieKey = 'sessionID';
+export const CookieKey = 'chiiNextSessionID';
 
 const TooManyRequestsError = createError(
   'TOO_MANY_REQUESTS',
@@ -62,18 +63,19 @@ export async function setup(app: App) {
           }),
         },
       },
+      preHandler: [requireLogin('logout')],
     },
     async (req, res) => {
       if (!req.auth.login) {
         throw new NeedLoginError('logout');
       }
 
-      if (!req.cookies.sessionID) {
-        throw new Error('missing cookies sessionID');
+      if (!req.cookies.chiiNextSessionID) {
+        throw new Error('missing cookies chiiNextSessionID');
       }
 
+      await session.revoke(req.cookies.chiiNextSessionID);
       void res.clearCookie(CookieKey);
-      await session.revoke(req.cookies.sessionID);
     },
   );
 
@@ -93,7 +95,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Ref(res.User, {
             headers: {
-              'Set-Cookie': t.String({ description: 'example: "sessionID=12345abc"' }),
+              'Set-Cookie': t.String({ description: 'example: "chiiNextSessionID=12345abc"' }),
             },
           }),
           400: t.Ref(res.ValidationError),
@@ -165,7 +167,11 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         regTime: user.regdate,
       });
 
-      void reply.cookie(CookieKey, token, { sameSite: 'strict', path: '/' });
+      void reply.cookie(CookieKey, token, {
+        sameSite: 'strict',
+        path: '/',
+        maxAge: 24 * 60 * 60 * 30,
+      });
 
       return {
         ...user,

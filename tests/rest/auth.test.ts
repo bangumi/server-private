@@ -34,7 +34,7 @@ test('should pass login/logout authorization flow', async () => {
   expect(res.statusCode).toBe(200);
 
   const cookieValue = (res.cookies as { name: string; value: string }[]).find(
-    (x) => x.name === 'sessionID',
+    (x) => x.name === 'chiiNextSessionID',
   )?.value;
 
   expect(cookieValue).toBeDefined();
@@ -46,7 +46,7 @@ test('should pass login/logout authorization flow', async () => {
   const currentRes = await app.inject({
     method: 'get',
     url: '/p1/me',
-    cookies: { sessionID: cookieValue },
+    cookies: { chiiNextSessionID: cookieValue },
   });
 
   expect(currentRes.json()).toMatchObject(treeHoleUser);
@@ -54,13 +54,13 @@ test('should pass login/logout authorization flow', async () => {
   const logout = await app.inject({
     method: 'post',
     url: '/p1/logout',
-    cookies: { sessionID: cookieValue },
+    cookies: { chiiNextSessionID: cookieValue },
   });
 
   expect(logout.statusCode).toBe(200);
   expect(logout.cookies).toContainEqual(
     expect.objectContaining({
-      name: 'sessionID',
+      name: 'chiiNextSessionID',
       value: '',
     }),
   );
@@ -68,7 +68,7 @@ test('should pass login/logout authorization flow', async () => {
   const currentUser2 = await app.inject({
     method: 'get',
     url: '/p1/me',
-    cookies: { sessionID: cookieValue },
+    cookies: { chiiNextSessionID: cookieValue },
   });
 
   expect(currentUser2.statusCode).toBe(401);

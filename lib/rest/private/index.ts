@@ -21,12 +21,12 @@ export async function setup(app: App) {
   });
 
   void app.addHook('preHandler', async (req, res) => {
-    if (!req.cookies.sessionID) {
+    if (!req.cookies.chiiNextSessionID) {
       req.auth = emptyAuth();
       return;
     }
 
-    const a = await session.get(req.cookies.sessionID);
+    const a = await session.get(req.cookies.chiiNextSessionID);
     if (!a) {
       void res.clearCookie(CookieKey);
       req.auth = emptyAuth();
