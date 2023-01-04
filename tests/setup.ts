@@ -10,19 +10,6 @@ vi.mock('@app/lib/redis', () => {
   };
 });
 
-vi.mock('@app/lib/externals/hcaptcha', () => {
-  return {
-    createHCaptchaDriver: () => {
-      return { verify: (res: string) => Promise.resolve(res === 'fake-response') };
-    },
-    HCaptcha: class {
-      verify(res: string): Promise<boolean> {
-        return Promise.resolve(res === 'fake-response');
-      }
-    },
-  };
-});
-
 vi.mock('@app/lib/externals/turnstile', () => {
   return {
     createTurnstileDriver: () => {
