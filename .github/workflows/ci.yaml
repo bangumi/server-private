@@ -47,7 +47,7 @@ jobs:
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
 
       - run: yarn test --coverage
-        timeout-minutes: 10
+        timeout-minutes: 1
         env:
           HCAPTCHA_SECRET_KEY: '0x0000000000000000000000000000000000000000'
           MYSQL_HOST: '127.0.0.1'
