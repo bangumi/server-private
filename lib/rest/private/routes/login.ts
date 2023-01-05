@@ -168,7 +168,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       });
 
       void reply.cookie(CookieKey, token, {
-        sameSite: 'strict',
+        sameSite: 'lax',
         path: '/',
         maxAge: 24 * 60 * 60 * 30,
       });
