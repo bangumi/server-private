@@ -12,8 +12,23 @@ export class DATE {
   }
 
   toString(): string {
-    return `${this.year?.toString().padStart(4, '0') ?? '0000'}-${
-      this.month?.toString().padStart(2, '0') ?? '00'
-    }-${this.day?.toString().padStart(2, '0') ?? '00'}`;
+    if (!this.year) {
+      return '';
+    }
+
+    let s = this.year.toString().padStart(4, '0');
+    if (!this.month) {
+      return s;
+    }
+
+    s += `-${this.month.toString().padStart(2, '0')}`;
+
+    if (!this.day) {
+      return s;
+    }
+
+    s += `-${this.day.toString().padStart(2, '0')}`;
+
+    return s;
   }
 }
