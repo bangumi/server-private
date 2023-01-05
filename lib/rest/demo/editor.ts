@@ -1,28 +1,34 @@
 import { NotFoundError } from '@app/lib/error';
+import { fetchUserX } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
+import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import { platforms } from '@app/lib/subject';
+import { userToResCreator } from '@app/lib/types/res';
 
 export function setup(app: App) {
   app.get(
     '/subject/184017/edit',
     {
-      websocket: false,
       schema: {
         hide: true,
-        // params: t.Object({
-        //   subjectID: t.Integer({ exclusiveMinimum: 0 }),
-        // }),
       },
+      preHandler: [requireLogin('edit a subject')],
     },
-    async (_, res) => {
+    async ({ auth }, res) => {
       const subjectID = 184017;
       const s = await orm.fetchSubject(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
+      let user;
+      if (auth.login) {
+        user = userToResCreator(await fetchUserX(auth.userID));
+      }
+
       await res.view('editor', {
+        user,
         subjectID,
         name: s.name,
         platformID: s.platform,

@@ -7,7 +7,7 @@
 <div class='container mt-5'>
   <div class='row'>
     <label for='name'></label>
-    <input type='text' id='name' placeholder='name' value='{{ name }}'>
+    <input type='text' id='name' placeholder='name' value='{{ name | escape }}'>
   </div>
   <br>
   <div class='row'>
@@ -34,7 +34,11 @@
   <br>
   <div class='row'>
     <label for='summary'></label>
-    <textarea name='summary' id='summary' style='width: 100%; height: 20vh'>{{ summary }}</textarea>
+    <textarea
+      name='summary'
+      id='summary'
+      style='width: 100%; height: 20vh'
+    >{{ summary | escape }}</textarea>
   </div>
   <br>
   <div class='row'>
