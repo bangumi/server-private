@@ -137,10 +137,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       },
     },
     async function handler(
-      { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, clientIP },
+      { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, ip },
       reply,
     ): Promise<res.IUser> {
-      const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${clientIP}`);
+      const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${ip}`);
       void reply.headers({
         'X-RateLimit-Remaining': remain,
         'X-RateLimit-Limit': LimitInTimeWindow,

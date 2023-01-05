@@ -14,13 +14,6 @@ import { schema } from './graphql/schema';
 import { repo } from './orm';
 import * as rest from './rest';
 
-declare module 'fastify' {
-  interface FastifyRequest {
-    /** ClientIp provided by cloudflare */
-    clientIP: string;
-  }
-}
-
 export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   if (production || stage) {
     opts.requestIdHeader ??= 'cf-ray';
@@ -45,7 +38,6 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
   const server = fastify(opts);
 
   server.setErrorHandler(function (error, request, reply) {
-    request.clientIP;
     // hide TypeORM message
     if (error instanceof TypeORMError) {
       this.log.error(error);
@@ -59,22 +51,20 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
     }
   });
 
-  server.decorateRequest('clientIP', '');
-
   server.addHook('onRequest', (req, res, done) => {
     void res.header('x-server-version', VERSION);
     done();
   });
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  server.addHook('preHandler', async (req) => {
-    const cfClientIp = req.headers['cf-connecting-ip'] as string | undefined;
-    if (cfClientIp) {
-      req.clientIP = cfClientIp;
-      return;
-    }
+  server.decorateRequest('ip', {
+    getter: function (this: FastifyRequest): string {
+      const cfClientIp = this.headers['cf-connecting-ip'] as string | undefined;
+      if (cfClientIp) {
+        return cfClientIp;
+      }
 
-    req.clientIP = req.ip;
+      return this.connection.remoteAddress ?? '0.0.0.0';
+    },
   });
 
   if (!testing) {
