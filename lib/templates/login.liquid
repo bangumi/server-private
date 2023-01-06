@@ -83,7 +83,10 @@
           }
         } else {
           console.log(await res.json());
-          location.href = '/demo/';
+
+          let qs = new URLSearchParams(location.search);
+
+          location.href = qs.get('to') ?? '/demo/';
         }
       }
 

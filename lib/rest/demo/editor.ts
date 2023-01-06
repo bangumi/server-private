@@ -1,7 +1,7 @@
 import { NotFoundError } from '@app/lib/error';
 import { fetchUserX } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
-import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
+import { redirectIfNotLogin } from '@app/lib/rest/demo/hooks';
 import type { App } from '@app/lib/rest/type';
 import { platforms } from '@app/lib/subject';
 import { userToResCreator } from '@app/lib/types/res';
@@ -13,7 +13,7 @@ export function setup(app: App) {
       schema: {
         hide: true,
       },
-      preHandler: [requireLogin('edit a subject')],
+      preHandler: [redirectIfNotLogin],
     },
     async ({ auth }, res) => {
       const subjectID = 184017;
