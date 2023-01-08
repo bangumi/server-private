@@ -63,6 +63,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - run: docker build -t base-image -f etc/base.dockerfile .
+      - run: |
+          export "TAG_HASH=${DOCKER_FILE_HASH:0:10}-${LOCK_FILE_HASH:0:10}"
+
+          if ! docker pull "${IMAGE}:base-${TAG_HASH}"; then
+            echo "build base docker image"
+            docker build -t "${IMAGE}:base-${TAG_HASH}" -f etc/base.dockerfile .
+          fi
+
+          docker tag "${IMAGE}:base-${TAG_HASH}" base-image
+
+        env:
+          LOCK_FILE_HASH: "${{ hashFiles('yarn.lock') }}"
+          DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
+          IMAGE: 'ghcr.io/bangumi/graphql'
+
+        name: build base docker image
       - run: docker build -t tmp -f etc/main.dockerfile .
       - run: docker run tmp --help
