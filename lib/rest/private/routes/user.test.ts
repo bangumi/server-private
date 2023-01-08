@@ -1,10 +1,10 @@
+import { DateTime } from 'luxon';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { emptyAuth } from '@app/lib/auth';
 import * as Notify from '@app/lib/notify';
 import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm';
 import { createTestServer } from '@app/tests/utils';
-import dayjs from '@app/vendor/dayjs';
 
 import { setup } from './user';
 
@@ -23,7 +23,7 @@ test('should list notify', async () => {
     destUserID: 287622,
     sourceUserID: 382951,
     topicID: 2,
-    now: dayjs(),
+    now: DateTime.now(),
     type: Notify.Type.GroupTopicReply,
     title: 'tt',
     postID: 1,

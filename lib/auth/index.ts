@@ -2,6 +2,7 @@ import * as crypto from 'node:crypto';
 
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
+import { DateTime } from 'luxon';
 import { FindOperator } from 'typeorm';
 
 import { redisPrefix } from '@app/lib/config';
@@ -9,7 +10,6 @@ import type { SingleMessageErrorConstructor } from '@app/lib/error';
 import type { IUser, Permission } from '@app/lib/orm';
 import { AccessTokenRepo, fetchPermission, fetchUser } from '@app/lib/orm';
 import redis from '@app/lib/redis';
-import dayjs from '@app/vendor/dayjs';
 import NodeCache from '@app/vendor/node-cache';
 
 const tokenPrefix = 'Bearer ';
@@ -165,7 +165,7 @@ async function userToAuth(user: IUser): Promise<IAuth> {
     userID: user.id,
     login: true,
     permission: await getPermission(user.groupID),
-    allowNsfw: user.regTime - dayjs().unix() <= 60 * 60 * 24 * 90,
+    allowNsfw: user.regTime - DateTime.now().toUnixInteger() <= 60 * 60 * 24 * 90,
     regTime: user.regTime,
     groupID: user.groupID,
   };

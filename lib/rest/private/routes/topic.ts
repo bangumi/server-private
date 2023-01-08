@@ -1,5 +1,6 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { DateTime } from 'luxon';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { dam } from '@app/lib/dam';
@@ -17,7 +18,6 @@ import * as Topic from '@app/lib/topic';
 import { NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
 import { formatErrors, userToResCreator } from '@app/lib/types/res';
-import dayjs from '@app/vendor/dayjs';
 
 const Group = t.Object(
   {
@@ -498,7 +498,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('reply to a closed topic');
       }
 
-      const now = dayjs();
+      const now = DateTime.now();
 
       let parentID = 0;
       let dstUserID = topic.creatorID;

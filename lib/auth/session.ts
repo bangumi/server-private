@@ -1,19 +1,19 @@
+import { DateTime } from 'luxon';
 import * as typeorm from 'typeorm';
 
 import { redisPrefix } from '@app/lib/config';
 import { SessionRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
 import { randomBase62String } from '@app/lib/utils';
-import dayjs from '@app/vendor/dayjs';
 
 import type { IAuth } from './index';
 import * as auth from './index';
 
 export async function create(user: { id: number; regTime: number }): Promise<string> {
-  const now = dayjs().unix();
+  const now = DateTime.now().toUnixInteger();
   const token = await randomBase62String(32);
   const value = {
-    reg_time: dayjs().toISOString(),
+    reg_time: DateTime.now().toISOTime(),
     user_id: user.id,
     created_at: now,
     expired_at: now + 60 * 60 * 24 * 7,
@@ -45,7 +45,7 @@ export async function get(sessionID: string): Promise<IAuth | null> {
   }
 
   const session = await SessionRepo.findOne({
-    where: { key: sessionID, expiredAt: typeorm.MoreThanOrEqual(dayjs().unix()) },
+    where: { key: sessionID, expiredAt: typeorm.MoreThanOrEqual(DateTime.now().toUnixInteger()) },
   });
   if (!session) {
     return null;
@@ -65,5 +65,8 @@ export async function revoke(sessionID: string) {
   const key = `${redisPrefix}-auth-session-${sessionID}`;
   await redis.del(key);
 
-  await SessionRepo.update({ key: sessionID }, { expiredAt: dayjs().unix() - 60 * 60 });
+  await SessionRepo.update(
+    { key: sessionID },
+    { expiredAt: DateTime.now().toUnixInteger() - 60 * 60 },
+  );
 }

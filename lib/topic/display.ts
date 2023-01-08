@@ -1,7 +1,8 @@
+import { DateTime } from 'luxon';
+
 import type { IAuth } from '@app/lib/auth';
 import type { IReply } from '@app/lib/topic';
 import { CommentState, ReplyState, TopicDisplay } from '@app/lib/topic';
-import dayjs from '@app/vendor/dayjs';
 
 export const CanViewStateClosedTopic = 24 * 60 * 60 * 180;
 export const CanViewStateDeleteTopic = 24 * 60 * 60 * 365;
@@ -70,11 +71,11 @@ export function CanViewTopicContent(
 }
 
 function CanViewDeleteTopic(a: IAuth): boolean {
-  return dayjs().unix() - a.regTime > CanViewStateDeleteTopic;
+  return DateTime.now().toUnixInteger() - a.regTime > CanViewStateDeleteTopic;
 }
 
 function CanViewClosedTopic(a: IAuth): boolean {
-  return dayjs().unix() - a.regTime > CanViewStateClosedTopic;
+  return DateTime.now().toUnixInteger() - a.regTime > CanViewStateClosedTopic;
 }
 
 export function filterReply(x: IReply): IReply {

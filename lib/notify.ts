@@ -1,5 +1,5 @@
-import type { Dayjs } from 'dayjs';
 import * as lodash from 'lodash-es';
+import type { DateTime } from 'luxon';
 import * as php from 'php-serialize';
 import * as typeorm from 'typeorm';
 import type { Repository } from 'typeorm/repository/Repository';
@@ -57,7 +57,7 @@ export const enum Type {
 interface Creation {
   destUserID: number;
   sourceUserID: number;
-  now: Dayjs;
+  now: DateTime;
   type: Type;
   /** 对应回帖所对应 post id */
   postID: number;
@@ -113,7 +113,7 @@ export async function create({
     uid: destUserID,
     from_uid: sourceUserID,
     unread: true,
-    dateline: now.unix(),
+    dateline: now.toUnixInteger(),
     type,
     notify_field_id: notifyField.id,
     postID,

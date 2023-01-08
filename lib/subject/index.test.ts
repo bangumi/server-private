@@ -1,8 +1,8 @@
+import { DateTime } from 'luxon';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AppDataSource, SubjectRepo, SubjectRevRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
-import dayjs from '@app/vendor/dayjs';
 
 import * as Subject from '.';
 import { SubjectType } from '.';
@@ -43,7 +43,7 @@ describe('should update subject', () => {
   });
 
   test('should update subject', async () => {
-    const now = dayjs();
+    const now = DateTime.now();
 
     await Subject.edit({
       subjectID: 363612,
@@ -59,7 +59,7 @@ describe('should update subject', () => {
 
     expect(subjectRevMock).toBeCalledWith({
       commitMessage: 'cm',
-      createdAt: now.unix(),
+      createdAt: now.toUnixInteger(),
       creatorID: 2,
       infobox: '{{Infobox q }}',
       name: 'q',
@@ -81,7 +81,7 @@ describe('should update subject', () => {
         name: 'q',
         nameCN: '',
         platform: 3,
-        updatedAt: now.unix(),
+        updatedAt: now.toUnixInteger(),
       },
     );
 

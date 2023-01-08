@@ -2,6 +2,7 @@ import type { Wiki } from '@bgm38/wiki';
 import wiki, { WikiSyntaxError } from '@bgm38/wiki';
 import { createError } from '@fastify/error';
 import { StatusCodes } from 'http-status-codes';
+import { DateTime } from 'luxon';
 
 import { BadRequestError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
@@ -9,7 +10,6 @@ import { AppDataSource, SubjectRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { extractDate } from '@app/lib/subject/date';
 import { DATE } from '@app/lib/utils/date';
-import dayjs from '@app/vendor/dayjs';
 
 import type { Platform } from './platform';
 import platform from './platform';
@@ -40,7 +40,7 @@ interface Create {
   commitMessage: string;
   userID: number;
   date?: string;
-  now?: dayjs.Dayjs;
+  now?: DateTime;
 }
 
 export async function edit({
@@ -52,7 +52,7 @@ export async function edit({
   commitMessage,
   date,
   userID,
-  now = dayjs(),
+  now = DateTime.now(),
 }: Create): Promise<void> {
   if (!SandBox.has(subjectID)) {
     return;
@@ -108,7 +108,7 @@ export async function edit({
       name,
       platform,
       nameCN,
-      createdAt: now.unix(),
+      createdAt: now.toUnixInteger(),
       commitMessage,
     });
 
@@ -123,7 +123,7 @@ export async function edit({
         nameCN: nameCN,
         fieldSummary: summary,
         fieldInfobox: infobox,
-        updatedAt: now.unix(),
+        updatedAt: now.toUnixInteger(),
       },
     );
 

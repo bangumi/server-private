@@ -1,4 +1,5 @@
 import { Type as t } from '@sinclair/typebox';
+import { DateTime, Duration } from 'luxon';
 import * as typeorm from 'typeorm';
 
 import { NotAllowedError } from '@app/lib/auth';
@@ -9,7 +10,6 @@ import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as res from '@app/lib/types/res';
 import { randomBase62String } from '@app/lib/utils';
-import dayjs from '@app/vendor/dayjs';
 
 export const enum TokenType {
   OauthToken = 0,
@@ -65,13 +65,15 @@ export function setup(app: App) {
       const token = await randomBase62String(40);
       await orm.AccessTokenRepo.insert({
         userId: auth.userID.toString(),
-        expires: dayjs().add(duration_days, 'day').toDate(),
+        expires: DateTime.now()
+          .plus(Duration.fromObject({ day: duration_days }))
+          .toJSDate(),
         type: TokenType.AccessToken,
         clientId: '',
         accessToken: token,
         info: JSON.stringify({
           name: name,
-          created_at: dayjs().toISOString(),
+          created_at: new Date().toISOString(),
         } satisfies TokenInfo),
       });
 
@@ -106,7 +108,6 @@ export function setup(app: App) {
           return {
             ...x,
             ...info(x, client),
-            expires: dayjs(x.expires).toDate(),
             client,
           };
         }),
@@ -134,7 +135,9 @@ function info(
 ): { createdAt: Date; name: string } {
   if (token.type === TokenType.OauthToken) {
     return {
-      createdAt: dayjs(token.expires).add(-168, 'hour').toDate(),
+      createdAt: DateTime.fromJSDate(token.expires)
+        .plus(Duration.fromObject({ hour: -168 }))
+        .toJSDate(),
       name: client?.app.appName ?? '',
     };
   }
@@ -142,7 +145,7 @@ function info(
   const info = JSON.parse(token.info) as TokenInfo;
 
   return {
-    createdAt: dayjs(info.created_at).toDate(),
+    createdAt: DateTime.fromISO(info.created_at).toJSDate(),
     name: info.name,
   };
 }

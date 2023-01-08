@@ -1,4 +1,5 @@
 import { fastify } from 'fastify';
+import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import type { IAuth } from '@app/lib/auth';
@@ -10,7 +11,6 @@ import type { ITopicDetails } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
 import { ReplyState, TopicDisplay } from '@app/lib/topic';
 import { createTestServer } from '@app/tests/utils';
-import dayjs from '@app/vendor/dayjs';
 
 import * as topicAPI from './topic';
 
@@ -160,7 +160,7 @@ describe('create group post reply', () => {
     id: 6,
     content: '',
     state: ReplyState.Normal,
-    createdAt: dayjs('2021-10-21').unix(),
+    createdAt: DateTime.fromISO('2021-10-21').toUnixInteger(),
     type: Topic.Type.group,
     topicID: 371602,
     user: {
@@ -169,7 +169,7 @@ describe('create group post reply', () => {
       groupID: UserGroup.Normal,
       id: 9,
       nickname: 'n',
-      regTime: dayjs('2008-10-01').unix(),
+      regTime: DateTime.fromISO('2008-10-01').toUnixInteger(),
       sign: '',
     },
   });
@@ -190,7 +190,7 @@ describe('create group post reply', () => {
           id: id,
           title: 't',
           display: TopicDisplay.Normal,
-          createdAt: dayjs().unix(),
+          createdAt: DateTime.now().toUnixInteger(),
           text: 't',
           state: ReplyState.Normal,
           parentID: 1,

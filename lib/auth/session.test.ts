@@ -1,7 +1,7 @@
+import { DateTime } from 'luxon';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { SessionRepo } from '@app/lib/orm';
-import dayjs from '@app/vendor/dayjs';
 
 import { create, get, revoke } from './session';
 
@@ -16,7 +16,7 @@ afterEach(async () => {
 test('should create and get session', async () => {
   const token = await create({
     id: 382951,
-    regTime: dayjs('2010-01-10 10:05:20').unix(),
+    regTime: DateTime.fromISO('2010-01-10 10:05:20').toUnixInteger(),
   });
 
   const session = await SessionRepo.findOne({ where: { key: token } });
@@ -39,8 +39,8 @@ test('should revoke session', async () => {
     key: token,
     value: Buffer.from(''),
     userID: 0,
-    createdAt: dayjs().unix(),
-    expiredAt: dayjs().unix() + 60 * 60 * 242 * 30,
+    createdAt: DateTime.now().toUnixInteger(),
+    expiredAt: DateTime.now().toUnixInteger() + 60 * 60 * 242 * 30,
   });
 
   await revoke(token);

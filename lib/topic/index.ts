@@ -1,4 +1,5 @@
 import { createError } from '@fastify/error';
+import { DateTime } from 'luxon';
 import * as typeorm from 'typeorm';
 
 import type { IAuth } from '@app/lib/auth';
@@ -7,7 +8,6 @@ import type { IBaseReply, IUser, Page } from '@app/lib/orm';
 import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display';
-import dayjs from '@app/vendor/dayjs';
 
 export { CanViewTopicContent, ListTopicDisplays } from './display';
 
@@ -223,7 +223,7 @@ export async function createTopicReply({
     throw new UnimplementedError('creating group reply');
   }
 
-  const now = dayjs();
+  const now = DateTime.now();
 
   const p = await AppDataSource.transaction(async (t) => {
     const GroupPostRepo = t.getRepository(entity.GroupPost);
@@ -238,7 +238,7 @@ export async function createTopicReply({
       uid: userID,
       related: parentID,
       state,
-      dateline: now.unix(),
+      dateline: now.toUnixInteger(),
     });
 
     const topicUpdate = {
@@ -247,7 +247,7 @@ export async function createTopicReply({
     };
 
     if (topic.state !== ReplyState.AdminSilentTopic) {
-      topicUpdate.dateline = scoredUpdateTime(now.unix(), topicType, topic);
+      topicUpdate.dateline = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
     }
 
     await GroupTopicRepo.update({ id: topic.id }, topicUpdate);

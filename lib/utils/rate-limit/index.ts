@@ -1,12 +1,13 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import * as url from 'node:url';
 
 import type { Redis } from 'ioredis';
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import { projectRoot } from '@app/lib/config';
 
-const luaScript = fs.readFileSync(path.join(__dirname, './lua/get_token.lua')).toString();
+const luaScript = fs
+  .readFileSync(path.join(projectRoot, 'lib/utils/rate-limit/lua/get_token.lua'))
+  .toString();
 
 export default class Limiter {
   private readonly redisClient: Redis;

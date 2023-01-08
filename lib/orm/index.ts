@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import * as php from 'php-serialize';
 import { DataSource } from 'typeorm';
 import * as typeorm from 'typeorm';
@@ -6,7 +7,6 @@ import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '@app/l
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
 import type { ReplyState, TopicDisplay } from '@app/lib/topic';
-import dayjs from '@app/vendor/dayjs';
 
 import * as entity from './entity';
 import {
@@ -408,7 +408,7 @@ interface PostCreation {
 }
 
 export async function createPostInGroup(post: PostCreation): Promise<{ id: number }> {
-  const now = dayjs();
+  const now = DateTime.now();
 
   return await AppDataSource.transaction(async (t) => {
     const GroupTopicRepo = t.getRepository(entity.GroupTopic);
@@ -419,15 +419,15 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
       gid: post.groupID,
       creatorID: post.userID,
       state: post.state,
-      lastpost: now.unix(),
-      dateline: now.unix(),
+      lastpost: now.toUnixInteger(),
+      dateline: now.toUnixInteger(),
       replies: 0,
       display: post.display,
     });
 
     await GroupPostRepo.insert({
       topicID: topic.id,
-      dateline: now.unix(),
+      dateline: now.toUnixInteger(),
       state: post.state,
       uid: post.userID,
       content: post.content,
