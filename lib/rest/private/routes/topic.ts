@@ -1,6 +1,5 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
-import dayjs from 'dayjs';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { dam } from '@app/lib/dam';
@@ -18,6 +17,7 @@ import * as Topic from '@app/lib/topic';
 import { NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
 import { formatErrors, userToResCreator } from '@app/lib/types/res';
+import dayjs from '@app/vendor/dayjs';
 
 const Group = t.Object(
   {

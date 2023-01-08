@@ -1,4 +1,4 @@
-import platform from './_platform.json' assert { type: 'json' };
+import platform from './_platform';
 
 export interface Platform {
   id: number;

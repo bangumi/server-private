@@ -1,7 +1,7 @@
 // remove this after https://github.com/import-js/eslint-plugin-import/issues/2467 is fixed
 
-import path from 'node:path';
-import posix from 'node:path/posix';
+import * as path from 'node:path';
+import * as posix from 'node:path/posix';
 
 import { ESLintUtils } from '@typescript-eslint/utils';
 

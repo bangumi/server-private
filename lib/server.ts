@@ -63,7 +63,7 @@ export async function createServer(opts: FastifyServerOptions = {}): Promise<Fas
         return cfClientIp;
       }
 
-      return this.connection.remoteAddress ?? '0.0.0.0';
+      return this.socket.remoteAddress ?? '0.0.0.0';
     },
   });
 

@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import * as php from 'php-serialize';
 import { DataSource } from 'typeorm';
 import * as typeorm from 'typeorm';
@@ -7,6 +6,7 @@ import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '@app/l
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
 import type { ReplyState, TopicDisplay } from '@app/lib/topic';
+import dayjs from '@app/vendor/dayjs';
 
 import * as entity from './entity';
 import {

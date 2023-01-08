@@ -1,5 +1,4 @@
 import { Type as t } from '@sinclair/typebox';
-import dayjs from 'dayjs';
 import * as typeorm from 'typeorm';
 
 import { NotAllowedError } from '@app/lib/auth';
@@ -10,6 +9,7 @@ import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as res from '@app/lib/types/res';
 import { randomBase62String } from '@app/lib/utils';
+import dayjs from '@app/vendor/dayjs';
 
 export const enum TokenType {
   OauthToken = 0,

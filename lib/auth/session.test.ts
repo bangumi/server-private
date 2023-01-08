@@ -1,7 +1,7 @@
-import dayjs from 'dayjs';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { SessionRepo } from '@app/lib/orm';
+import dayjs from '@app/vendor/dayjs';
 
 import { create, get, revoke } from './session';
 

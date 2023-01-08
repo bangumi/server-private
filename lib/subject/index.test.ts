@@ -1,8 +1,8 @@
-import dayjs from 'dayjs';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { AppDataSource, SubjectRepo, SubjectRevRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
+import dayjs from '@app/vendor/dayjs';
 
 import * as Subject from '.';
 import { SubjectType } from '.';

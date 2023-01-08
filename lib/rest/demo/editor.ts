@@ -22,10 +22,7 @@ export function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      let user;
-      if (auth.login) {
-        user = userToResCreator(await fetchUserX(auth.userID));
-      }
+      const user = auth.login ? userToResCreator(await fetchUserX(auth.userID)) : null;
 
       await res.view('editor', {
         user,

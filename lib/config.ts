@@ -12,10 +12,10 @@
  *
  * 配置文件见 `configFileType` 变量，定义了配置文件的 json schema
  */
-import fs from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
-import url from 'node:url';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import * as process from 'node:process';
+import * as url from 'node:url';
 
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';

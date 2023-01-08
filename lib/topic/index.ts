@@ -1,5 +1,4 @@
 import { createError } from '@fastify/error';
-import dayjs from 'dayjs';
 import * as typeorm from 'typeorm';
 
 import type { IAuth } from '@app/lib/auth';
@@ -8,6 +7,7 @@ import type { IBaseReply, IUser, Page } from '@app/lib/orm';
 import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display';
+import dayjs from '@app/vendor/dayjs';
 
 export { CanViewTopicContent, ListTopicDisplays } from './display';
 

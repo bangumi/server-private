@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { fastify } from 'fastify';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
@@ -11,6 +10,7 @@ import type { ITopicDetails } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
 import { ReplyState, TopicDisplay } from '@app/lib/topic';
 import { createTestServer } from '@app/tests/utils';
+import dayjs from '@app/vendor/dayjs';
 
 import * as topicAPI from './topic';
 

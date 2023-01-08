@@ -1,7 +1,6 @@
 import type { Wiki } from '@bgm38/wiki';
 import wiki, { WikiSyntaxError } from '@bgm38/wiki';
 import { createError } from '@fastify/error';
-import dayjs from 'dayjs';
 import { StatusCodes } from 'http-status-codes';
 
 import { BadRequestError } from '@app/lib/error';
@@ -10,6 +9,7 @@ import { AppDataSource, SubjectRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { extractDate } from '@app/lib/subject/date';
 import { DATE } from '@app/lib/utils/date';
+import dayjs from '@app/vendor/dayjs';
 
 import type { Platform } from './platform';
 import platform from './platform';

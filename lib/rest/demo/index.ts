@@ -1,4 +1,4 @@
-import path from 'node:path';
+import * as path from 'node:path';
 
 import { fastifyStatic } from '@fastify/static';
 import { fastifyView } from '@fastify/view';

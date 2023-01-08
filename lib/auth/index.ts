@@ -1,9 +1,7 @@
-import crypto from 'node:crypto';
+import * as crypto from 'node:crypto';
 
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
-import dayjs from 'dayjs';
-import NodeCache from 'node-cache';
 import { FindOperator } from 'typeorm';
 
 import { redisPrefix } from '@app/lib/config';
@@ -11,6 +9,8 @@ import type { SingleMessageErrorConstructor } from '@app/lib/error';
 import type { IUser, Permission } from '@app/lib/orm';
 import { AccessTokenRepo, fetchPermission, fetchUser } from '@app/lib/orm';
 import redis from '@app/lib/redis';
+import dayjs from '@app/vendor/dayjs';
+import NodeCache from '@app/vendor/node-cache';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError: SingleMessageErrorConstructor = createError(

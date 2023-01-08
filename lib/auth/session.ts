@@ -1,10 +1,10 @@
-import dayjs from 'dayjs';
 import * as typeorm from 'typeorm';
 
 import { redisPrefix } from '@app/lib/config';
 import { SessionRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
 import { randomBase62String } from '@app/lib/utils';
+import dayjs from '@app/vendor/dayjs';
 
 import type { IAuth } from './index';
 import * as auth from './index';
