@@ -2,6 +2,7 @@ import Cookie from '@fastify/cookie';
 
 import { emptyAuth } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
+import { production } from '@app/lib/config';
 import * as demo from '@app/lib/rest/demo';
 import * as me from '@app/lib/rest/routes/me';
 import * as swagger from '@app/lib/rest/swagger';
@@ -15,6 +16,15 @@ import * as user from './routes/user';
 import * as wiki from './routes/wiki';
 
 export async function setup(app: App) {
+  if (production) {
+    app.addHook('onRequest', async (req, res) => {
+      const ref = req.headers.referer;
+      if (ref && !ref.startsWith('https://next.bgm.tv/')) {
+        await res.send('bad referer');
+      }
+    });
+  }
+
   await app.register(Cookie, {
     hook: 'preHandler', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
     parseOptions: {}, // options for parsing cookies
