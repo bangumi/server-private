@@ -18,6 +18,10 @@ import * as wiki from './routes/wiki';
 export async function setup(app: App) {
   if (production) {
     app.addHook('onRequest', async (req, res) => {
+      if (req.method === 'GET') {
+        return;
+      }
+
       const ref = req.headers.referer;
       if (ref && !ref.startsWith('https://next.bgm.tv/')) {
         await res.send('bad referer');
