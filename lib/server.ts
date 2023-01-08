@@ -4,7 +4,7 @@ import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fast
 import { fastify } from 'fastify';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
-import { TypeORMError } from 'typeorm/error/TypeORMError';
+import { TypeORMError } from 'typeorm';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
