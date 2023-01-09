@@ -11,12 +11,32 @@
   "scripts": {
     "format": "prettier -w ./",
     "lint": "eslint --cache --ext ts ./",
-    "start": "NODE_OPTIONS=\"-r dotenv/config --enable-source-maps\" tsx watch --ignore='**.test.ts' --ignore=./lib/templates/ --ignore=./lib/static/ --clear-screen=false ./lib/main.ts",
+    "start": "nodemon ./lib/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
     "run-file": "tsx",
     "e": "tsx",
     "prepare": "husky install"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "**.test.ts"
+    ],
+    "watch": [
+      "lib",
+      "package.json",
+      "tsconfig.json",
+      ".env"
+    ],
+    "delay": 100,
+    "execMap": {
+      "ts": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader"
+    },
+    "env": {
+      "NODE_ENV": "development",
+      "REF": "development"
+    },
+    "ext": "ts,js,json,html"
   },
   "author": "",
   "license": "MIT",
@@ -51,6 +71,7 @@
     "ioredis-mock": "^8.2.2",
     "lint-staged": "^13.1.0",
     "mercurius-integration-testing": "^6.0.1",
+    "nodemon": "^2.0.20",
     "p-limit": "^4.0.0",
     "prettier": "^2.8.2",
     "prettier-plugin-jsdoc": "^0.4.2",
@@ -97,7 +118,6 @@
     "proxy-agent": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.5.4",
-    "tsx": "^3.12.1",
     "typeorm": "^0.3.11"
   },
   "prettier": {
