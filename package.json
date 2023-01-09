@@ -14,8 +14,8 @@
     "start": "nodemon ./lib/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
-    "run-file": "tsx",
-    "e": "tsx",
+    "run-file": "node --no-warnings --loader @esbuild-kit/esm-loader",
+    "e": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader",
     "prepare": "husky install"
   },
   "nodemonConfig": {
