@@ -72,7 +72,7 @@ require(['vs/editor/editor.main'], function () {
 
   $('#submit').on('click', async () => {
     const res = await fetch(`/p1/wiki/subjects/${subjectID}`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         'content-type': 'application/json',
       },

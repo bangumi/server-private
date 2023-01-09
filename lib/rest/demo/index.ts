@@ -15,20 +15,20 @@ import * as token from './token';
 
 export async function setup(app: App) {
   const liquid = new Liquid({
-    root: path.resolve(projectRoot, 'lib/templates'),
+    root: path.resolve(projectRoot, 'templates'),
     extname: '.liquid',
     cache: production,
   });
 
   await app.register(fastifyStatic, {
-    root: path.resolve(projectRoot, 'lib', 'static'),
+    root: path.resolve(projectRoot, 'static'),
     prefix: '/static/',
   });
 
   await app.register(fastifyView, {
     engine: { liquid },
     defaultContext: { production },
-    root: path.resolve(projectRoot, 'lib/templates'),
+    root: path.resolve(projectRoot, 'templates'),
     production,
   });
 
