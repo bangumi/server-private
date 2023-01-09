@@ -44,6 +44,7 @@ describe('edit subject ', () => {
         platform: 0,
         summary: 's',
         date: '0000-00-00',
+        nsfw: false,
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
@@ -85,6 +86,7 @@ describe('edit subject ', () => {
         platform: 0,
         summary: 's',
         date: '0000-00-00',
+        nsfw: false,
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
@@ -115,6 +117,7 @@ describe('edit subject ', () => {
       platform: 0,
       subjectID: 1,
       date: '0000-00-00',
+      nsfw: false,
       summary: 's',
       userID: 100,
     });

@@ -41,6 +41,7 @@ interface Create {
   userID: number;
   date?: string;
   now?: DateTime;
+  nsfw?: boolean;
 }
 
 export async function edit({
@@ -51,6 +52,7 @@ export async function edit({
   summary,
   commitMessage,
   date,
+  nsfw,
   userID,
   now = DateTime.now(),
 }: Create): Promise<void> {
@@ -122,6 +124,7 @@ export async function edit({
         fieldEps: episodes,
         nameCN: nameCN,
         fieldSummary: summary,
+        subjectNsfw: nsfw,
         fieldInfobox: infobox,
         updatedAt: now.toUnixInteger(),
       },

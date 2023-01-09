@@ -38,6 +38,7 @@ const exampleSubjectEdit = {
 }
 }}`,
   platform: 0,
+  nsfw: false,
   summary: `本条目是一个沙盒，可以用于尝试bgm功能。
 
 普通维基人可以随意编辑条目信息以及相关关联查看编辑效果，但是请不要完全删除沙盒说明并且不要关联非沙盒条目/人物/角色。
@@ -51,6 +52,7 @@ export const SubjectEdit = t.Object(
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
     platform: t.Integer(),
+    nsfw: t.Boolean(),
     date: t.Optional(
       t.String({
         pattern: String.raw`^\d{4}-\d{2}-\d{2}$`,
@@ -267,6 +269,7 @@ export async function setup(app: App) {
         platform: body.platform,
         date: body.date,
         summary: body.summary,
+        nsfw: body.nsfw,
         userID: auth.userID,
         commitMessage,
       });
@@ -334,6 +337,7 @@ export async function setup(app: App) {
         name = s.name,
         platform = s.platform,
         summary = s.summary,
+        nsfw = s.nsfw,
         date,
       }: Partial<Static<typeof SubjectEdit>> = input;
 
@@ -342,6 +346,7 @@ export async function setup(app: App) {
         name === s.name &&
         platform === s.platform &&
         summary === s.summary &&
+        nsfw === s.nsfw &&
         date === undefined
       ) {
         // no new data
@@ -355,6 +360,7 @@ export async function setup(app: App) {
         commitMessage: commitMessage,
         platform: platform,
         summary: summary,
+        nsfw,
         date,
         userID: auth.userID,
       });
