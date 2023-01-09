@@ -54,6 +54,7 @@ test('should pass login/logout authorization flow', async () => {
   const logout = await app.inject({
     method: 'post',
     url: '/p1/logout',
+    payload: {},
     cookies: { chiiNextSessionID: cookieValue },
   });
 

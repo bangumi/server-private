@@ -53,6 +53,7 @@ export async function setup(app: App) {
         description: '登出',
         operationId: 'logout',
         tags: [Tag.Auth],
+        body: t.Object({}),
         response: {
           200: {},
           401: t.Ref(res.Error, {
