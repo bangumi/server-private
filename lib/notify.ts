@@ -251,7 +251,7 @@ export async function list(
 function hashType(t: Type): number {
   const setting = _settings[t];
   if (!setting) {
-    throw new UnreachableError('setting in t');
+    throw new UnreachableError(`missing setting for notify type ${t}`);
   }
 
   return setting.hash;
