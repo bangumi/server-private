@@ -14,28 +14,24 @@ import { schema } from './graphql/schema';
 import { repo } from './orm';
 import * as rest from './rest';
 
-export async function createServer(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
+export async function createServer(
+  opts: Omit<FastifyServerOptions, 'ajv'> = {},
+): Promise<FastifyInstance> {
   if (production || stage) {
     opts.requestIdHeader ??= 'cf-ray';
   }
 
   opts.onProtoPoisoning = 'error';
 
-  if (opts.ajv?.plugins?.length) {
-    opts.ajv.plugins.push(function (ajv: Ajv) {
-      ajv.addKeyword({ keyword: 'x-examples' });
-    });
-  } else {
-    opts.ajv = {
-      plugins: [
-        function (ajv: Ajv) {
-          ajv.addKeyword({ keyword: 'x-examples' });
-        },
-      ],
-    };
-  }
+  const ajv: FastifyServerOptions['ajv'] = {
+    plugins: [
+      function (ajv: Ajv) {
+        ajv.addKeyword({ keyword: 'x-examples' });
+      },
+    ],
+  };
 
-  const server = fastify(opts);
+  const server = fastify({ ...opts, ajv });
 
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message
