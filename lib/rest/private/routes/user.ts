@@ -159,30 +159,20 @@ export async function setup(app: App) {
       preHandler: [requireLogin('subscribing notify')],
     },
     (req, reply) => {
-      // 不能使用 async handler
-      const send = (count: number) => {
+      const listener = subscribeNotifyChange(req.auth.userID, (data) => {
         reply.sse({
-          data: JSON.stringify({ count }),
+          data,
           event: 'notify-change',
         });
-      };
-
-      const listener = subscribeNotifyChange(req.auth.userID, send);
-
+      });
       req.socket.on('close', () => {
         Subscriber.removeListener('pmessage', listener);
       });
-
-      Notify.count(req.auth.userID)
-        .then((data) => send(data))
-        .catch((error) => {
-          void reply.send(error);
-        });
     },
   );
 }
 
-export function subscribeNotifyChange(userID: number, send: (count: number) => void) {
+export function subscribeNotifyChange(userID: number, send: (msg: string) => void) {
   const watch = `event-user-notify-${userID}`;
 
   const callback = (pattern: string, ch: string, msg: string) => {
@@ -190,7 +180,7 @@ export function subscribeNotifyChange(userID: number, send: (count: number) => v
       return;
     }
     const { new_notify: count } = JSON.parse(msg) as { new_notify: number };
-    send(count);
+    send(JSON.stringify({ count }));
   };
 
   Subscriber.addListener('pmessage', callback);
