@@ -8,6 +8,7 @@ import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
 import { fetchUsers } from '@app/lib/orm';
 import { Subscriber } from '@app/lib/redis';
+import { CookieKey } from '@app/lib/rest/private/routes/login';
 import type { App } from '@app/lib/rest/type';
 import { Paged, userToResCreator } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
@@ -134,12 +135,14 @@ export async function setup(app: App) {
 
     const cookie = app.parseCookie(socket.request.headers.cookie);
 
-    if (!cookie.sessionID) {
+    const sessionID = cookie[CookieKey];
+
+    if (!sessionID) {
       socket.disconnect(true);
       return;
     }
 
-    const a = await session.get(cookie.sessionID);
+    const a = await session.get(sessionID);
 
     if (!a) {
       socket.disconnect(true);
@@ -149,12 +152,17 @@ export async function setup(app: App) {
     const userID = a.userID;
     const watch = `event-user-notify-${userID}`;
 
+    const send = (count: number) => {
+      socket.emit('notify', JSON.stringify({ count }));
+    };
+
     const callback = (pattern: string, ch: string, msg: string) => {
       if (ch !== watch) {
         return;
       }
-      const { new_notify: count } = JSON.parse(msg) as { new_notify: number };
-      socket.emit('notify', JSON.stringify({ count }));
+
+      const { new_notify } = JSON.parse(msg) as { new_notify: number };
+      send(new_notify);
     };
 
     Subscriber.addListener('pmessage', callback);
@@ -162,5 +170,9 @@ export async function setup(app: App) {
     socket.on('disconnect', () => {
       Subscriber.removeListener('pmessage', callback);
     });
+
+    const count = await Notify.count(userID);
+
+    send(count);
   });
 }
