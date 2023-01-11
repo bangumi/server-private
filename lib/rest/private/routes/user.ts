@@ -1,15 +1,15 @@
 import { Type as t } from '@sinclair/typebox';
-import { FastifySSEPlugin } from 'fastify-sse-v2';
+import fastifySocketIO from 'fastify-socket.io';
 
 import { NeedLoginError } from '@app/lib/auth';
+import * as session from '@app/lib/auth/session';
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
 import { fetchUsers } from '@app/lib/orm';
 import { Subscriber } from '@app/lib/redis';
-import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
-import { formatErrors, Paged, userToResCreator } from '@app/lib/types/res';
+import { Paged, userToResCreator } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
 
 const NoticeRes = t.Object(
@@ -122,68 +122,45 @@ export async function setup(app: App) {
     },
   );
 
-  void app.register(FastifySSEPlugin);
-  app.get(
-    '/notify/sse',
-    {
-      schema: {
-        description: [
-          '## 本 API 不是普通的 HTTP 请求，不要使用 fetch',
-          '订阅 sse 通知',
-          '前端需要使用 [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) 订阅 `notify-change` 事件',
-          'example:',
-          [
-            '```js',
-            "const evtSource = new EventSource('/p1/notify/sse');",
-            '',
-            "evtSource.addEventListener('notify-change', (e) => {",
-            '  console.log(e);',
-            '  console.log(JSON.parse(e.data));',
-            `});`,
-            '```',
-          ].join('\n'),
-        ].join('\n\n'),
-        operationId: 'sseNotifyChange',
-        response: {
-          200: t.Object(
-            {},
-            {
-              description: 'sse 响应',
-            },
-          ),
-          401: {
-            'x-examples': formatErrors(NeedLoginError('')),
-          },
-        },
-      },
-      preHandler: [requireLogin('subscribing notify')],
-    },
-    (req, reply) => {
-      const listener = subscribeNotifyChange(req.auth.userID, (data) => {
-        reply.sse({
-          data,
-          event: 'notify-change',
-        });
-      });
-      req.socket.on('close', () => {
-        Subscriber.removeListener('pmessage', listener);
-      });
-    },
-  );
-}
+  await app.register(fastifySocketIO, {
+    path: '/p1/socket-io/',
+  });
 
-export function subscribeNotifyChange(userID: number, send: (msg: string) => void) {
-  const watch = `event-user-notify-${userID}`;
-
-  const callback = (pattern: string, ch: string, msg: string) => {
-    if (ch !== watch) {
+  app.io.on('connection', async (socket) => {
+    if (!socket.request.headers.cookie) {
+      socket.disconnect(true);
       return;
     }
-    const { new_notify: count } = JSON.parse(msg) as { new_notify: number };
-    send(JSON.stringify({ count }));
-  };
 
-  Subscriber.addListener('pmessage', callback);
+    const cookie = app.parseCookie(socket.request.headers.cookie);
 
-  return callback;
+    if (!cookie.sessionID) {
+      socket.disconnect(true);
+      return;
+    }
+
+    const a = await session.get(cookie.sessionID);
+
+    if (!a) {
+      socket.disconnect(true);
+      return;
+    }
+
+    const userID = a.userID;
+    const watch = `event-user-notify-${userID}`;
+
+    const callback = (pattern: string, ch: string, msg: string) => {
+      if (ch !== watch) {
+        return;
+      }
+      const { new_notify: count } = JSON.parse(msg) as { new_notify: number };
+      socket.emit('notify', JSON.stringify({ count }));
+    };
+
+    Subscriber.addListener('pmessage', callback);
+
+    socket.on('disconnect', () => {
+      Subscriber.removeListener('pmessage', callback);
+    });
+  });
 }

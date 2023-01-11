@@ -106,7 +106,8 @@ export async function privateAPI(app: FastifyInstance) {
     info: {
       version: VERSION,
       title: 'hello',
-      description: '不支持跨域',
+      description:
+        '关于订阅通知的 socket.io 相关的文档在 <https://github.com/bangumi/GraphQL/blob/master/docs/socket.io.md>',
     },
     components: {
       securitySchemes: {

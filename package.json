@@ -96,7 +96,7 @@
     "altair-fastify-plugin": "^5.0.9",
     "fastify": "^4.11.0",
     "fastify-metrics": "^10.0.2",
-    "fastify-sse-v2": "^3.0.0",
+    "fastify-socket.io": "^4.0.0",
     "got": "^12.5.3",
     "graphql": "^16.6.0",
     "http-status-codes": "^2.2.0",
@@ -117,6 +117,7 @@
     "prom-client": "^14.1.1",
     "proxy-agent": "^5.0.0",
     "reflect-metadata": "^0.1.13",
+    "socket.io": "^4.5.4",
     "typeorm": "^0.3.11"
   },
   "prettier": {
