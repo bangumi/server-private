@@ -76,7 +76,7 @@ jobs:
         env:
           LOCK_FILE_HASH: "${{ hashFiles('yarn.lock') }}"
           DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
-          IMAGE: 'ghcr.io/bangumi/graphql'
+          IMAGE: 'ghcr.io/bangumi/private-server'
 
         name: build base docker image
       - run: docker build -t tmp -f etc/main.dockerfile .
