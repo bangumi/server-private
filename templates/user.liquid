@@ -40,11 +40,10 @@
 </div>
 
 <script>
-  const evtSource = new EventSource('/p1/sse/notify');
+  const evtSource = new EventSource('/p1/notify/sse');
 
   evtSource.addEventListener('notify-change', (e) => {
     console.log(e);
-    console.log(JSON.stringify(e.data));
   });
 </script>
 {% endblock %}

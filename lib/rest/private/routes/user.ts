@@ -124,7 +124,7 @@ export async function setup(app: App) {
 
   void app.register(FastifySSEPlugin);
   app.get(
-    '/sse/notify',
+    '/notify/sse',
     {
       schema: {
         description: [
@@ -134,7 +134,7 @@ export async function setup(app: App) {
           'example:',
           [
             '```js',
-            "const evtSource = new EventSource('/p1/sse/notify');",
+            "const evtSource = new EventSource('/p1/notify/sse');",
             '',
             "evtSource.addEventListener('notify-change', (e) => {",
             '  console.log(e);',
@@ -158,7 +158,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('subscribing notify')],
     },
-    async (req, reply) => {
+    (req, reply) => {
+      // 不能使用 async handler
       const send = (count: number) => {
         reply.sse({
           data: JSON.stringify({ count }),
@@ -172,22 +173,24 @@ export async function setup(app: App) {
         Subscriber.removeListener('pmessage', listener);
       });
 
-      const count = await Notify.count(req.auth.userID);
-
-      send(count);
+      Notify.count(req.auth.userID)
+        .then((data) => send(data))
+        .catch((error) => {
+          void reply.send(error);
+        });
     },
   );
 }
 
-function subscribeNotifyChange(userID: number, send: (count: number) => void) {
+export function subscribeNotifyChange(userID: number, send: (count: number) => void) {
   const watch = `event-user-notify-${userID}`;
 
   const callback = (pattern: string, ch: string, msg: string) => {
     if (ch !== watch) {
       return;
     }
-    const { new_notify } = JSON.parse(msg) as { new_notify: number };
-    send(new_notify);
+    const { new_notify: count } = JSON.parse(msg) as { new_notify: number };
+    send(count);
   };
 
   Subscriber.addListener('pmessage', callback);
