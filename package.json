@@ -90,7 +90,7 @@
     "@fastify/swagger": "^8.2.1",
     "@fastify/type-provider-typebox": "^2.4.0",
     "@fastify/view": "^7.3.0",
-    "@node-rs/bcrypt": "^1.6.1",
+    "@node-rs/bcrypt": "^1.6.2",
     "@sinclair/typebox": "^0.25.20",
     "ajv": "^8.12.0",
     "altair-fastify-plugin": "^5.0.9",
