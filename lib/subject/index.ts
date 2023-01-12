@@ -1,5 +1,5 @@
 import type { Wiki } from '@bgm38/wiki';
-import wiki, { WikiSyntaxError } from '@bgm38/wiki';
+import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import { createError } from '@fastify/error';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
@@ -62,7 +62,7 @@ export async function edit({
 
   let w: Wiki;
   try {
-    w = wiki(infobox);
+    w = parse(infobox);
   } catch (error) {
     if (error instanceof WikiSyntaxError) {
       let l = '';
