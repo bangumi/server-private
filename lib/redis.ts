@@ -5,7 +5,7 @@ import IORedis from 'ioredis';
 
 import config from './config';
 
-const u = url.parse(config.redis.uri);
+const u = url.parse(config.redisUri);
 
 const [username, password] = (u.auth ?? '').split(':', 2);
 

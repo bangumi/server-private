@@ -1,10 +1,9 @@
 /**
  * 从 `projectRoot/config.yaml` 和环境变量读取配置。 配置文件见 `config.example.yaml`。
  *
- * {@link configSchema} 定义了配置文件的 json schema
+ * {@link schema} 定义了配置文件的 json schema
  *
- * 可以使用环境变量会覆盖对应的文件配置，如 `CHII_MYSQL_DB` 会覆盖 `mysql.db`, `CHII_TURNSTILE_SECRET-KEY` 会覆盖
- * `turnstile.secret_key`
+ * 可以使用环境变量会覆盖对应的文件配置，如 `MYSQL_DB` 会覆盖 `mysql.db`, 具体可用的环境变量和对应的配置项也定义在 {@link schema}。
  *
  * 除此之外可以设置的环境变量：
  *
@@ -28,7 +27,8 @@ import * as path from 'node:path';
 import * as process from 'node:process';
 import * as url from 'node:url';
 
-import { Type as t } from '@sinclair/typebox';
+import type { Static, TSchema } from '@sinclair/typebox';
+import { Kind, Type as t } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
 import Ajv from 'ajv';
 import * as yaml from 'js-yaml';
@@ -55,60 +55,80 @@ export const VERSION = developing ? 'development' : REF || pkg.version;
 export { HTTPS_PROXY };
 
 /** WARNING: 所有的 key 都必需小写，而且不能包含下划线。 */
-const configSchema = t.Object({
+const schema = t.Object({
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
   disable_words: t.Optional(t.String()),
   banned_domain: t.Optional(t.String()),
 
-  redis: t.Object({
-    uri: t.String({ default: 'redis://127.0.0.1:3306/0' }),
-  }),
+  redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
 
   turnstile: t.Object({
-    secret: t.String({ default: '1x0000000000000000000000000000000AA', description: 'secret key' }),
-    site: t.String({ default: '1x00000000000000000000AA', description: 'site key' }),
+    secretKey: t.String({
+      default: '1x0000000000000000000000000000000AA',
+      env: 'TURNSTILE_SECRET_KEY',
+    }),
+    siteKey: t.String({ default: '1x00000000000000000000AA', env: 'TURNSTILE_SITE_KEY' }),
   }),
 
   mysql: t.Object({
-    db: t.String({ default: 'bangumi' }),
-    host: t.String({ default: '127.0.0.1' }),
-    port: t.Integer({ default: 3306 }),
-    user: t.String({ default: 'user' }),
-    password: t.String({ default: 'password' }),
+    db: t.String({ default: 'bangumi', env: 'MYSQL_DB' }),
+    host: t.String({ default: '127.0.0.1', env: 'MYSQL_HOST' }),
+    port: t.Integer({ default: 3306, env: 'MYSQL_PORT' }),
+    user: t.String({ default: 'user', env: 'MYSQL_USER' }),
+    password: t.String({ default: 'password', env: 'MYSQL_PASS' }),
   }),
 });
 
 // read config file
 
-const configFilePath = path.resolve(projectRoot, 'config.yaml');
+export default readConfig();
 
-let configFileContent = '{}';
-if (fs.existsSync(configFilePath)) {
-  configFileContent = fs.readFileSync(configFilePath, 'utf8');
-}
+function readConfig(): Static<typeof schema> {
+  const configFilePath = path.resolve(projectRoot, 'config.yaml');
 
-const config = lo.assign(Value.Create(configSchema), yaml.load(configFileContent));
-export default config;
-
-const envPrefix = 'CHII_';
-
-for (const [key, value] of Object.entries(process.env)) {
-  if (key.startsWith(envPrefix)) {
-    const keyPath = key.slice(envPrefix.length).toLowerCase().replace('_', '.').replace('-', '_');
-    lo.set(config, keyPath, value);
+  let configFileContent = '{}';
+  if (fs.existsSync(configFilePath)) {
+    configFileContent = fs.readFileSync(configFilePath, 'utf8');
   }
-}
 
-const ajv = new Ajv({ allErrors: true, coerceTypes: true });
+  const config = lo.assign(Value.Create(schema), yaml.load(configFileContent));
 
-const schema = ajv.compile(configSchema);
+  function readFromEnv(keyPath: string[], o: TSchema) {
+    if (o[Kind] === 'Object') {
+      for (const [key, value] of Object.entries(o.properties as Record<string, TSchema>)) {
+        readFromEnv([...keyPath, key], value);
+      }
 
-const valid = schema(config);
+      return;
+    }
 
-if (!valid) {
-  const errorMessage =
-    schema.errors?.map((x) => '  ' + (x.message ?? `wrong data type ${x.schemaPath}`)).join('\n') ??
-    '';
+    const envKey = o.env as string | undefined;
+    if (envKey) {
+      const v = process.env[envKey];
+      if (v) {
+        lo.set(config, keyPath, process.env[envKey]);
+      }
+    }
+  }
 
-  throw new TypeError('failed to validate config file:\n' + errorMessage);
+  readFromEnv([], schema);
+
+  const ajv = new Ajv({ allErrors: true, coerceTypes: true, keywords: ['env'] });
+
+  const check = ajv.compile(schema);
+
+  const valid = check(config);
+
+  if (!valid) {
+    const errorMessage =
+      check.errors
+        ?.map(
+          (x) => '  ' + (x.instancePath + ': ' + (x.message ?? `wrong data type ${x.schemaPath}`)),
+        )
+        .join('\n') ?? '';
+
+    throw new TypeError('failed to validate config file:\n' + errorMessage);
+  }
+
+  return config;
 }

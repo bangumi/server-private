@@ -48,12 +48,12 @@ export async function setup(app: App) {
         notify,
       });
     } else {
-      await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.site });
+      await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
     }
   });
 
   app.get('/login', { schema: { hide: true } }, async (req, res) => {
-    await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.site });
+    await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
   });
 
   editor.setup(app);
