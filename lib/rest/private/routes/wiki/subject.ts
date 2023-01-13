@@ -15,7 +15,7 @@ import {
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
-import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
+import { requireLogin, requirePermission } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 import * as Subject from '@app/lib/subject';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
@@ -301,7 +301,10 @@ export async function setup(app: App) {
           }),
         }),
       },
-      preHandler: [requireLogin('upload a subject cover')],
+      preHandler: [
+        requireLogin('upload a subject cover'),
+        requirePermission('upload subject cover', (auth) => auth.permission.subject_edit ?? false),
+      ],
     },
     async ({ body: { content }, auth, params: { subjectID } }) => {
       const raw = Buffer.from(content, 'base64');
