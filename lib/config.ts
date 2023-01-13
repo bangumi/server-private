@@ -54,17 +54,19 @@ export const VERSION = developing ? 'development' : REF || pkg.version;
 
 export { HTTPS_PROXY };
 
-/** WARNING: 所有的 key 都必需小写 */
+/** WARNING: 所有的 key 都必需小写，而且不能包含下划线。 */
 const configSchema = t.Object({
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
   disable_words: t.Optional(t.String()),
   banned_domain: t.Optional(t.String()),
 
-  redis_uri: t.String({ default: 'redis://127.0.0.1:3306/0' }),
+  redis: t.Object({
+    uri: t.String({ default: 'redis://127.0.0.1:3306/0' }),
+  }),
 
   turnstile: t.Object({
-    secret_key: t.String({ default: '1x0000000000000000000000000000000AA' }),
-    site_key: t.String({ default: '1x00000000000000000000AA' }),
+    secret: t.String({ default: '1x0000000000000000000000000000000AA', description: 'secret key' }),
+    site: t.String({ default: '1x00000000000000000000AA', description: 'site key' }),
   }),
 
   mysql: t.Object({
