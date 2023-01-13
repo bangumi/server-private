@@ -36,7 +36,7 @@ const {
   MYSQL_USER,
   MYSQL_PASS,
   MYSQL_DB = 'bangumi',
-  IMAGE_STORAGE = 'local',
+  IMAGE_STORAGE = 'local-fs',
   LOCAL_IMAGE_STORAGE_PATH = './tmp/images/',
   SFTP_HOST,
   SFTP_PORT = '22',
