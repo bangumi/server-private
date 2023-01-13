@@ -5,18 +5,17 @@ disable_words: '办假存单|办理假证|0月租手机'
 banned_domain: 'lista.cc|snapmail.cc|ashotmail.com|zoutlook.com'
 
 mysql:
-  host: '127.0.0.1' # CHII_MYSQL_HOST
-  port: '3306' # CHII_MYSQL_PORT
-  user: 'user' # CHII_MYSQL_USER
-  password: 'password' # CHII_MYSQL_PASSWORD
-  db: 'bangumi' # CHII_MYSQL_DB
+  host: '127.0.0.1' # MYSQL_HOST
+  port: '3306' # MYSQL_PORT
+  user: 'user' # MYSQL_USER
+  password: 'password' # MYSQL_PASSWORD
+  db: 'bangumi' # MYSQL_DB
 
-redis:
-  uri: 'redis://:redis-pass@127.0.0.1:6379/0' # CHII_REDIS_URI
+redisUri: 'redis://:redis-pass@127.0.0.1:6379/0' # REDIS_URI
 
 turnstile:
-  secret: '1x0000000000000000000000000000000AA' # CHII_TURNSTILE_SECRET
-  site: '1x00000000000000000000AA' # CHII_TURNSTILE_SITE
+  secretKey: '1x0000000000000000000000000000000AA' # TURNSTILE_SECRET_KEY
+  siteKey: '1x00000000000000000000AA' # TURNSTILE_SITE_KEY
 
 image:
   provider: 'fs' # CHII_IMAGE_PROVIDER
