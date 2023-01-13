@@ -31,6 +31,7 @@ import * as url from 'node:url';
 import { Type as t } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import * as yaml from 'js-yaml';
 import * as lo from 'lodash-es';
 
@@ -61,7 +62,7 @@ const configSchema = t.Object({
   banned_domain: t.Optional(t.String()),
 
   redis: t.Object({
-    uri: t.String({ default: 'redis://127.0.0.1:3306/0' }),
+    uri: t.String({ default: 'redis://127.0.0.1:3306/0', format: 'uri' }),
   }),
 
   image: t.Object({
@@ -114,6 +115,7 @@ for (const [key, value] of Object.entries(process.env)) {
 }
 
 const ajv = new Ajv({ allErrors: true, coerceTypes: true });
+addFormats(ajv);
 
 const schema = ajv.compile(configSchema);
 
