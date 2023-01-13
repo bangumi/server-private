@@ -32,7 +32,6 @@ image:
 
   s3:
     bucket: 'chii-image'
-    region: 'ap-northeast-1'
     endPoint: 'play.min.io'
     port: 9000
     useSSL: true

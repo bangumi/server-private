@@ -64,11 +64,14 @@ const schema = t.Object({
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
 
   image: t.Object({
-    provider: t.Enum({
-      s3: 's3',
-      FS: 'fs',
-      SFTP: 'sftp',
-    } as const),
+    provider: t.Enum(
+      {
+        s3: 's3',
+        FS: 'fs',
+        SFTP: 'sftp',
+      } as const,
+      { default: 'fs', env: 'CHII_IMAGE_PROVIDER' },
+    ),
     fs: t.Object({
       path: t.String({ default: './tmp/images' }),
     }),
@@ -80,11 +83,12 @@ const schema = t.Object({
       password: t.String(),
     }),
     s3: t.Object({
-      path: t.String({ default: '/var/lib/data/images' }),
-      host: t.String(),
-      port: t.Integer({ default: 22 }),
-      accessKey: t.String({ env: 'CHII_IMG_S3_ACCESS_KEY' }),
-      secretKey: t.String(),
+      endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),
+      bucket: t.String({ default: 'chii-image', env: 'CHII_IMAGE_S3_BUCKET' }),
+      port: t.Integer({ default: 9000, env: 'CHII_IMAGE_S3_PORT' }),
+      useSSL: t.Boolean({ default: false, env: 'CHII_IMAGE_S3_USE_SSL' }),
+      accessKey: t.String({ env: 'CHII_IMAGE_S3_ACCESS_KEY' }),
+      secretKey: t.String({ env: 'CHII_IMAGE_S3_SECRET_KEY' }),
     }),
   }),
 

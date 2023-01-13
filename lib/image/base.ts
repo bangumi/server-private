@@ -1,17 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import config from '@app/lib/config';
+import { logger } from '@app/lib/logger';
 
 export interface ImageFS {
   uploadImage(path: string, content: Buffer): Promise<void>;
 }
 
-// TODO: add s3 to replace sftp
+// TODO: replace sftp with s3 in production
 export async function getImpl(): Promise<ImageFS> {
-  if (config.image.provider === 'sftp') {
-    return await import('./sftp');
-  } else if (config.image.provider === 'fs') {
-    return await import('./fs');
+  logger.info(`storage uploaded image in ${config.image.provider}`);
+
+  switch (config.image.provider) {
+    case 'sftp': {
+      return await import('./sftp');
+    }
+    case 'fs': {
+      return await import('./fs');
+    }
+    case 's3': {
+      return await import('./s3');
+    }
+    // No default
   }
 
-  throw new Error('missing image provider');
+  throw new Error(`missing image provider implement for "${config.image.provider as string}"`);
 }
