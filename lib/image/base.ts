@@ -1,4 +1,5 @@
-import { IMAGE_STORAGE_PROVIDER } from '@app/lib/config';
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+import config from '@app/lib/config';
 
 export interface ImageFS {
   uploadImage(path: string, content: Buffer): Promise<void>;
@@ -6,9 +7,9 @@ export interface ImageFS {
 
 // TODO: add s3 to replace sftp
 export async function getImpl(): Promise<ImageFS> {
-  if (IMAGE_STORAGE_PROVIDER === 'sftp') {
+  if (config.image_storage.provider === 'sftp') {
     return await import('./sftp');
-  } else if (IMAGE_STORAGE_PROVIDER === 'local-fs') {
+  } else if (config.image_storage.provider === 'fs') {
     return await import('./fs');
   }
 

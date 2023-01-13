@@ -4,7 +4,7 @@ import httpCodes from 'http-status-codes';
 
 import { comparePassword, NeedLoginError } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
-import { redisPrefix, TURNSTILE_SECRET_KEY } from '@app/lib/config';
+import config, { redisPrefix } from '@app/lib/config';
 import { createTurnstileDriver } from '@app/lib/externals/turnstile';
 import { Tag } from '@app/lib/openapi';
 import { UserRepo } from '@app/lib/orm';
@@ -80,7 +80,7 @@ export async function setup(app: App) {
     },
   );
 
-  const turnstile = createTurnstileDriver(TURNSTILE_SECRET_KEY);
+  const turnstile = createTurnstileDriver(config.turnstile.secret_key);
 
   app.post(
     '/login2',

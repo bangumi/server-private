@@ -1,50 +1,42 @@
 /**
- * 从环境变量和 `projectRoot/config.yaml` 读取配置 可以设置的值 env.NODE_ENV 'production' | 'stage' | 'test' 在测试时会被
- * vitest 会设置此环境变量为 'test'，在生产环境会被设置为 'production', 在测试部属环境被会设置为 stage
+ * 从 `projectRoot/config.yaml` 和环境变量读取配置。 配置文件见 `config.example.yaml`。
  *
- * Env.REDIS_URI 默认 'redis://127.0.0.1:3306/0'
+ * {@link configSchema} 定义了配置文件的 json schema
  *
- * Env.TURNSTILE_SITE_KEY cloudflare turnstile 的 key Env.TURNSTILE_SECRET_KEY
+ * 可以使用环境变量会覆盖对应的文件配置，如 `CHII_MYSQL_DB` 会覆盖 `mysql.db`, `CHII_TURNSTILE_SECRET-KEY` 会覆盖
+ * `turnstile.secret_key`
  *
- * Env.HTTPS_PROXY 默认为空，如果设置了的话，会作为 turnstile 的代理
+ * 除此之外可以设置的环境变量：
  *
- * MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASS, MYSQL_DB mysql 配置
+ * {@link NODE_ENV}
  *
- * 配置文件见 `configFileType` 变量，定义了配置文件的 json schema
+ * 'production' | 'stage' | 'test' 在测试时会被 vitest 会设置此环境变量为 'test'， 在生产环境会被设置为 'production',
+ * 在测试部属环境被会设置为 stage
+ *
+ * {@link HTTPS_PROXY}
+ *
+ * 默认为空，如果设置了的话，会作为 turnstile 的代理
+ *
+ * {@link REF}
+ *
+ * 用于 docker 镜像，不用设置。
+ *
+ * @packageDocumentation
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
 import * as url from 'node:url';
 
-import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { Value } from '@sinclair/typebox/value';
 import Ajv from 'ajv';
-import type { RedisOptions } from 'ioredis';
 import * as yaml from 'js-yaml';
+import * as lo from 'lodash-es';
 
 // read from env
 
-const {
-  HTTPS_PROXY = '',
-  TURNSTILE_SECRET_KEY = '1x0000000000000000000000000000000AA',
-  TURNSTILE_SITE_KEY = '1x00000000000000000000AA',
-  NODE_ENV,
-  REDIS_URI,
-  MYSQL_HOST,
-  MYSQL_PORT = '3306',
-  MYSQL_USER,
-  MYSQL_PASS,
-  MYSQL_DB = 'bangumi',
-  'image-storage.provider': IMAGE_STORAGE_PROVIDER = 'local-fs',
-  'image-storage.local.path': LOCAL_IMAGE_STORAGE_PATH = './tmp/images/',
-  'image-storage.sftp.host': SFTP_HOST,
-  'image-storage.sftp.port': SFTP_PORT = '22',
-  'image-storage.sftp.username': SFTP_USERNAME,
-  'image-storage.sftp.password': SFTP_PASSWORD,
-  'image-storage.sftp.path': SFTP_BASE_PATH = '',
-  REF,
-} = process.env;
+const { HTTPS_PROXY = '', NODE_ENV, REF } = process.env;
 
 export const production = NODE_ENV === 'production';
 export const stage = NODE_ENV === 'stage';
@@ -58,38 +50,45 @@ export const pkg = JSON.parse(
 
 export const redisPrefix = `graphql-${pkg.version}`;
 
-const u = url.parse(REDIS_URI ?? 'redis://127.0.0.1:3306/0');
-
-const [username, password] = (u.auth ?? '').split(':', 2);
-
-export const redisOption = {
-  host: u.hostname ?? '127.0.0.1',
-  port: u.port ? Number.parseInt(u.port) : 3306,
-  db: u.pathname ? Number.parseInt(u.pathname.slice(1)) : 0,
-  username,
-  password,
-  lazyConnect: true,
-} satisfies RedisOptions;
-
 export const VERSION = developing ? 'development' : REF || pkg.version;
 
-export {
-  HTTPS_PROXY,
-  IMAGE_STORAGE_PROVIDER,
-  LOCAL_IMAGE_STORAGE_PATH,
-  MYSQL_DB,
-  MYSQL_HOST,
-  MYSQL_PASS,
-  MYSQL_PORT,
-  MYSQL_USER,
-  SFTP_BASE_PATH,
-  SFTP_HOST,
-  SFTP_PASSWORD,
-  SFTP_PORT,
-  SFTP_USERNAME,
-  TURNSTILE_SECRET_KEY,
-  TURNSTILE_SITE_KEY,
-};
+export { HTTPS_PROXY };
+
+/** WARNING: 所有的 key 都必需小写 */
+const configSchema = t.Object({
+  nsfw_word: t.Optional(t.String({ minLength: 1 })),
+  disable_words: t.Optional(t.String()),
+  banned_domain: t.Optional(t.String()),
+
+  redis_uri: t.String({ default: 'redis://127.0.0.1:3306/0' }),
+
+  image_storage: t.Object({
+    provider: t.Enum({ FS: 'fs', SFTP: 'sftp' } as const),
+    fs: t.Object({
+      path: t.String({ default: './tmp/images' }),
+    }),
+    sftp: t.Object({
+      path: t.String({ default: '/var/lib/data/images' }),
+      host: t.String(),
+      port: t.Integer({ default: 22 }),
+      username: t.String(),
+      password: t.String(),
+    }),
+  }),
+
+  turnstile: t.Object({
+    secret_key: t.String({ default: '1x0000000000000000000000000000000AA' }),
+    site_key: t.String({ default: '1x00000000000000000000AA' }),
+  }),
+
+  mysql: t.Object({
+    db: t.String({ default: 'bangumi' }),
+    host: t.String({ default: '127.0.0.1' }),
+    port: t.Integer({ default: 3306 }),
+    user: t.String({ default: 'user' }),
+    password: t.String({ default: 'password' }),
+  }),
+});
 
 // read config file
 
@@ -100,19 +99,23 @@ if (fs.existsSync(configFilePath)) {
   configFileContent = fs.readFileSync(configFilePath, 'utf8');
 }
 
-export const fileConfig = yaml.load(configFileContent) as Static<typeof configFileType>;
+const config = lo.assign(Value.Create(configSchema), yaml.load(configFileContent));
+export default config;
 
-// validate config file
+const envPrefix = 'CHII_';
 
-const configFileType = t.Object({
-  nsfw_word: t.Optional(t.String({ minLength: 1 })),
-  disable_words: t.Optional(t.String()),
-  banned_domain: t.Optional(t.String()),
-});
+for (const [key, value] of Object.entries(process.env)) {
+  if (key.startsWith(envPrefix)) {
+    const keyPath = key.slice(envPrefix.length).toLowerCase().replace('_', '.').replace('-', '_');
+    lo.set(config, keyPath, value);
+  }
+}
 
-const schema = new Ajv({ allErrors: true }).compile(configFileType);
+const ajv = new Ajv({ allErrors: true, coerceTypes: true });
 
-const valid = schema(fileConfig);
+const schema = ajv.compile(configSchema);
+
+const valid = schema(config);
 
 if (!valid) {
   const errorMessage =

@@ -3,7 +3,7 @@ import * as php from 'php-serialize';
 import { DataSource } from 'typeorm';
 import * as typeorm from 'typeorm';
 
-import { MYSQL_DB, MYSQL_HOST, MYSQL_PASS, MYSQL_PORT, MYSQL_USER } from '@app/lib/config';
+import config from '@app/lib/config';
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
 import type { ReplyState, TopicDisplay } from '@app/lib/topic';
@@ -33,11 +33,11 @@ import {
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
-  host: MYSQL_HOST,
-  port: Number.parseInt(MYSQL_PORT),
-  username: MYSQL_USER,
-  password: MYSQL_PASS,
-  database: MYSQL_DB,
+  host: config.mysql.host,
+  port: config.mysql.port,
+  username: config.mysql.user,
+  password: config.mysql.password,
+  database: config.mysql.db,
   synchronize: false,
   maxQueryExecutionTime: 2000,
   logger: {
