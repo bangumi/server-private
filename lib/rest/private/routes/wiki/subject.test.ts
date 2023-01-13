@@ -16,6 +16,8 @@ const uploadImageMock = vi.fn();
 
 vi.spyOn(image, 'uploadImage').mockImplementation(uploadImageMock);
 
+vi.spyOn(Subject, 'uploadCover').mockImplementation(() => Promise.resolve());
+
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
   await app.register(setup);

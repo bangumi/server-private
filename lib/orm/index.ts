@@ -23,6 +23,7 @@ import {
   OauthClient,
   Subject,
   SubjectFields,
+  SubjectImage,
   SubjectRev,
   User,
   UserField,
@@ -73,6 +74,7 @@ export const AppDataSource = new DataSource({
     UserGroup,
     Notify,
     NotifyField,
+    SubjectImage,
     Friends,
     Group,
     GroupMembers,
@@ -92,6 +94,7 @@ export const FriendRepo = AppDataSource.getRepository(Friends);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
+export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
 
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);

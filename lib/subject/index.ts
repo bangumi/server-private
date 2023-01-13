@@ -7,6 +7,7 @@ import { DateTime } from 'luxon';
 import { BadRequestError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
 import { AppDataSource, SubjectRepo } from '@app/lib/orm';
+import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
 import { extractDate } from '@app/lib/subject/date';
 import { DATE } from '@app/lib/utils/date';
@@ -176,4 +177,36 @@ export function platforms(typeID: SubjectType): Platform[] {
 
 export function platformString(typeID: SubjectType, platformID: number): Platform | undefined {
   return platform[typeID]?.[platformID];
+}
+
+export async function uploadCover({
+  subjectID,
+  uid,
+  filename,
+}: {
+  subjectID: number;
+  uid: number;
+  filename: string;
+}): Promise<void> {
+  await orm.AppDataSource.transaction(async (t) => {
+    const Image = t.getRepository(entity.SubjectImage);
+    const Subject = t.getRepository(entity.Subject);
+
+    const subject = await Subject.findOneByOrFail({ id: subjectID });
+
+    await Image.insert({
+      ban: 0,
+      nsfw: 0,
+      subjectID,
+      createdAt: DateTime.now().toUnixInteger(),
+      target: filename,
+      uid,
+      vote: 0,
+    });
+
+    if (subject.subjectImage === '') {
+      subject.subjectImage = filename;
+      await Subject.save(subject);
+    }
+  });
 }

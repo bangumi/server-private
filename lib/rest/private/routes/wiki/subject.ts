@@ -298,7 +298,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('upload a subject cover')],
     },
-    async ({ body: { content }, params: { subjectID } }) => {
+    async ({ body: { content }, auth, params: { subjectID } }) => {
       const raw = Buffer.from(content, 'base64');
       // 4mb
       if (raw.length > 4 * 1024 * 1024) {
@@ -332,6 +332,8 @@ export async function setup(app: App) {
       const filename = `${h.slice(0, 2)}/${h.slice(2, 4)}/${h.slice(4)}.${ext}`;
 
       await uploadImage(filename, raw);
+
+      await Subject.uploadCover({ subjectID: subjectID, filename: filename, uid: auth.userID });
 
       return subjectID;
     },
