@@ -1,11 +1,6 @@
 import { IMAGE_STORAGE_PROVIDER } from '@app/lib/config';
 
 export interface ImageFS {
-  /**
-   * Upload image to storage. implement should check file exists and create directory if not exists
-   *
-   * @throws FileExistError
-   */
   uploadImage(path: string, content: Buffer): Promise<void>;
 }
 
