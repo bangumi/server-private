@@ -310,12 +310,12 @@ export async function setup(app: App) {
         throw new BadRequestError('file too large');
       }
 
-      const s = sharp(raw);
+      const image = sharp(raw);
 
       let format: keyof FormatEnum | undefined;
       // validate image
       try {
-        const m = await s.metadata();
+        const m = await image.metadata();
         format = m.format;
       } catch {
         throw new BadRequestError('not valid image');
@@ -335,6 +335,18 @@ export async function setup(app: App) {
       const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);
 
       const filename = `-/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
+
+      const s = await orm.fetchSubject(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+      if (s.redirect) {
+        throw new NotAllowedError('edit a locked subject');
+      }
 
       await uploadImage(SubjectCoverPrefix + filename, raw);
 
