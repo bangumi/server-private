@@ -7,9 +7,9 @@ export interface ImageFS {
 
 // TODO: add s3 to replace sftp
 export async function getImpl(): Promise<ImageFS> {
-  if (config.image_storage.provider === 'sftp') {
+  if (config.image.provider === 'sftp') {
     return await import('./sftp');
-  } else if (config.image_storage.provider === 'fs') {
+  } else if (config.image.provider === 'fs') {
     return await import('./fs');
   }
 

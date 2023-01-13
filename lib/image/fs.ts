@@ -3,7 +3,7 @@ import * as path from 'node:path';
 
 import config from '@app/lib/config';
 
-const BasePath = config.image_storage.fs.path;
+const BasePath = config.image.fs.path;
 
 export async function uploadImage(p: string, content: Buffer): Promise<void> {
   p = path.join(BasePath, p);

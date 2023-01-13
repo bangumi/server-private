@@ -80,7 +80,7 @@ export async function setup(app: App) {
     },
   );
 
-  const turnstile = createTurnstileDriver(config.turnstile.secret_key);
+  const turnstile = createTurnstileDriver(config.turnstile.secret);
 
   app.post(
     '/login2',

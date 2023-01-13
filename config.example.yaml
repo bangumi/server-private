@@ -1,3 +1,5 @@
+# 查看 lib/config.ts 的 configSchema
+
 nsfw_word: '里番|无码|18x|エロ'
 disable_words: '办假存单|办理假证|0月租手机'
 banned_domain: 'lista.cc|snapmail.cc|ashotmail.com|zoutlook.com'
@@ -9,13 +11,20 @@ mysql:
   password: 'password' # CHII_MYSQL_PASSWORD
   db: 'bangumi' # CHII_MYSQL_DB
 
-redis-uri: 'redis://:redis-pass@127.0.0.1:6379/0' # CHII_REDIS-URI
+redis:
+  uri: 'redis://:redis-pass@127.0.0.1:6379/0' # CHII_REDIS_URI
 
 turnstile:
-  secret_key: '1x0000000000000000000000000000000AA' # CHII_TURNSTILE_SECRET-KEY
-  site_key: '1x00000000000000000000AA' # CHII_TURNSTILE_SITE-KEY
+  secret: '1x0000000000000000000000000000000AA' # CHII_TURNSTILE_SECRET
+  site: '1x00000000000000000000AA' # CHII_TURNSTILE_SITE
 
-image_storage:
-  provider: 'fs'
+image:
+  provider: 'fs' # CHII_IMAGE_PROVIDER
   fs:
-    path: './tmp/images'
+    path: './tmp/images' # CHII_IMAGE_PROVIDER
+  sftp:
+    path: '/var/lib/data/images'
+    host: '...'
+    port: 22
+    username: '...'
+    password: '...'
