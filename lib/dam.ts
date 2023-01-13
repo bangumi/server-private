@@ -1,5 +1,5 @@
 /** 敏感词过滤 */
-import { fileConfig } from './config';
+import config from './config';
 
 const controlPattern = /[\u200B-\u200F\u202A-\u202E\uFEFF]/;
 
@@ -57,4 +57,4 @@ export class Dam {
   }
 }
 
-export const dam = new Dam(fileConfig);
+export const dam = new Dam(config);

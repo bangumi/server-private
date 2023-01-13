@@ -4,7 +4,7 @@ import { fastifyStatic } from '@fastify/static';
 import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
-import { production, projectRoot, TURNSTILE_SITE_KEY } from '@app/lib/config';
+import config, { production, projectRoot } from '@app/lib/config';
 import * as Notify from '@app/lib/notify';
 import { fetchUserX } from '@app/lib/orm';
 import type { App } from '@app/lib/rest/type';
@@ -48,12 +48,12 @@ export async function setup(app: App) {
         notify,
       });
     } else {
-      await res.view('login', { TURNSTILE_SITE_KEY });
+      await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.site_key });
     }
   });
 
   app.get('/login', { schema: { hide: true } }, async (req, res) => {
-    await res.view('login', { TURNSTILE_SITE_KEY });
+    await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.site_key });
   });
 
   editor.setup(app);
