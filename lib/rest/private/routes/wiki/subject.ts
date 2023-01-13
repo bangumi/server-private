@@ -327,7 +327,7 @@ export async function setup(app: App) {
         );
       }
 
-      const h = crypto.createHash('blake2b512').update(raw).digest('hex').slice(0, 32);
+      const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);
 
       const filename = `${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
 
