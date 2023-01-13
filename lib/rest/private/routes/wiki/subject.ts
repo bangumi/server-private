@@ -6,7 +6,7 @@ import type { FormatEnum } from 'sharp';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
-import { SupportedImageExtension, uploadImage } from '@app/lib/image';
+import { fileExtension, SupportedImageExtension, uploadImage } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -296,6 +296,7 @@ export async function setup(app: App) {
           }),
         }),
       },
+      preHandler: [requireLogin('upload a subject cover')],
     },
     async ({ body: { content }, params: { subjectID } }) => {
       const raw = Buffer.from(content, 'base64');
@@ -319,7 +320,8 @@ export async function setup(app: App) {
         throw new BadRequestError("not valid image, can' get image format");
       }
 
-      if (!SupportedImageExtension.includes(format)) {
+      const ext = fileExtension(format);
+      if (!ext) {
         throw new BadRequestError(
           `not valid image, only support ${SupportedImageExtension.join(', ')}`,
         );
@@ -327,7 +329,7 @@ export async function setup(app: App) {
 
       const h = crypto.createHash('blake2b512').update(raw).digest('hex').slice(0, 32);
 
-      const filename = `${h.slice(0, 2)}/${h.slice(2, 4)}/${h.slice(4)}.${format}`;
+      const filename = `${h.slice(0, 2)}/${h.slice(2, 4)}/${h.slice(4)}.${ext}`;
 
       await uploadImage(filename, raw);
 

@@ -1,11 +1,20 @@
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { UserGroup } from '@app/lib/auth';
+import { projectRoot } from '@app/lib/config';
+import * as image from '@app/lib/image';
 import * as Subject from '@app/lib/subject';
 import { createTestServer } from '@app/tests/utils';
 
 import type { ISubjectEdit } from './subject';
 import { setup } from './subject';
+
+const uploadImageMock = vi.fn();
+
+vi.spyOn(image, 'uploadImage').mockImplementation(uploadImageMock);
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -22,6 +31,7 @@ describe('edit subject ', () => {
 
   afterEach(() => {
     editSubject.mockReset();
+    uploadImageMock.mockReset();
   });
 
   test('should get current wiki info', async () => {
@@ -153,5 +163,33 @@ describe('edit subject ', () => {
         "statusCode": 400,
       }
     `);
+  });
+
+  test.each(['webp', 'jpg'])('upload subject covers in %s format', async (format) => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: { subject_edit: true },
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const raw = await fs.readFile(
+      path.join(projectRoot, `lib/rest/private/routes/wiki/fixtures/subject.${format}`),
+    );
+
+    const res = await app.inject({
+      url: '/subjects/1/cover',
+      method: 'post',
+      payload: {
+        content: raw.toString('base64'),
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(uploadImageMock).toBeCalledWith(expect.stringMatching(new RegExp('\\.' + format)), raw);
   });
 });
