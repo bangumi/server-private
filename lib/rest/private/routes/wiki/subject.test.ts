@@ -7,6 +7,12 @@ import { createTestServer } from '@app/tests/utils';
 import type { ISubjectEdit } from './subject';
 import { setup } from './subject';
 
+async function testApp(...args: Parameters<typeof createTestServer>) {
+  const app = createTestServer(...args);
+  await app.register(setup);
+  return app;
+}
+
 describe('edit subject ', () => {
   const editSubject = vi.fn();
 
@@ -19,8 +25,7 @@ describe('edit subject ', () => {
   });
 
   test('should get current wiki info', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
+    const app = await testApp({});
 
     const res = await app.inject('/subjects/8');
 
@@ -48,7 +53,7 @@ describe('edit subject ', () => {
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
-    const app = createTestServer({
+    const app = await testApp({
       auth: {
         groupID: UserGroup.Normal,
         login: true,
@@ -58,8 +63,6 @@ describe('edit subject ', () => {
         userID: 100,
       },
     });
-
-    await app.register(setup);
 
     const res = await app.inject({
       url: '/subjects/1',
@@ -90,7 +93,7 @@ describe('edit subject ', () => {
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
-    const app = createTestServer({
+    const app = await testApp({
       auth: {
         groupID: UserGroup.Normal,
         login: true,
@@ -100,8 +103,6 @@ describe('edit subject ', () => {
         userID: 100,
       },
     });
-
-    await app.register(setup);
 
     const res = await app.inject({
       url: '/subjects/1',
@@ -121,5 +122,36 @@ describe('edit subject ', () => {
       summary: 's',
       userID: 100,
     });
+  });
+
+  test('upload subject cover', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: { subject_edit: true },
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const res = await app.inject({
+      url: '/subjects/1/cover',
+      method: 'post',
+      payload: {
+        content: Buffer.from('hello world').toString('base64'),
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "BAD_REQUEST",
+        "error": "Bad Request",
+        "message": "not valid image",
+        "statusCode": 400,
+      }
+    `);
   });
 });

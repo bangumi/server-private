@@ -1,8 +1,12 @@
+import * as crypto from 'node:crypto';
+
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import type { FormatEnum } from 'sharp';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
+import { uploadImage } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -12,6 +16,7 @@ import * as Subject from '@app/lib/subject';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
+import sharp from '@app/vendor/sharp';
 
 const exampleSubjectEdit = {
   name: '沙盒',
@@ -273,6 +278,60 @@ export async function setup(app: App) {
         userID: auth.userID,
         commitMessage,
       });
+    },
+  );
+
+  app.post(
+    '/subjects/:subjectID/cover',
+    {
+      schema: {
+        operationId: 'uploadSubjectCover',
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        body: t.Object({
+          content: t.String({
+            format: 'byte',
+            description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
+          }),
+        }),
+      },
+    },
+    async ({ body: { content }, params: { subjectID } }) => {
+      const raw = Buffer.from(content, 'base64');
+      // 4mb
+      if (raw.length > 4 * 1024 * 1024) {
+        throw new BadRequestError('file too large');
+      }
+
+      const s = sharp(raw);
+
+      let format: keyof FormatEnum | undefined;
+      // validate image
+      try {
+        const m = await s.metadata();
+        format = m.format;
+      } catch {
+        throw new BadRequestError('not valid image');
+      }
+
+      if (!format) {
+        throw new BadRequestError("not valid image, can' get image format");
+      }
+
+      const supportedFormat: (keyof FormatEnum)[] = ['webp', 'jpeg', 'jpg', 'png'];
+
+      if (!supportedFormat.includes(format)) {
+        throw new BadRequestError(`not valid image, only support ${supportedFormat.join(', ')}`);
+      }
+
+      const h = crypto.createHash('blake2b512').update(raw).digest('hex').slice(0, 32);
+
+      const filename = `${h.slice(0, 2)}/${h.slice(2, 4)}/${h.slice(4)}.${format}`;
+
+      await uploadImage(filename, raw);
+
+      return subjectID;
     },
   );
 

@@ -1,4 +1,5 @@
 import type Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import type { FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 
@@ -9,6 +10,7 @@ export function createTestServer({ auth, ...opt }: { auth?: IAuth } & FastifySer
     ...opt,
     ajv: {
       plugins: [
+        addFormats,
         function (ajv: Ajv) {
           ajv.addKeyword({ keyword: 'x-examples' });
         },
