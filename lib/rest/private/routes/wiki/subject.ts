@@ -317,7 +317,7 @@ export async function setup(app: App) {
       }
 
       if (!format) {
-        throw new BadRequestError('not valid image, can\' get image format');
+        throw new BadRequestError("not valid image, can' get image format");
       }
 
       const ext = fileExtension(format);
