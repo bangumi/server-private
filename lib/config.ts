@@ -36,6 +36,13 @@ const {
   MYSQL_USER,
   MYSQL_PASS,
   MYSQL_DB = 'bangumi',
+  IMAGE_STORAGE = 'local',
+  LOCAL_IMAGE_STORAGE_PATH = './tmp/images/',
+  SFTP_HOST,
+  SFTP_PORT = '22',
+  SFTP_USERNAME,
+  SFTP_PASSWORD,
+  SFTP_BASE_PATH = '',
   REF,
 } = process.env;
 
@@ -68,11 +75,18 @@ export const VERSION = developing ? 'development' : REF || pkg.version;
 
 export {
   HTTPS_PROXY,
+  IMAGE_STORAGE,
+  LOCAL_IMAGE_STORAGE_PATH,
   MYSQL_DB,
   MYSQL_HOST,
   MYSQL_PASS,
   MYSQL_PORT,
   MYSQL_USER,
+  SFTP_BASE_PATH,
+  SFTP_HOST,
+  SFTP_PASSWORD,
+  SFTP_PORT,
+  SFTP_USERNAME,
   TURNSTILE_SECRET_KEY,
   TURNSTILE_SITE_KEY,
 };
