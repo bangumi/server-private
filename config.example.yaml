@@ -20,11 +20,22 @@ turnstile:
 
 image:
   provider: 'fs' # CHII_IMAGE_PROVIDER
+
   fs:
     path: './tmp/images' # CHII_IMAGE_PROVIDER
+
   sftp:
     path: '/var/lib/data/images'
     host: '...'
     port: 22
     username: '...'
     password: '...'
+
+  s3:
+    bucket: 'chii-image'
+    region: 'ap-northeast-1'
+    endPoint: 'play.min.io'
+    port: 9000
+    useSSL: true
+    access_key: '...'
+    secret_key: '...'

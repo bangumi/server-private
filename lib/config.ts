@@ -66,7 +66,11 @@ const configSchema = t.Object({
   }),
 
   image: t.Object({
-    provider: t.Enum({ FS: 'fs', SFTP: 'sftp' } as const),
+    provider: t.Enum({
+      s3: 's3',
+      FS: 'fs',
+      SFTP: 'sftp',
+    } as const),
     fs: t.Object({
       path: t.String({ default: './tmp/images' }),
     }),
@@ -76,6 +80,13 @@ const configSchema = t.Object({
       port: t.Integer({ default: 22 }),
       username: t.String(),
       password: t.String(),
+    }),
+    s3: t.Object({
+      path: t.String({ default: '/var/lib/data/images' }),
+      host: t.String(),
+      port: t.Integer({ default: 22 }),
+      accessKey: t.String({ env: 'CHII_IMG_S3_ACCESS_KEY' }),
+      secretKey: t.String(),
     }),
   }),
 
@@ -116,6 +127,7 @@ for (const [key, value] of Object.entries(process.env)) {
 
 const ajv = new Ajv({ allErrors: true, coerceTypes: true });
 addFormats(ajv);
+ajv.addKeyword('env');
 
 const schema = ajv.compile(configSchema);
 
