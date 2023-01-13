@@ -2,6 +2,8 @@ import type { FormatEnum } from 'sharp';
 
 import { getImpl } from './base';
 
+export const SubjectCoverPrefix = 'pic/cover/l/';
+
 export const SupportedImageExtension: (keyof FormatEnum)[] = ['webp', 'jpeg', 'jpg', 'png'];
 
 // 在 handler 中验证图片。
