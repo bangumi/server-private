@@ -6,7 +6,7 @@ import type { FormatEnum } from 'sharp';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
-import { uploadImage } from '@app/lib/image';
+import { SupportedImageExtension, uploadImage } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -319,10 +319,10 @@ export async function setup(app: App) {
         throw new BadRequestError("not valid image, can' get image format");
       }
 
-      const supportedFormat: (keyof FormatEnum)[] = ['webp', 'jpeg', 'jpg', 'png'];
-
-      if (!supportedFormat.includes(format)) {
-        throw new BadRequestError(`not valid image, only support ${supportedFormat.join(', ')}`);
+      if (!SupportedImageExtension.includes(format)) {
+        throw new BadRequestError(
+          `not valid image, only support ${SupportedImageExtension.join(', ')}`,
+        );
       }
 
       const h = crypto.createHash('blake2b512').update(raw).digest('hex').slice(0, 32);
