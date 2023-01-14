@@ -30,4 +30,4 @@ interface NotifyEvent {
 
 服务端**只有在用户的通知计数改变的时候**才会 emit 对应的事件，没有定时心跳。
 
-在 https://next.bgm.tv/p1/demo 页面可以看到示例
+在 <https://next.bgm.tv/demo> 页面可以看到示例
