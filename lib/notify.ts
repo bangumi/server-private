@@ -9,6 +9,7 @@ import * as orm from './orm';
 import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './orm';
 import type { Notify } from './orm/entity';
 import * as entity from './orm/entity';
+import { intval } from './utils';
 
 /**
  * `nt_type`
@@ -189,7 +190,7 @@ async function userNotifySetting(userID: number): Promise<PrivacySetting> {
     blockedUsers: f.blocklist
       .split(',')
       .map((x) => x.trim())
-      .map((x) => Number.parseInt(x)),
+      .map((x) => intval(x)),
   };
 }
 

@@ -5,6 +5,7 @@ import { logger } from './logger';
 import { AppDataSource } from './orm';
 import { Subscriber } from './redis';
 import { createServer } from './server';
+import { intval } from './utils';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console
@@ -26,7 +27,7 @@ server.addHook('onReady', async () => {
   await AppDataSource.initialize();
 });
 
-const port = process.env.PORT ? Number.parseInt(process.env.PORT) : 4000;
+const port = process.env.PORT ? intval(process.env.PORT) : 4000;
 const host = process.env.HOST ?? '0.0.0.0';
 
 await server.listen({ port, host });
