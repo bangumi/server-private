@@ -100,7 +100,7 @@
     "got": "^12.5.3",
     "graphql": "^16.6.0",
     "http-status-codes": "^2.2.0",
-    "ioredis": "^5.2.4",
+    "ioredis": "^5.2.5",
     "js-yaml": "^4.1.0",
     "liquidjs": "^10.4.0",
     "lodash-es": "^4.17.21",
