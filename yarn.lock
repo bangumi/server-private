@@ -43,10 +43,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@bgm38/wiki@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@bgm38/wiki/-/wiki-0.1.3.tgz#61b6f9e5c4e856de4598aa85e871fac5ad47c714"
-  integrity sha512-LRZqhAda8n2Iip3sEPK/n/8sNrqELPhxFXLRdOiidM00EKAnfYp0dALozKPupBg0wArDQQfj6tdn8nt0VHH4Cg==
+"@bgm38/wiki@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@bgm38/wiki/-/wiki-0.2.1.tgz#37e20a7e8faabca0e012ac9f1cd131773142591c"
+  integrity sha512-74gSRVtdTWYtdnZZ+l3xtMmC/v7/ShagLnB/lgmmorleonEzM21x7EmyhAQvJ2alX+TDW3VfqL+Ozw3+aeyhww==
 
 "@esbuild-kit/core-utils@^3.0.0":
   version "3.0.0"
