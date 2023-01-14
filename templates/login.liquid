@@ -86,7 +86,13 @@
 
           let qs = new URLSearchParams(location.search);
 
-          location.href = qs.get('to') ?? '/demo/';
+          const to = qs.get('to') ?? '/demo/';
+
+          if (to.startsWith('/')) {
+            location.href = to;
+          } else {
+            location.href = '/demo/';
+          }
         }
       }
 
