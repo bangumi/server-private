@@ -1,3 +1,5 @@
+# socket.io
+
 openapi 没法描述 socket.io 的 api，所以单独写一个文件
 
 需要使用 `/p1/socket-io/` 作为链接的 path
