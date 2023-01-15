@@ -4,6 +4,7 @@ import type { RedisOptions } from 'ioredis';
 import IORedis from 'ioredis';
 
 import config from './config';
+import { intval } from './utils';
 
 const u = url.parse(config.redisUri);
 
@@ -11,8 +12,8 @@ const [username, password] = (u.auth ?? '').split(':', 2);
 
 export const redisOption = {
   host: u.hostname ?? '127.0.0.1',
-  port: u.port ? Number.parseInt(u.port) : 3306,
-  db: u.pathname ? Number.parseInt(u.pathname.slice(1)) : 0,
+  port: u.port ? intval(u.port) : 3306,
+  db: u.pathname ? intval(u.pathname.slice(1)) : 0,
   username,
   password,
   lazyConnect: true,

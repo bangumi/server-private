@@ -1,7 +1,7 @@
 import pLimit from 'p-limit';
 import { expect, test } from 'vitest';
 
-import { randomBase62String } from './index';
+import { intval, randomBase62String } from './index';
 
 const limit = pLimit(10);
 
@@ -31,5 +31,22 @@ test('random should not have bias', async () => {
       expect(count).toBeGreaterThan((length / 62) * 0.98);
       expect(count).toBeLessThan((length / 62) * 1.02);
     });
+  }
+});
+
+test.each([
+  ['0', 0],
+  ['0x8', 8],
+  ['1', 1],
+  ['1eb', undefined],
+  ['1.9', undefined],
+  ['1.99', undefined],
+  [1.99, undefined],
+  ['-100', -100],
+])('intval("%s") should be %s', (value, expected) => {
+  if (expected === undefined) {
+    expect(() => intval(value)).toThrow();
+  } else {
+    expect(intval(value)).toBe(expected);
   }
 });

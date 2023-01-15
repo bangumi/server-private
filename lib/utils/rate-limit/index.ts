@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import type { Redis } from 'ioredis';
 
 import { projectRoot } from '@app/lib/config';
+import { intval } from '@app/lib/utils';
 
 const luaScript = fs
   .readFileSync(path.join(projectRoot, 'lib/utils/rate-limit/lua/get_token.lua'))
@@ -37,7 +38,7 @@ export default class Limiter {
     const result = await this.redisClient.getRateLimit(key, this.limit, this.duration);
     return {
       remain: result[0],
-      reset: Number.parseInt(result[1], 10),
+      reset: intval(result[1]),
     };
   }
 }

@@ -32,7 +32,7 @@ module.exports = createRule({
     const filename = context.getFilename();
     return {
       ImportDeclaration: (node) => {
-        if (node.source.value.startsWith('../')) {
+        if (node.source.value.startsWith('..')) {
           const dstPath = path.resolve(path.dirname(filename), node.source.value);
           const should = posix.normalize(
             posix.join('@app', path.relative(rootDir, dstPath).replaceAll('\\', '/')),

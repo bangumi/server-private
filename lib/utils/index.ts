@@ -8,3 +8,28 @@ if (base62Chars.length !== 62) {
 const generator = customAlphabet(base62Chars, 32);
 
 export const randomBase62String = (size: number) => generator(size);
+
+/**
+ * Parse string as int, strictly
+ *
+ * 避免出现 `parseInt('1abc') === 1` 的问题
+ */
+export function intval(value: string | number): number {
+  const v = parseIntStrict(value);
+  if (v === undefined) {
+    throw new Error(`"${value}" is not a valid integer`);
+  }
+  return v;
+}
+
+function parseIntStrict(integer: string | number) {
+  if (typeof integer === 'number') {
+    return Number.isInteger(integer) ? integer : undefined;
+  }
+
+  const n = Number(integer);
+
+  if (Number.isInteger(n)) {
+    return n;
+  }
+}
