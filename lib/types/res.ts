@@ -1,37 +1,16 @@
 import type { FastifyError } from '@fastify/error';
-import type { SchemaOptions, Static, TSchema } from '@sinclair/typebox';
-import { Type as t, Type } from '@sinclair/typebox';
+import type { Static, TSchema } from '@sinclair/typebox';
+import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
 import type * as orm from '@app/lib/orm';
 import { avatar } from '@app/lib/response';
 import * as Subject from '@app/lib/subject';
 
-function NumberEnum<T extends number>(
-  values: Readonly<Record<string, T>>,
-  options: SchemaOptions = {},
-) {
-  const entries = Object.entries(values).sort((a, b) => a[1] - b[1]);
-
-  return Type.Unsafe<T>({
-    ...options,
-    'x-enumNames': entries.map(([name]) => name),
-    type: 'number',
-    enum: entries.map((x) => x[1]),
-  });
-}
-
-/** 不可以用 t.Ref */
-export const SubjectType = NumberEnum(
-  {
-    Book: Subject.SubjectType.Book,
-    Anime: Subject.SubjectType.Anime,
-    Music: Subject.SubjectType.Music,
-    Game: Subject.SubjectType.Game,
-    Real: Subject.SubjectType.Real,
-  },
-  { $id: 'SubjectType', title: 'SubjectType' },
-);
+export const SubjectType = t.Enum(Subject.SubjectType, {
+  $id: 'SubjectType',
+  title: 'SubjectType',
+});
 
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
