@@ -13,15 +13,7 @@ import { DATE } from '@app/lib/utils/date';
 
 import type { Platform } from './platform';
 import platform from './platform';
-
-export const enum SubjectType {
-  Unknown = 0,
-  Book = 1, // 书籍
-  Anime = 2, // 动画
-  Music = 3, // 音乐
-  Game = 4, // 游戏
-  Real = 6, // 三次元
-}
+import type { SubjectType } from './type';
 
 export const InvalidWikiSyntaxError = createError(
   'INVALID_SYNTAX_ERROR',
@@ -177,3 +169,5 @@ export function platforms(typeID: SubjectType): Platform[] {
 export function platformString(typeID: SubjectType, platformID: number): Platform | undefined {
   return platform[typeID]?.[platformID];
 }
+
+export { SubjectType } from './type';

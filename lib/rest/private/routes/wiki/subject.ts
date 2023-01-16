@@ -71,6 +71,7 @@ const Platform = t.Object(
   {
     id: t.Integer(),
     text: t.String(),
+    wiki_tpl: t.Optional(t.String()),
   },
   { $id: 'WikiPlatform' },
 );
@@ -134,7 +135,11 @@ export async function setup(app: App) {
         infobox: s.infobox,
         summary: s.summary,
         platform: s.platform,
-        availablePlatform: platforms(s.typeID).map((x) => ({ id: x.id, text: x.type_cn })),
+        availablePlatform: platforms(s.typeID).map((x) => ({
+          id: x.id,
+          text: x.type_cn,
+          wiki_tpl: x.wiki_tpl,
+        })),
         nsfw: s.nsfw,
         typeID: s.typeID,
       };

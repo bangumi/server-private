@@ -6,22 +6,27 @@ Object {
     Object {
       "id": 0,
       "text": "其他",
+      "wiki_tpl": "Anime",
     },
     Object {
       "id": 1,
       "text": "TV",
+      "wiki_tpl": "TVAnime",
     },
     Object {
       "id": 2,
       "text": "OVA",
+      "wiki_tpl": "OVA",
     },
     Object {
       "id": 3,
       "text": "剧场版",
+      "wiki_tpl": "Movie",
     },
     Object {
       "id": 5,
       "text": "WEB",
+      "wiki_tpl": "TVAnime",
     },
   ],
   "id": 8,
