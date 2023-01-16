@@ -1,5 +1,4 @@
 export const enum SubjectType {
-  Unknown = 0,
   Book = 1, // 书籍
   Anime = 2, // 动画
   Music = 3, // 音乐
