@@ -5,6 +5,18 @@ import httpCodes from 'http-status-codes';
 
 import type * as orm from '@app/lib/orm';
 import { avatar } from '@app/lib/response';
+import * as Subject from '@app/lib/subject';
+
+export const SubjectType = t.Enum(
+  {
+    Book: Subject.SubjectType.Book,
+    Anime: Subject.SubjectType.Anime,
+    Music: Subject.SubjectType.Music,
+    Game: Subject.SubjectType.Game,
+    Real: Subject.SubjectType.Real,
+  } as const,
+  { $id: 'SubjectType', title: 'SubjectType' },
+);
 
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(

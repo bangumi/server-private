@@ -80,7 +80,7 @@ export const SubjectWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Integer(),
+    typeID: t.Ref(res.SubjectType),
     infobox: t.String(),
     platform: t.Integer(),
     availablePlatform: t.Array(t.Ref(Platform)),
@@ -95,6 +95,7 @@ export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
+  app.addSchema(res.SubjectType);
   app.addSchema(SubjectWikiInfo);
 
   app.get(
