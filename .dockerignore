@@ -1,0 +1,7 @@
+.dockerignire
+.git/
+.vscode/
+docs/
+eslint/
+etc/
+node_modules/

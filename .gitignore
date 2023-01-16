@@ -10,3 +10,4 @@ coverage/
 config.yaml
 .eslintcache
 tmp/
+.env

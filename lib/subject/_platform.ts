@@ -1,5 +1,7 @@
+import { SubjectType } from './type';
+
 export default {
-  '1': {
+  [SubjectType.Book]: {
     '0': {
       alias: 'misc',
       id: 0,
@@ -32,7 +34,7 @@ export default {
       wiki_tpl: 'Book',
     },
   },
-  '2': {
+  [SubjectType.Anime]: {
     '0': {
       alias: 'misc',
       id: 0,
@@ -73,31 +75,8 @@ export default {
       wiki_tpl: 'TVAnime',
     },
   },
-  '3': {
-    '0': {
-      id: 0,
-      type: '',
-      type_cn: '',
-    },
-    '1': {
-      id: 1,
-      type: 'TV',
-      type_cn: 'TV版动画',
-    },
-    '2': {
-      id: 2,
-      url: 'ova',
-      type: 'OVA',
-      type_cn: 'OVA',
-    },
-    '3': {
-      id: 3,
-      url: 'movie',
-      type: 'Movie',
-      type_cn: '剧场版动画',
-    },
-  },
-  '4': {
+  [SubjectType.Music]: {},
+  [SubjectType.Game]: {
     '0': {
       id: 0,
       type: '',
@@ -338,7 +317,7 @@ export default {
       type_cn: 'Xbox Series X/S',
     },
   },
-  '6': {
+  [SubjectType.Real]: {
     '0': {
       alias: 'misc',
       id: 0,

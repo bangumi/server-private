@@ -81,6 +81,7 @@ const Platform = t.Object(
   {
     id: t.Integer(),
     text: t.String(),
+    wiki_tpl: t.Optional(t.String()),
   },
   { $id: 'WikiPlatform' },
 );
@@ -89,7 +90,7 @@ export const SubjectWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Integer(),
+    typeID: t.Ref(res.SubjectType),
     infobox: t.String(),
     platform: t.Integer(),
     availablePlatform: t.Array(t.Ref(Platform)),
@@ -104,6 +105,7 @@ export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
+  app.addSchema(res.SubjectType);
   app.addSchema(SubjectWikiInfo);
 
   app.get(
@@ -144,7 +146,11 @@ export async function setup(app: App) {
         infobox: s.infobox,
         summary: s.summary,
         platform: s.platform,
-        availablePlatform: platforms(s.typeID).map((x) => ({ id: x.id, text: x.type_cn })),
+        availablePlatform: platforms(s.typeID).map((x) => ({
+          id: x.id,
+          text: x.type_cn,
+          wiki_tpl: x.wiki_tpl,
+        })),
         nsfw: s.nsfw,
         typeID: s.typeID,
       };
