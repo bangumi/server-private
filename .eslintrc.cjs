@@ -6,9 +6,7 @@ const rulesDirPlugin = require('eslint-plugin-rulesdir');
 
 rulesDirPlugin.RULES_DIR = path.join(__dirname, 'eslint');
 
-register({
-  format: 'cjs',
-});
+register({ format: 'cjs' });
 
 module.exports = {
   extends: [
@@ -151,14 +149,6 @@ module.exports = {
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '_' }],
     '@typescript-eslint/strict-boolean-expressions': 'off',
-    'no-restricted-syntax': [
-      'error',
-      // ban just non-const enums
-      {
-        selector: 'TSEnumDeclaration:not([const=true])',
-        message: "use 'const enum'",
-      },
-    ],
   },
   settings: {
     'import/parsers': {

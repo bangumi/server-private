@@ -1,4 +1,4 @@
-export const enum SubjectType {
+export enum SubjectType {
   Book = 1, // 书籍
   Anime = 2, // 动画
   Music = 3, // 音乐
