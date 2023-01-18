@@ -36,4 +36,28 @@ export function setup(app: App) {
       });
     },
   );
+
+  app.get(
+    '/subject/184017/upload-cover',
+    {
+      schema: {
+        hide: true,
+      },
+      preHandler: [redirectIfNotLogin],
+    },
+    async ({ auth }, res) => {
+      const subjectID = 184017;
+      const s = await orm.fetchSubject(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      const user = userToResCreator(await fetchUserX(auth.userID));
+
+      await res.view('upload-cover', {
+        user,
+        subjectID,
+      });
+    },
+  );
 }

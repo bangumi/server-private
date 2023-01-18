@@ -3,6 +3,10 @@ import * as minio from 'minio';
 
 import config from '@app/lib/config';
 
+if (config.image.s3 === undefined) {
+  throw new Error('missing image s3 storage config');
+}
+
 const s3 = config.image.s3;
 
 const client = new minio.Client({

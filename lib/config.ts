@@ -72,24 +72,35 @@ const schema = t.Object({
       } as const,
       { default: 'fs', env: 'CHII_IMAGE_PROVIDER' },
     ),
-    fs: t.Object({
-      path: t.String({ default: './tmp/images' }),
+    imaginaryUrl: t.String({
+      format: 'uri',
+      default: '',
+      description: 'url to docker image running https://github.com/h2non/imaginary',
     }),
-    sftp: t.Object({
-      path: t.String({ default: '/var/lib/data/images' }),
-      host: t.String(),
-      port: t.Integer({ default: 22 }),
-      username: t.String(),
-      password: t.String(),
-    }),
-    s3: t.Object({
-      endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),
-      bucket: t.String({ default: 'chii-image', env: 'CHII_IMAGE_S3_BUCKET' }),
-      port: t.Integer({ default: 9000, env: 'CHII_IMAGE_S3_PORT' }),
-      useSSL: t.Boolean({ default: false, env: 'CHII_IMAGE_S3_USE_SSL' }),
-      accessKey: t.String({ env: 'CHII_IMAGE_S3_ACCESS_KEY' }),
-      secretKey: t.String({ env: 'CHII_IMAGE_S3_SECRET_KEY' }),
-    }),
+    fs: t.Optional(
+      t.Object({
+        path: t.String({ default: './tmp/images' }),
+      }),
+    ),
+    sftp: t.ReadonlyOptional(
+      t.Object({
+        path: t.String({ default: '/var/lib/data/images' }),
+        host: t.String(),
+        port: t.Integer({ default: 22 }),
+        username: t.String(),
+        password: t.String(),
+      }),
+    ),
+    s3: t.ReadonlyOptional(
+      t.Object({
+        endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),
+        bucket: t.String({ default: 'chii-image', env: 'CHII_IMAGE_S3_BUCKET' }),
+        port: t.Integer({ default: 9000, env: 'CHII_IMAGE_S3_PORT' }),
+        useSSL: t.Boolean({ default: false, env: 'CHII_IMAGE_S3_USE_SSL' }),
+        accessKey: t.String({ env: 'CHII_IMAGE_S3_ACCESS_KEY' }),
+        secretKey: t.String({ env: 'CHII_IMAGE_S3_SECRET_KEY' }),
+      }),
+    ),
   }),
 
   turnstile: t.Object({

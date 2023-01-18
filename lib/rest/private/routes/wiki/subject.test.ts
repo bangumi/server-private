@@ -1,11 +1,12 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { UserGroup } from '@app/lib/auth';
 import { projectRoot } from '@app/lib/config';
 import * as image from '@app/lib/image';
+import { NotValidImageError } from '@app/lib/services/imaginary';
 import * as Subject from '@app/lib/subject';
 import { createTestServer } from '@app/tests/utils';
 
@@ -136,35 +137,50 @@ describe('edit subject ', () => {
     });
   });
 
-  test('upload subject cover', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
+  describe('bad image', () => {
+    afterAll(() => {
+      vi.resetModules();
     });
 
-    const res = await app.inject({
-      url: '/subjects/1/cover',
-      method: 'post',
-      payload: {
-        content: Buffer.from('hello world').toString('base64'),
-      },
+    vi.mock('@app/services/imaginary', () => {
+      return {
+        default: {
+          async info() {
+            throw new NotValidImageError();
+          },
+        },
+      };
     });
+    test('upload subject cover', async () => {
+      const app = await testApp({
+        auth: {
+          groupID: UserGroup.Normal,
+          login: true,
+          permission: { subject_edit: true },
+          allowNsfw: true,
+          regTime: 0,
+          userID: 100,
+        },
+      });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.json()).toMatchInlineSnapshot(`
-      Object {
-        "code": "BAD_REQUEST",
-        "error": "Bad Request",
-        "message": "not valid image",
-        "statusCode": 400,
-      }
-    `);
+      const res = await app.inject({
+        url: '/subjects/1/cover',
+        method: 'post',
+        payload: {
+          content: Buffer.from('hello world').toString('base64'),
+        },
+      });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.json()).toMatchInlineSnapshot(`
+        Object {
+          "code": "ERR_NOT_IMAGE",
+          "error": "Bad Request",
+          "message": "invalid image file",
+          "statusCode": 400,
+        }
+      `);
+    });
   });
 
   test.each(['webp', 'jpg'])('upload subject covers in %s format', async (format) => {

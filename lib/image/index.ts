@@ -1,13 +1,11 @@
-import type { FormatEnum } from 'sharp';
-
 import { getImpl } from './base';
 
 export const SubjectCoverPrefix = 'pic/cover/l/';
 
-export const SupportedImageExtension: (keyof FormatEnum)[] = ['webp', 'jpeg', 'jpg', 'png'];
+export const SupportedImageExtension = ['webp', 'jpeg', 'jpg', 'png'];
 
 // 在 handler 中验证图片。
-export function fileExtension(format: keyof FormatEnum): string | undefined {
+export function fileExtension(format: string): string | undefined {
   if (!SupportedImageExtension.includes(format)) {
     return;
   }

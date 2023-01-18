@@ -1,0 +1,56 @@
+{% assign title = 'edit' %}
+{% layout 'layout' %}
+
+{% block content %}
+<div class='container mt-5'>
+  <div class='row'>
+    <input type='file' id='fileupload'>
+  </div>
+  <br>
+  <div class='row'>
+    <button class='btn btn-primary' id='submit'>submit</button>
+  </div>
+</div>
+
+<script>
+  const subjectID = '{{ subjectID }}';
+</script>
+<script>
+  async function uploadFileToServer(file) {
+    return new Promise((resolve, reject) => {
+      var reader = new FileReader();
+      reader.readAsBinaryString(file);
+
+      reader.onload = function () {
+        resolve(btoa(reader.result));
+      };
+      reader.onerror = function () {
+        reject('failed to read file');
+        console.log('there are some problems');
+      };
+    });
+  }
+
+  $('#submit').on('click', async () => {
+    const file = await uploadFileToServer($('#fileupload')[0].files[0]);
+
+    console.log(file);
+
+    const res = await fetch(`/p1/wiki/subjects/${subjectID}/cover`, {
+      method: 'post',
+      headers: {
+        'content-type': 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ content: file }),
+    });
+
+    if (!res.ok) {
+      alert(JSON.stringify(await res.json(), null, 2));
+    } else {
+      location.href = `https://bgm.tv/subject/${subjectID}`;
+    }
+  });
+</script>
+
+{% endblock %}

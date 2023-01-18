@@ -2,7 +2,6 @@ import * as crypto from 'node:crypto';
 
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
-import type { FormatEnum } from 'sharp';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
@@ -17,11 +16,11 @@ import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import { requireLogin, requirePermission } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
+import imaginary from '@app/lib/services/imaginary';
 import * as Subject from '@app/lib/subject';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
-import sharp from '@app/vendor/sharp';
 
 const exampleSubjectEdit = {
   name: '沙盒',
@@ -319,16 +318,9 @@ export async function setup(app: App) {
         throw new BadRequestError('file too large');
       }
 
-      const image = sharp(raw);
-
-      let format: keyof FormatEnum | undefined;
       // validate image
-      try {
-        const m = await image.metadata();
-        format = m.format;
-      } catch {
-        throw new BadRequestError('not valid image');
-      }
+      const res = await imaginary.info(raw);
+      const format = res.type;
 
       if (!format) {
         throw new BadRequestError("not valid image, can' get image format");

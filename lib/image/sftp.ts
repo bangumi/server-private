@@ -3,6 +3,10 @@ import * as posix from 'node:path/posix';
 import config from '@app/lib/config';
 import Client from '@app/vendor/sftp';
 
+if (config.image.sftp === undefined) {
+  throw new Error('missing image sftp storage config');
+}
+
 const sftp = new Client();
 
 await sftp.connect({

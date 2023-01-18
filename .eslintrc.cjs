@@ -162,6 +162,7 @@ module.exports = {
     {
       files: ['tests/**/*', '*.test.ts'],
       rules: {
+        '@typescript-eslint/require-await': 'off',
         '@typescript-eslint/no-unnecessary-condition': 'off',
         '@typescript-eslint/no-unsafe-call': 'off',
         '@typescript-eslint/no-unsafe-member-access': 'off',
