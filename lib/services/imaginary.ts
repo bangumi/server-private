@@ -22,9 +22,13 @@ export interface Info {
   // orientation: 1,
 }
 
-export class Imaginary extends BaseHttpSrv {
-  constructor() {
-    super(config.image.imaginaryUrl);
+export interface IImaginary {
+  info(img: Buffer): Promise<Info>;
+}
+
+class Imaginary extends BaseHttpSrv implements IImaginary {
+  constructor(baseUrl: string) {
+    super(baseUrl);
   }
 
   async info(img: Buffer): Promise<Info> {
@@ -45,6 +49,21 @@ export class Imaginary extends BaseHttpSrv {
   }
 }
 
-const d = new Imaginary();
+let d: IImaginary;
+
+if (config.image.imaginaryUrl) {
+  // validate base url
+  // eslint-disable-next-line  @typescript-eslint/no-useless-constructor
+  new URL(config.image.imaginaryUrl);
+  d = new Imaginary(config.image.imaginaryUrl);
+} else {
+  console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
+  console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
+  d = {
+    info(): Promise<Info> {
+      return Promise.resolve({ width: 0, height: 0, type: 'jpg' });
+    },
+  };
+}
 
 export default d;

@@ -20,7 +20,9 @@ turnstile:
 image:
   provider: 'fs' # CHII_IMAGE_PROVIDER
 
-  imaginaryUrl: '127.0.0.1:9000' # https://github.com/h2non/imaginary
+  # https://github.com/h2non/imaginary
+  # example: 'http://127.0.0.1:9000'
+  imaginaryUrl: ''
 
   fs:
     path: './tmp/images' # CHII_IMAGE_PROVIDER

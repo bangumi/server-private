@@ -47,7 +47,7 @@ module.exports = {
     curly: ['error'],
     'tsdoc/syntax': 'error',
     'no-new-object': 'error',
-    'no-console': 'error',
+    'no-console': ['error', { allow: ['warn', 'error'] }],
     'no-new-wrappers': 'error',
     'unicorn/no-null': 'off',
     'unicorn/no-unsafe-regex': 'error',

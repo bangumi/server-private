@@ -72,11 +72,11 @@ const schema = t.Object({
       } as const,
       { default: 'fs', env: 'CHII_IMAGE_PROVIDER' },
     ),
-    imaginaryUrl: t.String({
-      format: 'uri',
-      default: '',
-      description: 'url to docker image running https://github.com/h2non/imaginary',
-    }),
+    imaginaryUrl: t.Optional(
+      t.String({
+        description: 'url to docker image running https://github.com/h2non/imaginary',
+      }),
+    ),
     fs: t.Optional(
       t.Object({
         path: t.String({ default: './tmp/images' }),
