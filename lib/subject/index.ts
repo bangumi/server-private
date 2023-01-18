@@ -184,7 +184,7 @@ export async function uploadCover({
     const Image = t.getRepository(entity.SubjectImage);
     const Subject = t.getRepository(entity.Subject);
 
-    const image = await Image.findBy({
+    const image = await Image.findOneBy({
       subjectID,
       target: filename,
     });

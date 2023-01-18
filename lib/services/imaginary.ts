@@ -42,8 +42,6 @@ class Imaginary extends BaseHttpSrv implements IImaginary {
       throw new NotValidImageError();
     }
 
-    console.log(res.body);
-
     return JSON.parse(res.body) as Info;
   }
 }
