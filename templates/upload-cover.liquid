@@ -4,7 +4,7 @@
 {% block content %}
 <div class='container mt-5'>
   <div class='row'>
-    <input type='file' id='fileupload'>
+    <input type='file' id='fileupload' accept='.jpg,.jpeg,.png,.webp'>
   </div>
   <br>
   <div class='row'>
@@ -32,9 +32,14 @@
   }
 
   $('#submit').on('click', async () => {
-    const file = await uploadFileToServer($('#fileupload')[0].files[0]);
+    const files = $('#fileupload')[0].files;
 
-    console.log(file);
+    if (!files.length) {
+      alert('请先选择要上传的文件');
+      return;
+    }
+
+    const file = await uploadFileToServer(files[0]);
 
     const res = await fetch(`/p1/wiki/subjects/${subjectID}/cover`, {
       method: 'post',
@@ -48,7 +53,7 @@
     if (!res.ok) {
       alert(JSON.stringify(await res.json(), null, 2));
     } else {
-      location.href = `https://bgm.tv/subject/${subjectID}`;
+      alert('上传成功');
     }
   });
 </script>
