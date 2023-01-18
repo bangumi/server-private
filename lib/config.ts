@@ -77,11 +77,9 @@ const schema = t.Object({
         description: 'url to docker image running https://github.com/h2non/imaginary',
       }),
     ),
-    fs: t.Optional(
-      t.Object({
-        path: t.String({ default: './tmp/images' }),
-      }),
-    ),
+    fs: t.Object({
+      path: t.String({ default: './tmp/images' }),
+    }),
     sftp: t.ReadonlyOptional(
       t.Object({
         path: t.String({ default: '/var/lib/data/images' }),

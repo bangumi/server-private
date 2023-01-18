@@ -1,7 +1,7 @@
 import * as buffer from 'node:buffer';
 import * as fs from 'node:fs/promises';
 
-import { afterAll, beforeAll, expect, test, vi } from 'vitest';
+import { afterAll, beforeAll, expect, test } from 'vitest';
 
 import * as impl from './fs';
 
@@ -11,16 +11,6 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await fs.rm('./tmp', { recursive: true, force: true });
-});
-
-vi.mock('@app/lib/config', () => {
-  return {
-    default: {
-      image: {
-        fs: { path: './tmp/images' },
-      },
-    },
-  };
 });
 
 test('should update image', async () => {
