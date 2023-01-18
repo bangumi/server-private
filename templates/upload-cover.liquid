@@ -15,16 +15,17 @@
 <script>
   async function uploadFileToServer(file) {
     return new Promise((resolve, reject) => {
-      var reader = new FileReader();
-      reader.readAsBinaryString(file);
+      const reader = new FileReader();
 
       reader.onload = function () {
-        resolve(btoa(reader.result));
+        resolve(btoa(String.fromCharCode.apply(null, new Uint8Array(reader.result))));
       };
       reader.onerror = function () {
         reject('failed to read file');
         console.log('there are some problems');
       };
+
+      reader.readAsArrayBuffer(file);
     });
   }
 
