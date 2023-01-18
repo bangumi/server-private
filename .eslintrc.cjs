@@ -162,6 +162,7 @@ module.exports = {
     {
       files: ['tests/**/*', '*.test.ts'],
       rules: {
+        '@typescript-eslint/consistent-type-imports': 'off',
         '@typescript-eslint/require-await': 'off',
         '@typescript-eslint/no-unnecessary-condition': 'off',
         '@typescript-eslint/no-unsafe-call': 'off',

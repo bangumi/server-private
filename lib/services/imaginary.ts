@@ -2,7 +2,7 @@ import { createError } from '@fastify/error';
 import { FormData } from 'formdata-node'; // or:
 import httpCodes from 'http-status-codes';
 
-import config from '@app/lib/config';
+import config, { testing } from '@app/lib/config';
 import { BaseHttpSrv } from '@app/lib/services/base';
 
 export const NotValidImageError = createError(
@@ -57,8 +57,10 @@ if (config.image.imaginaryUrl) {
   new URL(config.image.imaginaryUrl);
   d = new Imaginary(config.image.imaginaryUrl);
 } else {
-  console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
-  console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
+  if (!testing) {
+    console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
+    console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
+  }
   d = {
     info(): Promise<Info> {
       return Promise.resolve({ width: 0, height: 0, type: 'jpg' });

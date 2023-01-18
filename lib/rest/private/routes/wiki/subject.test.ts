@@ -1,23 +1,16 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import { afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { UserGroup } from '@app/lib/auth';
 import { projectRoot } from '@app/lib/config';
 import * as image from '@app/lib/image';
-import { NotValidImageError } from '@app/lib/services/imaginary';
 import * as Subject from '@app/lib/subject';
 import { createTestServer } from '@app/tests/utils';
 
 import type { ISubjectEdit } from './subject';
 import { setup } from './subject';
-
-const uploadImageMock = vi.fn();
-
-vi.spyOn(image, 'uploadImage').mockImplementation(uploadImageMock);
-
-vi.spyOn(Subject, 'uploadCover').mockImplementation(() => Promise.resolve());
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -34,7 +27,6 @@ describe('edit subject ', () => {
 
   afterEach(() => {
     editSubject.mockReset();
-    uploadImageMock.mockReset();
   });
 
   test('should get current wiki info', async () => {
@@ -136,54 +128,82 @@ describe('edit subject ', () => {
       userID: 100,
     });
   });
+});
 
-  describe('bad image', () => {
-    afterAll(() => {
-      vi.resetModules();
-    });
+describe('should upload image', () => {
+  const uploadImageMock = vi.fn();
 
-    vi.mock('@app/services/imaginary', () => {
-      return {
-        default: {
-          async info() {
-            throw new NotValidImageError();
-          },
-        },
-      };
-    });
-    test('upload subject cover', async () => {
-      const app = await testApp({
-        auth: {
-          groupID: UserGroup.Normal,
-          login: true,
-          permission: { subject_edit: true },
-          allowNsfw: true,
-          regTime: 0,
-          userID: 100,
-        },
-      });
+  vi.spyOn(image, 'uploadImage').mockImplementation(uploadImageMock);
+  vi.spyOn(Subject, 'uploadCover').mockImplementation(() => Promise.resolve());
 
-      const res = await app.inject({
-        url: '/subjects/1/cover',
-        method: 'post',
-        payload: {
-          content: Buffer.from('hello world').toString('base64'),
-        },
-      });
-
-      expect(res.statusCode).toBe(400);
-      expect(res.json()).toMatchInlineSnapshot(`
-        Object {
-          "code": "ERR_NOT_IMAGE",
-          "error": "Bad Request",
-          "message": "invalid image file",
-          "statusCode": 400,
-        }
-      `);
-    });
+  afterEach(() => {
+    uploadImageMock.mockReset();
   });
 
-  test.each(['webp', 'jpg'])('upload subject covers in %s format', async (format) => {
+  // only allow images in ./fixtures/
+  vi.mock('@app/lib/services/imaginary', async () => {
+    const mod = await vi.importActual<typeof import('@app/lib/services/imaginary')>(
+      '@app/lib/services/imaginary',
+    );
+
+    const images = await Promise.all(
+      ['webp', 'jpg'].map(async (ext) => {
+        return {
+          ext,
+          content: await fs.readFile(
+            path.join(projectRoot, `lib/rest/private/routes/wiki/fixtures/subject.${ext}`),
+          ),
+        };
+      }),
+    );
+
+    expect(images).toHaveLength(2);
+
+    return {
+      default: {
+        async info(img: Buffer) {
+          const i = images.find((x) => x.content.equals(img));
+          if (i) {
+            return { type: i.ext };
+          }
+          throw new mod.NotValidImageError();
+        },
+      },
+    };
+  });
+
+  test('upload subject cover', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: { subject_edit: true },
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const res = await app.inject({
+      url: '/subjects/1/cover',
+      method: 'post',
+      payload: {
+        content: Buffer.from('hello world').toString('base64'),
+      },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "ERR_NOT_IMAGE",
+        "error": "Bad Request",
+        "message": "invalid image file",
+        "statusCode": 400,
+      }
+    `);
+    expect(res.statusCode).toBe(400);
+  });
+
+  test.each(['jpg', 'webp'])('upload subject covers in %s format', async (format) => {
     const app = await testApp({
       auth: {
         groupID: UserGroup.Normal,
