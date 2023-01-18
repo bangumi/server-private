@@ -28,10 +28,6 @@ export interface IImaginary {
 }
 
 class Imaginary extends BaseHttpSrv implements IImaginary {
-  constructor(baseUrl: string) {
-    super(baseUrl);
-  }
-
   async info(img: Buffer): Promise<Info> {
     const res = await this.client.post('info', {
       body: img,
