@@ -1,5 +1,6 @@
+import * as console from 'node:console';
+
 import { createError } from '@fastify/error';
-import { FormData } from 'formdata-node'; // or:
 import httpCodes from 'http-status-codes';
 
 import config, { testing } from '@app/lib/config';
@@ -32,18 +33,16 @@ class Imaginary extends BaseHttpSrv implements IImaginary {
   }
 
   async info(img: Buffer): Promise<Info> {
-    const form = new FormData();
-    form.append('file', new Blob([img]), 'image-file');
-
     const res = await this.client.post('info', {
-      body: form,
-      searchParams: { field: 'file' },
+      body: img,
       throwHttpErrors: false,
     });
 
     if (res.statusCode >= 300) {
       throw new NotValidImageError();
     }
+
+    console.log(res.body);
 
     return JSON.parse(res.body) as Info;
   }

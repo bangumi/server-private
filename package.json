@@ -101,7 +101,6 @@
     "fastify": "^4.11.0",
     "fastify-metrics": "^10.0.2",
     "fastify-socket.io": "^4.0.0",
-    "formdata-node": "^5.0.0",
     "got": "^12.5.3",
     "graphql": "^16.6.0",
     "http-status-codes": "^2.2.0",
