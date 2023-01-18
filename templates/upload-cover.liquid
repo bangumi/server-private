@@ -13,9 +13,6 @@
 </div>
 
 <script>
-  const subjectID = '{{ subjectID }}';
-</script>
-<script>
   async function uploadFileToServer(file) {
     return new Promise((resolve, reject) => {
       var reader = new FileReader();
@@ -41,7 +38,7 @@
 
     const file = await uploadFileToServer(files[0]);
 
-    const res = await fetch(`/p1/wiki/subjects/${subjectID}/cover`, {
+    const res = await fetch(`/p1/wiki/subjects/{{ subjectID }}/cover`, {
       method: 'post',
       headers: {
         'content-type': 'application/json',
