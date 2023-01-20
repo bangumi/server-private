@@ -1,12 +1,21 @@
+import * as path from 'node:path';
+
 import Cookie from '@fastify/cookie';
+import { fastifyStatic } from '@fastify/static';
+import { fastifyView } from '@fastify/view';
+import { Liquid } from 'liquidjs';
 
 import { emptyAuth } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
-import { production } from '@app/lib/config';
+import { production, projectRoot } from '@app/lib/config';
+import { fetchUserX } from '@app/lib/orm';
 import * as demo from '@app/lib/rest/demo';
+import * as mobile from '@app/lib/rest/m2';
 import * as me from '@app/lib/rest/routes/me';
 import * as swagger from '@app/lib/rest/swagger';
 import type { App } from '@app/lib/rest/type';
+import type { IUser } from '@app/lib/types/res';
+import { userToResCreator } from '@app/lib/types/res';
 
 import { CookieKey } from './routes/login';
 import * as login from './routes/login';
@@ -51,7 +60,49 @@ export async function setup(app: App) {
   });
 
   await app.register(API, { prefix: '/p1' });
-  await app.register(demo.setup, { prefix: '/demo' });
+
+  await app.register(fastifyStatic, {
+    root: path.resolve(projectRoot, 'static'),
+    prefix: '/demo/static/',
+  });
+
+  /** Make sure `fastifyView` is scoped */
+  await app.register(async (app) => {
+    await app.register(fastifyView, {
+      engine: {
+        liquid: new Liquid({
+          root: path.resolve(projectRoot, 'templates'),
+          extname: '.liquid',
+          cache: production,
+        }),
+      },
+      defaultContext: { production },
+      root: path.resolve(projectRoot, 'templates'),
+      production,
+    });
+
+    app.addHook('preHandler', async (req, res) => {
+      if (req.auth.login) {
+        res.locals = {
+          user: userToResCreator(await fetchUserX(req.auth.userID)),
+        };
+      } else {
+        res.locals = {};
+      }
+    });
+
+    await app.register(demo.setup, { prefix: '/demo' });
+    await app.register(mobile.setup, { prefix: '/m2' });
+  });
+}
+
+declare module 'fastify' {
+  interface FastifyReply {
+    /** @see https://github.com/fastify/point-of-view#setting-request-global-variables */
+    locals: {
+      user?: IUser;
+    };
+  }
 }
 
 async function API(app: App) {

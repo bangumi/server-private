@@ -8,7 +8,6 @@ import type * as entity from '@app/lib/orm/entity';
 import { redirectIfNotLogin } from '@app/lib/rest/demo/hooks';
 import { requireLogin } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
-import * as res from '@app/lib/types/res';
 import { randomBase62String } from '@app/lib/utils';
 
 export const enum TokenType {
@@ -99,10 +98,7 @@ export function setup(app: App) {
 
       const cm = Object.fromEntries(clients.map((x) => [x.clientID, x]));
 
-      const user = await orm.fetchUserX(req.auth.userID);
-
       const data = {
-        user: res.userToResCreator(user),
         tokens: tokens.map((x) => {
           const client = cm[x.clientId];
           return {
@@ -121,10 +117,7 @@ export function setup(app: App) {
     '/access-token/create',
     { preHandler: [redirectIfNotLogin], schema: { hide: true } },
     async (req, reply) => {
-      const user = await orm.fetchUserX(req.auth.userID);
-
-      const data = { user: res.userToResCreator(user) };
-      await reply.view('token/create', data);
+      await reply.view('token/create');
     },
   );
 }

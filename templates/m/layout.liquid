@@ -1,0 +1,58 @@
+<html lang='en'>
+  <head>
+    <title>{{ title | default: 'Bangumi 番组计划' }}</title>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='maximum-scale=1.0,initial-scale=1.0'>
+    <link
+      rel='apple-touch-icon-precomposed'
+      href='https://bgm.tv/img/ico/ico_ios.png'
+    >
+    <link
+      rel='shortcut icon'
+      href='https://bgm.tv/img/favicon.ico'
+      type='image/x-icon'
+    >
+    <script src='https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js'></script>
+
+    <link
+      rel='stylesheet'
+      type='text/css'
+      href='/demo/static/style/mobile.css?r373'
+    >
+
+    <link
+      rel='shortcut icon'
+      href='https://bgm.tv/img/favicon.ico'
+      type='image/x-icon'
+    >
+
+    {% block head %}
+    {% endblock %}
+  </head>
+  <body>
+    <div id='header' class='clearit'>
+      <div id='badge'>
+        <a
+          class='avatar l'
+          href='https://bgm.tv/user/{{ user.username }}'
+        >
+          {{- user.nickname -}}
+        </a>
+        <a
+          href='https://bgm.tv/logout/60967c84'
+          >TODO: 登出</a
+        >
+      </div>
+      <div id='logo'>
+        <a href='/m2'><h1>Bangumi 番组计划</h1></a>
+      </div>
+    </div>
+    <ul id='nav' class='clearit'>
+      <li><a href='/m2' class='focus'>超展开</a></li>
+      <li><a href='/m2/timeline'>TODO: 时空管理局</a></li>
+      <li><a href='/m2/prg'>TODO: 进度管理</a></li>
+    </ul>
+    {% block content -%}
+    {%- endblock %}
+  </body>
+</html>

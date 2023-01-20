@@ -1,0 +1,150 @@
+{% layout 'm/layout' %}
+
+{% block content %}
+<ul class='subNav clearit'>
+  <li>
+    <a
+      href='/m2'
+      {% if type == '' %}
+        class='focus'
+      {% endif %}
+      >全部</a
+    >
+  </li>
+  <li>
+    <a
+      href='/m2?type=group'
+      {% if type == 'group' %}
+        class='focus'
+      {% endif %}
+      >小组</a
+    >
+  </li>
+  <li>
+    <a
+      href='/m2?type=subject'
+      {% if type == 'subject' %}
+        class='focus'
+      {% endif %}
+      >条目</a
+    >
+  </li>
+  <li>
+    <a
+      href='/m2?type=ep'
+      {% if type == 'ep' %}
+        class='focus'
+      {% endif %}
+      >章节</a
+    >
+  </li>
+  <li>
+    <a
+      href='/m2?type=mono'
+      {% if type == 'mobile' %}
+        class='focus'
+      {% endif %}
+      >人物</a
+    >
+  </li>
+</ul>
+
+<ul class='mobileTpcList'>
+  {% for item in items %}
+    <li
+      id='item_{{ item.type }}_{{ item.id }}'
+      class='line_{% cycle 'odd', 'even' %} item_list'
+    >
+      <a
+        href='/m/topic/{{ item.type }}/{{ item.id }}'
+        title='{{ item.author.nickname }}'
+        class='avatar l'
+        ><span
+          class='avatarNeue avatarSize32 ll'
+          data-user='lostpig'
+          style="background-image:url('{{ item.author.avatar }}')"
+        ></span
+      ></a>
+      <div class='inner'>
+        <a
+          href='/m/topic/{{ item.type }}/{{ item.id }}'
+          class='title avatar l'
+        >
+          {{- item.title -}}
+        </a>
+        <small class='grey'>{{ item.count }}</small
+        ><span class='row'
+          ><a
+            href='/{{ item.type }}/{{ item.name }}'
+            class=''
+          >
+            {{- item.name -}}</a
+          ><small
+            class='time'
+            >...{{ item.time }}</small
+          ></span
+        >
+      </div>
+    </li>
+  {% endfor %}
+  <li id='item_group_377063' class='line_odd item_list'>
+    <a
+      href='/m/topic/group/377063'
+      title='𝙇𝙤𝙨𝙩 𝙋𝙞𝙜 🎉'
+      class='avatar l'
+      ><span
+        class='avatarNeue avatarSize32 ll'
+        data-user='lostpig'
+        style="background-image:url('//lain.bgm.tv/pic/user/l/000/35/13/351390.jpg?r=1672240450&hd=1')"
+      ></span
+    ></a>
+    <div class='inner'>
+      <a
+        href='/m/topic/group/377063'
+        class='title avatar l'
+        >你们应该都知道这个是什么的吧</a
+      >
+      <small class='grey'>(+16)</small
+      ><span class='row'
+        ><a
+          href='/group/boring'
+          class=''
+          >靠谱人生茶话会</a
+        ><small
+          class='time'
+          >...47s ago</small
+        ></span
+      >
+    </div>
+  </li>
+  <li id='item_subject_12331' class='line_even item_list'>
+    <a
+      href='/m/topic/subject/12331'
+      class='avatar l'
+      ><span
+        class='avatarNeue avatarSize32 ll'
+        data-user='gothicgundam'
+        style="background-image:url('//lain.bgm.tv/pic/user/l/000/22/85/228529.jpg?r=1619534072')"
+      ></span
+    ></a>
+    <div class='inner'>
+      <a
+        href='/m/topic/subject/12331'
+        class='title avatar l'
+        >有人见过1080p无码无字幕的1小时完全版么</a
+      >
+      <small class='grey'>(+30)</small
+      ><span class='row'
+        ><a
+          href='/subject/18022'
+          class=''
+          >彼女×彼女×彼女 ～三姉妹とのドキドキ共同生活～</a
+        ><small
+          class='time'
+          >...1m ago</small
+        ></span
+      >
+    </div>
+  </li>
+</ul>
+{% endblock %}
