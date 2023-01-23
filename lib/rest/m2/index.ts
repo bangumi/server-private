@@ -50,20 +50,22 @@ export interface Item {
 const rtf1 = new Intl.RelativeTimeFormat('en', { style: 'short' });
 
 async function fetchRecentGroupTopic(): Promise<Item[]> {
-  return [{
-    type: 'subject',
-    id: 12331,
-    author: {
-      nickname: 'gothicgundam',
-      username: '11',
-      avatar: 'https://lain.bgm.tv/pic/user/l/000/22/85/228529.jpg?r=1619534072',
+  return [
+    {
+      type: 'subject',
+      id: 12331,
+      author: {
+        nickname: 'gothicgundam',
+        username: '11',
+        avatar: 'https://lain.bgm.tv/pic/user/l/000/22/85/228529.jpg?r=1619534072',
+      },
+      count: 10,
+      name: '哈',
+      parentID: 'qq',
+      title: '一个假item',
+      time: formatRelativeTime(Duration.fromObject({ day: 3 }).toMillis() / 1000),
     },
-    count: 10,
-    name: '哈',
-    parentID: 'qq',
-    title: '一个假item',
-    time: formatRelativeTime(Duration.fromObject({ day: 3 }).toMillis() / 1000),
-  }];
+  ];
 }
 
 function formatRelativeTime(seconds: number): string {
