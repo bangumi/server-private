@@ -27,13 +27,6 @@ image:
   fs:
     path: './tmp/images' # CHII_IMAGE_PROVIDER
 
-  sftp:
-    path: '/var/lib/data/images'
-    host: '...'
-    port: 22
-    username: '...'
-    password: '...'
-
   s3:
     bucket: 'chii-image'
     endPoint: 'play.min.io'

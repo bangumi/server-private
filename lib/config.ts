@@ -68,7 +68,6 @@ const schema = t.Object({
       {
         s3: 's3',
         FS: 'fs',
-        SFTP: 'sftp',
       } as const,
       { default: 'fs', env: 'CHII_IMAGE_PROVIDER' },
     ),
@@ -80,15 +79,6 @@ const schema = t.Object({
     fs: t.Object({
       path: t.String({ default: './tmp/images' }),
     }),
-    sftp: t.ReadonlyOptional(
-      t.Object({
-        path: t.String({ default: '/var/lib/data/images' }),
-        host: t.String(),
-        port: t.Integer({ default: 22 }),
-        username: t.String(),
-        password: t.String(),
-      }),
-    ),
     s3: t.ReadonlyOptional(
       t.Object({
         endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),

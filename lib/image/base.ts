@@ -11,9 +11,6 @@ export async function getImpl(): Promise<ImageFS> {
   logger.info(`storage uploaded image in ${config.image.provider}`);
 
   switch (config.image.provider) {
-    case 'sftp': {
-      return await import('./sftp');
-    }
     case 'fs': {
       return await import('./fs');
     }
