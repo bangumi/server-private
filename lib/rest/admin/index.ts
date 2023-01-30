@@ -63,13 +63,7 @@ export async function setup(app: App) {
           order: { vote: 'DESC' },
         });
 
-        const newCover = images.shift();
-
-        if (newCover) {
-          await SubjectRepo.update({ id: subjectID }, { subjectImage: newCover.target });
-        } else {
-          await SubjectRepo.update({ id: subjectID }, { subjectImage: '' });
-        }
+        await SubjectRepo.update({ id: subjectID }, { subjectImage: images[0]?.target ?? '' });
       });
     },
   );
