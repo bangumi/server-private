@@ -2,7 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import * as image from '@app/lib/image';
 import { AppDataSource, SubjectImageRepo } from '@app/lib/orm';
-import { SubjectImage } from '@app/lib/orm/entity';
+import { Subject, SubjectImage } from '@app/lib/orm/entity';
 import { requireLogin, requirePermission } from '@app/lib/rest/hooks/pre-handler';
 import type { App } from '@app/lib/rest/type';
 
@@ -52,8 +52,24 @@ export async function setup(app: App) {
 
       await AppDataSource.transaction(async (t) => {
         const SubjectImageRepo = t.getRepository(SubjectImage);
-        await SubjectImageRepo.delete(imageID);
+        const SubjectRepo = t.getRepository(Subject);
+
         await image.deleteSubjectImage(i.target);
+
+        await SubjectImageRepo.delete(imageID);
+
+        const images = await SubjectImageRepo.find({
+          where: { subjectID },
+          order: { vote: 'DESC' },
+        });
+
+        const newCover = images.shift();
+
+        if (newCover) {
+          await SubjectRepo.update({ id: subjectID }, { subjectImage: newCover.target });
+        } else {
+          await SubjectRepo.update({ id: subjectID }, { subjectImage: '' });
+        }
       });
     },
   );
