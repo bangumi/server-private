@@ -133,7 +133,7 @@ describe('edit subject ', () => {
 describe('should upload image', () => {
   const uploadImageMock = vi.fn();
 
-  vi.spyOn(image, 'uploadImage').mockImplementation(uploadImageMock);
+  vi.spyOn(image, 'uploadSubjectImage').mockImplementation(uploadImageMock);
   vi.spyOn(Subject, 'uploadCover').mockImplementation(() => Promise.resolve());
 
   afterEach(() => {

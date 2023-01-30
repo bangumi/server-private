@@ -1,3 +1,5 @@
+import * as posix from 'node:path/posix';
+
 import { getImpl } from './base';
 
 export const SubjectCoverPrefix = 'pic/cover/l/';
@@ -19,6 +21,6 @@ export function fileExtension(format: string): string | undefined {
 
 const impl = await getImpl();
 
-export async function uploadImage(path: string, content: Buffer): Promise<void> {
-  await impl.uploadImage(path, content);
+export async function uploadSubjectImage(path: string, content: Buffer): Promise<void> {
+  await impl.uploadImage(posix.join('cover/l/', path), content);
 }

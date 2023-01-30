@@ -9,7 +9,7 @@ import {
   fileExtension,
   SubjectCoverPrefix,
   SupportedImageExtension,
-  uploadImage,
+  uploadSubjectImage,
 } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
@@ -349,7 +349,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
-      await uploadImage(SubjectCoverPrefix + filename, raw);
+      await uploadSubjectImage(SubjectCoverPrefix + filename, raw);
 
       await Subject.uploadCover({ subjectID: subjectID, filename: filename, uid: auth.userID });
 
