@@ -9,4 +9,5 @@ lib/generated/
 coverage/
 config.yaml
 .eslintcache
+tmp/
 .env

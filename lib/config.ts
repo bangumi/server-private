@@ -31,6 +31,7 @@ import type { Static, TSchema } from '@sinclair/typebox';
 import { Kind, Type as t } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import * as yaml from 'js-yaml';
 import * as lo from 'lodash-es';
 
@@ -61,6 +62,34 @@ const schema = t.Object({
   banned_domain: t.Optional(t.String()),
 
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
+
+  image: t.Object({
+    provider: t.Enum(
+      {
+        s3: 's3',
+        FS: 'fs',
+      } as const,
+      { default: 'fs', env: 'CHII_IMAGE_PROVIDER' },
+    ),
+    imaginaryUrl: t.Optional(
+      t.String({
+        description: 'url to docker image running https://github.com/h2non/imaginary',
+      }),
+    ),
+    fs: t.Object({
+      path: t.String({ default: './tmp/images' }),
+    }),
+    s3: t.ReadonlyOptional(
+      t.Object({
+        endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),
+        bucket: t.String({ default: 'chii-image', env: 'CHII_IMAGE_S3_BUCKET' }),
+        port: t.Integer({ default: 9000, env: 'CHII_IMAGE_S3_PORT' }),
+        useSSL: t.Boolean({ default: false, env: 'CHII_IMAGE_S3_USE_SSL' }),
+        accessKey: t.String({ env: 'CHII_IMAGE_S3_ACCESS_KEY' }),
+        secretKey: t.String({ env: 'CHII_IMAGE_S3_SECRET_KEY' }),
+      }),
+    ),
+  }),
 
   turnstile: t.Object({
     secretKey: t.String({
@@ -114,6 +143,7 @@ function readConfig(): Static<typeof schema> {
   readFromEnv([], schema);
 
   const ajv = new Ajv({ allErrors: true, coerceTypes: true, keywords: ['env'] });
+  addFormats(ajv);
 
   const check = ajv.compile(schema);
 

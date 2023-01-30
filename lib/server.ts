@@ -1,4 +1,5 @@
 import type Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import AltairFastify from 'altair-fastify-plugin';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
@@ -28,6 +29,7 @@ export async function createServer(
       function (ajv: Ajv) {
         ajv.addKeyword({ keyword: 'x-examples' });
       },
+      addFormats,
     ],
   };
 

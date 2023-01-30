@@ -283,3 +283,37 @@ export class SubjectFields {
   })
   fieldRedirect!: number;
 }
+
+@Index('img_subject_id', ['subjectID'], {})
+@Index('img_nsfw', ['nsfw', 'ban'], {})
+@Entity('chii_subject_imgs', { schema: 'bangumi' })
+export class SubjectImage {
+  @PrimaryGeneratedColumn({ type: 'mediumint', name: 'img_id', unsigned: true })
+  id!: number;
+
+  @Column('mediumint', { name: 'img_subject_id', unsigned: true })
+  subjectID!: number;
+
+  @Column('mediumint', { name: 'img_uid', unsigned: true })
+  uid!: number;
+
+  /**
+   * Base file name,
+   *
+   * @example E4/da/5_wUARf.jpg
+   */
+  @Column('varchar', { name: 'img_target', length: 255 })
+  target!: string;
+
+  @Column('mediumint', { name: 'img_vote', unsigned: true })
+  vote!: number;
+
+  @Column('tinyint', { name: 'img_nsfw', unsigned: true })
+  nsfw!: number;
+
+  @Column('tinyint', { name: 'img_ban', unsigned: true })
+  ban!: number;
+
+  @Column('int', { name: 'img_dateline', unsigned: true })
+  createdAt!: number;
+}

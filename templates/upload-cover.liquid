@@ -1,0 +1,59 @@
+{% assign title = 'edit' %}
+{% layout 'layout' %}
+
+{% block content %}
+<div class='container mt-5'>
+  <div class='row'>
+    <input type='file' id='fileupload' accept='.jpg,.jpeg,.png,.webp'>
+  </div>
+  <br>
+  <div class='row'>
+    <button class='btn btn-primary' id='submit'>submit</button>
+  </div>
+</div>
+
+<script>
+  async function uploadFileToServer(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        resolve(btoa(String.fromCharCode.apply(null, new Uint8Array(reader.result))));
+      };
+      reader.onerror = function () {
+        reject('failed to read file');
+        console.log('there are some problems');
+      };
+
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  $('#submit').on('click', async () => {
+    const files = $('#fileupload')[0].files;
+
+    if (!files.length) {
+      alert('请先选择要上传的文件');
+      return;
+    }
+
+    const file = await uploadFileToServer(files[0]);
+
+    const res = await fetch(`/p1/wiki/subjects/{{ subjectID }}/cover`, {
+      method: 'post',
+      headers: {
+        'content-type': 'application/json',
+      },
+      credentials: 'same-origin',
+      body: JSON.stringify({ content: file }),
+    });
+
+    if (!res.ok) {
+      alert(JSON.stringify(await res.json(), null, 2));
+    } else {
+      alert('上传成功');
+    }
+  });
+</script>
+
+{% endblock %}

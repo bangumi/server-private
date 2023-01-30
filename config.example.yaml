@@ -1,3 +1,5 @@
+# 查看 lib/config.ts 的 configSchema
+
 nsfw_word: '里番|无码|18x|エロ'
 disable_words: '办假存单|办理假证|0月租手机'
 banned_domain: 'lista.cc|snapmail.cc|ashotmail.com|zoutlook.com'
@@ -14,3 +16,21 @@ redisUri: 'redis://:redis-pass@127.0.0.1:6379/0' # REDIS_URI
 turnstile:
   secretKey: '1x0000000000000000000000000000000AA' # TURNSTILE_SECRET_KEY
   siteKey: '1x00000000000000000000AA' # TURNSTILE_SITE_KEY
+
+image:
+  provider: 'fs' # CHII_IMAGE_PROVIDER
+
+  # https://github.com/h2non/imaginary
+  # example: 'http://127.0.0.1:9000'
+  imaginaryUrl: ''
+
+  fs:
+    path: './tmp/images' # CHII_IMAGE_PROVIDER
+
+  s3:
+    bucket: 'chii-image'
+    endPoint: 'play.min.io'
+    port: 9000
+    useSSL: true
+    access_key: '...'
+    secret_key: '...'
