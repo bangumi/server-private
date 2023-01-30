@@ -2,7 +2,7 @@ import * as posix from 'node:path/posix';
 
 import { getImpl } from './base';
 
-export const SubjectCoverPrefix = 'pic/cover/l/';
+export const SubjectCoverPrefix = 'cover/l/';
 
 export const SupportedImageExtension = ['webp', 'jpeg', 'jpg', 'png'];
 
@@ -21,6 +21,7 @@ export function fileExtension(format: string): string | undefined {
 
 const impl = await getImpl();
 
+/** @returns 最终图片文件的相对路径 */
 export async function uploadSubjectImage(path: string, content: Buffer): Promise<void> {
-  await impl.uploadImage(posix.join('cover/l/', path), content);
+  await impl.uploadImage(posix.join(SubjectCoverPrefix, path), content);
 }

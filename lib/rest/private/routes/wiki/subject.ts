@@ -5,12 +5,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
-import {
-  fileExtension,
-  SubjectCoverPrefix,
-  SupportedImageExtension,
-  uploadSubjectImage,
-} from '@app/lib/image';
+import { fileExtension, SupportedImageExtension, uploadSubjectImage } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -349,9 +344,9 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
-      await uploadSubjectImage(SubjectCoverPrefix + filename, raw);
+      await uploadSubjectImage(filename, raw);
 
-      await Subject.uploadCover({ subjectID: subjectID, filename: filename, uid: auth.userID });
+      await Subject.uploadCover({ subjectID: subjectID, filename, uid: auth.userID });
 
       return subjectID;
     },
