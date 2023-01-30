@@ -307,6 +307,9 @@ export async function setup(app: App) {
       ],
     },
     async ({ body: { content }, auth, params: { subjectID } }) => {
+      if (!SandBox.has(subjectID)) {
+        throw new BadRequestError('暂时只能修改沙盒条目');
+      }
       const raw = Buffer.from(content, 'base64');
       // 4mb
       if (raw.length > 4 * 1024 * 1024) {
