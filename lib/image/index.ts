@@ -4,7 +4,7 @@ import { getImpl } from './base';
 
 export const SubjectCoverPrefix = 'cover/l/';
 
-export const SupportedImageExtension = ['webp', 'jpeg', 'jpg', 'png'];
+export const SupportedImageExtension = ['jpeg', 'jpg', 'png'];
 
 // 在 handler 中验证图片。
 export function fileExtension(format: string): string | undefined {
