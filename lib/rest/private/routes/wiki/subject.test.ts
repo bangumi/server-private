@@ -185,7 +185,7 @@ describe('should upload image', () => {
     });
 
     const res = await app.inject({
-      url: '/subjects/1/cover',
+      url: '/subjects/184017/cover',
       method: 'post',
       payload: {
         content: Buffer.from('hello world').toString('base64'),
@@ -220,7 +220,7 @@ describe('should upload image', () => {
     );
 
     const res = await app.inject({
-      url: '/subjects/1/cover',
+      url: '/subjects/184017/cover',
       method: 'post',
       payload: {
         content: raw.toString('base64'),
