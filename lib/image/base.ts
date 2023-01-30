@@ -4,6 +4,8 @@ import { logger } from '@app/lib/logger';
 
 export interface ImageFS {
   uploadImage(path: string, content: Buffer): Promise<void>;
+
+  deleteImage(path: string): Promise<void>;
 }
 
 export async function getImpl(): Promise<ImageFS> {

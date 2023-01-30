@@ -11,3 +11,7 @@ export async function uploadImage(p: string, content: Buffer): Promise<void> {
   await fs.mkdir(path.dirname(p), { recursive: true });
   await fs.writeFile(p, content);
 }
+
+export async function deleteImage(p: string): Promise<void> {
+  await fs.unlink(path.join(BasePath, p));
+}

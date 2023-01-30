@@ -1,0 +1,39 @@
+{% layout 'layout' %}
+
+{% block content %}
+<div class='container mt-5'>
+  {% for image in images %}
+    <div class='row'>
+      <div class='col-4'>
+        <img
+          class='img-thumbnail'
+          src='https://lain.bgm.tv/r/400/pic/cover/l/{{ image.target }}'
+          alt=''
+        >
+      </div>
+      <div class='col-8'>
+        {% comment %}{{ image | json }}{% endcomment %}
+        <button type='button' class='btn btn-danger' onclick='deleteImage({{ image.id }})'>
+          Delete
+        </button>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<script>
+  async function deleteImage(imageID) {
+    const res = await fetch('', {
+      method: 'DELETE',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ imageID }),
+    });
+
+    if (res.ok) {
+      location.reload();
+    } else {
+      alert(await res.text());
+    }
+  }
+</script>
+{% endblock %}

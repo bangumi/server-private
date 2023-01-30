@@ -25,3 +25,7 @@ const impl = await getImpl();
 export async function uploadSubjectImage(path: string, content: Buffer): Promise<void> {
   await impl.uploadImage(posix.join(SubjectCoverPrefix, path), content);
 }
+
+export async function deleteSubjectImage(s: string): Promise<void> {
+  await impl.deleteImage(posix.join(SubjectCoverPrefix, s));
+}

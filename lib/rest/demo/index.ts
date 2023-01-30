@@ -7,6 +7,7 @@ import { Liquid } from 'liquidjs';
 import config, { production, projectRoot } from '@app/lib/config';
 import * as Notify from '@app/lib/notify';
 import { fetchUserX } from '@app/lib/orm';
+import * as admin from '@app/lib/rest/admin';
 import type { App } from '@app/lib/rest/type';
 import { userToResCreator } from '@app/lib/types/res';
 
@@ -58,4 +59,6 @@ export async function setup(app: App) {
 
   editor.setup(app);
   token.setup(app);
+
+  await app.register(admin.setup, { prefix: '/admin' });
 }
