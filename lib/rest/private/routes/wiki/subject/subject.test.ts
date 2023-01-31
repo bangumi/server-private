@@ -6,11 +6,10 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { UserGroup } from '@app/lib/auth';
 import { projectRoot } from '@app/lib/config';
 import * as image from '@app/lib/image';
+import type { ISubjectEdit } from '@app/lib/rest/private/routes/wiki/subject';
+import { setup } from '@app/lib/rest/private/routes/wiki/subject';
 import * as Subject from '@app/lib/subject';
 import { createTestServer } from '@app/tests/utils';
-
-import type { ISubjectEdit } from './subject';
-import { setup } from './subject';
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -183,7 +182,7 @@ describe('should upload image', () => {
     });
 
     const res = await app.inject({
-      url: '/subjects/184017/cover',
+      url: '/subjects/184017/covers',
       method: 'post',
       payload: {
         content: Buffer.from('hello world').toString('base64'),
@@ -217,7 +216,7 @@ describe('should upload image', () => {
     const raw = await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${format}`));
 
     const res = await app.inject({
-      url: '/subjects/184017/cover',
+      url: '/subjects/184017/covers',
       method: 'post',
       payload: {
         content: raw.toString('base64'),

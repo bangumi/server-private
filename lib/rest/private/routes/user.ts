@@ -10,7 +10,7 @@ import { fetchUsers } from '@app/lib/orm';
 import { Subscriber } from '@app/lib/redis';
 import { CookieKey } from '@app/lib/rest/private/routes/login';
 import type { App } from '@app/lib/rest/type';
-import { Paged, userToResCreator } from '@app/lib/types/res';
+import { Paged, toResUser } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
 
 const NoticeRes = t.Object(
@@ -74,7 +74,7 @@ export async function setup(app: App) {
 
           return {
             ...x,
-            sender: userToResCreator(u),
+            sender: toResUser(u),
           };
         }),
       };

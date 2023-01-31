@@ -3,7 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { NotFoundError } from '@app/lib/error';
 import { fetchUserByUsername } from '@app/lib/orm';
 import type { App, Option } from '@app/lib/rest/type';
-import { userToResCreator } from '@app/lib/types/res';
+import { toResUser } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -32,7 +32,7 @@ export async function setup(app: App, { tags = [] }: Option) {
         throw new NotFoundError('user');
       }
 
-      return userToResCreator(user);
+      return toResUser(user);
     },
   );
 }
