@@ -271,9 +271,11 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
       return 0;
     });
 
-  const should = rankedVotes.shift()!;
+  const should = rankedVotes.shift();
 
-  await SubjectRepo.update({ id: subjectID }, { subjectImage: should.image.target });
+  if (should) {
+    await SubjectRepo.update({ id: subjectID }, { subjectImage: should.image.target });
+  }
 }
 
 function toRank(users: { groupID: number }[]): number[] {
