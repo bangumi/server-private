@@ -49,9 +49,9 @@ export const pkg = JSON.parse(
   fs.readFileSync(path.resolve(projectRoot, 'package.json'), 'utf8'),
 ) as { version: string };
 
-export const redisPrefix = `graphql-${pkg.version}`;
-
 export const VERSION = developing ? 'development' : REF || pkg.version;
+
+export const redisPrefix = `graphql-${VERSION}`;
 
 export { HTTPS_PROXY };
 

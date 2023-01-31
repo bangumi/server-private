@@ -29,7 +29,10 @@ export async function setup(app: App) {
       preHandler: [requirePermission('delete subject cover', (a) => debugUser.has(a.userID))],
     },
     async (req, res) => {
-      await res.send(req.auth.permission);
+      await res.send({
+        group: req.auth.groupID,
+        permission: req.auth.permission,
+      });
     },
   );
 
