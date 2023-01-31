@@ -1,5 +1,6 @@
 import { Type as t } from '@sinclair/typebox';
 
+import { production } from '@app/lib/config';
 import * as image from '@app/lib/image';
 import { AppDataSource, SubjectImageRepo } from '@app/lib/orm';
 import { Subject, SubjectImage } from '@app/lib/orm/entity';
@@ -9,6 +10,28 @@ import type { App } from '@app/lib/rest/type';
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addHook('preHandler', requireLogin('admin'));
+
+  const debugUser = new Set<number>();
+
+  if (production) {
+    debugUser.add(287622);
+    debugUser.add(1);
+  } else {
+    debugUser.add(2);
+  }
+
+  app.get(
+    '/debug/permission',
+    {
+      schema: {
+        hide: true,
+      },
+      preHandler: [requirePermission('delete subject cover', (a) => debugUser.has(a.userID))],
+    },
+    async (req, res) => {
+      await res.send(req.auth.permission);
+    },
+  );
 
   app.get('/', (req, res) => {
     return res.view('admin/index');
@@ -21,7 +44,9 @@ export async function setup(app: App) {
         hide: true,
         params: t.Object({ subjectID: t.Integer({ exclusiveMinimum: 0 }) }),
       },
-      preHandler: [requirePermission('admin', (a) => a.permission.subject_cover_erase)],
+      preHandler: [
+        requirePermission('delete subject cover', (a) => a.permission.subject_cover_erase),
+      ],
     },
     async ({ params: { subjectID } }, res) => {
       const images = await SubjectImageRepo.findBy({ subjectID, ban: 0 });
@@ -41,7 +66,9 @@ export async function setup(app: App) {
         }),
         body: t.Object({ imageID: t.Integer({ exclusiveMinimum: 0 }) }),
       },
-      preHandler: [requirePermission('admin', (a) => a.permission.subject_cover_erase)],
+      preHandler: [
+        requirePermission('delete subject cover', (a) => a.permission.subject_cover_erase),
+      ],
     },
     async ({ params: { subjectID }, body: { imageID } }, res) => {
       const i = await SubjectImageRepo.findOneBy({ subjectID });
