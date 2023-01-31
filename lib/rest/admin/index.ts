@@ -24,7 +24,7 @@ export async function setup(app: App) {
       preHandler: [requirePermission('admin', (a) => a.permission.subject_cover_erase)],
     },
     async ({ params: { subjectID } }, res) => {
-      const images = await SubjectImageRepo.findBy({ subjectID });
+      const images = await SubjectImageRepo.findBy({ subjectID, ban: 0 });
       await res.view('admin/covers', {
         images: images.filter((x) => x.target.startsWith('raw/')),
       });
@@ -56,10 +56,10 @@ export async function setup(app: App) {
 
         await image.deleteSubjectImage(i.target);
 
-        await SubjectImageRepo.delete(imageID);
+        await SubjectImageRepo.update({ id: imageID }, { ban: 1 });
 
         const images = await SubjectImageRepo.find({
-          where: { subjectID },
+          where: { subjectID, ban: 0 },
           order: { vote: 'DESC' },
         });
 

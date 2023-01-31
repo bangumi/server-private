@@ -10,6 +10,7 @@
           src='https://lain.bgm.tv/r/400/pic/cover/l/{{ image.target }}'
           alt=''
         >
+        <p>上传时间：{{ image.createdAt | date: '%Y-%m-%d %H:%M:%S', 'Asia/Shanghai' }}</p>
       </div>
       <div class='col-8'>
         {% comment %}{{ image | json }}{% endcomment %}
