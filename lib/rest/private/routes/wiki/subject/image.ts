@@ -5,6 +5,7 @@ import { Type as t } from '@sinclair/typebox';
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { fileExtension, SupportedImageExtension, uploadSubjectImage } from '@app/lib/image';
+import { Tag } from '@app/lib/openapi';
 import { LikeRepo, SubjectImageRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import { Like } from '@app/lib/orm/entity';
@@ -21,6 +22,7 @@ export function setup(app: App) {
     {
       schema: {
         operationId: 'listSubjectCovers',
+        tags: [Tag.Wiki],
         params: t.Object({
           subjectID: t.Integer({ examples: [184017] }),
         }),
@@ -71,6 +73,7 @@ export function setup(app: App) {
     {
       schema: {
         operationId: 'uploadSubjectCover',
+        tags: [Tag.Wiki],
         params: t.Object({
           subjectID: t.Integer(),
         }),
@@ -143,7 +146,8 @@ export function setup(app: App) {
     {
       schema: {
         operationId: 'voteSubjectCover',
-        description: '为条目封面投票',
+        tags: [Tag.Wiki],
+        summary: '为条目封面投票',
         params: t.Object({
           subjectID: t.Integer({ exclusiveMinimum: 0 }),
           imageID: t.Integer({ exclusiveMinimum: 0 }),
@@ -184,7 +188,8 @@ export function setup(app: App) {
     {
       schema: {
         operationId: 'unvoteSubjectCover',
-        description: '撤消条目封面投票',
+        tags: [Tag.Wiki],
+        summary: '撤消条目封面投票',
         params: t.Object({
           subjectID: t.Integer({ exclusiveMinimum: 0 }),
           imageID: t.Integer({ exclusiveMinimum: 0 }),
