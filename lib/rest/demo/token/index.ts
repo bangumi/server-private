@@ -102,7 +102,7 @@ export function setup(app: App) {
       const user = await orm.fetchUserX(req.auth.userID);
 
       const data = {
-        user: res.userToResCreator(user),
+        user: res.toResUser(user),
         tokens: tokens.map((x) => {
           const client = cm[x.clientId];
           return {
@@ -123,7 +123,7 @@ export function setup(app: App) {
     async (req, reply) => {
       const user = await orm.fetchUserX(req.auth.userID);
 
-      const data = { user: res.userToResCreator(user) };
+      const data = { user: res.toResUser(user) };
       await reply.view('token/create', data);
     },
   );

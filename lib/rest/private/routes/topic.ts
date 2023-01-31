@@ -17,7 +17,7 @@ import type { ITopic } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
 import { NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
-import { formatErrors, userToResCreator } from '@app/lib/types/res';
+import { formatErrors, toResUser } from '@app/lib/types/res';
 
 const Group = t.Object(
   {
@@ -215,7 +215,7 @@ export async function setup(app: App) {
 
       return {
         ...topic,
-        creator: userToResCreator(creator),
+        creator: toResUser(creator),
         text: topic.text,
         group: { ...group, icon: groupIcon(group.icon) },
         replies: topic.replies.map((x) => {
@@ -234,12 +234,12 @@ export async function setup(app: App) {
               return {
                 isFriend: friends[x.creatorID] ?? false,
                 ...x,
-                creator: userToResCreator(user),
+                creator: toResUser(user),
               };
             }),
             creator: {
               isFriend: friends[x.creatorID] ?? false,
-              ...userToResCreator(user),
+              ...toResUser(user),
             },
           };
         }),
@@ -561,7 +561,7 @@ export async function setup(app: App) {
         state: t.state,
         createdAt: t.createdAt,
         text: t.content,
-        creator: userToResCreator(t.user),
+        creator: toResUser(t.user),
       };
     },
   );
@@ -576,7 +576,7 @@ async function addCreators(
   return withCreator.map((x) => {
     return {
       ...x,
-      creator: userToResCreator(x.creator),
+      creator: toResUser(x.creator),
       updatedAt: x.updatedAt,
       parentID,
     };

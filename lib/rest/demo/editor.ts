@@ -4,7 +4,7 @@ import * as orm from '@app/lib/orm';
 import { redirectIfNotLogin } from '@app/lib/rest/demo/hooks';
 import type { App } from '@app/lib/rest/type';
 import { platforms } from '@app/lib/subject';
-import { userToResCreator } from '@app/lib/types/res';
+import { toResUser } from '@app/lib/types/res';
 
 export function setup(app: App) {
   app.get(
@@ -22,7 +22,7 @@ export function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      const user = auth.login ? userToResCreator(await fetchUserX(auth.userID)) : null;
+      const user = auth.login ? toResUser(await fetchUserX(auth.userID)) : null;
 
       await res.view('editor', {
         user,
@@ -52,7 +52,7 @@ export function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      const user = userToResCreator(await fetchUserX(auth.userID));
+      const user = toResUser(await fetchUserX(auth.userID));
 
       await res.view('upload-cover', {
         user,

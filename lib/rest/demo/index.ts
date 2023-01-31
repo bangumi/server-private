@@ -9,7 +9,7 @@ import * as Notify from '@app/lib/notify';
 import { fetchUserX } from '@app/lib/orm';
 import * as admin from '@app/lib/rest/admin';
 import type { App } from '@app/lib/rest/type';
-import { userToResCreator } from '@app/lib/types/res';
+import { toResUser } from '@app/lib/types/res';
 
 import * as editor from './editor';
 import * as token from './token';
@@ -44,7 +44,7 @@ export async function setup(app: App) {
       }
 
       await res.view('user', {
-        user: userToResCreator(user),
+        user: toResUser(user),
         notifyCount,
         notify,
       });
