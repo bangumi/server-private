@@ -294,6 +294,9 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer(),
         }),
+        response: {
+          200: t.Object({}),
+        },
         body: t.Object({
           content: t.String({
             format: 'byte',
@@ -351,7 +354,7 @@ export async function setup(app: App) {
 
       await Subject.uploadCover({ subjectID: subjectID, filename, uid: auth.userID });
 
-      return subjectID;
+      return {};
     },
   );
 
