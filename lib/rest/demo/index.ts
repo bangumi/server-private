@@ -9,10 +9,18 @@ import * as Notify from '@app/lib/notify';
 import { fetchUserX } from '@app/lib/orm';
 import * as admin from '@app/lib/rest/admin';
 import type { App } from '@app/lib/rest/type';
-import { toResUser } from '@app/lib/types/res';
+import * as res from '@app/lib/types/res';
 
 import * as editor from './editor';
 import * as token from './token';
+
+declare module 'fastify' {
+  interface FastifyReply {
+    locals?: {
+      user?: res.IUser;
+    };
+  }
+}
 
 export async function setup(app: App) {
   const liquid = new Liquid({
@@ -33,9 +41,17 @@ export async function setup(app: App) {
     production,
   });
 
+  app.addHook('preHandler', async function (req, reply) {
+    let user;
+    if (req.auth.login) {
+      user = res.toResUser(await fetchUserX(req.auth.userID));
+    }
+
+    reply.locals = { user };
+  });
+
   app.get('/', { schema: { hide: true } }, async (req, res) => {
     if (req.auth.login) {
-      const user = await fetchUserX(req.auth.userID);
       const notifyCount = await Notify.count(req.auth.userID);
 
       let notify: Notify.INotify[] = [];
@@ -44,7 +60,6 @@ export async function setup(app: App) {
       }
 
       await res.view('user', {
-        user: toResUser(user),
         notifyCount,
         notify,
       });
