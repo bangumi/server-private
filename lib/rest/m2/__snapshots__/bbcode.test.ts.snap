@@ -1,3 +1,0 @@
-// Vitest Snapshot v1
-
-exports[`t 1`] = `"<span style=\\"background-color:#555;color:#555;border:1px solid #555;\\">[mask]a[/mask]</span>"`;

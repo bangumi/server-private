@@ -1,0 +1,222 @@
+{% layout 'm/layout' %}
+
+{% block content %}
+<div id='pageHeader'>
+  <h1>
+    <span
+      ><a href='https://bgm.tv/group/{{ group.name }}' target='_parent' class='avatar'>
+        {{- group.title | escape -}}
+      </a>
+      »
+      <a
+        href='https://bgm.tv/group/{{ group.name }}/forum'
+        target='_parent'
+        >讨论</a
+      ></span
+    ><br>
+    {{ title | escape }}
+  </h1>
+</div>
+
+<div class='rakuenTopicList'>
+  <div id='topic_{{ id }}' class='postTopic light_odd clearit'>
+    <div class='re_info'>
+      <small
+        >#1 - {{ createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
+
+        {% if user.id == creator.ID %}
+          /<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a
+            href='/group/topic/375598/edit'
+            target='_blank'
+            >edit</a
+          >
+        {% endif %}
+      </small>
+    </div>
+    <a href='/user/{{ creator.username }}' class='avatar' target='_parent'
+      ><span
+        class='avatarNeue avatarSize48 ll'
+        style="background-image:url('{{ creator.avatar.large }}')"
+      ></span
+    ></a>
+    <div class='inner'>
+      <strong
+        ><a href='/user/trim21' class='l' target='_parent'>
+          {{- creator.avatar.nickname | escape -}}
+        </a></strong
+      >
+      <span class='tip_j'>({{ creator.sign | escape }})</span>
+      <div class='topic_content'>
+        {{ text | mobileBBCode }}
+      </div>
+    </div>
+  </div>
+
+  <!-- 回复 -->
+
+  <div id='comment_list' class='commentList borderNeue'>
+    {% for reply in replies %}
+      {% assign flow = forloop.index | plus: 1 %}
+      <div id='post_{{ reply.id }}' class='light_{% cycle 'odd', 'even' %} row_reply clearit'>
+        <div class='re_info'>
+          <small
+            ><a href='#post_{{ reply.id }}' class='floor-anchor'>#{{ flow }}</a> -
+            {{ reply.createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
+
+            {% if user.id == creator.ID %}
+              /<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a
+                href='/group/topic/375598/edit'
+                target='_blank'
+              >
+                edit
+              </a>
+            {% endif %}
+
+            {% comment %}/            <a{% endcomment %}
+            {% comment %}href='/report?type=8&amp;id=2174813&amp;keepThis=false&amp;TB_iframe=true&amp;height=195&amp;width=450'{% endcomment %}
+            {% comment %}title='报告疑虑'{% endcomment %}
+            {% comment %}class='thickbox'{% endcomment %}
+            {% comment %}>&nbsp;!&nbsp;</a>{% endcomment %}
+          </small>
+        </div>
+
+        <a href='/user/{{ reply.creator.username }}' class='avatar' target='_parent'>
+          <span
+            class='avatarNeue avatarReSize40 ll'
+            style="background-image:url('{{ reply.creator.avatar.large | escape }}')"
+          ></span>
+        </a>
+        <div class='inner'>
+          <span class='userInfo'
+            ><strong
+              ><a href='/user/427613' class='l post_author_2174813' target='_parent'>
+                {{- reply.creator.nickname | escape -}}
+              </a></strong
+            >
+            <a
+              href='javascript:void(0);'
+              onclick="subReply('group',375598,2174813,0,287622,427613,0)"
+              class='tip_i icons_cmt'
+              >回复</a
+            >
+          </span>
+
+          <div class='reply_content'>
+            {% if reply.state == 0 %}
+              <div class='message'>{{ reply.text | mobileBBCode }}</div>
+            {% else %}
+              <div class='message'>action: {{ reply.state }}</div>
+            {% endif %}
+
+            {% if reply.replies.length != 0 %}
+              <div class='topic_sub_reply' id='topic_reply_{{ reply.id }}'>
+                {% for subReply in reply.replies %}
+                  {% assign subFlow = forloop.index %}
+                  <div id='post_{{ subReply.id }}' class='sub_reply_bg   clearit'>
+                    <div class='re_info'>
+                      <small
+                        ><a href='#post_{{ subReply.id }}' class='floor-anchor'
+                          >#{{ flow }}-{{ subFlow -}}
+                        </a>
+                        - {{ createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
+                        {% if subReply.creatorID == user.id %}
+                          /
+                          <a
+                            id='erase_2176645'
+                            href='/erase/group/reply/2176645?gh=e669bf68'
+                            class='erase_post'
+                            >del</a
+                          >
+                          /
+                          <a
+                            href='/group/reply/2176645/edit'
+                            target='_blank'
+                            >edit</a
+                          >
+                          {% comment %}/{% endcomment %}
+                          {% comment %}<a{% endcomment %}
+                          {% comment %}href='/report?type=8&amp;id=2176645&amp;keepThis=false&amp;TB_iframe=true&amp;height=195&amp;width=450'{% endcomment %}
+                          {% comment %}title='报告疑虑'{% endcomment %}
+                          {% comment %}class='thickbox'{% endcomment %}
+                          {% comment %}>&nbsp;!&nbsp;</a{% endcomment %}
+                          {% comment %}>{% endcomment %}
+                        {% endif %}
+                      </small>
+                    </div>
+                    <a href='/user/{{ subReply.creator.username }}' class='avatar' target='_parent'>
+                      <span
+                        class='avatarNeue avatarReSize32 ll'
+                        style="background-image:url('{{ subReply.creator.avatar.large }}')"
+                      ></span
+                    ></a>
+                    <div class='inner'>
+                      <strong class='userName'>
+                        <a
+                          id='{{ subReply.creator.id }}'
+                          href='/user/{{ subReply.creator.username }}'
+                          class='l'
+                          target='_parent'
+                        >
+                          {{- subReply.creator.nickname | escape -}}
+                        </a>
+                      </strong>
+                      <a
+                        href='javascript:void(0);'
+                        onclick="subReply('group',375598,2174813,2176645,427613,287622,1)"
+                        class='tip_i icons_cmt'
+                        >回复</a
+                      >
+                      <div class='cmt_sub_content'>{{ subReply.text | mobileBBCode }}</div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div id='reply_wrapper'>
+    <a name='new'></a>
+    <div id='new_comment' class='light_odd'>
+      <form id='ReplyForm' name='new_comment' method='post' action='/group/topic/375598/new_reply'>
+        <input type='hidden' name='formhash' value='e669bf68'>
+        <input type='hidden' name='lastview' value='1675279396'>
+        <a href='/user/trim21' class='avatar' target='_parent'
+          ><span
+            class='avatarNeue avatarReSize40 ll'
+            style="background-image:url('//lain.bgm.tv/pic/user/l/000/28/76/287622.jpg?r=1672779554&amp;hd=1')"
+          ></span
+        ></a>
+        <div class='inner'>
+          <h2 class='reply_title'>
+            <span class='reply_author'><a href='/user/trim21' class='l'>Trim21</a></span> /
+            添加新回复
+          </h2>
+          <span class='tip'>
+            <div class='replyTextarea'>
+              <textarea
+                name='content'
+                id='content'
+                cols='45'
+                rows='6'
+                class='reply newReply'
+                onkeydown="seditor_ctlent(event,'ReplyForm');"
+              ></textarea>
+            </div>
+            <div id='submitBtnO'>
+              <input class='inputBtn' value='加上去' name='submit' type='submit'>
+              <span class='tip'
+                >&nbsp;&nbsp;使用 Ctrl+Enter 或 Alt+S 快速提交 |
+                <a href='https://bgm.tv/help/bbcode' class='l' target='_blank'>BBCode指南</a></span
+              >
+            </div>
+          </span>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

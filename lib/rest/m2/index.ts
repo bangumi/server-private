@@ -1,5 +1,7 @@
+import { Type as t } from '@sinclair/typebox';
 import { Duration } from 'luxon';
 
+import { handleTopicDetail } from '@app/lib/rest/private/routes/topic';
 import type { App } from '@app/lib/rest/type';
 
 /* eslint-disable-next-line @typescript-eslint/require-await */
@@ -20,6 +22,23 @@ export async function setup(app: App) {
       const data = { type, items: await fetchRecentGroupTopic() };
 
       return res.view('m/index', data);
+    },
+  );
+
+  app.get(
+    '/topic/group/:topicID',
+    {
+      schema: {
+        hide: true,
+        params: t.Object({
+          topicID: t.Integer({ exclusiveMinimum: 0 }),
+        }),
+      },
+    },
+    async ({ params: { topicID }, auth }, res) => {
+      const topic = await handleTopicDetail({ params: { id: topicID }, auth });
+
+      await res.view('m/group-topic', topic);
     },
   );
 }

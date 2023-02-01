@@ -4,7 +4,7 @@
 <ul class='subNav clearit'>
   <li>
     <a
-      href='/m2'
+      href='/demo/m2'
       {% if type == '' %}
         class='focus'
       {% endif %}
@@ -13,7 +13,7 @@
   </li>
   <li>
     <a
-      href='/m2?type=group'
+      href='/demo/m2?type=group'
       {% if type == 'group' %}
         class='focus'
       {% endif %}
@@ -22,7 +22,7 @@
   </li>
   <li>
     <a
-      href='/m2?type=subject'
+      href='/demo/m2?type=subject'
       {% if type == 'subject' %}
         class='focus'
       {% endif %}
@@ -31,7 +31,7 @@
   </li>
   <li>
     <a
-      href='/m2?type=ep'
+      href='/demo/m2?type=ep'
       {% if type == 'ep' %}
         class='focus'
       {% endif %}
@@ -40,7 +40,7 @@
   </li>
   <li>
     <a
-      href='/m2?type=mono'
+      href='/demo/m2?type=mono'
       {% if type == 'mobile' %}
         class='focus'
       {% endif %}
@@ -56,7 +56,7 @@
       class='line_{% cycle 'odd', 'even' %} item_list'
     >
       <a
-        href='/m/topic/{{ item.type }}/{{ item.id }}'
+        href='/demo/m2/topic/{{ item.type }}/{{ item.id }}'
         title='{{ item.author.nickname }}'
         class='avatar l'
         ><span
@@ -67,7 +67,7 @@
       ></a>
       <div class='inner'>
         <a
-          href='/m/topic/{{ item.type }}/{{ item.id }}'
+          href='/demo/m2/topic/{{ item.type }}/{{ item.id }}'
           class='title avatar l'
         >
           {{- item.title -}}
@@ -75,7 +75,7 @@
         <small class='grey'>{{ item.count }}</small
         ><span class='row'
           ><a
-            href='/{{ item.type }}/{{ item.name }}'
+            href='/demo/m2/{{ item.type }}/{{ item.name }}'
             class=''
           >
             {{- item.name -}}</a
@@ -89,7 +89,7 @@
   {% endfor %}
   <li id='item_group_377063' class='line_odd item_list'>
     <a
-      href='/m/topic/group/377063'
+      href='/demo/m2/topic/group/377063'
       title='𝙇𝙤𝙨𝙩 𝙋𝙞𝙜 🎉'
       class='avatar l'
       ><span
@@ -100,7 +100,7 @@
     ></a>
     <div class='inner'>
       <a
-        href='/m/topic/group/377063'
+        href='/demo/m2/topic/group/377063'
         class='title avatar l'
         >你们应该都知道这个是什么的吧</a
       >
@@ -119,7 +119,7 @@
   </li>
   <li id='item_subject_12331' class='line_even item_list'>
     <a
-      href='/m/topic/subject/12331'
+      href='/demo/m2/topic/subject/12331'
       class='avatar l'
       ><span
         class='avatarNeue avatarSize32 ll'
@@ -129,7 +129,7 @@
     ></a>
     <div class='inner'>
       <a
-        href='/m/topic/subject/12331'
+        href='/demo/m2/topic/subject/12331'
         class='title avatar l'
         >有人见过1080p无码无字幕的1小时完全版么</a
       >

@@ -11,6 +11,7 @@ import { fetchUserX } from '@app/lib/orm';
 import * as admin from '@app/lib/rest/admin';
 import { SessionAuth } from '@app/lib/rest/hooks/pre-handler';
 import * as mobile from '@app/lib/rest/m2';
+import { mobileBBCode } from '@app/lib/rest/m2/bbcode';
 import type { App } from '@app/lib/rest/type';
 import * as res from '@app/lib/types/res';
 
@@ -46,13 +47,17 @@ export async function setup(app: App) {
     prefix: '/static/',
   });
 
+  const liquid = new Liquid({
+    root: path.resolve(projectRoot, 'templates'),
+    extname: '.liquid',
+    cache: production,
+  });
+
+  liquid.registerFilter('mobileBBCode', mobileBBCode);
+
   await app.register(fastifyView, {
     engine: {
-      liquid: new Liquid({
-        root: path.resolve(projectRoot, 'templates'),
-        extname: '.liquid',
-        cache: production,
-      }),
+      liquid,
     },
     defaultContext: { production },
     root: path.resolve(projectRoot, 'templates'),
