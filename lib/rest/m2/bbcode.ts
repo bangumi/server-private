@@ -1,9 +1,8 @@
 /* eslint-disable unicorn/no-abusive-eslint-disable */
 /* eslint-disable */
-/* @ts-ignore */
 
 /** 并不用于新前端，只是用在 /m2 支持 bbcode。 */
-import * as lo from 'lodash-es';
+import { matches } from 'lodash-es';
 
 const Settlement = {
   preg_replace(pattern: string[], replacement: string[], string: string) {
@@ -19,6 +18,22 @@ const Settlement = {
 const IMGDIR = '';
 const chiicode = {};
 const message = '';
+
+export type Option = {
+  smileyoff?: boolean,
+  bbcodeoff?: boolean,
+  htmlon?: boolean,
+  allowsmilies?: boolean,
+  allowbbcode?: boolean,
+  allowimgcode?: boolean,
+  allowhtml?: boolean,
+  jammer?: boolean,
+  parsetype?: boolean,
+  authorid?: boolean,
+  allowmediacode?: boolean,
+  pid?: boolean,
+  filter?: boolean,
+}
 
 export class ChiiCodeCore {
   public static smilies_list = {
@@ -324,7 +339,7 @@ export class ChiiCodeCore {
     return smiles_list;
   }
 
-  private static matched_domains = '/((?:www.)?(?:(bgm\\.tv|chii\\.in|bangumi\\.tv)))+/i';
+  private static matched_domains = /((?:www.)?(bgm\.tv|chii\.in|bangumi\.tv))+/i;
   private static replace_domains = {
     0: 'chii.in',
     1: 'bangumi.tv',
@@ -334,24 +349,19 @@ export class ChiiCodeCore {
     5: 'www.bgm.tv',
   };
 
-  addLink(str: string) {
-    const domain_replace_regex = '/(:\\/\\/(www|api|lain|doujin)\\.)(bgm\\.tv)+/i';
-    if (
-      preg_match(ChiiCodeCore.matched_domains, str, _matches) &&
-      !preg_match(domain_replace_regex, str, matches)
-    ) {
+  addLink(str: string): string {
+    const domain_replace_regex = /(:\/\/(www|api|lain|doujin)\.)(bgm\.tv)+/i;
+    if (ChiiCodeCore.matched_domains.test(str) && !domain_replace_regex.test(str)) {
       conv_url = ChiiCodeCore.replace_domains;
       target_url = Settlement.str_replace({ 0: 'http://', 1: 'https://' }, '', SITE_URL);
       str = Settlement.str_replace(conv_url, target_url, str);
     }
     //preg_match('#https?://[\w-./?%&=~@:$*\\\,+\#]+#i', $str, $m);
     //print_r($str);
-    const o = Settlement.preg_replace(
-      '#(https?://[\\w-./?%&;=~@:$*\\\\,+\\#]+)#i',
-      '<a href="\\1" class="l" rel="nofollow external noopener noreferrer" target="_blank">\\1</a>',
-      str,
+    return str.replaceAll(
+      /(https?:\/\/[\w-./?%&;=~@:$*\\,+#]+)/g,
+      '<a href="$1" class="l" rel="nofollow external noopener noreferrer" target="_blank">$1</a>',
     );
-    return o;
   }
 
   id = 0;
@@ -374,46 +384,32 @@ export class ChiiCodeCore {
 
   chiicode(
     message: string,
-    smileyoff,
-    bbcodeoff,
-    htmlon = 0,
-    allowsmilies = 1,
-    allowbbcode = 1,
-    allowimgcode = 1,
-    allowhtml = 0,
-    jammer = 0,
-    parsetype = '0',
-    authorid = '0',
-    allowmediacode = '0',
-    pid = 0,
-    filter = 0,
+    {
+      smileyoff = false,
+      bbcodeoff = false,
+      htmlon = false,
+      allowsmilies = true,
+      allowbbcode = true,
+      allowimgcode = true,
+      parsetype = false,
+      authorid = false,
+      allowmediacode = false,
+      pid = true,
+      filter = false,
+    }: Option = {},
   ) {
     const msglower: string = message.toLowerCase();
-    const htmlrule = 0;
     let parseCode = false;
 
-    if (htmlrule) {
-      htmlon = htmlon && allowhtml ? 1 : 0;
-    }
-
-    if (!htmlon) {
-      message = jammer
-        ? lo.escape(message).replaceAll('/\r\n|\n|\r/e', 'jammer()')
-        : lo.escape(message);
-    }
     if (!bbcodeoff && allowbbcode) {
       parseCode = false;
       if (msglower.includes('[/code]')) {
         parseCode = true;
-        message = message.replaceAll('#\\[code\\](.+)\\[/code\\]#Uise', this.parseCode);
+        message = message.replaceAll(/\\[code\\](.+)\\[/code\\]/g, this.parseCode);
       }
       if (msglower.includes('[/mask]')) {
         //打码
-        if (filter == 1) {
-          message = Settlement.preg_replace('#\\[mask\\](.+)\\[/mask\\]#iUse', '▇▇▇▇', message);
-        } else {
-          message = message.replaceAll('#\\[mask\\](.+)\\[/mask\\]#iUse', this.parseMask);
-        }
+        message = message.replaceAll(/\[mask](.+)\[\/mask]/g, this.parseMask);
       }
       if (msglower.includes('[/url]')) {
         message = message.replaceAll(
@@ -421,13 +417,7 @@ export class ChiiCodeCore {
           this.parseurl,
         );
       }
-      if (msglower.includes('[/email]')) {
-        message = message.replaceAll(
-          /\\[email(=([a-z0-9\\-_.+]+)@([a-z0-9\\-_]+[.][a-z0-9\\-_.]+))?\\](.+?)\\[\\/email\\]/gi,
-          this.parseEmail,
-        );
-      }
-      if (filter == 1) {
+      if (filter) {
         this.cov_code.open = { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' };
         this.cov_code.close = {
           0: '',
@@ -496,7 +486,7 @@ export class ChiiCodeCore {
            '<ul type="A" class="litype_3">', '<li>', '</ul>', '<blockquote>', '</blockquote>', '</span>','</a>'
            );
         */
-        convCodeArr = {
+        const convCodeArr = {
           '[/color]': '</span>',
           '[/size]': '</span>',
           '[b]': '<span style="font-weight:bold;">',
@@ -532,7 +522,7 @@ export class ChiiCodeCore {
                       '[i=s]', '[i]', '[/i]', '[u]', '[/u]', '[list]', '[list=1]', '[list=a]',
                       '[list=A]', '[*]', '[/list]', '[indent]', '[/indent]', '[/float]','[/user]','[/subject]'
                   ),$cov_code['close'], preg_replace(array(*/
-      if (filter == 1) {
+      if (filter) {
         message = message.replaceAll(
           {
             0: '/\\[color=([#\\w]+?)\\]/i',
@@ -564,7 +554,7 @@ export class ChiiCodeCore {
       }
       message = strtr(message, this.convCodeArr);
       if (parsetype !== 1 && msglower.includes('[/quote]')) {
-        if (filter == 1) {
+        if (filter) {
           message = Settlement.preg_replace(
             '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
             tpl_quote_filter(),
@@ -590,7 +580,7 @@ export class ChiiCodeCore {
     }
     if (!bbcodeoff) {
       if (msglower.includes('[/img]') || msglower.includes('[/photo]')) {
-        if (filter == 1) {
+        if (filter) {
           message = Settlement.preg_replace(
             {
               0: '/\\[photo=(\\d+)\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/photo\\]/ies',
@@ -640,7 +630,7 @@ export class ChiiCodeCore {
       }
       if (msglower.includes('[/user]')) {
         message = message.replaceAll(
-          /\\[user=([^\\W_][\\w]*)\\](.+?)\\[\\/user\\]/g,
+          /\[user=([^\W_]\w*)](.+?)\[\/user]/g,
           this.parseUsername,
         );
 
@@ -675,7 +665,7 @@ export class ChiiCodeCore {
       );
     }
     unset(msglower);
-    if (filter == 1) {
+    if (filter) {
       message = Settlement.str_replace(
         { 0: '\t', 1: '   ', 2: '  ' },
         { 0: ' ', 1: ' ', 2: '' },
@@ -768,7 +758,7 @@ export class ChiiCodeCore {
         url = Settlement.str_replace(conv_url, target_url, url);
         text = Settlement.str_replace(conv_url, target_url, text);
       }
-      if (filter == 1) {
+      if (filter) {
         return url;
       } else {
         return (
@@ -788,7 +778,7 @@ export class ChiiCodeCore {
         url = Settlement.str_replace(conv_url, target_url, url);
         text = Settlement.str_replace(conv_url, target_url, text);
       }
-      if (filter == 1) {
+      if (filter) {
         return text + '[' + url + ']';
       } else {
         return (
@@ -802,30 +792,16 @@ export class ChiiCodeCore {
     }
   }
 
-  parseEmail(email: string, text: string) {
-    if (
-      !email &&
-      preg_match('/\\s*([a-z0-9\\-_.+]+)@([a-z0-9\\-_]+[.][a-z0-9\\-_.]+)\\s*/i', text, matches)
-    ) {
-      email = trim(matches[0]);
-      return '<a href="mailto:' + email + '">' + email + '</a>';
-    } else {
-      return '<a href="mailto:' + substr(email, 1) + '">' + text + '</a>';
-    }
-  }
-
   parseMask(content: string) {
     const color = '#555';
-    content = Settlement.preg_replace('@\\[color=[#\\w]+?\\]@i', '[color=' + color + ']', content);
-    if (Settlement.strpos(content, '[/size]') !== false) {
-      content = Settlement.preg_replace(
-        '@\\[size=(\\d+)\\](.+)\\[/size\\]@iUs',
-        '<span style="font-size:\\1px;background-color:' + color + ';">\\2</span>',
-        content,
+    content = content.replaceAll(/\[color=[#\w]+?\]/g, color => '[color=' + color + ']');
+    if (content.includes('[/size]')) {
+      content = content.replaceAll(
+        new RegExp('\\[size=(\\d+)](.+)\\[/size]', 'g'),
+        color => '<span style="font-size:\\1px;background-color:' + color + ';">\\2</span>',
       );
     }
-    mask =
-      '<span style="background-color:' +
+    return '<span style="background-color:' +
       color +
       ';color:' +
 
@@ -835,209 +811,21 @@ export class ChiiCodeCore {
       ';">' +
       content +
       '</span>';
-    return mask;
   }
 
-  parsemedia(params, url) {
-    params = Settlement.explode(',', params);
-    if (Settlement.in_array(Settlement.count(params), { 0: 3, 1: 4 })) {
-      type = params[0];
-      width = Settlement.intval(params[1]) > 800 ? 800 : Settlement.intval(params[1]);
-      height = Settlement.intval(params[2]) > 600 ? 600 : Settlement.intval(params[2]);
-      autostart = 0;
-      url = Settlement.str_replace(
-        { 0: '<', 1: '>' },
-        '',
-        Settlement.str_replace('\\"', '\\"', url),
-      );
-      mediaid = 'media_' + GlobalCore.random(3);
-      switch (type) {
-        case 'ra': {
-          return (
-            '<object classid="clsid:CFCDAA03-8BE4-11CF-B84B-0020AFBBCCFA" width="' +
-            width +
-            '" height="32"><param name="autostart" value="' +
-            autostart +
-            '" /><param name="src" value="' +
-            url +
-            '" /><param name="controls" value="controlpanel" /><param name="console" value="' +
-            mediaid +
-            '_" /><embed src="' +
-            url +
-            '" type="audio/x-pn-realaudio-plugin" controls="ControlPanel" ' +
-            (autostart ? 'autostart="true"' : '') +
-            ' console="' +
-            mediaid +
-            '_" width="' +
-            width +
-            '" height="32"></embed></object>'
-          );
-          break;
-        }
-        case 'rm': {
-          return (
-            '<object classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="' +
-            width +
-            '" height="' +
-            height +
-            '"><param name="autostart" value="' +
-            autostart +
-            '" /><param name="src" value="' +
-            url +
-            '" /><param name="controls" value="imagewindow" /><param name="console" value="' +
-            mediaid +
-            '_" /><embed src="' +
-            url +
-            '" type="audio/x-pn-realaudio-plugin" controls="IMAGEWINDOW" console="' +
-            mediaid +
-            '_" width="' +
-            width +
-            '" height="' +
-            height +
-            '"></embed></object><br /><object classid="clsid:CFCDAA03-8BE4-11CF-B84B-0020AFBBCCFA" width="' +
-            width +
-            '" height="32"><param name="src" value="' +
-            url +
-            '" /><param name="controls" value="controlpanel" /><param name="console" value="' +
-            mediaid +
-            '_" /><embed src="' +
-            url +
-            '" type="audio/x-pn-realaudio-plugin" controls="ControlPanel" ' +
-            (autostart ? 'autostart="true"' : '') +
-            ' console="' +
-            mediaid +
-            '_" width="' +
-            width +
-            '" height="32"></embed></object>'
-          );
-          break;
-        }
-        case 'wma': {
-          return (
-            '<object classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="' +
-            width +
-            '" height="64"><param name="autostart" value="' +
-            autostart +
-            '" /><param name="url" value="' +
-            url +
-            '" /><embed src="' +
-            url +
-            '" autostart="' +
-            autostart +
-            '" type="audio/x-ms-wma" width="' +
-            width +
-            '" height="64"></embed></object>'
-          );
-          break;
-        }
-        case 'wmv': {
-          return (
-            '<object classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="' +
-            width +
-            '" height="' +
-            height +
-            '"><param name="autostart" value="' +
-            autostart +
-            '" /><param name="url" value="' +
-            url +
-            '" /><embed src="' +
-            url +
-            '" autostart="' +
-            autostart +
-            '" type="video/x-ms-wmv" width="' +
-            width +
-            '" height="' +
-            height +
-            '"></embed></object>'
-          );
-          break;
-        }
-        case 'mp3': {
-          return (
-            '<object classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="' +
-            width +
-            '" height="64"><param name="autostart" value="' +
-            autostart +
-            '" /><param name="url" value="' +
-            url +
-            '" /><embed src="' +
-            url +
-            '" autostart="' +
-            autostart +
-            '" type="application/x-mplayer2" width="' +
-            width +
-            '" height="64"></embed></object>'
-          );
-          break;
-        }
-        case 'mov': {
-          return (
-            '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="' +
-            width +
-            '" height="' +
-            height +
-            '"><param name="autostart" value="' +
-            (autostart ? 'true' : 'false') +
-            '" /><param name="src" value="' +
-            url +
-            '" /><embed controller="true" width="' +
-            width +
-            '" height="' +
-            height +
-            '" src="' +
-            url +
-            '" autostart="' +
-            (autostart ? 'true' : 'false') +
-            '"></embed></object>'
-          );
-          break;
-        }
-        default: {
-          return;
-        }
-      }
-    }
-    return;
-  }
-
-  videocode(message, tid, pid) {
-    global;
-    vsiteid, vsiteurl, boardurl;
-    vsiteurl = Settlement.urlencode(vsiteurl);
-    id = GlobalCore.random(5);
-    playurl =
-      'http://union.bokecc.com/flash/discuz2/player.swf?siteid={vsiteid}&vid=\\2&tid={tid}&pid={pid}&autoStart=\\1&referer=' +
-      Settlement.urlencode(boardurl + 'redirect.php?goto=findpost&pid={pid}&ptid={tid}');
-    flashplayer =
-      "\n<span id=\"vid_{id}\"></span><script type=\"text/javascript\" reload=\"1\">\n$('vid_{id}').innerHTML=AC_FL_RunContent('width', '438', 'height', '373', 'src', '{playurl}', 'quality', 'high', 'id', 'object_flash_player', 'menu', 'false', 'allowScriptAccess', 'always', 'allowFullScreen', 'true');\n</script>";
-    return Settlement.preg_replace(
-      '/\\[video=(\\d)\\](\\w+)\\[\\/video\\]/',
-      '{flashplayer}',
-      message,
-    );
-  }
-
-  fontResize(size, unit = NULL) {
+  fontResize(size: number, unit = null) {
     if (size >= 50) {
       size = 15;
     }
-    rt = '<span style="font-size:' + size + unit + '; line-height:' + size + unit + ';">';
-    return rt;
+    return '<span style="font-size:' + size + unit + '; line-height:' + size + unit + ';">';
   }
 
-  bbcodeurl(url, tags) {
-    if (preg_match('/<.+?>/s', url)) {
+  bbcodeurl(url: string, tags) {
+    if (/<.+?>/s.test(url)) {
       return ' ' + url;
     } else {
       if (
-        !Settlement.in_array(Settlement.strtolower(substr(url, 0, 6)), {
-          0: 'http:/',
-          1: 'https:',
-          2: 'ftp://',
-          3: 'rtsp:/',
-          4: 'mms://',
-        })
-      ) {
+        !['http:/', 'https:', 'ftp://', 'rtsp:/', 'mms://'].includes(url.slice(0, 6))) {
         url = 'http://' + url;
       }
       return Settlement.str_replace(
