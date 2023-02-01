@@ -7,13 +7,14 @@ import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
 import { TypeORMError } from 'typeorm';
 
+import * as routes from '@app/routes';
+
 import { emptyAuth } from './auth';
 import * as auth from './auth';
 import { production, stage, testing, VERSION } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
 import { repo } from './orm';
-import * as rest from './rest';
 
 export async function createServer(
   opts: Omit<FastifyServerOptions, 'ajv'> = {},
@@ -103,7 +104,7 @@ export async function createServer(
     },
   });
 
-  await server.register(rest.setup);
+  await server.register(routes.setup);
 
   return server;
 }
