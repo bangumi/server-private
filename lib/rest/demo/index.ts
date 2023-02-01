@@ -43,7 +43,7 @@ export async function setup(app: App) {
 
   await app.register(fastifyStatic, {
     root: path.resolve(projectRoot, 'static'),
-    prefix: '/demo/static/',
+    prefix: '/static/',
   });
 
   await app.register(fastifyView, {
@@ -59,37 +59,35 @@ export async function setup(app: App) {
     production,
   });
 
-  /* eslint-disable-next-line @typescript-eslint/require-await */
-  await app.register(
-    async (app: App) => {
-      app.get('/', { schema: { hide: true } }, async (req, res) => {
-        if (req.auth.login) {
-          const notifyCount = await Notify.count(req.auth.userID);
-
-          let notify: Notify.INotify[] = [];
-          if (notifyCount) {
-            notify = await Notify.list(req.auth.userID, { unread: true, limit: 20 });
-          }
-
-          await res.view('user', {
-            notifyCount,
-            notify,
-          });
-        } else {
-          await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
-        }
-      });
-
-      app.get('/login', { schema: { hide: true } }, async (req, res) => {
-        await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
-      });
-
-      editor.setup(app);
-      token.setup(app);
-    },
-    { prefix: '/demo/' },
-  );
-
   await app.register(mobile.setup, { prefix: '/m2' });
   await app.register(admin.setup, { prefix: '/admin' });
+  await app.register(userDemoRoutes);
+}
+
+/* eslint-disable-next-line @typescript-eslint/require-await */
+async function userDemoRoutes(app: App) {
+  app.get('/', { schema: { hide: true } }, async (req, res) => {
+    if (req.auth.login) {
+      const notifyCount = await Notify.count(req.auth.userID);
+
+      let notify: Notify.INotify[] = [];
+      if (notifyCount) {
+        notify = await Notify.list(req.auth.userID, { unread: true, limit: 20 });
+      }
+
+      await res.view('user', {
+        notifyCount,
+        notify,
+      });
+    } else {
+      await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
+    }
+  });
+
+  app.get('/login', { schema: { hide: true } }, async (req, res) => {
+    await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
+  });
+
+  editor.setup(app);
+  token.setup(app);
 }

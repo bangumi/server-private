@@ -14,7 +14,7 @@ export async function setup(app: FastifyInstance) {
 
   await app.register(privateAPI.setup, { prefix: '/p1' });
   await app.register(publicAPI.setup, { prefix: '/v0.5' });
-  await app.register(demo.setup);
+  await app.register(demo.setup, { prefix: '/demo/' });
 }
 
 declare module 'fastify' {
