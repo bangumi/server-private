@@ -53,10 +53,7 @@ export async function setup(app: App) {
       ],
     },
     async ({ params: { subjectID } }, res) => {
-      const images = await SubjectImageRepo.findBy({ subjectID, ban: 0 });
-      await res.view('admin/covers', {
-        images: images.filter((x) => x.target.startsWith('raw/')),
-      });
+      await res.view('admin/covers', { subjectID });
     },
   );
 

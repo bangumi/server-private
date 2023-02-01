@@ -1,6 +1,7 @@
 import * as crypto from 'node:crypto';
 
 import { Type as t } from '@sinclair/typebox';
+import * as lo from 'lodash-es';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
@@ -40,6 +41,7 @@ export function setup(app: App) {
                 thumbnail: t.String(),
                 raw: t.String(),
                 creator: res.User,
+                voted: t.Boolean(),
               }),
             ),
           }),
@@ -47,7 +49,7 @@ export function setup(app: App) {
       },
       preHandler: [requireLogin('list subject covers')],
     },
-    async ({ params: { subjectID } }) => {
+    async ({ params: { subjectID }, auth }) => {
       if (!SandBox.has(subjectID)) {
         throw new BadRequestError('暂时只能修改沙盒条目');
       }
@@ -64,7 +66,24 @@ export function setup(app: App) {
         where: { subjectID, ban: 0 },
         order: { id: 'asc' },
       });
+
+      if (images.length === 0) {
+        return {
+          current: undefined,
+          covers: [],
+        };
+      }
+
       const users = await orm.fetchUsers(images.map((x) => x.uid));
+      const likes = lo.groupBy(
+        await orm.LikeRepo.findBy({
+          relatedID: orm.In(images.map((x) => x.id)),
+          type: Like.TYPE_SUBJECT_COVER,
+          uid: auth.userID,
+          ban: 0,
+        }),
+        (x) => x.relatedID,
+      );
 
       return {
         current: s.image
@@ -84,6 +103,7 @@ export function setup(app: App) {
             thumbnail: 'https://lain.bgm.tv/r/400/pic/cover/l/' + x.target,
             raw: 'https://lain.bgm.tv/pic/cover/l/' + x.target,
             creator: res.toResUser(u),
+            voted: x.id in likes,
           };
         }),
       };
@@ -195,6 +215,7 @@ export function setup(app: App) {
           relatedID: imageID,
           uid: auth.userID,
           createdAt: new Date(),
+          ban: 0,
         },
         { conflictPaths: [], skipUpdateIfNoValuesChanged: false },
       );
