@@ -23,13 +23,13 @@
     <div class='re_info'>
       <small
         >#1 - {{ createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
-        {% if user.id == creator.id %}
-          /<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a
-            href='/group/topic/375598/edit'
-            target='_blank'
-            >edit</a
-          >
-        {% endif %}
+        {% comment %}{% if user.id == creator.id %}{% endcomment %}
+        {% comment %}/<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a{% endcomment %}
+        {% comment %}href='/group/topic/375598/edit'{% endcomment %}
+        {% comment %}target='_blank'{% endcomment %}
+        {% comment %}>edit</a{% endcomment %}
+        {% comment %}>{% endcomment %}
+        {% comment %}{% endif %}{% endcomment %}
       </small>
     </div>
     <a href='/user/{{ creator.username }}' class='avatar' target='_parent'
@@ -62,14 +62,14 @@
             ><a href='#post_{{ reply.id }}' class='floor-anchor'>#{{ flow }}</a> -
             {{ reply.createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
 
-            {% if user.id == reply.creator.id %}
-              /<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a
-                href='/group/topic/375598/edit'
-                target='_blank'
-              >
-                edit
-              </a>
-            {% endif %}
+            {% comment %}{% if user.id == reply.creator.id %}{% endcomment %}
+            {% comment %}/<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a{% endcomment %}
+            {% comment %}href='/group/topic/375598/edit'{% endcomment %}
+            {% comment %}target='_blank'{% endcomment %}
+            {% comment %}>{% endcomment %}
+            {% comment %}edit{% endcomment %}
+            {% comment %}</a>{% endcomment %}
+            {% comment %}{% endif %}{% endcomment %}
 
             {% comment %}/            <a{% endcomment %}
             {% comment %}href='/report?type=8&amp;id=2174813&amp;keepThis=false&amp;TB_iframe=true&amp;height=195&amp;width=450'{% endcomment %}
@@ -92,14 +92,14 @@
                 {{- reply.creator.nickname | escape -}}
               </a></strong
             >
-            {% if reply.state == 0 %}
-              <a
-                href='javascript:void(0);'
-                onclick="subReply('group',375598,2174813,0,287622,427613,0)"
-                class='tip_i icons_cmt'
-                >回复</a
-              >
-            {% endif %}
+            {% comment %}{% if reply.state == 0 %}{% endcomment %}
+            {% comment %}<a{% endcomment %}
+            {% comment %}href='javascript:void(0);'{% endcomment %}
+            {% comment %}onclick="subReply('group',375598,2174813,0,287622,427613,0)"{% endcomment %}
+            {% comment %}class='tip_i icons_cmt'{% endcomment %}
+            {% comment %}>回复</a{% endcomment %}
+            {% comment %}>{% endcomment %}
+            {% comment %}{% endif %}{% endcomment %}
           </span>
 
           <div class='reply_content'>
@@ -146,28 +146,29 @@
                           >#{{ flow }}-{{ subFlow -}}
                         </a>
                         - {{ createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
-                        {% if subReply.creatorID == user.id %}
-                          /
-                          <a
-                            id='erase_2176645'
-                            href='/erase/group/reply/2176645?gh=e669bf68'
-                            class='erase_post'
-                            >del</a
-                          >
-                          /
-                          <a
-                            href='/group/reply/2176645/edit'
-                            target='_blank'
-                            >edit</a
-                          >
-                          {% comment %}/{% endcomment %}
-                          {% comment %}<a{% endcomment %}
-                          {% comment %}href='/report?type=8&amp;id=2176645&amp;keepThis=false&amp;TB_iframe=true&amp;height=195&amp;width=450'{% endcomment %}
-                          {% comment %}title='报告疑虑'{% endcomment %}
-                          {% comment %}class='thickbox'{% endcomment %}
-                          {% comment %}>&nbsp;!&nbsp;</a{% endcomment %}
-                          {% comment %}>{% endcomment %}
-                        {% endif %}
+                        {% comment %}{% if subReply.creatorID == user.id %}{% endcomment %}
+                        {% comment %}/{% endcomment %}
+                        {% comment %}<a{% endcomment %}
+                        {% comment %}id='erase_2176645'{% endcomment %}
+                        {% comment %}href='/erase/group/reply/2176645?gh=e669bf68'{% endcomment %}
+                        {% comment %}class='erase_post'{% endcomment %}
+                        {% comment %}>del</a{% endcomment %}
+                        {% comment %}>{% endcomment %}
+                        {% comment %}/{% endcomment %}
+                        {% comment %}<a{% endcomment %}
+                        {% comment %}href='/group/reply/2176645/edit'{% endcomment %}
+                        {% comment %}target='_blank'{% endcomment %}
+                        {% comment %}>edit</a{% endcomment %}
+                        {% comment %}>{% endcomment %}
+
+                        {% comment %}/{% endcomment %}
+                        {% comment %}<a{% endcomment %}
+                        {% comment %}href='/report?type=8&amp;id=2176645&amp;keepThis=false&amp;TB_iframe=true&amp;height=195&amp;width=450'{% endcomment %}
+                        {% comment %}title='报告疑虑'{% endcomment %}
+                        {% comment %}class='thickbox'{% endcomment %}
+                        {% comment %}>&nbsp;!&nbsp;</a{% endcomment %}
+                        {% comment %}>{% endcomment %}
+                        {% comment %}{% endif %}{% endcomment %}
                       </small>
                     </div>
                     <a href='/user/{{ subReply.creator.username }}' class='avatar' target='_parent'>
@@ -187,12 +188,12 @@
                           {{- subReply.creator.nickname | escape -}}
                         </a>
                       </strong>
-                      <a
-                        href='javascript:void(0);'
-                        onclick="subReply('group',375598,2174813,2176645,427613,287622,1)"
-                        class='tip_i icons_cmt'
-                        >回复</a
-                      >
+                      {% comment %}<a{% endcomment %}
+                      {% comment %}href='javascript:void(0);'{% endcomment %}
+                      {% comment %}onclick="subReply('group',375598,2174813,2176645,427613,287622,1)"{% endcomment %}
+                      {% comment %}class='tip_i icons_cmt'{% endcomment %}
+                      {% comment %}>回复</a{% endcomment %}
+                      {% comment %}>{% endcomment %}
                       <div class='cmt_sub_content'>{{ subReply.text | mobileBBCode }}</div>
                     </div>
                   </div>
