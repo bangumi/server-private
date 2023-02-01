@@ -32,7 +32,7 @@
         {% comment %}{% endif %}{% endcomment %}
       </small>
     </div>
-    <a href='/user/{{ creator.username }}' class='avatar' target='_parent'
+    <a href='https://bgm.tv/user/{{ creator.username }}' class='avatar' target='_parent'
       ><span
         class='avatarNeue avatarSize48 ll'
         style="background-image:url('{{ creator.avatar.large }}')"
@@ -40,7 +40,7 @@
     ></a>
     <div class='inner'>
       <strong
-        ><a href='/user/trim21' class='l' target='_parent'>
+        ><a href='https://bgm.tv/user/trim21' class='l' target='_parent'>
           {{- creator.nickname | escape -}}
         </a></strong
       >
@@ -79,7 +79,7 @@
           </small>
         </div>
 
-        <a href='/user/{{ reply.creator.username }}' class='avatar' target='_parent'>
+        <a href='https://bgm.tv/user/{{ reply.creator.username }}' class='avatar' target='_parent'>
           <span
             class='avatarNeue avatarReSize40 ll'
             style="background-image:url('{{ reply.creator.avatar.large | escape }}')"
@@ -88,7 +88,7 @@
         <div class='inner'>
           <span class='userInfo'
             ><strong
-              ><a href='/user/427613' class='l post_author_2174813' target='_parent'>
+              ><a href='https://bgm.tv/user/427613' class='l post_author_2174813' target='_parent'>
                 {{- reply.creator.nickname | escape -}}
               </a></strong
             >
@@ -171,7 +171,11 @@
                         {% comment %}{% endif %}{% endcomment %}
                       </small>
                     </div>
-                    <a href='/user/{{ subReply.creator.username }}' class='avatar' target='_parent'>
+                    <a
+                      href='https://bgm.tv/user/{{ subReply.creator.username }}'
+                      class='avatar'
+                      target='_parent'
+                    >
                       <span
                         class='avatarNeue avatarReSize32 ll'
                         style="background-image:url('{{ subReply.creator.avatar.large }}')"
@@ -181,7 +185,7 @@
                       <strong class='userName'>
                         <a
                           id='{{ subReply.creator.id }}'
-                          href='/user/{{ subReply.creator.username }}'
+                          href='https://bgm.tv/user/{{ subReply.creator.username }}'
                           class='l'
                           target='_parent'
                         >
@@ -210,7 +214,7 @@
     <div id='reply_wrapper'>
       <a name='new'></a>
       <div id='new_comment' class='light_odd'>
-        <a href='/user/trim21' class='avatar' target='_parent'
+        <a href='https://bgm.tv/user/{{ user.username }}' class='avatar' target='_parent'
           ><span
             class='avatarNeue avatarReSize40 ll'
             style="background-image:url('{{ user.avatar.large | escape }}')"
@@ -220,7 +224,7 @@
           <h2 class='reply_title'>
             <span class='reply_author'
               ><a
-                href='/user/{{ user.username }}'
+                href='https://bgm.tv/user/{{ user.username }}'
                 class='l'
               >
                 {{- user.nickname | escape -}}
