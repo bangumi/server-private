@@ -54,7 +54,6 @@
     "@types/mime-types": "^2.1.1",
     "@types/minio": "^7.0.15",
     "@types/node": "^18.11.18",
-    "@types/ssh2-sftp-client": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.48.1",
     "@typescript-eslint/parser": "^5.48.1",
     "@vitest/coverage-c8": "^0.27.1",
@@ -103,7 +102,6 @@
     "@fastify/view": "^7.4.0",
     "@node-rs/bcrypt": "^1.6.2",
     "@sinclair/typebox": "^0.25.20",
-    "@thoughtsunificator/bbcode-parser": "^1.0.7",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "altair-fastify-plugin": "^5.0.9",
@@ -133,7 +131,6 @@
     "proxy-agent": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.5.4",
-    "ssh2-sftp-client": "^9.0.4",
     "typeorm": "^0.3.11"
   },
   "prettier": {
