@@ -227,6 +227,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
   const likes = await LikeRepo.findBy({
     type: Like.TYPE_SUBJECT_COVER,
     relatedID: orm.In(images.map((x) => x.id)),
+    ban: 0,
   });
 
   const users = await fetchUsers(likes.map((x) => x.uid));
