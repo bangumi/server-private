@@ -1,7 +1,7 @@
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import * as php from 'php-serialize';
-import { DataSource } from 'typeorm';
+import { DataSource, In } from 'typeorm';
 import * as typeorm from 'typeorm';
 
 import config from '@app/lib/config';
@@ -117,8 +117,6 @@ export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
 export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
 
 export const LikeRepo = AppDataSource.getRepository(Like);
-
-export { In } from 'typeorm';
 
 export const repo = {
   UserField: UserFieldRepo,
@@ -325,6 +323,31 @@ export async function fetchGroupByID(id: number): Promise<IGroup | null> {
   } satisfies IGroup;
 }
 
+export async function fetchGroups(ids: number[]): Promise<Record<number, IGroup>> {
+  const groups = await GroupRepo.find({
+    where: { id: In(lo.uniq(ids)) },
+  });
+
+  return Object.fromEntries(
+    groups.map((group) => {
+      return [
+        group.id,
+        {
+          id: group.id,
+          name: group.name,
+          title: group.title,
+          nsfw: group.nsfw,
+          description: group.description,
+          icon: group.icon,
+          createdAt: group.builddate,
+          totalMembers: group.memberCount,
+          accessible: group.accessible,
+        },
+      ];
+    }),
+  );
+}
+
 export async function fetchGroup(name: string): Promise<IGroup | null> {
   const group = await GroupRepo.findOne({
     where: { name },
@@ -465,3 +488,5 @@ export async function fetchUserX(id: number): Promise<IUser> {
 
   return u;
 }
+
+export { In } from 'typeorm';

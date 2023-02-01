@@ -2,6 +2,7 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
+import type { IAuth } from '@app/lib/auth';
 import { NotAllowedError } from '@app/lib/auth';
 import { dam } from '@app/lib/dam';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
@@ -43,6 +44,44 @@ const GroupMember = t.Object(
     joinedAt: t.Integer(),
   },
   { $id: 'GroupMember' },
+);
+const SubReply = t.Object(
+  {
+    id: t.Integer(),
+    creator: t.Ref(res.User),
+    createdAt: t.Integer(),
+    isFriend: t.Boolean(),
+    text: t.String(),
+    state: t.Integer(),
+  },
+  { $id: 'SubReply' },
+);
+
+const Reply = t.Object(
+  {
+    id: t.Integer(),
+    isFriend: t.Boolean(),
+    replies: t.Array(t.Ref(SubReply)),
+    creator: t.Ref(res.User),
+    createdAt: t.Integer(),
+    text: t.String(),
+    state: t.Integer(),
+  },
+  { $id: 'Reply' },
+);
+
+const TopicDetail = t.Object(
+  {
+    id: t.Integer(),
+    group: t.Ref(Group),
+    creator: t.Ref(res.User),
+    title: t.String(),
+    text: t.String(),
+    state: t.Integer(),
+    createdAt: t.Integer(),
+    replies: t.Array(t.Ref(Reply)),
+  },
+  { $id: 'TopicDetail' },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -110,18 +149,6 @@ export async function setup(app: App) {
     },
   );
 
-  const SubReply = t.Object(
-    {
-      id: t.Integer(),
-      creator: t.Ref(res.User),
-      createdAt: t.Integer(),
-      isFriend: t.Boolean(),
-      text: t.String(),
-      state: t.Integer(),
-    },
-    { $id: 'SubReply' },
-  );
-
   app.addSchema(SubReply);
 
   const BasicReply = t.Object(
@@ -137,34 +164,7 @@ export async function setup(app: App) {
 
   app.addSchema(BasicReply);
 
-  const Reply = t.Object(
-    {
-      id: t.Integer(),
-      isFriend: t.Boolean(),
-      replies: t.Array(t.Ref(SubReply)),
-      creator: t.Ref(res.User),
-      createdAt: t.Integer(),
-      text: t.String(),
-      state: t.Integer(),
-    },
-    { $id: 'Reply' },
-  );
-
   app.addSchema(Reply);
-
-  const TopicDetail = t.Object(
-    {
-      id: t.Integer(),
-      group: t.Ref(Group),
-      creator: t.Ref(res.User),
-      title: t.String(),
-      text: t.String(),
-      state: t.Integer(),
-      createdAt: t.Integer(),
-      replies: t.Array(t.Ref(Reply)),
-    },
-    { $id: 'TopicDetail' },
-  );
 
   app.addSchema(TopicDetail);
 
@@ -189,63 +189,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { id }, auth }) => {
-      const topic = await Topic.fetchDetail(auth, 'group', id);
-      if (!topic) {
-        throw new NotFoundError(`topic ${id}`);
-      }
-
-      const group = await orm.fetchGroupByID(topic.parentID);
-      if (!group) {
-        throw new UnexpectedNotFoundError(`group ${topic.parentID}`);
-      }
-
-      const userIds: number[] = [
-        topic.creatorID,
-        ...topic.replies.flatMap((x) => [x.creatorID, ...x.replies.map((x) => x.creatorID)]),
-      ];
-
-      const friends = await orm.fetchFriends(auth.userID);
-      const users = await orm.fetchUsers([...new Set(userIds)]);
-
-      const creator = users[topic.creatorID];
-      if (!creator) {
-        throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
-      }
-
-      return {
-        ...topic,
-        creator: toResUser(creator),
-        text: topic.text,
-        group: { ...group, icon: groupIcon(group.icon) },
-        replies: topic.replies.map((x) => {
-          const user = users[x.creatorID];
-          if (!user) {
-            throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
-          }
-          return {
-            isFriend: friends[x.creatorID] ?? false,
-            ...x,
-            replies: x.replies.map((x) => {
-              const user = users[x.creatorID];
-              if (!user) {
-                throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
-              }
-              return {
-                isFriend: friends[x.creatorID] ?? false,
-                ...x,
-                creator: toResUser(user),
-              };
-            }),
-            creator: {
-              isFriend: friends[x.creatorID] ?? false,
-              ...toResUser(user),
-            },
-          };
-        }),
-        state: topic.state,
-      };
-    },
+    handleTopicDetail,
   );
 
   app.addSchema(GroupMember);
@@ -627,4 +571,68 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
   const [_, members] = await fetchGroupMemberList(groupID, { limit: 6, type: 'all' });
 
   return members;
+}
+
+export async function handleTopicDetail({
+  params: { id },
+  auth,
+}: {
+  params: { id: number };
+  auth: IAuth;
+}): Promise<Static<typeof TopicDetail>> {
+  const topic = await Topic.fetchDetail(auth, 'group', id);
+  if (!topic) {
+    throw new NotFoundError(`topic ${id}`);
+  }
+
+  const group = await orm.fetchGroupByID(topic.parentID);
+  if (!group) {
+    throw new UnexpectedNotFoundError(`group ${topic.parentID}`);
+  }
+
+  const userIds: number[] = [
+    topic.creatorID,
+    ...topic.replies.flatMap((x) => [x.creatorID, ...x.replies.map((x) => x.creatorID)]),
+  ];
+
+  const friends = await orm.fetchFriends(auth.userID);
+  const users = await orm.fetchUsers([...new Set(userIds)]);
+
+  const creator = users[topic.creatorID];
+  if (!creator) {
+    throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
+  }
+
+  return {
+    ...topic,
+    creator: toResUser(creator),
+    text: topic.text,
+    group: { ...group, icon: groupIcon(group.icon) },
+    replies: topic.replies.map((x) => {
+      const user = users[x.creatorID];
+      if (!user) {
+        throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
+      }
+      return {
+        isFriend: friends[x.creatorID] ?? false,
+        ...x,
+        replies: x.replies.map((x) => {
+          const user = users[x.creatorID];
+          if (!user) {
+            throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
+          }
+          return {
+            isFriend: friends[x.creatorID] ?? false,
+            ...x,
+            creator: toResUser(user),
+          };
+        }),
+        creator: {
+          isFriend: friends[x.creatorID] ?? false,
+          ...toResUser(user),
+        },
+      };
+    }),
+    state: topic.state,
+  };
 }

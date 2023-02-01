@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 
+import Cookie from '@fastify/cookie';
 import { fastifyStatic } from '@fastify/static';
 import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
@@ -8,6 +9,9 @@ import config, { production, projectRoot } from '@app/lib/config';
 import * as Notify from '@app/lib/notify';
 import { fetchUserX } from '@app/lib/orm';
 import * as admin from '@app/lib/rest/admin';
+import { SessionAuth } from '@app/lib/rest/hooks/pre-handler';
+import * as mobile from '@app/lib/rest/m2';
+import { mobileBBCode } from '@app/lib/rest/m2/bbcode';
 import type { App } from '@app/lib/rest/type';
 import * as res from '@app/lib/types/res';
 
@@ -22,11 +26,20 @@ declare module 'fastify' {
   }
 }
 
+/* eslint-disable-next-line @typescript-eslint/require-await */
 export async function setup(app: App) {
-  const liquid = new Liquid({
-    root: path.resolve(projectRoot, 'templates'),
-    extname: '.liquid',
-    cache: production,
+  await app.register(Cookie, {
+    hook: 'preHandler', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
+    parseOptions: {}, // options for parsing cookies
+  });
+
+  void app.addHook('preHandler', SessionAuth);
+
+  app.addHook('preHandler', async function (req, reply) {
+    if (req.auth.login) {
+      const user = res.toResUser(await fetchUserX(req.auth.userID));
+      reply.locals = { user };
+    }
   });
 
   await app.register(fastifyStatic, {
@@ -34,22 +47,30 @@ export async function setup(app: App) {
     prefix: '/static/',
   });
 
+  const liquid = new Liquid({
+    root: path.resolve(projectRoot, 'templates'),
+    extname: '.liquid',
+    cache: production,
+  });
+
+  liquid.registerFilter('mobileBBCode', mobileBBCode);
+
   await app.register(fastifyView, {
-    engine: { liquid },
+    engine: {
+      liquid,
+    },
     defaultContext: { production },
     root: path.resolve(projectRoot, 'templates'),
     production,
   });
 
-  app.addHook('preHandler', async function (req, reply) {
-    let user;
-    if (req.auth.login) {
-      user = res.toResUser(await fetchUserX(req.auth.userID));
-    }
+  await app.register(mobile.setup, { prefix: '/m2' });
+  await app.register(admin.setup, { prefix: '/admin' });
+  await app.register(userDemoRoutes);
+}
 
-    reply.locals = { user };
-  });
-
+/* eslint-disable-next-line @typescript-eslint/require-await */
+async function userDemoRoutes(app: App) {
   app.get('/', { schema: { hide: true } }, async (req, res) => {
     if (req.auth.login) {
       const notifyCount = await Notify.count(req.auth.userID);
@@ -74,6 +95,4 @@ export async function setup(app: App) {
 
   editor.setup(app);
   token.setup(app);
-
-  await app.register(admin.setup, { prefix: '/admin' });
 }

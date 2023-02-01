@@ -1,7 +1,6 @@
 import Cookie from '@fastify/cookie';
 
 import { production } from '@app/lib/config';
-import * as demo from '@app/lib/rest/demo';
 import { SessionAuth } from '@app/lib/rest/hooks/pre-handler';
 import * as me from '@app/lib/rest/routes/me';
 import * as swagger from '@app/lib/rest/swagger';
@@ -34,8 +33,7 @@ export async function setup(app: App) {
 
   void app.addHook('preHandler', SessionAuth);
 
-  await app.register(API, { prefix: '/p1' });
-  await app.register(demo.setup, { prefix: '/demo' });
+  await app.register(API);
 }
 
 async function API(app: App) {
