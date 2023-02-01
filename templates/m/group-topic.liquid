@@ -250,25 +250,26 @@
     </div>
 
     <script>
-      function submit() {
+      async function submit() {
         const content = $('#content').val();
-        fetch('/p1/groups/-/topics/{{ id }}/replies', {
+        if (!content) {
+          return;
+        }
+
+        const res = await fetch('/p1/groups/-/topics/{{ id }}/replies', {
           method: 'post',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ content }),
-        })
-          .then((res) => {
-            if (res.ok) {
-              location.reload();
-            } else {
-              return res.text();
-            }
-          })
-          .then((msg) => {
-            if (msg) {
-              alert(msg);
-            }
-          });
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          console.log(data);
+          location.href = location.pathname + `#post_${data.id}`;
+          location.reload();
+        } else {
+          alert(await res.text());
+        }
       }
     </script>
   {% endif %}
