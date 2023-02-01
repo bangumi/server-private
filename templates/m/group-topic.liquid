@@ -23,8 +23,7 @@
     <div class='re_info'>
       <small
         >#1 - {{ createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
-
-        {% if user.id == creator.ID %}
+        {% if user.id == creator.id %}
           /<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a
             href='/group/topic/375598/edit'
             target='_blank'
@@ -63,7 +62,7 @@
             ><a href='#post_{{ reply.id }}' class='floor-anchor'>#{{ flow }}</a> -
             {{ reply.createdAt | date: '%Y-%m-%d %H:%M', 'Asia/Shanghai' }}
 
-            {% if user.id == creator.ID %}
+            {% if user.id == reply.creator.id %}
               /<a href='javascript:void(0);' onclick="eraseGrpTopic(375598,'e669bf68')">del</a> /<a
                 href='/group/topic/375598/edit'
                 target='_blank'

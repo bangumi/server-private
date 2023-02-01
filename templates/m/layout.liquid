@@ -32,16 +32,17 @@
   <body>
     <div id='header' class='clearit'>
       <div id='badge'>
-        <a
-          class='avatar l'
-          href='https://bgm.tv/user/{{ user.username }}'
-        >
-          {{- user.nickname -}}
-        </a>
-        <a
-          href='https://bgm.tv/logout/60967c84'
-          >TODO: 登出</a
-        >
+        {% if user %}
+          <a
+            class='avatar l'
+            href='https://bgm.tv/user/{{ user.username }}'
+          >
+            {{- user.nickname -}}
+          </a>
+          <a href='javascript:void 0;' onclick='logout()'>登出</a>
+        {% else %}
+          <a href='/demo/'>登录</a>
+        {% endif %}
       </div>
       <div id='logo'>
         <a href='/m2'><h1>Bangumi 番组计划</h1></a>
@@ -52,6 +53,18 @@
       <li><a href='/m2/timeline'>TODO: 时空管理局</a></li>
       <li><a href='/m2/prg'>TODO: 进度管理</a></li>
     </ul>
+
+    <script>
+      async function logout() {
+        await fetch('/p1/logout', {
+          method: 'post',
+          headers: { 'content-type': 'application/json' },
+          body: '{}',
+        });
+        location.reload();
+      }
+    </script>
+
     {% block content -%}
     {%- endblock %}
   </body>
