@@ -1,3 +1,7 @@
+/* eslint-disable unicorn/no-abusive-eslint-disable */
+/* eslint-disable */
+/* @ts-ignore */
+
 /** 并不用于新前端，只是用在 /m2 支持 bbcode。 */
 import * as lo from 'lodash-es';
 
@@ -560,20 +564,20 @@ export class ChiiCodeCore {
       }
       message = strtr(message, this.convCodeArr);
       if (parsetype !== 1 && msglower.includes('[/quote]')) {
-          if (filter == 1) {
-            message = Settlement.preg_replace(
-              '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
-              tpl_quote_filter(),
-              message,
-            );
-          } else {
-            message = Settlement.preg_replace(
-              '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
-              tpl_quote(),
-              message,
-            );
-          }
+        if (filter == 1) {
+          message = Settlement.preg_replace(
+            '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
+            tpl_quote_filter(),
+            message,
+          );
+        } else {
+          message = Settlement.preg_replace(
+            '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
+            tpl_quote(),
+            message,
+          );
         }
+      }
     }
     if (!smileyoff && allowsmilies) {
       //$smile_replace_list = this.smileReplace();
@@ -613,23 +617,23 @@ export class ChiiCodeCore {
             },
             allowimgcode
               ? {
-                  0:
-                    "ChiiCodeCore::insiteurl('\\2', '<img src=\"" +
-                    PHOTO_URL +
-                    '/l/%s" class="code" alt="" />\')',
-                  1: 'ChiiCodeCore::bbcodeurl(\'\\1\', \'<img src="%s" class="code" rel="noreferrer" referrerpolicy="no-referrer" alt="" />\')',
-                  2: 'ChiiCodeCore::bbcodeurl(\'\\3\', \'<img width="\\1" height="\\2" src="%s" border="0" alt="" class="code" referrerpolicy="no-referrer" />\')',
-                }
+                0:
+                  "ChiiCodeCore::insiteurl('\\2', '<img src=\"" +
+                  PHOTO_URL +
+                  '/l/%s" class="code" alt="" />\')',
+                1: 'ChiiCodeCore::bbcodeurl(\'\\1\', \'<img src="%s" class="code" rel="noreferrer" referrerpolicy="no-referrer" alt="" />\')',
+                2: 'ChiiCodeCore::bbcodeurl(\'\\3\', \'<img width="\\1" height="\\2" src="%s" border="0" alt="" class="code" referrerpolicy="no-referrer" />\')',
+              }
               : {
-                  0:
-                    "ChiiCodeCore::insiteurl('\\2', '<a href=\"" +
-                    PHOTO_URL +
-                    '/l/%s" class="l">' +
-                    PHOTO_URL +
-                    "/l/%s</a>')",
-                  1: 'ChiiCodeCore::bbcodeurl(\'\\1\', \'<a href="%s" target="_blank" rel="nofollow external noopener noreferrer" class="l">%s</a>\')',
-                  2: 'ChiiCodeCore::bbcodeurl(\'\\3\', \'<a href="%s" target="_blank" rel="nofollow external noopener noreferrer" class="l">%s</a>\')',
-                },
+                0:
+                  "ChiiCodeCore::insiteurl('\\2', '<a href=\"" +
+                  PHOTO_URL +
+                  '/l/%s" class="l">' +
+                  PHOTO_URL +
+                  "/l/%s</a>')",
+                1: 'ChiiCodeCore::bbcodeurl(\'\\1\', \'<a href="%s" target="_blank" rel="nofollow external noopener noreferrer" class="l">%s</a>\')',
+                2: 'ChiiCodeCore::bbcodeurl(\'\\3\', \'<a href="%s" target="_blank" rel="nofollow external noopener noreferrer" class="l">%s</a>\')',
+              },
             message,
           );
         }

@@ -1,4 +1,10 @@
-import config from '@app/lib/config';
+import * as path from 'node:path';
+
+import { fastifyStatic } from '@fastify/static';
+import { fastifyView } from '@fastify/view';
+import { Liquid } from 'liquidjs';
+
+import config, { production, projectRoot } from '@app/lib/config';
 import * as Notify from '@app/lib/notify';
 import { fetchUserX } from '@app/lib/orm';
 import * as admin from '@app/lib/rest/admin';

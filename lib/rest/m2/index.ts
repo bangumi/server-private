@@ -2,6 +2,7 @@ import { Duration } from 'luxon';
 
 import type { App } from '@app/lib/rest/type';
 
+/* eslint-disable-next-line @typescript-eslint/require-await */
 export async function setup(app: App) {
   app.get(
     '/',
@@ -13,8 +14,8 @@ export async function setup(app: App) {
     async ({ query }, res) => {
       const { type = '' } = query as { type?: string };
       if (type && !expectedTypes.has(type)) {
-          return res.redirect('/m2');
-        }
+        return res.redirect('/m2');
+      }
 
       const data = { type, items: await fetchRecentGroupTopic() };
 
@@ -44,10 +45,8 @@ export interface Item {
   parentID: string;
 }
 
-const rtf1 = new Intl.RelativeTimeFormat('en', { style: 'short' });
-
-async function fetchRecentGroupTopic(): Promise<Item[]> {
-  return [
+function fetchRecentGroupTopic(): Promise<Item[]> {
+  return Promise.resolve([
     {
       type: 'subject',
       id: 12331,
@@ -62,7 +61,7 @@ async function fetchRecentGroupTopic(): Promise<Item[]> {
       title: '一个假item',
       time: formatRelativeTime(Duration.fromObject({ day: 3 }).toMillis() / 1000),
     },
-  ];
+  ]);
 }
 
 function formatRelativeTime(seconds: number): string {

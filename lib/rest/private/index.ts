@@ -6,13 +6,13 @@ import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
 import { production, projectRoot } from '@app/lib/config';
+import * as orm from '@app/lib/orm';
 import * as demo from '@app/lib/rest/demo';
 import { SessionAuth } from '@app/lib/rest/hooks/pre-handler';
+import * as mobile from '@app/lib/rest/m2';
 import * as me from '@app/lib/rest/routes/me';
-import * as orm from '@app/lib/orm';
 import * as swagger from '@app/lib/rest/swagger';
 import type { App } from '@app/lib/rest/type';
-import type { IUser } from '@app/lib/types/res';
 import { toResUser } from '@app/lib/types/res';
 
 import * as login from './routes/login';
@@ -77,15 +77,6 @@ export async function setup(app: App) {
     await app.register(demo.setup, { prefix: '/demo' });
     await app.register(mobile.setup, { prefix: '/m2' });
   });
-}
-
-declare module 'fastify' {
-  interface FastifyReply {
-    /** @see https://github.com/fastify/point-of-view#setting-request-global-variables */
-    locals: {
-      user?: IUser;
-    };
-  }
 }
 
 async function API(app: App) {
