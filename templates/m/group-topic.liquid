@@ -93,19 +93,47 @@
                 {{- reply.creator.nickname | escape -}}
               </a></strong
             >
-            <a
-              href='javascript:void(0);'
-              onclick="subReply('group',375598,2174813,0,287622,427613,0)"
-              class='tip_i icons_cmt'
-              >回复</a
-            >
+            {% if reply.state == 0 %}
+              <a
+                href='javascript:void(0);'
+                onclick="subReply('group',375598,2174813,0,287622,427613,0)"
+                class='tip_i icons_cmt'
+                >回复</a
+              >
+            {% endif %}
           </span>
 
           <div class='reply_content'>
             {% if reply.state == 0 %}
               <div class='message'>{{ reply.text | mobileBBCode }}</div>
             {% else %}
-              <div class='message'>action: {{ reply.state }}</div>
+              {% if reply.state == 6 %}
+                <div class='message' style='color: gray'>内容已被用户删除</div>
+              {% elsif reply.state == 7 %}
+                <div class='message' style='color: gray'>
+                  <span class='tip'
+                    >内容因违反「<a
+                      href='https://bgm.tv/about/guideline'
+                      class='l'
+                      >社区指导原则</a
+                    >」已被删除</span
+                  >
+                </div>
+              {% elsif reply.state == 5 %}
+                <div class='message' style='color: gray'>
+                  <span class='tip'>管理员下沉了主题</span>
+                </div>
+              {% elsif reply.state == 1 %}
+                <div class='message' style='color: gray'>
+                  <span class='tip'>管理员关闭了主题</span>
+                </div>
+              {% elsif reply.state == 2 %}
+                <div class='message' style='color: gray'>
+                  <span class='tip'>管理员重新开启了主题</span>
+                </div>
+              {% else %}
+                {{ reply.state | json }}
+              {% endif %}
             {% endif %}
 
             {% if reply.replies.length != 0 %}
