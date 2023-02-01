@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('subject_name_cn', ['nameCN'], {})
@@ -314,6 +315,13 @@ export class SubjectImage {
   @Column('tinyint', { name: 'img_ban', unsigned: true })
   ban!: number;
 
-  @Column('int', { name: 'img_dateline', unsigned: true })
-  createdAt!: number;
+  @Column('int', {
+    name: 'img_dateline',
+    unsigned: true,
+    transformer: {
+      to: (value: Date) => Math.trunc(value.getTime() / 1000),
+      from: (value: number) => DateTime.fromSeconds(value).toJSDate(),
+    },
+  })
+  createdAt!: Date;
 }
