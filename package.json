@@ -12,7 +12,6 @@
     "format": "prettier -w ./",
     "lint": "eslint --cache --ext ts ./",
     "start": "nodemon ./lib/main.ts",
-    "dev": "concurrently npm:start npm:watch-less npm:watch-livereload",
     "watch-less": "less-watch-compiler --enable-js style static/style",
     "watch-livereload": "livereload 'templates, static' --extraExts liquid",
     "test": "vitest --run",
@@ -34,7 +33,6 @@
     ],
     "delay": 100,
     "execMap": {
-      "less": "lessc --js",
       "ts": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader"
     },
     "env": {
@@ -58,7 +56,6 @@
     "@typescript-eslint/parser": "^5.48.1",
     "@vitest/coverage-c8": "^0.27.1",
     "@vitest/ui": "^0.27.1",
-    "concurrently": "^7.6.0",
     "dotenv": "^16.0.3",
     "esbuild": "^0.17.0",
     "esbuild-register": "^3.4.2",
