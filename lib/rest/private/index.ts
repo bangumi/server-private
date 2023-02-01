@@ -1,19 +1,10 @@
-import * as path from 'node:path';
-
 import Cookie from '@fastify/cookie';
-import { fastifyStatic } from '@fastify/static';
-import { fastifyView } from '@fastify/view';
-import { Liquid } from 'liquidjs';
 
-import { production, projectRoot } from '@app/lib/config';
-import * as orm from '@app/lib/orm';
-import * as demo from '@app/lib/rest/demo';
+import { production } from '@app/lib/config';
 import { SessionAuth } from '@app/lib/rest/hooks/pre-handler';
-import * as mobile from '@app/lib/rest/m2';
 import * as me from '@app/lib/rest/routes/me';
 import * as swagger from '@app/lib/rest/swagger';
 import type { App } from '@app/lib/rest/type';
-import { toResUser } from '@app/lib/types/res';
 
 import * as login from './routes/login';
 import * as post from './routes/post';
@@ -42,41 +33,7 @@ export async function setup(app: App) {
 
   void app.addHook('preHandler', SessionAuth);
 
-  await app.register(API, { prefix: '/p1' });
-
-  await app.register(fastifyStatic, {
-    root: path.resolve(projectRoot, 'static'),
-    prefix: '/demo/static/',
-  });
-
-  /** Make sure `fastifyView` is scoped */
-  await app.register(async (app) => {
-    await app.register(fastifyView, {
-      engine: {
-        liquid: new Liquid({
-          root: path.resolve(projectRoot, 'templates'),
-          extname: '.liquid',
-          cache: production,
-        }),
-      },
-      defaultContext: { production },
-      root: path.resolve(projectRoot, 'templates'),
-      production,
-    });
-
-    app.addHook('preHandler', async (req, res) => {
-      if (req.auth.login) {
-        res.locals = {
-          user: toResUser(await orm.fetchUserX(req.auth.userID)),
-        };
-      } else {
-        res.locals = {};
-      }
-    });
-
-    await app.register(demo.setup, { prefix: '/demo' });
-    await app.register(mobile.setup, { prefix: '/m2' });
-  });
+  await app.register(API);
 }
 
 async function API(app: App) {

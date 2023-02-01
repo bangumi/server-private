@@ -1,183 +1,174 @@
 /* eslint-disable unicorn/no-abusive-eslint-disable */
 /* eslint-disable */
+// @ts-nocheck
 
 /** 并不用于新前端，只是用在 /m2 支持 bbcode。 */
 import { matches } from 'lodash-es';
-
-const Settlement = {
-  preg_replace(pattern: string[], replacement: string[], string: string) {
-    let _flag = pattern.slice(pattern.lastIndexOf(pattern[0]!) + 1);
-    _flag = _flag === '' ? 'g' : _flag;
-    const _pattern = pattern.slice(1, 1 + pattern.lastIndexOf(pattern[0]!) - 1);
-    const regex = new RegExp(_pattern, _flag);
-    const result = string.replace(regex, replacement);
-    return result;
-  },
-};
+import * as lo from 'lodash-es';
 
 const IMGDIR = '';
 const chiicode = {};
 const message = '';
+const PHOTO_URL = 'https://lain.bgm.tv/pic/';
 
 export type Option = {
-  smileyoff?: boolean,
-  bbcodeoff?: boolean,
-  htmlon?: boolean,
-  allowsmilies?: boolean,
-  allowbbcode?: boolean,
-  allowimgcode?: boolean,
-  allowhtml?: boolean,
-  jammer?: boolean,
-  parsetype?: boolean,
-  authorid?: boolean,
-  allowmediacode?: boolean,
-  pid?: boolean,
-  filter?: boolean,
-}
+  smileyoff?: boolean;
+  bbcodeoff?: boolean;
+  htmlon?: boolean;
+  allowsmilies?: boolean;
+  allowbbcode?: boolean;
+  allowhtml?: boolean;
+  jammer?: boolean;
+  parsetype?: boolean;
+  authorid?: boolean;
+  allowmediacode?: boolean;
+  pid?: boolean;
+  filter?: boolean;
+};
 
 export class ChiiCodeCore {
   public static smilies_list = {
     searcharray: {
-      139: '/\\(bgm123\\)/',
-      138: '/\\(bgm122\\)/',
-      137: '/\\(bgm121\\)/',
-      136: '/\\(bgm120\\)/',
-      135: '/\\(bgm119\\)/',
-      134: '/\\(bgm118\\)/',
-      133: '/\\(bgm117\\)/',
-      132: '/\\(bgm116\\)/',
-      131: '/\\(bgm115\\)/',
-      130: '/\\(bgm114\\)/',
-      129: '/\\(bgm113\\)/',
-      128: '/\\(bgm112\\)/',
-      127: '/\\(bgm111\\)/',
-      126: '/\\(bgm110\\)/',
-      125: '/\\(bgm109\\)/',
-      124: '/\\(bgm108\\)/',
-      123: '/\\(bgm107\\)/',
-      122: '/\\(bgm106\\)/',
-      121: '/\\(bgm105\\)/',
-      120: '/\\(bgm104\\)/',
-      119: '/\\(bgm103\\)/',
-      118: '/\\(bgm102\\)/',
-      117: '/\\(bgm101\\)/',
-      116: '/\\(bgm100\\)/',
-      115: '/\\(bgm99\\)/',
-      114: '/\\(bgm98\\)/',
-      113: '/\\(bgm97\\)/',
-      112: '/\\(bgm96\\)/',
-      111: '/\\(bgm95\\)/',
-      110: '/\\(bgm94\\)/',
-      109: '/\\(bgm93\\)/',
-      108: '/\\(bgm92\\)/',
-      107: '/\\(bgm91\\)/',
-      106: '/\\(bgm90\\)/',
-      105: '/\\(bgm89\\)/',
-      104: '/\\(bgm88\\)/',
-      103: '/\\(bgm87\\)/',
-      102: '/\\(bgm86\\)/',
-      101: '/\\(bgm85\\)/',
-      100: '/\\(bgm84\\)/',
-      99: '/\\(bgm83\\)/',
-      98: '/\\(bgm82\\)/',
-      97: '/\\(bgm81\\)/',
-      96: '/\\(bgm80\\)/',
-      95: '/\\(bgm79\\)/',
-      94: '/\\(bgm78\\)/',
-      93: '/\\(bgm77\\)/',
-      92: '/\\(bgm76\\)/',
-      91: '/\\(bgm75\\)/',
-      90: '/\\(bgm74\\)/',
-      89: '/\\(bgm73\\)/',
-      88: '/\\(bgm72\\)/',
-      87: '/\\(bgm71\\)/',
-      86: '/\\(bgm70\\)/',
-      85: '/\\(bgm69\\)/',
-      84: '/\\(bgm68\\)/',
-      83: '/\\(bgm67\\)/',
-      82: '/\\(bgm66\\)/',
-      81: '/\\(bgm65\\)/',
-      80: '/\\(bgm64\\)/',
-      79: '/\\(bgm63\\)/',
-      78: '/\\(bgm62\\)/',
-      77: '/\\(bgm61\\)/',
-      76: '/\\(bgm60\\)/',
-      75: '/\\(bgm59\\)/',
-      74: '/\\(bgm58\\)/',
-      73: '/\\(bgm57\\)/',
-      72: '/\\(bgm56\\)/',
-      71: '/\\(bgm55\\)/',
-      70: '/\\(bgm54\\)/',
-      69: '/\\(bgm53\\)/',
-      68: '/\\(bgm52\\)/',
-      67: '/\\(bgm51\\)/',
-      66: '/\\(bgm50\\)/',
-      65: '/\\(bgm49\\)/',
-      64: '/\\(bgm48\\)/',
-      63: '/\\(bgm47\\)/',
-      62: '/\\(bgm46\\)/',
-      61: '/\\(bgm45\\)/',
-      60: '/\\(bgm44\\)/',
-      59: '/\\(bgm43\\)/',
-      58: '/\\(bgm42\\)/',
-      57: '/\\(bgm41\\)/',
-      56: '/\\(bgm40\\)/',
-      55: '/\\(bgm39\\)/',
-      54: '/\\(bgm38\\)/',
-      53: '/\\(bgm37\\)/',
-      52: '/\\(bgm36\\)/',
-      51: '/\\(bgm35\\)/',
-      50: '/\\(bgm34\\)/',
-      49: '/\\(bgm33\\)/',
-      48: '/\\(bgm32\\)/',
-      47: '/\\(bgm31\\)/',
-      46: '/\\(bgm30\\)/',
-      45: '/\\(bgm29\\)/',
-      44: '/\\(bgm28\\)/',
-      43: '/\\(bgm27\\)/',
-      42: '/\\(bgm26\\)/',
-      41: '/\\(bgm25\\)/',
-      40: '/\\(bgm24\\)/',
-      39: '/\\(bgm23\\)/',
-      38: '/\\(bgm22\\)/',
-      37: '/\\(bgm21\\)/',
-      36: '/\\(bgm20\\)/',
-      35: '/\\(bgm19\\)/',
-      34: '/\\(bgm18\\)/',
-      33: '/\\(bgm17\\)/',
-      32: '/\\(bgm16\\)/',
-      31: '/\\(bgm15\\)/',
-      30: '/\\(bgm14\\)/',
-      29: '/\\(bgm13\\)/',
-      28: '/\\(bgm12\\)/',
-      27: '/\\(bgm11\\)/',
-      26: '/\\(bgm10\\)/',
-      25: '/\\(bgm09\\)/',
-      24: '/\\(bgm08\\)/',
-      23: '/\\(bgm07\\)/',
-      22: '/\\(bgm06\\)/',
-      21: '/\\(bgm05\\)/',
-      20: '/\\(bgm04\\)/',
-      19: '/\\(bgm03\\)/',
-      18: '/\\(bgm02\\)/',
-      17: '/\\(bgm01\\)/',
-      16: '/\\(LOL\\)/',
-      15: '/\\(:P\\)/',
-      14: '/\\(=\\.,=\\)/',
-      13: '/\\(=\\/\\/\\/=\\)/',
-      12: "/\\(= ='\\)/",
-      11: '/\\(=3=\\)/',
-      10: "/\\(='=\\)/",
-      9: '/\\(T_T\\)/',
-      8: '/\\(TAT\\)/',
-      7: '/\\(=W=\\)/',
-      6: '/\\(@_@\\)/',
-      5: '/\\(=v=\\)/',
-      4: '/\\(S_S\\)/',
-      3: '/\\(-w=\\)/',
-      2: '/\\(=w=\\)/',
-      1: '/\\(=A=\\)/',
-    },
+      139: /\(bgm123\)/g,
+      138: /\(bgm122\)/g,
+      137: /\(bgm121\)/g,
+      136: /\(bgm120\)/g,
+      135: /\(bgm119\)/g,
+      134: /\(bgm118\)/g,
+      133: /\(bgm117\)/g,
+      132: /\(bgm116\)/g,
+      131: /\(bgm115\)/g,
+      130: /\(bgm114\)/g,
+      129: /\(bgm113\)/g,
+      128: /\(bgm112\)/g,
+      127: /\(bgm111\)/g,
+      126: /\(bgm110\)/g,
+      125: /\(bgm109\)/g,
+      124: /\(bgm108\)/g,
+      123: /\(bgm107\)/g,
+      122: /\(bgm106\)/g,
+      121: /\(bgm105\)/g,
+      120: /\(bgm104\)/g,
+      119: /\(bgm103\)/g,
+      118: /\(bgm102\)/g,
+      117: /\(bgm101\)/g,
+      116: /\(bgm100\)/g,
+      115: /\(bgm99\)/g,
+      114: /\(bgm98\)/g,
+      113: /\(bgm97\)/g,
+      112: /\(bgm96\)/g,
+      111: /\(bgm95\)/g,
+      110: /\(bgm94\)/g,
+      109: /\(bgm93\)/g,
+      108: /\(bgm92\)/g,
+      107: /\(bgm91\)/g,
+      106: /\(bgm90\)/g,
+      105: /\(bgm89\)/g,
+      104: /\(bgm88\)/g,
+      103: /\(bgm87\)/g,
+      102: /\(bgm86\)/g,
+      101: /\(bgm85\)/g,
+      100: /\(bgm84\)/g,
+      99: /\(bgm83\)/g,
+      98: /\(bgm82\)/g,
+      97: /\(bgm81\)/g,
+      96: /\(bgm80\)/g,
+      95: /\(bgm79\)/g,
+      94: /\(bgm78\)/g,
+      93: /\(bgm77\)/g,
+      92: /\(bgm76\)/g,
+      91: /\(bgm75\)/g,
+      90: /\(bgm74\)/g,
+      89: /\(bgm73\)/g,
+      88: /\(bgm72\)/g,
+      87: /\(bgm71\)/g,
+      86: /\(bgm70\)/g,
+      85: /\(bgm69\)/g,
+      84: /\(bgm68\)/g,
+      83: /\(bgm67\)/g,
+      82: /\(bgm66\)/g,
+      81: /\(bgm65\)/g,
+      80: /\(bgm64\)/g,
+      79: /\(bgm63\)/g,
+      78: /\(bgm62\)/g,
+      77: /\(bgm61\)/g,
+      76: /\(bgm60\)/g,
+      75: /\(bgm59\)/g,
+      74: /\(bgm58\)/g,
+      73: /\(bgm57\)/g,
+      72: /\(bgm56\)/g,
+      71: /\(bgm55\)/g,
+      70: /\(bgm54\)/g,
+      69: /\(bgm53\)/g,
+      68: /\(bgm52\)/g,
+      67: /\(bgm51\)/g,
+      66: /\(bgm50\)/g,
+      65: /\(bgm49\)/g,
+      64: /\(bgm48\)/g,
+      63: /\(bgm47\)/g,
+      62: /\(bgm46\)/g,
+      61: /\(bgm45\)/g,
+      60: /\(bgm44\)/g,
+      59: /\(bgm43\)/g,
+      58: /\(bgm42\)/g,
+      57: /\(bgm41\)/g,
+      56: /\(bgm40\)/g,
+      55: /\(bgm39\)/g,
+      54: /\(bgm38\)/g,
+      53: /\(bgm37\)/g,
+      52: /\(bgm36\)/g,
+      51: /\(bgm35\)/g,
+      50: /\(bgm34\)/g,
+      49: /\(bgm33\)/g,
+      48: /\(bgm32\)/g,
+      47: /\(bgm31\)/g,
+      46: /\(bgm30\)/g,
+      45: /\(bgm29\)/g,
+      44: /\(bgm28\)/g,
+      43: /\(bgm27\)/g,
+      42: /\(bgm26\)/g,
+      41: /\(bgm25\)/g,
+      40: /\(bgm24\)/g,
+      39: /\(bgm23\)/g,
+      38: /\(bgm22\)/g,
+      37: /\(bgm21\)/g,
+      36: /\(bgm20\)/g,
+      35: /\(bgm19\)/g,
+      34: /\(bgm18\)/g,
+      33: /\(bgm17\)/g,
+      32: /\(bgm16\)/g,
+      31: /\(bgm15\)/g,
+      30: /\(bgm14\)/g,
+      29: /\(bgm13\)/g,
+      28: /\(bgm12\)/g,
+      27: /\(bgm11\)/g,
+      26: /\(bgm10\)/g,
+      25: /\(bgm09\)/g,
+      24: /\(bgm08\)/g,
+      23: /\(bgm07\)/g,
+      22: /\(bgm06\)/g,
+      21: /\(bgm05\)/g,
+      20: /\(bgm04\)/g,
+      19: /\(bgm03\)/g,
+      18: /\(bgm02\)/g,
+      17: /\(bgm01\)/g,
+      16: /\(LOL\)/g,
+      15: /\(:P\)/g,
+      14: /\(=\.,=\)/g,
+      13: /\(=\/\/\/=\)/g,
+      12: /\(= ='\)/g,
+      11: /\(=3=\)/g,
+      10: /\(='=\)/g,
+      9: /\(T_T\)/g,
+      8: /\(TAT\)/g,
+      7: /\(=W=\)/g,
+      6: /\(@_@\)/g,
+      5: /\(=v=\)/g,
+      4: /\(S_S\)/g,
+      3: /\(-w=\)/g,
+      2: /\(=w=\)/g,
+      1: /\(=A=\)/g,
+    } as const,
     replacearray: {
       139: '<img src="/img/smiles/tv/100.gif" smileid="139" alt="(bgm123)" />',
       138: '<img src="/img/smiles/tv/99.gif" smileid="138" alt="(bgm122)" />',
@@ -318,7 +309,7 @@ export class ChiiCodeCore {
       3: '<img src="/img/smiles/3.gif" smileid="3" alt="-w=" />',
       2: '<img src="/img/smiles/2.gif" smileid="2" alt="=w=" />',
       1: '<img src="/img/smiles/1.gif" smileid="1" alt="=A=" />',
-    },
+    } as const,
   };
 
   public static chiicodes = { pcodecount: -1, codecount: 0, codehtml: '', smiliesreplaced: 0 };
@@ -374,13 +365,13 @@ export class ChiiCodeCore {
     return mark;
   }
 
-  genParseCodeMark(id: number) {
+  genParseCodeMark(id: string) {
     const mark = '8848213b4dd8e320';
     return `<${mark}#${id}>`;
   }
 
   cov_code = { open: {}, close: {} };
-  convCodeArr = {};
+  convCodeArr: Record<string, string> = {};
 
   chiicode(
     message: string,
@@ -390,7 +381,6 @@ export class ChiiCodeCore {
       htmlon = false,
       allowsmilies = true,
       allowbbcode = true,
-      allowimgcode = true,
       parsetype = false,
       authorid = false,
       allowmediacode = false,
@@ -486,7 +476,7 @@ export class ChiiCodeCore {
            '<ul type="A" class="litype_3">', '<li>', '</ul>', '<blockquote>', '</blockquote>', '</span>','</a>'
            );
         */
-        const convCodeArr = {
+        this.convCodeArr = {
           '[/color]': '</span>',
           '[/size]': '</span>',
           '[b]': '<span style="font-weight:bold;">',
@@ -523,116 +513,83 @@ export class ChiiCodeCore {
                       '[list=A]', '[*]', '[/list]', '[indent]', '[/indent]', '[/float]','[/user]','[/subject]'
                   ),$cov_code['close'], preg_replace(array(*/
       if (filter) {
-        message = message.replaceAll(
-          {
-            0: '/\\[color=([#\\w]+?)\\]/i',
-            1: '/\\[size=(\\d+?)\\]/i',
-            2: '/\\[align=(left|center|right)\\]/i',
-            3: '/\\[float=(left|right)\\]/i',
-            4: '/\\[subject=(\\d+?)\\]/i',
-          },
-          { 0: '', 1: '', 2: '', 3: '', 4: '' },
-        );
+        for (const pattern of [
+          /\[color=([#\w]+?)]/g,
+          /\[size=(\d+?)]/g,
+          /\[align=(left|center|right)]/g,
+          /\[float=(left|right)]/g,
+          /\[subject=(\d+?)]/g,
+        ]) {
+          message = message.replaceAll(pattern, '');
+        }
       } else {
-        message = Settlement.preg_replace(
-          {
-            0: '/\\[color=([#\\w]+?)\\]/i',
-            1: '/\\[size=(\\d+?)\\]/ies',
-            2: '/\\[align=(left|center|right)\\]/i',
-            3: '/\\[float=(left|right)\\]/i',
-            4: '/\\[subject=(\\d+?)\\]/i',
-          },
-          {
-            0: '<span style="color: \\1;">',
-            1: "this.fontResize('\\1','px');",
-            2: '<p align="\\1">',
-            3: '<span style="float: \\1;">',
-            4: '<a href="/subject/\\1" class="l">',
-          },
-          message,
-        );
+        for (const [pattern, value] of [
+          [/\[color=([#\\w]+?)\\]/gi, (m) => `<span style="color: ${m};">`],
+          [/\[size=(\\d+?)\\]/gi, (m) => this.fontResize(m, 'px')],
+          [/\[align=(left|center|right)\\]/gi, (m) => `<p align="${m}">`],
+          [/\[float=(left|right)\\]/gi, (m) => `<span style="float: ${m};">`],
+          [/\[subject=(\\d+?)\\]/gi, (m) => `<a href="/subject/${m}" class="l">`],
+        ] satisfies [RegExp, (match: string) => string][]) {
+          message = message.replaceAll(pattern, value);
+        }
       }
-      message = strtr(message, this.convCodeArr);
-      if (parsetype !== 1 && msglower.includes('[/quote]')) {
+
+      for (const [pattern, value] of Object.entries(this.convCodeArr)) {
+        message = message.replaceAll(pattern, value);
+      }
+
+      if (!parsetype && msglower.includes('[/quote]')) {
         if (filter) {
-          message = Settlement.preg_replace(
-            '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
-            tpl_quote_filter(),
-            message,
+          message = message.replaceAll(
+            /\s*\[quote][\n\r]*(.+?)[\n\r]*\[\/quote]\s*/gis,
+            `<div class="quote"><q>$1</q></div>`,
           );
         } else {
-          message = Settlement.preg_replace(
-            '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
-            tpl_quote(),
-            message,
-          );
+          message = message.replaceAll(/\s*\[quote][\n\r]*(.+?)[\n\r]*\[\/quote]\s*/gis, '$1');
         }
       }
     }
     if (!smileyoff && allowsmilies) {
-      //$smile_replace_list = this.smileReplace();
-      message = preg_replace(
-        this.smilies_list.searcharray,
-        this.smilies_list.replacearray,
-        message,
-        10,
-      );
+      for (const key of Object.keys(ChiiCodeCore.smilies_list.searcharray) as unknown as Array<
+        keyof typeof ChiiCodeCore.smilies_list.searcharray
+      >) {
+        message.replaceAll(
+          ChiiCodeCore.smilies_list.searcharray[key],
+          ChiiCodeCore.smilies_list.replacearray[key],
+        );
+      }
     }
     if (!bbcodeoff) {
       if (msglower.includes('[/img]') || msglower.includes('[/photo]')) {
-        if (filter) {
-          message = Settlement.preg_replace(
-            {
-              0: '/\\[photo=(\\d+)\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/photo\\]/ies',
-              1: '/\\[img\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/img\\]/ies',
-              2: '/\\[img=(\\d{1,4})[x|\\,](\\d{1,4})\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/img\\]/ies',
-            },
-            allowimgcode ? { 0: '', 1: '', 2: '' } : { 0: '', 1: '', 2: '' },
-            message,
-          );
-          /*$message = preg_replace_callback(
-            array(
-                "/\[photo=(\d+)\]\s*([^\[\<\r\n]+?)\s*\[\/photo\]/is",
-                "/\[img\]\s*([^\[\<\r\n]+?)\s*\[\/img\]/is",
-                "/\[img=(\d{1,4})[x|\,](\d{1,4})\]\s*([^\[\<\r\n]+?)\s*\[\/img\]/is"
-            ),
-            function() { return array('', '', '') },
-            $message);*/
-        } else {
-          message = Settlement.preg_replace(
-            {
-              0: '/\\[photo=(\\d+)\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/photo\\]/ies',
-              1: '/\\[img\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/img\\]/ies',
-              2: '/\\[img=(\\d{1,4})[x|\\,](\\d{1,4})\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/img\\]/ies',
-            },
-            allowimgcode
-              ? {
-                0:
-                  "ChiiCodeCore::insiteurl('\\2', '<img src=\"" +
-                  PHOTO_URL +
-                  '/l/%s" class="code" alt="" />\')',
-                1: 'ChiiCodeCore::bbcodeurl(\'\\1\', \'<img src="%s" class="code" rel="noreferrer" referrerpolicy="no-referrer" alt="" />\')',
-                2: 'ChiiCodeCore::bbcodeurl(\'\\3\', \'<img width="\\1" height="\\2" src="%s" border="0" alt="" class="code" referrerpolicy="no-referrer" />\')',
-              }
-              : {
-                0:
-                  "ChiiCodeCore::insiteurl('\\2', '<a href=\"" +
-                  PHOTO_URL +
-                  '/l/%s" class="l">' +
-                  PHOTO_URL +
-                  "/l/%s</a>')",
-                1: 'ChiiCodeCore::bbcodeurl(\'\\1\', \'<a href="%s" target="_blank" rel="nofollow external noopener noreferrer" class="l">%s</a>\')',
-                2: 'ChiiCodeCore::bbcodeurl(\'\\3\', \'<a href="%s" target="_blank" rel="nofollow external noopener noreferrer" class="l">%s</a>\')',
-              },
-            message,
-          );
+        if (!filter) {
+          const patterns = {
+            0: '/\\[photo=(\\d+)\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/photo\\]/ies',
+            1: '/\\[img\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/img\\]/ies',
+            2: '/\\[img=(\\d{1,4})[x|\\,](\\d{1,4})\\]\\s*([^\\[\\<\r\n]+?)\\s*\\[\\/img\\]/ies',
+          } as const;
+
+          const values = {
+            0: (_: string, m1: string, m2: string) =>
+              this.insiteurl(m2, `<img src="${PHOTO_URL}/l/%s" class="code" alt="" />`),
+            1: (_: string, m1: string, m2: string) =>
+              this.bbcodeurl(
+                m1,
+                '<img src="%s" class="code" rel="noreferrer" referrerpolicy="no-referrer" alt="" />',
+              ),
+            2: (_: string, m1: string, m2: string, m3: string) =>
+              this.bbcodeurl(
+                m3,
+                `<img width="${m1}" height="${m2}" src="%s" border="0" alt="" class="code" referrerpolicy="no-referrer" />`,
+              ),
+          };
+
+          for (const i of [0, 1, 2] as const) {
+            message = message.replaceAll(patterns[i], values[i]);
+          }
         }
       }
       if (msglower.includes('[/user]')) {
-        message = message.replaceAll(
-          /\[user=([^\W_]\w*)](.+?)\[\/user]/g,
-          this.parseUsername,
-        );
+        message = message.replaceAll(/\[user=([^\W_]\w*)](.+?)\[\/user]/g, this.parseUsername);
 
         message = message.replaceAll(
           '/\\[user]([^\\W_][\\w]*)\\[\\/user\\]/iies',
@@ -641,48 +598,21 @@ export class ChiiCodeCore {
       }
 
       if (parseCode) {
-        for (const id in this.bbcodeCodeArr) {
-          code = this.bbcodeCodeArr[id];
-          message = Settlement.str_ireplace(self.genParseCodeMark(id), code, message);
+        for (const [id, code] of Object.entries(this.bbcodeCodeArr)) {
+          message = message.replaceAll(this.genParseCodeMark(id), code);
         }
       }
     }
-    /*for($i = 0; $i <= $chiicodes['pcodecount']; $i++) {
-          $message = str_replace("[\tDISCUZ_CODE_$i\t]", $chiicodes['codehtml'][$i], $message);
-      }*/
-    if (highlight) {
-      highlightarray = Settlement.explode('+', highlight);
-      message = Settlement.preg_replace(
-        {
-          0: '/(^|>)([^<]+)(?=<|$)/sUe',
-          1: '/<highlight>(.*)<\\/highlight>/siU',
-        },
-        {
-          0: "highlight('\\2', $highlightarray, '\\1')",
-          1: '<strong><font color="#FF0000">\\1</font></strong>',
-        },
-        message,
-      );
-    }
-    unset(msglower);
+
     if (filter) {
-      message = Settlement.str_replace(
-        { 0: '\t', 1: '   ', 2: '  ' },
-        { 0: ' ', 1: ' ', 2: '' },
-        message,
-      );
+      message.replaceAll('\t', '  ').replaceAll('   ', ' ').replaceAll('  ', '  ');
     } else {
-      message = Settlement.nl2br(
-        Settlement.str_replace(
-          { 0: '\t', 1: '   ', 2: '  ' },
-          {
-            0: '        ',
-            1: '   ',
-            2: '  ',
-          },
-          message,
-        ),
-      );
+      message
+        .replaceAll('\r\n', '<br')
+        .replaceAll('\n', '<br>')
+        .replaceAll('\t', '&nbsp; &nbsp; &nbsp; &nbsp; ')
+        .replaceAll('   ', '&nbsp; &nbsp; &nbsp;')
+        .replaceAll('  ', '&nbsp; &nbsp; ');
     }
 
     return htmlon ? message : message;
@@ -792,40 +722,40 @@ export class ChiiCodeCore {
     }
   }
 
-  parseMask(content: string) {
+  parseMask(_: string, content: string) {
     const color = '#555';
-    content = content.replaceAll(/\[color=[#\w]+?\]/g, color => '[color=' + color + ']');
+    content = content.replaceAll(/\[color=[#\w]+?\]/g, (color) => '[color=' + color + ']');
     if (content.includes('[/size]')) {
       content = content.replaceAll(
         new RegExp('\\[size=(\\d+)](.+)\\[/size]', 'g'),
-        color => '<span style="font-size:\\1px;background-color:' + color + ';">\\2</span>',
+        (color) => '<span style="font-size:\\1px;background-color:' + color + ';">\\2</span>',
       );
     }
-    return '<span style="background-color:' +
+    return (
+      '<span style="background-color:' +
       color +
       ';color:' +
-
       color +
       ';border:1px solid ' +
       color +
       ';">' +
       content +
-      '</span>';
+      '</span>'
+    );
   }
 
-  fontResize(size: number, unit = null) {
-    if (size >= 50) {
-      size = 15;
+  fontResize(size: string, unit = '') {
+    if (parseInt(size) >= 50) {
+      size = '15';
     }
-    return '<span style="font-size:' + size + unit + '; line-height:' + size + unit + ';">';
+    return `<span style="font-size:${size}${unit}; line-height:${size}${unit};">`;
   }
 
   bbcodeurl(url: string, tags) {
     if (/<.+?>/s.test(url)) {
       return ' ' + url;
     } else {
-      if (
-        !['http:/', 'https:', 'ftp://', 'rtsp:/', 'mms://'].includes(url.slice(0, 6))) {
+      if (!['http:/', 'https:', 'ftp://', 'rtsp:/', 'mms://'].includes(url.slice(0, 6))) {
         url = 'http://' + url;
       }
       return Settlement.str_replace(
@@ -846,11 +776,6 @@ export class ChiiCodeCore {
         Settlement.sprintf(tags, url, Settlement.addslashes(url)),
       );
     }
-  }
-
-  _sakuyaPad_(str: string) {
-    //PAD长借您PAD一用。。
-    return Settlement.str_repeat(' ', str.length);
   }
 
   autoBBcodeUrl(str: string) {
@@ -874,44 +799,11 @@ export class ChiiCodeCore {
     return str;
   }
 
-  insiteurl(url, tags) {
-    if (preg_match('/<.+?>/s', url)) {
-      return ' ' + url;
-    } else {
-      if (
-        !Settlement.in_array(Settlement.strtolower(substr(url, 0, 6)), {
-          0: 'http:/',
-          1: 'https:',
-          2: 'ftp://',
-          3: 'rtsp:/',
-          4: 'mms://',
-        })
-      ) {
-        url = url;
-      }
-      return Settlement.str_replace(
-        { 0: 'submit', 1: 'logging.php' },
-        {
-          0: '',
-          1: '',
-        },
-        Settlement.sprintf(tags, url, Settlement.addslashes(url)),
-      );
+  insiteurl(url: string, tag: string) {
+    if (/<.+?>/s.test(url)) {
+      return '&nbsp;' + url;
     }
-  }
-
-  jammer() {
-    randomstr = '';
-    for (i = 0; i < Settlement.mt_rand(5, 15); i++) {
-      randomstr =
-        Settlement.chr(Settlement.mt_rand(32, 59)) +
-        ' ' +
-        Settlement.chr(Settlement.mt_rand(63, 126));
-    }
-    seo = GLOBALS.tagstatus ? '' : GLOBALS.discuzcodes.seoarray[Settlement.mt_rand(0, 5)];
-    return Settlement.mt_rand(0, 1)
-      ? '<font style="font-size:0px;color:' + WRAPBG + '">' + seo + randomstr + '</font>' + '\r\n'
-      : '\r\n' + '<span style="display:none">' + randomstr + seo + '</span>';
+    return utils.format(tag, url.replaceAll('submit', '').replaceAll('logging.php', ''));
   }
 
   highlight(text: string, words: Record<string, string>, prepend: string) {
@@ -922,3 +814,5 @@ export class ChiiCodeCore {
     return `${prepend}${text}`;
   }
 }
+
+import * as utils from 'node:util';

@@ -5,11 +5,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
-import {
-  fileExtension,
-  SupportedImageExtension,
-  uploadSubjectImage,
-} from '@app/lib/image';
+import { fileExtension, SupportedImageExtension, uploadSubjectImage } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';

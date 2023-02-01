@@ -103,6 +103,7 @@
     "@fastify/view": "^7.4.0",
     "@node-rs/bcrypt": "^1.6.2",
     "@sinclair/typebox": "^0.25.20",
+    "@thoughtsunificator/bbcode-parser": "^1.0.7",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "altair-fastify-plugin": "^5.0.9",

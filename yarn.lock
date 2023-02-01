@@ -658,6 +658,11 @@
   dependencies:
     defer-to-connect "^2.0.1"
 
+"@thoughtsunificator/bbcode-parser@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.npmmirror.com/@thoughtsunificator/bbcode-parser/-/bbcode-parser-1.0.7.tgz#a76f99b2cb7c84a840c04b8b80ddc6f5dca150f6"
+  integrity sha512-kDup/FZEZ5QXHOZkPE0xahMX7il6qoJdrvoD+JJec99GuobLhmnrxRThBmp+q7K6zNe30YhmaSRkrqbBwV+10w==
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
