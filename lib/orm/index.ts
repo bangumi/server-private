@@ -384,6 +384,7 @@ export async function fetchSubject(id: number) {
     date: f.date,
     redirect: f.fieldRedirect,
     locked: subject.locked(),
+    image: subject.subjectImage,
   };
 }
 

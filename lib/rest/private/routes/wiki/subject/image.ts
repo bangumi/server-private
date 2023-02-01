@@ -28,10 +28,17 @@ export function setup(app: App) {
         }),
         response: {
           200: t.Object({
-            data: t.Array(
+            current: t.Optional(
+              t.Object({
+                thumbnail: t.String(),
+                raw: t.String(),
+              }),
+            ),
+            covers: t.Array(
               t.Object({
                 id: t.Integer(),
-                url: t.String(),
+                thumbnail: t.String(),
+                raw: t.String(),
                 creator: res.User,
               }),
             ),
@@ -45,6 +52,14 @@ export function setup(app: App) {
         throw new BadRequestError('暂时只能修改沙盒条目');
       }
 
+      const s = await orm.fetchSubject(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      if (s.locked) {
+        throw new NotAllowedError(`subject ${subjectID} is locked`);
+      }
+
       const images = await SubjectImageRepo.find({
         where: { subjectID, ban: 0 },
         order: { id: 'asc' },
@@ -52,7 +67,13 @@ export function setup(app: App) {
       const users = await orm.fetchUsers(images.map((x) => x.uid));
 
       return {
-        data: images.map((x) => {
+        current: s.image
+          ? {
+              thumbnail: `https://lain.bgm.tv/r/400/pic/cover/l/${s.image}`,
+              raw: `https://lain.bgm.tv/pic/cover/l/${s.image}`,
+            }
+          : undefined,
+        covers: images.map((x) => {
           const u = users[x.uid];
           if (!u) {
             throw new UnexpectedNotFoundError(`user ${x.uid}`);
@@ -60,7 +81,8 @@ export function setup(app: App) {
 
           return {
             id: x.id,
-            url: 'https://lain.bgm.tv/r/400/pic/cover/l/' + x.target,
+            thumbnail: 'https://lain.bgm.tv/r/400/pic/cover/l/' + x.target,
+            raw: 'https://lain.bgm.tv/pic/cover/l/' + x.target,
             creator: res.toResUser(u),
           };
         }),
