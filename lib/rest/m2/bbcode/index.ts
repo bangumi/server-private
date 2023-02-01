@@ -29,10 +29,14 @@ const urlCodes: {
 }[] = [
   {
     regexp: new RegExp('\\[url=(.+?)](.+?)\\[/url]', 'igms'),
-    replacement: (match, p1, p2) =>
-      `<a href="${escape(
-        p1,
-      )}" class="code" rel="noreferrer" referrerpolicy="no-referrer" alt="">${escape(p2)}</a>`,
+    replacement: (match, p1, p2) => {
+      if (p1.startsWith('https://') || p1.startsWith('http://')) {
+        return `<a href="${escape(
+          p1,
+        )}" class="code" rel="noreferrer" referrerpolicy="no-referrer" alt="">${escape(p2)}</a>`;
+      }
+      return match;
+    },
   },
   {
     regexp: new RegExp('\\[img](.+?)\\[/img]', 'igms'),
