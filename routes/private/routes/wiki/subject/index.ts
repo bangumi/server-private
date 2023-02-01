@@ -1,20 +1,16 @@
-import * as crypto from 'node:crypto';
-
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
-import { fileExtension, SupportedImageExtension, uploadSubjectImage } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
-import imaginary from '@app/lib/services/imaginary';
 import * as Subject from '@app/lib/subject';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
-import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler';
+import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
 import * as imageRoutes from './image';
@@ -286,72 +282,6 @@ export async function setup(app: App) {
         userID: auth.userID,
         commitMessage,
       });
-    },
-  );
-
-  app.post(
-    '/subjects/:subjectID/cover',
-    {
-      schema: {
-        operationId: 'uploadSubjectCover',
-        params: t.Object({
-          subjectID: t.Integer(),
-        }),
-        body: t.Object({
-          content: t.String({
-            format: 'byte',
-            description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
-          }),
-        }),
-      },
-      preHandler: [
-        requireLogin('upload a subject cover'),
-        requirePermission('upload subject cover', (auth) => auth.permission.subject_edit ?? false),
-      ],
-    },
-    async ({ body: { content }, auth, params: { subjectID } }) => {
-      const raw = Buffer.from(content, 'base64');
-      // 4mb
-      if (raw.length > 4 * 1024 * 1024) {
-        throw new BadRequestError('file too large');
-      }
-
-      // validate image
-      const res = await imaginary.info(raw);
-      const format = res.type;
-
-      if (!format) {
-        throw new BadRequestError("not valid image, can' get image format");
-      }
-
-      const ext = fileExtension(format);
-      if (!ext) {
-        throw new BadRequestError(
-          `not valid image, only support ${SupportedImageExtension.join(', ')}`,
-        );
-      }
-
-      const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);
-
-      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
-
-      const s = await orm.fetchSubject(subjectID);
-      if (!s) {
-        throw new NotFoundError(`subject ${subjectID}`);
-      }
-
-      if (s.locked) {
-        throw new NotAllowedError('edit a locked subject');
-      }
-      if (s.redirect) {
-        throw new NotAllowedError('edit a locked subject');
-      }
-
-      await uploadSubjectImage(filename, raw);
-
-      await Subject.uploadCover({ subjectID: subjectID, filename: filename, uid: auth.userID });
-
-      return subjectID;
     },
   );
 
