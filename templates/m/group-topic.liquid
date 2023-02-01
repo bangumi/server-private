@@ -205,22 +205,27 @@
     {% endfor %}
   </div>
 
-  <div id='reply_wrapper'>
-    <a name='new'></a>
-    <div id='new_comment' class='light_odd'>
-      <form id='ReplyForm' name='new_comment' method='post' action='/group/topic/375598/new_reply'>
-        <input type='hidden' name='formhash' value='e669bf68'>
-        <input type='hidden' name='lastview' value='1675279396'>
+  {% if user %}
+    <div id='reply_wrapper'>
+      <a name='new'></a>
+      <div id='new_comment' class='light_odd'>
         <a href='/user/trim21' class='avatar' target='_parent'
           ><span
             class='avatarNeue avatarReSize40 ll'
-            style="background-image:url('//lain.bgm.tv/pic/user/l/000/28/76/287622.jpg?r=1672779554&amp;hd=1')"
+            style="background-image:url('{{ user.avatar.large | escape }}')"
           ></span
         ></a>
         <div class='inner'>
           <h2 class='reply_title'>
-            <span class='reply_author'><a href='/user/trim21' class='l'>Trim21</a></span> /
-            添加新回复
+            <span class='reply_author'
+              ><a
+                href='/user/{{ user.username }}'
+                class='l'
+              >
+                {{- user.nickname | escape -}}
+              </a></span
+            >
+            / 添加新回复
           </h2>
           <span class='tip'>
             <div class='replyTextarea'>
@@ -234,15 +239,38 @@
               ></textarea>
             </div>
             <div id='submitBtnO'>
-              <input class='inputBtn' value='加上去' name='submit' type='submit'>
+              <input class='inputBtn' value='加上去' name='submit' type='submit' onclick='submit()'>
               <span class='tip'>
                 <a href='https://bgm.tv/help/bbcode' class='l' target='_blank'>BBCode指南</a></span
               >
             </div>
           </span>
         </div>
-      </form>
+      </div>
     </div>
-  </div>
+
+    <script>
+      function submit() {
+        const content = $('#content').val();
+        fetch('/p1/groups/-/topics/{{ id }}/replies', {
+          method: 'post',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ content }),
+        })
+          .then((res) => {
+            if (res.ok) {
+              location.reload();
+            } else {
+              return res.text();
+            }
+          })
+          .then((msg) => {
+            if (msg) {
+              alert(msg);
+            }
+          });
+      }
+    </script>
+  {% endif %}
 </div>
 {% endblock %}
