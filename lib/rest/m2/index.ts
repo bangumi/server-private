@@ -1,8 +1,9 @@
 import { Type as t } from '@sinclair/typebox';
-import { Duration } from 'luxon';
 
+import * as orm from '@app/lib/orm';
 import { handleTopicDetail } from '@app/lib/rest/private/routes/topic';
 import type { App } from '@app/lib/rest/type';
+import * as res from '@app/lib/types/res';
 
 /* eslint-disable-next-line @typescript-eslint/require-await */
 export async function setup(app: App) {
@@ -14,7 +15,7 @@ export async function setup(app: App) {
       },
     },
     async ({ query }, res) => {
-      const { type = '' } = query as { type?: string };
+      const { type = 'group' } = query as { type?: string };
       if (type && !expectedTypes.has(type)) {
         return res.redirect('/m2');
       }
@@ -64,23 +65,47 @@ export interface Item {
   parentID: string;
 }
 
-function fetchRecentGroupTopic(): Promise<Item[]> {
-  return Promise.resolve([
-    {
-      type: 'subject',
-      id: 12331,
-      author: {
-        nickname: 'gothicgundam',
-        username: '11',
-        avatar: 'https://lain.bgm.tv/pic/user/l/000/22/85/228529.jpg?r=1619534072',
-      },
-      count: 10,
-      name: '哈',
-      parentID: 'qq',
-      title: '一个假item',
-      time: formatRelativeTime(Duration.fromObject({ day: 3 }).toMillis() / 1000),
+async function fetchRecentGroupTopic(): Promise<Item[]> {
+  const now = Date.now() / 1000;
+  const topics = await orm.GroupTopicRepo.find({
+    take: 40,
+    order: {
+      dateline: 'desc',
     },
-  ]);
+  });
+
+  const groups = await orm.fetchGroups(topics.map((x) => x.gid));
+  const users = await orm.fetchUsers(topics.map((x) => x.creatorID));
+
+  return topics
+    .map(function (t): Item | undefined {
+      const user = users[t.creatorID]!;
+      if (!user) {
+        return;
+      }
+      const group = groups[t.gid];
+      if (!group) {
+        return;
+      }
+
+      return {
+        type: 'group',
+        id: t.id,
+        count: t.replies,
+        title: t.title,
+        time: formatRelativeTime(now - t.dateline),
+        author: {
+          nickname: user.nickname,
+          username: user.username,
+          avatar: res.toResUser(user).avatar.large,
+        },
+        name: group.title,
+        parentID: group.name,
+      } satisfies Item;
+    })
+    .filter(function (e): e is Item {
+      return e !== undefined;
+    });
 }
 
 function formatRelativeTime(seconds: number): string {
