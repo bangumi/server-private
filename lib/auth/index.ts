@@ -125,7 +125,7 @@ export async function byUserID(userID: number): Promise<IAuth> {
     throw new MissingUserError();
   }
 
-  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
+  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60);
 
   return await userToAuth(u);
 }

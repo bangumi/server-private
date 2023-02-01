@@ -1,7 +1,6 @@
-import config from '@app/lib/config';
+import { Duration } from 'luxon';
+
 import type { App } from '@app/lib/rest/type';
-import { DateTime, Duration } from 'luxon';
-import * as console from 'console';
 
 export async function setup(app: App) {
   app.get(
@@ -11,13 +10,11 @@ export async function setup(app: App) {
         hide: true,
       },
     },
-    async ({ query, auth }, res) => {
+    async ({ query }, res) => {
       const { type = '' } = query as { type?: string };
-      if (type) {
-        if (!expectedTypes.includes(type)) {
+      if (type && !expectedTypes.has(type)) {
           return res.redirect('/m2');
         }
-      }
 
       const data = { type, items: await fetchRecentGroupTopic() };
 
@@ -26,7 +23,7 @@ export async function setup(app: App) {
   );
 }
 
-const expectedTypes = ['group', 'subject', 'ep', 'mono'];
+const expectedTypes = new Set(['group', 'subject', 'ep', 'mono']);
 
 export interface Item {
   id: number;

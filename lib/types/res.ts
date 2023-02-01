@@ -93,7 +93,7 @@ export function formatErrors(
   );
 }
 
-export function userToResCreator(user: orm.IUser): IUser {
+export function toResUser(user: orm.IUser): IUser {
   return {
     avatar: avatar(user.img),
     username: user.username,

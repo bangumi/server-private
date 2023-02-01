@@ -1,3 +1,4 @@
+import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import * as php from 'php-serialize';
 import { DataSource } from 'typeorm';
@@ -17,6 +18,7 @@ import {
   GroupMembers,
   GroupPost,
   GroupTopic,
+  Like,
   Notify,
   NotifyField,
   OauthAccessTokens,
@@ -85,6 +87,7 @@ export const AppDataSource = new DataSource({
     GroupTopic,
     GroupPost,
     SubjectRev,
+    Like,
   ],
 });
 
@@ -112,6 +115,10 @@ export const GroupRepo = AppDataSource.getRepository(Group);
 export const GroupTopicRepo = AppDataSource.getRepository(GroupTopic);
 export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
 export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
+
+export const LikeRepo = AppDataSource.getRepository(Like);
+
+export { In } from 'typeorm';
 
 export const repo = {
   UserField: UserFieldRepo,
@@ -264,7 +271,7 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
   }
 
   const users = await UserRepo.find({
-    where: { id: typeorm.In(userIDs) },
+    where: { id: typeorm.In(lo.uniq(userIDs)) },
   });
 
   return Object.fromEntries(
@@ -377,6 +384,7 @@ export async function fetchSubject(id: number) {
     date: f.date,
     redirect: f.fieldRedirect,
     locked: subject.locked(),
+    image: subject.subjectImage,
   };
 }
 

@@ -5,7 +5,7 @@ import { UnexpectedNotFoundError } from '@app/lib/error';
 import { Tag } from '@app/lib/openapi';
 import { fetchUser } from '@app/lib/orm';
 import type { App, Option } from '@app/lib/rest/type';
-import { userToResCreator } from '@app/lib/types/res';
+import { toResUser } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -38,7 +38,7 @@ export async function setup(app: App, { tags = [] }: Option) {
         throw new UnexpectedNotFoundError(`user ${req.auth.userID}`);
       }
 
-      return userToResCreator(u);
+      return toResUser(u);
     },
   );
 }

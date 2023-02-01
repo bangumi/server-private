@@ -1,11 +1,49 @@
 import config from '@app/lib/config';
 import * as Notify from '@app/lib/notify';
-import type { App } from '@app/lib/rest/type';
+import { fetchUserX } from '@app/lib/orm';
+import * as admin from '@app/lib/rest/admin';
+import type { App , App } from '@app/lib/rest/type';
+import * as res from '@app/lib/types/res';
 
 import * as editor from './editor';
 import * as token from './token';
 
+declare module 'fastify' {
+  interface FastifyReply {
+    locals?: {
+      user?: res.IUser;
+    };
+  }
+}
+
 export async function setup(app: App) {
+  const liquid = new Liquid({
+    root: path.resolve(projectRoot, 'templates'),
+    extname: '.liquid',
+    cache: production,
+  });
+
+  await app.register(fastifyStatic, {
+    root: path.resolve(projectRoot, 'static'),
+    prefix: '/static/',
+  });
+
+  await app.register(fastifyView, {
+    engine: { liquid },
+    defaultContext: { production },
+    root: path.resolve(projectRoot, 'templates'),
+    production,
+  });
+
+  app.addHook('preHandler', async function (req, reply) {
+    let user;
+    if (req.auth.login) {
+      user = res.toResUser(await fetchUserX(req.auth.userID));
+    }
+
+    reply.locals = { user };
+  });
+
   app.get('/', { schema: { hide: true } }, async (req, res) => {
     if (req.auth.login) {
       const notifyCount = await Notify.count(req.auth.userID);
@@ -30,4 +68,6 @@ export async function setup(app: App) {
 
   editor.setup(app);
   token.setup(app);
+
+  await app.register(admin.setup, { prefix: '/admin' });
 }

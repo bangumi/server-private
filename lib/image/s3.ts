@@ -31,3 +31,7 @@ export async function uploadImage(path: string, content: Buffer): Promise<void> 
 
   await client.putObject(s3.bucket, path, content, metadata);
 }
+
+export async function deleteImage(p: string): Promise<void> {
+  await client.removeObject(s3.bucket, p);
+}

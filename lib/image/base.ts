@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-import config from '@app/lib/config';
+import config, { testing } from '@app/lib/config';
 import { logger } from '@app/lib/logger';
 
 export interface ImageFS {
   uploadImage(path: string, content: Buffer): Promise<void>;
+
+  deleteImage(path: string): Promise<void>;
 }
 
-// TODO: replace sftp with s3 in production
 export async function getImpl(): Promise<ImageFS> {
-  logger.info(`storage uploaded image in ${config.image.provider}`);
+  if (!testing) {
+    logger.info(`storage uploaded image in ${config.image.provider}`);
+  }
 
   switch (config.image.provider) {
-    case 'sftp': {
-      return await import('./sftp');
-    }
     case 'fs': {
       return await import('./fs');
     }

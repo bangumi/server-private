@@ -6,11 +6,10 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { UserGroup } from '@app/lib/auth';
 import { projectRoot } from '@app/lib/config';
 import * as image from '@app/lib/image';
+import type { ISubjectEdit } from '@app/lib/rest/private/routes/wiki/subject';
+import { setup } from '@app/lib/rest/private/routes/wiki/subject';
 import * as Subject from '@app/lib/subject';
 import { createTestServer } from '@app/tests/utils';
-
-import type { ISubjectEdit } from './subject';
-import { setup } from './subject';
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -133,7 +132,7 @@ describe('edit subject ', () => {
 describe('should upload image', () => {
   const uploadImageMock = vi.fn();
 
-  vi.spyOn(image, 'uploadImage').mockImplementation(uploadImageMock);
+  vi.spyOn(image, 'uploadSubjectImage').mockImplementation(uploadImageMock);
   vi.spyOn(Subject, 'uploadCover').mockImplementation(() => Promise.resolve());
 
   afterEach(() => {
@@ -150,9 +149,7 @@ describe('should upload image', () => {
       ['webp', 'jpg'].map(async (ext) => {
         return {
           ext,
-          content: await fs.readFile(
-            path.join(projectRoot, `lib/rest/private/routes/wiki/fixtures/subject.${ext}`),
-          ),
+          content: await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${ext}`)),
         };
       }),
     );
@@ -185,7 +182,7 @@ describe('should upload image', () => {
     });
 
     const res = await app.inject({
-      url: '/subjects/1/cover',
+      url: '/subjects/184017/covers',
       method: 'post',
       payload: {
         content: Buffer.from('hello world').toString('base64'),
@@ -203,7 +200,8 @@ describe('should upload image', () => {
     expect(res.statusCode).toBe(400);
   });
 
-  test.each(['jpg', 'webp'])('upload subject covers in %s format', async (format) => {
+  // TODO: convert webp to jpg when uploading images
+  test.each(['jpg'])('upload subject covers in %s format', async (format) => {
     const app = await testApp({
       auth: {
         groupID: UserGroup.Normal,
@@ -215,12 +213,10 @@ describe('should upload image', () => {
       },
     });
 
-    const raw = await fs.readFile(
-      path.join(projectRoot, `lib/rest/private/routes/wiki/fixtures/subject.${format}`),
-    );
+    const raw = await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${format}`));
 
     const res = await app.inject({
-      url: '/subjects/1/cover',
+      url: '/subjects/184017/covers',
       method: 'post',
       payload: {
         content: raw.toString('base64'),

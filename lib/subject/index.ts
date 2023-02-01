@@ -2,13 +2,16 @@ import type { Wiki } from '@bgm38/wiki';
 import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import { createError } from '@fastify/error';
 import { StatusCodes } from 'http-status-codes';
+import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
+import { UserGroup } from '@app/lib/auth';
 import { BadRequestError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
-import { AppDataSource, SubjectRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
+import { AppDataSource, fetchUsers, LikeRepo, SubjectImageRepo, SubjectRepo } from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
+import { Like } from '@app/lib/orm/entity';
 import { extractDate } from '@app/lib/subject/date';
 import { DATE } from '@app/lib/utils/date';
 
@@ -190,6 +193,10 @@ export async function uploadCover({
     });
 
     if (image) {
+      if (image.ban !== 0) {
+        image.ban = 0;
+        await Image.save(image);
+      }
       return;
     }
 
@@ -213,3 +220,77 @@ export async function uploadCover({
 }
 
 export { SubjectType } from './type';
+
+export async function onSubjectVote(subjectID: number): Promise<void> {
+  const images = await SubjectImageRepo.findBy({ subjectID, ban: 0 });
+
+  const likes = await LikeRepo.findBy({
+    type: Like.TYPE_SUBJECT_COVER,
+    relatedID: orm.In(images.map((x) => x.id)),
+    ban: 0,
+  });
+
+  const users = await fetchUsers(likes.map((x) => x.uid));
+
+  /*
+   * 按照投票数量多少进行排序，高权限用户会覆盖低权限用户的投票。
+   * 如，bangumi admin 投了 封面1，无论多少个用户投封面2都不会有效。
+   *
+   */
+
+  const votes = lo.groupBy(
+    likes.map((like) => {
+      return {
+        like,
+        user: users[like.uid] ?? {
+          groupID: 0,
+        },
+      };
+    }),
+    (x) => x.like.relatedID,
+  );
+
+  const rankedVotes = images
+    .map((image) => {
+      return {
+        image,
+        rank: toRank((votes[image.id] ?? []).map((x) => x.user)),
+      };
+    })
+    .sort((a, b) => {
+      for (let i = 0; i < subjectImageVoteOrder.length + 1; i++) {
+        const va = a.rank[i] ?? 0;
+        const vb = b.rank[i] ?? 0;
+
+        if (va === vb) {
+          continue;
+        }
+
+        return vb - va;
+      }
+
+      return 0;
+    });
+
+  const should = rankedVotes.shift();
+
+  if (should) {
+    await SubjectRepo.update({ id: subjectID }, { subjectImage: should.image.target });
+  }
+}
+
+function toRank(users: { groupID: number }[]): number[] {
+  return [
+    ...subjectImageVoteOrder.map((x) => {
+      return users.filter((u) => u.groupID === x).length;
+    }),
+    users.filter((x) => !subjectImageVoteOrder.includes(x.groupID)).length,
+  ];
+}
+
+const subjectImageVoteOrder = [
+  UserGroup.Admin,
+  UserGroup.BangumiAdmin,
+  UserGroup.WikiAdmin,
+  UserGroup.WikiEditor,
+] as const;

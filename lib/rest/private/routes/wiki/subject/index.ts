@@ -7,9 +7,8 @@ import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import {
   fileExtension,
-  SubjectCoverPrefix,
   SupportedImageExtension,
-  uploadImage,
+  uploadSubjectImage,
 } from '@app/lib/image';
 import { Security, Tag } from '@app/lib/openapi';
 import { SubjectRevRepo } from '@app/lib/orm';
@@ -21,6 +20,8 @@ import * as Subject from '@app/lib/subject';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
 import * as res from '@app/lib/types/res';
 import { formatErrors } from '@app/lib/types/res';
+
+import * as imageRoutes from './image';
 
 const exampleSubjectEdit = {
   name: '沙盒',
@@ -101,6 +102,7 @@ export const SubjectWikiInfo = t.Object(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  imageRoutes.setup(app);
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
@@ -335,7 +337,7 @@ export async function setup(app: App) {
 
       const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);
 
-      const filename = `-/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
 
       const s = await orm.fetchSubject(subjectID);
       if (!s) {
@@ -349,7 +351,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
-      await uploadImage(SubjectCoverPrefix + filename, raw);
+      await uploadSubjectImage(filename, raw);
 
       await Subject.uploadCover({ subjectID: subjectID, filename: filename, uid: auth.userID });
 

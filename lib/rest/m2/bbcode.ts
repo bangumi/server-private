@@ -3,9 +3,9 @@ import * as lo from 'lodash-es';
 
 const Settlement = {
   preg_replace(pattern: string[], replacement: string[], string: string) {
-    let _flag = pattern.substr(pattern.lastIndexOf(pattern[0]!) + 1);
-    _flag = _flag !== '' ? _flag : 'g';
-    const _pattern = pattern.substr(1, pattern.lastIndexOf(pattern[0]!) - 1);
+    let _flag = pattern.slice(pattern.lastIndexOf(pattern[0]!) + 1);
+    _flag = _flag === '' ? 'g' : _flag;
+    const _pattern = pattern.slice(1, 1 + pattern.lastIndexOf(pattern[0]!) - 1);
     const regex = new RegExp(_pattern, _flag);
     const result = string.replace(regex, replacement);
     return result;
@@ -14,7 +14,7 @@ const Settlement = {
 
 const IMGDIR = '';
 const chiicode = {};
-let message = '';
+const message = '';
 
 export class ChiiCodeCore {
   public static smilies_list = {
@@ -310,12 +310,12 @@ export class ChiiCodeCore {
   smileReplace() {
     const smiles_list: Record<string, string> = {};
 
-    if (!ChiiCodeCore.chiicodes['smiliesreplaced']) {
-      for (const [key, smiley] of Object.entries(ChiiCodeCore.smilies_list['replacearray'])) {
+    if (!ChiiCodeCore.chiicodes.smiliesreplaced) {
+      for (const [key, smiley] of Object.entries(ChiiCodeCore.smilies_list.replacearray)) {
         smiles_list[key] =
           '<img src="' + IMGDIR + '/smilies/' + smiley + '" smileid="' + key + '" alt="" />';
       }
-      chiicode['smiliesreplaced'] = 1;
+      chiicode.smiliesreplaced = 1;
     }
     return smiles_list;
   }
@@ -350,7 +350,7 @@ export class ChiiCodeCore {
     return o;
   }
 
-  id: number = 0;
+  id = 0;
 
   parseCode(code: string) {
     this.bbcodeCodeArr[this.id] = code;
@@ -424,8 +424,8 @@ export class ChiiCodeCore {
         );
       }
       if (filter == 1) {
-        this.cov_code['open'] = { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' };
-        this.cov_code['close'] = {
+        this.cov_code.open = { 0: '', 1: '', 2: '', 3: '', 4: '', 5: '', 6: '' };
+        this.cov_code.close = {
           0: '',
           1: '',
           2: '',
@@ -559,8 +559,7 @@ export class ChiiCodeCore {
         );
       }
       message = strtr(message, this.convCodeArr);
-      if (parsetype !== 1) {
-        if (msglower.includes('[/quote]')) {
+      if (parsetype !== 1 && msglower.includes('[/quote]')) {
           if (filter == 1) {
             message = Settlement.preg_replace(
               '/\\s*\\[quote\\][\n\r]*(.+?)[\n\r]*\\[\\/quote\\]\\s*/is',
@@ -575,13 +574,12 @@ export class ChiiCodeCore {
             );
           }
         }
-      }
     }
     if (!smileyoff && allowsmilies) {
       //$smile_replace_list = this.smileReplace();
       message = preg_replace(
-        this.smilies_list['searcharray'],
-        this.smilies_list['replacearray'],
+        this.smilies_list.searcharray,
+        this.smilies_list.replacearray,
         message,
         10,
       );
@@ -649,7 +647,7 @@ export class ChiiCodeCore {
       }
 
       if (parseCode) {
-        for (var id in this.bbcodeCodeArr) {
+        for (const id in this.bbcodeCodeArr) {
           code = this.bbcodeCodeArr[id];
           message = Settlement.str_ireplace(self.genParseCodeMark(id), code, message);
         }
@@ -850,7 +848,7 @@ export class ChiiCodeCore {
       );
       mediaid = 'media_' + GlobalCore.random(3);
       switch (type) {
-        case 'ra':
+        case 'ra': {
           return (
             '<object classid="clsid:CFCDAA03-8BE4-11CF-B84B-0020AFBBCCFA" width="' +
             width +
@@ -871,7 +869,8 @@ export class ChiiCodeCore {
             '" height="32"></embed></object>'
           );
           break;
-        case 'rm':
+        }
+        case 'rm': {
           return (
             '<object classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="' +
             width +
@@ -908,7 +907,8 @@ export class ChiiCodeCore {
             '" height="32"></embed></object>'
           );
           break;
-        case 'wma':
+        }
+        case 'wma': {
           return (
             '<object classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="' +
             width +
@@ -925,7 +925,8 @@ export class ChiiCodeCore {
             '" height="64"></embed></object>'
           );
           break;
-        case 'wmv':
+        }
+        case 'wmv': {
           return (
             '<object classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="' +
             width +
@@ -946,7 +947,8 @@ export class ChiiCodeCore {
             '"></embed></object>'
           );
           break;
-        case 'mp3':
+        }
+        case 'mp3': {
           return (
             '<object classid="clsid:6BF52A52-394A-11d3-B153-00C04F79FAA6" width="' +
             width +
@@ -963,7 +965,8 @@ export class ChiiCodeCore {
             '" height="64"></embed></object>'
           );
           break;
-        case 'mov':
+        }
+        case 'mov': {
           return (
             '<object classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" width="' +
             width +
@@ -984,8 +987,10 @@ export class ChiiCodeCore {
             '"></embed></object>'
           );
           break;
-        default:
+        }
+        default: {
           return;
+        }
       }
     }
     return;
@@ -1017,7 +1022,9 @@ export class ChiiCodeCore {
   }
 
   bbcodeurl(url, tags) {
-    if (!preg_match('/<.+?>/s', url)) {
+    if (preg_match('/<.+?>/s', url)) {
+      return ' ' + url;
+    } else {
       if (
         !Settlement.in_array(Settlement.strtolower(substr(url, 0, 6)), {
           0: 'http:/',
@@ -1046,8 +1053,6 @@ export class ChiiCodeCore {
         '',
         Settlement.sprintf(tags, url, Settlement.addslashes(url)),
       );
-    } else {
-      return ' ' + url;
     }
   }
 
@@ -1078,7 +1083,9 @@ export class ChiiCodeCore {
   }
 
   insiteurl(url, tags) {
-    if (!preg_match('/<.+?>/s', url)) {
+    if (preg_match('/<.+?>/s', url)) {
+      return ' ' + url;
+    } else {
       if (
         !Settlement.in_array(Settlement.strtolower(substr(url, 0, 6)), {
           0: 'http:/',
@@ -1098,8 +1105,6 @@ export class ChiiCodeCore {
         },
         Settlement.sprintf(tags, url, Settlement.addslashes(url)),
       );
-    } else {
-      return ' ' + url;
     }
   }
 
@@ -1111,7 +1116,7 @@ export class ChiiCodeCore {
         ' ' +
         Settlement.chr(Settlement.mt_rand(63, 126));
     }
-    seo = !GLOBALS['tagstatus'] ? GLOBALS['discuzcodes']['seoarray'][Settlement.mt_rand(0, 5)] : '';
+    seo = GLOBALS.tagstatus ? '' : GLOBALS.discuzcodes.seoarray[Settlement.mt_rand(0, 5)];
     return Settlement.mt_rand(0, 1)
       ? '<font style="font-size:0px;color:' + WRAPBG + '">' + seo + randomstr + '</font>' + '\r\n'
       : '\r\n' + '<span style="display:none">' + randomstr + seo + '</span>';
@@ -1119,7 +1124,7 @@ export class ChiiCodeCore {
 
   highlight(text: string, words: Record<string, string>, prepend: string) {
     text = text.replaceAll('\\"', '"');
-    for (var replaceword of Object.values(words)) {
+    for (const replaceword of Object.values(words)) {
       text = text.replaceAll(replaceword, '<highlight>' + replaceword + '</highlight>');
     }
     return `${prepend}${text}`;

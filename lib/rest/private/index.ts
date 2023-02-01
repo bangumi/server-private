@@ -5,19 +5,16 @@ import { fastifyStatic } from '@fastify/static';
 import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
-import { emptyAuth } from '@app/lib/auth';
-import * as session from '@app/lib/auth/session';
 import { production, projectRoot } from '@app/lib/config';
-import { fetchUserX } from '@app/lib/orm';
 import * as demo from '@app/lib/rest/demo';
-import * as mobile from '@app/lib/rest/m2';
+import { SessionAuth } from '@app/lib/rest/hooks/pre-handler';
 import * as me from '@app/lib/rest/routes/me';
+import * as orm from '@app/lib/orm';
 import * as swagger from '@app/lib/rest/swagger';
 import type { App } from '@app/lib/rest/type';
 import type { IUser } from '@app/lib/types/res';
-import { userToResCreator } from '@app/lib/types/res';
+import { toResUser } from '@app/lib/types/res';
 
-import { CookieKey } from './routes/login';
 import * as login from './routes/login';
 import * as post from './routes/post';
 import * as group from './routes/topic';
@@ -43,21 +40,7 @@ export async function setup(app: App) {
     parseOptions: {}, // options for parsing cookies
   });
 
-  void app.addHook('preHandler', async (req, res) => {
-    if (!req.cookies.chiiNextSessionID) {
-      req.auth = emptyAuth();
-      return;
-    }
-
-    const a = await session.get(req.cookies.chiiNextSessionID);
-    if (!a) {
-      void res.clearCookie(CookieKey);
-      req.auth = emptyAuth();
-      return;
-    }
-
-    req.auth = a;
-  });
+  void app.addHook('preHandler', SessionAuth);
 
   await app.register(API, { prefix: '/p1' });
 
@@ -84,7 +67,7 @@ export async function setup(app: App) {
     app.addHook('preHandler', async (req, res) => {
       if (req.auth.login) {
         res.locals = {
-          user: userToResCreator(await fetchUserX(req.auth.userID)),
+          user: toResUser(await orm.fetchUserX(req.auth.userID)),
         };
       } else {
         res.locals = {};
