@@ -1,7 +1,7 @@
 import * as url from 'node:url';
 
 import type { RedisOptions } from 'ioredis';
-import IORedis from 'ioredis';
+import { Redis } from 'ioredis';
 
 import config from './config';
 import { intval } from './utils';
@@ -19,5 +19,5 @@ export const redisOption = {
   lazyConnect: true,
 } satisfies RedisOptions;
 
-export default new IORedis(redisOption);
-export const Subscriber = new IORedis(redisOption);
+export default new Redis(redisOption);
+export const Subscriber = new Redis(redisOption);
