@@ -89,7 +89,7 @@
     "vitest-github-actions-reporter": "^0.9.0"
   },
   "dependencies": {
-    "@bgm38/wiki": "^0.2.1",
+    "@bgm38/wiki": "^0.2.2",
     "@esbuild-kit/esm-loader": "^2.5.4",
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.2.0",
