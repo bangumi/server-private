@@ -1,7 +1,7 @@
 import { NotFoundError } from '@app/lib/error';
 import * as orm from '@app/lib/orm';
 import { platforms } from '@app/lib/subject';
-import { redirectIfNotLogin } from '@app/routes/demo/hooks';
+import { redirectIfNotLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
 export function setup(app: App) {

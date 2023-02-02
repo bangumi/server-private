@@ -5,12 +5,12 @@ import * as image from '@app/lib/image';
 import { AppDataSource, SubjectImageRepo } from '@app/lib/orm';
 import { SubjectImage } from '@app/lib/orm/entity';
 import * as Subject from '@app/lib/subject';
-import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler';
+import { redirectIfNotLogin, requirePermission } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addHook('preHandler', requireLogin('admin'));
+  app.addHook('preHandler', redirectIfNotLogin);
 
   const debugUser = new Set<number>();
 

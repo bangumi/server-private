@@ -6,8 +6,7 @@ import { NotAllowedError } from '@app/lib/auth';
 import * as orm from '@app/lib/orm';
 import type * as entity from '@app/lib/orm/entity';
 import { randomBase62String } from '@app/lib/utils';
-import { redirectIfNotLogin } from '@app/routes/demo/hooks';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
+import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
 export const enum TokenType {
