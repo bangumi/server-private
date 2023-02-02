@@ -57,7 +57,7 @@
     "@vitest/coverage-c8": "^0.27.1",
     "@vitest/ui": "^0.27.1",
     "dotenv": "^16.0.3",
-    "esbuild": "^0.17.0",
+    "esbuild": "^0.17.5",
     "esbuild-register": "^3.4.2",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^8.6.0",
