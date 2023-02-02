@@ -44,6 +44,7 @@ export async function setup(app: App) {
 
   await app.register(fastifyStatic, {
     root: path.resolve(projectRoot, 'static'),
+    dotfiles: 'ignore',
     prefix: '/static/',
   });
 
