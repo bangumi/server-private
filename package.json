@@ -96,7 +96,7 @@
     "@fastify/static": "^6.8.0",
     "@fastify/swagger": "^8.2.1",
     "@fastify/type-provider-typebox": "^2.4.0",
-    "@fastify/view": "^7.4.0",
+    "@fastify/view": "^7.4.1",
     "@node-rs/bcrypt": "^1.6.2",
     "@sinclair/typebox": "^0.25.20",
     "ajv": "^8.12.0",
