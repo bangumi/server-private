@@ -1,3 +1,5 @@
+import * as crypto from 'node:crypto';
+
 import { customAlphabet } from 'nanoid/async';
 
 const base62Chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -32,4 +34,8 @@ function parseIntStrict(integer: string | number) {
   if (Number.isInteger(n)) {
     return n;
   }
+}
+
+export function md5(s: string) {
+  return crypto.createHash('md5').update(s).digest('hex');
 }

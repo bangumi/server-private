@@ -61,6 +61,12 @@ const schema = t.Object({
   disable_words: t.Optional(t.String()),
   banned_domain: t.Optional(t.String()),
 
+  php_session_secret_key: t.String({
+    default: 'default-secret-key-not-safe-in-production',
+    env: 'PHP_SESSION_SECRET_KEY',
+    pattern: new RegExp('[0-9a-zA-Z]').source,
+  }),
+
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
 
   image: t.Object({
