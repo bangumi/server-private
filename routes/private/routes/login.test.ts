@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
+import * as session from '@app/lib/auth/session';
 import { SessionRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
 import { createServer } from '@app/lib/server';
@@ -52,7 +53,7 @@ describe('login', () => {
     expect(res.statusCode).toBe(200);
     expect(
       // @ts-expect-error remove this ts-ignore after light-my-re quest release a new version
-      res.cookies.filter((x: { name: string }) => x.name === 'chiiNextSessionID'),
+      res.cookies.filter((x: { name: string }) => x.name === session.CookieKey),
     ).toHaveLength(1);
     expect(res.json()).toMatchSnapshot();
   });

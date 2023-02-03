@@ -4,7 +4,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { IAuth } from '@app/lib/auth';
 import { emptyAuth, NeedLoginError, NotAllowedError } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
-import { CookieKey } from '@app/routes/private/routes/login';
+import { CookieKey } from '@app/lib/auth/session';
 
 export const requireLogin = (s: string) => async (req: { auth: IAuth }) => {
   if (!req.auth.login) {
@@ -21,12 +21,14 @@ export function requirePermission(s: string, allowed: (auth: IAuth) => boolean |
 }
 
 export async function SessionAuth(req: FastifyRequest, res: FastifyReply) {
-  if (!req.cookies.chiiNextSessionID) {
+  const newSessionValue = req.cookies[session.CookieKey];
+
+  if (!newSessionValue) {
     req.auth = emptyAuth();
     return;
   }
 
-  const a = await session.get(req.cookies.chiiNextSessionID);
+  const a = await session.get(newSessionValue);
   if (!a) {
     void res.clearCookie(CookieKey);
     req.auth = emptyAuth();

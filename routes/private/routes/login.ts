@@ -4,6 +4,7 @@ import httpCodes from 'http-status-codes';
 
 import { comparePassword, NeedLoginError } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
+import { CookieKey } from '@app/lib/auth/session';
 import config, { redisPrefix } from '@app/lib/config';
 import { createTurnstileDriver } from '@app/lib/externals/turnstile';
 import { Tag } from '@app/lib/openapi';
@@ -14,8 +15,6 @@ import * as res from '@app/lib/types/res';
 import Limiter from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
-
-export const CookieKey = 'chiiNextSessionID';
 
 const TooManyRequestsError = createError(
   'TOO_MANY_REQUESTS',
@@ -71,11 +70,13 @@ export async function setup(app: App) {
         throw new NeedLoginError('logout');
       }
 
-      if (!req.cookies.chiiNextSessionID) {
+      const sessionKey = req.cookies[session.CookieKey];
+
+      if (!sessionKey) {
         throw new Error('missing cookies chiiNextSessionID');
       }
 
-      await session.revoke(req.cookies.chiiNextSessionID);
+      await session.revoke(sessionKey);
       void res.clearCookie(CookieKey);
     },
   );
@@ -96,7 +97,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Ref(res.User, {
             headers: {
-              'Set-Cookie': t.String({ description: 'example: "chiiNextSessionID=12345abc"' }),
+              'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
             },
           }),
           400: t.Ref(res.ValidationError),

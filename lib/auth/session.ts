@@ -9,6 +9,8 @@ import { randomBase62String } from '@app/lib/utils';
 import type { IAuth } from './index';
 import * as auth from './index';
 
+export const CookieKey = 'chiiNextSessionID';
+
 export async function create(user: { id: number; regTime: number }): Promise<string> {
   const now = DateTime.now().toUnixInteger();
   const token = await randomBase62String(32);

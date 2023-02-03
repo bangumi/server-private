@@ -3,6 +3,7 @@ import fastifySocketIO from 'fastify-socket.io';
 
 import { NeedLoginError } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
+import { CookieKey } from '@app/lib/auth/session';
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
@@ -10,7 +11,6 @@ import { fetchUsers } from '@app/lib/orm';
 import { Subscriber } from '@app/lib/redis';
 import { Paged, toResUser } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
-import { CookieKey } from '@app/routes/private/routes/login';
 import type { App } from '@app/routes/type';
 
 const NoticeRes = t.Object(

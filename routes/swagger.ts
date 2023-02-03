@@ -7,10 +7,10 @@ import { Type as t } from '@sinclair/typebox';
 import type { FastifyInstance, FastifySchema } from 'fastify';
 import type { OpenAPIV3 } from 'openapi-types';
 
+import { CookieKey } from '@app/lib/auth/session';
 import { projectRoot, VERSION } from '@app/lib/config';
 import { Security } from '@app/lib/openapi';
 import * as res from '@app/lib/types/res';
-import { CookieKey } from '@app/routes/private/routes/login';
 
 const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
 

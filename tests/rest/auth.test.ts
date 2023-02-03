@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
+import * as session from '@app/lib/auth/session';
 import { SessionRepo } from '@app/lib/orm';
 import { createServer } from '@app/lib/server';
 
@@ -34,7 +35,7 @@ test('should pass login/logout authorization flow', async () => {
   expect(res.statusCode).toBe(200);
 
   const cookieValue = (res.cookies as { name: string; value: string }[]).find(
-    (x) => x.name === 'chiiNextSessionID',
+    (x) => x.name === session.CookieKey,
   )?.value;
 
   expect(cookieValue).toBeDefined();
@@ -46,7 +47,7 @@ test('should pass login/logout authorization flow', async () => {
   const currentRes = await app.inject({
     method: 'get',
     url: '/p1/me',
-    cookies: { chiiNextSessionID: cookieValue },
+    cookies: { [session.CookieKey]: cookieValue },
   });
 
   expect(currentRes.json()).toMatchObject(treeHoleUser);
@@ -55,13 +56,13 @@ test('should pass login/logout authorization flow', async () => {
     method: 'post',
     url: '/p1/logout',
     payload: {},
-    cookies: { chiiNextSessionID: cookieValue },
+    cookies: { [session.CookieKey]: cookieValue },
   });
 
   expect(logout.statusCode).toBe(200);
   expect(logout.cookies).toContainEqual(
     expect.objectContaining({
-      name: 'chiiNextSessionID',
+      name: session.CookieKey,
       value: '',
     }),
   );
@@ -69,7 +70,7 @@ test('should pass login/logout authorization flow', async () => {
   const currentUser2 = await app.inject({
     method: 'get',
     url: '/p1/me',
-    cookies: { chiiNextSessionID: cookieValue },
+    cookies: { [session.CookieKey]: cookieValue },
   });
 
   expect(currentUser2.statusCode).toBe(401);
