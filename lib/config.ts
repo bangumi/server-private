@@ -126,7 +126,7 @@ function readConfig(): Static<typeof schema> {
     configFileContent = fs.readFileSync(configFilePath, 'utf8');
   }
 
-  const config = lo.assign(Value.Create(schema), yaml.load(configFileContent));
+  const config = lo.merge(Value.Create(schema), yaml.load(configFileContent));
 
   function readFromEnv(keyPath: string[], o: TSchema) {
     if (o[Kind] === 'Object') {

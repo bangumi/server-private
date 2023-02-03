@@ -32,5 +32,5 @@ image:
     endPoint: 'play.min.io'
     port: 9000
     useSSL: true
-    access_key: '...'
-    secret_key: '...'
+    accessKey: '...'
+    secretKey: '...'
