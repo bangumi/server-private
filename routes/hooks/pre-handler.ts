@@ -8,6 +8,8 @@ import * as authCode from '@app/lib/auth/authcode';
 import * as session from '@app/lib/auth/session';
 import { CookieKey } from '@app/lib/auth/session';
 import config from '@app/lib/config';
+import { UserRepo } from '@app/lib/orm';
+import { cached } from '@app/lib/redis';
 import { md5 } from '@app/lib/utils';
 
 export const requireLogin = (s: string) => async (req: { auth: IAuth }) => {
@@ -35,12 +37,10 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
     return false;
   }
 
-  const key = md5(config.php_session_secret_key + ua);
+  const s = authCode.decode(sessionRaw, md5(config.php_session_secret_key + ua));
 
-  const s = authCode.decode(sessionRaw, key);
-
-  const userIDRaw = s.split('\t').pop();
-  if (!userIDRaw) {
+  const [passwordCrypt, userIDRaw] = s.split('\t');
+  if (!userIDRaw || !passwordCrypt) {
     return false;
   }
 
@@ -49,10 +49,27 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
   }
 
   const userID = Number(userIDRaw);
+  const user = await cached<{ password: string }>({
+    key: `user-pw-${userIDRaw}`,
+    getter: async () => {
+      const u = await UserRepo.findOneBy({ id: userID });
+      if (u) {
+        return { password: u.passwordCrypt };
+      }
+    },
+    ttl: 60,
+  });
 
-  req.auth = await auth.byUserID(userID);
+  if (!user) {
+    return false;
+  }
 
-  return true;
+  if (user.password === passwordCrypt) {
+    req.auth = await auth.byUserID(userID);
+    return true;
+  }
+
+  return false;
 }
 
 export async function SessionAuth(req: FastifyRequest, res: FastifyReply) {
