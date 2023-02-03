@@ -206,7 +206,7 @@ export async function uploadCover({
       ban: 0,
       nsfw: 0,
       subjectID,
-      createdAt: DateTime.now().toUnixInteger(),
+      createdAt: new Date(),
       target: filename,
       uid,
       vote: 0,
