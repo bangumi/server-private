@@ -1,5 +1,6 @@
-import * as lo from 'lodash-es';
 import { Column, Entity, Index, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+
+import { htmlEscapedString } from '@app/lib/orm/transformer';
 
 @Index('username', ['username'], { unique: true })
 @Entity('chii_members', { schema: 'bangumi' })
@@ -54,10 +55,7 @@ export class User {
   @Column('varchar', {
     name: 'sign',
     length: 255,
-    transformer: {
-      to: (value: string) => lo.escape(value),
-      from: (value: string) => lo.unescape(value),
-    },
+    transformer: htmlEscapedString,
   })
   sign!: string;
 

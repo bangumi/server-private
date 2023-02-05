@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
+import { htmlEscapedString } from '@app/lib/orm/transformer';
+
 @Index('subject_name_cn', ['nameCN'], {})
 @Index('subject_platform', ['platform'], {})
 @Index('subject_creator', ['subjectCreator'], {})
@@ -30,10 +32,10 @@ export class Subject {
   })
   typeID!: number;
 
-  @Column('varchar', { name: 'subject_name', length: 80 })
+  @Column('varchar', { name: 'subject_name', length: 80, transformer: htmlEscapedString })
   name!: string;
 
-  @Column('varchar', { name: 'subject_name_cn', length: 80 })
+  @Column('varchar', { name: 'subject_name_cn', length: 80, transformer: htmlEscapedString })
   nameCN!: string;
 
   @Column('varchar', {
@@ -63,10 +65,14 @@ export class Subject {
   })
   platform!: number;
 
-  @Column('mediumtext', { name: 'field_infobox' })
+  @Column('mediumtext', { name: 'field_infobox', transformer: htmlEscapedString })
   fieldInfobox!: string;
 
-  @Column('mediumtext', { name: 'field_summary', comment: 'summary' })
+  @Column('mediumtext', {
+    name: 'field_summary',
+    comment: 'summary',
+    transformer: htmlEscapedString,
+  })
   fieldSummary!: string;
 
   @Column('mediumtext', { name: 'field_5', comment: 'author summary' })
