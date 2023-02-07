@@ -5912,6 +5912,11 @@ touch@^3.1.0:
   dependencies:
     nopt "~1.0.10"
 
+tsconfck@^2.0.1:
+  version "2.0.2"
+  resolved "https://registry.npmmirror.com/tsconfck/-/tsconfck-2.0.2.tgz#860a488f9acd024a85b2db458888410009b5383d"
+  integrity sha512-H3DWlwKpow+GpVLm/2cpmok72pwRr1YFROV3YzAmvzfGFiC1zEM/mc9b7+1XnrxuXtEbhJ7xUSIqjPFbedp7aQ==
+
 tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
@@ -6137,6 +6142,15 @@ vite-node@0.28.3:
     source-map "^0.6.1"
     source-map-support "^0.5.21"
     vite "^3.0.0 || ^4.0.0"
+
+vite-tsconfig-paths@^4.0.5:
+  version "4.0.5"
+  resolved "https://registry.npmmirror.com/vite-tsconfig-paths/-/vite-tsconfig-paths-4.0.5.tgz#c7c54e2cf7ccc5e600db565cecd7b368a1fa8889"
+  integrity sha512-/L/eHwySFYjwxoYt1WRJniuK/jPv+WGwgRGBYx3leciR5wBeqntQpUE6Js6+TJemChc+ter7fDBKieyEWDx4yQ==
+  dependencies:
+    debug "^4.1.1"
+    globrex "^0.1.2"
+    tsconfck "^2.0.1"
 
 "vite@^3.0.0 || ^4.0.0", vite@^4.1.1:
   version "4.1.1"

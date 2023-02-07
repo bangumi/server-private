@@ -1,19 +1,14 @@
 import 'dotenv/config';
 
-import * as url from 'node:url';
-
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 import GithubActionsReporter from 'vitest-github-actions-reporter';
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
-
 export default defineConfig({
   resolve: {
-    alias: {
-      '@app': __dirname,
-    },
     extensions: ['.js', '.ts'],
   },
+  plugins: [tsconfigPaths()],
   test: {
     reporters: process.env.GITHUB_ACTIONS ? ['default', new GithubActionsReporter()] : 'default',
     watch: false,
