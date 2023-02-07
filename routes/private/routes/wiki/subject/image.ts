@@ -17,7 +17,29 @@ import * as res from '@app/lib/types/res';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
+const CoverList = t.Object(
+  {
+    current: t.Optional(
+      t.Object({
+        thumbnail: t.String(),
+        raw: t.String(),
+      }),
+    ),
+    covers: t.Array(
+      t.Object({
+        id: t.Integer(),
+        thumbnail: t.String(),
+        raw: t.String(),
+        creator: res.User,
+        voted: t.Boolean(),
+      }),
+    ),
+  },
+  { $id: 'CoverList' },
+);
+
 export function setup(app: App) {
+  app.addSchema(CoverList);
   app.get(
     '/subjects/:subjectID/covers',
     {
@@ -28,23 +50,7 @@ export function setup(app: App) {
           subjectID: t.Integer({ examples: [184017] }),
         }),
         response: {
-          200: t.Object({
-            current: t.Optional(
-              t.Object({
-                thumbnail: t.String(),
-                raw: t.String(),
-              }),
-            ),
-            covers: t.Array(
-              t.Object({
-                id: t.Integer(),
-                thumbnail: t.String(),
-                raw: t.String(),
-                creator: res.User,
-                voted: t.Boolean(),
-              }),
-            ),
-          }),
+          200: t.Ref(CoverList),
         },
       },
       preHandler: [requireLogin('list subject covers')],
