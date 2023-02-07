@@ -1,4 +1,5 @@
 import { createError } from '@fastify/error';
+import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
@@ -6,12 +7,14 @@ import { comparePassword, NeedLoginError } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
 import { CookieKey } from '@app/lib/auth/session';
 import config, { redisPrefix } from '@app/lib/config';
+import { UnexpectedNotFoundError } from '@app/lib/error';
 import { createTurnstileDriver } from '@app/lib/externals/turnstile';
-import { Tag } from '@app/lib/openapi';
-import { UserRepo } from '@app/lib/orm';
+import { Security, Tag } from '@app/lib/openapi';
+import { fetchUser, UserRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
 import { avatar } from '@app/lib/response';
 import * as res from '@app/lib/types/res';
+import { toResUser } from '@app/lib/types/res';
 import Limiter from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
@@ -32,6 +35,17 @@ const EmailOrPasswordError = createError(
 
 const LimitInTimeWindow = 10;
 
+const clientPermission = t.Object(
+  {
+    subjectWikiEdit: t.Boolean(),
+  },
+  { $id: 'Permission' },
+);
+
+const currentUser = t.Intersect([res.User, t.Object({ permission: clientPermission })], {
+  $id: 'CurrentUser',
+});
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   // 10 calls per 600s
@@ -44,6 +58,45 @@ export async function setup(app: App) {
   app.addSchema(res.User);
   app.addSchema(res.Error);
   app.addSchema(res.ValidationError);
+  app.addSchema(clientPermission);
+  app.addSchema(currentUser);
+
+  app.get(
+    '/me',
+    {
+      websocket: false,
+      schema: {
+        operationId: 'getCurrentUser',
+        description: '需要 `subjectWikiEdit` 权限',
+        tags: [Tag.Auth],
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Ref(currentUser),
+          401: t.Ref(res.Error, {
+            examples: [res.formatError(NeedLoginError('get current user'))],
+          }),
+        },
+      },
+    },
+    async function ({ auth }): Promise<Static<typeof currentUser>> {
+      if (!auth.login) {
+        throw new NeedLoginError('getting current user');
+      }
+
+      const u = await fetchUser(auth.userID);
+
+      if (!u) {
+        throw new UnexpectedNotFoundError(`user ${auth.userID}`);
+      }
+
+      return {
+        ...toResUser(u),
+        permission: {
+          subjectWikiEdit: auth.permission.subject_edit ?? false,
+        },
+      };
+    },
+  );
 
   app.post(
     '/logout',

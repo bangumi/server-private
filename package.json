@@ -26,6 +26,7 @@
     ],
     "watch": [
       "lib",
+      "routes",
       "config.yaml",
       "package.json",
       "tsconfig.json",

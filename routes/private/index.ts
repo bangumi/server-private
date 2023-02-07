@@ -2,7 +2,6 @@ import Cookie from '@fastify/cookie';
 
 import { production } from '@app/lib/config';
 import { SessionAuth } from '@app/routes/hooks/pre-handler';
-import * as me from '@app/routes/routes/me';
 import * as swagger from '@app/routes/swagger';
 import type { App } from '@app/routes/type';
 
@@ -40,7 +39,6 @@ async function API(app: App) {
   await swagger.privateAPI(app);
 
   await app.register(login.setup);
-  await app.register(me.setup);
   await app.register(group.setup);
   await app.register(post.setup);
   await app.register(user.setup);
