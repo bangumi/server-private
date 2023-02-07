@@ -67,7 +67,6 @@ export async function setup(app: App) {
       websocket: false,
       schema: {
         operationId: 'getCurrentUser',
-        description: '需要 `subjectWikiEdit` 权限',
         tags: [Tag.Auth],
         security: [{ [Security.CookiesSession]: [] }],
         response: {

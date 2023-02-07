@@ -223,7 +223,9 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'putSubjectInfo',
-        description: `暂时只能修改沙盒条目 ${[...SandBox].sort().join(',')}`,
+        description: `暂时只能修改沙盒条目 ${[...SandBox]
+          .sort()
+          .join(',')}\n\n需要 \`subjectWikiEdit\` 权限`,
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),

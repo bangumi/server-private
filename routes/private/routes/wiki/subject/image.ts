@@ -116,6 +116,7 @@ export function setup(app: App) {
       schema: {
         operationId: 'uploadSubjectCover',
         tags: [Tag.Wiki],
+        description: `需要 \`subjectWikiEdit\` 权限`,
         params: t.Object({
           subjectID: t.Integer(),
         }),
@@ -189,6 +190,7 @@ export function setup(app: App) {
       schema: {
         operationId: 'voteSubjectCover',
         tags: [Tag.Wiki],
+        description: `需要 \`subjectWikiEdit\` 权限`,
         summary: '为条目封面投票',
         params: t.Object({
           subjectID: t.Integer({ exclusiveMinimum: 0 }),
@@ -233,6 +235,7 @@ export function setup(app: App) {
         operationId: 'unvoteSubjectCover',
         tags: [Tag.Wiki],
         summary: '撤消条目封面投票',
+        description: `需要 \`subjectWikiEdit\` 权限`,
         params: t.Object({
           subjectID: t.Integer({ exclusiveMinimum: 0 }),
           imageID: t.Integer({ exclusiveMinimum: 0 }),
