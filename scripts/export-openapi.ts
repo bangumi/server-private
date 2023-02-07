@@ -16,6 +16,7 @@ await fs.writeFile(
   path.resolve(projectRoot, 'dist', 'public.yaml'),
   yaml.dump(pub.json(), {
     indent: 2,
+    sortKeys: true,
   }),
 );
 
@@ -24,5 +25,6 @@ await fs.writeFile(
   path.resolve(projectRoot, 'dist', 'private.yaml'),
   yaml.dump(lodash.omit(pri.json(), 'info.version'), {
     indent: 2,
+    sortKeys: true,
   }),
 );
