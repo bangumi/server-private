@@ -16,15 +16,15 @@ export class Dam {
 
   constructor({ banned_domain, disabled_words, nsfw_word }: Option) {
     if (nsfw_word) {
-      this.nsfwWord = new RegExp(nsfw_word);
+      this.nsfwWord = new RegExp(nsfw_word, 'i');
     }
 
     if (disabled_words) {
-      this.disableWord = new RegExp(disabled_words);
+      this.disableWord = new RegExp(disabled_words, 'i');
     }
 
     if (banned_domain) {
-      this.bannedDomain = new RegExp(banned_domain);
+      this.bannedDomain = new RegExp(banned_domain, 'i');
     }
   }
 
@@ -37,7 +37,7 @@ export class Dam {
       return false;
     }
 
-    return this.disableWord.test(text.toLowerCase());
+    return this.disableWord.test(text);
   }
 
   censoredWords(text: string): boolean {
