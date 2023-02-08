@@ -5,7 +5,7 @@ import * as lo from 'lodash-es';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
-import { fileExtension, SupportedImageExtension, uploadSubjectImage } from '@app/lib/image';
+import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image';
 import { Tag } from '@app/lib/openapi';
 import { LikeRepo, SubjectImageRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -155,21 +155,20 @@ export function setup(app: App) {
         throw new BadRequestError("not valid image, can' get image format");
       }
 
-      let ext: string;
+      if (!ImageTypeCanBeUploaded.includes(format)) {
+        throw new BadRequestError(
+          `not valid image, only support ${ImageTypeCanBeUploaded.join(', ')}`,
+        );
+      }
+
+      // convert webp to jpeg
+      let ext = format;
       if (format === 'webp') {
         raw = await imaginary.convert(raw, { format: 'jpeg' });
         if (raw.length > sizeLimit) {
           throw new BadRequestError('file is too large after converting to jpeg');
         }
         ext = 'jpeg';
-      } else {
-        const e = fileExtension(format);
-        if (!e) {
-          throw new BadRequestError(
-            `not valid image, only support ${SupportedImageExtension.join(', ')}`,
-          );
-        }
-        ext = e;
       }
 
       const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);
