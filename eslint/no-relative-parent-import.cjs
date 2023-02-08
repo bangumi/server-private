@@ -1,15 +1,14 @@
 // TODO: remove this after https://github.com/import-js/eslint-plugin-import/issues/2467 is fixed
 
-import * as path from 'node:path';
-import * as posix from 'node:path/posix';
+const path = require('node:path');
+const posix = require('node:path/posix');
 
-import { ESLintUtils } from '@typescript-eslint/utils';
+const { ESLintUtils } = require('@typescript-eslint/utils');
 
-const rootDir = posix.normalize(path.dirname(__dirname));
+const projectRoot = posix.normalize(path.dirname(__dirname));
 
 const createRule = ESLintUtils.RuleCreator((name) => name);
 
-// 不要用 export default 重写， esbuild 不会处理成 cjs 的默认导出。
 module.exports = createRule({
   name: 'no-relative-parent-import',
   meta: {
@@ -33,9 +32,9 @@ module.exports = createRule({
     return {
       ImportDeclaration: (node) => {
         if (node.source.value.startsWith('..')) {
-          const dstPath = path.resolve(path.dirname(filename), node.source.value);
+          const importPath = path.resolve(path.dirname(filename), node.source.value);
           const should = posix.normalize(
-            posix.join('@app', path.relative(rootDir, dstPath).replaceAll('\\', '/')),
+            posix.join('@app', path.relative(projectRoot, importPath).replaceAll('\\', '/')),
           );
 
           context.report({

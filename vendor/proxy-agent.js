@@ -1,3 +1,1 @@
-import ProxyAgent from 'proxy-agent';
-
-export default ProxyAgent;
+export { default } from 'proxy-agent';

@@ -1,3 +1,1 @@
-import NodeCache from 'node-cache';
-
-export default NodeCache;
+export { default } from 'node-cache';
