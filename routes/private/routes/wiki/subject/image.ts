@@ -166,7 +166,7 @@ export function setup(app: App) {
       if (format === 'webp') {
         raw = await imaginary.convert(raw, { format: 'jpeg' });
         if (raw.length > sizeLimit) {
-          throw new BadRequestError('file is too large after converting to jpeg');
+          throw new BadRequestError('file is too large after converted to jpeg');
         }
         ext = 'jpeg';
       }
