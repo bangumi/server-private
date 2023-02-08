@@ -4,6 +4,7 @@ import { createError } from '@fastify/error';
 import httpCodes from 'http-status-codes';
 
 import config, { testing } from '@app/lib/config';
+import { UnimplementedError } from '@app/lib/error';
 import { BaseHttpSrv } from '@app/lib/services/base';
 
 export const NotValidImageError = createError(
@@ -25,6 +26,8 @@ export interface Info {
 
 export interface IImaginary {
   info(img: Buffer): Promise<Info>;
+
+  convert(img: Buffer, target: { format: 'jpeg' }): Promise<Buffer>;
 }
 
 class Imaginary extends BaseHttpSrv implements IImaginary {
@@ -40,13 +43,27 @@ class Imaginary extends BaseHttpSrv implements IImaginary {
 
     return JSON.parse(res.body) as Info;
   }
+
+  async convert(img: Buffer, { format }: { format: 'jpeg' }): Promise<Buffer> {
+    const res = await this.client.post('convert', {
+      body: img,
+      searchParams: { type: format, quality: 80 },
+      throwHttpErrors: false,
+    });
+
+    if (res.statusCode >= 300) {
+      throw new Error('failed to convert image: ' + res.body);
+    }
+
+    return res.rawBody;
+  }
 }
 
 let d: IImaginary;
 
 if (config.image.imaginaryUrl) {
   // validate base url
-  // eslint-disable-next-line  @typescript-eslint/no-useless-constructor
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   new URL(config.image.imaginaryUrl);
   d = new Imaginary(config.image.imaginaryUrl);
 } else {
@@ -57,6 +74,9 @@ if (config.image.imaginaryUrl) {
   d = {
     info(): Promise<Info> {
       return Promise.resolve({ width: 0, height: 0, type: 'jpg' });
+    },
+    convert(): Promise<Buffer> {
+      throw new UnimplementedError('missing imaginary');
     },
   };
 }

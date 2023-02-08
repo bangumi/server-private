@@ -5,7 +5,7 @@ import * as lo from 'lodash-es';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
-import { fileExtension, SupportedImageExtension, uploadSubjectImage } from '@app/lib/image';
+import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image';
 import { Tag } from '@app/lib/openapi';
 import { LikeRepo, SubjectImageRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -16,6 +16,8 @@ import * as Subject from '@app/lib/subject';
 import * as res from '@app/lib/types/res';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
+
+const sizeLimit = 4 * 1024 * 1024;
 
 export function setup(app: App) {
   app.get(
@@ -139,9 +141,9 @@ export function setup(app: App) {
       if (!SandBox.has(subjectID)) {
         throw new BadRequestError('暂时只能修改沙盒条目');
       }
-      const raw = Buffer.from(content, 'base64');
+      let raw = Buffer.from(content, 'base64');
       // 4mb
-      if (raw.length > 4 * 1024 * 1024) {
+      if (raw.length > sizeLimit) {
         throw new BadRequestError('file too large');
       }
 
@@ -153,11 +155,20 @@ export function setup(app: App) {
         throw new BadRequestError("not valid image, can' get image format");
       }
 
-      const ext = fileExtension(format);
-      if (!ext) {
+      if (!ImageTypeCanBeUploaded.includes(format)) {
         throw new BadRequestError(
-          `not valid image, only support ${SupportedImageExtension.join(', ')}`,
+          `not valid image, only support ${ImageTypeCanBeUploaded.join(', ')}`,
         );
+      }
+
+      // convert webp to jpeg
+      let ext = format;
+      if (format === 'webp') {
+        raw = await imaginary.convert(raw, { format: 'jpeg' });
+        if (raw.length > sizeLimit) {
+          throw new BadRequestError('file is too large after converted to jpeg');
+        }
+        ext = 'jpeg';
       }
 
       const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);

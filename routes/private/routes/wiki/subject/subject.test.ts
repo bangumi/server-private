@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { UserGroup } from '@app/lib/auth';
 import { projectRoot } from '@app/lib/config';
 import * as image from '@app/lib/image';
+import { IImaginary, Info } from '@app/lib/services/imaginary';
 import * as Subject from '@app/lib/subject';
 import type { ISubjectEdit } from '@app/routes/private/routes/wiki/subject';
 import { setup } from '@app/routes/private/routes/wiki/subject';
@@ -161,11 +162,15 @@ describe('should upload image', () => {
         async info(img: Buffer) {
           const i = images.find((x) => x.content.equals(img));
           if (i) {
-            return { type: i.ext };
+            return { type: i.ext } as Info;
           }
           throw new mod.NotValidImageError();
         },
-      },
+
+        convert(): Promise<Buffer> {
+          return Promise.resolve(Buffer.from(''));
+        },
+      } satisfies IImaginary,
     };
   });
 
@@ -200,8 +205,7 @@ describe('should upload image', () => {
     expect(res.statusCode).toBe(400);
   });
 
-  // TODO: convert webp to jpg when uploading images
-  test.each(['jpg'])('upload subject covers in %s format', async (format) => {
+  test.each(['jpg', 'webp'])('upload subject covers in %s format', async (format) => {
     const app = await testApp({
       auth: {
         groupID: UserGroup.Normal,
@@ -224,6 +228,9 @@ describe('should upload image', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(uploadImageMock).toBeCalledWith(expect.stringMatching(new RegExp('\\.' + format)), raw);
+    expect(uploadImageMock).toBeCalledWith(
+      expect.stringMatching(/.*\.jpe?g$/),
+      expect.objectContaining({}),
+    );
   });
 });
