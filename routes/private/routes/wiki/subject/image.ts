@@ -17,6 +17,8 @@ import * as res from '@app/lib/types/res';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
+const sizeLimit = 4 * 1024 * 1024;
+
 export function setup(app: App) {
   app.get(
     '/subjects/:subjectID/covers',
@@ -139,9 +141,9 @@ export function setup(app: App) {
       if (!SandBox.has(subjectID)) {
         throw new BadRequestError('暂时只能修改沙盒条目');
       }
-      const raw = Buffer.from(content, 'base64');
+      let raw = Buffer.from(content, 'base64');
       // 4mb
-      if (raw.length > 4 * 1024 * 1024) {
+      if (raw.length > sizeLimit) {
         throw new BadRequestError('file too large');
       }
 
@@ -153,11 +155,21 @@ export function setup(app: App) {
         throw new BadRequestError("not valid image, can' get image format");
       }
 
-      const ext = fileExtension(format);
-      if (!ext) {
-        throw new BadRequestError(
-          `not valid image, only support ${SupportedImageExtension.join(', ')}`,
-        );
+      let ext: string;
+      if (format === 'webp') {
+        raw = await imaginary.convert(raw, { format: 'jpeg' });
+        if (raw.length > sizeLimit) {
+          throw new BadRequestError('file is too large after converting to jpeg');
+        }
+        ext = 'jpeg';
+      } else {
+        const e = fileExtension(format);
+        if (!e) {
+          throw new BadRequestError(
+            `not valid image, only support ${SupportedImageExtension.join(', ')}`,
+          );
+        }
+        ext = e;
       }
 
       const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);
