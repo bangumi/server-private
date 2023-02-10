@@ -1,6 +1,8 @@
 import * as crypto from 'node:crypto';
 
+import { createError } from '@fastify/error';
 import { Type as t } from '@sinclair/typebox';
+import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
 import { NotAllowedError } from '@app/lib/auth';
@@ -14,8 +16,20 @@ import imaginary from '@app/lib/services/imaginary';
 import { SandBox } from '@app/lib/subject';
 import * as Subject from '@app/lib/subject';
 import * as res from '@app/lib/types/res';
+import { errorResponses } from '@app/lib/types/res';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
+
+const ImageFileTooLarge = createError(
+  'IMAGE_FILE_TOO_LARGE',
+  'uploaded image file is too large',
+  StatusCodes.BAD_REQUEST,
+);
+const UnsupportedImageFormat = createError(
+  'IMAGE_FORMAT_NOT_SUPPORT',
+  `not valid image file, only support ${ImageTypeCanBeUploaded.join(', ')}`,
+  StatusCodes.BAD_REQUEST,
+);
 
 const sizeLimit = 4 * 1024 * 1024;
 
@@ -124,6 +138,11 @@ export function setup(app: App) {
         }),
         response: {
           200: t.Object({}),
+          ...errorResponses(
+            ImageFileTooLarge(),
+            UnsupportedImageFormat(),
+            NotAllowedError('non sandbox subject'),
+          ),
         },
         body: t.Object({
           content: t.String({
@@ -139,12 +158,12 @@ export function setup(app: App) {
     },
     async ({ body: { content }, auth, params: { subjectID } }) => {
       if (!SandBox.has(subjectID)) {
-        throw new BadRequestError('暂时只能修改沙盒条目');
+        throw new NotAllowedError('non sandbox subject');
       }
       let raw = Buffer.from(content, 'base64');
       // 4mb
       if (raw.length > sizeLimit) {
-        throw new BadRequestError('file too large');
+        throw new ImageFileTooLarge();
       }
 
       // validate image
@@ -152,7 +171,7 @@ export function setup(app: App) {
       const format = res.type;
 
       if (!format) {
-        throw new BadRequestError("not valid image, can' get image format");
+        throw new UnsupportedImageFormat();
       }
 
       if (!ImageTypeCanBeUploaded.includes(format)) {
@@ -166,7 +185,7 @@ export function setup(app: App) {
       if (format === 'webp') {
         raw = await imaginary.convert(raw, { format: 'jpeg' });
         if (raw.length > sizeLimit) {
-          throw new BadRequestError('file is too large after converted to jpeg');
+          throw new ImageFileTooLarge();
         }
         ext = 'jpeg';
       }

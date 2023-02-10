@@ -2,6 +2,7 @@ import type { FastifyError } from '@fastify/error';
 import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
+import * as lo from 'lodash-es';
 
 import type * as orm from '@app/lib/orm';
 import { avatar } from '@app/lib/response';
@@ -102,4 +103,14 @@ export function toResUser(user: orm.IUser): IUser {
     sign: user.sign,
     user_group: user.groupID,
   };
+}
+
+export function errorResponses(...errors: FastifyError[]): Record<number, unknown> {
+  const status: Record<number, FastifyError[]> = lo.groupBy(errors, (x) => x.statusCode ?? 500);
+
+  return lo.mapValues(status, (errs) => {
+    return t.Ref(Error, {
+      'x-examples': formatErrors(...errs),
+    });
+  });
 }

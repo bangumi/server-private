@@ -3,9 +3,13 @@ import { createError } from '@fastify/error';
 import httpCodes, { StatusCodes } from 'http-status-codes';
 
 /** Type helper to make message argument as required */
-export interface SingleMessageErrorConstructor {
-  new (msg: string): FastifyError & { statusCode: number };
-  (msg: string): FastifyError & { statusCode: number };
+export type SingleMessageErrorConstructor = FastifyErrorConstructor<[string]>;
+
+/** Type helper to make message argument as required */
+export interface FastifyErrorConstructor<T extends unknown[]> {
+  new (...args: T): FastifyError;
+
+  (...args: T): FastifyError;
 }
 
 export const BadRequestError: SingleMessageErrorConstructor = createError(
