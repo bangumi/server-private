@@ -8,9 +8,13 @@ import * as Subject from '@app/lib/subject';
 import { redirectIfNotLogin, requirePermission } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
+import * as ep from './ep';
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addHook('preHandler', redirectIfNotLogin);
+
+  await app.register(ep.setup);
 
   const debugUser = new Set<number>();
 

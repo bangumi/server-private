@@ -13,6 +13,7 @@ import * as entity from './entity';
 import {
   App,
   Episode,
+  EpRevision,
   Friends,
   Group,
   GroupMembers,
@@ -23,6 +24,8 @@ import {
   NotifyField,
   OauthAccessTokens,
   OauthClient,
+  RevHistory,
+  RevText,
   Subject,
   SubjectFields,
   SubjectImage,
@@ -69,6 +72,7 @@ export const AppDataSource = new DataSource({
   },
   entities: [
     App,
+    EpRevision,
     User,
     UserField,
     OauthAccessTokens,
@@ -82,6 +86,8 @@ export const AppDataSource = new DataSource({
     GroupMembers,
     Episode,
     OauthClient,
+    RevHistory,
+    RevText,
     Subject,
     SubjectFields,
     GroupTopic,
@@ -99,6 +105,10 @@ export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
+export const EpRevRepo = AppDataSource.getRepository(EpRevision);
+
+export const RevHistoryRepo = AppDataSource.getRepository(RevHistory);
+export const RevTextRepo = AppDataSource.getRepository(RevText);
 
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
@@ -250,17 +260,34 @@ export async function fetchPermission(userGroup: number): Promise<Readonly<Permi
 
 export async function addCreator<T extends { creatorID: number }>(
   arr: T[],
+  { ghostUser = false }: { ghostUser?: boolean } = {},
 ): Promise<(T & { creator: IUser })[]> {
   const users = await fetchUsers(arr.map((x) => x.creatorID));
 
   return arr.map((o) => {
     const user = users[o.creatorID];
     if (!user) {
+      if (ghostUser) {
+        return { ...o, creator: ghost(o.creatorID) };
+      }
+
       throw new UnexpectedNotFoundError(`user ${o.creatorID}`);
     }
 
     return { ...o, creator: user };
   });
+}
+
+function ghost(id: number): IUser {
+  return {
+    id: 0,
+    img: '',
+    username: `ghost_${id}`,
+    nickname: `ghost_${id}`,
+    groupID: 0,
+    regTime: 0,
+    sign: '',
+  };
 }
 
 export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUser>> {
@@ -489,4 +516,4 @@ export async function fetchUserX(id: number): Promise<IUser> {
   return u;
 }
 
-export { In } from 'typeorm';
+export { In, Like } from 'typeorm';

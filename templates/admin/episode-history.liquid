@@ -1,0 +1,62 @@
+{% layout 'layout' %}
+
+{% block content %}
+<div class='container mt-5' id='container'>
+  <div class='row'>
+    <div class='accordion' id='accordionFlushExample'>
+      {% for history in histories %}
+        <div class='accordion-item'>
+          <h2 class='accordion-header' id='flush-heading{{ forloop.index }}'>
+            <button
+              class='accordion-button collapsed'
+              type='button'
+              data-bs-toggle='collapse'
+              data-bs-target='#flush-collapse{{ forloop.index }}'
+              aria-expanded='false'
+              aria-controls='flush-collapse{{ forloop.index }}'
+            >
+              <span> {{ history.revDateline | date: '%Y-%m-%d %H:%M:%S', 'Asia/Shanghai' }} </span>
+            </button>
+          </h2>
+          <div
+            id='flush-collapse{{ forloop.index }}'
+            class='accordion-collapse collapse'
+            aria-labelledby='flush-heading{{ forloop.index }}'
+            data-bs-parent='#accordionFlushExample'
+          >
+            <div class='accordion-body'>
+              <a
+                href='https://bgm.tv/user/{{ history.creator.username | escape }}'
+                target='_blank'
+              >
+                {{ history.creator.nickname | escape }}
+              </a>
+
+              <hr>
+
+              {% if history.batch %}
+                <h2>批量修改</h2>
+                <pre class='border border-b'><code>{{ history.batch }}</code></pre>
+              {% else %}
+                标题：<span class='border border-b'>{{ history.name | escape }}</span>
+                <br>
+                简体中文标题：<span class='border border-b'>{{ history.name_cn | escape }}</span>
+                <br>
+                话数： <span class='border border-b'>{{ history.sort }}</span>
+                <br>
+                播出日期：<span class='border border-b'>{{ history.airdate | escape }}</span>
+                <br>
+                简介：<span class='border border-b'>{{ history.desc | escape }}</span>
+                <br>
+                时长：<span class='border border-b'>{{ history.duration | escape }}</span>
+                <br>
+                播出日期：<span class='border border-b'>{{ history.airdate | escape }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
