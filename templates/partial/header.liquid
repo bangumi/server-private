@@ -26,18 +26,16 @@
 </style>
 <div id='header' class='container-fluid'>
   <div class='row d-flex justify-content-around h-100'>
-    <div class='col-6'>
-      <div class='row'>
-        <div class='col-2'>
-          <a href='/demo/'>
-            <div class='bg musume_0'></div>
-          </a>
-        </div>
-        <div class='col-5 d-flex align-content-around align-items-center'>
-          {{ navTitle | default: 'demo' }}
-        </div>
-      </div>
+    <div class='col-1'>
+      <a href='/demo/'>
+        <div class='bg musume_0'></div>
+      </a>
     </div>
+
+    <div class='col-3 d-none d-sm-none d-md-flex align-content-around align-items-center'>
+      {{ navTitle | default: 'demo' }}
+    </div>
+
     <div class='col-1 h-100 d-flex justify-content-center align-items-center'>
       {% if user %}
         <a href='https://api.bgm.tv/v0/users/{{ user.username }}' class='h-100 avatar'>
