@@ -4,7 +4,6 @@ import * as lo from 'lodash-es';
 import * as orm from '@app/lib/orm';
 import { addCreator, EpisodeRepo, EpRevRepo, RevHistoryRepo, RevTextRepo } from '@app/lib/orm';
 import { RevHistory, RevText } from '@app/lib/orm/entity';
-import { requirePermission } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -18,9 +17,6 @@ export async function setup(app: App) {
           episodeID: t.Integer({ exclusiveMinimum: 0 }),
         }),
       },
-      preHandler: [
-        requirePermission('delete subject cover', (a) => a.permission.subject_cover_erase),
-      ],
     },
     async ({ params: { episodeID } }, res) => {
       const ep = await EpisodeRepo.findOneBy({ id: episodeID });
