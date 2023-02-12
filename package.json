@@ -122,7 +122,7 @@
     "node-cache": "^5.1.2",
     "openapi-types": "^12.1.0",
     "php-serialize": "^4.0.2",
-    "pino": "^8.8.0",
+    "pino": "^8.10.0",
     "pino-pretty": "^9.1.1",
     "prom-client": "^14.1.1",
     "proxy-agent": "^5.0.0",
