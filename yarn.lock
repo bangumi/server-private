@@ -2931,10 +2931,10 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
-graphql-jit@^0.7.3:
-  version "0.7.4"
-  resolved "https://registry.yarnpkg.com/graphql-jit/-/graphql-jit-0.7.4.tgz#bc8ccf79596d13dff3835902a466f9a5ecc3a8c1"
-  integrity sha512-kWyHmsQtKMD6xcKDgf4dgPLyIZhviqA6IWGdnA0ElL9wgrIOTxf3eI4c0/U3tnoAU3t09zliVCfDkfIptzYjIA==
+graphql-jit@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/graphql-jit/-/graphql-jit-0.8.0.tgz#0f8fb7240cbd0dc1ab45f3684ff296193bb2d2a5"
+  integrity sha512-mxdV9ohO6jKt1o9erb+7RpmnDKQFQCcJlYVfGa3j4+ieP0ITDsAlm194+pfvdv5F4zgrgZfSe5xx5Rf98epJmg==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     fast-json-stringify "^1.21.0"
@@ -3885,17 +3885,17 @@ mercurius-integration-testing@^6.0.1:
     cookie "^0.5.0"
     ws "^8.9.0"
 
-mercurius@^12.0.0:
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/mercurius/-/mercurius-12.0.0.tgz#b998606145426a7510289de11e981f22fa91ed2f"
-  integrity sha512-ORe/0eFuUq5lFMF1c8hdEQz44MdK4A8gMbJr8US3BakHBeYbbFDWGskhHkYmaZkx2ka0NJh+iMasWiL07kAoHg==
+mercurius@^12.0.1:
+  version "12.0.1"
+  resolved "https://registry.yarnpkg.com/mercurius/-/mercurius-12.0.1.tgz#b6eaa129ea5eda6522b5c8d43fa6d9b40cb8910f"
+  integrity sha512-Yt7+Sy50Av9W0nopp3bXBK+gSmpbWaPQFuxGWixRRhgBBn7SF1AUJ3iC8v7/qsiffzNo8l0TF2tQwlUCRhTNWg==
   dependencies:
     "@fastify/error" "^3.0.0"
     "@fastify/static" "^6.0.0"
     "@fastify/websocket" "^7.0.0"
     fastify-plugin "^4.2.0"
     graphql "^16.0.0"
-    graphql-jit "^0.7.3"
+    graphql-jit "^0.8.0"
     mqemitter "^5.0.0"
     p-map "^4.0.0"
     readable-stream "^4.0.0"
