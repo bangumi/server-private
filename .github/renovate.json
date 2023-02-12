@@ -14,5 +14,8 @@
   },
   "docker-compose": {
     "enabled": false
+  },
+  "nodenv": {
+    "enabled": false
   }
 }
