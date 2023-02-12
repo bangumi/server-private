@@ -90,7 +90,7 @@
   },
   "dependencies": {
     "@bgm38/wiki": "^0.2.2",
-    "@esbuild-kit/esm-loader": "^2.5.4",
+    "@esbuild-kit/esm-loader": "^2.5.5",
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.2.0",
     "@fastify/static": "^6.8.0",
