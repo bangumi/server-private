@@ -2533,10 +2533,10 @@ fast-xml-parser@^3.17.5:
   dependencies:
     strnum "^1.0.4"
 
-fastify-metrics@^10.0.2:
-  version "10.0.2"
-  resolved "https://registry.yarnpkg.com/fastify-metrics/-/fastify-metrics-10.0.2.tgz#195e3d8097445e5cf868e26443bca5aeacfd51ba"
-  integrity sha512-j+NrJKRbHArM0Kr+PbQ0OGLIIjfH6JN/y+BviKKaETwKwwN16w8JB4fCpJSNIDneHOYXWJvIuqq7RCh6RNbehw==
+fastify-metrics@^10.0.3:
+  version "10.0.3"
+  resolved "https://registry.yarnpkg.com/fastify-metrics/-/fastify-metrics-10.0.3.tgz#4384bdc69790ba0cdb9ea7a1edcf552f3077aff8"
+  integrity sha512-rw7qLMNglBu11hM0V+K4xaRgy4QLxa7/f2S91xpg6ZrOLEt+1gBEQlT5CUNev9BRYwWipZkYqwWVvBRFuyCN6w==
   dependencies:
     fastify-plugin "^4.3.0"
     prom-client "^14.1.0"
