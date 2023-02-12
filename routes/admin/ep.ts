@@ -70,6 +70,7 @@ export async function setup(app: App) {
       const revData = Object.fromEntries(revText.map((x) => [x.id, x.data]));
 
       return await res.view('admin/episode-history', {
+        ep,
         histories: await addCreator(
           [
             ...o

@@ -33,7 +33,9 @@
             <div class='bg musume_0'></div>
           </a>
         </div>
-        <div class='col-5 d-flex align-content-around align-items-center'>demo</div>
+        <div class='col-5 d-flex align-content-around align-items-center'>
+          {{ navTitle | default: 'demo' }}
+        </div>
       </div>
     </div>
     <div class='col-1 h-100 d-flex justify-content-center align-items-center'>

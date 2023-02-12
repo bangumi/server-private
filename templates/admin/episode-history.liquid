@@ -1,7 +1,14 @@
+{% assign navTitle = '编辑历史' %}
 {% layout 'layout' %}
 
 {% block content %}
 <div class='container mt-5' id='container'>
+  <div class='row'>
+    <p>
+      编辑历史：<a href='https://bgm.tv/ep/{{ ep.id }}' target='_blank'>{{ ep.epName | escape }}</a>
+    </p>
+  </div>
+  <br>
   <div class='row'>
     <div class='accordion' id='accordionFlushExample'>
       {% for history in histories %}
