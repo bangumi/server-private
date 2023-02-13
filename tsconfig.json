@@ -17,7 +17,6 @@
     "pretty": true,
     "isolatedModules": true,
     "sourceMap": true,
-    "allowImportingTsExtensions": true,
     "declaration": false,
     "noEmit": true,
     "rootDir": ".",
