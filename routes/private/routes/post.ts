@@ -103,7 +103,7 @@ export async function setup(app: App) {
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('edit a post')),
+            'x-examples': formatErrors(NotAllowedError('edit a topic')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
@@ -117,7 +117,7 @@ export async function setup(app: App) {
           },
         ),
       },
-      preHandler: [requireLogin('edit a post')],
+      preHandler: [requireLogin('edit a topic')],
     },
     /**
      * @param auth -
