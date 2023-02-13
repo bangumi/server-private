@@ -14,7 +14,7 @@ import { GroupMemberRepo, GroupRepo, isMemberInGroup } from '@app/lib/orm';
 import { avatar, groupIcon } from '@app/lib/response';
 import type { ITopic } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
-import { NotJoinPrivateGroupError, ReplyState, TopicDisplay } from '@app/lib/topic';
+import { CommentState, NotJoinPrivateGroupError, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
 import { formatErrors, toResUser } from '@app/lib/types/res';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
@@ -374,7 +374,7 @@ export async function setup(app: App) {
         display,
         userID: auth.userID,
         groupID: group.id,
-        state: Topic.ReplyState.Normal,
+        state: Topic.CommentState.Normal,
       });
     },
   );
@@ -438,7 +438,7 @@ export async function setup(app: App) {
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      if (topic.state === ReplyState.AdminCloseTopic) {
+      if (topic.state === CommentState.AdminCloseTopic) {
         throw new NotAllowedError('reply to a closed topic');
       }
 
@@ -452,9 +452,9 @@ export async function setup(app: App) {
             // 管理员操作不能回复
             if (
               [
-                ReplyState.AdminCloseTopic,
-                ReplyState.AdminReopen,
-                ReplyState.AdminSilentTopic,
+                CommentState.AdminCloseTopic,
+                CommentState.AdminReopen,
+                CommentState.AdminSilentTopic,
               ].includes(x.state)
             ) {
               return [];

@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import type { IAuth } from '@app/lib/auth';
 import type { IReply } from '@app/lib/topic';
-import { CommentState, ReplyState, TopicDisplay } from '@app/lib/topic';
+import { CommentState, TopicDisplay } from '@app/lib/topic';
 
 export const CanViewStateClosedTopic = 24 * 60 * 60 * 180;
 export const CanViewStateDeleteTopic = 24 * 60 * 60 * 365;
@@ -28,7 +28,7 @@ export function CanViewTopicContent(
     // 未登录用户只能看到正常帖子
     return (
       topic.display === TopicDisplay.Normal &&
-      (topic.state === CommentState.None || topic.state == CommentState.AdminReopen)
+      (topic.state === CommentState.Normal || topic.state == CommentState.AdminReopen)
     );
   }
 
@@ -62,7 +62,7 @@ export function CanViewTopicContent(
   }
 
   return (
-    topic.state === CommentState.None ||
+    topic.state === CommentState.Normal ||
     topic.state === CommentState.AdminReopen ||
     topic.state === CommentState.AdminMerge ||
     topic.state === CommentState.AdminPin ||
@@ -87,11 +87,11 @@ export function filterReply(x: IReply): IReply {
 
 function filterSubReply<T extends { state: number; text: string }>(x: T): T {
   if (
-    x.state === ReplyState.AdminDelete ||
-    x.state === ReplyState.UserDelete ||
-    x.state === ReplyState.AdminReopen ||
-    x.state === ReplyState.AdminCloseTopic ||
-    x.state === ReplyState.AdminSilentTopic
+    x.state === CommentState.AdminDelete ||
+    x.state === CommentState.UserDelete ||
+    x.state === CommentState.AdminReopen ||
+    x.state === CommentState.AdminCloseTopic ||
+    x.state === CommentState.AdminSilentTopic
   ) {
     return { ...x, text: '' };
   }

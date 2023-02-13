@@ -1,14 +1,14 @@
 import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from '@app/lib/auth';
-import { Dam } from '@app/lib/dam';
+import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import * as orm from '@app/lib/orm';
 import * as Topic from '@app/lib/topic';
-import { ReplyState } from '@app/lib/topic';
-import { formatErrors } from '@app/lib/types/res';
+import { CommentState, TopicDisplay } from '@app/lib/topic';
 import * as res from '@app/lib/types/res';
+import { formatErrors } from '@app/lib/types/res';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
@@ -20,7 +20,7 @@ export async function setup(app: App) {
     '/groups/-/posts/:postID',
     {
       schema: {
-        operationId: 'editReply',
+        operationId: 'editGroupReply',
         params: t.Object({
           postID: t.Integer({ examples: [2092074] }),
         }),
@@ -46,7 +46,7 @@ export async function setup(app: App) {
     /**
      * @param auth -
      * @param text - 回帖内容
-     * @param topicID - 帖子 ID
+     * @param postID - 回复 ID
      */
     async function ({ auth, body: { text }, params: { postID } }): Promise<Record<string, never>> {
       if (auth.permission.ban_post) {
@@ -71,11 +71,11 @@ export async function setup(app: App) {
         throw new NotFoundError(`topic ${post.topicID}`);
       }
 
-      if (topic.state === ReplyState.AdminCloseTopic) {
+      if (topic.state === CommentState.AdminCloseTopic) {
         throw new NotAllowedError('edit reply in a closed topic');
       }
 
-      if ([ReplyState.AdminDelete, ReplyState.UserDelete].includes(topic.state)) {
+      if ([CommentState.AdminDelete, CommentState.UserDelete].includes(topic.state)) {
         throw new NotAllowedError('edit a deleted reply');
       }
 
@@ -86,6 +86,92 @@ export async function setup(app: App) {
       }
 
       await orm.GroupPostRepo.update({ id: postID }, { content: text });
+
+      return {};
+    },
+  );
+
+  app.put(
+    '/groups/-/topics/:topicID',
+    {
+      schema: {
+        operationId: 'editGroupTopic',
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Object({}),
+          400: t.Ref(res.Error),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('edit a topic')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+        body: t.Object(
+          {
+            title: t.String({ minLength: 1 }),
+            text: t.String({ minLength: 1 }),
+          },
+          {
+            examples: [{ title: 'new topic title', text: 'new contents' }],
+          },
+        ),
+      },
+      preHandler: [requireLogin('edit a topic')],
+    },
+    /**
+     * @param auth -
+     * @param title - 帖子标题
+     * @param text - 帖子内容
+     * @param topicID - 帖子 ID
+     */
+    async function ({
+      auth,
+      body: { title, text },
+      params: { topicID },
+    }): Promise<Record<string, never>> {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+
+      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(text))) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const topic = await Topic.fetchDetail(auth, 'group', topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+
+      if (
+        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
+          topic.state,
+        )
+      ) {
+        throw new NotAllowedError('edit this topic');
+      }
+
+      if (topic.creatorID !== auth.userID) {
+        throw new NotAllowedError('edit this topic');
+      }
+
+      let display = topic.display;
+      if (dam.needReview(title) || dam.needReview(text)) {
+        if (display === TopicDisplay.Normal) {
+          display = TopicDisplay.Review;
+        } else {
+          return {};
+        }
+      }
+
+      await orm.GroupTopicRepo.update({ id: topicID }, { title, display });
+
+      const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
+
+      if (topicPost) {
+        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: text });
+      }
 
       return {};
     },

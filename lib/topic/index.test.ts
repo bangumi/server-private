@@ -30,7 +30,7 @@ describe('mocked', () => {
       topicID: 10,
       content: 'c',
       userID: 1,
-      state: Topic.ReplyState.Normal,
+      state: Topic.CommentState.Normal,
       parentID: 6,
     });
 
@@ -49,7 +49,7 @@ describe('should create topic reply', () => {
       topicID: 375793,
       content: 'new content for testing',
       userID: 1,
-      state: Topic.ReplyState.Normal,
+      state: Topic.CommentState.Normal,
       parentID: 0,
     });
 
