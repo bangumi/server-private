@@ -6,7 +6,7 @@ import { emptyAuth, NeedLoginError, NotAllowedError } from '@app/lib/auth';
 import * as auth from '@app/lib/auth';
 import * as authCode from '@app/lib/auth/authcode';
 import * as session from '@app/lib/auth/session';
-import { CookieKey } from '@app/lib/auth/session';
+import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session';
 import config from '@app/lib/config';
 import { UserRepo } from '@app/lib/orm';
 import { cached } from '@app/lib/redis';
@@ -32,7 +32,7 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
     return false;
   }
 
-  const sessionRaw = req.cookies.chii_auth;
+  const sessionRaw = req.cookies[LegacyCookieKey];
   if (!sessionRaw) {
     return false;
   }
