@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "allowImportingTsExtensions": true,
+    "forceConsistentCasingInFileNames": true,
     "pretty": true,
     "isolatedModules": true,
     "sourceMap": true,
