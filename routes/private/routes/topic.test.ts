@@ -9,7 +9,7 @@ import * as orm from '@app/lib/orm';
 import { createServer } from '@app/lib/server';
 import type { ITopicDetails } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
-import { ReplyState, TopicDisplay } from '@app/lib/topic';
+import { CommentState, TopicDisplay } from '@app/lib/topic';
 import { createTestServer } from '@app/tests/utils';
 
 import * as topicAPI from './topic';
@@ -159,7 +159,7 @@ describe('create group post reply', () => {
   const createTopicReply = vi.fn().mockResolvedValue({
     id: 6,
     content: '',
-    state: ReplyState.Normal,
+    state: CommentState.Normal,
     createdAt: DateTime.fromISO('2021-10-21').toUnixInteger(),
     type: Topic.Type.group,
     topicID: 371602,
@@ -192,7 +192,7 @@ describe('create group post reply', () => {
           display: TopicDisplay.Normal,
           createdAt: DateTime.now().toUnixInteger(),
           text: 't',
-          state: ReplyState.Normal,
+          state: CommentState.Normal,
           parentID: 1,
         });
       },

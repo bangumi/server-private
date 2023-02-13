@@ -7,7 +7,7 @@ import * as typeorm from 'typeorm';
 import config from '@app/lib/config';
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import { logger } from '@app/lib/logger';
-import type { ReplyState, TopicDisplay } from '@app/lib/topic';
+import type { CommentState, TopicDisplay } from '@app/lib/topic';
 
 import * as entity from './entity';
 import {
@@ -465,7 +465,7 @@ interface PostCreation {
   groupID: number;
   userID: number;
   display: TopicDisplay;
-  state: ReplyState;
+  state: CommentState;
 }
 
 export async function createPostInGroup(post: PostCreation): Promise<{ id: number }> {
