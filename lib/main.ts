@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 
-import { production } from './config';
-import { logger } from './logger';
+import { production } from './config.ts';
+import { logger } from './logger.ts';
 import { AppDataSource } from './orm';
 import { Subscriber } from './redis.ts';
 import { createServer } from './server.ts';
