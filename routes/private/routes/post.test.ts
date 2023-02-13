@@ -150,19 +150,39 @@ test('should edit topic', async () => {
 
   await app.register(setup);
 
-  const res = await app.inject({
-    url: '/groups/-/topics/375793',
-    method: 'put',
-    payload: {
-      title: 'new topic title',
-      text: 'new contents',
-    },
-  });
+  {
+    const res = await app.inject({
+      url: '/groups/-/topics/375793',
+      method: 'put',
+      payload: {
+        title: 'new topic title',
+        text: 'new contents',
+      },
+    });
 
-  expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(200);
 
-  const topic = await fetchDetail(emptyAuth(), 'group', 375793);
+    const topic = await fetchDetail(emptyAuth(), 'group', 375793);
 
-  expect(topic?.title).toBe('new topic title');
-  expect(topic?.text).toBe('new contents');
+    expect(topic?.title).toBe('new topic title');
+    expect(topic?.text).toBe('new contents');
+  }
+
+  {
+    const res = await app.inject({
+      url: '/groups/-/topics/375793',
+      method: 'put',
+      payload: {
+        title: 'new topic title 2',
+        text: 'new contents 2',
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    const topic = await fetchDetail(emptyAuth(), 'group', 375793);
+
+    expect(topic?.title).toBe('new topic title 2');
+    expect(topic?.text).toBe('new contents 2');
+  }
 });
