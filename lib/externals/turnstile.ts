@@ -1,6 +1,6 @@
 import { stage } from '@app/lib/config';
 
-import { WithHttpClient } from './base';
+import { WithHttpClient } from './base.ts';
 
 const VerifyURL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 

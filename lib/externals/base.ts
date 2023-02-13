@@ -2,8 +2,8 @@ import type { OptionsInit } from 'got';
 import { Options } from 'got';
 import * as got from 'got';
 
-import { HTTPS_PROXY } from '@app/lib/config';
-import ProxyAgent from '@app/vendor/proxy-agent';
+import { HTTPS_PROXY } from '@app/lib/config.ts';
+import ProxyAgent from '@app/vendor/proxy-agent.js';
 
 export class WithHttpClient {
   protected readonly client: got.Got;
