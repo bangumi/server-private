@@ -102,6 +102,7 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         response: {
           200: t.Object({}),
+          400: t.Ref(res.Error),
           401: t.Ref(res.Error, {
             'x-examples': formatErrors(NotAllowedError('edit a topic')),
           }),
