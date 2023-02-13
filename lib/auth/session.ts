@@ -10,6 +10,7 @@ import type { IAuth } from './';
 import * as auth from './';
 
 export const CookieKey = 'chiiNextSessionID';
+export const LegacyCookieKey = 'chii_auth';
 
 export async function create(user: { id: number; regTime: number }): Promise<string> {
   const now = DateTime.now().toUnixInteger();

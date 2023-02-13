@@ -24,7 +24,9 @@ module.exports = {
     sourceType: 'module',
     ecmaVersion: 2022,
   },
-  rules: {},
+  rules: {
+    'space-before-function-paren': 'off',
+  },
   settings: {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts'],
@@ -99,22 +101,7 @@ module.exports = {
             multilineDetection: 'brackets',
           },
         ],
-        '@typescript-eslint/space-before-function-paren': [
-          'error',
-          {
-            anonymous: 'always',
-            named: 'never',
-            asyncArrow: 'always',
-          },
-        ],
-        'space-before-function-paren': [
-          'error',
-          {
-            anonymous: 'always',
-            named: 'never',
-            asyncArrow: 'always',
-          },
-        ],
+        '@typescript-eslint/space-before-function-paren': 'off',
         '@typescript-eslint/semi': ['error', 'always'],
         semi: ['error', 'always'],
         'comma-dangle': [

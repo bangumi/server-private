@@ -23,26 +23,30 @@
     width: 40px;
     height: 50px;
   }
+
+  .one-line {
+    white-space: nowrap;
+  }
 </style>
 <div id='header' class='container-fluid'>
   <div class='row d-flex justify-content-around h-100'>
-    <div class='col-6'>
-      <div class='row'>
-        <div class='col-2'>
-          <a href='/demo/'>
-            <div class='bg musume_0'></div>
-          </a>
-        </div>
-        <div class='col-5 d-flex align-content-around align-items-center'>demo</div>
-      </div>
+    <div class='col-1'>
+      <a href='/demo/'>
+        <div class='bg musume_0'></div>
+      </a>
     </div>
+
+    <div class='col-3 d-none d-sm-none d-md-flex align-content-around align-items-center'>
+      {{ navTitle | default: 'demo' }}
+    </div>
+
     <div class='col-1 h-100 d-flex justify-content-center align-items-center'>
       {% if user %}
         <a href='https://api.bgm.tv/v0/users/{{ user.username }}' class='h-100 avatar'>
           <img class='img-fluid h-100' src='{{ user.avatar.large }}' alt=''>
         </a>
       {% else %}
-        <a href='/demo/login' class='h-50 text-decoration-none text-dark'> 登录 </a>
+        <a href='/demo/login' class='one-line h-50 text-decoration-none text-dark'> 登录 </a>
       {% endif %}
     </div>
   </div>

@@ -125,7 +125,7 @@ export async function setup(app: App) {
       const sessionKey = req.cookies[session.CookieKey];
 
       if (!sessionKey) {
-        throw new Error('missing cookies chiiNextSessionID');
+        return;
       }
 
       await session.revoke(sessionKey);
