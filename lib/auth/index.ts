@@ -5,12 +5,12 @@ import { compare } from '@node-rs/bcrypt';
 import { DateTime } from 'luxon';
 import { FindOperator } from 'typeorm';
 
-import { redisPrefix } from '@app/lib/config';
+import { redisPrefix } from '@app/lib/config.ts';
 import type { SingleMessageErrorConstructor } from '@app/lib/error';
 import type { IUser, Permission } from '@app/lib/orm';
 import { AccessTokenRepo, fetchPermission, fetchUser } from '@app/lib/orm';
-import redis from '@app/lib/redis';
-import NodeCache from '@app/vendor/node-cache';
+import redis from '@app/lib/redis.ts';
+import NodeCache from '@app/vendor/node-cache.js';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError: SingleMessageErrorConstructor = createError(

@@ -2,9 +2,9 @@ import { Type as t } from '@sinclair/typebox';
 
 import { NotFoundError } from '@app/lib/error';
 import { fetchUserByUsername } from '@app/lib/orm';
-import { toResUser } from '@app/lib/types/res';
-import * as res from '@app/lib/types/res';
-import type { App, Option } from '@app/routes/type';
+import { toResUser } from '@app/lib/types/res.ts';
+import * as res from '@app/lib/types/res.ts';
+import type { App, Option } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App, { tags = [] }: Option) {

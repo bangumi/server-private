@@ -3,7 +3,7 @@ import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { SessionRepo } from '@app/lib/orm';
 
-import { create, get, revoke } from './session';
+import { create, get, revoke } from './session.ts';
 
 beforeEach(async () => {
   await SessionRepo.delete({});

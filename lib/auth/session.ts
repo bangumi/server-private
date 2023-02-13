@@ -6,8 +6,8 @@ import { SessionRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
 import { randomBase62String } from '@app/lib/utils';
 
-import type { IAuth } from './index';
-import * as auth from './index';
+import type { IAuth } from './';
+import * as auth from './';
 
 export const CookieKey = 'chiiNextSessionID';
 
