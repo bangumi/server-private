@@ -1,5 +1,5 @@
 /** 敏感词过滤 */
-import config from './config';
+import config from './config.ts';
 
 const controlPattern = /[\u200B-\u200F\u202A-\u202E\uFEFF]/;
 

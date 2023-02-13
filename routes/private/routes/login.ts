@@ -4,20 +4,20 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
 import { comparePassword, NeedLoginError } from '@app/lib/auth';
-import * as session from '@app/lib/auth/session';
-import { CookieKey } from '@app/lib/auth/session';
-import config, { redisPrefix } from '@app/lib/config';
-import { UnexpectedNotFoundError } from '@app/lib/error';
-import { createTurnstileDriver } from '@app/lib/externals/turnstile';
+import * as session from '@app/lib/auth/session.ts';
+import { CookieKey } from '@app/lib/auth/session.ts';
+import config, { redisPrefix } from '@app/lib/config.ts';
+import { UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { createTurnstileDriver } from '@app/lib/externals/turnstile.ts';
 import { Security, Tag } from '@app/lib/openapi';
 import { fetchUser, UserRepo } from '@app/lib/orm';
-import redis from '@app/lib/redis';
-import { avatar } from '@app/lib/response';
-import * as res from '@app/lib/types/res';
-import { toResUser } from '@app/lib/types/res';
+import redis from '@app/lib/redis.ts';
+import { avatar } from '@app/lib/response.ts';
+import * as res from '@app/lib/types/res.ts';
+import { toResUser } from '@app/lib/types/res.ts';
 import Limiter from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
 const TooManyRequestsError = createError(
   'TOO_MANY_REQUESTS',
