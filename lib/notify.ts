@@ -1,10 +1,10 @@
 import * as lodash from 'lodash-es';
 import type { DateTime } from 'luxon';
 import * as php from 'php-serialize';
+import type { Repository } from 'typeorm';
 import * as typeorm from 'typeorm';
-import type { Repository } from 'typeorm/repository/Repository';
 
-import { UnreachableError } from './error';
+import { UnreachableError } from './error.ts';
 import * as orm from './orm';
 import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './orm';
 import type { Notify } from './orm/entity';

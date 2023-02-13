@@ -3,7 +3,7 @@ import * as url from 'node:url';
 import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
 
-import config, { redisPrefix } from './config';
+import config, { redisPrefix } from './config.ts';
 import { intval } from './utils';
 
 const u = url.parse(config.redisUri);
