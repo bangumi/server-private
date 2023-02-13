@@ -5874,7 +5874,7 @@ typeorm@^0.3.12:
 
 typescript@^5.0.0-beta:
   version "5.0.0-beta"
-  resolved "https://registry.npmmirror.com/typescript/-/typescript-5.0.0-beta.tgz#791fa95411d6ff64ee77d677ed1e6f32a2eaabaf"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.0.0-beta.tgz#791fa95411d6ff64ee77d677ed1e6f32a2eaabaf"
   integrity sha512-+SSabbSXG5mtF+QGdV9uXXt9Saq1cSyI6hSG7znhaLoquleJpnmfkwSxFngK9c2fWWi1W/263TuzXQOsIcdjjA==
 
 ufo@^1.0.1:
