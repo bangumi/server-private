@@ -1,5 +1,4 @@
 import { DateTime } from 'luxon';
-import * as typeorm from 'typeorm';
 
 import { redisPrefix } from '@app/lib/config';
 import { SessionRepo } from '@app/lib/orm';
@@ -47,10 +46,11 @@ export async function get(sessionID: string): Promise<IAuth | null> {
     return await auth.byUserID(session.userID);
   }
 
-  const session = await SessionRepo.findOne({
-    where: { key: sessionID, expiredAt: typeorm.MoreThanOrEqual(DateTime.now().toUnixInteger()) },
-  });
+  const session = await SessionRepo.findOneBy({ key: sessionID });
   if (!session) {
+    return null;
+  }
+  if (session.expiredAt <= DateTime.now().toUnixInteger()) {
     return null;
   }
 
