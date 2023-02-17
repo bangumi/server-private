@@ -1,23 +1,5 @@
 // Vitest Snapshot v1
 
-exports[`create group post reply > should not create on non-existing topic 1`] = `
-Object {
-  "code": "NOT_FOUND",
-  "error": "Not Found",
-  "message": "topic 3716000 not found",
-  "statusCode": 404,
-}
-`;
-
-exports[`create group post reply > should not create on non-existing topic reply 1`] = `
-Object {
-  "code": "NOT_FOUND",
-  "error": "Not Found",
-  "message": "parent post id 11 not found",
-  "statusCode": 404,
-}
-`;
-
 exports[`group topics > should failed on not found group 1`] = `
 Object {
   "code": "NOT_FOUND",
