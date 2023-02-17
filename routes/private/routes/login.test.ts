@@ -51,10 +51,7 @@ describe('login', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(
-      // @ts-expect-error remove this ts-ignore after light-my-re quest release a new version
-      res.cookies.filter((x: { name: string }) => x.name === session.CookieKey),
-    ).toHaveLength(1);
+    expect(res.cookies.filter((x) => x.name === session.CookieKey)).toHaveLength(1);
     expect(res.json()).toMatchSnapshot();
   });
 });
