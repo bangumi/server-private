@@ -658,6 +658,52 @@
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.4.tgz#e913e8175db8307d78b4e8fa690408ba6b65dee4"
   integrity sha512-KnRanxnpfpjUTqTCXslZSEdLfXExwgNxYPdiO2WGUj8+HDjFi8R3k5RVKPeSCzLjCcshCAtVO2QBbVuAV4kTnw==
 
+"@types/conventional-changelog-core@*":
+  version "4.2.1"
+  resolved "https://registry.npmmirror.com/@types/conventional-changelog-core/-/conventional-changelog-core-4.2.1.tgz#d72a6a5117d725c8980aa084d3447a65fd66e741"
+  integrity sha512-XdQKXrWvHYvnhuXal4JcvIh3sn9LpcER/WjWDDQHh0yz3/yt0r8TvE5AyJwX6xL9BwJRpE1Ce+A0Hj16nsfI6w==
+  dependencies:
+    "@types/conventional-changelog-writer" "*"
+    "@types/conventional-commits-parser" "*"
+    "@types/conventional-recommended-bump" "*"
+    "@types/git-raw-commits" "*"
+    "@types/node" "*"
+    "@types/normalize-package-data" "*"
+
+"@types/conventional-changelog-writer@*":
+  version "4.0.2"
+  resolved "https://registry.npmmirror.com/@types/conventional-changelog-writer/-/conventional-changelog-writer-4.0.2.tgz#bbdf5800b15866fb0e9f5e08e6528961dd4e4911"
+  integrity sha512-3WZjXOh1k2FYDZlmR/lFCaTJlOGTfqOW0PWd4A1hwIVVSk5fWP8fRR9228DiEbcq9ZrQl07ACbPpxGCCEJ6cQQ==
+  dependencies:
+    "@types/conventional-commits-parser" "*"
+    "@types/node" "*"
+
+"@types/conventional-changelog@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.npmmirror.com/@types/conventional-changelog/-/conventional-changelog-3.1.1.tgz#a126b9d264a834f2267f0822717a28c12aa352e1"
+  integrity sha512-+Ei7ZUTHnWseUthn22+MVLQjcQZ0AitqOk/UMl3/3aX5FMPofGeKVn/0HZYabsLN+kCioP3FpBrucrWdcCoMJw==
+  dependencies:
+    "@types/conventional-changelog-core" "*"
+    "@types/conventional-changelog-writer" "*"
+    "@types/conventional-commits-parser" "*"
+    "@types/node" "*"
+
+"@types/conventional-commits-parser@*":
+  version "3.0.3"
+  resolved "https://registry.npmmirror.com/@types/conventional-commits-parser/-/conventional-commits-parser-3.0.3.tgz#ad894794a4df360231bfb2de1b361890a1459824"
+  integrity sha512-aoUKfRQYvGMH+spFpOTX9jO4nZoz9/BKp4hlHPxL3Cj2r2Xj+jEcwlXtFIyZr5uL8bh1nbWynDEYaAota+XqPg==
+  dependencies:
+    "@types/node" "*"
+
+"@types/conventional-recommended-bump@*":
+  version "6.1.0"
+  resolved "https://registry.npmmirror.com/@types/conventional-recommended-bump/-/conventional-recommended-bump-6.1.0.tgz#b0386c0cc830aac0f88d9018226f77641d1b9bf9"
+  integrity sha512-AlhJsbzY2W+9xkn44qvEgeJGY6FbQIluPRZawwU2JgJw+o7PYB/yjeuRsJhNZRKto3j71hDj+hQik10w/7bI4Q==
+  dependencies:
+    "@types/conventional-changelog-core" "*"
+    "@types/conventional-changelog-writer" "*"
+    "@types/conventional-commits-parser" "*"
+
 "@types/cookie@^0.4.1":
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.4.1.tgz#bfd02c1f2224567676c1545199f87c3a861d878d"
@@ -676,6 +722,13 @@
   integrity sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==
   dependencies:
     "@types/ms" "*"
+
+"@types/git-raw-commits@*":
+  version "2.0.1"
+  resolved "https://registry.npmmirror.com/@types/git-raw-commits/-/git-raw-commits-2.0.1.tgz#94bd91f6cfbc7174a47545424559de229998adc1"
+  integrity sha512-vE2lbXxqJ0AqMDoP4N6d+WVfbcBla9+z8IL6e+37JNQIwYZCYY0z3J7hdpY8D/VGwFZ0yIYQLcqk8eCnfXsaEg==
+  dependencies:
+    "@types/node" "*"
 
 "@types/http-cache-semantics@^4.0.1":
   version "4.0.1"
@@ -760,7 +813,7 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.13.0.tgz#0400d1e6ce87e9d3032c19eb6c58205b0d3f7850"
   integrity sha512-gC3TazRzGoOnoKAhUx+Q0t8S9Tzs74z7m0ipwGpSqQrleP14hKxP4/JUeEQcD3W1/aIpnWl8pHowI7WokuZpXg==
 
-"@types/normalize-package-data@^2.4.0":
+"@types/normalize-package-data@*", "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz#d3357479a0fdfdd5907fe67e17e0a85c906e1301"
   integrity sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==

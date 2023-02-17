@@ -11,14 +11,14 @@ const commitTemplate = `*{{#if scope}} **{{scope}}**:
 
 const s = conventionalChangelog(
   {
-    preset: 'angular',
+    preset: 'conventionalcommits',
     tagPrefix: 'v',
     releaseCount: 2,
   },
   { linkReferences: false },
   undefined,
   {
-    noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES'],
+    noteKeywords: ['BREAKING CHANGE'],
   },
   {
     headerPartial: '',
@@ -28,14 +28,14 @@ const s = conventionalChangelog(
         return false;
       }
 
-      if (commit.scope) {
-        if (['internal', 'dal'].includes(commit.scope)) {
-          return false;
-        }
+      if (!['feat', 'fix', 'perf', 'revert', 'refactor'].includes(commit.type)) {
+        return false;
       }
 
-      if (!['feat', 'fix', 'perf', 'revert'].includes(commit.type)) {
-        return false;
+      if (commit.type === 'refactor') {
+        if (!commit.notes.length) {
+          return false;
+        }
       }
 
       if (commit.type === 'feat') {
@@ -47,6 +47,8 @@ const s = conventionalChangelog(
       } else if (commit.type === 'revert' || commit.revert) {
         commit.type = 'Reverts';
       }
+
+      commit.references = [];
 
       return commit;
     },
