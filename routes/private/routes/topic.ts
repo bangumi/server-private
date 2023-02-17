@@ -85,7 +85,7 @@ const TopicDetail = t.Object(
 const TopicBasic = t.Object(
   {
     title: t.String({ minLength: 1 }),
-    content: t.String({ minLength: 1, description: 'bbcode' }),
+    text: t.String({ minLength: 1, description: 'bbcode' }),
   },
   { $id: 'TopicCreation', examples: [{ title: 'topic title', content: 'topic content' }] },
 );
@@ -336,7 +336,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a post')],
     },
-    async ({ auth, body: { content, title }, params: { groupName } }) => {
+    async ({ auth, body: { text, title }, params: { groupName } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create posts');
       }
@@ -348,7 +348,7 @@ export async function setup(app: App) {
 
       let display = TopicDisplay.Normal;
 
-      if (dam.needReview(title) || dam.needReview(content)) {
+      if (dam.needReview(title) || dam.needReview(text)) {
         display = TopicDisplay.Review;
       }
 
@@ -358,7 +358,7 @@ export async function setup(app: App) {
 
       return await orm.createPostInGroup({
         title,
-        content,
+        content: text,
         display,
         userID: auth.userID,
         groupID: group.id,
@@ -391,19 +391,19 @@ export async function setup(app: App) {
     /**
      * @param auth -
      * @param title - 帖子标题
-     * @param content - 帖子内容
+     * @param text - 帖子内容
      * @param topicID - 帖子 ID
      */
     async function ({
       auth,
-      body: { title, content },
+      body: { title, text },
       params: { topicID },
     }): Promise<Record<string, never>> {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
       }
 
-      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(content))) {
+      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(text))) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
@@ -425,7 +425,7 @@ export async function setup(app: App) {
       }
 
       let display = topic.display;
-      if (dam.needReview(title) || dam.needReview(content)) {
+      if (dam.needReview(title) || dam.needReview(text)) {
         if (display === TopicDisplay.Normal) {
           display = TopicDisplay.Review;
         } else {
@@ -438,7 +438,7 @@ export async function setup(app: App) {
       const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
 
       if (topicPost) {
-        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: content });
+        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: text });
       }
 
       return {};

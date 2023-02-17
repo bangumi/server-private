@@ -1,8 +1,11 @@
-import { beforeEach, expect, test } from 'vitest';
+import { DateTime } from 'luxon';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { emptyAuth } from '@app/lib/auth';
+import { emptyAuth, IAuth, UserGroup } from '@app/lib/auth';
+import * as Notify from '@app/lib/notify';
 import * as orm from '@app/lib/orm';
-import { fetchDetail } from '@app/lib/topic';
+import { CommentState, ITopicDetails, TopicDisplay } from '@app/lib/topic';
+import * as Topic from '@app/lib/topic';
 import { createTestServer } from '@app/tests/utils';
 
 import { setup } from './post';
@@ -108,81 +111,181 @@ test('should not edit post with sub-reply', async () => {
   expect(res.statusCode).toBe(401);
 });
 
-test('should not edited topic by non-owner', async () => {
-  const app = createTestServer({
-    auth: {
-      ...emptyAuth(),
-      login: true,
-      userID: 1,
+describe('create group post reply', () => {
+  const createTopicReply = vi.fn().mockResolvedValue({
+    id: 6,
+    content: '',
+    state: CommentState.Normal,
+    createdAt: DateTime.fromISO('2021-10-21').toUnixInteger(),
+    type: Topic.Type.group,
+    topicID: 371602,
+    user: {
+      img: '',
+      username: 'u',
+      groupID: UserGroup.Normal,
+      id: 9,
+      nickname: 'n',
+      regTime: DateTime.fromISO('2008-10-01').toUnixInteger(),
+      sign: '',
     },
   });
 
-  await app.register(setup);
+  const notifyMock = vi.fn();
+  beforeEach(() => {
+    vi.spyOn(Topic, 'createTopicReply').mockImplementation(createTopicReply);
+    vi.spyOn(Notify, 'create').mockImplementation(notifyMock);
+    vi.spyOn(Topic, 'fetchDetail').mockImplementationOnce(
+      (_: IAuth, type: 'group', id: number): Promise<ITopicDetails | null> => {
+        if (id !== 371602) {
+          return Promise.resolve(null);
+        }
 
-  const res = await app.inject({
-    url: '/groups/-/topics/371602',
-    method: 'put',
-    payload: {
-      title: 'new topic title',
-      text: 'new contents',
-    },
+        return Promise.resolve({
+          replies: [],
+          creatorID: 287622,
+          id: id,
+          title: 't',
+          display: TopicDisplay.Normal,
+          createdAt: DateTime.now().toUnixInteger(),
+          text: 't',
+          state: CommentState.Normal,
+          parentID: 1,
+        });
+      },
+    );
   });
 
-  expect(res.json()).toMatchInlineSnapshot(`
-    Object {
-      "code": "NOT_ALLOWED",
-      "error": "Unauthorized",
-      "message": "you don't have permission to edit this topic",
-      "statusCode": 401,
-    }
-  `);
-  expect(res.statusCode).toBe(401);
-});
-
-test('should edit topic', async () => {
-  const app = createTestServer({
-    auth: {
-      ...emptyAuth(),
-      login: true,
-      userID: 287622,
-    },
+  afterEach(() => {
+    vi.resetModules();
   });
 
-  await app.register(setup);
-
-  {
-    const res = await app.inject({
-      url: '/groups/-/topics/375793',
-      method: 'put',
-      payload: {
-        title: 'new topic title',
-        text: 'new contents',
+  test('should create group post reply', async () => {
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
       },
     });
 
-    expect(res.statusCode).toBe(200);
+    await app.register(setup);
 
-    const topic = await fetchDetail(emptyAuth(), 'group', 375793);
-
-    expect(topic?.title).toBe('new topic title');
-    expect(topic?.text).toBe('new contents');
-  }
-
-  {
     const res = await app.inject({
-      url: '/groups/-/topics/375793',
-      method: 'put',
+      url: '/groups/-/topics/371602/replies',
+      method: 'post',
       payload: {
-        title: 'new topic title 2',
-        text: 'new contents 2',
+        content: 'post contents',
       },
     });
 
+    expect(res.json()).toMatchObject({
+      creator: {
+        avatar: {
+          large: 'https://lain.bgm.tv/pic/user/l/icon.jpg',
+          medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
+          small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
+        },
+        id: 9,
+        nickname: 'n',
+        sign: '',
+        user_group: 10,
+        username: 'u',
+      },
+      id: 6,
+      state: 0,
+      text: '',
+    });
     expect(res.statusCode).toBe(200);
+    expect(notifyMock).toHaveBeenCalledOnce();
+    expect(notifyMock).toBeCalledWith(
+      expect.objectContaining({
+        destUserID: 287622,
+        type: Notify.Type.GroupTopicReply,
+      }),
+    );
+  });
 
-    const topic = await fetchDetail(emptyAuth(), 'group', 375793);
+  test('should not create with banned user', async () => {
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {
+          ban_post: true,
+        },
+        regTime: 0,
+        allowNsfw: true,
+        userID: 1,
+      },
+    });
 
-    expect(topic?.title).toBe('new topic title 2');
-    expect(topic?.text).toBe('new contents 2');
-  }
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics/371602/replies',
+      method: 'post',
+      payload: {
+        content: 'post contents',
+      },
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(createTopicReply).toBeCalledTimes(1);
+  });
+
+  test('should not create on non-existing topic', async () => {
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 1,
+      },
+    });
+
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics/3716000/replies',
+      method: 'post',
+      payload: {
+        content: 'post contents',
+      },
+    });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should not create on non-existing topic reply', async () => {
+    const app = createTestServer({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 1,
+      },
+    });
+
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics/371602/replies',
+      method: 'post',
+      payload: {
+        content: 'post contents',
+        replyTo: 11,
+      },
+    });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.json()).toMatchSnapshot();
+  });
 });
