@@ -1,16 +1,14 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
-import { DateTime } from 'luxon';
 
 import type { IAuth } from '@app/lib/auth';
 import { NotAllowedError } from '@app/lib/auth';
-import { dam } from '@app/lib/dam';
-import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
-import * as Notify from '@app/lib/notify';
+import { Dam, dam } from '@app/lib/dam';
+import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
-import type { IBaseReply, Page } from '@app/lib/orm';
+import type { Page } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
-import { GroupMemberRepo, GroupRepo, isMemberInGroup } from '@app/lib/orm';
+import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm';
 import { avatar, groupIcon } from '@app/lib/response';
 import type { ITopic } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
@@ -84,11 +82,20 @@ const TopicDetail = t.Object(
   { $id: 'TopicDetail' },
 );
 
+const TopicBasic = t.Object(
+  {
+    title: t.String({ minLength: 1 }),
+    content: t.String({ minLength: 1, description: 'bbcode' }),
+  },
+  { $id: 'TopicCreation', examples: [{ title: 'topic title', content: 'topic content' }] },
+);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(res.Topic);
   app.addSchema(Group);
+  app.addSchema(TopicBasic);
 
   const GroupProfile = t.Object(
     {
@@ -150,19 +157,6 @@ export async function setup(app: App) {
   );
 
   app.addSchema(SubReply);
-
-  const BasicReply = t.Object(
-    {
-      id: t.Integer(),
-      creator: t.Ref(res.User),
-      createdAt: t.Integer(),
-      text: t.String(),
-      state: t.Integer(),
-    },
-    { $id: 'BasicReply' },
-  );
-
-  app.addSchema(BasicReply);
 
   app.addSchema(Reply);
 
@@ -334,17 +328,11 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Object({
-            id: t.Integer({ description: 'new post topic id' }),
+            id: t.Integer({ description: 'new topic id' }),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Object(
-          {
-            title: t.String({ minLength: 1 }),
-            content: t.String({ minLength: 1 }),
-          },
-          { examples: [{ title: 'post title', content: 'post contents' }] },
-        ),
+        body: t.Ref(TopicBasic),
       },
       preHandler: [requireLogin('creating a post')],
     },
@@ -379,134 +367,81 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
-    '/groups/-/topics/:topicID/replies',
+  app.put(
+    '/groups/-/topics/:topicID',
     {
       schema: {
-        operationId: 'createGroupReply',
+        operationId: 'editGroupTopic',
         params: t.Object({
           topicID: t.Integer({ examples: [371602] }),
         }),
         tags: [Tag.Group],
         response: {
-          200: t.Ref(BasicReply),
+          200: t.Object({}),
+          400: t.Ref(res.Error),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
+            'x-examples': formatErrors(NotAllowedError('edit a topic')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Object(
-          {
-            replyTo: t.Optional(
-              t.Integer({
-                examples: [0],
-                default: 0,
-                description: '被回复的 topic ID, `0` 代表回复楼主',
-              }),
-            ),
-            content: t.String({ minLength: 1 }),
-          },
-          {
-            examples: [
-              { content: 'post contents' },
-              {
-                content: 'post contents',
-                replyTo: 2,
-              },
-            ],
-          },
-        ),
+        body: t.Ref(TopicBasic),
       },
-      preHandler: [requireLogin('creating a reply')],
+      preHandler: [requireLogin('edit a topic')],
     },
     /**
      * @param auth -
-     * @param content - 回帖内容
-     * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
+     * @param title - 帖子标题
+     * @param content - 帖子内容
      * @param topicID - 帖子 ID
      */
-    async ({
+    async function ({
       auth,
-      body: { content, replyTo = 0 },
+      body: { title, content },
       params: { topicID },
-    }): Promise<Static<typeof BasicReply>> => {
+    }): Promise<Record<string, never>> {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
+      }
+
+      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(content))) {
+        throw new BadRequestError('text contains invalid invisible character');
       }
 
       const topic = await Topic.fetchDetail(auth, 'group', topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('reply to a closed topic');
+
+      if (
+        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
+          topic.state,
+        )
+      ) {
+        throw new NotAllowedError('edit this topic');
       }
 
-      const now = DateTime.now();
+      if (topic.creatorID !== auth.userID) {
+        throw new NotAllowedError('edit this topic');
+      }
 
-      let parentID = 0;
-      let dstUserID = topic.creatorID;
-      if (replyTo) {
-        const parents: Record<number, IBaseReply> = Object.fromEntries(
-          topic.replies.flatMap((x): [number, IBaseReply][] => {
-            // 管理员操作不能回复
-            if (
-              [
-                CommentState.AdminCloseTopic,
-                CommentState.AdminReopen,
-                CommentState.AdminSilentTopic,
-              ].includes(x.state)
-            ) {
-              return [];
-            }
-            return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
-          }),
-        );
-
-        const replied = parents[replyTo];
-
-        if (!replied) {
-          throw new NotFoundError(`parent post id ${replyTo}`);
+      let display = topic.display;
+      if (dam.needReview(title) || dam.needReview(content)) {
+        if (display === TopicDisplay.Normal) {
+          display = TopicDisplay.Review;
+        } else {
+          return {};
         }
-
-        dstUserID = replied.creatorID;
-        parentID = replied.repliedTo || replied.id;
       }
 
-      const group = await GroupRepo.findOneOrFail({
-        where: { id: topic.parentID },
-      });
+      await orm.GroupTopicRepo.update({ id: topicID }, { title, display });
 
-      if (!group.accessible && !(await orm.isMemberInGroup(group.id, auth.userID))) {
-        throw new NotJoinPrivateGroupError(group.name);
+      const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
+
+      if (topicPost) {
+        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: content });
       }
 
-      const t = await Topic.createTopicReply({
-        topicType: Topic.Type.group,
-        topicID: topicID,
-        userID: auth.userID,
-        content,
-        parentID,
-      });
-
-      const notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
-      await Notify.create({
-        destUserID: dstUserID,
-        sourceUserID: auth.userID,
-        now,
-        type: notifyType,
-        postID: t.id,
-        topicID: topic.id,
-        title: topic.title,
-      });
-
-      return {
-        id: t.id,
-        state: t.state,
-        createdAt: t.createdAt,
-        text: t.content,
-        creator: toResUser(t.user),
-      };
+      return {};
     },
   );
 }
