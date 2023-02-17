@@ -51,9 +51,9 @@ describe('login', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(
-      res.cookies.filter((x: { name: string }) => x.name === session.CookieKey),
-    ).toHaveLength(1);
+    expect(res.cookies.filter((x: { name: string }) => x.name === session.CookieKey)).toHaveLength(
+      1,
+    );
     expect(res.json()).toMatchSnapshot();
   });
 });
