@@ -1,6 +1,6 @@
 {
   "name": "graphql",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "",
   "private": true,
   "type": "module",
@@ -46,6 +46,7 @@
   "license": "MIT",
   "devDependencies": {
     "@shopify/prettier-plugin-liquid": "^1.0.6",
+    "@types/conventional-changelog": "^3.1.1",
     "@types/ioredis-mock": "^8.2.1",
     "@types/js-yaml": "^4.0.5",
     "@types/lodash-es": "^4.17.6",
@@ -58,6 +59,7 @@
     "@typescript-eslint/utils": "^5.52.0",
     "@vitest/coverage-c8": "^0.28.5",
     "@vitest/ui": "^0.28.5",
+    "conventional-changelog": "^3.1.25",
     "dotenv": "^16.0.3",
     "eslint": "^8.34.0",
     "eslint-config-prettier": "^8.6.0",

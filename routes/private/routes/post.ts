@@ -1,20 +1,38 @@
+import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { DateTime } from 'luxon';
 
 import { NotAllowedError } from '@app/lib/auth';
-import { Dam, dam } from '@app/lib/dam';
+import { Dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
+import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
+import type { IBaseReply } from '@app/lib/orm';
+import { GroupRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
+import { CommentState, NotJoinPrivateGroupError } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
-import { CommentState, TopicDisplay } from '@app/lib/topic';
+import { formatErrors, toResUser } from '@app/lib/types/res';
 import * as res from '@app/lib/types/res';
-import { formatErrors } from '@app/lib/types/res';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
+  app.addSchema(res.User);
+  const BasicReply = t.Object(
+    {
+      id: t.Integer(),
+      creator: t.Ref(res.User),
+      createdAt: t.Integer(),
+      text: t.String(),
+      state: t.Integer(),
+    },
+    { $id: 'BasicReply' },
+  );
+
+  app.addSchema(BasicReply);
 
   app.put(
     '/groups/-/posts/:postID',
@@ -91,89 +109,134 @@ export async function setup(app: App) {
     },
   );
 
-  app.put(
-    '/groups/-/topics/:topicID',
+  app.post(
+    '/groups/-/topics/:topicID/replies',
     {
       schema: {
-        operationId: 'editGroupTopic',
+        operationId: 'createGroupReply',
         params: t.Object({
           topicID: t.Integer({ examples: [371602] }),
         }),
         tags: [Tag.Group],
         response: {
-          200: t.Object({}),
-          400: t.Ref(res.Error),
+          200: t.Ref(BasicReply),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('edit a topic')),
+            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
           {
-            title: t.String({ minLength: 1 }),
-            text: t.String({ minLength: 1 }),
+            replyTo: t.Optional(
+              t.Integer({
+                examples: [0],
+                default: 0,
+                description: '被回复的 topic ID, `0` 代表回复楼主',
+              }),
+            ),
+            content: t.String({ minLength: 1 }),
           },
           {
-            examples: [{ title: 'new topic title', text: 'new contents' }],
+            examples: [
+              { content: 'post contents' },
+              {
+                content: 'post contents',
+                replyTo: 2,
+              },
+            ],
           },
         ),
       },
-      preHandler: [requireLogin('edit a topic')],
+      preHandler: [requireLogin('creating a reply')],
     },
     /**
      * @param auth -
-     * @param title - 帖子标题
-     * @param text - 帖子内容
+     * @param content - 回帖内容
+     * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
      * @param topicID - 帖子 ID
      */
-    async function ({
+    async ({
       auth,
-      body: { title, text },
+      body: { content, replyTo = 0 },
       params: { topicID },
-    }): Promise<Record<string, never>> {
+    }): Promise<Static<typeof BasicReply>> => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
-      }
-
-      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(text))) {
-        throw new BadRequestError('text contains invalid invisible character');
       }
 
       const topic = await Topic.fetchDetail(auth, 'group', topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-
-      if (
-        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
-          topic.state,
-        )
-      ) {
-        throw new NotAllowedError('edit this topic');
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('reply to a closed topic');
       }
 
-      if (topic.creatorID !== auth.userID) {
-        throw new NotAllowedError('edit this topic');
-      }
+      const now = DateTime.now();
 
-      let display = topic.display;
-      if (dam.needReview(title) || dam.needReview(text)) {
-        if (display === TopicDisplay.Normal) {
-          display = TopicDisplay.Review;
-        } else {
-          return {};
+      let parentID = 0;
+      let dstUserID = topic.creatorID;
+      if (replyTo) {
+        const parents: Record<number, IBaseReply> = Object.fromEntries(
+          topic.replies.flatMap((x): [number, IBaseReply][] => {
+            // 管理员操作不能回复
+            if (
+              [
+                CommentState.AdminCloseTopic,
+                CommentState.AdminReopen,
+                CommentState.AdminSilentTopic,
+              ].includes(x.state)
+            ) {
+              return [];
+            }
+            return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
+          }),
+        );
+
+        const replied = parents[replyTo];
+
+        if (!replied) {
+          throw new NotFoundError(`parent post id ${replyTo}`);
         }
+
+        dstUserID = replied.creatorID;
+        parentID = replied.repliedTo || replied.id;
       }
 
-      await orm.GroupTopicRepo.update({ id: topicID }, { title, display });
+      const group = await GroupRepo.findOneOrFail({
+        where: { id: topic.parentID },
+      });
 
-      const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
-
-      if (topicPost) {
-        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: text });
+      if (!group.accessible && !(await orm.isMemberInGroup(group.id, auth.userID))) {
+        throw new NotJoinPrivateGroupError(group.name);
       }
 
-      return {};
+      const t = await Topic.createTopicReply({
+        topicType: Topic.Type.group,
+        topicID: topicID,
+        userID: auth.userID,
+        content,
+        parentID,
+      });
+
+      const notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
+      await Notify.create({
+        destUserID: dstUserID,
+        sourceUserID: auth.userID,
+        now,
+        type: notifyType,
+        postID: t.id,
+        topicID: topic.id,
+        title: topic.title,
+      });
+
+      return {
+        id: t.id,
+        state: t.state,
+        createdAt: t.createdAt,
+        text: t.content,
+        creator: toResUser(t.user),
+      };
     },
   );
 }
