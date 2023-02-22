@@ -15,7 +15,7 @@ export default defineConfig({
     extensions: ['.js', '.ts'],
   },
   test: {
-    reporters: process.env.GITHUB_ACTIONS ? ['default', new GithubActionsReporter()] : 'default',
+    reporters: process.env.GITHUB_ACTIONS ? ['default', new GithubActionsReporter()] : 'basic',
     watch: false,
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
