@@ -11,8 +11,6 @@ import { fetchUserX } from '@app/lib/orm';
 import * as res from '@app/lib/types/res';
 import * as admin from '@app/routes/admin';
 import { SessionAuth } from '@app/routes/hooks/pre-handler';
-import * as mobile from '@app/routes/m2';
-import { mobileBBCode } from '@app/routes/m2/bbcode';
 import type { App } from '@app/routes/type';
 
 import * as editor from './editor';
@@ -54,8 +52,6 @@ export async function setup(app: App) {
     cache: production,
   });
 
-  liquid.registerFilter('mobileBBCode', mobileBBCode);
-
   await app.register(fastifyView, {
     engine: {
       liquid,
@@ -65,7 +61,6 @@ export async function setup(app: App) {
     production,
   });
 
-  await app.register(mobile.setup, { prefix: '/m2' });
   await app.register(admin.setup, { prefix: '/admin' });
   await app.register(userDemoRoutes);
 }
