@@ -55,7 +55,6 @@ export const redisPrefix = `graphql-${VERSION}`;
 
 export { HTTPS_PROXY };
 
-/** WARNING: 所有的 key 都必需小写，而且不能包含下划线。 */
 const schema = t.Object({
   host: t.String({ default: '0.0.0.0', env: 'HOST' }),
   port: t.Integer({ default: 4000, env: 'PORT' }),
