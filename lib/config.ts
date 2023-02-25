@@ -57,6 +57,9 @@ export { HTTPS_PROXY };
 
 /** WARNING: 所有的 key 都必需小写，而且不能包含下划线。 */
 const schema = t.Object({
+  host: t.String({ default: '0.0.0.0', env: 'HOST' }),
+  port: t.Integer({ default: 4000, env: 'PORT' }),
+
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
   disable_words: t.Optional(t.String()),
   banned_domain: t.Optional(t.String()),
