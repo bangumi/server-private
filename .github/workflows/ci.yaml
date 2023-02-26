@@ -34,12 +34,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           repository: 'bangumi/dev-env'
-          path: '${{env.HOME}}/dev-env'
-
-      - run: cd ~/dev-env && docker-compose up -d
-        working-directory: 'dev-env'
+          path: 'dev-env'
 
       - run: mv dev-env $HOME/dev-env
+
+      - run: docker-compose up -d
+        working-directory: '${{env.HOME}}/dev-env'
 
       - uses: actions/checkout@v3
 
