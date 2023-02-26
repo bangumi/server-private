@@ -45,10 +45,23 @@ describe('get post', () => {
     const res = await app.inject({ method: 'get', url: '/groups/-/posts/2092074' });
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
-        "code": "NOT_FOUND",
-        "error": "Not Found",
-        "message": "group post 2092074 not found",
-        "statusCode": 404,
+        "createdAt": 1662283112,
+        "creator": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "id": 287622,
+          "nickname": "nickname 287622",
+          "sign": "sing 287622",
+          "user_group": 0,
+          "username": "287622",
+        },
+        "id": 2092074,
+        "state": 0,
+        "text": "sub",
+        "topicID": 371602,
       }
     `);
   });
