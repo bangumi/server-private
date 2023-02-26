@@ -12,7 +12,7 @@ import { projectRoot, VERSION } from '@app/lib/config';
 import { Security } from '@app/lib/openapi';
 import * as res from '@app/lib/types/res';
 
-const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
+const swaggerUI = fs.readFileSync(path.join(projectRoot, './static/swagger.html'));
 
 const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
 
