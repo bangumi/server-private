@@ -104,7 +104,7 @@ export async function privateAPI(app: FastifyInstance) {
   await addPlugin(app, {
     info: {
       version: VERSION,
-      title: 'hello',
+      title: 'bangumi private api',
       description:
         '关于订阅通知的 socket.io 相关的文档在 <https://github.com/bangumi/GraphQL/blob/master/docs/socket.io.md>',
     },

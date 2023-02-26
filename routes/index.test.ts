@@ -15,5 +15,5 @@ test('should build private api spec', async () => {
 
   const res = await app.inject({ url: '/p1/openapi.json' });
   expect(res.statusCode).toBe(200);
-  expect(res.json()).toMatchObject({ info: { title: 'hello' } });
+  expect(res.json()).toMatchObject({ info: { title: 'bangumi private api' } });
 });
