@@ -31,7 +31,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: git clone https://github.com/bangumi/dev-env $HOME/dev-env
+      - uses: actions/checkout@v3
+        with:
+          repository: 'bangumi/dev-env'
+          path: 'dev-env'
+
+      - run: mv dev-env $HOME/dev-env
+
       - run: cd ~/dev-env && docker-compose up -d
 
       - uses: actions/checkout@v3
