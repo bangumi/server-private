@@ -38,8 +38,7 @@ jobs:
 
       - run: mv dev-env $HOME/dev-env
 
-      - run: docker-compose up -d
-        working-directory: '${{env.HOME}}/dev-env'
+      - run: cd ~/dev-env && docker-compose up -d
 
       - uses: actions/checkout@v3
 
