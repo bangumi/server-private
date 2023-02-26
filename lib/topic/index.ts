@@ -62,6 +62,8 @@ export interface ITopicDetails {
   // group ID or subject ID
   parentID: number;
   replies: IReply[];
+
+  contentPost: { id: number };
 }
 
 export async function fetchDetail(
@@ -124,6 +126,7 @@ export async function fetchDetail(
     .map((x) => filterReply(x));
 
   return {
+    contentPost: top,
     id: topic.id,
     title: topic.title,
     parentID: topic.gid,

@@ -189,6 +189,7 @@ describe('create group post reply', () => {
         }
 
         return Promise.resolve({
+          contentPost: { id: 100 },
           replies: [],
           creatorID: 287622,
           id: id,

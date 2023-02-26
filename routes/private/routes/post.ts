@@ -59,6 +59,10 @@ export async function setup(app: App) {
       throw new NotFoundError(`group topic ${post.topicID}`);
     }
 
+    if (topic.contentPost.id === post.id) {
+      throw new NotFoundError(`group post ${postID}`);
+    }
+
     if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(topic.state)) {
       throw new NotFoundError(`group topic ${post.topicID}`);
     }
