@@ -8,7 +8,7 @@ import { BadRequestError, NotFoundError } from '@app/lib/error';
 import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
 import type { IBaseReply } from '@app/lib/orm';
-import { GroupRepo } from '@app/lib/orm';
+import { fetchUserX, GroupRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import { CommentState, NotJoinPrivateGroupError } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
@@ -32,13 +32,72 @@ export async function setup(app: App) {
     { $id: 'BasicReply' },
   );
 
+  const Reply = t.Object(
+    {
+      ...BasicReply.properties,
+      topicID: t.Integer(),
+    },
+    { $id: 'GroupReply' },
+  );
+
   app.addSchema(BasicReply);
+  app.addSchema(Reply);
+
+  app.get(
+    '/groups/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'getGroupPost',
+        params: t.Object({
+          postID: t.Integer({ examples: [2092074] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Ref(Reply),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotFoundError('post')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+      },
+    },
+    async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
+      const post = await orm.GroupPostRepo.findOneBy({ id: postID });
+      if (!post) {
+        throw new NotFoundError(`group post ${postID}`);
+      }
+
+      if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(post.state)) {
+        throw new NotFoundError(`group post ${postID}`);
+      }
+
+      const creator = res.toResUser(await fetchUserX(post.uid));
+
+      const topic = await Topic.fetchDetail(auth, 'group', post.topicID);
+      if (!topic) {
+        throw new NotFoundError(`group topic ${post.topicID}`);
+      }
+
+      if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(topic.state)) {
+        throw new NotFoundError(`group post ${postID}`);
+      }
+
+      return {
+        id: postID,
+        creator,
+        topicID: topic.id,
+        state: post.state,
+        createdAt: post.dateline,
+        text: post.content,
+      };
+    },
+  );
 
   app.put(
     '/groups/-/posts/:postID',
     {
       schema: {
-        operationId: 'editGroupReply',
+        operationId: 'editGroupPost',
         params: t.Object({
           postID: t.Integer({ examples: [2092074] }),
         }),
