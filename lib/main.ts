@@ -5,7 +5,6 @@ import { logger } from './logger.ts';
 import { AppDataSource } from './orm';
 import { Subscriber } from './redis.ts';
 import { createServer } from './server.ts';
-import { intval } from './utils';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console
