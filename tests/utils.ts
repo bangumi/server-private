@@ -4,8 +4,12 @@ import type { FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 
 import type { IAuth } from '@app/lib/auth';
+import { emptyAuth } from '@app/lib/auth';
 
-export function createTestServer({ auth, ...opt }: { auth?: IAuth } & FastifyServerOptions) {
+export function createTestServer({
+  auth = {},
+  ...opt
+}: { auth?: Partial<IAuth> } & FastifyServerOptions = {}) {
   const app = fastify({
     ...opt,
     ajv: {
@@ -20,7 +24,10 @@ export function createTestServer({ auth, ...opt }: { auth?: IAuth } & FastifySer
 
   if (auth) {
     app.addHook('preHandler', (req, res, done) => {
-      req.auth = auth;
+      req.auth = {
+        ...emptyAuth(),
+        ...auth,
+      };
       done();
     });
   }

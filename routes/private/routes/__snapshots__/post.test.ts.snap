@@ -17,3 +17,23 @@ Object {
   "statusCode": 404,
 }
 `;
+
+exports[`delete post > not allowed not login 1`] = `
+Object {
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before delete a post",
+  "statusCode": 401,
+}
+`;
+
+exports[`delete post > not allowed wrong user 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to delete this post",
+  "statusCode": 401,
+}
+`;
+
+exports[`delete post > ok 1`] = `Object {}`;
