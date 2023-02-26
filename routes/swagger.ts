@@ -12,7 +12,7 @@ import { projectRoot, VERSION } from '@app/lib/config';
 import { Security } from '@app/lib/openapi';
 import * as res from '@app/lib/types/res';
 
-const swaggerUI = fs.readFileSync(path.join(projectRoot, './lib/swagger.html'));
+const swaggerUI = fs.readFileSync(path.join(projectRoot, './static/swagger.html'));
 
 const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
 
@@ -104,7 +104,7 @@ export async function privateAPI(app: FastifyInstance) {
   await addPlugin(app, {
     info: {
       version: VERSION,
-      title: 'hello',
+      title: 'bangumi private api',
       description:
         '关于订阅通知的 socket.io 相关的文档在 <https://github.com/bangumi/GraphQL/blob/master/docs/socket.io.md>',
     },
