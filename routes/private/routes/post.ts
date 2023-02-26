@@ -2,6 +2,7 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
+import type { IAuth } from '@app/lib/auth';
 import { NotAllowedError } from '@app/lib/auth';
 import { Dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
@@ -43,6 +44,28 @@ export async function setup(app: App) {
   app.addSchema(BasicReply);
   app.addSchema(Reply);
 
+  async function getGroupPost(auth: IAuth, postID: number) {
+    const post = await orm.GroupPostRepo.findOneBy({ id: postID });
+    if (!post) {
+      throw new NotFoundError(`group post ${postID}`);
+    }
+
+    if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(post.state)) {
+      throw new NotFoundError(`group post ${postID}`);
+    }
+
+    const topic = await Topic.fetchDetail(auth, 'group', post.topicID);
+    if (!topic) {
+      throw new NotFoundError(`group topic ${post.topicID}`);
+    }
+
+    if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(topic.state)) {
+      throw new NotFoundError(`group topic ${post.topicID}`);
+    }
+
+    return { post, topic };
+  }
+
   app.get(
     '/groups/-/posts/:postID',
     {
@@ -62,25 +85,9 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const post = await orm.GroupPostRepo.findOneBy({ id: postID });
-      if (!post) {
-        throw new NotFoundError(`group post ${postID}`);
-      }
-
-      if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(post.state)) {
-        throw new NotFoundError(`group post ${postID}`);
-      }
+      const { topic, post } = await getGroupPost(auth, postID);
 
       const creator = res.toResUser(await fetchUserX(post.uid));
-
-      const topic = await Topic.fetchDetail(auth, 'group', post.topicID);
-      if (!topic) {
-        throw new NotFoundError(`group topic ${post.topicID}`);
-      }
-
-      if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(topic.state)) {
-        throw new NotFoundError(`group post ${postID}`);
-      }
 
       return {
         id: postID,
@@ -164,6 +171,44 @@ export async function setup(app: App) {
 
       await orm.GroupPostRepo.update({ id: postID }, { content: text });
 
+      return {};
+    },
+  );
+
+  app.delete(
+    '/groups/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'deleteGroupPost',
+        params: t.Object({
+          postID: t.Integer({ examples: [2092074] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Object({}),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('delete this post')),
+          }),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotFoundError('post')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+      },
+      preHandler: [requireLogin('delete a post')],
+    },
+    async ({ auth, params: { postID } }) => {
+      const { post } = await getGroupPost(auth, postID);
+
+      if (auth.userID !== post.uid) {
+        throw new NotAllowedError('delete this post');
+      }
+
+      if (post.state !== Topic.CommentState.Normal) {
+        return {};
+      }
+
+      await orm.GroupPostRepo.update({ id: postID }, { state: Topic.CommentState.UserDelete });
       return {};
     },
   );

@@ -1,4 +1,4 @@
-// Vitest Snapshot v1
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`group topics > should failed on not found group 1`] = `
 Object {
@@ -169,8 +169,8 @@ Object {
           },
           "id": 2092074,
           "isFriend": false,
-          "state": 0,
-          "text": "sub",
+          "state": 6,
+          "text": "",
         },
       ],
       "state": 0,

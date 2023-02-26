@@ -24,6 +24,7 @@ beforeEach(async () => {
       id: 2177420,
     },
     {
+      state: 0,
       content: 'before-test',
     },
   );
@@ -44,23 +45,10 @@ describe('get post', () => {
     const res = await app.inject({ method: 'get', url: '/groups/-/posts/2092074' });
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
-        "createdAt": 1662283112,
-        "creator": Object {
-          "avatar": Object {
-            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-          },
-          "id": 287622,
-          "nickname": "nickname 287622",
-          "sign": "sing 287622",
-          "user_group": 0,
-          "username": "287622",
-        },
-        "id": 2092074,
-        "state": 0,
-        "text": "sub",
-        "topicID": 371602,
+        "code": "NOT_FOUND",
+        "error": "Not Found",
+        "message": "group post 2092074 not found",
+        "statusCode": 404,
       }
     `);
   });
@@ -74,86 +62,88 @@ describe('get post', () => {
   });
 });
 
-test('should edit post', async () => {
-  const app = createTestServer({
-    auth: {
-      ...emptyAuth(),
-      login: true,
-      userID: 287622,
-    },
+describe('edit post', () => {
+  test('should edit post', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/posts/2177420',
+      method: 'put',
+      payload: { text: 'new content' },
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    const pst = await orm.GroupPostRepo.findOneBy({
+      id: 2177420,
+    });
+
+    expect(pst?.content).toBe('new content');
   });
 
-  await app.register(setup);
+  test('should not edit post', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622 + 1,
+      },
+    });
 
-  const res = await app.inject({
-    url: '/groups/-/posts/2177420',
-    method: 'put',
-    payload: { text: 'new content' },
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/posts/2177420',
+      method: 'put',
+      payload: { text: 'new content' },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "NOT_ALLOWED",
+        "error": "Unauthorized",
+        "message": "you don't have permission to edit reply not created by you",
+        "statusCode": 401,
+      }
+    `);
+    expect(res.statusCode).toBe(401);
   });
 
-  expect(res.statusCode).toBe(200);
+  test('should not edit post with sub-reply', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
 
-  const pst = await orm.GroupPostRepo.findOneBy({
-    id: 2177420,
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/posts/2177419',
+      method: 'put',
+      payload: { text: 'new content' },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "NOT_ALLOWED",
+        "error": "Unauthorized",
+        "message": "you don't have permission to edit a reply with sub-reply",
+        "statusCode": 401,
+      }
+    `);
+    expect(res.statusCode).toBe(401);
   });
-
-  expect(pst?.content).toBe('new content');
-});
-
-test('should not edit post', async () => {
-  const app = createTestServer({
-    auth: {
-      ...emptyAuth(),
-      login: true,
-      userID: 287622 + 1,
-    },
-  });
-
-  await app.register(setup);
-
-  const res = await app.inject({
-    url: '/groups/-/posts/2177420',
-    method: 'put',
-    payload: { text: 'new content' },
-  });
-
-  expect(res.json()).toMatchInlineSnapshot(`
-    Object {
-      "code": "NOT_ALLOWED",
-      "error": "Unauthorized",
-      "message": "you don't have permission to edit reply not created by you",
-      "statusCode": 401,
-    }
-  `);
-  expect(res.statusCode).toBe(401);
-});
-
-test('should not edit post with sub-reply', async () => {
-  const app = createTestServer({
-    auth: {
-      ...emptyAuth(),
-      login: true,
-      userID: 287622,
-    },
-  });
-
-  await app.register(setup);
-
-  const res = await app.inject({
-    url: '/groups/-/posts/2177419',
-    method: 'put',
-    payload: { text: 'new content' },
-  });
-
-  expect(res.json()).toMatchInlineSnapshot(`
-    Object {
-      "code": "NOT_ALLOWED",
-      "error": "Unauthorized",
-      "message": "you don't have permission to edit a reply with sub-reply",
-      "statusCode": 401,
-    }
-  `);
-  expect(res.statusCode).toBe(401);
 });
 
 describe('create group post reply', () => {
@@ -332,5 +322,52 @@ describe('create group post reply', () => {
 
     expect(res.statusCode).toBe(404);
     expect(res.json()).toMatchSnapshot();
+  });
+});
+
+async function testServer(...arg: Parameters<typeof createTestServer>) {
+  const app = createTestServer(...arg);
+
+  await app.register(setup);
+  return app;
+}
+
+describe('delete post', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('not found', async () => {
+    const app = await testServer({ auth: { login: true, userID: 1 } });
+    const res = await app.inject({
+      url: '/groups/-/posts/2092074123',
+      method: 'delete',
+    });
+
+    expect(res.statusCode).toBe(404);
+  });
+
+  test('ok', async () => {
+    const app = await testServer({ auth: { login: true, userID: 287622 } });
+
+    const res = await app.inject({ method: 'delete', url: '/groups/-/posts/2177420' });
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(200);
+  });
+
+  test('not allowed not login', async () => {
+    const app = await testServer();
+    const res = await app.inject({ url: '/groups/-/posts/2177420', method: 'delete' });
+
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('not allowed wrong user', async () => {
+    const app = await testServer({ auth: { login: true, userID: 1122 } });
+    const res = await app.inject({ url: '/groups/-/posts/2177420', method: 'delete' });
+
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(401);
   });
 });
