@@ -19,10 +19,10 @@ export default defineConfig({
     watch: false,
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
-    threads: false,
     snapshotFormat: {
       printBasicPrototype: true,
     },
+    singleThread: true,
     coverage: {
       provider: 'c8',
       reporter: ['lcov', 'text-summary'],
