@@ -34,5 +34,5 @@ jobs:
           title: Update Private Openapi Specification from bangumi/server-private
           push-to-fork: bangumi-bot/dev-docs
           branch: 'update-upstream-graphql'
-          author: 'bangumi-bot <trim21me+banmgumi-bot@gmail.com>'
-          committer: 'bangumi-bot <trim21me+banmgumi-bot@gmail.com>'
+          author: 'bangumi-bot <124712095+bangumi-bot@users.noreply.github.com>'
+          committer: 'bangumi-bot <124712095+bangumi-bot@users.noreply.github.com>'
