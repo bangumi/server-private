@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import { redisPrefix } from '@app/lib/config';
 import { SessionRepo } from '@app/lib/orm';
 import redis from '@app/lib/redis';
-import { randomBase62String } from '@app/lib/utils';
+import { randomBytes } from '@app/lib/utils';
 
 import type { IAuth } from './';
 import * as auth from './';
@@ -13,7 +13,9 @@ export const LegacyCookieKey = 'chii_auth';
 
 export async function create(user: { id: number; regTime: number }): Promise<string> {
   const now = DateTime.now().toUnixInteger();
-  const token = await randomBase62String(32);
+  const bytes = await randomBytes(30);
+  const token = bytes.toString('base64url');
+
   const value = {
     reg_time: DateTime.now().toISOTime(),
     user_id: user.id,

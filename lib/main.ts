@@ -1,11 +1,12 @@
 import { nanoid } from 'nanoid';
 
-import { production } from './config.ts';
+import config, { production } from './config';
 import { logger } from './logger.ts';
 import { AppDataSource } from './orm';
 import { Subscriber } from './redis.ts';
 import { createServer } from './server.ts';
 import { intval } from './utils';
+
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console
@@ -27,14 +28,10 @@ server.addHook('onReady', async () => {
   await AppDataSource.initialize();
 });
 
-const port = process.env.PORT ? intval(process.env.PORT) : 4000;
-const host = process.env.HOST ?? '0.0.0.0';
+await server.listen({ port: config.port, host: config.host });
 
-await server.listen({ port, host });
-
-logger.info(`GraphQL UI  http://127.0.0.1:${port}/v0/altair/`);
-logger.info(`public API  http://127.0.0.1:${port}/v0.5/`);
-logger.info(`private API http://127.0.0.1:${port}/p1/`);
-logger.info(`demo        http://127.0.0.1:${port}/demo/`);
-logger.info(`admin       http://127.0.0.1:${port}/demo/admin/`);
-logger.info(`mobile      http://127.0.0.1:${port}/demo/m2/`);
+logger.info(`GraphQL UI  http://127.0.0.1:${config.port}/v0/altair/`);
+logger.info(`public API  http://127.0.0.1:${config.port}/v0.5/`);
+logger.info(`private API http://127.0.0.1:${config.port}/p1/`);
+logger.info(`demo        http://127.0.0.1:${config.port}/demo/`);
+logger.info(`admin       http://127.0.0.1:${config.port}/demo/admin/`);

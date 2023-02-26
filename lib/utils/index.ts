@@ -11,6 +11,18 @@ const generator = customAlphabet(base62Chars, 32);
 
 export const randomBase62String = (size: number) => generator(size);
 
+export async function randomBytes(size: number): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    crypto.randomBytes(size, (err, buf) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(buf);
+      }
+    });
+  });
+}
+
 /**
  * Parse string as int, strictly
  *

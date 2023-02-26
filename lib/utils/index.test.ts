@@ -1,7 +1,7 @@
 import pLimit from 'p-limit';
 import { expect, test } from 'vitest';
 
-import { intval, randomBase62String } from './index';
+import { intval, randomBase62String, randomBytes } from './index';
 
 const limit = pLimit(10);
 
@@ -49,4 +49,10 @@ test.each([
   } else {
     expect(intval(value)).toBe(expected);
   }
+});
+
+test('randomBytes', async () => {
+  const bytes = await randomBytes(20);
+
+  expect(bytes).toHaveLength(20);
 });
