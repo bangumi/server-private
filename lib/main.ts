@@ -7,7 +7,6 @@ import { Subscriber } from './redis.ts';
 import { createServer } from './server.ts';
 import { intval } from './utils';
 
-
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console
   console.log('check ./lib/config.ts for all available env');
