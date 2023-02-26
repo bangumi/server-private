@@ -31,8 +31,8 @@ jobs:
         with:
           path: dev-docs
           token: ${{ secrets.PAT }}
-          title: Update Openapi Specification from bangumi/server-private
+          title: Update Private Openapi Specification from bangumi/server-private
           push-to-fork: bangumi-bot/dev-docs
           branch: 'update-upstream-graphql'
-          author: 'bangumi-bot <bangumi-bot@users.noreply.github.com>'
-          committer: 'bangumi-bot <bangumi-bot@users.noreply.github.com>'
+          author: 'bangumi-bot <trim21me+banmgumi-bot@gmail.com>'
+          committer: 'bangumi-bot <trim21me+banmgumi-bot@gmail.com>'
