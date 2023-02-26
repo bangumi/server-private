@@ -35,3 +35,4 @@ jobs:
           push-to-fork: bangumi-bot/dev-docs
           branch: 'update-upstream-graphql'
           author: 'bangumi-bot <bangumi-bot@users.noreply.github.com>'
+          committer: 'bangumi-bot <bangumi-bot@users.noreply.github.com>'
