@@ -37,7 +37,9 @@ jobs:
           path: '${{env.HOME}}/dev-env'
 
       - run: cd ~/dev-env && docker-compose up -d
-        working-directory: '${{env.HOME}}/dev-env'
+        working-directory: 'dev-env'
+
+      - run: mv dev-env $HOME/dev-env
 
       - uses: actions/checkout@v3
 
