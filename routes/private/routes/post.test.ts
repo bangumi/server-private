@@ -30,7 +30,7 @@ beforeEach(async () => {
 });
 
 describe('get post', () => {
-  test('get post', async () => {
+  test('ok', async () => {
     const app = createTestServer({
       auth: {
         ...emptyAuth(),
@@ -63,6 +63,14 @@ describe('get post', () => {
         "topicID": 371602,
       }
     `);
+  });
+
+  test('not found', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject({ method: 'get', url: '/groups/-/posts/209207400' });
+    expect(res.statusCode).toBe(404);
   });
 });
 
