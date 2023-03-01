@@ -220,6 +220,7 @@ export async function createTopicReply({
     const GroupTopicRepo = t.getRepository(entity.GroupTopic);
 
     const topic = await GroupTopicRepo.findOneOrFail({ where: { id: topicID } });
+    const posts = await GroupPostRepo.countBy({ topicID, state: CommentState.Normal });
 
     // 创建回帖
     const post = await GroupPostRepo.save({
@@ -232,7 +233,7 @@ export async function createTopicReply({
     });
 
     const topicUpdate = {
-      replies: topic.replies + 1,
+      replies: posts,
       dateline: undefined as undefined | number,
     };
 
