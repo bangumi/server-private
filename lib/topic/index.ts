@@ -168,7 +168,7 @@ export async function fetchTopicList(
   const total = await GroupTopicRepo.count({ where });
   const topics = await GroupTopicRepo.find({
     where,
-    order: { dateline: 'desc' },
+    order: { createdAt: 'desc' },
     skip: offset,
     take: limit,
   });
@@ -181,8 +181,8 @@ export async function fetchTopicList(
         parentID: x.gid,
         creatorID: x.creatorID,
         title: x.title,
-        createdAt: x.dateline,
-        updatedAt: x.lastpost,
+        createdAt: x.createdAt,
+        updatedAt: x.updatedAt,
         repliesCount: x.replies,
       };
     }),
@@ -238,7 +238,7 @@ export async function createTopicReply({
     };
 
     if (topic.state !== CommentState.AdminSilentTopic) {
-      topicUpdate.lastpost = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
+      topicUpdate.updatedAt = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
     }
 
     await GroupTopicRepo.update({ id: topic.id }, topicUpdate);
@@ -259,7 +259,7 @@ export async function createTopicReply({
 
 function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
   if (type === Type.group && [364].includes(main_info.gid) && main_info.replies > 0) {
-    const $created_at = main_info.dateline;
+    const $created_at = main_info.createdAt;
     const $created_hours = (timestamp - $created_at) / 3600;
     const $gravity = 1.8;
     const $base_score = (Math.pow($created_hours + 0.1, $gravity) / main_info.replies) * 200;

@@ -480,8 +480,8 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
       gid: post.groupID,
       creatorID: post.userID,
       state: post.state,
-      lastpost: now.toUnixInteger(),
-      dateline: now.toUnixInteger(),
+      updatedAt: now.toUnixInteger(),
+      createdAt: now.toUnixInteger(),
       replies: 0,
       display: post.display,
     });
