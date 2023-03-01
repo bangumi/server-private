@@ -1,6 +1,7 @@
 import { createError } from '@fastify/error';
 import { DateTime } from 'luxon';
 import * as typeorm from 'typeorm';
+import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 import type { IAuth } from '@app/lib/auth';
 import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error';
@@ -232,13 +233,12 @@ export async function createTopicReply({
       dateline: now.toUnixInteger(),
     });
 
-    const topicUpdate = {
+    const topicUpdate: QueryDeepPartialEntity<entity.GroupTopic> = {
       replies: posts,
-      dateline: undefined as undefined | number,
     };
 
     if (topic.state !== CommentState.AdminSilentTopic) {
-      topicUpdate.dateline = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
+      topicUpdate.lastpost = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
     }
 
     await GroupTopicRepo.update({ id: topic.id }, topicUpdate);
@@ -258,7 +258,7 @@ export async function createTopicReply({
 }
 
 function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
-  if (type === Type.group && [364].includes(main_info.id) && main_info.replies > 0) {
+  if (type === Type.group && [364].includes(main_info.gid) && main_info.replies > 0) {
     const $created_at = main_info.dateline;
     const $created_hours = (timestamp - $created_at) / 3600;
     const $gravity = 1.8;
