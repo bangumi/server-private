@@ -18,7 +18,7 @@ const client = new minio.Client({
 });
 
 if (!(await client.bucketExists(s3.bucket))) {
-  await client.makeBucket(s3.bucket, 'us-east-1');
+  await client.makeBucket(s3.bucket);
 }
 
 export async function uploadImage(path: string, content: Buffer): Promise<void> {
