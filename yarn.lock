@@ -808,12 +808,7 @@
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-0.7.31.tgz#31b7ca6407128a3d2bbc27fe2d21b345397f6197"
   integrity sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==
 
-"@types/node@*", "@types/node@>=10.0.0":
-  version "18.14.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.14.0.tgz#94c47b9217bbac49d4a67a967fdcdeed89ebb7d0"
-  integrity sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==
-
-"@types/node@^18.14.2":
+"@types/node@*", "@types/node@>=10.0.0", "@types/node@^18.14.2":
   version "18.14.2"
   resolved "https://registry.npmmirror.com/@types/node/-/node-18.14.2.tgz#c076ed1d7b6095078ad3cf21dfeea951842778b1"
   integrity sha512-1uEQxww3DaghA0RxqHx0O0ppVlo43pJhepY51OxuQIKHpjbnYLA7vcdwioNPzIqmC2u3I/dmylcqjlh0e7AyUA==
@@ -4179,10 +4174,10 @@ meow@^8.0.0:
     type-fest "^0.18.0"
     yargs-parser "^20.2.3"
 
-mercurius-integration-testing@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/mercurius-integration-testing/-/mercurius-integration-testing-6.0.1.tgz#758d4447fff27a0061c7503989693bf40de7a3de"
-  integrity sha512-YBjsR0KtjtnlGIuyOpg40PD57eq9XKSSsyisrsGUAY2Ql4nY6nP8oM3JN2zjk7j8zYlZRnIiZKovsTOddqXZdA==
+mercurius-integration-testing@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/mercurius-integration-testing/-/mercurius-integration-testing-7.0.0.tgz#e64fb4b9cc8487f1b149d711c27e4858d8784734"
+  integrity sha512-0z6KEsyRNcENWG8QXU5rCZfqrU6wZ/Oeii86OxhdX8KiTIwb3zl+6xQeOlom5vu7zsY5Db5rGeLWEqVbc1Mwjw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     cookie "^0.5.0"
