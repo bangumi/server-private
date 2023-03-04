@@ -37,6 +37,7 @@ export async function setup(app: App) {
     {
       ...BasicReply.properties,
       topicID: t.Integer(),
+      topicTitle: t.String(),
     },
     { $id: 'GroupReply' },
   );
@@ -100,6 +101,7 @@ export async function setup(app: App) {
         state: post.state,
         createdAt: post.dateline,
         text: post.content,
+        topicTitle: topic.title,
       };
     },
   );

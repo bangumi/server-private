@@ -62,6 +62,7 @@ describe('get post', () => {
         "state": 0,
         "text": "sub",
         "topicID": 371602,
+        "topicTitle": "tes",
       }
     `);
   });
