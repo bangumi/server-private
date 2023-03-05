@@ -242,11 +242,11 @@ export async function fetchPermission(userGroup: number): Promise<Readonly<Permi
   const permission = await UserGroupRepo.findOne({ where: { id: userGroup } });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
-    return {};
+    return Object.freeze({});
   }
 
   if (!permission.Permission) {
-    return {};
+    return Object.freeze({});
   }
 
   return Object.freeze(

@@ -128,7 +128,7 @@ const permissionCache = new NodeCache({ stdTTL: 60 * 10 });
 
 async function getPermission(userGroup?: number): Promise<Readonly<Permission>> {
   if (!userGroup) {
-    return {};
+    return Object.freeze({});
   }
 
   const cached = permissionCache.get(userGroup);
