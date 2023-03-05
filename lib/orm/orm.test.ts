@@ -7,7 +7,12 @@ test('should fetch user', async () => {
 });
 
 test('should fetch permission', async () => {
-  await expect(fetchPermission(0)).resolves.toEqual({});
+  await expect(fetchPermission(0)).resolves.toMatchInlineSnapshot(`
+    Object {
+      "ban_post": true,
+      "ban_visit": true,
+    }
+  `);
 });
 
 test('should fallback to empty permission', async () => {

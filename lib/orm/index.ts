@@ -238,15 +238,20 @@ export interface Permission {
   user_wiki_approve?: boolean;
 }
 
+const defaultPermission: Permission = {
+  ban_post: true,
+  ban_visit: true,
+};
+
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
   const permission = await UserGroupRepo.findOne({ where: { id: userGroup } });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
-    return Object.freeze({});
+    return Object.freeze({ ...defaultPermission });
   }
 
   if (!permission.Permission) {
-    return Object.freeze({});
+    return Object.freeze({ ...defaultPermission });
   }
 
   return Object.freeze(
