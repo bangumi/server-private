@@ -7,13 +7,18 @@ interface TypeSafeCacheUtil<Key, Value> {
   get(key: Key): Promise<Value | null>;
 
   del(key: Key): Promise<void>;
+
+  cached(key: Key, getter: () => Promise<Value | null>, ttl?: number): Promise<Value | null>;
 }
 
-export function TypedCache<K, V>(toRedisKey: (v: K) => string): TypeSafeCacheUtil<K, V> {
+export function TypedCache<K, V>(
+  toRedisKey: (v: K) => string,
+  defaultTTL = 60,
+): TypeSafeCacheUtil<K, V> {
   const buildKey = (key: K) => `${redisPrefix}:${toRedisKey(key)}`;
 
   return {
-    async set(key: K, value, ttl = 60) {
+    async set(key: K, value, ttl = defaultTTL) {
       await redis.set(buildKey(key), JSON.stringify(value), 'EX', ttl);
     },
     async get(key: K): Promise<V | null> {
@@ -26,6 +31,22 @@ export function TypedCache<K, V>(toRedisKey: (v: K) => string): TypeSafeCacheUti
     },
     async del(key: K): Promise<void> {
       await redis.del(buildKey(key));
+    },
+
+    async cached(key: K, getter: () => Promise<V | null>, ttl?: number): Promise<V | null> {
+      const cached = await this.get(key);
+      if (cached) {
+        return cached;
+      }
+
+      const data = await getter();
+      if (!data) {
+        return null;
+      }
+
+      await this.set(key, data, ttl);
+
+      return data;
     },
   };
 }

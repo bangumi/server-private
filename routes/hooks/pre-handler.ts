@@ -7,9 +7,9 @@ import * as auth from '@app/lib/auth';
 import * as authCode from '@app/lib/auth/authcode';
 import * as session from '@app/lib/auth/session';
 import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session';
+import { TypedCache } from '@app/lib/cache';
 import config from '@app/lib/config';
 import { UserRepo } from '@app/lib/orm';
-import { cached } from '@app/lib/redis';
 import { md5 } from '@app/lib/utils';
 
 export const requireLogin = (s: string) => async (req: { auth: IAuth }) => {
@@ -25,6 +25,10 @@ export function requirePermission(s: string, allowed: (auth: IAuth) => boolean |
     }
   };
 }
+
+const legacySessionCache = TypedCache<number, { password: string }>(
+  (id) => `auth:legacy-session:${id}`,
+);
 
 async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
   const ua = req.headers['user-agent'];
@@ -44,20 +48,18 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
     return false;
   }
 
-  if (!/\d+/.test(userIDRaw)) {
+  const userID = Number(userIDRaw);
+  if (Number.isNaN(userID) || !Number.isSafeInteger(userID)) {
     return false;
   }
 
-  const userID = Number(userIDRaw);
-  const user = await cached<{ password: string }>({
-    key: `user-pw-${userIDRaw}`,
-    getter: async () => {
-      const u = await UserRepo.findOneBy({ id: userID });
-      if (u) {
-        return { password: u.passwordCrypt };
-      }
-    },
-    ttl: 60,
+  const user = await legacySessionCache.cached(userID, async () => {
+    const u = await UserRepo.findOneBy({ id: userID });
+    if (u) {
+      return { password: u.passwordCrypt };
+    }
+
+    return null;
   });
 
   if (!user) {

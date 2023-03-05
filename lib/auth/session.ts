@@ -37,9 +37,7 @@ interface ICachedSession {
   userID: number;
 }
 
-const sessionCache = TypedCache<string, ICachedSession>(
-  (sessionID: string) => `auth-session:${sessionID}`,
-);
+const sessionCache = TypedCache<string, ICachedSession>((sessionID) => `auth:session:${sessionID}`);
 
 /** @param sessionID - Store in user cookies */
 export async function get(sessionID: string): Promise<IAuth | null> {
