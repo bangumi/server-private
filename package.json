@@ -9,7 +9,7 @@
     "node": "^18.0.0"
   },
   "scripts": {
-    "format": "prettier -w ./",
+    "format": "prettier --list-different -w ./",
     "lint": "eslint --cache --ext ts,cjs,js ./",
     "start": "nodemon ./lib/main.ts",
     "test": "vitest --run",
