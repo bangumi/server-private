@@ -8,8 +8,9 @@ import { FindOperator } from 'typeorm';
 import { redisPrefix } from '@app/lib/config';
 import type { SingleMessageErrorConstructor } from '@app/lib/error';
 import type { IUser, Permission } from '@app/lib/orm';
-import { AccessTokenRepo, fetchPermission, fetchUser } from '@app/lib/orm';
+import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm';
 import redis from '@app/lib/redis';
+import { intval } from '@app/lib/utils';
 import NodeCache from '@app/vendor/node-cache';
 
 const tokenPrefix = 'Bearer ';
@@ -33,7 +34,6 @@ const TokenNotValidError = createError(
   "can't find access token or it has been expired",
   401,
 );
-const MissingUserError = createError('MISSING_USER', "can't find user", 500);
 
 export const enum UserGroup {
   Unknown = 0,
@@ -42,9 +42,9 @@ export const enum UserGroup {
   WindowAdmin,
   Quite,
   Banned,
-  // 不太清除具体是什么
+  // 不太清楚具体是什么
   _6,
-  // 不太清除具体是什么
+  // 不太清楚具体是什么
   _7,
   CharacterAdmin,
   WikiAdmin,
@@ -103,10 +103,7 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
     throw new Error('access token without user id');
   }
 
-  const u = await fetchUser(Number.parseInt(token.userId));
-  if (!u) {
-    throw new MissingUserError();
-  }
+  const u = await fetchUserX(intval(token.userId));
 
   await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
 
@@ -120,10 +117,7 @@ export async function byUserID(userID: number): Promise<IAuth> {
     return await userToAuth(JSON.parse(cached) as IUser);
   }
 
-  const u = await fetchUser(userID);
-  if (!u) {
-    throw new MissingUserError();
-  }
+  const u = await fetchUserX(userID);
 
   await redis.set(key, JSON.stringify(u), 'EX', 60 * 60);
 

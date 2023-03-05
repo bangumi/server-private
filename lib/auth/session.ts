@@ -38,9 +38,13 @@ interface ICachedSession {
   userID: number;
 }
 
+function redisKey(sessionID: string) {
+  return `${redisPrefix}-auth-session:${sessionID}`;
+}
+
 /** @param sessionID - Store in user cookies */
 export async function get(sessionID: string): Promise<IAuth | null> {
-  const key = `${redisPrefix}-auth-session-${sessionID}`;
+  const key = redisKey(sessionID);
   const cached = await redis.get(key);
   if (cached) {
     const session = JSON.parse(cached) as ICachedSession;
@@ -67,11 +71,7 @@ export async function get(sessionID: string): Promise<IAuth | null> {
 }
 
 export async function revoke(sessionID: string) {
-  const key = `${redisPrefix}-auth-session-${sessionID}`;
-  await redis.del(key);
+  await SessionRepo.update({ key: sessionID }, { expiredAt: DateTime.now().toUnixInteger() });
 
-  await SessionRepo.update(
-    { key: sessionID },
-    { expiredAt: DateTime.now().toUnixInteger() - 60 * 60 },
-  );
+  await redis.del(redisKey(sessionID));
 }
