@@ -3,13 +3,12 @@ import * as crypto from 'node:crypto';
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
 import { DateTime } from 'luxon';
-import { FindOperator } from 'typeorm';
 
-import { redisPrefix } from '@app/lib/config';
+import { TypedCache } from '@app/lib/cache';
 import type { SingleMessageErrorConstructor } from '@app/lib/error';
 import type { IUser, Permission } from '@app/lib/orm';
 import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm';
-import redis from '@app/lib/redis';
+import * as orm from '@app/lib/orm';
 import { intval } from '@app/lib/utils';
 import NodeCache from '@app/vendor/node-cache';
 
@@ -83,16 +82,16 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
+const tokenAuthCache = TypedCache<string, IUser>((token) => `auth:token:${token}`);
+
 export async function byToken(accessToken: string): Promise<IAuth | null> {
-  const key = `${redisPrefix}-auth-access-token-${accessToken}`;
-  const cached = await redis.get(key);
+  const cached = await tokenAuthCache.get(accessToken);
   if (cached) {
-    const user = JSON.parse(cached) as IUser;
-    return await userToAuth(user);
+    return await userToAuth(cached);
   }
 
   const token = await AccessTokenRepo.findOne({
-    where: { accessToken, expires: new FindOperator<Date>('moreThanOrEqual', new Date()) },
+    where: { accessToken, expires: orm.Gt(new Date()) },
   });
 
   if (!token) {
@@ -105,21 +104,22 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
 
   const u = await fetchUserX(intval(token.userId));
 
-  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
+  await tokenAuthCache.set(accessToken, u, 60 * 60 * 24);
 
   return await userToAuth(u);
 }
 
+const userCache = TypedCache<number, IUser>((userID) => `auth:user:${userID}`);
+
 export async function byUserID(userID: number): Promise<IAuth> {
-  const key = `${redisPrefix}-auth-user-id-${userID}`;
-  const cached = await redis.get(key);
+  const cached = await userCache.get(userID);
   if (cached) {
-    return await userToAuth(JSON.parse(cached) as IUser);
+    return await userToAuth(cached);
   }
 
   const u = await fetchUserX(userID);
 
-  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60);
+  await userCache.set(userID, u, 60 * 60);
 
   return await userToAuth(u);
 }

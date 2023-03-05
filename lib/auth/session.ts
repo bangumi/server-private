@@ -1,8 +1,7 @@
 import { DateTime } from 'luxon';
 
-import { redisPrefix } from '@app/lib/config';
+import { TypedCache } from '@app/lib/cache';
 import { SessionRepo } from '@app/lib/orm';
-import redis from '@app/lib/redis';
 import { randomBytes } from '@app/lib/utils';
 
 import type { IAuth } from './index';
@@ -38,18 +37,15 @@ interface ICachedSession {
   userID: number;
 }
 
-function redisKey(sessionID: string) {
-  return `${redisPrefix}-auth-session:${sessionID}`;
-}
+const sessionCache = TypedCache<string, ICachedSession>(
+  (sessionID: string) => `auth-session:${sessionID}`,
+);
 
 /** @param sessionID - Store in user cookies */
 export async function get(sessionID: string): Promise<IAuth | null> {
-  const key = redisKey(sessionID);
-  const cached = await redis.get(key);
+  const cached = await sessionCache.get(sessionID);
   if (cached) {
-    const session = JSON.parse(cached) as ICachedSession;
-
-    return await auth.byUserID(session.userID);
+    return await auth.byUserID(cached.userID);
   }
 
   const session = await SessionRepo.findOneBy({ key: sessionID });
@@ -60,12 +56,7 @@ export async function get(sessionID: string): Promise<IAuth | null> {
     return null;
   }
 
-  await redis.set(
-    key,
-    JSON.stringify({ userID: session.userID } satisfies ICachedSession),
-    'EX',
-    60,
-  );
+  await sessionCache.set(sessionID, { userID: session.userID });
 
   return await auth.byUserID(session.userID);
 }
@@ -73,5 +64,5 @@ export async function get(sessionID: string): Promise<IAuth | null> {
 export async function revoke(sessionID: string) {
   await SessionRepo.update({ key: sessionID }, { expiredAt: DateTime.now().toUnixInteger() });
 
-  await redis.del(redisKey(sessionID));
+  await sessionCache.del(sessionID);
 }

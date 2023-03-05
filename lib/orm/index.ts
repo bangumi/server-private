@@ -516,4 +516,4 @@ export async function fetchUserX(id: number): Promise<IUser> {
   return u;
 }
 
-export { In, Like } from 'typeorm';
+export { MoreThan as Gt, MoreThanOrEqual as Gte, In, Like } from 'typeorm';
