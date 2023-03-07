@@ -120,7 +120,7 @@
     "openapi-types": "^12.1.0",
     "php-serialize": "^4.0.2",
     "pino": "^8.11.0",
-    "pino-pretty": "^9.2.0",
+    "pino-pretty": "^9.4.0",
     "prom-client": "^14.2.0",
     "proxy-agent": "^5.0.0",
     "reflect-metadata": "^0.1.13",
