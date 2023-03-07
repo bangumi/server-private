@@ -110,7 +110,7 @@
     "liquidjs": "^10.6.1",
     "lodash-es": "^4.17.21",
     "luxon": "^3.3.0",
-    "mercurius": "^12.0.1",
+    "mercurius": "^12.2.0",
     "mime-types": "^2.1.35",
     "minio": "^7.0.32",
     "mysql2": "^3.2.0",
