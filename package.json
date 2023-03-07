@@ -102,7 +102,7 @@
     "fastify": "^4.13.0",
     "fastify-metrics": "^10.0.3",
     "fastify-socket.io": "^4.0.0",
-    "got": "^12.5.3",
+    "got": "^12.6.0",
     "graphql": "^16.6.0",
     "http-status-codes": "^2.2.0",
     "ioredis": "^5.3.1",
