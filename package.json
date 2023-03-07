@@ -121,7 +121,7 @@
     "php-serialize": "^4.0.2",
     "pino": "^8.10.0",
     "pino-pretty": "^9.2.0",
-    "prom-client": "^14.1.1",
+    "prom-client": "^14.2.0",
     "proxy-agent": "^5.0.0",
     "reflect-metadata": "^0.1.13",
     "socket.io": "^4.6.0",
