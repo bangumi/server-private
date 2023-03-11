@@ -3,7 +3,7 @@
     "experimentalDecorators": true,
     "module": "ESNext",
     "target": "ES2022",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     // 在 ./vendor 文件中添加一个 wrapper 来避免启用这个选项。
     "allowSyntheticDefaultImports": false,
     "useUnknownInCatchVariables": true,
