@@ -1,8 +1,10 @@
+import type { Static } from '@sinclair/typebox';
 import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import AltairFastify from 'altair-fastify-plugin';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
+import type { FastifySchemaValidationError } from 'fastify/types/schema';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
 import { TypeORMError } from 'typeorm';
@@ -15,15 +17,38 @@ import { production, stage, testing, VERSION } from './config';
 import type { Context } from './graphql/context';
 import { schema } from './graphql/schema';
 import { repo } from './orm';
+import type * as res from './types/res';
+
+export function defaultSchemaErrorFormatter(
+  errors: FastifySchemaValidationError[],
+  dataVar: string,
+): Error & Static<typeof res.Error> {
+  let text = '';
+  const separator = ', ';
+
+  for (const e of errors) {
+    text += `${dataVar}${e.instancePath} ${e.message ?? ''}${separator}`;
+  }
+  return new ValidationError(text.slice(0, -separator.length));
+}
+
+class ValidationError extends Error {
+  code = 'REQUEST_SCHEMA_VALIDATION_ERROR';
+  error = 'Bad Request';
+  statusCode = 400;
+
+  constructor(msg: string) {
+    super(msg);
+    this.message = msg;
+  }
+}
 
 export async function createServer(
-  opts: Omit<FastifyServerOptions, 'ajv'> = {},
+  opts: Omit<FastifyServerOptions, 'onProtoPoisoning' | 'ajv' | 'schemaErrorFormatter'> = {},
 ): Promise<FastifyInstance> {
   if (production || stage) {
     opts.requestIdHeader ??= 'cf-ray';
   }
-
-  opts.onProtoPoisoning = 'error';
 
   const ajv: FastifyServerOptions['ajv'] = {
     plugins: [
@@ -34,7 +59,12 @@ export async function createServer(
     ],
   };
 
-  const server = fastify({ ...opts, ajv });
+  const server = fastify({
+    ...opts,
+    onProtoPoisoning: 'error',
+    ajv,
+    schemaErrorFormatter: defaultSchemaErrorFormatter,
+  });
 
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message

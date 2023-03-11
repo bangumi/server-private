@@ -5,6 +5,7 @@ import { fastify } from 'fastify';
 
 import type { IAuth } from '@app/lib/auth';
 import { emptyAuth } from '@app/lib/auth';
+import { defaultSchemaErrorFormatter } from '@app/lib/server';
 
 export function createTestServer({
   auth = {},
@@ -12,6 +13,7 @@ export function createTestServer({
 }: { auth?: Partial<IAuth> } & FastifyServerOptions = {}) {
   const app = fastify({
     ...opt,
+    schemaErrorFormatter: defaultSchemaErrorFormatter,
     ajv: {
       plugins: [
         addFormats,

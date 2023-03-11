@@ -57,7 +57,6 @@ export async function setup(app: App) {
 
   app.addSchema(res.User);
   app.addSchema(res.Error);
-  app.addSchema(res.ValidationError);
   app.addSchema(clientPermission);
   app.addSchema(currentUser);
 
@@ -169,7 +168,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
         },
       }),
-      400: t.Ref(res.ValidationError),
+      400: t.Ref(res.Error, { description: 'request validation error' }),
       401: t.Ref(res.Error, {
         description: '验证码错误/账号密码不匹配',
         headers: {
