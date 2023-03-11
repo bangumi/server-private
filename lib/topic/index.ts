@@ -1,7 +1,7 @@
 import { createError } from '@fastify/error';
 import { DateTime } from 'luxon';
 import * as typeorm from 'typeorm';
-import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth';
 import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
