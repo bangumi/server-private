@@ -29,6 +29,7 @@ export function addRoute(app: FastifyInstance) {
     return yaml.dump(app.swagger(), {
       indent: 2,
       sortKeys: true,
+      noRefs: true,
     });
   });
 
