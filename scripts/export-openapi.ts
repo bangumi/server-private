@@ -11,19 +11,13 @@ await fs.mkdir(path.resolve(projectRoot, 'dist'), { recursive: true });
 
 const app = await createServer();
 
-const pub = await app.inject('/v0.5/openapi.json');
-await fs.writeFile(
-  path.resolve(projectRoot, 'dist', 'public.yaml'),
-  yaml.dump(pub.json(), {
-    indent: 2,
-    sortKeys: true,
-  }),
-);
+const pub = await app.inject('/v0.5/openapi.yaml');
+await fs.writeFile(path.resolve(projectRoot, 'dist', 'public.yaml'), pub.body);
 
-const pri = await app.inject('/p1/openapi.json');
+const pri = await app.inject('/p1/openapi.yaml');
 await fs.writeFile(
   path.resolve(projectRoot, 'dist', 'private.yaml'),
-  yaml.dump(lodash.omit(pri.json(), 'info.version'), {
+  yaml.dump(lodash.omit(yaml.load(pri.body) as object, 'info.version'), {
     indent: 2,
     sortKeys: true,
   }),

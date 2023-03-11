@@ -3,14 +3,14 @@ import * as crypto from 'node:crypto';
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
 import { DateTime } from 'luxon';
-import { FindOperator } from 'typeorm';
 
-import { redisPrefix } from '@app/lib/config.ts';
+import { TypedCache } from '@app/lib/cache';
 import type { SingleMessageErrorConstructor } from '@app/lib/error';
 import type { IUser, Permission } from '@app/lib/orm';
-import { AccessTokenRepo, fetchPermission, fetchUser } from '@app/lib/orm';
-import redis from '@app/lib/redis.ts';
-import NodeCache from '@app/vendor/node-cache.js';
+import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm';
+import * as orm from '@app/lib/orm';
+import { intval } from '@app/lib/utils';
+import NodeCache from '@app/vendor/node-cache';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError: SingleMessageErrorConstructor = createError(
@@ -33,7 +33,6 @@ const TokenNotValidError = createError(
   "can't find access token or it has been expired",
   401,
 );
-const MissingUserError = createError('MISSING_USER', "can't find user", 500);
 
 export const enum UserGroup {
   Unknown = 0,
@@ -42,9 +41,9 @@ export const enum UserGroup {
   WindowAdmin,
   Quite,
   Banned,
-  // 不太清除具体是什么
+  // 不太清楚具体是什么
   _6,
-  // 不太清除具体是什么
+  // 不太清楚具体是什么
   _7,
   CharacterAdmin,
   WikiAdmin,
@@ -83,16 +82,16 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
+const tokenAuthCache = TypedCache<string, IUser>((token) => `auth:token:${token}`);
+
 export async function byToken(accessToken: string): Promise<IAuth | null> {
-  const key = `${redisPrefix}-auth-access-token-${accessToken}`;
-  const cached = await redis.get(key);
+  const cached = await tokenAuthCache.get(accessToken);
   if (cached) {
-    const user = JSON.parse(cached) as IUser;
-    return await userToAuth(user);
+    return await userToAuth(cached);
   }
 
   const token = await AccessTokenRepo.findOne({
-    where: { accessToken, expires: new FindOperator<Date>('moreThanOrEqual', new Date()) },
+    where: { accessToken, expires: orm.Gt(new Date()) },
   });
 
   if (!token) {
@@ -103,29 +102,24 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
     throw new Error('access token without user id');
   }
 
-  const u = await fetchUser(Number.parseInt(token.userId));
-  if (!u) {
-    throw new MissingUserError();
-  }
+  const u = await fetchUserX(intval(token.userId));
 
-  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60 * 24);
+  await tokenAuthCache.set(accessToken, u, 60 * 60 * 24);
 
   return await userToAuth(u);
 }
 
+const userCache = TypedCache<number, IUser>((userID) => `auth:user:${userID}`);
+
 export async function byUserID(userID: number): Promise<IAuth> {
-  const key = `${redisPrefix}-auth-user-id-${userID}`;
-  const cached = await redis.get(key);
+  const cached = await userCache.get(userID);
   if (cached) {
-    return await userToAuth(JSON.parse(cached) as IUser);
+    return await userToAuth(cached);
   }
 
-  const u = await fetchUser(userID);
-  if (!u) {
-    throw new MissingUserError();
-  }
+  const u = await fetchUserX(userID);
 
-  await redis.set(key, JSON.stringify(u), 'EX', 60 * 60);
+  await userCache.set(userID, u, 60 * 60);
 
   return await userToAuth(u);
 }
@@ -134,7 +128,7 @@ const permissionCache = new NodeCache({ stdTTL: 60 * 10 });
 
 async function getPermission(userGroup?: number): Promise<Readonly<Permission>> {
   if (!userGroup) {
-    return {};
+    return Object.freeze({});
   }
 
   const cached = permissionCache.get(userGroup);

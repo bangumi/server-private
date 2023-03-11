@@ -238,15 +238,20 @@ export interface Permission {
   user_wiki_approve?: boolean;
 }
 
+const defaultPermission: Permission = {
+  ban_post: true,
+  ban_visit: true,
+};
+
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
   const permission = await UserGroupRepo.findOne({ where: { id: userGroup } });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
-    return {};
+    return Object.freeze({ ...defaultPermission });
   }
 
   if (!permission.Permission) {
-    return {};
+    return Object.freeze({ ...defaultPermission });
   }
 
   return Object.freeze(
@@ -480,8 +485,8 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
       gid: post.groupID,
       creatorID: post.userID,
       state: post.state,
-      lastpost: now.toUnixInteger(),
-      dateline: now.toUnixInteger(),
+      updatedAt: now.toUnixInteger(),
+      createdAt: now.toUnixInteger(),
       replies: 0,
       display: post.display,
     });
@@ -516,4 +521,4 @@ export async function fetchUserX(id: number): Promise<IUser> {
   return u;
 }
 
-export { In, Like } from 'typeorm';
+export { MoreThan as Gt, MoreThanOrEqual as Gte, In, Like } from 'typeorm';

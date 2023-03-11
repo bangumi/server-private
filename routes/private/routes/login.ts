@@ -4,17 +4,17 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
 import { comparePassword, NeedLoginError } from '@app/lib/auth';
-import * as session from '@app/lib/auth/session.ts';
-import { CookieKey } from '@app/lib/auth/session.ts';
-import config, { redisPrefix } from '@app/lib/config.ts';
-import { UnexpectedNotFoundError } from '@app/lib/error.ts';
-import { createTurnstileDriver } from '@app/lib/externals/turnstile.ts';
+import * as session from '@app/lib/auth/session';
+import { CookieKey } from '@app/lib/auth/session';
+import config, { redisPrefix } from '@app/lib/config';
+import { UnexpectedNotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import { fetchUser, UserRepo } from '@app/lib/orm';
-import redis from '@app/lib/redis.ts';
-import { avatar } from '@app/lib/response.ts';
-import * as res from '@app/lib/types/res.ts';
-import { toResUser } from '@app/lib/types/res.ts';
+import redis from '@app/lib/redis';
+import { avatar } from '@app/lib/response';
+import { createTurnstileDriver } from '@app/lib/services/turnstile';
+import * as res from '@app/lib/types/res';
+import { toResUser } from '@app/lib/types/res';
 import Limiter from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App, Handler } from '@app/routes/type';
@@ -57,7 +57,6 @@ export async function setup(app: App) {
 
   app.addSchema(res.User);
   app.addSchema(res.Error);
-  app.addSchema(res.ValidationError);
   app.addSchema(clientPermission);
   app.addSchema(currentUser);
 
@@ -169,7 +168,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
         },
       }),
-      400: t.Ref(res.ValidationError),
+      400: t.Ref(res.Error, { description: 'request validation error' }),
       401: t.Ref(res.Error, {
         description: '验证码错误/账号密码不匹配',
         headers: {

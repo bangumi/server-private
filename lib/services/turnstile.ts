@@ -1,6 +1,6 @@
 import { stage } from '@app/lib/config.ts';
 
-import { WithHttpClient } from './base.ts';
+import { BaseExternalHttpSrv } from './base';
 
 const VerifyURL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
@@ -21,7 +21,7 @@ export function createTurnstileDriver(secretKey: string) {
   return new Turnstile(secretKey);
 }
 
-export class Turnstile extends WithHttpClient {
+export class Turnstile extends BaseExternalHttpSrv {
   private readonly secretKey: string;
 
   constructor(secretKey: string) {

@@ -84,7 +84,7 @@ export class GroupMembers {
 @Index('grp_tpc_gid', ['gid'], {})
 @Index('grp_tpc_display', ['display'], {})
 @Index('grp_tpc_uid', ['creatorID'], {})
-@Index('grp_tpc_lastpost', ['lastpost'], {})
+@Index('grp_tpc_lastpost', ['updatedAt'], {})
 @Entity('chii_group_topics', { schema: 'bangumi' })
 export class GroupTopic {
   @PrimaryGeneratedColumn({
@@ -108,14 +108,14 @@ export class GroupTopic {
     unsigned: true,
     default: () => "'0'",
   })
-  dateline!: number;
+  createdAt!: number;
 
   @Column('int', {
     name: 'grp_tpc_lastpost',
     unsigned: true,
     default: () => "'0'",
   })
-  lastpost!: number;
+  updatedAt!: number;
 
   @Column('mediumint', {
     name: 'grp_tpc_replies',

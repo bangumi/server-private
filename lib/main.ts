@@ -22,8 +22,7 @@ const server = await createServer({
 });
 
 server.addHook('onReady', async () => {
-  await Subscriber.psubscribe(`event-user-notify-*`);
-  await AppDataSource.initialize();
+  await Promise.all([Subscriber.psubscribe(`event-user-notify-*`), AppDataSource.initialize()]);
 });
 
 await server.listen({ port: config.port, host: config.host });

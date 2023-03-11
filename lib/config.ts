@@ -67,6 +67,7 @@ const schema = t.Object({
     default: 'default-secret-key-not-safe-in-production',
     env: 'PHP_SESSION_SECRET_KEY',
     pattern: new RegExp('[0-9a-zA-Z]').source,
+    description: '用于读取 `bgm.tv` 域名的 cookies session',
   }),
 
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
@@ -142,8 +143,8 @@ function readConfig(): Static<typeof schema> {
     const envKey = o.env as string | undefined;
     if (envKey) {
       const v = process.env[envKey];
-      if (v) {
-        lo.set(config, keyPath, process.env[envKey]);
+      if (v !== undefined) {
+        lo.set(config, keyPath, v);
       }
     }
   }

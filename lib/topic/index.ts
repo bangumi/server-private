@@ -1,6 +1,7 @@
 import { createError } from '@fastify/error';
 import { DateTime } from 'luxon';
 import * as typeorm from 'typeorm';
+import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 import type { IAuth } from '@app/lib/auth';
 import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
@@ -62,6 +63,8 @@ export interface ITopicDetails {
   // group ID or subject ID
   parentID: number;
   replies: IReply[];
+
+  contentPost: { id: number };
 }
 
 export async function fetchDetail(
@@ -124,6 +127,7 @@ export async function fetchDetail(
     .map((x) => filterReply(x));
 
   return {
+    contentPost: top,
     id: topic.id,
     title: topic.title,
     parentID: topic.gid,
@@ -164,7 +168,7 @@ export async function fetchTopicList(
   const total = await GroupTopicRepo.count({ where });
   const topics = await GroupTopicRepo.find({
     where,
-    order: { dateline: 'desc' },
+    order: { createdAt: 'desc' },
     skip: offset,
     take: limit,
   });
@@ -177,8 +181,8 @@ export async function fetchTopicList(
         parentID: x.gid,
         creatorID: x.creatorID,
         title: x.title,
-        createdAt: x.dateline,
-        updatedAt: x.lastpost,
+        createdAt: x.createdAt,
+        updatedAt: x.updatedAt,
         repliesCount: x.replies,
       };
     }),
@@ -217,6 +221,7 @@ export async function createTopicReply({
     const GroupTopicRepo = t.getRepository(entity.GroupTopic);
 
     const topic = await GroupTopicRepo.findOneOrFail({ where: { id: topicID } });
+    const posts = await GroupPostRepo.countBy({ topicID, state: CommentState.Normal });
 
     // 创建回帖
     const post = await GroupPostRepo.save({
@@ -228,13 +233,12 @@ export async function createTopicReply({
       dateline: now.toUnixInteger(),
     });
 
-    const topicUpdate = {
-      replies: topic.replies + 1,
-      dateline: undefined as undefined | number,
+    const topicUpdate: QueryDeepPartialEntity<entity.GroupTopic> = {
+      replies: posts,
     };
 
     if (topic.state !== CommentState.AdminSilentTopic) {
-      topicUpdate.dateline = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
+      topicUpdate.updatedAt = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
     }
 
     await GroupTopicRepo.update({ id: topic.id }, topicUpdate);
@@ -254,8 +258,8 @@ export async function createTopicReply({
 }
 
 function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
-  if (type === Type.group && [364].includes(main_info.id) && main_info.replies > 0) {
-    const $created_at = main_info.dateline;
+  if (type === Type.group && [364].includes(main_info.gid) && main_info.replies > 0) {
+    const $created_at = main_info.createdAt;
     const $created_hours = (timestamp - $created_at) / 3600;
     const $gravity = 1.8;
     const $base_score = (Math.pow($created_hours + 0.1, $gravity) / main_info.replies) * 200;
