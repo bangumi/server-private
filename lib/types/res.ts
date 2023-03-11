@@ -57,7 +57,7 @@ export const Paged = <T extends TSchema>(type: T) =>
 
 export const Error = t.Object(
   {
-    code: t.Optional(t.String()),
+    code: t.String(),
     error: t.String(),
     message: t.String(),
     statusCode: t.Integer(),
