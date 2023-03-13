@@ -100,7 +100,7 @@
     "ajv-formats": "^2.1.1",
     "altair-fastify-plugin": "^5.0.17",
     "fastify": "^4.14.1",
-    "fastify-metrics": "^10.0.3",
+    "fastify-metrics": "^10.0.4",
     "fastify-socket.io": "^4.0.0",
     "got": "^12.6.0",
     "graphql": "^16.6.0",
