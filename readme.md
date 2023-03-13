@@ -1,6 +1,6 @@
 # server
 
-[![deployed version](https://img.shields.io/badge/dynamic/json?label=deployed&query=info.version&url=https%3A%2F%2Fnext.bgm.tv%2Fp1%2Fopenapi.json)](https://next.bgm.tv/p1/)
+[![deployed version](https://img.shields.io/badge/dynamic/yaml?label=deployed&query=info.version&url=https%3A%2F%2Fnext.bgm.tv%2Fp1%2Fopenapi.yaml)](https://next.bgm.tv/p1/)
 ![Codecov](https://img.shields.io/codecov/c/github/bangumi/server-private)
 
 fastify + TypeORM + mercurius + nexus
