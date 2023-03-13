@@ -27,8 +27,12 @@ declare module 'fastify' {
 /* eslint-disable-next-line @typescript-eslint/require-await */
 export async function setup(app: App) {
   await app.register(Cookie, {
-    hook: 'preHandler', // set to false to disable cookie autoparsing or set autoparsing on any of the following hooks: 'onRequest', 'preParsing', 'preHandler', 'preValidation'. default: 'onRequest'
-    parseOptions: {}, // options for parsing cookies
+    hook: 'preHandler',
+    parseOptions: {
+      sameSite: 'lax',
+      secure: 'auto',
+      httpOnly: true,
+    },
   });
 
   void app.addHook('preHandler', SessionAuth);

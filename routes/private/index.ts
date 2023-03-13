@@ -28,7 +28,9 @@ export async function setup(app: App) {
   await app.register(Cookie, {
     hook: 'preHandler',
     parseOptions: {
+      sameSite: 'lax',
       secure: 'auto',
+      httpOnly: true,
     },
   });
 
