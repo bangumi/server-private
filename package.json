@@ -13,8 +13,9 @@
     "lint": "eslint --cache --ext ts,cjs,js ./",
     "start": "nodemon ./lib/main.ts",
     "test": "vitest --run",
+    "coverage": "vitest --run --coverage",
     "vitest": "vitest",
-    "run-file": "node --no-warnings --loader @esbuild-kit/esm-loader",
+    "file": "node --no-warnings --loader @esbuild-kit/esm-loader",
     "e": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader",
     "prepare": "husky install"
   },

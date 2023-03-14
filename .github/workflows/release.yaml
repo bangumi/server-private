@@ -41,7 +41,7 @@ jobs:
 
         env:
           LOCK_FILE_HASH: "${{ hashFiles('yarn.lock') }}"
-          DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
+          DOCKER_FILE_HASH: "${{ hashFiles('etc/*.dockerfile') }}"
         name: build base docker image
 
       - run: |

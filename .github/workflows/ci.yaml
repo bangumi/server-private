@@ -19,13 +19,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.node-version'
-          cache: yarn
+          cache: npm
 
-      - run: yarn
+      - run: npm ci
 
       - run: npx prettier --check ./
       - run: npx tsc --noEmit --pretty
-      - run: yarn lint
+      - run: npm run lint
 
   test:
     runs-on: ubuntu-latest
@@ -46,13 +46,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.node-version'
-          cache: yarn
+          cache: npm
 
-      - run: yarn
+      - run: npm ci
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
 
-      - run: yarn test --coverage
+      - run: npm run coverage
         timeout-minutes: 1
 
       - name: Upload Coverage to Codecov
@@ -75,9 +75,8 @@ jobs:
 
         env:
           LOCK_FILE_HASH: "${{ hashFiles('yarn.lock') }}"
-          DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
-          IMAGE: 'ghcr.io/bangumi/private-server'
+          DOCKER_FILE_HASH: "${{ hashFiles('etc/*.dockerfile') }}"
+        name: get base docker image
 
-        name: build base docker image
       - run: docker build -t tmp -f etc/main.dockerfile .
       - run: docker run tmp --help

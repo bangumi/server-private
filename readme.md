@@ -22,7 +22,7 @@ fastify + TypeORM + mercurius + nexus
 如果你是在本机启动了 [dev-env](https://github.com/bangumi/dev-env) 中的 docker-compose，可以直接使用默认设置。
 
 ```shell
-yarn start
+npm run start
 ```
 
 在文件修改后会自动重启。
