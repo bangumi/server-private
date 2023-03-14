@@ -1,6 +1,6 @@
 FROM node:18-slim as builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package.json package-lock.json ./
 
