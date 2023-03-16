@@ -13,9 +13,9 @@ import * as routes from '@app/routes';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
-import { production, stage, testing, VERSION } from './config';
-import type { Context } from './graphql/context';
-import { schema } from './graphql/schema';
+import { production, stage, testing, VERSION } from './config.ts';
+import type { Context } from './graphql/context.ts';
+import { schema } from './graphql/schema.ts';
 import { repo } from './orm';
 import type * as res from './types/res';
 

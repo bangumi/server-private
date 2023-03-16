@@ -1,10 +1,10 @@
 import { nanoid } from 'nanoid';
 
 import config, { production } from './config';
-import { logger } from './logger';
+import { logger } from './logger.ts';
 import { AppDataSource } from './orm';
-import { Subscriber } from './redis';
-import { createServer } from './server';
+import { Subscriber } from './redis.ts';
+import { createServer } from './server.ts';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console

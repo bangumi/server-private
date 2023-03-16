@@ -5,10 +5,10 @@ import { SessionAuth } from '@app/routes/hooks/pre-handler';
 import * as swagger from '@app/routes/swagger';
 import type { App } from '@app/routes/type';
 
-import * as login from './routes/login';
-import * as post from './routes/post';
-import * as group from './routes/topic';
-import * as user from './routes/user';
+import * as login from './routes/login.ts';
+import * as post from './routes/post.ts';
+import * as group from './routes/topic.ts';
+import * as user from './routes/user.ts';
 import * as wiki from './routes/wiki';
 
 export async function setup(app: App) {

@@ -1,4 +1,4 @@
-import { stage } from '@app/lib/config';
+import { stage } from '@app/lib/config.ts';
 
 import { BaseExternalHttpSrv } from './base';
 

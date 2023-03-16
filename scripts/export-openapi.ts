@@ -17,7 +17,7 @@ await fs.writeFile(path.resolve(projectRoot, 'dist', 'public.yaml'), pub.body);
 const pri = await app.inject('/p1/openapi.yaml');
 await fs.writeFile(
   path.resolve(projectRoot, 'dist', 'private.yaml'),
-  yaml.dump(lodash.omit(yaml.load(pri.body) as any, 'info.version'), {
+  yaml.dump(lodash.omit(yaml.load(pri.body) as object, 'info.version'), {
     indent: 2,
     sortKeys: true,
   }),

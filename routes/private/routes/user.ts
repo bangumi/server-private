@@ -2,16 +2,16 @@ import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 
 import { NeedLoginError } from '@app/lib/auth';
-import * as session from '@app/lib/auth/session';
-import { CookieKey } from '@app/lib/auth/session';
-import { UnexpectedNotFoundError } from '@app/lib/error';
+import * as session from '@app/lib/auth/session.ts';
+import { CookieKey } from '@app/lib/auth/session.ts';
+import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
 import { fetchUsers } from '@app/lib/orm';
-import { Subscriber } from '@app/lib/redis';
-import { Paged, toResUser } from '@app/lib/types/res';
-import * as res from '@app/lib/types/res';
-import type { App } from '@app/routes/type';
+import { Subscriber } from '@app/lib/redis.ts';
+import { Paged, toResUser } from '@app/lib/types/res.ts';
+import * as res from '@app/lib/types/res.ts';
+import type { App } from '@app/routes/type.ts';
 
 const NoticeRes = t.Object(
   {

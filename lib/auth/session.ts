@@ -4,8 +4,8 @@ import { TypedCache } from '@app/lib/cache';
 import { SessionRepo } from '@app/lib/orm';
 import { randomBytes } from '@app/lib/utils';
 
-import type { IAuth } from './index';
-import * as auth from './index';
+import type { IAuth } from './';
+import * as auth from './';
 
 export const CookieKey = 'chiiNextSessionID';
 export const LegacyCookieKey = 'chii_auth';

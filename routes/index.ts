@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 
 import type { IAuth } from '@app/lib/auth';
-import { logger } from '@app/lib/logger';
+import { logger } from '@app/lib/logger.ts';
 import * as demo from '@app/routes/demo';
 import * as privateAPI from '@app/routes/private';
 import * as publicAPI from '@app/routes/public';

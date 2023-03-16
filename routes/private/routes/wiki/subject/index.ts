@@ -8,12 +8,12 @@ import { SubjectRevRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import * as Subject from '@app/lib/subject';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
-import * as res from '@app/lib/types/res';
-import { formatErrors } from '@app/lib/types/res';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import * as res from '@app/lib/types/res.ts';
+import { formatErrors } from '@app/lib/types/res.ts';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
-import * as imageRoutes from './image';
+import * as imageRoutes from './image.ts';
 
 const exampleSubjectEdit = {
   name: '沙盒',

@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { comparePassword } from './index';
+import { comparePassword } from './index.ts';
 
 describe('compare password', () => {
   test('should pass', async () => {

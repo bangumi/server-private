@@ -1,4 +1,4 @@
-import type { App } from '@app/routes/type';
+import type { App } from '@app/routes/type.ts';
 
 import * as subject from './subject';
 

@@ -5,7 +5,7 @@ import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
 import type * as orm from '@app/lib/orm';
-import { avatar } from '@app/lib/response';
+import { avatar } from '@app/lib/response.ts';
 import * as Subject from '@app/lib/subject';
 
 export const SubjectType = t.Enum(Subject.SubjectType, {
