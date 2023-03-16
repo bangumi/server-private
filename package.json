@@ -80,7 +80,7 @@
     "prettier": "^2.8.4",
     "prettier-plugin-jsdoc": "^0.4.2",
     "prettier-plugin-sh": "^0.12.8",
-    "typescript": "^5.0.1-rc",
+    "typescript": "^5.0.2",
     "vite": "^4.2.0",
     "vitest": "^0.29.2",
     "vitest-github-actions-reporter": "^0.10.0"
