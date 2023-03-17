@@ -85,7 +85,13 @@ module.exports = {
         '@typescript-eslint/restrict-plus-operands': ['error', { checkCompoundAssignments: true }],
         '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
         '@typescript-eslint/object-curly-spacing': ['error', 'always'],
-        '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+        '@typescript-eslint/consistent-type-imports': [
+          'error',
+          {
+            prefer: 'type-imports',
+            fixStyle: 'separate-type-imports',
+          },
+        ],
         '@typescript-eslint/prefer-nullish-coalescing': 'off',
         '@typescript-eslint/member-delimiter-style': [
           'error',
@@ -146,7 +152,7 @@ module.exports = {
     {
       files: ['tests/**/*', '*.test.ts'],
       rules: {
-        '@typescript-eslint/consistent-type-imports': 'off',
+        '@typescript-eslint/consistent-type-imports': ['error', { disallowTypeAnnotations: false }],
         '@typescript-eslint/require-await': 'off',
         '@typescript-eslint/no-unnecessary-condition': 'off',
         '@typescript-eslint/no-unsafe-call': 'off',

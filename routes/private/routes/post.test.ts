@@ -1,10 +1,12 @@
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { emptyAuth, IAuth, UserGroup } from '@app/lib/auth';
+import type { IAuth } from '@app/lib/auth';
+import { emptyAuth, UserGroup } from '@app/lib/auth';
 import * as Notify from '@app/lib/notify';
 import * as orm from '@app/lib/orm';
-import { CommentState, ITopicDetails, TopicDisplay } from '@app/lib/topic';
+import type { ITopicDetails } from '@app/lib/topic';
+import { CommentState, TopicDisplay } from '@app/lib/topic';
 import * as Topic from '@app/lib/topic';
 import { createTestServer } from '@app/tests/utils';
 

@@ -1,3 +1,6 @@
+import * as console from 'node:console';
+import * as process from 'node:process';
+
 import { nanoid } from 'nanoid';
 
 import config, { production } from './config';

@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { UserGroup } from '@app/lib/auth';
 import { projectRoot } from '@app/lib/config';
 import * as image from '@app/lib/image';
-import { IImaginary, Info } from '@app/lib/services/imaginary';
+import type { IImaginary, Info } from '@app/lib/services/imaginary';
 import * as Subject from '@app/lib/subject';
 import type { ISubjectEdit } from '@app/routes/private/routes/wiki/subject';
 import { setup } from '@app/routes/private/routes/wiki/subject';
