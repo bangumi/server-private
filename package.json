@@ -101,6 +101,7 @@
     "@sinclair/typebox": "^0.25.24",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0",
     "altair-fastify-plugin": "^5.0.18",
     "fastify": "^4.14.1",
     "fastify-metrics": "^10.0.4",

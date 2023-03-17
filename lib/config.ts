@@ -32,6 +32,7 @@ import { Kind, Type as t } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import ajvKeywords from 'ajv-keywords';
 import * as yaml from 'js-yaml';
 import * as lo from 'lodash-es';
 
@@ -58,6 +59,8 @@ export { HTTPS_PROXY };
 const schema = t.Object({
   host: t.String({ default: '0.0.0.0', env: 'HOST' }),
   port: t.Integer({ default: 4000, env: 'PORT' }),
+
+  siteUrl: t.String({ default: 'https://next.bgm.tv ', transform: ['trim'] }),
 
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
   disable_words: t.Optional(t.String()),
@@ -118,11 +121,6 @@ const schema = t.Object({
   }),
 });
 
-// read config file
-
-const config = readConfig();
-export default config;
-
 function readConfig(): Static<typeof schema> {
   const configFilePath = path.resolve(projectRoot, 'config.yaml');
 
@@ -153,8 +151,9 @@ function readConfig(): Static<typeof schema> {
 
   readFromEnv([], schema);
 
-  const ajv = new Ajv({ allErrors: true, coerceTypes: true, keywords: ['env'] });
+  const ajv = new Ajv({ allErrors: true, coerceTypes: true, keywords: ['env'], strict: false });
   addFormats(ajv);
+  ajvKeywords(ajv, 'transform');
 
   const check = ajv.compile(schema);
 
@@ -174,4 +173,9 @@ function readConfig(): Static<typeof schema> {
   return config;
 }
 
+// read config file
+const config = readConfig();
+
+export default config;
 export const imageDomain = config.image.gatewayDomain;
+export const siteUrl = config.siteUrl;

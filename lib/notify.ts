@@ -4,6 +4,8 @@ import * as php from 'php-serialize';
 import type { Repository } from 'typeorm';
 import * as typeorm from 'typeorm';
 
+import { siteUrl } from '@app/lib/config';
+
 import { UnreachableError } from './error.ts';
 import * as orm from './orm';
 import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './orm';
@@ -273,7 +275,7 @@ interface setting {
 
 const _settings: Record<number, setting> = {
   1: {
-    url: '/group/topic',
+    url: `${siteUrl}/group/topic`,
     url_mobile: 'MOBILE_URL/topic/group/',
     anchor: '#post_',
     prefix: '在你的小组话题',
@@ -283,7 +285,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   2: {
-    url: '/group/topic',
+    url: `${siteUrl}/group/topic`,
     url_mobile: 'MOBILE_URL/topic/group/',
     anchor: '#post_',
     prefix: '在小组话题',
@@ -293,7 +295,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   3: {
-    url: '/subject/topic',
+    url: `${siteUrl}/subject/topic`,
     url_mobile: '/topic/subject',
     anchor: '#post_',
     prefix: '在你的条目讨论',
@@ -303,7 +305,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   4: {
-    url: 'SITE_URL/subject/topic/',
+    url: `${siteUrl}/subject/topic/`,
     url_mobile: 'MOBILE_URL/topic/subject/',
     anchor: '#post_',
     prefix: '在条目讨论',
@@ -313,7 +315,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   5: {
-    url: 'SITE_URL/character/',
+    url: `${siteUrl}/character/`,
     url_mobile: 'MOBILE_URL/topic/crt/',
     anchor: '#post_',
     prefix: '在角色讨论',
@@ -323,7 +325,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   6: {
-    url: 'SITE_URL/character/',
+    url: `${siteUrl}/character/`,
     url_mobile: 'MOBILE_URL/topic/crt/',
     anchor: '#post_',
     prefix: '在角色',
@@ -342,7 +344,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '8': {
-    url: 'SITE_URL/blog/',
+    url: `${siteUrl}/blog/`,
     anchor: '#post_',
     prefix: '在日志',
     suffix: '中回复了你',
@@ -351,7 +353,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '9': {
-    url: 'SITE_URL/subject/ep/',
+    url: `${siteUrl}/subject/ep/`,
     url_mobile: 'MOBILE_URL/topic/ep/',
     anchor: '#post_',
     prefix: '在章节讨论',
@@ -361,7 +363,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '10': {
-    url: 'SITE_URL/subject/ep/',
+    url: `${siteUrl}/subject/ep/`,
     url_mobile: 'MOBILE_URL/topic/ep/',
     anchor: '#post_',
     prefix: '在章节讨论',
@@ -371,7 +373,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '11': {
-    url: 'SITE_URL/index/',
+    url: `${siteUrl}/index/`,
     anchor: '#post_',
     append: '/comments',
     prefix: '在目录',
@@ -381,7 +383,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '12': {
-    url: 'SITE_URL/index/',
+    url: `${siteUrl}/index/`,
     anchor: '#post_',
     append: '/comments',
     prefix: '在目录',
@@ -391,7 +393,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '13': {
-    url: 'SITE_URL/person/',
+    url: `${siteUrl}/person/`,
     url_mobile: 'MOBILE_URL/topic/prsn/',
     anchor: '#post_',
     prefix: '在人物',
@@ -401,7 +403,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '14': {
-    url: 'SITE_URL/user/',
+    url: `${siteUrl}/user/`,
     anchor: '#',
     prefix: '请求与你成为好友',
     suffix: '',
@@ -409,7 +411,7 @@ const _settings: Record<number, setting> = {
     hash: 14,
   },
   '15': {
-    url: 'SITE_URL/user/',
+    url: `${siteUrl}/user/`,
     anchor: '#',
     prefix: '通过了你的好友请求',
     suffix: '',
@@ -462,7 +464,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '22': {
-    url: 'SITE_URL/user/chobits_user/timeline/status/',
+    url: `${siteUrl}/user/chobits_user/timeline/status/`,
     anchor: '#post_',
     prefix: '回复了你的 <a href="%2$s%3$s" class="nt_link link_%4$s" target="_blank">吐槽</a>',
     suffix: '',
@@ -471,7 +473,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '23': {
-    url: 'SITE_URL/group/topic/',
+    url: `${siteUrl}/group/topic/`,
     url_mobile: 'MOBILE_URL/topic/group/',
     anchor: '#post_',
     prefix: '在小组话题',
@@ -481,7 +483,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '24': {
-    url: 'SITE_URL/subject/topic/',
+    url: `${siteUrl}/subject/topic/`,
     url_mobile: 'MOBILE_URL/topic/subject/',
     anchor: '#post_',
     prefix: '在条目讨论',
@@ -491,7 +493,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '25': {
-    url: 'SITE_URL/character/',
+    url: `${siteUrl}/character/`,
     url_mobile: 'MOBILE_URL/topic/crt/',
     anchor: '#post_',
     prefix: '在角色',
@@ -501,7 +503,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '26': {
-    url: 'SITE_URL/person/',
+    url: `${siteUrl}/person/`,
     url_mobile: 'MOBILE_URL/topic/prsn/',
     anchor: '#post_',
     prefix: '在人物讨论',
@@ -511,7 +513,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '27': {
-    url: 'SITE_URL/index/',
+    url: `${siteUrl}/index/`,
     anchor: '#post_',
     append: '/comments',
     prefix: '在目录',
@@ -521,7 +523,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '28': {
-    url: 'SITE_URL/user/chobits_user/timeline/status/',
+    url: `${siteUrl}/user/chobits_user/timeline/status/`,
     anchor: '#post_',
     prefix: '在',
     suffix: '中提到了你',
@@ -530,7 +532,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '29': {
-    url: 'SITE_URL/blog/',
+    url: `${siteUrl}/blog/`,
     anchor: '#post_',
     prefix: '在日志',
     suffix: '中提到了你',
@@ -539,7 +541,7 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
   '30': {
-    url: 'SITE_URL/subject/ep/',
+    url: `${siteUrl}/subject/ep/`,
     url_mobile: 'MOBILE_URL/topic/ep/',
     anchor: '#post_',
     prefix: '在章节讨论',
