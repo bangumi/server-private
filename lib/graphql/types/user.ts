@@ -1,5 +1,6 @@
 import { extendType, objectType } from 'nexus';
 
+import { imageDomain } from '@app/lib/config';
 import type { Context } from '@app/lib/graphql/context';
 import type { IUser } from '@app/lib/orm';
 import { fetchUser } from '@app/lib/orm';
@@ -27,9 +28,9 @@ const User = objectType({
         const img = parent.img || 'icon.jpg';
 
         return {
-          large: 'https://lain.bgm.tv/pic/user/l/' + img,
-          medium: 'https://lain.bgm.tv/pic/user/m/' + img,
-          small: 'https://lain.bgm.tv/pic/user/s/' + img,
+          large: `https://${imageDomain}/pic/user/l/${img}`,
+          medium: `https://${imageDomain}/pic/user/m/${img}`,
+          small: `https://${imageDomain}/pic/user/s/${img}`,
         };
       },
     });

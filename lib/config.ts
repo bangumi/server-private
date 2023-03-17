@@ -73,6 +73,7 @@ const schema = t.Object({
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
 
   image: t.Object({
+    gatewayDomain: t.String({ default: 'lain.bgm.tv' }),
     provider: t.Enum(
       {
         s3: 's3',
@@ -119,7 +120,8 @@ const schema = t.Object({
 
 // read config file
 
-export default readConfig();
+const config = readConfig();
+export default config;
 
 function readConfig(): Static<typeof schema> {
   const configFilePath = path.resolve(projectRoot, 'config.yaml');
@@ -171,3 +173,5 @@ function readConfig(): Static<typeof schema> {
 
   return config;
 }
+
+export const imageDomain = config.image.gatewayDomain;

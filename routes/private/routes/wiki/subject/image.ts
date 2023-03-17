@@ -6,6 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
 import { NotAllowedError } from '@app/lib/auth';
+import { imageDomain } from '@app/lib/config';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image';
 import { Tag } from '@app/lib/openapi';
@@ -104,8 +105,8 @@ export function setup(app: App) {
       return {
         current: s.image
           ? {
-              thumbnail: `https://lain.bgm.tv/r/400/pic/cover/l/${s.image}`,
-              raw: `https://lain.bgm.tv/pic/cover/l/${s.image}`,
+              thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${s.image}`,
+              raw: `https://${imageDomain}/pic/cover/l/${s.image}`,
             }
           : undefined,
         covers: images.map((x) => {
@@ -116,8 +117,8 @@ export function setup(app: App) {
 
           return {
             id: x.id,
-            thumbnail: 'https://lain.bgm.tv/r/400/pic/cover/l/' + x.target,
-            raw: 'https://lain.bgm.tv/pic/cover/l/' + x.target,
+            thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${x.target}`,
+            raw: `https://${imageDomain}/pic/cover/l/${x.target}`,
             creator: res.toResUser(u),
             voted: x.id in likes,
           };

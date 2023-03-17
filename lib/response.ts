@@ -1,6 +1,8 @@
+import { imageDomain } from '@app/lib/config';
+
 import type * as res from './types/res';
 
-const baseAvatarUrl = 'https://lain.bgm.tv/pic/user';
+const baseAvatarUrl = `https://${imageDomain}/pic/user`;
 
 export function avatar(s: string): res.IAvatar {
   if (!s) {
@@ -15,5 +17,5 @@ export function avatar(s: string): res.IAvatar {
 }
 
 export function groupIcon(s: string): string {
-  return 'https://lain.bgm.tv/pic/icon/s/' + s;
+  return `https://${imageDomain}/pic/icon/s/${s}`;
 }
