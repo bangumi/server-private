@@ -10,6 +10,7 @@
   },
   "scripts": {
     "format": "prettier --list-different -w ./",
+    "tsc": "tsc --noEmit",
     "lint": "eslint --cache --ext ts,cjs,js ./",
     "start": "nodemon ./lib/main.ts",
     "test": "vitest --run",
