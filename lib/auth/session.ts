@@ -1,3 +1,4 @@
+import type { CookieSerializeOptions } from '@fastify/cookie';
 import { DateTime } from 'luxon';
 
 import { TypedCache } from '@app/lib/cache';
@@ -9,6 +10,12 @@ import * as auth from './';
 
 export const CookieKey = 'chiiNextSessionID';
 export const LegacyCookieKey = 'chii_auth';
+export const cookiesPluginOption = {
+  sameSite: 'lax',
+  secure: 'auto',
+  path: '/',
+  httpOnly: true,
+} as const satisfies CookieSerializeOptions;
 
 export async function create(user: { id: number; regTime: number }): Promise<string> {
   const now = DateTime.now().toUnixInteger();

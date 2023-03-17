@@ -1,5 +1,6 @@
 import Cookie from '@fastify/cookie';
 
+import { cookiesPluginOption } from '@app/lib/auth/session';
 import { production } from '@app/lib/config';
 import { SessionAuth } from '@app/routes/hooks/pre-handler';
 import * as swagger from '@app/routes/swagger';
@@ -27,11 +28,7 @@ export async function setup(app: App) {
 
   await app.register(Cookie, {
     hook: 'preHandler',
-    parseOptions: {
-      sameSite: 'lax',
-      secure: 'auto',
-      httpOnly: true,
-    },
+    parseOptions: cookiesPluginOption,
   });
 
   void app.addHook('preHandler', SessionAuth);

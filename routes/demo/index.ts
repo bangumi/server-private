@@ -5,6 +5,7 @@ import { fastifyStatic } from '@fastify/static';
 import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
+import { cookiesPluginOption } from '@app/lib/auth/session';
 import config, { production, projectRoot } from '@app/lib/config';
 import * as Notify from '@app/lib/notify';
 import { fetchUserX } from '@app/lib/orm';
@@ -28,11 +29,7 @@ declare module 'fastify' {
 export async function setup(app: App) {
   await app.register(Cookie, {
     hook: 'preHandler',
-    parseOptions: {
-      sameSite: 'lax',
-      secure: 'auto',
-      httpOnly: true,
-    },
+    parseOptions: cookiesPluginOption,
   });
 
   void app.addHook('preHandler', SessionAuth);
