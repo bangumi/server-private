@@ -19,7 +19,7 @@ test('should pass login/logout authorization flow', async () => {
   const app = await createServer();
 
   const res = await app.inject({
-    url: '/p1/login2',
+    url: '/p1/login',
     method: 'post',
     payload: {
       email: 'treeholechan@gmail.com',

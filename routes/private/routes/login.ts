@@ -17,7 +17,7 @@ import * as res from '@app/lib/types/res';
 import { toResUser } from '@app/lib/types/res';
 import Limiter from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
-import type { App, Handler } from '@app/routes/type';
+import type { App } from '@app/routes/type';
 
 const TooManyRequestsError = createError(
   'TOO_MANY_REQUESTS',
@@ -154,93 +154,84 @@ export async function setup(app: App) {
 
   app.addSchema(loginRequestBody);
 
-  const loginSchema = {
-    description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+  app.post(
+    '/login',
+    {
+      schema: {
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
 
 next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
 dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
-    operationId: 'login2',
-    tags: [Tag.Auth],
-    response: {
-      200: t.Ref(res.User, {
-        headers: {
-          'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
+        operationId: 'login',
+        tags: [Tag.Auth],
+        response: {
+          200: t.Ref(res.User, {
+            headers: {
+              'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
+            },
+          }),
+          400: t.Ref(res.Error, { description: 'request validation error' }),
+          401: t.Ref(res.Error, {
+            description: '验证码错误/账号密码不匹配',
+            headers: {
+              'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
+              'X-RateLimit-Limit': t.Integer({ description: 'total limit per 10 minutes' }),
+              'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
+            },
+            'x-examples': res.formatErrors(new CaptchaError(), new EmailOrPasswordError()),
+          }),
+          429: t.Ref(res.Error, {
+            description: '失败次数太多，需要过一段时间再重试',
+            headers: {
+              'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
+              'X-RateLimit-Limit': t.Integer({ description: 'limit per 10 minutes' }),
+              'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
+            },
+            examples: [res.formatError(TooManyRequestsError())],
+          }),
         },
-      }),
-      400: t.Ref(res.Error, { description: 'request validation error' }),
-      401: t.Ref(res.Error, {
-        description: '验证码错误/账号密码不匹配',
-        headers: {
-          'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
-          'X-RateLimit-Limit': t.Integer({ description: 'total limit per 10 minutes' }),
-          'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
-        },
-        'x-examples': res.formatErrors(new CaptchaError(), new EmailOrPasswordError()),
-      }),
-      429: t.Ref(res.Error, {
-        description: '失败次数太多，需要过一段时间再重试',
-        headers: {
-          'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
-          'X-RateLimit-Limit': t.Integer({ description: 'limit per 10 minutes' }),
-          'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
-        },
-        examples: [res.formatError(TooManyRequestsError())],
-      }),
-    },
-    body: t.Ref(loginRequestBody),
-  };
-
-  const loginHandler: Handler<typeof loginSchema> = async function loginHandler(
-    { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, ip },
-    reply,
-  ): Promise<res.IUser> {
-    const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${ip}`);
-    void reply.headers({
-      'X-RateLimit-Remaining': remain,
-      'X-RateLimit-Limit': LimitInTimeWindow,
-      'X-RateLimit-Reset': reset,
-    });
-    if (remain <= 0) {
-      throw new TooManyRequestsError();
-    }
-
-    if (!(await turnstile.verify(cfCaptchaResponse))) {
-      throw new CaptchaError();
-    }
-
-    const user = await UserRepo.findOne({ where: { email } });
-    if (!user) {
-      throw new EmailOrPasswordError();
-    }
-    if (!(await comparePassword(user.passwordCrypt, password))) {
-      throw new EmailOrPasswordError();
-    }
-
-    const token = await session.create({
-      id: user.id,
-      regTime: user.regdate,
-    });
-
-    void reply.cookie(CookieKey, token, { maxAge: 24 * 60 * 60 * 30 });
-
-    return {
-      ...user,
-      user_group: user.groupid,
-      avatar: avatar(user.avatar),
-    };
-  };
-
-  app.post('/login', { schema: { ...loginSchema, operationId: 'login' } }, loginHandler);
-  app.post(
-    '/login2',
-    {
-      schema: {
-        ...loginSchema,
-        deprecated: true,
-        description: 'backward compatibility for #login operator',
+        body: t.Ref(loginRequestBody),
       },
     },
-    loginHandler,
+    async function loginHandler(
+      { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, ip },
+      reply,
+    ): Promise<res.IUser> {
+      const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${ip}`);
+      void reply.headers({
+        'X-RateLimit-Remaining': remain,
+        'X-RateLimit-Limit': LimitInTimeWindow,
+        'X-RateLimit-Reset': reset,
+      });
+      if (remain <= 0) {
+        throw new TooManyRequestsError();
+      }
+
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+
+      const user = await UserRepo.findOne({ where: { email } });
+      if (!user) {
+        throw new EmailOrPasswordError();
+      }
+      if (!(await comparePassword(user.passwordCrypt, password))) {
+        throw new EmailOrPasswordError();
+      }
+
+      const token = await session.create({
+        id: user.id,
+        regTime: user.regdate,
+      });
+
+      void reply.cookie(CookieKey, token, { maxAge: 24 * 60 * 60 * 30 });
+
+      return {
+        ...user,
+        user_group: user.groupid,
+        avatar: avatar(user.avatar),
+      };
+    },
   );
 }
