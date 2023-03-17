@@ -213,7 +213,7 @@ interface Filter {
 /** 返回通知 */
 export async function list(userID: number, { unread, limit = 30 }: Filter): Promise<INotify[]> {
   const notifications: Notify[] = await NotifyRepo.find({
-    where: unread === undefined ? { uid: userID } : { uid: userID, unread },
+    where: { uid: userID, unread },
     order: { dateline: 'desc' },
     take: limit,
   });
