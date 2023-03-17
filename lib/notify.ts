@@ -202,6 +202,7 @@ export interface INotify {
   title: string;
   topicID: number;
   postID: number;
+  unread: boolean;
 }
 
 interface Filter {
@@ -210,12 +211,9 @@ interface Filter {
 }
 
 /** 返回通知 */
-export async function list(
-  userID: number,
-  { unread = true, limit = 30 }: Filter,
-): Promise<INotify[]> {
+export async function list(userID: number, { unread, limit = 30 }: Filter): Promise<INotify[]> {
   const notifications: Notify[] = await NotifyRepo.find({
-    where: { uid: userID, unread },
+    where: unread === undefined ? { uid: userID } : { uid: userID, unread },
     order: { dateline: 'desc' },
     take: limit,
   });
@@ -244,6 +242,7 @@ export async function list(
       title: field?.title ?? '',
       topicID: field?.topicID ?? 0,
       postID: x.postID,
+      unread: x.unread,
     } satisfies INotify;
   });
 }
