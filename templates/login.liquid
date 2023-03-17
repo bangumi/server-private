@@ -65,7 +65,6 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data),
         });
-        await res.text();
         if (res.status > 300) {
           turnstile.reset();
           const d = await res.json();
