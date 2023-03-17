@@ -368,6 +368,41 @@
   resolved "https://registry.yarnpkg.com/@lukeed/ms/-/ms-2.0.1.tgz#3c2bbc258affd9cc0e0cc7828477383c73afa6ee"
   integrity sha512-Xs/4RZltsAL7pkvaNStUQt7netTkyxrS0K+RILcVr3TRMS/ToOg4I6uNfhB9SlGsnWBym4U+EaXq0f0cEMNkHA==
 
+"@mercuriusjs/federation@^1.0.0", "@mercuriusjs/federation@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/@mercuriusjs/federation/-/federation-1.0.1.tgz#e362396b82f3a81a16d78938984df6d53ba30f88"
+  integrity sha512-aski6H8SRfjK73Bruzh5kQ20OS0s0pkbFvcOex46Qm17bYWoJ3daMrbTw4caOSkru7R8pIA/bvAjSq97xkDJkQ==
+  dependencies:
+    "@fastify/error" "^3.0.0"
+    graphql "^16.6.0"
+    mercurius "^12.0.0"
+
+"@mercuriusjs/gateway@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/@mercuriusjs/gateway/-/gateway-1.2.0.tgz#fd89e577ed817fae4182595e70aa904bd29ef3d3"
+  integrity sha512-kwSTeY53NpO2VUaDKKl3PBUwcqQBLHzHAq2FDxCr4N2u2ELu9/yJVAcv7okkmwg7ImjsTOdgbvU2+VrG2foLHQ==
+  dependencies:
+    "@mercuriusjs/federation" "^1.0.0"
+    "@mercuriusjs/subscription-client" "^1.0.0"
+    fastify-plugin "^4.3.0"
+    graphql "^16.6.0"
+    graphql-ws "^5.11.2"
+    mercurius "^12.0.1"
+    p-map "^4.0.0"
+    single-user-cache "^0.6.0"
+    tiny-lru "^10.0.1"
+    use-strict "1.0.1"
+    ws "^8.11.0"
+
+"@mercuriusjs/subscription-client@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/@mercuriusjs/subscription-client/-/subscription-client-1.0.0.tgz#661bef043047846b1a9d3124cc3da480c614c261"
+  integrity sha512-hIGqNp6FBdcy7ZkrWNk4mHl/Qodtwvbu9/iRl3zQdNRl4UtlVI7xW/FPU+2AJy0qTB567yrpvtQPwtmQLuYHYg==
+  dependencies:
+    "@fastify/error" "^3.0.0"
+    secure-json-parse "^2.4.0"
+    ws "^8.2.2"
+
 "@microsoft/tsdoc-config@0.16.2":
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/@microsoft/tsdoc-config/-/tsdoc-config-0.16.2.tgz#b786bb4ead00d54f53839a458ce626c8548d3adf"
@@ -3071,6 +3106,11 @@ graphql-tag@^2.12.6:
   dependencies:
     tslib "^2.1.0"
 
+graphql-ws@^5.11.2:
+  version "5.12.0"
+  resolved "https://registry.npmmirror.com/graphql-ws/-/graphql-ws-5.12.0.tgz#d06fe38916334b4a4c827f73268cbf4359a32ed7"
+  integrity sha512-PA3ImUp8utrpEjoxBMhvxsjkStvFEdU0E1gEBREt8HZIWkxOUymwJBhFnBL7t/iHhUq1GVPeZevPinkZFENxTw==
+
 graphql@^16.0.0, graphql@^16.6.0:
   version "16.6.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.6.0.tgz#c2dcffa4649db149f6282af726c8c83f1c7c5fdb"
@@ -4056,7 +4096,7 @@ mercurius-integration-testing@^8.0.0:
     cookie "^0.5.0"
     ws "^8.12.1"
 
-mercurius@^12.2.0:
+mercurius@^12.0.0, mercurius@^12.0.1, mercurius@^12.2.0:
   version "12.2.0"
   resolved "https://registry.yarnpkg.com/mercurius/-/mercurius-12.2.0.tgz#ce27f4dd50037ba37cb524dc1392c2b2fb96d428"
   integrity sha512-S1/j+MSJA11A0rW/TM+31qq7PTf9EQVDtq+XJQMaebtqEP5JhhUmQnTLzCh9NhHkh7YIFH72gEY03Phr3Cs8xQ==
@@ -6062,6 +6102,11 @@ tiny-lru@^10.0.0:
   resolved "https://registry.yarnpkg.com/tiny-lru/-/tiny-lru-10.0.1.tgz#aaf5d22207e641ed1b176ac2e616d6cc2fc9ef66"
   integrity sha512-Vst+6kEsWvb17Zpz14sRJV/f8bUWKhqm6Dc+v08iShmIJ/WxqWytHzCTd6m88pS33rE2zpX34TRmOpAJPloNCA==
 
+tiny-lru@^10.0.1:
+  version "10.2.1"
+  resolved "https://registry.npmmirror.com/tiny-lru/-/tiny-lru-10.2.1.tgz#2a7f7cd87cf82ba87f4224af681bc2b478ece722"
+  integrity sha512-cxcNyX4O50FDnB5x9jdEJupYC+9PPutt6wT16TaOtXeHfV9t41aFqg0VniB9YK5KmBeqmZaYriNMajm/5TtA7Q==
+
 tinybench@^2.3.1:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/tinybench/-/tinybench-2.4.0.tgz#83f60d9e5545353610fe7993bd783120bc20c7a7"
@@ -6282,6 +6327,11 @@ uri-js@^4.2.2:
   dependencies:
     punycode "^2.1.0"
 
+use-strict@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmmirror.com/use-strict/-/use-strict-1.0.1.tgz#0bb80d94f49a4a05192b84a8c7d34e95f1a7e3a0"
+  integrity sha512-IeiWvvEXfW5ltKVMkxq6FvNf2LojMKvB2OCeja6+ct24S1XOmQw2dGr2JyndwACWAGJva9B7yPHwAmeA9QCqAQ==
+
 util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
@@ -6489,7 +6539,7 @@ wrappy@1:
   resolved "https://registry.yarnpkg.com/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
   integrity sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==
 
-ws@^8.0.0, ws@^8.12.1, ws@^8.2.2:
+ws@^8.0.0, ws@^8.11.0, ws@^8.12.1, ws@^8.2.2:
   version "8.13.0"
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.13.0.tgz#9a9fb92f93cf41512a0735c8f4dd09b8a1211cd0"
   integrity sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==

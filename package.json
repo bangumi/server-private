@@ -43,6 +43,8 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@mercuriusjs/federation": "^1.0.1",
+    "@mercuriusjs/gateway": "^1.2.0",
     "@shopify/prettier-plugin-liquid": "^1.0.6",
     "@types/conventional-changelog": "^3.1.1",
     "@types/ioredis-mock": "^8.2.1",
