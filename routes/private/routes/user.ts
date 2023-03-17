@@ -22,6 +22,7 @@ const NoticeRes = t.Object(
     topicID: t.Integer(),
     postID: t.Integer(),
     createdAt: t.Integer({ description: 'unix timestamp in seconds' }),
+    unread: t.Boolean(),
   },
   { $id: 'Notice' },
 );
@@ -41,6 +42,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [] }],
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20 })),
+          unread: t.Optional(t.Boolean()),
         }),
         response: {
           200: Paged(t.Ref(NoticeRes)),
@@ -55,8 +57,8 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth: { userID }, query: { limit = 20 } }) => {
-      const data = await Notify.list(userID, { unread: true, limit });
+    async ({ auth: { userID }, query: { limit = 20, unread } }) => {
+      const data = await Notify.list(userID, { limit, unread });
       if (data.length === 0) {
         return { total: 0, data: [] };
       }
