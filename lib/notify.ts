@@ -137,22 +137,33 @@ export async function count(userID: number): Promise<number> {
   return u?.newNotify ?? 0;
 }
 
-export async function markAllAsRead(userID: number, id: number[] | undefined): Promise<void> {
+/**
+ * 把用户 id 为 userID 的通知，根据条件设置为已读
+ *
+ * @param userID - 用户ID
+ * @param condition - 选择通知的条件，比如访问某 topic 时，把通知设为已读
+ */
+export async function markAsRead(userID: number, criteria: typeorm.FindOptionsWhere<Notify>) {
+  // options.topicID;
   await AppDataSource.transaction(async (t) => {
     const notifyRepo = t.getRepository(entity.Notify);
     const memberRepo = t.getRepository(entity.User);
     await notifyRepo.update(
       {
+        ...criteria,
         uid: userID,
-        id: id ? typeorm.In(id) : undefined,
       },
       { unread: false },
     );
-
-    const c = await countNotifyRecord(notifyRepo, userID);
-
-    await memberRepo.update({ id: userID }, { newNotify: c });
+    await memberRepo.update(
+      { id: userID },
+      { newNotify: await countNotifyRecord(notifyRepo, userID) },
+    );
   });
+}
+
+export async function markAllAsRead(userID: number, id: number[] | undefined): Promise<void> {
+  await markAsRead(userID, { id: id ? typeorm.In(id) : undefined });
 }
 
 const enum PrivacyFilter {

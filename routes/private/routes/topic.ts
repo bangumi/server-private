@@ -5,6 +5,7 @@ import type { IAuth } from '@app/lib/auth';
 import { NotAllowedError } from '@app/lib/auth';
 import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
+import { markAsRead } from '@app/lib/notify';
 import { Security, Tag } from '@app/lib/openapi';
 import type { Page } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -537,6 +538,9 @@ export async function handleTopicDetail({
   if (!creator) {
     throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
   }
+
+  // 访问 topic 时标记为已读
+  await markAsRead(auth.userID, { postID: id });
 
   return {
     ...topic,
