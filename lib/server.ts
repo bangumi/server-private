@@ -33,7 +33,7 @@ export function defaultSchemaErrorFormatter(
 }
 
 class ValidationError extends Error {
-  code = 'REQUEST_SCHEMA_VALIDATION_ERROR';
+  code = 'REQUEST_VALIDATION_ERROR';
   error = 'Bad Request';
   statusCode = 400;
 
