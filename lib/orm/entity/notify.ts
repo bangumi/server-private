@@ -18,6 +18,10 @@ export class Notify {
     name: 'nt_status',
     unsigned: true,
     default: () => "'1'",
+    transformer: {
+      to: (value: boolean) => (value ? 1 : 0),
+      from: Boolean,
+    },
   })
   unread!: boolean;
 

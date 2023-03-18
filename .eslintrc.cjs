@@ -145,7 +145,10 @@ module.exports = {
         ],
         'simple-import-sort/exports': 'error',
         'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': ['error', { varsIgnorePattern: '_' }],
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          { args: 'after-used', varsIgnorePattern: '_', destructuredArrayIgnorePattern: '^_' },
+        ],
         '@typescript-eslint/strict-boolean-expressions': 'off',
       },
     },
