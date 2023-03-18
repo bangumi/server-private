@@ -9,6 +9,8 @@ RUN yarn --prod \
 
 FROM node:18-slim
 
+ENTRYPOINT [ "node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./lib/main.ts" ]
+
 WORKDIR /app
 
 ENV NODE_ENV=production
