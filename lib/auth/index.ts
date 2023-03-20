@@ -37,18 +37,18 @@ const TokenNotValidError = createError(
 export const enum UserGroup {
   Unknown = 0,
   Admin = 1,
-  BangumiAdmin,
-  WindowAdmin,
-  Quite,
-  Banned,
+  BangumiAdmin = 2,
+  WindowAdmin = 3,
+  Quite = 4,
+  Banned = 5,
   // 不太清楚具体是什么
-  _6,
+  _6 = 6,
   // 不太清楚具体是什么
-  _7,
-  CharacterAdmin,
-  WikiAdmin,
-  Normal,
-  WikiEditor,
+  _7 = 7,
+  CharacterAdmin = 8,
+  WikiAdmin = 9,
+  Normal = 10,
+  WikiEditor = 11,
 }
 
 export interface IAuth {

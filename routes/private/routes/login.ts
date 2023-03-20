@@ -6,7 +6,7 @@ import httpCodes from 'http-status-codes';
 import { comparePassword, NeedLoginError } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
 import { CookieKey } from '@app/lib/auth/session';
-import config, { redisPrefix } from '@app/lib/config';
+import config, { redisPrefix, stage } from '@app/lib/config';
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import { fetchUser, UserRepo } from '@app/lib/orm';
@@ -46,14 +46,30 @@ const currentUser = t.Intersect([res.User, t.Object({ permission: clientPermissi
   $id: 'CurrentUser',
 });
 
-// eslint-disable-next-line @typescript-eslint/require-await
-export async function setup(app: App) {
-  // 10 calls per 600s
-  const limiter = new Limiter({
+function createLimiter() {
+  if (stage) {
+    return {
+      get(): Promise<{ remain: number; reset: number }> {
+        return Promise.resolve({ remain: 6, reset: 3600 });
+      },
+
+      reset(): Promise<void> {
+        return Promise.resolve();
+      },
+    };
+  }
+
+  return new Limiter({
     redisClient: redis,
     limit: LimitInTimeWindow,
     duration: 600,
   });
+}
+
+// eslint-disable-next-line @typescript-eslint/require-await
+export async function setup(app: App) {
+  // 10 calls per 600s
+  const limiter = createLimiter();
 
   app.addSchema(res.User);
   app.addSchema(res.Error);
@@ -198,7 +214,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, ip },
       reply,
     ): Promise<res.IUser> {
-      const { remain, reset } = await limiter.get(`${redisPrefix}-login-rate-limit-${ip}`);
+      const limitKey = `${redisPrefix}-login-rate-limit-${ip}`;
+      const { remain, reset } = await limiter.get(limitKey);
       void reply.headers({
         'X-RateLimit-Remaining': remain,
         'X-RateLimit-Limit': LimitInTimeWindow,
@@ -224,6 +241,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         id: user.id,
         regTime: user.regdate,
       });
+
+      await limiter.reset(limitKey);
 
       void reply.cookie(CookieKey, token, { maxAge: 24 * 60 * 60 * 30 });
 

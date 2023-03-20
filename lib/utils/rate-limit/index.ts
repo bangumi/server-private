@@ -41,6 +41,10 @@ export default class Limiter {
       reset: intval(result[1]),
     };
   }
+
+  async reset(key: string): Promise<void> {
+    await this.redisClient.del(key);
+  }
 }
 
 // work with defineCommand
