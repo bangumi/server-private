@@ -1,5 +1,9 @@
 /**
- * 从 `projectRoot/config.yaml` 和环境变量读取配置。 配置文件见 `config.example.yaml`。
+ * 从配置文件和环境变量读取配置。
+ *
+ * 在设置了 `CHII_CONFIG_FILE` 环境变量时会加载，如果未设置或者是空字符串则会从 `projectRoot/config.yaml` 加载。
+ *
+ * 配置文件参考 `config.example.yaml`。
  *
  * {@link schema} 定义了配置文件的 json schema
  *
@@ -38,7 +42,7 @@ import * as lo from 'lodash-es';
 
 // read from env
 
-const { HTTPS_PROXY = '', NODE_ENV, REF } = process.env;
+const { HTTPS_PROXY = '', NODE_ENV, REF, CHII_CONFIG_FILE } = process.env;
 
 export const production = NODE_ENV === 'production';
 export const stage = NODE_ENV === 'stage';
@@ -122,7 +126,7 @@ const schema = t.Object({
 });
 
 function readConfig(): Static<typeof schema> {
-  const configFilePath = path.resolve(projectRoot, 'config.yaml');
+  const configFilePath = CHII_CONFIG_FILE || path.resolve(projectRoot, 'config.yaml');
 
   let configFileContent = '{}';
   if (fs.existsSync(configFilePath)) {
