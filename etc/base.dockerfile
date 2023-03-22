@@ -7,9 +7,9 @@ COPY package.json yarn.lock ./
 RUN yarn --prod \
   && rm package.json yarn.lock
 
-FROM node:18-slim
+FROM gcr.io/distroless/nodejs18-debian11:latest
 
-ENTRYPOINT [ "node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./lib/main.ts" ]
+ENTRYPOINT [ "/nodejs/bin/node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./lib/main.ts" ]
 
 WORKDIR /app
 
