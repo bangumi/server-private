@@ -9,7 +9,7 @@ RUN yarn --prod \
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
 
-ENTRYPOINT [ "node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./lib/main.ts" ]
+CMD [ "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./lib/main.ts" ]
 
 WORKDIR /app
 
