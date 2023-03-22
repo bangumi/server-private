@@ -59,8 +59,8 @@ jobs:
 
       - name: push described tag
         run: |
-          docker tag current "${IMAGE}:${REF}"
-          docker push "${IMAGE}:${REF}"
-
           docker tag current "${IMAGE}:${TAG}"
           docker push "${IMAGE}:${TAG}"
+
+          docker tag current "${IMAGE}:${REF}"
+          docker push "${IMAGE}:${REF}"
