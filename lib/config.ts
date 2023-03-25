@@ -31,7 +31,7 @@ import * as path from 'node:path';
 import * as process from 'node:process';
 import * as url from 'node:url';
 
-import type { Static, TSchema } from '@sinclair/typebox';
+import type { Static, TObject, TProperties, TSchema } from '@sinclair/typebox';
 import { Kind, Type as t } from '@sinclair/typebox';
 import { Value } from '@sinclair/typebox/value';
 import Ajv from 'ajv';
@@ -60,8 +60,12 @@ export const redisPrefix = `graphql-${VERSION}`;
 
 export { HTTPS_PROXY };
 
-const schema = t.Object({
-  server: t.Object({
+function Obj<T extends TProperties>(properties: T): TObject<T> {
+  return t.Object(properties, { additionalProperties: false });
+}
+
+export const schema = Obj({
+  server: Obj({
     port: t.Integer({ default: 4000, env: 'PORT' }),
     host: t.String({ default: '0.0.0.0', env: 'HOST' }),
     requestIDHeader: t.String({ default: 'x-request-id', transform: ['toLowerCase'] }),
@@ -83,7 +87,7 @@ const schema = t.Object({
 
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
 
-  image: t.Object({
+  image: Obj({
     gatewayDomain: t.String({ default: 'lain.bgm.tv' }),
     provider: t.Enum(
       {
@@ -97,11 +101,11 @@ const schema = t.Object({
         description: 'url to docker image running https://github.com/h2non/imaginary',
       }),
     ),
-    fs: t.Object({
+    fs: Obj({
       path: t.String({ default: './tmp/images' }),
     }),
     s3: t.ReadonlyOptional(
-      t.Object({
+      Obj({
         endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),
         bucket: t.String({ default: 'chii-image', env: 'CHII_IMAGE_S3_BUCKET' }),
         port: t.Integer({ default: 9000, env: 'CHII_IMAGE_S3_PORT' }),
@@ -112,7 +116,7 @@ const schema = t.Object({
     ),
   }),
 
-  turnstile: t.Object({
+  turnstile: Obj({
     secretKey: t.String({
       default: '1x0000000000000000000000000000000AA',
       env: 'TURNSTILE_SECRET_KEY',
@@ -120,7 +124,7 @@ const schema = t.Object({
     siteKey: t.String({ default: '1x00000000000000000000AA', env: 'TURNSTILE_SITE_KEY' }),
   }),
 
-  mysql: t.Object({
+  mysql: Obj({
     db: t.String({ default: 'bangumi', env: 'MYSQL_DB' }),
     host: t.String({ default: '127.0.0.1', env: 'MYSQL_HOST' }),
     port: t.Integer({ default: 3306, env: 'MYSQL_PORT' }),
@@ -159,26 +163,35 @@ function readConfig(): Static<typeof schema> {
 
   readFromEnv([], schema);
 
+  validateConfig(config);
+
+  return config;
+}
+
+export function validateConfig(config: unknown) {
   const ajv = new Ajv({ allErrors: true, coerceTypes: true, keywords: ['env'], strict: false });
   addFormats(ajv);
   ajvKeywords(ajv, 'transform');
 
-  const check = ajv.compile(schema);
-
-  const valid = check(config);
+  const valid = ajv.validate(schema, config);
 
   if (!valid) {
     const errorMessage =
-      check.errors
-        ?.map(
-          (x) => '  ' + (x.instancePath + ': ' + (x.message ?? `wrong data type ${x.schemaPath}`)),
-        )
+      ajv.errors
+        ?.map((x) => {
+          if (x.keyword === 'additionalProperties') {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            return `$${x.instancePath}: ${x.message}: ${JSON.stringify(
+              x.params.additionalProperty,
+            )}`;
+          }
+
+          return '  ' + (x.instancePath + ': ' + (x.message ?? `wrong data type ${x.schemaPath}`));
+        })
         .join('\n') ?? '';
 
     throw new TypeError('failed to validate config file:\n' + errorMessage);
   }
-
-  return config;
 }
 
 // read config file
