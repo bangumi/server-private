@@ -107,8 +107,9 @@ export async function fetchDetail(
       createdAt: x.dateline,
     };
 
-    subReplies[x.related] ??= [];
-    subReplies[x.related]?.push(sub);
+    const subR = subReplies[x.related] ?? [];
+    subR.push(sub);
+    subReplies[x.related] = subR;
   }
 
   const topLevelReplies = replies

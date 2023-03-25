@@ -1,13 +1,12 @@
-import type { FastifyInstance } from 'fastify';
-
 import * as auth from '@app/lib/auth';
 import { emptyAuth } from '@app/lib/auth';
 import * as me from '@app/routes/routes/me.ts';
 import * as swagger from '@app/routes/swagger.ts';
+import type { App } from '@app/routes/type';
 
 import * as userApi from './routes/user.ts';
 
-export async function setup(app: FastifyInstance) {
+export async function setup(app: App) {
   await swagger.publicAPI(app);
 
   void app.addHook('preHandler', async (req) => {

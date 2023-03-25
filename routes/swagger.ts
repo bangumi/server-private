@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import type { JSONObject } from '@fastify/swagger';
 import swagger from '@fastify/swagger';
 import { Type as t } from '@sinclair/typebox';
-import type { FastifyInstance, FastifySchema } from 'fastify';
+import type { FastifySchema } from 'fastify';
 import * as yaml from 'js-yaml';
 import type { OpenAPIV3 } from 'openapi-types';
 
@@ -12,12 +12,13 @@ import { CookieKey } from '@app/lib/auth/session';
 import { projectRoot, VERSION } from '@app/lib/config';
 import { Security } from '@app/lib/openapi';
 import * as res from '@app/lib/types/res';
+import type { App } from '@app/routes/type';
 
 const swaggerUI = fs.readFileSync(path.join(projectRoot, './static/swagger.html'));
 
 const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_';
 
-export function addRoute(app: FastifyInstance) {
+export function addRoute(app: App) {
   app.get('/', (req, res) => {
     if (!req.url.endsWith('/')) {
       return res.redirect(req.routerPath + '/');
@@ -80,7 +81,7 @@ const transform: transformer = ({ schema, url }) => {
   return { schema: schema as unknown as JSONObject, url };
 };
 
-export async function addPlugin(app: FastifyInstance, openapi: Partial<OpenAPIV3.Document>) {
+export async function addPlugin(app: App, openapi: Partial<OpenAPIV3.Document>) {
   await app.register(swagger, {
     openapi,
     transform,
@@ -104,7 +105,7 @@ export async function addPlugin(app: FastifyInstance, openapi: Partial<OpenAPIV3
   });
 }
 
-export async function privateAPI(app: FastifyInstance) {
+export async function privateAPI(app: App) {
   addRoute(app);
   await addPlugin(app, {
     info: {
@@ -127,7 +128,7 @@ export async function privateAPI(app: FastifyInstance) {
   });
 }
 
-export async function publicAPI(app: FastifyInstance) {
+export async function publicAPI(app: App) {
   addRoute(app);
   await addPlugin(app, {
     info: {
