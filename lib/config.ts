@@ -61,8 +61,12 @@ export const redisPrefix = `graphql-${VERSION}`;
 export { HTTPS_PROXY };
 
 const schema = t.Object({
-  host: t.String({ default: '0.0.0.0', env: 'HOST' }),
-  port: t.Integer({ default: 4000, env: 'PORT' }),
+  server: t.Object({
+    port: t.Integer({ default: 4000, env: 'PORT' }),
+    host: t.String({ default: '0.0.0.0', env: 'HOST' }),
+    requestIDHeader: t.String({ default: 'x-request-id', transform: ['toLowerCase'] }),
+    clientIpHeader: t.String({ default: 'x-real-ip', transform: ['toLowerCase'] }),
+  }),
 
   siteUrl: t.String({ default: 'https://next.bgm.tv ', transform: ['trim'] }),
 

@@ -10,12 +10,12 @@ import * as auth from './';
 
 export const CookieKey = 'chiiNextSessionID';
 export const LegacyCookieKey = 'chii_auth';
-export const cookiesPluginOption = {
+export const cookiesPluginOption: Readonly<CookieSerializeOptions> = {
   sameSite: 'lax',
   secure: 'auto',
   path: '/',
   httpOnly: true,
-} as const satisfies CookieSerializeOptions;
+};
 
 export async function create(user: { id: number; regTime: number }): Promise<string> {
   const now = DateTime.now().toUnixInteger();

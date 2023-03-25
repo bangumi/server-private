@@ -13,7 +13,7 @@ import * as routes from '@app/routes';
 
 import { emptyAuth } from './auth';
 import * as auth from './auth';
-import { production, stage, testing, VERSION } from './config.ts';
+import config, { testing, VERSION } from './config.ts';
 import type { Context } from './graphql/context.ts';
 import { schema } from './graphql/schema.ts';
 import { repo } from './orm';
@@ -44,12 +44,11 @@ class ValidationError extends Error {
 }
 
 export async function createServer(
-  opts: Omit<FastifyServerOptions, 'onProtoPoisoning' | 'ajv' | 'schemaErrorFormatter'> = {},
+  opts: Omit<
+    FastifyServerOptions,
+    'onProtoPoisoning' | 'ajv' | 'schemaErrorFormatter' | 'requestIdHeader'
+  > = {},
 ): Promise<FastifyInstance> {
-  if (production || stage) {
-    opts.requestIdHeader ??= 'cf-ray';
-  }
-
   const ajv: FastifyServerOptions['ajv'] = {
     plugins: [
       function (ajv: Ajv) {
@@ -63,6 +62,7 @@ export async function createServer(
     ...opts,
     onProtoPoisoning: 'error',
     ajv,
+    requestIdHeader: config.server.requestIDHeader,
     schemaErrorFormatter: defaultSchemaErrorFormatter,
   });
 
@@ -85,14 +85,16 @@ export async function createServer(
     done();
   });
 
+  const clientIpHeader = config.server.clientIpHeader;
+
   server.decorateRequest('ip', {
     getter: function (this: FastifyRequest): string {
-      const cfClientIp = this.headers['cf-connecting-ip'] as string | undefined;
-      if (cfClientIp) {
-        return cfClientIp;
+      const hRealIp = this.headers[clientIpHeader] as string | undefined;
+      if (hRealIp) {
+        return hRealIp;
       }
 
-      return this.socket.remoteAddress ?? '0.0.0.0';
+      return this.socket.remoteAddress ?? '127.0.0.1';
     },
   });
 

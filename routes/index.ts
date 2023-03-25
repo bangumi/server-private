@@ -14,9 +14,7 @@ export async function setup(app: App) {
   await app.register(publicAPI.setup, { prefix: '/v0.5' });
   await app.register(demo.setup, { prefix: '/demo/' });
 
-  app.get('/img/*', (req, res) => {
-    return res.redirect('https://bgm.tv' + req.url);
-  });
+  app.get('/img/*', (req, res) => res.redirect('https://bgm.tv' + req.url));
 }
 
 declare module 'fastify' {
