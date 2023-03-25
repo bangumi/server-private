@@ -24,6 +24,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "resolveJsonModule": true,
+    "types": ["node"],
     "paths": {
       // 生产环境依赖 @esbuild-kit/esm-loader 进行加载
       // 测试环境需要设置 vitest.config.ts 的 resolve.alias
