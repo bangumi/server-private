@@ -1009,19 +1009,19 @@ ajv@^8.0.0, ajv@^8.10.0, ajv@^8.11.0, ajv@^8.12.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-altair-fastify-plugin@^5.0.18:
-  version "5.0.18"
-  resolved "https://registry.yarnpkg.com/altair-fastify-plugin/-/altair-fastify-plugin-5.0.18.tgz#d7bfeb559ee68c12bb0c4adbff3b4719e75e1ec7"
-  integrity sha512-s2tM78AIGFPfQdrZq+6CdVLWGrHGydmTZ5QegCxkIHxXDwr6RAuwbKEsWyt5IEiwy6VZRqNY/32eEdwbFBmnPA==
+altair-fastify-plugin@^5.0.19:
+  version "5.0.19"
+  resolved "https://registry.yarnpkg.com/altair-fastify-plugin/-/altair-fastify-plugin-5.0.19.tgz#584b8c3bac4f7de1d95aeaf58a8849900891a215"
+  integrity sha512-hjh5eubujyIQkcYdCSSgmXHCEIDfXfYgrX/yTm/4MCFHMzAk0QZwuPDEYpKo7D7R7D4UW5vZ1cGtg9F3nsJxNQ==
   dependencies:
     "@fastify/static" "^6.4.0"
-    altair-static "^5.0.18"
+    altair-static "^5.0.19"
     fastify-plugin "^2.3.4"
 
-altair-static@^5.0.18:
-  version "5.0.18"
-  resolved "https://registry.yarnpkg.com/altair-static/-/altair-static-5.0.18.tgz#25471d7f3f600ca9d6243ac8e08ddd20211ac487"
-  integrity sha512-aOVSNmyttBc+fMK2rClCm3tIw//mD9jZH0POnWSla5Q5pXVaEjK+QV3TSdEl7lIP7UsWYgncQR9wnHy46imbBQ==
+altair-static@^5.0.19:
+  version "5.0.19"
+  resolved "https://registry.yarnpkg.com/altair-static/-/altair-static-5.0.19.tgz#97ca218887172d86f7d35fbdad55f7c0a6633782"
+  integrity sha512-OkPCCRrHIVUC3EYry7K1Y4Ze87rq9q3xq83WG/OKKkwr4bKWuijyD0YCw+OMqkPQqGcwuBL10qMQEYPiBPnDuA==
 
 ansi-escapes@^4.3.0:
   version "4.3.2"
