@@ -121,8 +121,8 @@ export async function setup(app: App) {
           groupName: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 20 })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          limit: t.Optional(t.Integer({ default: 20, maximum: 40 })),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
         }),
         response: {
           200: t.Ref(GroupProfile),
@@ -209,7 +209,7 @@ export async function setup(app: App) {
               { default: 'all' },
             ),
           ),
-          limit: t.Optional(t.Integer({ default: 30 })),
+          limit: t.Optional(t.Integer({ default: 30, maximum: 40 })),
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
@@ -247,7 +247,7 @@ export async function setup(app: App) {
           groupName: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 30 })),
+          limit: t.Optional(t.Integer({ default: 30, maximum: 40 })),
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
@@ -289,7 +289,7 @@ export async function setup(app: App) {
           subjectID: t.Integer({ exclusiveMinimum: 0 }),
         }),
         querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 30 })),
+          limit: t.Optional(t.Integer({ default: 30, maximum: 40 })),
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {

@@ -41,7 +41,7 @@ export async function setup(app: App) {
         tags: [Tag.User],
         security: [{ [Security.CookiesSession]: [] }],
         querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 20 })),
+          limit: t.Optional(t.Integer({ default: 20, maximum: 40, description: 'max 40' })),
           unread: t.Optional(t.Boolean()),
         }),
         response: {
