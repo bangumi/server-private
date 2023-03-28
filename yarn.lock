@@ -551,7 +551,7 @@
     line-column "^1.0.2"
     ohm-js "^16.3.0"
 
-"@sinclair/typebox@^0.26.3", "@sinclair/typebox@^0.26.4":
+"@sinclair/typebox@^0.26.4", "@sinclair/typebox@^0.26.5":
   version "0.26.5"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.26.5.tgz#565335597bf1876197848b27335b518a043aab43"
   integrity sha512-bCAUB2mTRhSCbDKjtlsqfmIAahNLdW7T854jnbruGHsH8p7CZKJQgU84x9b59HQ6NKvI9GUCimxBJSrp5f7fbA==
