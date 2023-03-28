@@ -1,5 +1,7 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
+import { htmlEscapedString } from '@app/lib/orm/transformer';
+
 @Entity('chii_groups', { schema: 'bangumi' })
 export class Group {
   @PrimaryGeneratedColumn({ type: 'smallint', name: 'grp_id', unsigned: true })
@@ -100,7 +102,7 @@ export class GroupTopic {
   @Column('mediumint', { name: 'grp_tpc_uid', unsigned: true })
   creatorID!: number;
 
-  @Column('varchar', { name: 'grp_tpc_title', length: 80 })
+  @Column('varchar', { name: 'grp_tpc_title', length: 80, transformer: htmlEscapedString })
   title!: string;
 
   @Column('int', {
