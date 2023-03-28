@@ -54,7 +54,7 @@
     "@types/luxon": "^3.2.0",
     "@types/mime-types": "^2.1.1",
     "@types/minio": "^7.0.17",
-    "@types/node": "^18.15.9",
+    "@types/node": "^18.15.10",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "@typescript-eslint/utils": "^5.57.0",
