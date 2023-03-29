@@ -551,10 +551,10 @@
     line-column "^1.0.2"
     ohm-js "^16.3.0"
 
-"@sinclair/typebox@^0.26.4", "@sinclair/typebox@^0.26.5":
-  version "0.26.5"
-  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.26.5.tgz#565335597bf1876197848b27335b518a043aab43"
-  integrity sha512-bCAUB2mTRhSCbDKjtlsqfmIAahNLdW7T854jnbruGHsH8p7CZKJQgU84x9b59HQ6NKvI9GUCimxBJSrp5f7fbA==
+"@sinclair/typebox@^0.26.4", "@sinclair/typebox@^0.26.6":
+  version "0.26.6"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.26.6.tgz#d66a26ce4e09af10a4a6a85a26dceafc956b6162"
+  integrity sha512-7BT4sRfeCV5j/CK/+cXu05B2IxrNBhD1rR3HJ8XG3/oqZfJIA60GnNKo+N4VHA47JTg8zlXuYTLYMVxI3pwMEQ==
 
 "@sindresorhus/is@^5.2.0":
   version "5.3.0"
