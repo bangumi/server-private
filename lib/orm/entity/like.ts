@@ -1,5 +1,6 @@
-import { DateTime } from 'luxon';
 import { Column, Entity, Index } from 'typeorm';
+
+import { UnixTimestamp } from '@app/lib/orm/transformer';
 
 /** 用于点赞/封面投票 */
 @Index('idx_uid', ['uid'], {})
@@ -28,10 +29,7 @@ export class Like {
     name: 'created_at',
     comment: 'unix timestamp seconds',
     unsigned: true,
-    transformer: {
-      to: (value: Date) => Math.trunc(value.getTime() / 1000),
-      from: (value: number) => DateTime.fromSeconds(value).toJSDate(),
-    },
+    transformer: UnixTimestamp,
   })
   createdAt!: Date;
 }

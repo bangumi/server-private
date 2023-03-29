@@ -1,5 +1,7 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
+import type { Transformer } from '@app/lib/orm/transformer';
+
 @Index('nt_from_uid', ['from_uid'], {})
 @Index('nt_mid', ['notify_field_id'], {})
 @Index('nt_uid', ['uid', 'unread', 'type', 'postID'], {})
@@ -21,7 +23,7 @@ export class Notify {
     transformer: {
       to: (value: boolean) => (value ? 1 : 0),
       from: Boolean,
-    },
+    } satisfies Transformer<number, boolean>,
   })
   unread!: boolean;
 

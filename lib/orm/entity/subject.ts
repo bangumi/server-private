@@ -1,7 +1,6 @@
-import { DateTime } from 'luxon';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import { htmlEscapedString } from '@app/lib/orm/transformer';
+import { htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer';
 
 @Index('subject_name_cn', ['nameCN'], {})
 @Index('subject_platform', ['platform'], {})
@@ -324,10 +323,7 @@ export class SubjectImage {
   @Column('int', {
     name: 'img_dateline',
     unsigned: true,
-    transformer: {
-      to: (value: Date) => Math.trunc(value.getTime() / 1000),
-      from: (value: number) => DateTime.fromSeconds(value).toJSDate(),
-    },
+    transformer: UnixTimestamp,
   })
   createdAt!: Date;
 }

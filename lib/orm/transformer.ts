@@ -1,6 +1,17 @@
 import * as lo from 'lodash-es';
 
-export const htmlEscapedString = {
+export interface Transformer<DBType, ValueType> {
+  to(value: ValueType): DBType;
+
+  from(value: DBType): ValueType;
+}
+
+export const htmlEscapedString: Transformer<string, string> = {
   to: (value: string) => lo.escape(value),
   from: (value: string) => lo.unescape(value),
-} as const;
+};
+
+export const UnixTimestamp: Transformer<number, Date> = {
+  to: (value: Date) => Math.trunc(value.getTime() / 1000),
+  from: (value: number) => new Date(value * 1000),
+};
