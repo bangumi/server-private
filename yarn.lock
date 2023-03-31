@@ -18,9 +18,9 @@
     tunnel "^0.0.6"
 
 "@babel/code-frame@^7.0.0":
-  version "7.18.6"
-  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.18.6.tgz#3b25d38c89600baa2dcc219edfa88a74eb2c427a"
-  integrity sha512-TDCmlK5eOvH+eH7cdAFlNXeVJqWIQ7gW9tY1GJIpUtFb6CmjVyq2VM3u71bOyR8CRihcCgMUYoDNyLXao3+70Q==
+  version "7.21.4"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.21.4.tgz#d0fa9e4413aca81f2b23b9442797bda1826edb39"
+  integrity sha512-LYvhNKfwWSPpocw8GI7gpK2nq3HSDuEPC/uSYaALSJu9xjsalaaYFOq0Pwt5KmVqwEbZlDu81aLXwBOmD/Fv9g==
   dependencies:
     "@babel/highlight" "^7.18.6"
 
@@ -182,9 +182,9 @@
     eslint-visitor-keys "^3.3.0"
 
 "@eslint-community/regexpp@^4.4.0":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@eslint-community/regexpp/-/regexpp-4.4.1.tgz#087cb8d9d757bb22e9c9946c9c0c2bf8806830f1"
-  integrity sha512-BISJ6ZE4xQsuL/FmsyRaiffpq977bMlsKfGHTQrOGFErfByxIe6iZTxPf/00Zon9b9a7iUykfQwejN3s2ZW/Bw==
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/@eslint-community/regexpp/-/regexpp-4.5.0.tgz#f6f729b02feee2c749f57e334b7a1b5f40a81724"
+  integrity sha512-vITaYzIcNmjn5tF5uxcZ/ft7/RXGrMUIS9HalWckEOF6ESiwXKoMzAQf2UW0aVd6rnOeExTJVd5hmWXucBKGXQ==
 
 "@eslint/eslintrc@^2.0.2":
   version "2.0.2"
@@ -3104,9 +3104,9 @@ grapheme-splitter@^1.0.4:
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
 graphql-jit@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/graphql-jit/-/graphql-jit-0.8.0.tgz#0f8fb7240cbd0dc1ab45f3684ff296193bb2d2a5"
-  integrity sha512-mxdV9ohO6jKt1o9erb+7RpmnDKQFQCcJlYVfGa3j4+ieP0ITDsAlm194+pfvdv5F4zgrgZfSe5xx5Rf98epJmg==
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/graphql-jit/-/graphql-jit-0.8.1.tgz#1b3842d27da6c7fe2da565216b11c212ef72a5ac"
+  integrity sha512-C2ytXbgve7eYTr26nxflrJxjD7Vez8aDO+o6wvQEypv4b9ndikceRi0SsA5trEhhvOB2z5Za2PQfaBDO5+02JQ==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     fast-json-stringify "^1.21.0"
@@ -3124,9 +3124,9 @@ graphql-tag@^2.12.6:
     tslib "^2.1.0"
 
 graphql-ws@^5.11.2:
-  version "5.12.0"
-  resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-5.12.0.tgz#d06fe38916334b4a4c827f73268cbf4359a32ed7"
-  integrity sha512-PA3ImUp8utrpEjoxBMhvxsjkStvFEdU0E1gEBREt8HZIWkxOUymwJBhFnBL7t/iHhUq1GVPeZevPinkZFENxTw==
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/graphql-ws/-/graphql-ws-5.12.1.tgz#c62d5ac54dbd409cc6520b0b39de374b3d59d0dd"
+  integrity sha512-umt4f5NnMK46ChM2coO36PTFhHouBrK9stWWBczERguwYrGnPNxJ9dimU6IyOBfOkC6Izhkg4H8+F51W/8CYDg==
 
 graphql@^16.0.0, graphql@^16.6.0:
   version "16.6.0"
