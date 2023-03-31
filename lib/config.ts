@@ -64,6 +64,11 @@ function Obj<T extends TProperties>(properties: T): TObject<T> {
   return t.Object(properties, { additionalProperties: false });
 }
 
+export enum Image {
+  S3 = 's3',
+  FileSystem = 'fs',
+}
+
 export const schema = Obj({
   server: Obj({
     port: t.Integer({ default: 4000, env: 'PORT' }),
@@ -89,13 +94,7 @@ export const schema = Obj({
 
   image: Obj({
     gatewayDomain: t.String({ default: 'lain.bgm.tv' }),
-    provider: t.Enum(
-      {
-        s3: 's3',
-        FS: 'fs',
-      } as const,
-      { default: 'fs', env: 'CHII_IMAGE_PROVIDER' },
-    ),
+    provider: t.Enum(Image, { default: Image.FileSystem, env: 'CHII_IMAGE_PROVIDER' }),
     imaginaryUrl: t.Optional(
       t.String({
         description: 'url to docker image running https://github.com/h2non/imaginary',
