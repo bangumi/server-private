@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 import type { IAuth } from '@app/lib/auth';
 import { UserGroup } from '@app/lib/auth';
 import { LikeRepo, SubjectImageRepo } from '@app/lib/orm';
+import { Like } from '@app/lib/orm/entity';
 import * as Subject from '@app/lib/subject';
 import { setup } from '@app/routes/private/routes/wiki/subject/index';
 import { createTestServer } from '@app/tests/utils';
@@ -33,7 +34,7 @@ vi.spyOn(Subject, 'onSubjectVote').mockImplementation(() => Promise.resolve());
 
 describe('should vote for subject cover', () => {
   beforeAll(async () => {
-    await LikeRepo.createQueryBuilder().where('true').delete().execute();
+    await LikeRepo.delete({ type: Like.TYPE_SUBJECT_COVER });
     await SubjectImageRepo.upsert(
       {
         ban: 0,
@@ -49,7 +50,7 @@ describe('should vote for subject cover', () => {
   });
 
   afterAll(async () => {
-    await LikeRepo.createQueryBuilder().where('true').delete().execute();
+    await LikeRepo.delete({ type: Like.TYPE_SUBJECT_COVER });
     await SubjectImageRepo.delete({ id: 100 });
   });
 

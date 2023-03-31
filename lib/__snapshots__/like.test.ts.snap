@@ -1,3 +1,102 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`group topic reactions 1`] = `Object {}`;
+exports[`group topic reactions 1`] = `
+Object {
+  "2288668": Array [
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 54,
+    },
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 68,
+    },
+    Object {
+      "selected": true,
+      "total": 1,
+      "value": 92,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 122,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 128,
+    },
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 132,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 137,
+    },
+  ],
+  "2288669": Array [
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 68,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 85,
+    },
+    Object {
+      "selected": true,
+      "total": 1,
+      "value": 90,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 92,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 122,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 132,
+    },
+  ],
+  "2288670": Array [
+    Object {
+      "selected": true,
+      "total": 1,
+      "value": 60,
+    },
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 62,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 122,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 128,
+    },
+    Object {
+      "selected": false,
+      "total": 3,
+      "value": 137,
+    },
+  ],
+}
+`;

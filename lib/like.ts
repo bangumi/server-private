@@ -1,7 +1,6 @@
 import * as lo from 'lodash-es';
 
 import { LikeRepo } from '@app/lib/orm';
-import { Like } from '@app/lib/orm/entity';
 
 export interface Reaction {
   selected: boolean;
@@ -13,7 +12,7 @@ export async function fetchGroupTopic(
   id: number,
   uid: number,
 ): Promise<Record<number, Reaction[]>> {
-  const data = await LikeRepo.findBy({ mainID: id, type: Like.TYPE_GROUP_REPLY });
+  const data = await LikeRepo.findBy({ mainID: id });
 
   const r = lo.groupBy(data, (x) => x.relatedID);
 
