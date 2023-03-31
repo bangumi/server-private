@@ -104,16 +104,14 @@ export const schema = Obj({
     fs: Obj({
       path: t.String({ default: './tmp/images' }),
     }),
-    s3: t.ReadonlyOptional(
-      Obj({
-        endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),
-        bucket: t.String({ default: 'chii-image', env: 'CHII_IMAGE_S3_BUCKET' }),
-        port: t.Integer({ default: 9000, env: 'CHII_IMAGE_S3_PORT' }),
-        useSSL: t.Boolean({ default: false, env: 'CHII_IMAGE_S3_USE_SSL' }),
-        accessKey: t.String({ env: 'CHII_IMAGE_S3_ACCESS_KEY' }),
-        secretKey: t.String({ env: 'CHII_IMAGE_S3_SECRET_KEY' }),
-      }),
-    ),
+    s3: Obj({
+      endPoint: t.String({ env: 'CHII_IMAGE_S3_ENDPOINT' }),
+      bucket: t.String({ default: 'chii-image', env: 'CHII_IMAGE_S3_BUCKET' }),
+      port: t.Integer({ default: 9000, env: 'CHII_IMAGE_S3_PORT' }),
+      useSSL: t.Boolean({ default: false, env: 'CHII_IMAGE_S3_USE_SSL' }),
+      accessKey: t.String({ env: 'CHII_IMAGE_S3_ACCESS_KEY' }),
+      secretKey: t.String({ env: 'CHII_IMAGE_S3_SECRET_KEY' }),
+    }),
   }),
 
   turnstile: Obj({
@@ -195,7 +193,7 @@ export function validateConfig(config: unknown) {
 }
 
 // read config file
-const config = readConfig();
+const config: Static<typeof schema> = readConfig();
 
 export default config;
 export const imageDomain = config.image.gatewayDomain;
