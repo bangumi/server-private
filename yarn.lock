@@ -257,9 +257,9 @@
     mime "^3.0.0"
 
 "@fastify/static@^6.0.0", "@fastify/static@^6.4.0", "@fastify/static@^6.9.0":
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/@fastify/static/-/static-6.9.0.tgz#038efdfe33757cc0ab4b0920e82bc4240fa5d78a"
-  integrity sha512-9SBVNJi2+KTnfiW1WjiVXDsmUxliNI54OF1eOiaop264dh8FwXSuLmO62JXvx7+VD0vQXEqsyRbFCYUJ9aJxng==
+  version "6.10.0"
+  resolved "https://registry.yarnpkg.com/@fastify/static/-/static-6.10.0.tgz#cdb6a5ddcc3ea8691c79aad0c846bc986a4bc721"
+  integrity sha512-TGruNm6ZabkQz2oRNoarPnY2BvS9i9DNf8Nn1aDcZp+WjOQRPCq0Wy2ko78yGB5JHytdCWoHpprc128QtLl8hw==
   dependencies:
     "@fastify/accept-negotiator" "^1.0.0"
     "@fastify/send" "^2.0.0"
