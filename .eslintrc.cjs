@@ -85,6 +85,7 @@ module.exports = {
         '@typescript-eslint/restrict-plus-operands': ['error', { checkCompoundAssignments: true }],
         '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
         '@typescript-eslint/object-curly-spacing': ['error', 'always'],
+        'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
         '@typescript-eslint/consistent-type-imports': [
           'error',
           {
