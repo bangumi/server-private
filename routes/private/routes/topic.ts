@@ -5,6 +5,7 @@ import type { IAuth } from '@app/lib/auth';
 import { NotAllowedError } from '@app/lib/auth';
 import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
+import * as Like from '@app/lib/like';
 import { Security, Tag } from '@app/lib/openapi';
 import type { Page } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
@@ -55,6 +56,12 @@ const SubReply = t.Object(
   { $id: 'SubReply' },
 );
 
+const Reaction = t.Object({
+  selected: t.Boolean(),
+  total: t.Integer(),
+  value: t.Integer(),
+});
+
 const Reply = t.Object(
   {
     id: t.Integer(),
@@ -64,6 +71,7 @@ const Reply = t.Object(
     createdAt: t.Integer(),
     text: t.String(),
     state: t.Integer(),
+    reactions: t.Array(Reaction),
   },
   { $id: 'Reply' },
 );
@@ -78,6 +86,7 @@ const TopicDetail = t.Object(
     state: t.Integer(),
     createdAt: t.Integer(),
     replies: t.Array(t.Ref(Reply)),
+    reactions: t.Array(Reaction),
   },
   { $id: 'TopicDetail' },
 );
@@ -538,17 +547,21 @@ export async function handleTopicDetail({
     throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
   }
 
+  const reactions = await Like.fetchGroupTopic(id, auth.userID);
+
   return {
     ...topic,
     creator: toResUser(creator),
     text: topic.text,
     group: { ...group, icon: groupIcon(group.icon) },
+    reactions: reactions[topic.contentPost.id] ?? [],
     replies: topic.replies.map((x) => {
       const user = users[x.creatorID];
       if (!user) {
         throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
       }
       return {
+        reactions: reactions[x.id] ?? [],
         isFriend: friends[x.creatorID] ?? false,
         ...x,
         replies: x.replies.map((x) => {
@@ -557,6 +570,7 @@ export async function handleTopicDetail({
             throw new UnexpectedNotFoundError(`user ${x.creatorID}`);
           }
           return {
+            reactions: reactions[x.id] ?? [],
             isFriend: friends[x.creatorID] ?? false,
             ...x,
             creator: toResUser(user),

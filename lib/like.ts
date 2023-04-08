@@ -25,7 +25,7 @@ export async function fetchGroupTopic(
       return {
         selected: values.some((x) => x.uid === uid),
         total: values.length,
-        value: Number.parseInt(key),
+        value: Number(key),
       };
     });
   });

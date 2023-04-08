@@ -54,6 +54,7 @@ export interface IReply extends IBaseReply {
 
 export interface ITopicDetails {
   id: number;
+
   title: string;
   text: string;
   display: number;

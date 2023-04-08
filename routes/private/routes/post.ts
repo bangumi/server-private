@@ -22,6 +22,7 @@ import type { App } from '@app/routes/type';
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(res.User);
+
   const BasicReply = t.Object(
     {
       id: t.Integer(),
