@@ -1011,7 +1011,7 @@ ajv@^8.0.0, ajv@^8.10.0, ajv@^8.11.0, ajv@^8.12.0:
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
 
-altair-fastify-plugin@^5.0.19:
+altair-fastify-plugin@^5.0.21:
   version "5.0.21"
   resolved "https://registry.yarnpkg.com/altair-fastify-plugin/-/altair-fastify-plugin-5.0.21.tgz#2c5371c16087b8882310cd2c4e9f8068ed787d8c"
   integrity sha512-PtDTmylUl6NuiSXdZoYuZn6A+owhvvJ/qIglClceZ/2lNJfZCpbi/6zk7D8z7VwhwjMPmSNTcFELL/rrDEFGUQ==
