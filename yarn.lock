@@ -256,7 +256,7 @@
     http-errors "2.0.0"
     mime "^3.0.0"
 
-"@fastify/static@^6.0.0", "@fastify/static@^6.4.0", "@fastify/static@^6.9.0":
+"@fastify/static@^6.0.0", "@fastify/static@^6.10.0", "@fastify/static@^6.4.0":
   version "6.10.0"
   resolved "https://registry.yarnpkg.com/@fastify/static/-/static-6.10.0.tgz#cdb6a5ddcc3ea8691c79aad0c846bc986a4bc721"
   integrity sha512-TGruNm6ZabkQz2oRNoarPnY2BvS9i9DNf8Nn1aDcZp+WjOQRPCq0Wy2ko78yGB5JHytdCWoHpprc128QtLl8hw==
