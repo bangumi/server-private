@@ -1,20 +1,39 @@
+import {
+  CreateBucketCommand,
+  DeleteObjectCommand,
+  ListBucketsCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import * as mime from 'mime-types';
-import * as minio from 'minio';
 
 import config from '@app/lib/config';
 
 const s3 = config.image.s3;
 
-const client = new minio.Client({
-  endPoint: s3.endPoint,
-  port: s3.port,
-  useSSL: s3.useSSL,
-  accessKey: s3.accessKey,
-  secretKey: s3.secretKey,
+const client = new S3Client({
+  endpoint: {
+    protocol: s3.useSSL ? 'https:' : 'http:',
+    hostname: s3.endPoint,
+    port: s3.port,
+    path: '/',
+  },
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: s3.accessKey,
+    secretAccessKey: s3.secretKey,
+  },
+  region: 'REGION',
 });
 
-if (!(await client.bucketExists(s3.bucket))) {
-  await client.makeBucket(s3.bucket);
+const cmd = new ListBucketsCommand({});
+const res = await client.send(cmd);
+if (!res.Buckets?.some((x) => x.Name === s3.bucket)) {
+  const cmd = new CreateBucketCommand({
+    Bucket: s3.bucket,
+  });
+
+  await client.send(cmd);
 }
 
 export async function uploadImage(path: string, content: Buffer): Promise<void> {
@@ -25,9 +44,21 @@ export async function uploadImage(path: string, content: Buffer): Promise<void> 
     metadata['content-type'] = type;
   }
 
-  await client.putObject(s3.bucket, path, content, metadata);
+  await client.send(
+    new PutObjectCommand({
+      Bucket: s3.bucket,
+      Key: path,
+      ContentType: type || undefined,
+      Body: content,
+    }),
+  );
 }
 
 export async function deleteImage(p: string): Promise<void> {
-  await client.removeObject(s3.bucket, p);
+  await client.send(
+    new DeleteObjectCommand({
+      Bucket: s3.bucket,
+      Key: p,
+    }),
+  );
 }
