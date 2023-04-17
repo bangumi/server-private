@@ -62,7 +62,7 @@ export const Error = t.Object(
     message: t.String(),
     statusCode: t.Integer(),
   },
-  { $id: 'Error', description: 'fastify default error response' },
+  { $id: 'ErrorResponse', description: 'default error response type' },
 );
 
 export function formatError(e: FastifyError): Static<typeof Error> {
