@@ -3,11 +3,11 @@ import * as process from 'node:process';
 
 import { nanoid } from 'nanoid';
 
-import config, { production } from './config';
-import { logger } from './logger.ts';
-import { AppDataSource } from './orm';
-import { Subscriber } from './redis.ts';
-import { createServer } from './server.ts';
+import config, { production } from '@app/lib/config';
+import { logger } from '@app/lib/logger.ts';
+import { AppDataSource } from '@app/lib/orm';
+import { Subscriber } from '@app/lib/redis.ts';
+import { createServer } from '@app/lib/server.ts';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
   // eslint-disable-next-line no-console

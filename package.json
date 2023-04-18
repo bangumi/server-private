@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "type": "module",
-  "main": "lib/main.ts",
+  "main": "bin/main.ts",
   "engines": {
     "node": "^18.0.0"
   },
@@ -12,7 +12,7 @@
     "format": "prettier --list-different -w ./",
     "tsc": "tsc --noEmit",
     "lint": "eslint --cache --ext ts,cjs,js ./",
-    "start": "nodemon ./lib/main.ts",
+    "start": "nodemon ./bin/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
     "run-file": "node --no-warnings --loader @esbuild-kit/esm-loader",

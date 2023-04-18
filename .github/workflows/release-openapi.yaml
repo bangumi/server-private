@@ -17,7 +17,7 @@ jobs:
           cache: yarn
 
       - run: yarn
-      - run: yarn run-file ./scripts/export-openapi.ts
+      - run: yarn run-file ./bin/export-openapi.ts
 
       - uses: actions/checkout@v3
         with:
