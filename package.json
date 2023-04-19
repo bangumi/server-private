@@ -111,6 +111,7 @@
       "**.test.ts"
     ],
     "watch": [
+      "bin",
       "lib",
       "routes",
       "config.yaml",
