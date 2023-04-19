@@ -176,9 +176,7 @@ export function setup(app: App) {
       }
 
       if (!ImageTypeCanBeUploaded.includes(format)) {
-        throw new BadRequestError(
-          `not valid image, only support ${ImageTypeCanBeUploaded.join(', ')}`,
-        );
+        throw new UnsupportedImageFormat();
       }
 
       // convert webp to jpeg
