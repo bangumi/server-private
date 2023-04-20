@@ -3382,7 +3382,7 @@ fast-xml-parser@4.1.2:
   dependencies:
     strnum "^1.0.5"
 
-fastify-metrics@^10.2.0:
+fastify-metrics@^10.3.0:
   version "10.3.0"
   resolved "https://registry.yarnpkg.com/fastify-metrics/-/fastify-metrics-10.3.0.tgz#0ea9c107c6fe0c8d8085b413f01eeb6af2375fb4"
   integrity sha512-0m+tD84efgudLp4gmLqFSZ5q1eUltBeNVBPGV8duPxhIR4s+2Xv4IVR4Clp9So5p1Emv83iOAEERddSmDBkyRA==
