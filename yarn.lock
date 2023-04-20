@@ -1221,12 +1221,12 @@
     rfdc "^1.3.0"
     yaml "^2.1.1"
 
-"@fastify/type-provider-typebox@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@fastify/type-provider-typebox/-/type-provider-typebox-3.0.0.tgz#d88f9f3142aeb8145f9d8979e1d946643e471752"
-  integrity sha512-VVYY/ZcPSFElLtRYboA2bmFxoINGDqmmqJ8Ch8+2lvmc+XFCsOJ714SEOpgshC4n52KBclgQxf2O80NeEAN7gQ==
+"@fastify/type-provider-typebox@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@fastify/type-provider-typebox/-/type-provider-typebox-3.1.0.tgz#55e4e2d981c55c06d1d06638399aa37a2159162c"
+  integrity sha512-gR1ZYaFbnPd5U24OblcvFJsqcwb2U9oXnmeSEL3FQakgoQ2J5lPluUMU/Rmq9LOy6DMUILuyj+uwXTYh7PNqpQ==
   dependencies:
-    "@sinclair/typebox" "^0.26.4"
+    "@sinclair/typebox" "^0.27.8"
 
 "@fastify/view@^7.4.1":
   version "7.4.1"
@@ -1492,10 +1492,15 @@
     line-column "^1.0.2"
     ohm-js "^16.3.0"
 
-"@sinclair/typebox@^0.26.4", "@sinclair/typebox@^0.26.8":
+"@sinclair/typebox@^0.26.8":
   version "0.26.8"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.26.8.tgz#daea92a69f2903b1f1d9582b9539553f144aba6b"
   integrity sha512-fvAkOrUWndf5vjptkW+4TeTH84/bILWQHgk7rbbzT8trZxW+b84lr8dZQPM/r7cGNRFxDaJYsMjHCikEYyAHaw==
+
+"@sinclair/typebox@^0.27.8":
+  version "0.27.8"
+  resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
+  integrity sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==
 
 "@sindresorhus/is@^5.2.0":
   version "5.3.0"
