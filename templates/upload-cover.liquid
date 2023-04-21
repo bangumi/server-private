@@ -20,14 +20,16 @@
       const reader = new FileReader();
 
       reader.onload = function () {
-        resolve(btoa(String.fromCharCode.apply(null, new Uint8Array(reader.result))));
+        const content = reader.result;
+        resolve(content.split(',')[1]);
       };
+
       reader.onerror = function () {
         reject('failed to read file');
         console.log('there are some problems');
       };
 
-      reader.readAsArrayBuffer(file);
+      reader.readAsDataURL(file);
     });
   }
 
