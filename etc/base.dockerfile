@@ -6,8 +6,10 @@ COPY package.json package-lock.json ./
 
 ENV NODE_ENV=production
 
-RUN npm pkg delete scripts.prepare \
-  && npm ci \
+RUN npm i -g pnpm \
+  && npm pkg delete scripts.prepare \
+  && pnpm fetch --prod \
+  && pnpm install -r --offline --prod \
   && rm package.json package-lock.json
 
 FROM gcr.io/distroless/nodejs18-debian11:latest

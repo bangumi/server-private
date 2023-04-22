@@ -135,6 +135,7 @@
   "prettier": {
     "plugins": [
       "@shopify/prettier-plugin-liquid",
+      "prettier-plugin-sh",
       "prettier-plugin-jsdoc"
     ],
     "tsdoc": true,
