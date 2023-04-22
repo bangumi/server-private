@@ -17,6 +17,16 @@ fastify + TypeORM + mercurius + nexus
 
 ## 开发
 
+使用 `yarn v1` 进行依赖管理
+
+### 安装依赖
+
+```shell
+yarn
+```
+
+### 启动
+
 复制 `.env.example` 到 `.env`，`config.example.yaml` 到 `config.yaml`，根据自己的开发环境设置相关配置。 环境变量(及`.env`文件)会覆盖 `config.yaml` 中的设置。
 
 如果你是在本机启动了 [dev-env](https://github.com/bangumi/dev-env) 中的 docker-compose，可以直接使用默认设置。
