@@ -6,16 +6,15 @@ import httpCodes from 'http-status-codes';
 import { comparePassword, NeedLoginError } from '@app/lib/auth';
 import * as session from '@app/lib/auth/session';
 import { CookieKey } from '@app/lib/auth/session';
-import config, { redisPrefix, stage } from '@app/lib/config';
+import config, { redisPrefix } from '@app/lib/config';
 import { UnexpectedNotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import { fetchUser, UserRepo } from '@app/lib/orm';
-import redis from '@app/lib/redis';
 import { avatar } from '@app/lib/response';
 import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import * as res from '@app/lib/types/res';
 import { toResUser } from '@app/lib/types/res';
-import Limiter from '@app/lib/utils/rate-limit';
+import { createLimiter } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type';
 
@@ -33,8 +32,6 @@ const EmailOrPasswordError = createError(
   httpCodes.UNAUTHORIZED,
 );
 
-const LimitInTimeWindow = 10;
-
 const clientPermission = t.Object(
   {
     subjectWikiEdit: t.Boolean(),
@@ -45,26 +42,6 @@ const clientPermission = t.Object(
 const currentUser = t.Intersect([res.User, t.Object({ permission: clientPermission })], {
   $id: 'CurrentUser',
 });
-
-function createLimiter() {
-  if (stage) {
-    return {
-      get(): Promise<{ remain: number; reset: number }> {
-        return Promise.resolve({ remain: 6, reset: 3600 });
-      },
-
-      reset(): Promise<void> {
-        return Promise.resolve();
-      },
-    };
-  }
-
-  return new Limiter({
-    redisClient: redis,
-    limit: LimitInTimeWindow,
-    duration: 600,
-  });
-}
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -215,13 +192,13 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       reply,
     ): Promise<res.IUser> {
       const limitKey = `${redisPrefix}-login-rate-limit-${ip}`;
-      const { remain, reset } = await limiter.get(limitKey);
+      const { remain, reset, limit, limited } = await limiter.get(limitKey, 600, 10);
       void reply.headers({
         'X-RateLimit-Remaining': remain,
-        'X-RateLimit-Limit': LimitInTimeWindow,
+        'X-RateLimit-Limit': limit,
         'X-RateLimit-Reset': reset,
       });
-      if (remain <= 0) {
+      if (limited) {
         throw new TooManyRequestsError();
       }
 

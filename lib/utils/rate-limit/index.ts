@@ -1,55 +1,48 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { stage } from '@app/lib/config.ts';
+import redis from '@app/lib/redis.ts';
+import { RedisLimiter } from '@app/lib/utils/rate-limit/redis.ts';
 
-import type { Redis } from 'ioredis';
+export const enum LimitAction {}
 
-import { projectRoot } from '@app/lib/config';
-import { intval } from '@app/lib/utils';
+export interface Result {
+  limited: boolean;
 
-const luaScript = fs
-  .readFileSync(path.join(projectRoot, 'lib/utils/rate-limit/lua/get_token.lua'))
-  .toString();
+  remain: number;
+  reset: number;
+  limit: number;
+}
 
-export default class Limiter {
-  private readonly redisClient: Redis;
-  private readonly limit: number;
-  private readonly duration: number;
+export interface Limiter {
+  get(key: string, timeWindow: number, limit: number): Promise<Result>;
 
-  constructor({
-    redisClient,
-    limit = 10,
-    duration = 60,
-  }: {
-    redisClient: Redis;
-    limit?: number;
-    duration?: number;
-  }) {
-    this.redisClient = redisClient;
-    this.limit = limit;
-    this.duration = duration;
+  userAction(
+    userID: number,
+    action: LimitAction,
+    timeWindow: number,
+    limit: number,
+  ): Promise<Result>;
 
-    this.redisClient.defineCommand('getRateLimit', {
-      numberOfKeys: 1,
-      lua: luaScript,
-    });
-  }
+  reset(key: string): Promise<void>;
+}
 
-  async get(key: string): Promise<{ remain: number; reset: number }> {
-    const result = await this.redisClient.getRateLimit(key, this.limit, this.duration);
+export function createLimiter(): Limiter {
+  if (stage) {
     return {
-      remain: result[0],
-      reset: intval(result[1]),
+      userAction(): Promise<Result> {
+        return Promise.resolve({ limited: false, remain: 6, reset: 3600, limit: 10 });
+      },
+
+      get(): Promise<Result> {
+        return Promise.resolve({ limited: false, remain: 6, reset: 3600, limit: 10 });
+      },
+
+      reset(): Promise<void> {
+        return Promise.resolve();
+      },
     };
   }
 
-  async reset(key: string): Promise<void> {
-    await this.redisClient.del(key);
-  }
-}
-
-// work with defineCommand
-declare module 'ioredis' {
-  interface RedisCommander {
-    getRateLimit(key: string, limit: number, duration: number): Promise<[number, string]>;
-  }
+  return new RedisLimiter({
+    redisClient: redis,
+  });
 }

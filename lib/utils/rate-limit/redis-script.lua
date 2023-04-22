@@ -20,9 +20,9 @@ if token_remain then
 
     local time_to_reset = redis.call('ttl', key);
 
-    return {token_remain, time_to_reset}
+    return { token_remain, time_to_reset }
 else
     --if no such key, create a key and store the remaining key in db
     redis.call('set', key, limit - 1, 'PX', duration * 1000);
-    return {limit - 1, duration}
+    return { limit - 1, tonumber(duration, 10) }
 end
