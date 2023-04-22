@@ -171,7 +171,7 @@ export function platforms(typeID: SubjectType): Platform[] {
 }
 
 export function platformString(typeID: SubjectType, platformID: number): Platform | undefined {
-  return platform[typeID]?.[platformID];
+  return platform[typeID][platformID];
 }
 
 export async function uploadCover({
