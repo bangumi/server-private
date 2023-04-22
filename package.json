@@ -139,6 +139,7 @@
       "prettier-plugin-jsdoc"
     ],
     "tsdoc": true,
+    "binaryNextLine": false,
     "printWidth": 100,
     "singleQuote": true,
     "semi": true,
