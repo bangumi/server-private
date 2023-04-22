@@ -2,14 +2,20 @@ FROM node:18-slim as builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+COPY package.json package-lock.json ./
 
-RUN yarn --prod \
-  && rm package.json yarn.lock
+RUN npm i --frozen-lockfile --prod \
+  && rm package.json package-lock.json
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
 
-ENTRYPOINT [ "/nodejs/bin/node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./bin/main.ts" ]
+ENTRYPOINT [
+"/nodejs/bin/node",
+"--no-warnings",
+"--loader=@esbuild-kit/esm-loader",
+"--enable-source-maps",
+"./bin/main.ts"
+]
 
 WORKDIR /app
 

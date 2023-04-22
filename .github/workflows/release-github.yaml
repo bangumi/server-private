@@ -13,12 +13,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: '.node-version'
-          cache: yarn
-
-      - run: yarn
+      - uses: ./.github/actions/setup-js-env
 
       - run: node .github/scripts/changelog.js | tee changelog.md
 
