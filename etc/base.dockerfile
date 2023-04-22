@@ -4,7 +4,9 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm ci --frozen-lockfile --ignore-scripts --omit=dev \
+ENV NODE_ENV=production
+
+RUN npm ci --ignore-scripts \
   && rm package.json package-lock.json
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
