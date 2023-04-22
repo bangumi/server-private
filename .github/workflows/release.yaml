@@ -28,20 +28,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
+      - uses: ./.github/actions/setup-js-env
+
       - run: |
           export "TAG_HASH=${DOCKER_FILE_HASH:0:10}-${LOCK_FILE_HASH:0:10}"
 
-          if ! docker pull "${IMAGE}:base-${TAG_HASH}"; then
+          if ! docker pull "${IMAGE}:${BASE_DOCKER_TAG}"; then
             echo "build base docker image"
-            docker build -t "${IMAGE}:base-${TAG_HASH}" -f etc/base.dockerfile .
+            docker build -t "${IMAGE}:${BASE_DOCKER_TAG}" -f etc/base.dockerfile .
             docker push "${IMAGE}:base-${TAG_HASH}"
           fi
 
           docker tag "${IMAGE}:base-${TAG_HASH}" base-image
-
-        env:
-          LOCK_FILE_HASH: "${{ hashFiles('pnpm-lock.yaml') }}"
-          DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
         name: build base docker image
 
       - run: |
