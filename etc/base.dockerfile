@@ -2,7 +2,7 @@ FROM node:18-slim as builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package.json pnpm-lock.yaml ./
 
 ENV NODE_ENV=production
 
@@ -10,7 +10,7 @@ RUN npm i -g pnpm \
   && npm pkg delete scripts.prepare \
   && pnpm fetch --prod \
   && pnpm install -r --offline --prod \
-  && rm package.json package-lock.json
+  && rm package.json pnpm-lock.yaml
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
 
