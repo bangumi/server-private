@@ -14,18 +14,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.node-version'
-          cache: yarn
-
-      - run: yarn
+      - uses: ./.github/actions/setup-js-env
 
       - run: npx prettier --check ./
       - run: npx tsc --noEmit --pretty
-      - run: yarn lint
+      - run: npm run lint
 
   test:
     runs-on: ubuntu-latest
@@ -41,20 +34,14 @@ jobs:
       - run: cd ~/dev-env && docker-compose up -d
 
       - uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version-file: '.node-version'
-          cache: yarn
-
-      - run: yarn
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-js-env
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
 
       - run: cd ~/dev-env && docker-compose logs redis
 
-      - run: yarn test --coverage
+      - run: npm test -- --coverage
         timeout-minutes: 2
         env:
           REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
@@ -78,7 +65,7 @@ jobs:
           docker tag "${IMAGE}:base-${TAG_HASH}" base-image
 
         env:
-          LOCK_FILE_HASH: "${{ hashFiles('yarn.lock') }}"
+          LOCK_FILE_HASH: "${{ hashFiles('package-lock.json') }}"
           DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
           IMAGE: 'ghcr.io/bangumi/private-server'
 

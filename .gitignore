@@ -4,7 +4,6 @@ node_modules/*
 .vscode/launch.json
 .idea
 dist
-yarn-error.log
 lib/generated/
 coverage/
 config.yaml
