@@ -76,8 +76,8 @@
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "@typescript-eslint/utils": "^5.57.1",
-    "@vitest/coverage-c8": "^0.29.8",
-    "@vitest/ui": "^0.29.8",
+    "@vitest/coverage-c8": "^0.30.1",
+    "@vitest/ui": "^0.30.1",
     "conventional-changelog": "^3.1.25",
     "dotenv": "^16.0.3",
     "eslint": "^8.38.0",
@@ -103,7 +103,7 @@
     "prettier-plugin-sh": "^0.12.8",
     "typescript": "~5.0.4",
     "vite": "^4.2.1",
-    "vitest": "^0.29.8",
+    "vitest": "^0.30.1",
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "nodemonConfig": {
