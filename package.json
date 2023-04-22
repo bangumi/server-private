@@ -17,6 +17,7 @@
     "vitest": "vitest",
     "run-file": "node --no-warnings --loader @esbuild-kit/esm-loader",
     "e": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader",
+    "lint-staged": "lint-staged -q",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -101,7 +102,6 @@
     "p-limit": "^4.0.0",
     "prettier": "^2.8.7",
     "prettier-plugin-jsdoc": "^0.4.2",
-    "prettier-plugin-sh": "^0.12.8",
     "typescript": "~5.0.4",
     "vite": "^4.3.1",
     "vitest": "^0.30.1",
@@ -135,7 +135,6 @@
   "prettier": {
     "plugins": [
       "@shopify/prettier-plugin-liquid",
-      "prettier-plugin-sh",
       "prettier-plugin-jsdoc"
     ],
     "tsdoc": true,
