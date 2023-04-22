@@ -39,7 +39,7 @@ export class RedisLimiter implements Limiter {
     timeWindow: number,
     limit: number,
   ): Promise<Result> {
-    const limitKey = `${redisPrefix}-login-rate-limit:${action}:${userID}`;
+    const limitKey = `${redisPrefix}:rate-limit:${action}:${userID}`;
 
     return this.get(limitKey, limit, timeWindow);
   }
