@@ -6,7 +6,7 @@ COPY package.json pnpm-lock.yaml .npmrc ./
 
 ENV NODE_ENV=production
 
-RUN npm i -g pnpm \
+RUN npm i -g pnpm@^8 \
   && npm pkg delete scripts.prepare \
   && pnpm fetch --prod \
   && pnpm install -r --offline --prod \
