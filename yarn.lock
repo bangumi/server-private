@@ -4081,7 +4081,7 @@ internal-slot@^1.0.5:
     has "^1.0.3"
     side-channel "^1.0.4"
 
-ioredis-mock@^8.5.0:
+ioredis-mock@^8.7.0:
   version "8.7.0"
   resolved "https://registry.yarnpkg.com/ioredis-mock/-/ioredis-mock-8.7.0.tgz#9877a85e0d233e1b49123d1c6e320df01e9a1d36"
   integrity sha512-BJcSjkR3sIMKbH93fpFzwlWi/jl1kd5I3vLvGQxnJ/W/6bD2ksrxnyQN186ljAp3Foz4p1ivViDE3rZeKEAluA==
