@@ -1,5 +1,5 @@
 {
-  "name": "graphql",
+  "name": "app",
   "version": "0.5.5",
   "description": "",
   "private": true,
@@ -135,6 +135,7 @@
   "prettier": {
     "plugins": [
       "@shopify/prettier-plugin-liquid",
+      "prettier-plugin-sh",
       "prettier-plugin-jsdoc"
     ],
     "tsdoc": true,
