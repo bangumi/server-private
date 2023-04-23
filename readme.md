@@ -17,12 +17,10 @@ fastify + TypeORM + mercurius + nexus
 
 ## 开发
 
-使用 `yarn` 进行依赖管理
-
 ### 安装依赖
 
 ```shell
-yarn
+npm ci
 ```
 
 ### 启动
@@ -32,7 +30,7 @@ yarn
 如果你是在本机启动了 [dev-env](https://github.com/bangumi/dev-env) 中的 docker-compose，可以直接使用默认设置。
 
 ```shell
-yarn start
+npm start
 ```
 
 在文件修改后会自动重启。
@@ -44,5 +42,5 @@ jest 对于 esm 的支持不好，所以使用 vitest 作为测试框架。
 运行测试需要 mysql。
 
 ```shell
-yarn test
+npm test
 ```

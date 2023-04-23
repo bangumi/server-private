@@ -7,7 +7,7 @@
     "github>Trim21/renovate-config:monthly"
   ],
   "automerge": true,
-  "postUpdateOptions": ["yarnDedupeHighest"],
+  "postUpdateOptions": ["npmDedupe"],
   "rangeStrategy": "bump",
   "dockerfile": {
     "fileMatch": [".*dockerfile$"],
