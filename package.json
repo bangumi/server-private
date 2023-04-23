@@ -100,7 +100,7 @@
     "mercurius-integration-testing": "^8.0.0",
     "nodemon": "^2.0.22",
     "p-limit": "^4.0.0",
-    "prettier": "^2.8.7",
+    "prettier": "^2.8.8",
     "prettier-plugin-jsdoc": "^0.4.2",
     "typescript": "~5.0.4",
     "vite": "^4.3.1",
