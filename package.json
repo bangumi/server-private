@@ -142,5 +142,6 @@
     "singleQuote": true,
     "semi": true,
     "trailingComma": "all"
-  }
+  },
+  "packageManager": "yarn@3.5.0"
 }
