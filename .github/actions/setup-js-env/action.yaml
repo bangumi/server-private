@@ -7,8 +7,8 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version-file: '.node-version'
-        cache: 'yarn'
+        cache: 'npm'
 
     - name: Install Dependencies
-      run: yarn --immutable
+      run: npm ci
       shell: bash
