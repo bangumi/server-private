@@ -6,7 +6,8 @@ COPY package.json .yarn .yarnrc.yml ./
 
 ENV NODE_ENV=production
 
-RUN npm pkg delete scripts.prepare &&\
+RUN ls . -ahr &&\
+    npm pkg delete scripts.prepare &&\
     yarn --immutable --prod &&\
     rm -rf package.json .yarn .yarnrc.yml
 
