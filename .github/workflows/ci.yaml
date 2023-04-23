@@ -34,7 +34,6 @@ jobs:
       - run: cd ~/dev-env && docker-compose up -d
 
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-js-env
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
