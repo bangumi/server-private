@@ -2,7 +2,8 @@ FROM node:18-slim as builder
 
 WORKDIR /app
 
-COPY package.json .yarn .yarnrc.yml ./
+COPY package.json .yarnrc.yml ./
+COPY .yarn/ ./.yarn/
 
 ENV NODE_ENV=production
 
