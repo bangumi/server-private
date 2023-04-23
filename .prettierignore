@@ -2,3 +2,4 @@ dist/
 *.graphql
 coverage/
 .husky/_/
+pnpm-lock.yaml

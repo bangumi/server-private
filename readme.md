@@ -19,8 +19,10 @@ fastify + TypeORM + mercurius + nexus
 
 ### 安装依赖
 
+使用 `pnpm@8` 进行依赖管理
+
 ```shell
-npm ci
+pnpm i
 ```
 
 ### 启动
@@ -30,7 +32,7 @@ npm ci
 如果你是在本机启动了 [dev-env](https://github.com/bangumi/dev-env) 中的 docker-compose，可以直接使用默认设置。
 
 ```shell
-npm start
+pnpm start
 ```
 
 在文件修改后会自动重启。
@@ -42,5 +44,5 @@ jest 对于 esm 的支持不好，所以使用 vitest 作为测试框架。
 运行测试需要 mysql。
 
 ```shell
-npm test
+pnpm test
 ```
