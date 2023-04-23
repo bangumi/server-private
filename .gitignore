@@ -11,3 +11,7 @@ config.yaml
 tmp/
 .env
 static/style
+
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
