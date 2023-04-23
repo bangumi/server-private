@@ -18,11 +18,5 @@
   },
   "nodenv": {
     "enabled": false
-  },
-  "packageRules": [
-    {
-      "groupName": "typebox",
-      "matchPackageNames": ["@fastify/type-provider-typebox", "@sinclair/typebox"]
-    }
-  ]
+  }
 }
