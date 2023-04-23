@@ -2,7 +2,7 @@ FROM node:18-slim as builder
 
 WORKDIR /app
 
-COPY package.json .yarnrc.yml ./
+COPY package.json .yarnrc.yml yarn.lock ./
 COPY .yarn/ ./.yarn/
 
 ENV NODE_ENV=production
@@ -10,7 +10,7 @@ ENV NODE_ENV=production
 RUN ls . -ahr &&\
     npm pkg delete scripts.prepare &&\
     yarn --immutable --prod &&\
-    rm -rf package.json .yarn .yarnrc.yml
+    rm -rf package.json yarn.lock .yarnrc.yml .yarn
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
 
