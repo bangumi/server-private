@@ -9,6 +9,7 @@ ENV NODE_ENV=production
 
 RUN ls . -ahr &&\
     npm pkg delete scripts.prepare &&\
+    yarn set version --only-if-needed stable &&\
     yarn --immutable --prod &&\
     rm -rf package.json yarn.lock .yarnrc.yml .yarn
 
