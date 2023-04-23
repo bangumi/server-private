@@ -9,8 +9,7 @@ ENV NODE_ENV=production
 
 RUN ls . -ahr &&\
     npm pkg delete scripts.prepare &&\
-    yarn set version --only-if-needed stable &&\
-    yarn --immutable --prod &&\
+    yarn workspaces focus --production app &&\
     rm -rf package.json yarn.lock .yarnrc.yml .yarn
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
