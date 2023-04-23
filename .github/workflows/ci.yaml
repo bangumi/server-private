@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          export "TAG_HASH=${DOCKER_FILE_HASH:0:10}-${LOCK_FILE_HASH:0:10}"
+          export "TAG_HASH=${DOCKER_FILE_HASH:0:10}-${PKG_FILE_HASH:0:10}"
 
           if ! docker pull "${IMAGE}:base-${TAG_HASH}"; then
             echo "build base docker image"
@@ -64,7 +64,7 @@ jobs:
           docker tag "${IMAGE}:base-${TAG_HASH}" base-image
 
         env:
-          LOCK_FILE_HASH: "${{ hashFiles('pnpm-lock.yaml') }}"
+          PKG_FILE_HASH: "${{ hashFiles('package.json', 'pnpm-lock.yaml') }}"
           DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
           IMAGE: 'ghcr.io/bangumi/private-server'
 

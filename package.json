@@ -5,8 +5,10 @@
   "private": true,
   "type": "module",
   "main": "bin/main.ts",
+  "packageManager": "pnpm@8.3.1",
   "engines": {
-    "node": "^18.0.0"
+    "node": "^18.0.0",
+    "pnpm": "^8"
   },
   "scripts": {
     "format": "prettier --list-different -w ./",

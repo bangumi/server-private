@@ -21,6 +21,19 @@ fastify + TypeORM + mercurius + nexus
 
 使用 `pnpm@8` 进行依赖管理
 
+#### 启用 pnpm
+
+[手动安装 pnpm](https://pnpm.io/zh/installation#前言)
+
+(或者直接使用 corepack)
+
+```shell
+corepack enable
+corepack prepare --activate
+```
+
+#### 安装 npm 依赖
+
 ```shell
 pnpm i
 ```

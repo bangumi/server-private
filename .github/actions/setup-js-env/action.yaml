@@ -8,9 +8,14 @@ runs:
       with:
         node-version-file: '.node-version'
 
-    - uses: pnpm/action-setup@v2.2.4
-      with:
-        version: '8'
+    - run: corepack enable
+      shell: bash
+
+    - run: corepack prepare --activate
+      shell: bash
+
+    - run: pnpm --version
+      shell: bash
 
     - name: Get npm cache directory
       id: npm-cache-dir
