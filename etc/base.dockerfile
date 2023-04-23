@@ -7,8 +7,7 @@ COPY .yarn/ ./.yarn/
 
 ENV NODE_ENV=production
 
-RUN ls . -ahr &&\
-    npm pkg delete scripts.prepare &&\
+RUN npm pkg delete scripts.prepare &&\
     yarn workspaces focus --production app &&\
     rm -rf package.json yarn.lock .yarnrc.yml .yarn
 
