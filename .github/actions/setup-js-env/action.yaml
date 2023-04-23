@@ -1,5 +1,5 @@
 name: 'Setup Node and run npm ci'
-description: 'run actions/setup-node and `npm ci`'
+description: 'setup node env'
 runs:
   using: 'composite'
   steps:
@@ -7,8 +7,24 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version-file: '.node-version'
-        cache: 'yarn'
+
+    - uses: pnpm/action-setup@v2.2.4
+      with:
+        version: '8'
+
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      shell: bash
+      run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+    - uses: actions/cache@v3
+      id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
 
     - name: Install Dependencies
-      run: yarn --immutable
+      run: pnpm i --frozen-lockfile
       shell: bash

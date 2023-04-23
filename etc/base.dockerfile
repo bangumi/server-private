@@ -2,14 +2,15 @@ FROM node:18-slim as builder
 
 WORKDIR /app
 
-COPY package.json .yarnrc.yml yarn.lock ./
-COPY .yarn/ ./.yarn/
+COPY package.json pnpm-lock.yaml .npmrc ./
 
 ENV NODE_ENV=production
 
-RUN npm pkg delete scripts.prepare &&\
-    yarn workspaces focus --production app &&\
-    rm -rf package.json yarn.lock .yarnrc.yml .yarn
+RUN npm i -g pnpm@^8 \
+  && npm pkg delete scripts.prepare \
+  && pnpm fetch --prod \
+  && pnpm install -r --offline --prod \
+  && rm package.json pnpm-lock.yaml .npmrc
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
 
