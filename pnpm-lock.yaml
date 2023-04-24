@@ -29,8 +29,8 @@ dependencies:
     specifier: ^1.6.2
     version: 1.6.2
   '@sinclair/typebox':
-    specifier: ~0.27.8
-    version: 0.27.8
+    specifier: ~0.28.5
+    version: 0.28.5
   ajv:
     specifier: ^8.12.0
     version: 8.12.0
@@ -1858,8 +1858,8 @@ packages:
       prettier: 2.8.8
     dev: true
 
-  /@sinclair/typebox@0.27.8:
-    resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
+  /@sinclair/typebox@0.28.5:
+    resolution: {integrity: sha512-3BjziLrALI2q+KpSKMwQdHP0MwmBpiu3oH0LM3mr7Aob9xO2z1hbGxjorTH7l5msuevXH7TU7YLt3Qs7U6Iokg==}
     dev: false
 
   /@sindresorhus/is@5.3.0:
