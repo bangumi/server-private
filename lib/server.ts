@@ -62,6 +62,7 @@ export async function createServer(
     ...opts,
     onProtoPoisoning: 'error',
     ajv,
+    bodyLimit: 8 * 1024 * 1024,
     requestIdHeader: config.server.requestIDHeader,
     schemaErrorFormatter: defaultSchemaErrorFormatter,
   });

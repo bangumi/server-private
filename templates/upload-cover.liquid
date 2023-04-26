@@ -21,7 +21,9 @@
 
       reader.onload = function () {
         const content = reader.result;
-        resolve(content.slice('data:text/plain;base64,'.length));
+        console.log(content.slice(0, 20));
+        const s = ';base64,';
+        resolve(content.slice(content.indexOf(s) + s.length));
       };
 
       reader.onerror = function () {
