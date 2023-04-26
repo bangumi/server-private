@@ -7,6 +7,7 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version-file: '.node-version'
+        cache: pnpm
 
     - run: corepack enable
       shell: bash
