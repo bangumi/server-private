@@ -1,6 +1,6 @@
+import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
-import * as php from 'php-serialize';
 import { DataSource, In } from 'typeorm';
 import * as typeorm from 'typeorm';
 import type { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
@@ -257,9 +257,9 @@ export async function fetchPermission(userGroup: number): Promise<Readonly<Permi
 
   return Object.freeze(
     Object.fromEntries(
-      Object.entries(
-        php.unserialize(permission.Permission) as Record<keyof Permission, string>,
-      ).map(([key, value]) => [key, value === '1']),
+      Object.entries(php.parse(permission.Permission) as Record<keyof Permission, string>).map(
+        ([key, value]) => [key, value === '1'],
+      ),
     ),
   );
 }

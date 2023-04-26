@@ -1,5 +1,5 @@
+import * as php from '@trim21/php-serialize';
 import { extendType, intArg, nonNull, objectType } from 'nexus';
-import * as php from 'php-serialize';
 
 import type { Context } from '@app/lib/graphql/context';
 import { SubjectRepo } from '@app/lib/orm';
@@ -128,9 +128,7 @@ const SubjectByIDQuery = extendType({
           id: subject.id,
           name: subject.name,
           name_cn: subject.nameCN,
-          tags: (
-            php.unserialize(fields.fieldTags) as { tag_name: string | undefined; result: string }[]
-          )
+          tags: (php.parse(fields.fieldTags) as { tag_name: string | undefined; result: string }[])
             .filter((x) => x.tag_name !== undefined)
             .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
             .filter((x) => !Number.isNaN(x.count)),
