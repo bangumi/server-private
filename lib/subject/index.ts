@@ -163,11 +163,7 @@ export function extractEpisode(w: Wiki): number {
 
 export function platforms(typeID: SubjectType): Platform[] {
   const s = platform[typeID];
-  if (s) {
-    return Object.values(s).sort((a, b) => a.id - b.id);
-  }
-
-  return [];
+  return Object.values(s).sort((a, b) => a.id - b.id);
 }
 
 export function platformString(typeID: SubjectType, platformID: number): Platform | undefined {

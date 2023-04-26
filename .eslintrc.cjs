@@ -86,6 +86,7 @@ module.exports = {
         '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
         '@typescript-eslint/object-curly-spacing': ['error', 'always'],
         'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
+        '@typescript-eslint/no-unsafe-enum-comparison': 'off',
         '@typescript-eslint/consistent-type-imports': [
           'error',
           {
