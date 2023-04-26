@@ -1,6 +1,6 @@
+import * as php from '@trim21/php-serialize';
 import * as lodash from 'lodash-es';
 import type { DateTime } from 'luxon';
-import * as php from 'php-serialize';
 import type { Repository } from 'typeorm';
 
 import { siteUrl } from '@app/lib/config';
@@ -182,7 +182,7 @@ interface PrivacySetting {
 async function userNotifySetting(userID: number): Promise<PrivacySetting> {
   const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
 
-  const field = php.unserialize(f.privacy) as Record<number, number>;
+  const field = php.parse(f.privacy) as Record<number, number>;
 
   return {
     PrivateMessage: field[UserPrivacyReceivePrivateMessage] as PrivacyFilter,

@@ -1,7 +1,7 @@
 import { promisify } from 'node:util';
 import * as zlib from 'node:zlib';
 
-import * as php from 'php-serialize';
+import * as php from '@trim21/php-serialize';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 const inflateRaw = promisify(zlib.inflateRaw);
@@ -74,7 +74,7 @@ export class RevText {
       revTexts.map(async (x) => {
         return {
           id: x.revTextId,
-          data: php.unserialize(await inflateRaw(x.revText)) as Record<number, R>,
+          data: php.parse(await inflateRaw(x.revText)) as Record<number, R>,
         };
       }),
     );
