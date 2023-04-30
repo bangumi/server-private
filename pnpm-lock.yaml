@@ -29,8 +29,8 @@ dependencies:
     specifier: ^1.7.1
     version: 1.7.1
   '@sinclair/typebox':
-    specifier: ~0.28.5
-    version: 0.28.5
+    specifier: ~0.28.8
+    version: 0.28.8
   '@trim21/php-serialize':
     specifier: ^0.1.1
     version: 0.1.1
@@ -1858,8 +1858,8 @@ packages:
       prettier: 2.8.8
     dev: true
 
-  /@sinclair/typebox@0.28.5:
-    resolution: {integrity: sha512-3BjziLrALI2q+KpSKMwQdHP0MwmBpiu3oH0LM3mr7Aob9xO2z1hbGxjorTH7l5msuevXH7TU7YLt3Qs7U6Iokg==}
+  /@sinclair/typebox@0.28.8:
+    resolution: {integrity: sha512-OerNjE43mIb2RDy/RJfjS+OHfJHq3caePlVe/GXkLwLzcYevA2JPzHWSFMkpGgfoFKWdQdckKRiMVMsz40yHgw==}
     dev: false
 
   /@sindresorhus/is@5.3.0:
