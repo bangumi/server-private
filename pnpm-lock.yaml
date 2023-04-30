@@ -127,8 +127,8 @@ dependencies:
 
 devDependencies:
   '@mercuriusjs/federation':
-    specifier: ^1.0.1
-    version: 1.0.1
+    specifier: ^2.0.0
+    version: 2.0.0
   '@mercuriusjs/gateway':
     specifier: ^1.2.0
     version: 1.2.0
@@ -224,7 +224,7 @@ devDependencies:
     version: 13.2.2
   mercurius-integration-testing:
     specifier: ^8.0.0
-    version: 8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0)
+    version: 8.0.0(@mercuriusjs/federation@2.0.0)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0)
   nodemon:
     specifier: ^2.0.22
     version: 2.0.22
@@ -1632,6 +1632,17 @@ packages:
       '@fastify/error': 3.2.0
       graphql: 16.6.0
       mercurius: 12.2.0(graphql@16.6.0)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: true
+
+  /@mercuriusjs/federation@2.0.0:
+    resolution: {integrity: sha512-hBL2Zhdf0p2Ab2SDPXcVnNsYTf5x50xPAyHm2HpmXreHS7aGt4obX8g8JrqRhIfOApcRg5l9RQ2OZqaUYeR8sQ==}
+    dependencies:
+      '@fastify/error': 3.2.0
+      graphql: 16.6.0
+      mercurius: 13.0.0(graphql@16.6.0)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -5164,7 +5175,7 @@ packages:
       yargs-parser: 20.2.9
     dev: true
 
-  /mercurius-integration-testing@8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0):
+  /mercurius-integration-testing@8.0.0(@mercuriusjs/federation@2.0.0)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0):
     resolution: {integrity: sha512-wo/g3ipwZ9g44BvEp+VjoXzaJVviOXXHFKccgVBkURBvZnzCEj/4rAqjH+CuflmYRRvJ0GBRYTIARezJBtviMA==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -5175,7 +5186,7 @@ packages:
       mercurius: ^12.0.0
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.6.0)
-      '@mercuriusjs/federation': 1.0.1
+      '@mercuriusjs/federation': 2.0.0
       '@mercuriusjs/gateway': 1.2.0
       cookie: 0.5.0
       fastify: 4.17.0
