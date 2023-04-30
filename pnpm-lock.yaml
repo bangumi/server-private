@@ -80,8 +80,8 @@ dependencies:
     specifier: ^3.3.0
     version: 3.3.0
   mercurius:
-    specifier: ^12.2.0
-    version: 12.2.0(graphql@16.6.0)
+    specifier: ^13.0.0
+    version: 13.0.0(graphql@16.6.0)
   micromatch:
     specifier: ^4.0.5
     version: 4.0.5
@@ -224,7 +224,7 @@ devDependencies:
     version: 13.2.2
   mercurius-integration-testing:
     specifier: ^8.0.0
-    version: 8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@12.2.0)
+    version: 8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0)
   nodemon:
     specifier: ^2.0.22
     version: 2.0.22
@@ -1541,6 +1541,16 @@ packages:
 
   /@fastify/websocket@7.2.0:
     resolution: {integrity: sha512-vhWQCT0I5a1JIKc34LXHQ2earW7kViYvhGn5x+lZr8TIOJKmx6NJk0Bw9zGWakulXhMsu/0y89QnsUnHiII9ag==}
+    dependencies:
+      fastify-plugin: 4.5.0
+      ws: 8.13.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: true
+
+  /@fastify/websocket@8.0.0:
+    resolution: {integrity: sha512-7NnTJVbpWkAHwuAw9tGKJP5RBOUqLhU50xP5FMlfShWvWPZeCGioy22v8noqw1KFi+Mdo5guCMmfQRGrFfIR1w==}
     dependencies:
       fastify-plugin: 4.5.0
       ws: 8.13.0
@@ -5154,7 +5164,7 @@ packages:
       yargs-parser: 20.2.9
     dev: true
 
-  /mercurius-integration-testing@8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@12.2.0):
+  /mercurius-integration-testing@8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0):
     resolution: {integrity: sha512-wo/g3ipwZ9g44BvEp+VjoXzaJVviOXXHFKccgVBkURBvZnzCEj/4rAqjH+CuflmYRRvJ0GBRYTIARezJBtviMA==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -5170,7 +5180,7 @@ packages:
       cookie: 0.5.0
       fastify: 4.17.0
       graphql: 16.6.0
-      mercurius: 12.2.0(graphql@16.6.0)
+      mercurius: 13.0.0(graphql@16.6.0)
       ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil
@@ -5196,6 +5206,32 @@ packages:
       secure-json-parse: 2.7.0
       single-user-cache: 0.6.0
       tiny-lru: 10.4.1
+      undici: 5.22.0
+      ws: 8.13.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: true
+
+  /mercurius@13.0.0(graphql@16.6.0):
+    resolution: {integrity: sha512-gPJGw9qymc2JSee5lUgg5OeQLM7EtLzEWMY7dV2sMwUdh3k8iO3Y22iy6B8TnIX2atpVt2xSpWHRvfiUvH6wuQ==}
+    engines: {node: '>=14.19.3'}
+    peerDependencies:
+      graphql: ^16.0.0
+    dependencies:
+      '@fastify/error': 3.2.0
+      '@fastify/static': 6.10.1
+      '@fastify/websocket': 8.0.0
+      fastify-plugin: 4.5.0
+      graphql: 16.6.0
+      graphql-jit: 0.8.1(graphql@16.6.0)
+      mqemitter: 5.0.0
+      p-map: 4.0.0
+      readable-stream: 4.3.0
+      safe-stable-stringify: 2.4.3
+      secure-json-parse: 2.7.0
+      single-user-cache: 0.6.0
+      tiny-lru: 11.0.1
       undici: 5.22.0
       ws: 8.13.0
     transitivePeerDependencies:
@@ -6912,6 +6948,7 @@ packages:
   /tiny-lru@10.4.1:
     resolution: {integrity: sha512-buLIzw7ppqymuO3pt10jHk/6QMeZLbidihMQU+N6sogF6EnBzG0qtDWIHuhw1x3dyNgVL/KTGIZsTK81+yCzLg==}
     engines: {node: '>=12'}
+    dev: true
 
   /tiny-lru@11.0.1:
     resolution: {integrity: sha512-iNgFugVuQgBKrqeO/mpiTTgmBsTP0WL6yeuLfLs/Ctf0pI/ixGqIRm8sDCwMcXGe9WWvt2sGXI5mNqZbValmJg==}
