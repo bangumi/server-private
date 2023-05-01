@@ -1,0 +1,13 @@
+diff --git a/index.d.ts b/index.d.ts
+index 9164554b620c90b7d982152e127db727b3bcfa9c..ab633192d605ff3e6fcc2e502bf5a6e3ebd0e902 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -15,7 +15,7 @@ export type Units =
+   'month' | 'b' |
+   'year' | 'yr' | 'y'
+ 
+-declare const parse: ((input: string, format?: Units) => number) & {
++declare const parse: ((input: string, format?: Units) => number | undefined) & {
+   [key: string]: number;
+ };
+ 

@@ -144,5 +144,10 @@
     "singleQuote": true,
     "semi": true,
     "trailingComma": "all"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "parse-duration@1.0.3": "patches/parse-duration@1.0.3.patch"
+    }
   }
 }

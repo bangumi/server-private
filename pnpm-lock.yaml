@@ -1,5 +1,10 @@
 lockfileVersion: '6.0'
 
+patchedDependencies:
+  parse-duration@1.0.3:
+    hash: ml2wzb3jfeufueudpbkqxjdthi
+    path: patches/parse-duration@1.0.3.patch
+
 dependencies:
   '@aws-sdk/client-s3':
     specifier: ^3.321.1
@@ -105,7 +110,7 @@ dependencies:
     version: 12.1.0
   parse-duration:
     specifier: ^1.0.3
-    version: 1.0.3
+    version: 1.0.3(patch_hash=ml2wzb3jfeufueudpbkqxjdthi)
   pino:
     specifier: ^8.11.0
     version: 8.11.0
@@ -5887,9 +5892,10 @@ packages:
       callsites: 3.1.0
     dev: true
 
-  /parse-duration@1.0.3:
+  /parse-duration@1.0.3(patch_hash=ml2wzb3jfeufueudpbkqxjdthi):
     resolution: {integrity: sha512-o6NAh12na5VvR6nFejkU0gpQ8jmOY9Y9sTU2ke3L3G/d/3z8jqmbBbeyBGHU73P4JLXfc7tJARygIK3WGIkloA==}
     dev: false
+    patched: true
 
   /parse-json@4.0.0:
     resolution: {integrity: sha512-aOIos8bujGN93/8Ox/jPLh7RwVnPEysynVFE+fQZyg6jKELEHwzgKdLRFHUgXJL6kylijVSBC4BvN9OmsB48Rw==}
