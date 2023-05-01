@@ -17,7 +17,7 @@ import type {
 } from 'fastify';
 import type { ResolveFastifyRequestType } from 'fastify/types/type-provider';
 
-// from https://github.com/fastify/fastify-type-provider-typebox/blob/82b8ea42c1ab440a092d866d1e6195a2e43b65f1/index.ts#L56
+// from https://github.com/fastify/fastify-type-provider-typebox/blob/v3.1.0/index.ts#L56
 export interface TypeBoxTypeProvider extends FastifyTypeProvider {
   output: this['input'] extends TSchema ? Static<this['input']> : never;
 }
