@@ -69,5 +69,5 @@ jobs:
           IMAGE: 'ghcr.io/bangumi/private-server'
 
         name: build base docker image
-      - run: docker build -t tmp -f etc/main.dockerfile .
+      - run: docker build -t tmp -f etc/final.dockerfile .
       - run: docker run tmp --help
