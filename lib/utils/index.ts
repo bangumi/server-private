@@ -69,7 +69,9 @@ export function parseDuration(durationString: string): number {
     return result;
   }
 
-  return _parseDuration(durationString, 's');
+  // npm package 'parse-duration' has a wrong type definition, the return value maybe `undefined`
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return _parseDuration(durationString, 's') ?? Number.NaN;
 }
 
 function pad(s: number, n = 2): string {

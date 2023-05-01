@@ -1,9 +1,9 @@
 import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
+import type { FindOptionsWhere } from 'typeorm';
 import { DataSource, In } from 'typeorm';
 import * as typeorm from 'typeorm';
-import type { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere';
 
 import config from '@app/lib/config';
 import { UnexpectedNotFoundError } from '@app/lib/error';
@@ -36,6 +36,8 @@ import {
   UserGroup,
   WebSessions,
 } from './entity';
+
+export * as entity from './entity';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',

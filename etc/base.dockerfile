@@ -2,7 +2,7 @@ FROM node:18-slim as builder
 
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml .npmrc ./
 
 ENV NODE_ENV=production
 
@@ -10,7 +10,7 @@ RUN corepack enable && corepack prepare --activate \
   && npm pkg delete scripts.prepare \
   && pnpm fetch --prod \
   && pnpm install -r --offline --prod \
-  && rm package.json pnpm-lock.yaml
+  && rm package.json pnpm-lock.yaml .npmrc
 
 FROM gcr.io/distroless/nodejs18-debian11:latest
 

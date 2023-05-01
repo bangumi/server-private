@@ -4,12 +4,12 @@ import { Type as t } from '@sinclair/typebox';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import { AppDataSource, EpisodeRepo } from '@app/lib/orm';
-import * as entity from '@app/lib/orm/entity';
-import { Episode } from '@app/lib/orm/entity';
+import { pushRev } from '@app/lib/rev/ep.ts';
 import * as res from '@app/lib/types/res.ts';
 import { EpisodeType, formatErrors } from '@app/lib/types/res.ts';
 import type { EmptyObject } from '@app/lib/types/util.ts';
 import { formatDuration, parseDuration } from '@app/lib/utils';
+import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
@@ -97,30 +97,33 @@ export async function setup(app: App) {
           episodeID: t.Integer({ examples: [1148124], minimum: 0 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Partial(t.Omit(EpisodeWikiInfo, ['id']), {
-          examples: [
-            {
-              date: '2023-05-01',
-              duration: '3m10s',
-              ep: 1,
-              name: 'nn',
-              nameCN: 'mm',
-              summary: 'string',
-              type: 0,
-            },
-          ],
+        body: t.Object({
+          commitMessage: t.String(),
+          episode: t.Partial(t.Omit(EpisodeWikiInfo, ['id']), { $id: undefined }),
         }),
         response: {
           200: t.Object({}),
-          401: t.Ref(res.Error, { description: 'invalid input' }),
+          400: t.Ref(res.Error, { description: 'invalid input' }),
           404: t.Ref(res.Error, { 'x-examples': formatErrors(NotFoundError('episode 1')) }),
         },
       },
+      preHandler: [
+        requireLogin('edit a episode'),
+        requirePermission('edit episode', (auth) => auth.permission.ep_edit),
+      ],
     },
-    async ({ params: { episodeID }, body }): Promise<EmptyObject> => {
+    async ({
+      auth,
+      params: { episodeID },
+      body: { episode: body, commitMessage },
+    }): Promise<EmptyObject> => {
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
+      }
+
+      if (Object.keys(body).length === 0) {
+        throw new BadRequestError('request is a empty body');
       }
 
       if (body.date) {
@@ -142,36 +145,29 @@ export async function setup(app: App) {
         ep.duration = formatDuration(duration);
       }
 
+      const now = new Date();
+
       await AppDataSource.transaction(async (t) => {
-        const EpisodeRepo = t.getRepository(Episode);
-
-        await t.findOneBy(entity.RevText, {});
-
-        await EpisodeRepo.update({ id: episodeID }, ep);
-
-        await t.findOneBy(entity.RevHistory, {});
-        await t.findOneBy(entity.RevText, {});
+        await pushRev(t, {
+          episodeID,
+          rev: {
+            ep_airdate: ep.airDate,
+            ep_desc: body.summary ?? ep.summary,
+            ep_duration: ep.duration,
+            ep_name: body.name ?? ep.name,
+            ep_name_cn: body.nameCN ?? ep.nameCN,
+            ep_sort: '0',
+            ep_type: '0',
+          },
+          creator: auth.userID,
+          now,
+          comment: commitMessage,
+        });
       });
 
-      const {
-        name = ep.name,
-        nameCN = ep.nameCN,
-        ep: episode = ep.sort,
-        date = ep.airDate,
-        type = ep.type,
-        duration = ep.duration,
-        summary = ep.summary,
-      } = body;
+      await EpisodeRepo.update({ id: episodeID }, ep);
 
-      return {
-        name,
-        nameCN,
-        ep: episode,
-        date,
-        type,
-        duration,
-        summary,
-      };
+      return {};
     },
   );
 }

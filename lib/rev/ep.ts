@@ -1,50 +1,118 @@
-import * as lo from 'lodash-es';
+import type { EntityManager } from 'typeorm';
 
-import { AppDataSource, RevHistoryRepo, RevTextRepo } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
-import type { EpTextRev } from '@app/lib/orm/entity';
+import type { EpTextRev, RevHistory } from '@app/lib/orm/entity';
 import * as entity from '@app/lib/orm/entity';
-import { RevText } from '@app/lib/orm/entity';
 
-
-export async function getSingleTypeRev(mid: number, type: number) {
-  const o = await RevHistoryRepo.findBy({ revMid: mid, revType: type });
-
-  const revTexts = await RevTextRepo.findBy({
-    revTextId: orm.In(lo.uniq(o.map((x) => x.revTextId))),
+export async function pushRev(
+  t: EntityManager,
+  {
+    episodeID,
+    rev,
+    creator,
+    now,
+    comment,
+  }: {
+    episodeID: number;
+    rev: EpTextRev;
+    creator: number;
+    now: Date;
+    comment: string;
+  },
+) {
+  const revs = await t.findBy(entity.RevHistory, {
+    revMid: episodeID,
+    revType: entity.RevHistory.TypeEp,
   });
+  const o = revs.pop();
+  if (!o) {
+    return await createRevRecords({
+      t: t,
+      episodeID: episodeID,
+      rev: rev,
+      creator: creator,
+      now: now,
+      comment,
+    });
+  }
 
-  const revText = await RevText.parse<EpTextRev>(revTexts);
-  const revData = Object.fromEntries(revText.map((x) => [x.id, x.data]));
-
-  return o
-    .map((x) => {
-      const data: EpTextRev | undefined = revData[x.revTextId]?.[x.revId];
-      if (!data) {
-        return null;
-      }
-
-      return {
-        revDateline: x.revDateline,
-        creatorID: x.revCreator,
-        airdate: data.ep_airdate,
-        desc: data.ep_desc,
-        name: data.ep_name,
-        type: data.ep_type,
-        sort: data.ep_sort,
-        duration: data.ep_duration,
-        name_cn: data.ep_name_cn,
-      } as { revDateline: number; creatorID: number };
-    })
-    .filter(function <T>(t: T | null): t is T {
-      return t !== null;
-    }).sort((a, b) => a.revDateline - b.revDateline);
+  return await updatePreviousRevRecords({
+    t: t,
+    previous: o,
+    episodeID: episodeID,
+    rev: rev,
+    creator: creator,
+    now: now,
+    comment,
+  });
 }
 
-
-export async function pushRev(episodeID: number, rev: EpTextRev, creator: number, now: Date) {
-  return getSingleTypeRev(8, entity.RevHistory.TypeEp);
-  return await AppDataSource.transaction(async t => {
-
+async function updatePreviousRevRecords({
+  t,
+  previous,
+  episodeID,
+  rev,
+  creator,
+  now,
+  comment,
+}: {
+  t: EntityManager;
+  previous: RevHistory;
+  episodeID: number;
+  rev: EpTextRev;
+  creator: number;
+  now: Date;
+  comment: string;
+}) {
+  const revText = await t.findOneOrFail(entity.RevText, {
+    where: {
+      revTextId: previous.revTextId,
+    },
   });
+
+  const revHistory = await t.save(entity.RevHistory, {
+    revType: entity.RevHistory.TypeEp,
+    revCreator: creator,
+    revTextId: revText.revTextId,
+    revDateline: now.getTime() / 1000,
+    revMid: episodeID,
+    revEditSummary: comment,
+  });
+
+  revText.revText = await entity.RevText.serialize({
+    ...(await entity.RevText.deserialize(revText.revText)),
+    [revHistory.revId]: rev,
+  });
+  await t.save(entity.RevText, revText);
+}
+
+async function createRevRecords({
+  t,
+  episodeID,
+  rev,
+  creator,
+  now,
+  comment,
+}: {
+  t: EntityManager;
+  episodeID: number;
+  rev: EpTextRev;
+  creator: number;
+  now: Date;
+  comment: string;
+}) {
+  const revText = await t.save(entity.RevText, {
+    revText: await entity.RevText.serialize({}),
+  });
+
+  const revHistory = await t.save(entity.RevHistory, {
+    revType: entity.RevHistory.TypeEp,
+    revCreator: creator,
+    revTextId: revText.revTextId,
+    revDateline: now.getTime() / 1000,
+    revMid: episodeID,
+    revEditSummary: comment,
+  });
+
+  revText.revText = await entity.RevText.serialize({ [revHistory.revId]: rev });
+  await t.save(entity.RevText, revText);
 }
