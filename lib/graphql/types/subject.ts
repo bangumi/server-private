@@ -65,14 +65,14 @@ const Subject = objectType({
       ) {
         if (offset < 0) {
           const count = await repo.Episode.count({
-            where: { epType: type ?? undefined, epSubjectId: parent.id },
+            where: { type: type ?? undefined, subjectID: parent.id },
           });
           offset = count + offset;
         }
 
         const episodes = await repo.Episode.find({
-          order: { epSort: 'asc' },
-          where: { epType: type ?? undefined, epSubjectId: parent.id },
+          order: { sort: 'asc' },
+          where: { type: type ?? undefined, subjectID: parent.id },
           skip: offset,
           take: limit,
         });
@@ -80,12 +80,12 @@ const Subject = objectType({
         return episodes.map((e: entity.Episode) => {
           return {
             id: e.id,
-            name: e.epName,
-            name_cn: e.epNameCn,
-            description: e.epDesc,
-            type: e.epType,
-            duration: e.epDuration,
-            sort: e.epSort,
+            name: e.name,
+            name_cn: e.nameCN,
+            description: e.summary,
+            type: e.type,
+            duration: e.duration,
+            sort: e.sort,
           };
         });
       },

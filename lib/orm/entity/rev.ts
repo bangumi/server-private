@@ -6,13 +6,17 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 const inflateRaw = promisify(zlib.inflateRaw);
 
+const TypeEp = 18; // RevisionTypeEp
+
 @Index('rev_crt_id', ['revType', 'revMid'], {})
 @Index('rev_crt_creator', ['revCreator'], {})
 @Index('rev_id', ['revId', 'revType', 'revCreator'], {})
 @Entity('chii_rev_history', { schema: 'bangumi' })
 export class RevHistory {
+  static readonly TypeEp = TypeEp;
+
   static episodeTypes = [
-    18, // RevisionTypeEp
+    TypeEp,
     181, // RevisionTypeEpMerge
     182, // RevisionTypeEpMove
     183, // RevisionTypeEpLock
@@ -115,4 +119,14 @@ export class EpRevision {
 
   @Column('varchar', { name: 'rev_edit_summary', length: 200 })
   revEditSummary!: string;
+}
+
+export interface EpTextRev {
+  ep_sort: string;
+  ep_type: string;
+  ep_name: string;
+  ep_name_cn: string;
+  ep_duration: string;
+  ep_airdate: string;
+  ep_desc: string;
 }

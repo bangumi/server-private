@@ -1,7 +1,7 @@
 import pLimit from 'p-limit';
 import { expect, test } from 'vitest';
 
-import { intval, randomBase62String, randomBytes } from './index';
+import { formatDuration, intval, parseDuration, randomBase62String, randomBytes } from './index';
 
 const limit = pLimit(10);
 
@@ -43,7 +43,7 @@ test.each([
   ['1.99', undefined],
   [1.99, undefined],
   ['-100', -100],
-])('intval("%s") should be %s', (value, expected) => {
+])('intval(%j) === %j', (value, expected) => {
   if (expected === undefined) {
     expect(() => intval(value)).toThrow();
   } else {
@@ -55,4 +55,21 @@ test('randomBytes', async () => {
   const bytes = await randomBytes(20);
 
   expect(bytes).toHaveLength(20);
+});
+
+test.each([
+  ['20:3', 20 * 60 + 3],
+  ['00:50:10', 50 * 60 + 10],
+  ['30m2s', 30 * 60 + 2],
+  ['1h20m8s', 60 * 60 + 20 * 60 + 8],
+  ['not duration string', Number.NaN],
+])('parseDuration(%j) === %j', function (value, expected) {
+  expect(parseDuration(value)).toBe(expected);
+});
+
+test.each([
+  [20 * 60 + 3, '20:03'],
+  [3 * 60 * 60 + 22 * 60 + 3, '3:22:03'],
+])('formatDuration(%j) === %j', function (value, expected) {
+  expect(formatDuration(value)).toBe(expected);
 });

@@ -1,18 +1,18 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Index('ep_sort', ['epSort'], {})
+@Index('ep_sort', ['sort'], {})
 @Index('ep_disc', ['epDisc'], {})
-@Index('ep_subject_id', ['epSubjectId'], {})
+@Index('ep_subject_id', ['subjectID'], {})
 @Index('ep_lastpost', ['epLastpost'], {})
 @Index('ep_ban', ['epBan'], {})
-@Index('ep_subject_id_2', ['epSubjectId', 'epBan', 'epSort'], {})
+@Index('ep_subject_id_2', ['subjectID', 'epBan', 'sort'], {})
 @Entity('chii_episodes', { schema: 'bangumi' })
 export class Episode {
   @PrimaryGeneratedColumn({ type: 'mediumint', name: 'ep_id', unsigned: true })
   id!: number;
 
   @Column('mediumint', { name: 'ep_subject_id', unsigned: true })
-  epSubjectId!: number;
+  subjectID!: number;
 
   @Column('float', {
     name: 'ep_sort',
@@ -20,10 +20,10 @@ export class Episode {
     precision: 12,
     default: () => "'0'",
   })
-  epSort!: number;
+  sort!: number;
 
   @Column('tinyint', { name: 'ep_type', unsigned: true })
-  epType!: number;
+  type!: number;
 
   @Column('tinyint', {
     name: 'ep_disc',
@@ -34,20 +34,21 @@ export class Episode {
   epDisc!: number;
 
   @Column('varchar', { name: 'ep_name', length: 80 })
-  epName!: string;
+  name!: string;
 
   @Column('varchar', { name: 'ep_name_cn', length: 80 })
-  epNameCn!: string;
+  nameCN!: string;
 
   @Column('tinyint', { name: 'ep_rate' })
   epRate!: number;
 
   @Column('varchar', { name: 'ep_duration', length: 80 })
-  epDuration!: string;
+  duration!: string;
 
   @Column('varchar', { name: 'ep_airdate', length: 80 })
-  epAirdate!: string;
+  airDate!: string;
 
+  /** @deprecated 在线播放地址 */
   @Column('mediumtext', { name: 'ep_online' })
   epOnline!: string;
 
@@ -58,7 +59,7 @@ export class Episode {
   epResources!: number;
 
   @Column('mediumtext', { name: 'ep_desc' })
-  epDesc!: string;
+  summary!: string;
 
   @Column('int', { name: 'ep_dateline', unsigned: true })
   epDateline!: number;

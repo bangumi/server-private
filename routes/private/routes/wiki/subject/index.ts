@@ -13,6 +13,7 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
+import * as ep from './ep.ts';
 import * as imageRoutes from './image.ts';
 
 const exampleSubjectEdit = {
@@ -100,6 +101,8 @@ export async function setup(app: App) {
   app.addSchema(Platform);
   app.addSchema(res.SubjectType);
   app.addSchema(SubjectWikiInfo);
+
+  app.register(ep.setup);
 
   app.get(
     '/subjects/:subjectID',

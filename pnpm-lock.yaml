@@ -103,6 +103,9 @@ dependencies:
   openapi-types:
     specifier: ^12.1.0
     version: 12.1.0
+  parse-duration:
+    specifier: ^1.0.3
+    version: 1.0.3
   pino:
     specifier: ^8.11.0
     version: 8.11.0
@@ -5883,6 +5886,10 @@ packages:
     dependencies:
       callsites: 3.1.0
     dev: true
+
+  /parse-duration@1.0.3:
+    resolution: {integrity: sha512-o6NAh12na5VvR6nFejkU0gpQ8jmOY9Y9sTU2ke3L3G/d/3z8jqmbBbeyBGHU73P4JLXfc7tJARygIK3WGIkloA==}
+    dev: false
 
   /parse-json@4.0.0:
     resolution: {integrity: sha512-aOIos8bujGN93/8Ox/jPLh7RwVnPEysynVFE+fQZyg6jKELEHwzgKdLRFHUgXJL6kylijVSBC4BvN9OmsB48Rw==}
