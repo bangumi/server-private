@@ -30,7 +30,7 @@ jobs:
 
       - name: Try to find existing base docker image
         run: |
-          export "TAG_HASH=base-${PKG_FILE_HASH:0:10}-${DOCKER_FILE_HASH:0:10}"
+          export "TAG_HASH=base-${FILE_HASH}"
           echo "TAG_HASH=${TAG_HASH}" >>$GITHUB_ENV
 
           if ! docker pull "${IMAGE}:${TAG_HASH}"; then
@@ -39,8 +39,7 @@ jobs:
             echo "NEED_BUILD_BASE=false" >>$GITHUB_ENV
           fi
         env:
-          PKG_FILE_HASH: "${{ hashFiles('pnpm-lock.yaml') }}"
-          DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
+          FILE_HASH: "${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
 
       - name: Build Base Docker Image (if needed)
         uses: docker/build-push-action@v4
