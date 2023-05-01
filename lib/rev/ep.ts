@@ -1,9 +1,9 @@
-import * as entity from '@app/lib/orm/entity';
 import * as lo from 'lodash-es';
 
 import { AppDataSource, RevHistoryRepo, RevTextRepo } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import type { EpTextRev } from '@app/lib/orm/entity';
+import * as entity from '@app/lib/orm/entity';
 import { RevText } from '@app/lib/orm/entity';
 
 

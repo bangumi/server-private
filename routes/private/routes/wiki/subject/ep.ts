@@ -4,11 +4,11 @@ import { Type as t } from '@sinclair/typebox';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi';
 import { AppDataSource, EpisodeRepo } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity';
-import { Episode, RevHistory } from '@app/lib/orm/entity';
+import { Episode } from '@app/lib/orm/entity';
 import * as res from '@app/lib/types/res.ts';
 import { EpisodeType, formatErrors } from '@app/lib/types/res.ts';
+import type { EmptyObject } from '@app/lib/types/util.ts';
 import { formatDuration, parseDuration } from '@app/lib/utils';
 import type { App } from '@app/routes/type.ts';
 
@@ -31,6 +31,7 @@ export const EpisodeWikiInfo = t.Object(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  app.addSchema(res.Error);
   app.addSchema(EpisodeWikiInfo);
 
   app.get(
@@ -116,7 +117,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { episodeID }, body }): Promise<{}> => {
+    async ({ params: { episodeID }, body }): Promise<EmptyObject> => {
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
@@ -132,9 +133,9 @@ export async function setup(app: App) {
 
       if (body.duration) {
         const duration = parseDuration(body.duration);
-        if (isNaN(duration)) {
+        if (Number.isNaN(duration)) {
           throw new BadRequestError(
-            `${body.date} is not valid duration, use string like 'hh:mm:dd' or '1h10m20s'`,
+            `${body.duration} is not valid duration, use string like 'hh:mm:dd' or '1h10m20s'`,
           );
         }
 
@@ -144,16 +145,9 @@ export async function setup(app: App) {
       await AppDataSource.transaction(async (t) => {
         const EpisodeRepo = t.getRepository(Episode);
 
-        const episode = await t.findOneBy(entity.Episode, { id: episodeID });
-
         await t.findOneBy(entity.RevText, {});
 
         await EpisodeRepo.update({ id: episodeID }, ep);
-
-        const o = await t.findBy(entity.RevHistory, {
-          revMid: episodeID,
-          revType: orm.In(RevHistory.episodeTypes),
-        });
 
         await t.findOneBy(entity.RevHistory, {});
         await t.findOneBy(entity.RevText, {});
