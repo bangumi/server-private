@@ -1,7 +1,8 @@
 import { expect, test } from 'vitest';
 
 import { AppDataSource } from '@app/lib/orm';
-import { pushRev } from '@app/lib/rev/ep.ts';
+
+import { pushRev } from './ep.ts';
 
 test('get episode rev', async () => {
   // const r = await getRev(15, 8);
