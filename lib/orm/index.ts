@@ -288,8 +288,8 @@ function ghost(id: number): IUser {
   return {
     id: 0,
     img: '',
-    username: `ghost_${id}`,
-    nickname: `ghost_${id}`,
+    username: id.toString(),
+    nickname: `deleted or missing user ${id}`,
     groupID: 0,
     regTime: 0,
     sign: '',
