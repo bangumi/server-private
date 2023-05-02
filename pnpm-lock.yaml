@@ -223,8 +223,8 @@ devDependencies:
     specifier: ^13.2.2
     version: 13.2.2
   mercurius-integration-testing:
-    specifier: ^8.0.0
-    version: 8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0)
+    specifier: ^8.1.0
+    version: 8.1.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0)
   nodemon:
     specifier: ^2.0.22
     version: 2.0.22
@@ -5164,15 +5164,20 @@ packages:
       yargs-parser: 20.2.9
     dev: true
 
-  /mercurius-integration-testing@8.0.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0):
-    resolution: {integrity: sha512-wo/g3ipwZ9g44BvEp+VjoXzaJVviOXXHFKccgVBkURBvZnzCEj/4rAqjH+CuflmYRRvJ0GBRYTIARezJBtviMA==}
+  /mercurius-integration-testing@8.1.0(@mercuriusjs/federation@1.0.1)(@mercuriusjs/gateway@1.2.0)(fastify@4.17.0)(graphql@16.6.0)(mercurius@13.0.0):
+    resolution: {integrity: sha512-cN3ILAmZgTVPmiF6mru2ap2PJ0LLytbvEjHqlmv9zukGbvN6ezE7L/SO2nWVNC95Ao7wI78GPvXt+rTHjgzlGQ==}
     engines: {node: '>=14'}
     peerDependencies:
-      '@mercuriusjs/federation': ^1.0.1
+      '@mercuriusjs/federation': ^1 || ^2
       '@mercuriusjs/gateway': ^1.2.0
       fastify: ^4.0.0
       graphql: '*'
-      mercurius: ^12.0.0
+      mercurius: ^12 | ^13
+    peerDependenciesMeta:
+      '@mercuriusjs/federation':
+        optional: true
+      '@mercuriusjs/gateway':
+        optional: true
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@16.6.0)
       '@mercuriusjs/federation': 1.0.1
