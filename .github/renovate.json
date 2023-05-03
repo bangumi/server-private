@@ -17,5 +17,12 @@
   },
   "nodenv": {
     "enabled": false
-  }
+  },
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["gcr.io/distroless/nodejs18-debian11", "node"],
+      "pinDigests": true
+    }
+  ]
 }
