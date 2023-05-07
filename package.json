@@ -18,6 +18,7 @@
     "test": "vitest --run",
     "vitest": "vitest",
     "run-file": "node --no-warnings --loader @esbuild-kit/esm-loader",
+    "license-check": "license-checker --excludePrivatePackages --production --summary --onlyAllow=\"0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;Python-2.0;\"",
     "e": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader",
     "lint-staged": "lint-staged -q",
     "prepare": "husky install"
@@ -97,6 +98,7 @@
     "graphql-tag": "^2.12.6",
     "husky": "^8.0.3",
     "ioredis-mock": "^8.7.0",
+    "license-checker": "^25.0.1",
     "lint-staged": "^13.2.2",
     "mercurius-integration-testing": "^8.1.1",
     "nodemon": "^2.0.22",

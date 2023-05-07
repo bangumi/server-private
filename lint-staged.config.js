@@ -7,4 +7,5 @@ export default {
     'eslint --quiet --fix',
     'prettier -w',
   ],
+  'pnpm-lock.yaml': () => 'pnpm run license-check',
 };
