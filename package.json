@@ -143,5 +143,10 @@
     "singleQuote": true,
     "semi": true,
     "trailingComma": "all"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@fastify/error@3.2.0": "patches/@fastify__error@3.2.0.patch"
+    }
   }
 }
