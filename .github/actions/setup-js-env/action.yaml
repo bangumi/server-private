@@ -1,3 +1,13 @@
+inputs:
+  node-version:
+    description: 'node version'
+    required: false
+    default: ''
+  node-version-file:
+    description: 'node version file'
+    required: false
+    default: '.node-version'
+
 name: 'Setup Node and run npm ci'
 description: 'setup node env'
 runs:
@@ -6,7 +16,8 @@ runs:
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version-file: '.node-version'
+        node-version: '${{ inputs.node-version }}'
+        node-version-file: '${{ inputs.node-version-file }}'
 
     - run: corepack enable
       shell: bash
@@ -22,13 +33,18 @@ runs:
       shell: bash
       run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
 
+    - name: Get nodejs version
+      shell: bash
+      id: nodejs-version
+      run: echo "version=$(node -e 'console.log(process.version)')" >> $GITHUB_OUTPUT
+
     - uses: actions/cache@v3
       id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
       with:
         path: ${{ steps.npm-cache-dir.outputs.dir }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-node${{ steps.nodejs-version.outputs.version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
-          ${{ runner.os }}-node-
+          ${{ runner.os }}-node${{ steps.nodejs-version.outputs.version }}-
 
     - name: Install Dependencies
       run: pnpm i --frozen-lockfile
