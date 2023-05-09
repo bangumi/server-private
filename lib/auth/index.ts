@@ -9,7 +9,7 @@ import type { IUser, Permission } from '@app/lib/orm';
 import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import { intval } from '@app/lib/utils';
-import NodeCache from '@app/vendor/node-cache';
+import NodeCache from '@app/vendor/node-cache.ts';
 
 const tokenPrefix = 'Bearer ';
 export const NeedLoginError = createError<[string]>(
