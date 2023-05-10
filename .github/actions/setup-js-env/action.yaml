@@ -21,17 +21,12 @@ runs:
       shell: bash
       name: install pnpm
 
-    - name: Get nodejs version
-      shell: bash
-      id: nodejs-version
-      run: echo "version=$(node -e 'console.log(process.version)')" >> $GITHUB_OUTPUT
-
     - uses: actions/cache@v3
       with:
         path: ~/.local/share/pnpm/store/
-        key: ${{ runner.os }}-1-node${{ steps.nodejs-version.outputs.version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-1-node${{ inputs.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
-          ${{ runner.os }}-1-node${{ steps.nodejs-version.outputs.version }}-
+          ${{ runner.os }}-1-node${{ inputs.node-version }}-
 
     - name: Install Dependencies
       run: pnpm install --frozen-lockfile
