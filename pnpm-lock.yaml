@@ -245,6 +245,9 @@ devDependencies:
   prettier-plugin-jsdoc:
     specifier: ^0.4.2
     version: 0.4.2(prettier@2.8.8)
+  std-env:
+    specifier: ^3.3.3
+    version: 3.3.3
   typescript:
     specifier: ~5.0.4
     version: 5.0.4
@@ -2160,7 +2163,7 @@ packages:
       c8: 7.13.0
       magic-string: 0.30.0
       picocolors: 1.0.0
-      std-env: 3.3.2
+      std-env: 3.3.3
       vitest: 0.31.0(@vitest/ui@0.31.0)
     dev: true
 
@@ -6598,8 +6601,8 @@ packages:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
 
-  /std-env@3.3.2:
-    resolution: {integrity: sha512-uUZI65yrV2Qva5gqE0+A7uVAvO40iPo6jGhs7s8keRfHCmtg+uB2X6EiLGCI9IgL1J17xGhvoOqSz79lzICPTA==}
+  /std-env@3.3.3:
+    resolution: {integrity: sha512-Rz6yejtVyWnVjC1RFvNmYL10kgjC49EOghxWn0RFqlCHGFpQx+Xe7yW3I4ceK1SGrWIGMjD5Kbue8W/udkbMJg==}
     dev: true
 
   /streamsearch@1.1.0:
@@ -7234,7 +7237,7 @@ packages:
       magic-string: 0.30.0
       pathe: 1.1.0
       picocolors: 1.0.0
-      std-env: 3.3.2
+      std-env: 3.3.3
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.5.0

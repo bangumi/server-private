@@ -2,6 +2,7 @@ import 'dotenv/config';
 
 import * as url from 'node:url';
 
+import { isCI } from 'std-env';
 import { defineConfig } from 'vitest/config';
 import GithubActionsReporter from 'vitest-github-actions-reporter';
 
@@ -15,7 +16,7 @@ export default defineConfig({
     extensions: ['.js', '.ts'],
   },
   test: {
-    reporters: process.env.GITHUB_ACTIONS ? ['default', new GithubActionsReporter()] : 'basic',
+    reporters: isCI ? ['default', new GithubActionsReporter()] : 'basic',
     watch: false,
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
