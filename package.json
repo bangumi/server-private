@@ -17,7 +17,7 @@
     "start": "nodemon ./bin/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
-    "run-file": "node --no-warnings --loader @esbuild-kit/esm-loader",
+    "file": "node --no-warnings --loader @esbuild-kit/esm-loader",
     "license-check": "license-checker --excludePrivatePackages --production --summary --onlyAllow=\"0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;Python-2.0;\"",
     "e": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader",
     "lint-staged": "lint-staged -q",
