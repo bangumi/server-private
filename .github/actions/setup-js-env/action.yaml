@@ -19,19 +19,12 @@ runs:
         node-version: '${{ inputs.node-version }}'
         node-version-file: '${{ inputs.node-version-file }}'
 
-    - run: corepack enable
+    - run: |
+        corepack enable
+        corepack prepare --activate
+        pnpm --version
       shell: bash
-
-    - run: corepack prepare --activate
-      shell: bash
-
-    - run: pnpm --version
-      shell: bash
-
-    - name: Get npm cache directory
-      id: npm-cache-dir
-      shell: bash
-      run: echo "dir=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+      name: install pnpm
 
     - name: Get nodejs version
       shell: bash
@@ -41,7 +34,7 @@ runs:
     - uses: actions/cache@v3
       id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
       with:
-        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        path: ~/.local/share/pnpm/store/
         key: ${{ runner.os }}-node${{ steps.nodejs-version.outputs.version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
         restore-keys: |
           ${{ runner.os }}-node${{ steps.nodejs-version.outputs.version }}-
