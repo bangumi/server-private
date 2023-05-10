@@ -127,28 +127,3 @@ export async function privateAPI(app: App) {
     },
   });
 }
-
-export async function publicAPI(app: App) {
-  addRoute(app);
-  await addPlugin(app, {
-    info: {
-      version: VERSION,
-      title: 'hello',
-    },
-    components: {
-      securitySchemes: {
-        [Security.OptionalHTTPBearer]: {
-          type: 'http',
-          description:
-            '不强制要求用户认证，但是可能看不到某些敏感内容内容（如 NSFW 或者仅用户自己可见的收藏）',
-          scheme: 'Bearer',
-        },
-        [Security.HTTPBearer]: {
-          type: 'http',
-          description: '需要使用 access token 进行认证',
-          scheme: 'Bearer',
-        },
-      },
-    },
-  });
-}
