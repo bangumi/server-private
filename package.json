@@ -12,7 +12,7 @@
   },
   "scripts": {
     "format": "prettier --list-different -w ./",
-    "tsc": "tsc --noEmit",
+    "tsc": "tsc",
     "lint": "eslint --cache --ext ts,cjs,js ./",
     "start": "nodemon ./bin/main.ts",
     "test": "vitest --run",

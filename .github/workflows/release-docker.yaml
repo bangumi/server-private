@@ -30,16 +30,15 @@ jobs:
 
       - name: Try to find existing base docker image
         run: |
-          export "TAG_HASH=base-${FILE_HASH}"
-          echo "TAG_HASH=${TAG_HASH}" >>$GITHUB_ENV
+          echo "BASE_TAG=${BASE_TAG}" >>$GITHUB_ENV
 
-          if ! docker pull "${IMAGE}:${TAG_HASH}"; then
+          if ! docker pull "${IMAGE}:${BASE_TAG}"; then
             echo "NEED_BUILD_BASE=true" >>$GITHUB_ENV
           else
             echo "NEED_BUILD_BASE=false" >>$GITHUB_ENV
           fi
         env:
-          FILE_HASH: "${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
+          BASE_TAG: "base-${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
 
       - name: Build Base Docker Image (if needed)
         uses: docker/build-push-action@v4
@@ -49,9 +48,9 @@ jobs:
           file: ./etc/base.dockerfile
           provenance: false
           push: true
-          tags: ${{ env.IMAGE }}:${{ env.TAG_HASH }}
+          tags: ${{ env.IMAGE }}:${{ env.BASE_TAG }}
 
-      - run: docker tag "${IMAGE}:${TAG_HASH}" base-image
+      - run: docker tag "${IMAGE}:${BASE_TAG}" base-image
 
       - run: echo "SHA=$(git show --no-patch --no-notes --date=short-local --pretty='%as-%h')" >> $GITHUB_ENV
         env:
