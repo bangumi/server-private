@@ -135,7 +135,6 @@
     "ext": "ts,js,json,html"
   },
   "author": "",
-  "license": "MIT",
   "prettier": {
     "plugins": [
       "@shopify/prettier-plugin-liquid",
