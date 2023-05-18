@@ -44,6 +44,16 @@ const GroupMember = t.Object(
   },
   { $id: 'GroupMember' },
 );
+
+const Reaction = t.Object(
+  {
+    selected: t.Boolean(),
+    total: t.Integer(),
+    value: t.Integer(),
+  },
+  { $id: 'Reaction' },
+);
+
 const SubReply = t.Object(
   {
     id: t.Integer(),
@@ -52,15 +62,10 @@ const SubReply = t.Object(
     isFriend: t.Boolean(),
     text: t.String(),
     state: t.Integer(),
+    reactions: t.Array(t.Ref(Reaction)),
   },
   { $id: 'SubReply' },
 );
-
-const Reaction = t.Object({
-  selected: t.Boolean(),
-  total: t.Integer(),
-  value: t.Integer(),
-});
 
 const Reply = t.Object(
   {
@@ -71,7 +76,7 @@ const Reply = t.Object(
     createdAt: t.Integer(),
     text: t.String(),
     state: t.Integer(),
-    reactions: t.Array(Reaction),
+    reactions: t.Array(t.Ref(Reaction)),
   },
   { $id: 'Reply' },
 );
@@ -86,7 +91,7 @@ const TopicDetail = t.Object(
     state: t.Integer(),
     createdAt: t.Integer(),
     replies: t.Array(t.Ref(Reply)),
-    reactions: t.Array(Reaction),
+    reactions: t.Array(t.Ref(Reaction)),
   },
   { $id: 'TopicDetail' },
 );
@@ -169,6 +174,7 @@ export async function setup(app: App) {
 
   app.addSchema(Reply);
 
+  app.addSchema(Reaction);
   app.addSchema(TopicDetail);
 
   app.get(
