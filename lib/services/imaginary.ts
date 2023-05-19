@@ -1,10 +1,11 @@
-import * as console from 'node:console';
+import { URL } from 'node:url';
 
 import { createError } from '@fastify/error';
 import httpCodes from 'http-status-codes';
 
 import config, { testing } from '@app/lib/config.ts';
 import { UnimplementedError } from '@app/lib/error.ts';
+import { logger } from '@app/lib/logger.ts';
 import { BaseHttpSrv } from '@app/lib/services/base.ts';
 
 export const NotValidImageError = createError(
@@ -59,19 +60,16 @@ class Imaginary extends BaseHttpSrv implements IImaginary {
   }
 }
 
-let d: IImaginary;
-
-if (config.image.imaginaryUrl) {
-  // validate base url
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  new URL(config.image.imaginaryUrl);
-  d = new Imaginary(config.image.imaginaryUrl);
-} else {
-  if (!testing) {
-    console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
-    console.warn('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性');
+function createImaginaryClient(): IImaginary {
+  if (config.image.imaginaryUrl) {
+    return new Imaginary(new URL(config.image.imaginaryUrl).toString());
   }
-  d = {
+
+  if (!testing) {
+    logger.error('!!! 缺少 `image.imaginaryUrl` 设置，不会验证上传图片的有效性 !!!');
+  }
+
+  return {
     info(): Promise<Info> {
       return Promise.resolve({ width: 0, height: 0, type: 'jpg' });
     },
@@ -81,4 +79,4 @@ if (config.image.imaginaryUrl) {
   };
 }
 
-export default d;
+export default createImaginaryClient();
