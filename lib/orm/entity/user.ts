@@ -1,5 +1,6 @@
 import { Column, Entity, Index, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
+import type { ACL } from '@app/lib/auth/acl.ts';
 import type { Transformer } from '@app/lib/orm/transformer.ts';
 import { htmlEscapedString } from '@app/lib/orm/transformer.ts';
 import type { UnknownObject } from '@app/lib/types/res.ts';
@@ -95,7 +96,7 @@ export class User {
       },
     } satisfies Transformer<string, UnknownObject>,
   })
-  acl!: { ban_user_info: boolean; ban_post: boolean; ban_like: boolean };
+  acl!: ACL;
 }
 
 @Entity('chii_memberfields', { schema: 'bangumi' })
