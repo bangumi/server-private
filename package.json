@@ -148,7 +148,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "@fastify/error@3.2.0": "patches/@fastify__error@3.2.0.patch"
+      "@fastify/error@3.2.0": "patches/@fastify__error@3.2.0.patch",
+      "got@13.0.0": "patches/got@13.0.0.patch"
     }
   }
 }
