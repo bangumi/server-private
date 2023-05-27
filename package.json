@@ -44,7 +44,7 @@
     "fastify-socket.io": "^4.0.0",
     "got": "^13.0.0",
     "graphql": "^16.6.0",
-    "http-proxy-agent": "^6.0.1",
+    "http-proxy-agent": "^7.0.0",
     "http-status-codes": "^2.2.0",
     "https-proxy-agent": "^6.1.0",
     "ioredis": "^5.3.2",
