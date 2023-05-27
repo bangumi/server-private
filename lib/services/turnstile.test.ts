@@ -1,6 +1,6 @@
 import { expect, test, vi } from 'vitest';
 
-import type * as turnstileModule from './turnstile';
+import type * as turnstileModule from './turnstile.ts';
 
 const turnstile = await vi.importActual<typeof turnstileModule>('./turnstile');
 

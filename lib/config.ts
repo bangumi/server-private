@@ -166,9 +166,14 @@ function readConfig(): Static<typeof schema> {
 }
 
 export function validateConfig(config: unknown) {
-  const ajv = new Ajv({ allErrors: true, coerceTypes: true, keywords: ['env'], strict: false });
-  addFormats(ajv);
-  ajvKeywords(ajv, 'transform');
+  const ajv = new Ajv.default({
+    allErrors: true,
+    coerceTypes: true,
+    keywords: ['env'],
+    strict: false,
+  });
+  addFormats.default(ajv);
+  ajvKeywords.default(ajv, 'transform');
 
   const valid = ajv.validate(schema, config);
 

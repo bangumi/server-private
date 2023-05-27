@@ -8,11 +8,11 @@ import type { FastifySchema } from 'fastify';
 import * as yaml from 'js-yaml';
 import type { OpenAPIV3 } from 'openapi-types';
 
-import { CookieKey } from '@app/lib/auth/session';
-import { projectRoot, VERSION } from '@app/lib/config';
-import { Security } from '@app/lib/openapi';
-import * as res from '@app/lib/types/res';
-import type { App } from '@app/routes/type';
+import { CookieKey } from '@app/lib/auth/session.ts';
+import { projectRoot, VERSION } from '@app/lib/config.ts';
+import { Security } from '@app/lib/openapi/index.ts';
+import * as res from '@app/lib/types/res.ts';
+import type { App } from '@app/routes/type.ts';
 
 const swaggerUI = fs.readFileSync(path.join(projectRoot, './static/swagger.html'));
 

@@ -4,20 +4,20 @@ import addFormats from 'ajv-formats';
 import AltairFastify from 'altair-fastify-plugin';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
-import type { FastifySchemaValidationError } from 'fastify/types/schema';
+import type { FastifySchemaValidationError } from 'fastify/types/schema.d.ts';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
 import { TypeORMError } from 'typeorm';
 
-import * as routes from '@app/routes';
+import * as routes from '@app/routes/index.ts';
 
-import { emptyAuth } from './auth';
-import * as auth from './auth';
+import { emptyAuth } from './auth/index.ts';
+import * as auth from './auth/index.ts';
 import config, { testing, VERSION } from './config.ts';
 import type { Context } from './graphql/context.ts';
 import { schema } from './graphql/schema.ts';
-import { repo } from './orm';
-import type * as res from './types/res';
+import { repo } from './orm/index.ts';
+import type * as res from './types/res.ts';
 
 export function defaultSchemaErrorFormatter(
   errors: FastifySchemaValidationError[],
@@ -51,10 +51,10 @@ export async function createServer(
 ): Promise<FastifyInstance> {
   const ajv: FastifyServerOptions['ajv'] = {
     plugins: [
-      function (ajv: Ajv) {
+      function (ajv: Ajv.default) {
         ajv.addKeyword({ keyword: 'x-examples' });
       },
-      addFormats,
+      addFormats.default,
     ],
   };
 
@@ -100,7 +100,7 @@ export async function createServer(
   });
 
   if (!testing) {
-    await server.register(metricsPlugin, {
+    await server.register(metricsPlugin.default, {
       routeMetrics: {
         groupStatusCodes: true,
         overrides: {
@@ -112,7 +112,7 @@ export async function createServer(
     });
   }
 
-  await server.register(mercurius, {
+  await server.register(mercurius.default, {
     schema,
     path: '/v0/graphql',
     graphiql: false,
@@ -127,7 +127,7 @@ export async function createServer(
     },
   });
 
-  await server.register(AltairFastify, {
+  await server.register(AltairFastify.default, {
     path: '/v0/altair/',
     baseURL: '/v0/altair/',
     endpointURL: '/v0/graphql',

@@ -1,12 +1,12 @@
 import type { CookieSerializeOptions } from '@fastify/cookie';
 import { DateTime } from 'luxon';
 
-import { TypedCache } from '@app/lib/cache';
-import { SessionRepo } from '@app/lib/orm';
-import { randomBytes } from '@app/lib/utils';
+import { TypedCache } from '@app/lib/cache.ts';
+import { SessionRepo } from '@app/lib/orm/index.ts';
+import { randomBytes } from '@app/lib/utils/index.ts';
 
-import type { IAuth } from './';
-import * as auth from './';
+import type { IAuth } from './index.ts';
+import * as auth from './index.ts';
 
 export const CookieKey = 'chiiNextSessionID';
 export const LegacyCookieKey = 'chii_auth';

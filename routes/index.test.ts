@@ -1,7 +1,7 @@
 import * as yaml from 'js-yaml';
 import { expect, test } from 'vitest';
 
-import { createServer } from '@app/lib/server';
+import { createServer } from '@app/lib/server.ts';
 
 test('should build private api spec', async () => {
   const app = await createServer();

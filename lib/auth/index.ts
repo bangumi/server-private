@@ -4,11 +4,11 @@ import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
 import { DateTime } from 'luxon';
 
-import { TypedCache } from '@app/lib/cache';
-import type { IUser, Permission } from '@app/lib/orm';
-import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
-import { intval } from '@app/lib/utils';
+import { TypedCache } from '@app/lib/cache.ts';
+import type { IUser, Permission } from '@app/lib/orm/index.ts';
+import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import { intval } from '@app/lib/utils/index.ts';
 import NodeCache from '@app/vendor/node-cache.ts';
 
 const tokenPrefix = 'Bearer ';

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
-import config, { Image, testing } from '@app/lib/config';
-import { logger } from '@app/lib/logger';
+import config, { Image, testing } from '@app/lib/config.ts';
+import { logger } from '@app/lib/logger.ts';
 
 export interface ImageFS {
   uploadImage(path: string, content: Buffer): Promise<void>;
@@ -15,10 +15,10 @@ export async function getImpl(): Promise<ImageFS> {
 
   switch (config.image.provider) {
     case Image.FileSystem: {
-      return await import('./fs');
+      return await import('./fs.ts');
     }
     case Image.S3: {
-      return await import('./s3');
+      return await import('./s3.ts');
     }
     // No default
   }

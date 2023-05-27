@@ -2,12 +2,12 @@ import * as path from 'node:path';
 
 import { fastifyStatic } from '@fastify/static';
 
-import type { IAuth } from '@app/lib/auth';
+import type { IAuth } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger.ts';
-import * as demo from '@app/routes/demo';
-import * as privateAPI from '@app/routes/private';
-import type { App } from '@app/routes/type';
+import * as demo from '@app/routes/demo/index.ts';
+import * as privateAPI from '@app/routes/private/index.ts';
+import type { App } from '@app/routes/type.ts';
 
 export async function setup(app: App) {
   logger.debug('setup rest routes');

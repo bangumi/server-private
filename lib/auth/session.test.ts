@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
-import { SessionRepo } from '@app/lib/orm';
+import { SessionRepo } from '@app/lib/orm/index.ts';
 
 import { create, get, revoke } from './session.ts';
 

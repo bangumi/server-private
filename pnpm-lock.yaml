@@ -10,8 +10,8 @@ dependencies:
     specifier: ^3.321.1
     version: 3.321.1
   '@bgm38/wiki':
-    specifier: ^0.2.2
-    version: 0.2.2
+    specifier: ^0.2.6
+    version: 0.2.6
   '@esbuild-kit/esm-loader':
     specifier: ^2.5.5
     version: 2.5.5
@@ -61,8 +61,8 @@ dependencies:
     specifier: ^4.0.0
     version: 4.0.0(socket.io@4.6.1)
   got:
-    specifier: ^12.6.0
-    version: 12.6.0
+    specifier: ^13.0.0
+    version: 13.0.0(patch_hash=d4msj3jdqs4opuuvmstouodue4)
   graphql:
     specifier: ^16.6.0
     version: 16.6.0
@@ -1258,8 +1258,8 @@ packages:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
 
-  /@bgm38/wiki@0.2.2:
-    resolution: {integrity: sha512-G1ttxnYBbYOdc8Gwvptdu7FdlWiDmP9EQRabIrDAL1WzjNp3VNLiZeczgN1X3jarN5i8D4kuBfeJ23TKy+cJ2g==}
+  /@bgm38/wiki@0.2.6:
+    resolution: {integrity: sha512-zTcsxNOKjchwqiabiJejJAsR1xnXrEdCJdoeadtvyt14na9Tnq6TZHiQHQWbsWdrNc+kJ2f1LxqjrAGEmbzI1g==}
     engines: {node: '>=16'}
     dev: false
 
@@ -4115,9 +4115,9 @@ packages:
       get-intrinsic: 1.2.0
     dev: true
 
-  /got@12.6.0:
-    resolution: {integrity: sha512-WTcaQ963xV97MN3x0/CbAriXFZcXCfgxVp91I+Ze6pawQOa7SgzwSx2zIJJsX+kTajMnVs0xcFD1TxZKFqhdnQ==}
-    engines: {node: '>=14.16'}
+  /got@13.0.0(patch_hash=d4msj3jdqs4opuuvmstouodue4):
+    resolution: {integrity: sha512-XfBk1CxOOScDcMr9O1yKkNaQyy865NbYs+F7dr4H0LZMVgCj2Le59k6PqbNHoL5ToeaEQUYh6c6yMfVcc6SJxA==}
+    engines: {node: '>=16'}
     dependencies:
       '@sindresorhus/is': 5.3.0
       '@szmarczak/http-timer': 5.0.1
@@ -4131,6 +4131,7 @@ packages:
       p-cancelable: 3.0.0
       responselike: 3.0.0
     dev: false
+    patched: true
 
   /graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}

@@ -3,9 +3,9 @@ import * as process from 'node:process';
 
 import { nanoid } from 'nanoid';
 
-import config, { production } from '@app/lib/config';
+import config, { production } from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger.ts';
-import { AppDataSource } from '@app/lib/orm';
+import { AppDataSource } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
 

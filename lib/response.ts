@@ -1,6 +1,6 @@
-import { imageDomain } from '@app/lib/config';
+import { imageDomain } from '@app/lib/config.ts';
 
-import type * as res from './types/res';
+import type * as res from './types/res.ts';
 
 const baseAvatarUrl = `https://${imageDomain}/pic/user`;
 

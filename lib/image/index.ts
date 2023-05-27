@@ -1,6 +1,6 @@
 import * as posix from 'node:path/posix';
 
-import { getImpl } from './base';
+import { getImpl } from './base.ts';
 
 export const SubjectCoverPrefix = 'cover/l/';
 

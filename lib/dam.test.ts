@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { Dam } from './dam';
+import { Dam } from './dam.ts';
 
 test('should check printable characters', () => {
   expect(Dam.allCharacterPrintable('\u202C')).toBe(false);

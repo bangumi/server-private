@@ -13,7 +13,7 @@
   "scripts": {
     "format": "prettier --list-different -w ./",
     "tsc": "tsc",
-    "lint": "eslint --cache --ext ts,cjs,js ./",
+    "lint": "eslint --ext ts,cjs,js ./",
     "start": "nodemon ./bin/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.321.1",
-    "@bgm38/wiki": "^0.2.2",
+    "@bgm38/wiki": "^0.2.6",
     "@esbuild-kit/esm-loader": "^2.5.5",
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.2.0",
@@ -42,7 +42,7 @@
     "fastify": "^4.17.0",
     "fastify-metrics": "^10.3.0",
     "fastify-socket.io": "^4.0.0",
-    "got": "^12.6.0",
+    "got": "^13.0.0",
     "graphql": "^16.6.0",
     "http-proxy-agent": "^6.0.1",
     "http-status-codes": "^2.2.0",

@@ -3,14 +3,20 @@ import * as lodash from 'lodash-es';
 import type { DateTime } from 'luxon';
 import type { Repository } from 'typeorm';
 
-import { siteUrl } from '@app/lib/config';
+import { siteUrl } from '@app/lib/config.ts';
 
 import { UnreachableError } from './error.ts';
-import * as orm from './orm';
-import { AppDataSource, NotifyFieldRepo, NotifyRepo, UserFieldRepo, UserRepo } from './orm';
-import type { Notify } from './orm/entity';
-import * as entity from './orm/entity';
-import { intval } from './utils';
+import type { Notify } from './orm/entity/index.ts';
+import * as entity from './orm/entity/index.ts';
+import * as orm from './orm/index.ts';
+import {
+  AppDataSource,
+  NotifyFieldRepo,
+  NotifyRepo,
+  UserFieldRepo,
+  UserRepo,
+} from './orm/index.ts';
+import { intval } from './utils/index.ts';
 
 /**
  * `nt_type`

@@ -5,17 +5,17 @@ import { fastifyStatic } from '@fastify/static';
 import { fastifyView } from '@fastify/view';
 import { Liquid } from 'liquidjs';
 
-import { cookiesPluginOption } from '@app/lib/auth/session';
-import config, { production, projectRoot } from '@app/lib/config';
-import * as Notify from '@app/lib/notify';
-import { fetchUserX } from '@app/lib/orm';
-import * as res from '@app/lib/types/res';
-import * as admin from '@app/routes/admin';
-import { SessionAuth } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import { cookiesPluginOption } from '@app/lib/auth/session.ts';
+import config, { production, projectRoot } from '@app/lib/config.ts';
+import * as Notify from '@app/lib/notify.ts';
+import { fetchUserX } from '@app/lib/orm/index.ts';
+import * as res from '@app/lib/types/res.ts';
+import * as admin from '@app/routes/admin/index.ts';
+import { SessionAuth } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
-import * as editor from './editor';
-import * as token from './token';
+import * as editor from './editor.ts';
+import * as token from './token/index.ts';
 
 declare module 'fastify' {
   interface FastifyReply {
