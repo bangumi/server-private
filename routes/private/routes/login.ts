@@ -59,7 +59,7 @@ export async function setup(app: App) {
       websocket: false,
       schema: {
         operationId: 'getCurrentUser',
-        tags: [Tag.Auth],
+        tags: [Tag.User],
         security: [{ [Security.CookiesSession]: [] }],
         response: {
           200: t.Ref(currentUser),
@@ -95,7 +95,7 @@ export async function setup(app: App) {
       schema: {
         description: '登出',
         operationId: 'logout',
-        tags: [Tag.Auth],
+        tags: [Tag.User],
         body: t.Object({}),
         response: {
           200: {},
@@ -157,7 +157,7 @@ next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
 dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         operationId: 'login',
-        tags: [Tag.Auth],
+        tags: [Tag.User],
         response: {
           200: t.Ref(res.User, {
             headers: {

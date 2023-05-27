@@ -9,38 +9,44 @@ on:
       - 'master'
 
 jobs:
+  license:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-js-env
+      - run: pnpm run license-check
+
   lint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-js-env
 
-      - run: npx prettier --check ./
-      - run: npx tsc --noEmit --pretty
-      - run: npm run lint
+      - run: pnpm exec prettier --check .
+      - run: pnpm exec tsc
+      - run: pnpm run lint
 
   test:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        node_version: [18.x, 20.x]
     steps:
       - uses: actions/checkout@v3
         with:
           repository: 'bangumi/dev-env'
           path: 'dev-env'
-
       - run: mv dev-env $HOME/dev-env
-
       - run: cd ~/dev-env && docker-compose up -d
 
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-js-env
+        with:
+          node-version: ${{ matrix.node_version }}
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
 
-      - run: cd ~/dev-env && docker-compose logs redis
-
-      - run: npm test -- --coverage
+      - run: pnpm run test --coverage
         timeout-minutes: 2
         env:
           REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
@@ -50,24 +56,21 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
       - run: |
-          export "TAG_HASH=${DOCKER_FILE_HASH:0:10}-${PKG_FILE_HASH:0:10}"
-
-          if ! docker pull "${IMAGE}:base-${TAG_HASH}"; then
+          if ! docker pull "${IMAGE}:${BASE_TAG}"; then
             echo "build base docker image"
-            docker build -t "${IMAGE}:base-${TAG_HASH}" -f etc/base.dockerfile .
+            docker build -t "${IMAGE}:${BASE_TAG}" -f etc/base.dockerfile .
           fi
 
-          docker tag "${IMAGE}:base-${TAG_HASH}" base-image
+          docker tag "${IMAGE}:${BASE_TAG}" base-image
 
         env:
-          PKG_FILE_HASH: "${{ hashFiles('package.json', 'pnpm-lock.yaml') }}"
-          DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
-          IMAGE: 'ghcr.io/bangumi/private-server'
+          BASE_TAG: "base-${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
+          IMAGE: 'ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}'
 
-        name: build base docker image
+        name: base docker image
+
       - run: docker build -t tmp -f etc/final.dockerfile .
       - run: docker run tmp --help

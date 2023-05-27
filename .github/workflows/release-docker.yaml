@@ -11,7 +11,7 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     env:
-      IMAGE: 'ghcr.io/${{ github.repository_owner }}/private-server'
+      IMAGE: 'ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}'
 
     concurrency:
       group: ${{ github.workflow }}-${{ github.sha }}
@@ -19,8 +19,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - uses: docker/login-action@v2
         with:
@@ -30,17 +28,15 @@ jobs:
 
       - name: Try to find existing base docker image
         run: |
-          export "TAG_HASH=base-${PKG_FILE_HASH:0:10}-${DOCKER_FILE_HASH:0:10}"
-          echo "TAG_HASH=${TAG_HASH}" >>$GITHUB_ENV
+          echo "BASE_TAG=${BASE_TAG}" >>$GITHUB_ENV
 
-          if ! docker pull "${IMAGE}:${TAG_HASH}"; then
+          if ! docker pull "${IMAGE}:${BASE_TAG}"; then
             echo "NEED_BUILD_BASE=true" >>$GITHUB_ENV
           else
             echo "NEED_BUILD_BASE=false" >>$GITHUB_ENV
           fi
         env:
-          PKG_FILE_HASH: "${{ hashFiles('pnpm-lock.yaml') }}"
-          DOCKER_FILE_HASH: "${{ hashFiles('etc/base.dockerfile') }}"
+          BASE_TAG: "base-${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
 
       - name: Build Base Docker Image (if needed)
         uses: docker/build-push-action@v4
@@ -50,9 +46,9 @@ jobs:
           file: ./etc/base.dockerfile
           provenance: false
           push: true
-          tags: ${{ env.IMAGE }}:${{ env.TAG_HASH }}
+          tags: ${{ env.IMAGE }}:${{ env.BASE_TAG }}
 
-      - run: docker tag "${IMAGE}:${TAG_HASH}" base-image
+      - run: docker tag "${IMAGE}:${BASE_TAG}" base-image
 
       - run: echo "SHA=$(git show --no-patch --no-notes --date=short-local --pretty='%as-%h')" >> $GITHUB_ENV
         env:
@@ -67,7 +63,7 @@ jobs:
             type=semver,pattern=v{{version}}
 
             type=ref,event=branch
-            type=sha,prefix={{branch}}-
+            type=ref,event=branch,suffix=-{{ sha }}
             type=ref,event=branch,suffix=-${{ env.SHA }}
 
             type=raw,value=${{ env.SHA }}

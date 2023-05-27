@@ -50,6 +50,7 @@ export function setup(app: App) {
               t.Object({
                 thumbnail: t.String(),
                 raw: t.String(),
+                id: t.Integer(),
               }),
             ),
             covers: t.Array(
@@ -102,11 +103,18 @@ export function setup(app: App) {
         (x) => x.relatedID,
       );
 
+      const currentUpload = s.image ? images.find((x) => x.target === s.image) : undefined;
+
+      if (s.image && !currentUpload) {
+        throw new UnexpectedNotFoundError(`can't find image uploading for image ${s.image}`);
+      }
+
       return {
-        current: s.image
+        current: currentUpload
           ? {
-              thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${s.image}`,
-              raw: `https://${imageDomain}/pic/cover/l/${s.image}`,
+              thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${currentUpload.target}`,
+              raw: `https://${imageDomain}/pic/cover/l/${currentUpload.target}`,
+              id: currentUpload.id,
             }
           : undefined,
         covers: images.map((x) => {

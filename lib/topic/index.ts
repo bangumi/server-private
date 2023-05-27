@@ -28,6 +28,7 @@ export const enum CommentState {
   AdminSilentTopic = 5, // 下沉
   UserDelete = 6, // 自行删除
   AdminDelete = 7, // 管理员删除
+  AdminOffTopic = 8, // 折叠
 }
 
 export const enum TopicDisplay {

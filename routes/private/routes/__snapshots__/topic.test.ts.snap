@@ -176,6 +176,7 @@ Object {
           },
           "id": 2092074,
           "isFriend": false,
+          "reactions": Array [],
           "state": 0,
           "text": "sub",
         },

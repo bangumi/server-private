@@ -5,30 +5,26 @@ import { compare } from '@node-rs/bcrypt';
 import { DateTime } from 'luxon';
 
 import { TypedCache } from '@app/lib/cache';
-import type { SingleMessageErrorConstructor } from '@app/lib/error';
 import type { IUser, Permission } from '@app/lib/orm';
 import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm';
 import * as orm from '@app/lib/orm';
 import { intval } from '@app/lib/utils';
-import NodeCache from '@app/vendor/node-cache';
+import NodeCache from '@app/vendor/node-cache.ts';
 
 const tokenPrefix = 'Bearer ';
-export const NeedLoginError: SingleMessageErrorConstructor = createError(
+export const NeedLoginError = createError<[string]>(
   'NEED_LOGIN',
   'you need to login before %s',
   401,
 );
-export const NotAllowedError: SingleMessageErrorConstructor = createError(
+export const NotAllowedError = createError<[string]>(
   'NOT_ALLOWED',
   `you don't have permission to %s`,
   401,
 );
-const HeaderInvalidError: SingleMessageErrorConstructor = createError(
-  'AUTHORIZATION_INVALID',
-  '%s',
-  401,
-);
-const TokenNotValidError = createError(
+const HeaderInvalidError = createError<[string]>('AUTHORIZATION_INVALID', '%s', 401);
+
+const TokenNotValidError = createError<[]>(
   'TOKEN_INVALID',
   "can't find access token or it has been expired",
   401,

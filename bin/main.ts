@@ -32,7 +32,6 @@ const { host, port } = config.server;
 await server.listen({ port: port, host: host });
 
 logger.info(`GraphQL UI  http://127.0.0.1:${port}/v0/altair/`);
-logger.info(`public API  http://127.0.0.1:${port}/v0.5/`);
 logger.info(`private API http://127.0.0.1:${port}/p1/`);
 logger.info(`demo        http://127.0.0.1:${port}/demo/`);
 logger.info(`admin       http://127.0.0.1:${port}/demo/admin/`);

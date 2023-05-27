@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup-js-env
 
-      - run: npm run run-file -- ./bin/export-openapi.ts
+      - run: pnpm run file ./bin/export-openapi.ts
 
       - uses: actions/checkout@v3
         with:

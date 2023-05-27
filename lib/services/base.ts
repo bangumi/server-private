@@ -3,7 +3,7 @@ import { Options } from 'got';
 import * as got from 'got';
 
 import { HTTPS_PROXY } from '@app/lib/config';
-import ProxyAgent from '@app/vendor/proxy-agent';
+import { getProxyAgent } from '@app/lib/utils/proxy.ts';
 
 /** 内网环境的服务的基类，不支持 HTTP PROXY */
 export class BaseHttpSrv {
@@ -33,9 +33,7 @@ export class BaseExternalHttpSrv {
     // local developing env with proxy
     if (HTTPS_PROXY) {
       opt.http2 = false;
-
-      const agent = new ProxyAgent(HTTPS_PROXY);
-      opt.agent = { http: agent, https: agent };
+      opt.agent = getProxyAgent(HTTPS_PROXY);
     }
 
     this.client = got.create({
