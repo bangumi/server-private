@@ -1,6 +1,8 @@
 import { Column, Entity, Index, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
+import type { Transformer } from '@app/lib/orm/transformer.ts';
 import { htmlEscapedString } from '@app/lib/orm/transformer.ts';
+import type { UnknownObject } from '@app/lib/types/res.ts';
 
 @Index('username', ['username'], { unique: true })
 @Entity('chii_members', { schema: 'bangumi' })
@@ -67,6 +69,33 @@ export class User {
 
   @OneToOne(() => UserField)
   fields!: UserField;
+
+  @Column('mediumtext', {
+    name: 'acl',
+    transformer: {
+      to(value: UnknownObject): string {
+        return JSON.stringify(
+          Object.fromEntries(
+            Object.entries(value).map(([key, value]) => {
+              return [key, value ? '1' : '0'];
+            }),
+          ),
+        );
+      },
+      from(value: string): UnknownObject {
+        if (!value) {
+          return {};
+        }
+
+        return Object.fromEntries(
+          Object.entries(JSON.parse(value) as UnknownObject).map(([key, value]) => {
+            return [key, typeof value === 'string' ? value === '1' : value];
+          }),
+        );
+      },
+    } satisfies Transformer<string, UnknownObject>,
+  })
+  acl!: { ban_user_info: boolean; ban_post: boolean; ban_like: boolean };
 }
 
 @Entity('chii_memberfields', { schema: 'bangumi' })
