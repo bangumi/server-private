@@ -1,16 +1,16 @@
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import type { IAuth } from '@app/lib/auth';
-import { emptyAuth, UserGroup } from '@app/lib/auth';
-import * as Notify from '@app/lib/notify';
-import * as orm from '@app/lib/orm';
-import type { ITopicDetails } from '@app/lib/topic';
-import { CommentState, TopicDisplay } from '@app/lib/topic';
-import * as Topic from '@app/lib/topic';
-import { createTestServer } from '@app/tests/utils';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
+import * as Notify from '@app/lib/notify.ts';
+import * as orm from '@app/lib/orm/index.js';
+import type { ITopicDetails } from '@app/lib/topic/index.js';
+import { CommentState, TopicDisplay } from '@app/lib/topic/index.js';
+import * as Topic from '@app/lib/topic/index.js';
+import { createTestServer } from '@app/tests/utils.ts';
 
-import { setup } from './post';
+import { setup } from './post.ts';
 
 /**
  * Topic 375793

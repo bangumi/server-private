@@ -3,9 +3,9 @@ import addFormats from 'ajv-formats';
 import type { FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 
-import type { IAuth } from '@app/lib/auth';
-import { emptyAuth } from '@app/lib/auth';
-import { defaultSchemaErrorFormatter } from '@app/lib/server';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { emptyAuth } from '@app/lib/auth/index.ts';
+import { defaultSchemaErrorFormatter } from '@app/lib/server.ts';
 
 export function createTestServer({
   auth = {},
@@ -16,8 +16,8 @@ export function createTestServer({
     schemaErrorFormatter: defaultSchemaErrorFormatter,
     ajv: {
       plugins: [
-        addFormats,
-        function (ajv: Ajv) {
+        addFormats.default,
+        function (ajv: Ajv.default) {
           ajv.addKeyword({ keyword: 'x-examples' });
         },
       ],

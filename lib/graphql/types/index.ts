@@ -1,4 +1,4 @@
-import subject from './subject';
-import user from './user';
+import subject from './subject.js';
+import user from './user.js';
 
 export default [subject, user];

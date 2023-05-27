@@ -1,23 +1,23 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import type { IAuth } from '@app/lib/auth';
-import { NotAllowedError } from '@app/lib/auth';
-import { Dam, dam } from '@app/lib/dam';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
-import * as Like from '@app/lib/like';
-import { Security, Tag } from '@app/lib/openapi';
-import type { Page } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
-import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm';
-import { avatar, groupIcon } from '@app/lib/response';
-import type { ITopic } from '@app/lib/topic';
-import * as Topic from '@app/lib/topic';
-import { CommentState, NotJoinPrivateGroupError, TopicDisplay } from '@app/lib/topic';
-import * as res from '@app/lib/types/res';
-import { formatErrors, toResUser } from '@app/lib/types/res';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { Dam, dam } from '@app/lib/dam.js';
+import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import * as Like from '@app/lib/like.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
+import type { Page } from '@app/lib/orm/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm/index.ts';
+import { avatar, groupIcon } from '@app/lib/response.ts';
+import type { ITopic } from '@app/lib/topic/index.ts';
+import * as Topic from '@app/lib/topic/index.ts';
+import { CommentState, NotJoinPrivateGroupError, TopicDisplay } from '@app/lib/topic/index.ts';
+import * as res from '@app/lib/types/res.ts';
+import { formatErrors, toResUser } from '@app/lib/types/res.ts';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
 const Group = t.Object(
   {

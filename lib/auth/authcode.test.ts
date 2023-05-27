@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { decode } from '@app/lib/auth/authcode';
+import { decode } from '@app/lib/auth/authcode.ts';
 
 test('should decode', () => {
   const secretKey = 'testing-key-unsafe-to-use-in-production';

@@ -1,6 +1,6 @@
 import { Column, Entity, Index } from 'typeorm';
 
-import { UnixTimestamp } from '@app/lib/orm/transformer';
+import { UnixTimestamp } from '@app/lib/orm/transformer.ts';
 
 const TYPE_SUBJECT_COVER = 1;
 const TYPE_GROUP_TOPIC = 7;

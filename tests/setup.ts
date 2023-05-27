@@ -1,12 +1,12 @@
 import MockRedis from 'ioredis-mock';
 import { afterAll, beforeAll, vi } from 'vitest';
 
-import { AppDataSource } from '@app/lib/orm';
+import { AppDataSource } from '@app/lib/orm/index.ts';
 
 vi.mock('@app/lib/redis', () => {
   return {
-    default: new MockRedis(),
-    Subscriber: new MockRedis(),
+    default: new MockRedis.default(),
+    Subscriber: new MockRedis.default(),
   };
 });
 

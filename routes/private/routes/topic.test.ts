@@ -1,14 +1,14 @@
 import { fastify } from 'fastify';
 import { describe, expect, test, vi } from 'vitest';
 
-import type { IAuth } from '@app/lib/auth';
-import { emptyAuth, UserGroup } from '@app/lib/auth';
-import * as orm from '@app/lib/orm';
-import { createServer } from '@app/lib/server';
-import { fetchDetail } from '@app/lib/topic';
-import { createTestServer } from '@app/tests/utils';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import { createServer } from '@app/lib/server.ts';
+import { fetchDetail } from '@app/lib/topic/index.ts';
+import { createTestServer } from '@app/tests/utils.ts';
 
-import { setup } from './topic';
+import { setup } from './topic.ts';
 
 const expectedTopic = {
   createdAt: 1657885648,

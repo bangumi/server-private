@@ -2,7 +2,7 @@ import type { OptionsInit } from 'got';
 import { Options } from 'got';
 import * as got from 'got';
 
-import { HTTPS_PROXY } from '@app/lib/config';
+import { HTTPS_PROXY } from '@app/lib/config.ts';
 import { getProxyAgent } from '@app/lib/utils/proxy.ts';
 
 /** 内网环境的服务的基类，不支持 HTTP PROXY */

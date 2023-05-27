@@ -2,7 +2,7 @@ import type { Wiki } from '@bgm38/wiki';
 import { parse } from '@bgm38/wiki';
 import { expect, test } from 'vitest';
 
-import { extractDate, extractFromString } from '@app/lib/subject/date';
+import { extractDate, extractFromString } from '@app/lib/subject/date.ts';
 
 test.each([
   ['', '0000-00-00'],

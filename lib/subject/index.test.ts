@@ -1,11 +1,11 @@
 import { DateTime } from 'luxon';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { AppDataSource, SubjectRepo, SubjectRevRepo } from '@app/lib/orm';
-import * as entity from '@app/lib/orm/entity';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import { AppDataSource, SubjectRepo, SubjectRevRepo } from '@app/lib/orm/index.ts';
 
-import * as Subject from '.';
-import { SubjectType } from '.';
+import * as Subject from './index.ts';
+import { SubjectType } from './index.ts';
 
 describe('should update subject', () => {
   const subjectMock = vi.fn();

@@ -2,7 +2,7 @@ import * as process from 'node:process';
 
 import { pino } from 'pino';
 
-import { production, stage, testing, VERSION } from './config';
+import { production, stage, testing, VERSION } from './config.ts';
 
 export const logger = testing
   ? pino({ level: 'error' })

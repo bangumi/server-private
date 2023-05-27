@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { App } from '@app/lib/orm/entity/app';
+import { App } from '@app/lib/orm/entity/app.ts';
 
 @Index('client_id', ['clientID'], {})
 @Entity('chii_oauth_clients', { schema: 'bangumi' })

@@ -5,21 +5,21 @@ import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { NotAllowedError } from '@app/lib/auth';
-import { imageDomain } from '@app/lib/config';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
-import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image';
-import { Tag } from '@app/lib/openapi';
-import { LikeRepo, SubjectImageRepo } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
-import { Like } from '@app/lib/orm/entity';
-import imaginary from '@app/lib/services/imaginary';
-import { SandBox } from '@app/lib/subject';
-import * as Subject from '@app/lib/subject';
-import * as res from '@app/lib/types/res';
-import { errorResponses } from '@app/lib/types/res';
-import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { imageDomain } from '@app/lib/config.ts';
+import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image/index.ts';
+import { Tag } from '@app/lib/openapi/index.ts';
+import { Like } from '@app/lib/orm/entity/index.ts';
+import { LikeRepo, SubjectImageRepo } from '@app/lib/orm/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import imaginary from '@app/lib/services/imaginary.ts';
+import { SandBox } from '@app/lib/subject/index.ts';
+import * as Subject from '@app/lib/subject/index.ts';
+import * as res from '@app/lib/types/res.ts';
+import { errorResponses } from '@app/lib/types/res.ts';
+import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
 const ImageFileTooLarge = createError(
   'IMAGE_FILE_TOO_LARGE',

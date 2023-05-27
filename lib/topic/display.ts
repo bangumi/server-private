@@ -1,8 +1,8 @@
 import { DateTime } from 'luxon';
 
-import type { IAuth } from '@app/lib/auth';
-import type { IReply } from '@app/lib/topic';
-import { CommentState, TopicDisplay } from '@app/lib/topic';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import type { IReply } from '@app/lib/topic/index.ts';
+import { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
 
 export const CanViewStateClosedTopic = 24 * 60 * 60 * 180;
 export const CanViewStateDeleteTopic = 24 * 60 * 60 * 365;

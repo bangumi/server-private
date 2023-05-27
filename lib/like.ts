@@ -1,6 +1,6 @@
 import * as lo from 'lodash-es';
 
-import { LikeRepo } from '@app/lib/orm';
+import { LikeRepo } from '@app/lib/orm/index.ts';
 
 export interface Reaction {
   selected: boolean;

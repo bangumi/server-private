@@ -3,11 +3,11 @@ import { DateTime } from 'luxon';
 import * as typeorm from 'typeorm';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
-import type { IAuth } from '@app/lib/auth';
+import type { IAuth } from '@app/lib/auth/index.ts';
 import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
-import type { IBaseReply, IUser, Page } from '@app/lib/orm';
-import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm';
-import * as entity from '@app/lib/orm/entity';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import type { IBaseReply, IUser, Page } from '@app/lib/orm/index.ts';
+import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm/index.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
 
 export { CanViewTopicContent, ListTopicDisplays } from './display.ts';
