@@ -5,7 +5,7 @@ patchedDependencies:
     hash: togjkda4ioifnn7rmqdmhhjwui
     path: patches/@fastify__error@3.2.0.patch
   parse-duration@1.0.3:
-    hash: ml2wzb3jfeufueudpbkqxjdthi
+    hash: di74rlfrud3czt45xbdxymshhy
     path: patches/parse-duration@1.0.3.patch
 
 dependencies:
@@ -119,7 +119,7 @@ dependencies:
     version: 12.1.0
   parse-duration:
     specifier: ^1.0.3
-    version: 1.0.3(patch_hash=ml2wzb3jfeufueudpbkqxjdthi)
+    version: 1.0.3(patch_hash=di74rlfrud3czt45xbdxymshhy)
   pino:
     specifier: ^8.11.0
     version: 8.14.1
@@ -5726,7 +5726,7 @@ packages:
       callsites: 3.1.0
     dev: true
 
-  /parse-duration@1.0.3(patch_hash=ml2wzb3jfeufueudpbkqxjdthi):
+  /parse-duration@1.0.3(patch_hash=di74rlfrud3czt45xbdxymshhy):
     resolution: {integrity: sha512-o6NAh12na5VvR6nFejkU0gpQ8jmOY9Y9sTU2ke3L3G/d/3z8jqmbBbeyBGHU73P4JLXfc7tJARygIK3WGIkloA==}
     dev: false
     patched: true
