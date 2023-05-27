@@ -4,9 +4,6 @@ patchedDependencies:
   '@fastify/error@3.2.0':
     hash: togjkda4ioifnn7rmqdmhhjwui
     path: patches/@fastify__error@3.2.0.patch
-  got@13.0.0:
-    hash: d4msj3jdqs4opuuvmstouodue4
-    path: patches/got@13.0.0.patch
 
 dependencies:
   '@aws-sdk/client-s3':
