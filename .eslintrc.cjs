@@ -32,14 +32,7 @@ module.exports = {
       '@typescript-eslint/parser': ['.ts'],
     },
     'import/resolver': {
-      typescript: {
-        // alwaysTryTypes: true,
-        // extensionAlias: {
-        //   '.js': ['.js'],
-        // },
-        // extensions: ['.ts', '.js', '.mjs', '.d.ts'],
-        // fullySpecified: false,
-      },
+      typescript: {},
     },
   },
   overrides: [
