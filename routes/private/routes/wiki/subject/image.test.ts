@@ -2,13 +2,13 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 
-import type { IAuth } from '@app/lib/auth';
-import { UserGroup } from '@app/lib/auth';
-import { LikeRepo, SubjectImageRepo } from '@app/lib/orm';
-import { Like } from '@app/lib/orm/entity';
-import * as Subject from '@app/lib/subject';
-import { setup } from '@app/routes/private/routes/wiki/subject/index';
-import { createTestServer } from '@app/tests/utils';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { UserGroup } from '@app/lib/auth/index.ts';
+import { Like } from '@app/lib/orm/entity/index.ts';
+import { LikeRepo, SubjectImageRepo } from '@app/lib/orm/index.ts';
+import * as Subject from '@app/lib/subject/index.ts';
+import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
+import { createTestServer } from '@app/tests/utils.ts';
 
 async function testApp(auth?: Partial<IAuth>) {
   const app = createTestServer({

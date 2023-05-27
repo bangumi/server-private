@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import { htmlEscapedString } from '@app/lib/orm/transformer';
+import { htmlEscapedString } from '@app/lib/orm/transformer.ts';
 
 @Entity('chii_groups', { schema: 'bangumi' })
 export class Group {

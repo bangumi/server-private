@@ -1,11 +1,11 @@
 import { extendType, objectType } from 'nexus';
 
-import { imageDomain } from '@app/lib/config';
-import type { Context } from '@app/lib/graphql/context';
-import type { IUser } from '@app/lib/orm';
-import { fetchUser } from '@app/lib/orm';
-import { avatar } from '@app/lib/response';
-import type * as res from '@app/lib/types/res';
+import { imageDomain } from '@app/lib/config.ts';
+import type { Context } from '@app/lib/graphql/context.ts';
+import type { IUser } from '@app/lib/orm/index.ts';
+import { fetchUser } from '@app/lib/orm/index.ts';
+import { avatar } from '@app/lib/response.ts';
+import type * as res from '@app/lib/types/res.ts';
 
 const Avatar = objectType({
   name: 'Avatar',

@@ -6,7 +6,7 @@ import * as yaml from 'js-yaml';
 import * as lo from 'lodash-es';
 import { expect, test } from 'vitest';
 
-import { projectRoot, schema, testing, validateConfig } from './config';
+import { projectRoot, schema, testing, validateConfig } from './config.ts';
 
 test('should be in test env', () => {
   expect(testing).toBe(true);

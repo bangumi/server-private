@@ -5,12 +5,12 @@ import type { FindOptionsWhere } from 'typeorm';
 import { DataSource, In } from 'typeorm';
 import * as typeorm from 'typeorm';
 
-import config from '@app/lib/config';
-import { UnexpectedNotFoundError } from '@app/lib/error';
-import { logger } from '@app/lib/logger';
-import type { CommentState, TopicDisplay } from '@app/lib/topic';
+import config from '@app/lib/config.ts';
+import { UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { logger } from '@app/lib/logger.ts';
+import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
 
-import * as entity from './entity';
+import * as entity from './entity/index.ts';
 import {
   App,
   Episode,
@@ -35,9 +35,9 @@ import {
   UserField,
   UserGroup,
   WebSessions,
-} from './entity';
+} from './entity/index.ts';
 
-export * as entity from './entity';
+export * as entity from './entity/index.ts';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',

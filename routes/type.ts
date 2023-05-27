@@ -15,7 +15,7 @@ import type {
   RouteGenericInterface,
   RouteHandlerMethod,
 } from 'fastify';
-import type { ResolveFastifyRequestType } from 'fastify/types/type-provider';
+import type { ResolveFastifyRequestType } from 'fastify/types/type-provider.d.ts';
 
 // from https://github.com/fastify/fastify-type-provider-typebox/blob/v3.1.0/index.ts#L56
 export interface TypeBoxTypeProvider extends FastifyTypeProvider {

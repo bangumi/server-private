@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import type { Transformer } from '@app/lib/orm/transformer';
+import type { Transformer } from '@app/lib/orm/transformer.ts';
 
 @Index('nt_from_uid', ['from_uid'], {})
 @Index('nt_mid', ['notify_field_id'], {})

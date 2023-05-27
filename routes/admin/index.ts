@@ -1,14 +1,14 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { production } from '@app/lib/config';
-import * as image from '@app/lib/image';
-import { AppDataSource, SubjectImageRepo } from '@app/lib/orm';
-import { SubjectImage } from '@app/lib/orm/entity';
-import * as Subject from '@app/lib/subject';
-import { redirectIfNotLogin, requirePermission } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import { production } from '@app/lib/config.ts';
+import * as image from '@app/lib/image/index.ts';
+import { SubjectImage } from '@app/lib/orm/entity/index.ts';
+import { AppDataSource, SubjectImageRepo } from '@app/lib/orm/index.ts';
+import * as Subject from '@app/lib/subject/index.ts';
+import { redirectIfNotLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
-import * as ep from './ep';
+import * as ep from './ep.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {

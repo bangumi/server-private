@@ -2,21 +2,21 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
-import type { IAuth } from '@app/lib/auth';
-import { NotAllowedError } from '@app/lib/auth';
-import { Dam } from '@app/lib/dam';
-import { BadRequestError, NotFoundError } from '@app/lib/error';
-import * as Notify from '@app/lib/notify';
-import { Security, Tag } from '@app/lib/openapi';
-import type { IBaseReply } from '@app/lib/orm';
-import { fetchUserX, GroupRepo } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
-import { CommentState, NotJoinPrivateGroupError } from '@app/lib/topic';
-import * as Topic from '@app/lib/topic';
-import { formatErrors, toResUser } from '@app/lib/types/res';
-import * as res from '@app/lib/types/res';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { Dam } from '@app/lib/dam.ts';
+import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
+import * as Notify from '@app/lib/notify.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
+import type { IBaseReply } from '@app/lib/orm/index.ts';
+import { fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import { CommentState, NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
+import * as Topic from '@app/lib/topic/index.ts';
+import { formatErrors, toResUser } from '@app/lib/types/res.ts';
+import * as res from '@app/lib/types/res.ts';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {

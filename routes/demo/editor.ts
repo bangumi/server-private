@@ -1,8 +1,8 @@
-import { NotFoundError } from '@app/lib/error';
-import * as orm from '@app/lib/orm';
-import { platforms } from '@app/lib/subject';
-import { redirectIfNotLogin } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import { NotFoundError } from '@app/lib/error.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import { platforms } from '@app/lib/subject/index.ts';
+import { redirectIfNotLogin } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
 export function setup(app: App) {
   app.get(

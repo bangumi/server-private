@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
-import * as session from '@app/lib/auth/session';
-import { SessionRepo } from '@app/lib/orm';
-import redis from '@app/lib/redis';
-import { createServer } from '@app/lib/server';
+import * as session from '@app/lib/auth/session.ts';
+import { SessionRepo } from '@app/lib/orm/index.ts';
+import redis from '@app/lib/redis.ts';
+import { createServer } from '@app/lib/server.ts';
 
 describe('login', () => {
   beforeEach(async () => {

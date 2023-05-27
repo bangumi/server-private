@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
-import * as session from '@app/lib/auth/session';
-import { SessionRepo } from '@app/lib/orm';
-import { createServer } from '@app/lib/server';
+import * as session from '@app/lib/auth/session.ts';
+import { SessionRepo } from '@app/lib/orm/index.ts';
+import { createServer } from '@app/lib/server.ts';
 
 const treeHoleUser = { id: 382951, nickname: '树洞酱', username: '382951' };
 const fakeIP = 'fake-client-ip-should-not-fail';

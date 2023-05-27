@@ -1,13 +1,13 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { NotAllowedError } from '@app/lib/auth';
-import { BadRequestError, NotFoundError } from '@app/lib/error';
-import { Security, Tag } from '@app/lib/openapi';
-import { SubjectRevRepo } from '@app/lib/orm';
-import * as orm from '@app/lib/orm';
-import * as Subject from '@app/lib/subject';
-import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { SubjectRevRepo } from '@app/lib/orm/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import * as Subject from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';

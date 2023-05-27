@@ -1,7 +1,7 @@
 import type { EntityManager } from 'typeorm';
 
-import type { EpTextRev, RevHistory } from '@app/lib/orm/entity';
-import * as entity from '@app/lib/orm/entity';
+import type { EpTextRev, RevHistory } from '@app/lib/orm/entity/index.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
 
 export async function pushRev(
   t: EntityManager,

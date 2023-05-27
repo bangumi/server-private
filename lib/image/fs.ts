@@ -1,7 +1,7 @@
 import * as fsp from 'node:fs/promises';
 import * as path from 'node:path';
 
-import config from '@app/lib/config';
+import config from '@app/lib/config.ts';
 
 const BasePath = config.image.fs.path;
 

@@ -3,8 +3,8 @@ import * as url from 'node:url';
 import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
 
-import config from './config';
-import { intval } from './utils';
+import config from './config.ts';
+import { intval } from './utils/index.ts';
 
 const u = url.parse(config.redisUri);
 

@@ -1,6 +1,6 @@
 import { Column, Entity, Index, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
-import { htmlEscapedString } from '@app/lib/orm/transformer';
+import { htmlEscapedString } from '@app/lib/orm/transformer.ts';
 
 @Index('username', ['username'], { unique: true })
 @Entity('chii_members', { schema: 'bangumi' })

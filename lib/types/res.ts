@@ -4,9 +4,9 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import type * as orm from '@app/lib/orm';
+import type * as orm from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
-import * as Subject from '@app/lib/subject';
+import * as Subject from '@app/lib/subject/index.ts';
 
 export const SubjectType = t.Enum(Subject.SubjectType, {
   $id: 'SubjectType',

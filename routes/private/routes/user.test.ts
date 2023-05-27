@@ -1,12 +1,12 @@
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
-import { emptyAuth } from '@app/lib/auth';
-import * as Notify from '@app/lib/notify';
-import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm';
-import { createTestServer } from '@app/tests/utils';
+import { emptyAuth } from '@app/lib/auth/index.ts';
+import * as Notify from '@app/lib/notify.ts';
+import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm/index.ts';
+import { createTestServer } from '@app/tests/utils.ts';
 
-import { setup } from './user';
+import { setup } from './user.ts';
 
 beforeEach(async () => {
   await NotifyRepo.delete({});

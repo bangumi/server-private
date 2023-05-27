@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/require-await */
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
-import type { IAuth } from '@app/lib/auth';
-import { emptyAuth, NeedLoginError, NotAllowedError } from '@app/lib/auth';
-import * as auth from '@app/lib/auth';
-import * as authCode from '@app/lib/auth/authcode';
-import * as session from '@app/lib/auth/session';
-import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session';
-import { TypedCache } from '@app/lib/cache';
-import config from '@app/lib/config';
-import { UserRepo } from '@app/lib/orm';
-import { md5 } from '@app/lib/utils';
+import * as authCode from '@app/lib/auth/authcode.ts';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { emptyAuth, NeedLoginError, NotAllowedError } from '@app/lib/auth/index.ts';
+import * as auth from '@app/lib/auth/index.ts';
+import * as session from '@app/lib/auth/session.ts';
+import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session.ts';
+import { TypedCache } from '@app/lib/cache.ts';
+import config from '@app/lib/config.ts';
+import { UserRepo } from '@app/lib/orm/index.ts';
+import { md5 } from '@app/lib/utils/index.ts';
 
 export const requireLogin = (s: string) => async (req: { auth: IAuth }) => {
   if (!req.auth.login) {

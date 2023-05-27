@@ -1,14 +1,14 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { BadRequestError, NotFoundError } from '@app/lib/error';
-import { Security, Tag } from '@app/lib/openapi';
-import { AppDataSource, EpisodeRepo } from '@app/lib/orm';
+import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { AppDataSource, EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import * as res from '@app/lib/types/res.ts';
 import { EpisodeType, formatErrors } from '@app/lib/types/res.ts';
 import type { EmptyObject } from '@app/lib/types/util.ts';
-import { formatDuration, parseDuration } from '@app/lib/utils';
+import { formatDuration, parseDuration } from '@app/lib/utils/index.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 

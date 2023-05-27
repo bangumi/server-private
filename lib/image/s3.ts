@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-s3';
 import * as mime from 'mime-types';
 
-import config from '@app/lib/config';
+import config from '@app/lib/config.ts';
 
 const s3 = config.image.s3;
 

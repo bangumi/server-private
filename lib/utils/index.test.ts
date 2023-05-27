@@ -1,7 +1,7 @@
 import pLimit from 'p-limit';
 import { expect, test } from 'vitest';
 
-import { formatDuration, intval, parseDuration, randomBase62String, randomBytes } from './index';
+import { formatDuration, intval, parseDuration, randomBase62String, randomBytes } from './index.ts';
 
 const limit = pLimit(10);
 

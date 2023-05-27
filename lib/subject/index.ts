@@ -5,19 +5,25 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { UserGroup } from '@app/lib/auth';
-import { BadRequestError } from '@app/lib/error';
-import { logger } from '@app/lib/logger';
-import * as orm from '@app/lib/orm';
-import { AppDataSource, fetchUsers, LikeRepo, SubjectImageRepo, SubjectRepo } from '@app/lib/orm';
-import * as entity from '@app/lib/orm/entity';
-import { Like } from '@app/lib/orm/entity';
-import { extractDate } from '@app/lib/subject/date';
-import { DATE } from '@app/lib/utils/date';
+import { UserGroup } from '@app/lib/auth/index.ts';
+import { BadRequestError } from '@app/lib/error.ts';
+import { logger } from '@app/lib/logger.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import { Like } from '@app/lib/orm/entity/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import {
+  AppDataSource,
+  fetchUsers,
+  LikeRepo,
+  SubjectImageRepo,
+  SubjectRepo,
+} from '@app/lib/orm/index.ts';
+import { extractDate } from '@app/lib/subject/date.ts';
+import { DATE } from '@app/lib/utils/date.ts';
 
-import type { Platform } from './platform';
-import platform from './platform';
-import type { SubjectType } from './type';
+import type { Platform } from './platform.ts';
+import platform from './platform.ts';
+import type { SubjectType } from './type.ts';
 
 export const InvalidWikiSyntaxError = createError(
   'INVALID_SYNTAX_ERROR',
@@ -215,7 +221,7 @@ export async function uploadCover({
   });
 }
 
-export { SubjectType } from './type';
+export { SubjectType } from './type.ts';
 
 export async function onSubjectVote(subjectID: number): Promise<void> {
   const images = await SubjectImageRepo.findBy({ subjectID, ban: 0 });

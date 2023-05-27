@@ -3,14 +3,14 @@ import * as path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { UserGroup } from '@app/lib/auth';
-import { projectRoot } from '@app/lib/config';
-import * as image from '@app/lib/image';
-import type { IImaginary, Info } from '@app/lib/services/imaginary';
-import * as Subject from '@app/lib/subject';
-import type { ISubjectEdit } from '@app/routes/private/routes/wiki/subject';
-import { setup } from '@app/routes/private/routes/wiki/subject';
-import { createTestServer } from '@app/tests/utils';
+import { UserGroup } from '@app/lib/auth/index.ts';
+import { projectRoot } from '@app/lib/config.ts';
+import * as image from '@app/lib/image/index.ts';
+import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
+import * as Subject from '@app/lib/subject/index.ts';
+import type { ISubjectEdit } from '@app/routes/private/routes/wiki/subject/index.ts';
+import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
+import { createTestServer } from '@app/tests/utils.ts';
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -142,7 +142,7 @@ describe('should upload image', () => {
 
   // only allow images in ./fixtures/
   vi.mock('@app/lib/services/imaginary', async () => {
-    const mod = await vi.importActual<typeof import('@app/lib/services/imaginary')>(
+    const mod = await vi.importActual<typeof import('@app/lib/services/imaginary.ts')>(
       '@app/lib/services/imaginary',
     );
 

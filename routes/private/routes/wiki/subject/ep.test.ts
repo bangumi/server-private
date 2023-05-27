@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import { createTestServer } from '@app/tests/utils';
+import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './ep.ts';
 

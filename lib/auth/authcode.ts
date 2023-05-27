@@ -1,6 +1,6 @@
 /** Discuz encryption/decryption, don't use it for non-legacy encryption or decryption */
 
-import { md5 } from '@app/lib/utils';
+import { md5 } from '@app/lib/utils/index.ts';
 
 /* eslint-disable unicorn/prefer-code-point,@typescript-eslint/no-non-null-assertion */
 

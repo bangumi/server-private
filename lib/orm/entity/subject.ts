@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import { htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer';
+import { htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
 
 @Index('subject_name_cn', ['nameCN'], {})
 @Index('subject_platform', ['platform'], {})

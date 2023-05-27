@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import * as auth from '@app/lib/auth';
+import * as auth from '@app/lib/auth/index.ts';
 
 describe('should auth', () => {
   test('current auth', async () => {

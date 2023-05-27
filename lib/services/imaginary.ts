@@ -3,10 +3,10 @@ import { URL } from 'node:url';
 import { createError } from '@fastify/error';
 import httpCodes from 'http-status-codes';
 
-import config, { testing } from '@app/lib/config';
-import { UnimplementedError } from '@app/lib/error';
+import config, { testing } from '@app/lib/config.ts';
+import { UnimplementedError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
-import { BaseHttpSrv } from '@app/lib/services/base';
+import { BaseHttpSrv } from '@app/lib/services/base.ts';
 
 export const NotValidImageError = createError(
   'ERR_NOT_IMAGE',

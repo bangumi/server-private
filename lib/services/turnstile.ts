@@ -1,6 +1,6 @@
 import { stage } from '@app/lib/config.ts';
 
-import { BaseExternalHttpSrv } from './base';
+import { BaseExternalHttpSrv } from './base.ts';
 
 const VerifyURL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 

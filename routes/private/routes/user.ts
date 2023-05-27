@@ -1,13 +1,13 @@
 import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 
-import { NeedLoginError } from '@app/lib/auth';
+import { NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
-import * as Notify from '@app/lib/notify';
-import { Security, Tag } from '@app/lib/openapi';
-import { fetchUsers } from '@app/lib/orm';
+import * as Notify from '@app/lib/notify.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { fetchUsers } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import { Paged, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -124,7 +124,7 @@ export async function setup(app: App) {
     },
   );
 
-  await app.register(fastifySocketIO, {
+  await app.register(fastifySocketIO.default, {
     path: '/p1/socket-io/',
   });
 

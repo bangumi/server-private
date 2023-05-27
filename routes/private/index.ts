@@ -1,16 +1,16 @@
 import Cookie from '@fastify/cookie';
 
-import { cookiesPluginOption } from '@app/lib/auth/session';
-import { production } from '@app/lib/config';
-import { SessionAuth } from '@app/routes/hooks/pre-handler';
-import * as swagger from '@app/routes/swagger';
-import type { App } from '@app/routes/type';
+import { cookiesPluginOption } from '@app/lib/auth/session.ts';
+import { production } from '@app/lib/config.ts';
+import { SessionAuth } from '@app/routes/hooks/pre-handler.ts';
+import * as swagger from '@app/routes/swagger.ts';
+import type { App } from '@app/routes/type.ts';
 
 import * as login from './routes/login.ts';
 import * as post from './routes/post.ts';
 import * as group from './routes/topic.ts';
 import * as user from './routes/user.ts';
-import * as wiki from './routes/wiki';
+import * as wiki from './routes/wiki/index.ts';
 
 export async function setup(app: App) {
   if (production) {

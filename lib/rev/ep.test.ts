@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { AppDataSource } from '@app/lib/orm';
+import { AppDataSource } from '@app/lib/orm/index.ts';
 
 import { pushRev } from './ep.ts';
 

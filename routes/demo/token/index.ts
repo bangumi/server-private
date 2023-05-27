@@ -2,12 +2,12 @@ import { Type as t } from '@sinclair/typebox';
 import { DateTime, Duration } from 'luxon';
 import * as typeorm from 'typeorm';
 
-import { NotAllowedError } from '@app/lib/auth';
-import * as orm from '@app/lib/orm';
-import type * as entity from '@app/lib/orm/entity';
-import { randomBase62String } from '@app/lib/utils';
-import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler';
-import type { App } from '@app/routes/type';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
+import type * as entity from '@app/lib/orm/entity/index.ts';
+import * as orm from '@app/lib/orm/index.ts';
+import { randomBase62String } from '@app/lib/utils/index.ts';
+import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import type { App } from '@app/routes/type.ts';
 
 export const enum TokenType {
   OauthToken = 0,

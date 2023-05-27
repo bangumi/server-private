@@ -2,9 +2,9 @@ import * as path from 'node:path';
 
 import { makeSchema } from 'nexus';
 
-import { projectRoot } from '@app/lib/config';
+import { projectRoot } from '@app/lib/config.ts';
 
-import types from './types/index';
+import types from './types/index.ts';
 
 export const schema = makeSchema({
   types,

@@ -3,7 +3,7 @@ import * as fs from 'node:fs/promises';
 
 import { afterAll, beforeAll, expect, test } from 'vitest';
 
-import * as impl from './fs';
+import * as impl from './fs.ts';
 
 beforeAll(async () => {
   await fs.rm('./tmp', { recursive: true, force: true });
