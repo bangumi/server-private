@@ -1,4 +1,4 @@
-import subject from './subject.js';
-import user from './user.js';
+import subject from './subject.ts';
+import user from './user.ts';
 
 export default [subject, user];

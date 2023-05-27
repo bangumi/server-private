@@ -4,7 +4,7 @@ import type { RedisOptions } from 'ioredis';
 import { Redis } from 'ioredis';
 
 import config from './config.ts';
-import { intval } from './utils/index.js';
+import { intval } from './utils/index.ts';
 
 const u = url.parse(config.redisUri);
 

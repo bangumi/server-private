@@ -3,7 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { Dam, dam } from '@app/lib/dam.js';
+import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as Like from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';

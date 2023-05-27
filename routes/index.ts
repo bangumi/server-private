@@ -5,8 +5,8 @@ import { fastifyStatic } from '@fastify/static';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger.ts';
-import * as demo from '@app/routes/demo/index.js';
-import * as privateAPI from '@app/routes/private/index.js';
+import * as demo from '@app/routes/demo/index.ts';
+import * as privateAPI from '@app/routes/private/index.ts';
 import type { App } from '@app/routes/type.ts';
 
 export async function setup(app: App) {

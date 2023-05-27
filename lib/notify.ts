@@ -6,9 +6,9 @@ import type { Repository } from 'typeorm';
 import { siteUrl } from '@app/lib/config.ts';
 
 import { UnreachableError } from './error.ts';
-import type { Notify } from './orm/entity/index.js';
+import type { Notify } from './orm/entity/index.ts';
 import * as entity from './orm/entity/index.ts';
-import * as orm from './orm/index.js';
+import * as orm from './orm/index.ts';
 import {
   AppDataSource,
   NotifyFieldRepo,

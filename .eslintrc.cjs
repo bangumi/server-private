@@ -32,7 +32,14 @@ module.exports = {
       '@typescript-eslint/parser': ['.ts'],
     },
     'import/resolver': {
-      typescript: {},
+      typescript: {
+        // alwaysTryTypes: true,
+        // extensionAlias: {
+        //   '.js': ['.js'],
+        // },
+        // extensions: ['.ts', '.js', '.mjs', '.d.ts'],
+        // fullySpecified: false,
+      },
     },
   },
   overrides: [
@@ -49,6 +56,7 @@ module.exports = {
       ],
       plugins: ['@typescript-eslint', 'tsdoc'],
       rules: {
+        'import/extensions': ['error', { ts: 'always', js: 'ignorePackages' }],
         'rulesdir/no-relative-parent-import': 'error',
         'unused-imports/no-unused-imports': 'error',
         curly: ['error'],

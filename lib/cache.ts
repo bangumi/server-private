@@ -1,5 +1,5 @@
 import { redisPrefix } from '@app/lib/config.ts';
-import redis from '@app/lib/redis.js';
+import redis from '@app/lib/redis.ts';
 
 interface TypeSafeCacheUtil<Key, Value> {
   set(key: Key, value: Value, ttl?: number): Promise<void>;
