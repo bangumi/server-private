@@ -49,7 +49,6 @@ module.exports = {
       ],
       plugins: ['@typescript-eslint', 'tsdoc'],
       rules: {
-        'import/extensions': ['error', { ts: 'always', js: 'ignorePackages' }],
         'rulesdir/no-relative-parent-import': 'error',
         'unused-imports/no-unused-imports': 'error',
         curly: ['error'],

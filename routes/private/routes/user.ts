@@ -124,7 +124,7 @@ export async function setup(app: App) {
     },
   );
 
-  await app.register(fastifySocketIO.default, {
+  await app.register(fastifySocketIO, {
     path: '/p1/socket-io/',
   });
 

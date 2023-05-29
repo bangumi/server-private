@@ -16,8 +16,8 @@ export function createTestServer({
     schemaErrorFormatter: defaultSchemaErrorFormatter,
     ajv: {
       plugins: [
-        addFormats.default,
-        function (ajv: Ajv.default) {
+        addFormats,
+        function (ajv: Ajv) {
           ajv.addKeyword({ keyword: 'x-examples' });
         },
       ],

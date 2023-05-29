@@ -5,8 +5,8 @@ import { AppDataSource } from '@app/lib/orm/index.ts';
 
 vi.mock('@app/lib/redis', () => {
   return {
-    default: new MockRedis.default(),
-    Subscriber: new MockRedis.default(),
+    default: new MockRedis(),
+    Subscriber: new MockRedis(),
   };
 });
 

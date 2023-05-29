@@ -13,10 +13,26 @@ export const UnexpectedNotFoundError = createError<[string]>(
   500,
 );
 
+/** Feature not implemented yet. */
 export class UnimplementedError extends Error {
+  code = 'UNIMPLEMENTED_FEATURE_ERROR';
+
   constructor(msg: string) {
     super('TODO: ' + msg);
+    this.name = this.constructor.name;
   }
 }
 
-export class UnreachableError extends Error {}
+/**
+ * Code path not expected to run.
+ *
+ * Help TypeScript type narrow
+ */
+export class UnreachableError extends Error {
+  code = 'UNREACHABLE_ERROR';
+
+  constructor(msg: string) {
+    super('TODO: ' + msg);
+    this.name = this.constructor.name;
+  }
+}

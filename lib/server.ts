@@ -51,10 +51,10 @@ export async function createServer(
 ): Promise<FastifyInstance> {
   const ajv: FastifyServerOptions['ajv'] = {
     plugins: [
-      function (ajv: Ajv.default) {
+      function (ajv: Ajv) {
         ajv.addKeyword({ keyword: 'x-examples' });
       },
-      addFormats.default,
+      addFormats,
     ],
   };
 
@@ -100,7 +100,7 @@ export async function createServer(
   });
 
   if (!testing) {
-    await server.register(metricsPlugin.default, {
+    await server.register(metricsPlugin, {
       routeMetrics: {
         groupStatusCodes: true,
         overrides: {
@@ -112,7 +112,7 @@ export async function createServer(
     });
   }
 
-  await server.register(mercurius.default, {
+  await server.register(mercurius, {
     schema,
     path: '/v0/graphql',
     graphiql: false,
@@ -127,7 +127,7 @@ export async function createServer(
     },
   });
 
-  await server.register(AltairFastify.default, {
+  await server.register(AltairFastify, {
     path: '/v0/altair/',
     baseURL: '/v0/altair/',
     endpointURL: '/v0/graphql',
