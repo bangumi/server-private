@@ -59,10 +59,10 @@ dependencies:
     version: 10.3.0(fastify@4.17.0)
   fastify-socket.io:
     specifier: ^4.0.0
-    version: 4.0.0(socket.io@4.6.1)
+    version: 4.0.0(socket.io@4.6.2)
   got:
     specifier: ^13.0.0
-    version: 13.0.0(patch_hash=d4msj3jdqs4opuuvmstouodue4)
+    version: 13.0.0
   graphql:
     specifier: ^16.6.0
     version: 16.6.0
@@ -127,8 +127,8 @@ dependencies:
     specifier: ^0.1.13
     version: 0.1.13
   socket.io:
-    specifier: ^4.6.1
-    version: 4.6.1
+    specifier: ^4.6.2
+    version: 4.6.2
   socks-proxy-agent:
     specifier: ^8.0.1
     version: 8.0.1
@@ -3196,8 +3196,8 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: false
 
-  /engine.io@6.4.1:
-    resolution: {integrity: sha512-JFYQurD/nbsA5BSPmbaOSLa3tSVj8L6o4srSwXXY3NqE+gGUNmmPTbhn8tjzcCtSqhFgIeqef81ngny8JM25hw==}
+  /engine.io@6.4.2:
+    resolution: {integrity: sha512-FKn/3oMiJjrOEOeUub2WCox6JhxBXq/Zn3fZOMCBxKnNYtsdKjxhl7yR3fZhM9PV+rdE75SU5SYMc+2PGzo+Tg==}
     engines: {node: '>=10.0.0'}
     dependencies:
       '@types/cookie': 0.4.1
@@ -3777,13 +3777,13 @@ packages:
   /fastify-plugin@4.5.0:
     resolution: {integrity: sha512-79ak0JxddO0utAXAQ5ccKhvs6vX2MGyHHMMsmZkBANrq3hXc1CHzvNPHOcvTsVMEPl5I+NT+RO4YKMGehOfSIg==}
 
-  /fastify-socket.io@4.0.0(socket.io@4.6.1):
+  /fastify-socket.io@4.0.0(socket.io@4.6.2):
     resolution: {integrity: sha512-j5mgvHZpQ0Iiz9HyKwGdLOQGjFKH/6KOwx8esxCIBkIjtiQkdC8e4J1xX4JAMISLfTJOY9EHQG/1MmU/9cXaog==}
     peerDependencies:
       socket.io: ^4.4.0
     dependencies:
       fastify-plugin: 3.0.1
-      socket.io: 4.6.1
+      socket.io: 4.6.2
     dev: false
 
   /fastify@4.17.0:
@@ -4115,7 +4115,7 @@ packages:
       get-intrinsic: 1.2.0
     dev: true
 
-  /got@13.0.0(patch_hash=d4msj3jdqs4opuuvmstouodue4):
+  /got@13.0.0:
     resolution: {integrity: sha512-XfBk1CxOOScDcMr9O1yKkNaQyy865NbYs+F7dr4H0LZMVgCj2Le59k6PqbNHoL5ToeaEQUYh6c6yMfVcc6SJxA==}
     engines: {node: '>=16'}
     dependencies:
@@ -4131,7 +4131,6 @@ packages:
       p-cancelable: 3.0.0
       responselike: 3.0.0
     dev: false
-    patched: true
 
   /graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
@@ -6426,8 +6425,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /socket.io-parser@4.2.2:
-    resolution: {integrity: sha512-DJtziuKypFkMMHCm2uIshOYC7QaylbtzQwiMYDuCKy3OPkjLzu4B2vAhTlqipRHHzrI0NJeBAizTK7X+6m1jVw==}
+  /socket.io-parser@4.2.4:
+    resolution: {integrity: sha512-/GbIKmo8ioc+NIWIhwdecY0ge+qVBSMdgxGygevmdHj24bsfgtCmcUUcQ5ZzcylGFHsN3k4HB4Cgkl96KVnuew==}
     engines: {node: '>=10.0.0'}
     dependencies:
       '@socket.io/component-emitter': 3.1.0
@@ -6436,16 +6435,16 @@ packages:
       - supports-color
     dev: false
 
-  /socket.io@4.6.1:
-    resolution: {integrity: sha512-KMcaAi4l/8+xEjkRICl6ak8ySoxsYG+gG6/XfRCPJPQ/haCRIJBTL4wIl8YCsmtaBovcAXGLOShyVWQ/FG8GZA==}
+  /socket.io@4.6.2:
+    resolution: {integrity: sha512-Vp+lSks5k0dewYTfwgPT9UeGGd+ht7sCpB7p0e83VgO4X/AHYWhXITMrNk/pg8syY2bpx23ptClCQuHhqi2BgQ==}
     engines: {node: '>=10.0.0'}
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
       debug: 4.3.4
-      engine.io: 6.4.1
+      engine.io: 6.4.2
       socket.io-adapter: 2.5.2
-      socket.io-parser: 4.2.2
+      socket.io-parser: 4.2.4
     transitivePeerDependencies:
       - bufferutil
       - supports-color
