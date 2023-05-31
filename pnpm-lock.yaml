@@ -138,8 +138,8 @@ dependencies:
 
 devDependencies:
   '@shopify/prettier-plugin-liquid':
-    specifier: ^1.0.6
-    version: 1.0.6(prettier@2.8.8)
+    specifier: ^1.1.0
+    version: 1.1.0(prettier@2.8.8)
   '@types/conventional-changelog':
     specifier: ^3.1.1
     version: 3.1.1
@@ -1848,8 +1848,8 @@ packages:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
 
-  /@shopify/prettier-plugin-liquid@1.0.6(prettier@2.8.8):
-    resolution: {integrity: sha512-Z4fo0H4jkmlRBRDxFbayiXDu4nWV2ZoUqdYKT7QFjIqMRM/xsBOd+GiLgZE6Nomdl8I0DF9Oyy0UCZZMn6QYXg==}
+  /@shopify/prettier-plugin-liquid@1.1.0(prettier@2.8.8):
+    resolution: {integrity: sha512-nsd0pDUiAQG9yDoOku7Auh0hkZGoHCOG/I3m9ql/J2tgyQ5ArRJpsfRBkYvuscwHUrE/wbMRr2vqhKEWUIfS4A==}
     peerDependencies:
       prettier: ^2.0.0
     dependencies:
