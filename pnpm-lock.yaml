@@ -34,8 +34,8 @@ dependencies:
     specifier: ^1.7.1
     version: 1.7.1
   '@sinclair/typebox':
-    specifier: ~0.28.8
-    version: 0.28.8
+    specifier: ~0.28.14
+    version: 0.28.14
   '@trim21/php-serialize':
     specifier: ^0.1.1
     version: 0.1.1
@@ -62,7 +62,7 @@ dependencies:
     version: 4.0.0(socket.io@4.6.1)
   got:
     specifier: ^13.0.0
-    version: 13.0.0(patch_hash=d4msj3jdqs4opuuvmstouodue4)
+    version: 13.0.0
   graphql:
     specifier: ^16.6.0
     version: 16.6.0
@@ -1847,8 +1847,8 @@ packages:
       prettier: 2.8.8
     dev: true
 
-  /@sinclair/typebox@0.28.8:
-    resolution: {integrity: sha512-OerNjE43mIb2RDy/RJfjS+OHfJHq3caePlVe/GXkLwLzcYevA2JPzHWSFMkpGgfoFKWdQdckKRiMVMsz40yHgw==}
+  /@sinclair/typebox@0.28.14:
+    resolution: {integrity: sha512-aB3ddagwMFz2cSLg0/gUt7yaUHJUKnT+rEHGdb/srtEFILB0zdL7a2mcbA7kskOCFHicAOV1POeeZdwoevFgAQ==}
     dev: false
 
   /@sindresorhus/is@5.3.0:
@@ -4115,7 +4115,7 @@ packages:
       get-intrinsic: 1.2.0
     dev: true
 
-  /got@13.0.0(patch_hash=d4msj3jdqs4opuuvmstouodue4):
+  /got@13.0.0:
     resolution: {integrity: sha512-XfBk1CxOOScDcMr9O1yKkNaQyy865NbYs+F7dr4H0LZMVgCj2Le59k6PqbNHoL5ToeaEQUYh6c6yMfVcc6SJxA==}
     engines: {node: '>=16'}
     dependencies:
@@ -4131,7 +4131,6 @@ packages:
       p-cancelable: 3.0.0
       responselike: 3.0.0
     dev: false
-    patched: true
 
   /graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
