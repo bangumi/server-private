@@ -73,8 +73,8 @@ dependencies:
     specifier: ^2.2.0
     version: 2.2.0
   https-proxy-agent:
-    specifier: ^6.2.1
-    version: 6.2.1
+    specifier: ^7.0.0
+    version: 7.0.0
   ioredis:
     specifier: ^5.3.2
     version: 5.3.2
@@ -4333,8 +4333,8 @@ packages:
       resolve-alpn: 1.2.1
     dev: false
 
-  /https-proxy-agent@6.2.1:
-    resolution: {integrity: sha512-ONsE3+yfZF2caH5+bJlcddtWqNI3Gvs5A38+ngvljxaBiRXRswym2c7yf8UAeFpRFKjFNHIFEHqR/OLAWJzyiA==}
+  /https-proxy-agent@7.0.0:
+    resolution: {integrity: sha512-0euwPCRyAPSgGdzD1IVN9nJYHtBhJwb6XPfbpQcYbPCwrBidX6GzxmchnaF4sfF/jPb74Ojx5g4yTg3sixlyPw==}
     engines: {node: '>= 14'}
     dependencies:
       agent-base: 7.1.0
