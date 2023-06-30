@@ -99,7 +99,7 @@
     "husky": "^8.0.3",
     "ioredis-mock": "^8.7.0",
     "license-checker": "^25.0.1",
-    "lint-staged": "^13.2.2",
+    "lint-staged": "^13.2.3",
     "mercurius-integration-testing": "^8.1.1",
     "nodemon": "^2.0.22",
     "p-limit": "^4.0.0",
