@@ -132,8 +132,8 @@ dependencies:
     specifier: ^8.0.1
     version: 8.0.1
   typeorm:
-    specifier: ^0.3.16
-    version: 0.3.16(ioredis@5.3.2)(mysql2@3.3.3)
+    specifier: ^0.3.17
+    version: 0.3.17(ioredis@5.3.2)(mysql2@3.3.3)
 
 devDependencies:
   '@shopify/prettier-plugin-liquid':
@@ -6953,8 +6953,8 @@ packages:
       is-typed-array: 1.1.10
     dev: true
 
-  /typeorm@0.3.16(ioredis@5.3.2)(mysql2@3.3.3):
-    resolution: {integrity: sha512-wJ4Qy1oqRKNDdZiBTTaVMqwo/XxC52Q7uNPTjltPgLhvIW173bL6Iad0lhptMOsFlpixFPaUu3PNziaRBwX2Zw==}
+  /typeorm@0.3.17(ioredis@5.3.2)(mysql2@3.3.3):
+    resolution: {integrity: sha512-UDjUEwIQalO9tWw9O2A4GU+sT3oyoUXheHJy4ft+RFdnRdQctdQ34L9SqE2p7LdwzafHx1maxT+bqXON+Qnmig==}
     engines: {node: '>= 12.9.0'}
     hasBin: true
     peerDependencies:
