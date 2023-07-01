@@ -99,8 +99,8 @@ dependencies:
     specifier: ^2.1.35
     version: 2.1.35
   mysql2:
-    specifier: ^3.3.3
-    version: 3.3.3
+    specifier: ^3.4.3
+    version: 3.4.3
   nanoid:
     specifier: ^4.0.2
     version: 4.0.2
@@ -133,7 +133,7 @@ dependencies:
     version: 8.0.1
   typeorm:
     specifier: ^0.3.17
-    version: 0.3.17(ioredis@5.3.2)(mysql2@3.3.3)
+    version: 0.3.17(ioredis@5.3.2)(mysql2@3.4.3)
 
 devDependencies:
   '@shopify/prettier-plugin-liquid':
@@ -5456,8 +5456,8 @@ packages:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
     dev: true
 
-  /mysql2@3.3.3:
-    resolution: {integrity: sha512-MxDQJztArk4JFX1PKVjDhIXRzAmVJfuqZrVU+my6NeYBAA/XZRaDw5q7vga8TNvgyy3Lv3rivBFBBuJFbsdjaw==}
+  /mysql2@3.4.3:
+    resolution: {integrity: sha512-pgXnfmZlJ2JnJk9A5z3tnJcG4w8ly/AbVsVsgcavhiOQ7VQpxMwmIyR2CTNxNLKQWQUdD5QOkKkY1DdoRDgSnA==}
     engines: {node: '>= 8.0'}
     dependencies:
       denque: 2.1.0
@@ -6983,7 +6983,7 @@ packages:
       is-typed-array: 1.1.10
     dev: true
 
-  /typeorm@0.3.17(ioredis@5.3.2)(mysql2@3.3.3):
+  /typeorm@0.3.17(ioredis@5.3.2)(mysql2@3.4.3):
     resolution: {integrity: sha512-UDjUEwIQalO9tWw9O2A4GU+sT3oyoUXheHJy4ft+RFdnRdQctdQ34L9SqE2p7LdwzafHx1maxT+bqXON+Qnmig==}
     engines: {node: '>= 12.9.0'}
     hasBin: true
@@ -7052,7 +7052,7 @@ packages:
       glob: 8.1.0
       ioredis: 5.3.2
       mkdirp: 2.1.6
-      mysql2: 3.3.3
+      mysql2: 3.4.3
       reflect-metadata: 0.1.13
       sha.js: 2.4.11
       tslib: 2.5.0
