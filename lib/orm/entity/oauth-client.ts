@@ -1,6 +1,6 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
 
-import { App } from '@app/lib/orm/entity/app.ts';
+import type { App } from '@app/lib/orm/entity/app.ts';
 
 @Index('client_id', ['clientID'], {})
 @Entity('chii_oauth_clients', { schema: 'bangumi' })
@@ -26,10 +26,10 @@ export class OauthClient {
   @Column('varchar', { name: 'user_id', nullable: true, length: 80 })
   userId: string | null = null;
 
-  @ManyToOne(() => App, (app) => app.appID, { eager: true, nullable: false })
-  @JoinColumn({
-    name: 'app_id',
-    foreignKeyConstraintName: 'app_id',
-  })
+  // @ManyToOne(() => App, (app) => app.appID, { eager: true, nullable: false })
+  // @JoinColumn({
+  //   name: 'app_id',
+  //   foreignKeyConstraintName: 'app_id',
+  // })
   app!: App;
 }

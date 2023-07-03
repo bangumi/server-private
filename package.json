@@ -32,6 +32,8 @@
     "@fastify/static": "^6.10.2",
     "@fastify/swagger": "^8.6.0",
     "@fastify/view": "^8.0.0",
+    "@mikro-orm/core": "^5.7.12",
+    "@mikro-orm/mysql": "^5.7.12",
     "@node-rs/bcrypt": "^1.7.1",
     "@sinclair/typebox": "~0.29.0",
     "@trim21/php-serialize": "^0.1.1",

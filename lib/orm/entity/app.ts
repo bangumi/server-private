@@ -1,40 +1,40 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-@Index('app_type', ['appType', 'appCreator'], {})
-@Index('app_ban', ['appBan'], {})
-@Index('app_status', ['appStatus'], {})
-@Entity('chii_apps', { schema: 'bangumi' })
+// @Index('app_type', ['appType', 'appCreator'], {})
+// @Index('app_ban', ['appBan'], {})
+// @Index('app_status', ['appStatus'], {})
+@Entity({ tableName: 'chii_apps', schema: 'bangumi' })
 export class App {
-  @PrimaryGeneratedColumn({ type: 'mediumint', name: 'app_id' })
+  @PrimaryKey({ type: 'mediumint', name: 'app_id', autoincrement: true })
   appID!: number;
 
-  @Column('tinyint', { name: 'app_type', width: 1 })
+  @Property({ name: 'app_type', type: 'tinyint' })
   appType!: boolean;
 
-  @Column('mediumint', { name: 'app_creator' })
+  @Property({ name: 'app_creator', type: 'mediumint' })
   appCreator!: number;
 
-  @Column('varchar', { name: 'app_name', length: 255 })
+  @Property({ name: 'app_name', length: 255, type: 'varchar' })
   appName!: string;
 
-  @Column('mediumtext', { name: 'app_desc' })
+  @Property({ name: 'app_desc', type: 'mediumtext' })
   appDesc!: string;
 
-  @Column('varchar', { name: 'app_url', length: 2000 })
+  @Property({ name: 'app_url', length: 2000, type: 'varchar' })
   appUrl!: string;
 
-  @Column('mediumint', { name: 'app_collects' })
+  @Property({ name: 'app_collects', type: 'mediumint' })
   appCollects!: number;
 
-  @Column('tinyint', { name: 'app_status', width: 1 })
+  @Property({ name: 'app_status', type: 'tinyint' })
   appStatus!: boolean;
 
-  @Column('int', { name: 'app_timestamp' })
+  @Property({ name: 'app_timestamp', type: 'int' })
   appTimestamp!: number;
 
-  @Column('int', { name: 'app_lasttouch' })
+  @Property({ name: 'app_lasttouch', type: 'int' })
   appLasttouch!: number;
 
-  @Column('tinyint', { name: 'app_ban', width: 1 })
+  @Property({ name: 'app_ban', type: 'tinyint' })
   appBan!: boolean;
 }

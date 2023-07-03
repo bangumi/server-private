@@ -1,3 +1,5 @@
+import { MikroORM } from '@mikro-orm/core';
+import { defineConfig } from '@mikro-orm/mysql';
 import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
@@ -37,6 +39,20 @@ import {
   WebSessions,
 } from './entity/index.ts';
 
+const orm = await MikroORM.init(
+  defineConfig({
+    dbName: 'bangumi',
+    host: config.mysql.host,
+    port: config.mysql.port,
+    user: config.mysql.user,
+    password: config.mysql.password,
+    allowGlobalContext: true,
+    entities: [App],
+  }),
+);
+
+await orm.em.findOne(App, { appTimestamp: { $gte: 0 } });
+
 export const AppDataSource = new DataSource({
   type: 'mysql',
   host: config.mysql.host,
@@ -72,7 +88,6 @@ export const AppDataSource = new DataSource({
     logMigration() {},
   },
   entities: [
-    App,
     EpRevision,
     User,
     UserField,
@@ -114,7 +129,7 @@ export const RevTextRepo = AppDataSource.getRepository(RevText);
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
-export const AppRepo = AppDataSource.getRepository(App);
+// export const AppRepo = AppDataSource.getRepository(App);
 export const OauthClientRepo = AppDataSource.getRepository(OauthClient);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
 export const UserGroupRepo = AppDataSource.getRepository(UserGroup);

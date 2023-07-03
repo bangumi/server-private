@@ -8,6 +8,7 @@
     "allowSyntheticDefaultImports": false,
     "useUnknownInCatchVariables": true,
     "esModuleInterop": false,
+    "emitDecoratorMetadata": true,
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": true,
     "strict": true,
