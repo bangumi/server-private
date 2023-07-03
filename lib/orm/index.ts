@@ -47,7 +47,7 @@ const orm = await MikroORM.init(
     user: config.mysql.user,
     password: config.mysql.password,
     allowGlobalContext: true,
-    entities: [App],
+    entities: [OauthClient, App],
   }),
 );
 
@@ -101,7 +101,6 @@ export const AppDataSource = new DataSource({
     Group,
     GroupMembers,
     Episode,
-    OauthClient,
     RevHistory,
     RevText,
     Subject,
@@ -130,7 +129,7 @@ export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 // export const AppRepo = AppDataSource.getRepository(App);
-export const OauthClientRepo = AppDataSource.getRepository(OauthClient);
+export const OauthClientRepo = orm.em.getRepository(OauthClient);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
 export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
 

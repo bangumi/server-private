@@ -1,35 +1,34 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 
-import type { App } from '@app/lib/orm/entity/app.ts';
+import { App } from '@app/lib/orm/entity/app.ts';
 
-@Index('client_id', ['clientID'], {})
-@Entity('chii_oauth_clients', { schema: 'bangumi' })
+@Entity({ tableName: 'chii_oauth_clients', schema: 'bangumi' })
 export class OauthClient {
-  @Column('mediumint', { primary: true, name: 'app_id' })
+  @Property({ primary: true, name: 'app_id', type: 'mediumint' })
   appID!: number;
 
-  @Column('varchar', { name: 'client_id', length: 80 })
+  @Property({ name: 'client_id', length: 80, type: 'varchar' })
   clientID!: string;
 
-  @Column('varchar', { name: 'client_secret', nullable: true, length: 80 })
+  @Property({ name: 'client_secret', nullable: true, length: 80, type: 'varchar' })
   clientSecret: string | null = null;
 
-  @Column('varchar', { name: 'redirect_uri', nullable: true, length: 2000 })
+  @Property({ name: 'redirect_uri', nullable: true, length: 2000, type: 'varchar' })
   redirectUri: string | null = null;
 
-  @Column('varchar', { name: 'grant_types', nullable: true, length: 80 })
+  @Property({ name: 'grant_types', nullable: true, length: 80, type: 'varchar' })
   grantTypes: string | null = null;
 
-  @Column('varchar', { name: 'scope', nullable: true, length: 4000 })
+  @Property({ name: 'scope', nullable: true, length: 4000, type: 'varchar' })
   scope: string | null = null;
 
-  @Column('varchar', { name: 'user_id', nullable: true, length: 80 })
+  @Property({ name: 'user_id', nullable: true, length: 80, type: 'varchar' })
   userId: string | null = null;
 
-  // @ManyToOne(() => App, (app) => app.appID, { eager: true, nullable: false })
-  // @JoinColumn({
-  //   name: 'app_id',
-  //   foreignKeyConstraintName: 'app_id',
-  // })
+  @ManyToOne(() => App, {
+    name: 'app_id',
+    eager: true,
+    nullable: false,
+  })
   app!: App;
 }

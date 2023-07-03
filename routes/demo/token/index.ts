@@ -91,8 +91,8 @@ export function setup(app: App) {
         expires: typeorm.MoreThan(new Date()),
       });
 
-      const clients = await orm.OauthClientRepo.findBy({
-        clientID: typeorm.In(tokens.map((x) => x.clientId)),
+      const clients = await orm.OauthClientRepo.find({
+        clientID: tokens.map((x) => x.clientId),
       });
 
       const cm = Object.fromEntries(clients.map((x) => [x.clientID, x]));

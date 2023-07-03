@@ -1,8 +1,5 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
-// @Index('app_type', ['appType', 'appCreator'], {})
-// @Index('app_ban', ['appBan'], {})
-// @Index('app_status', ['appStatus'], {})
 @Entity({ tableName: 'chii_apps', schema: 'bangumi' })
 export class App {
   @PrimaryKey({ type: 'mediumint', name: 'app_id', autoincrement: true })
