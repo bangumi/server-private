@@ -2,7 +2,6 @@ import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { DataSource, In } from 'typeorm';
-import * as typeorm from 'typeorm';
 
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
@@ -301,7 +300,7 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
   }
 
   const users = await UserRepo.find({
-    where: { id: typeorm.In(lo.uniq(userIDs)) },
+    where: { id: In(lo.uniq(userIDs)) },
   });
 
   return Object.fromEntries(
