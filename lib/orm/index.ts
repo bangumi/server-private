@@ -3,7 +3,6 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { DataSource, In } from 'typeorm';
 import * as typeorm from 'typeorm';
-import type { FindOptionsWhere } from 'typeorm/find-options/FindOptionsWhere.js';
 
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
@@ -523,16 +522,3 @@ export async function fetchUserX(id: number): Promise<IUser> {
 }
 
 export { MoreThan as Gt, MoreThanOrEqual as Gte, In, Like } from 'typeorm';
-
-/**
- * Typeorm 不会省略 value 为 `undefined` 的 where 条件.
- *
- * https://github.com/typeorm/typeorm/pull/9487
- *
- * https://github.com/typeorm/typeorm/issues/9316
- */
-export function stripWhere<T>(w: FindOptionsWhere<T>): FindOptionsWhere<T> {
-  return Object.fromEntries(
-    Object.entries(w).filter(([_, value]) => value !== undefined),
-  ) as FindOptionsWhere<T>;
-}
