@@ -9,3 +9,4 @@ export * from './rev.ts';
 export * from './subject.ts';
 export * from './subject-rev.ts';
 export * from './user.ts';
+export * from './web-session.ts';

@@ -1,6 +1,5 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime, Duration } from 'luxon';
-import * as typeorm from 'typeorm';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import type * as entity from '@app/lib/orm/entity/index.ts';
@@ -30,7 +29,7 @@ export function setup(app: App) {
       preHandler: [requireLogin('delete your token')],
     },
     async ({ auth, body }) => {
-      const token = await orm.AccessTokenRepo.findOneBy({ id: body.id });
+      const token = await orm.AccessTokenRepo.findOne({ id: body.id });
 
       if (!token) {
         throw new NotAllowedError("delete a token not belong to you or token doesn't exist");
@@ -40,7 +39,7 @@ export function setup(app: App) {
         throw new NotAllowedError("delete a token not belong to you or token doesn't exist");
       }
 
-      await orm.AccessTokenRepo.update({ id: body.id }, { expires: new Date() });
+      await orm.AccessTokenRepo.nativeUpdate({ id: body.id }, { expires: new Date() });
     },
   );
 
@@ -61,7 +60,7 @@ export function setup(app: App) {
     },
     async ({ auth, body: { duration_days, name } }) => {
       const token = await randomBase62String(40);
-      await orm.AccessTokenRepo.insert({
+      await orm.AccessTokenRepo.nativeInsert({
         userId: auth.userID.toString(),
         expires: DateTime.now()
           .plus(Duration.fromObject({ day: duration_days }))
@@ -86,9 +85,9 @@ export function setup(app: App) {
       schema: { hide: true },
     },
     async (req, reply) => {
-      const tokens = await orm.AccessTokenRepo.findBy({
+      const tokens = await orm.AccessTokenRepo.find({
         userId: req.auth.userID.toString(),
-        expires: typeorm.MoreThan(new Date()),
+        expires: { $gt: new Date() },
       });
 
       const clients = await orm.OauthClientRepo.find({

@@ -47,7 +47,7 @@ const orm = await MikroORM.init(
     user: config.mysql.user,
     password: config.mysql.password,
     allowGlobalContext: true,
-    entities: [OauthClient, App],
+    entities: [App, OauthAccessTokens, OauthClient],
   }),
 );
 
@@ -91,7 +91,6 @@ export const AppDataSource = new DataSource({
     EpRevision,
     User,
     UserField,
-    OauthAccessTokens,
     WebSessions,
     UserGroup,
     Notify,
@@ -127,8 +126,8 @@ export const RevTextRepo = AppDataSource.getRepository(RevText);
 
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 
-export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
-// export const AppRepo = AppDataSource.getRepository(App);
+export const AccessTokenRepo = orm.em.getRepository(OauthAccessTokens);
+export const AppRepo = orm.em.getRepository(App);
 export const OauthClientRepo = orm.em.getRepository(OauthClient);
 export const SessionRepo = AppDataSource.getRepository(WebSessions);
 export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
