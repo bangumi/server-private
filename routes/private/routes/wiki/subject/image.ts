@@ -166,9 +166,6 @@ export function setup(app: App) {
       ],
     },
     async ({ body: { content }, auth, params: { subjectID } }) => {
-      if (!SandBox.has(subjectID)) {
-        throw new NotAllowedError('non sandbox subject');
-      }
       let raw = Buffer.from(content, 'base64');
       // 4mb
       if (raw.length > sizeLimit) {
