@@ -40,7 +40,7 @@ jobs:
 
       - name: Build Base Docker Image (if needed)
         uses: docker/build-push-action@v4
-        if: ${{ env.NEED_BUILD_BASE }}
+        if: ${{ env.NEED_BUILD_BASE == 'true' }}
         with:
           context: ./
           file: ./etc/base.dockerfile
