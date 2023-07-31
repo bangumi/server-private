@@ -30,7 +30,7 @@
     "@fastify/cookie": "^8.3.0",
     "@fastify/error": "^3.3.0",
     "@fastify/static": "^6.10.2",
-    "@fastify/swagger": "^8.6.0",
+    "@fastify/swagger": "^8.8.0",
     "@fastify/view": "^8.0.0",
     "@node-rs/bcrypt": "^1.7.1",
     "@sinclair/typebox": "~0.29.0",
