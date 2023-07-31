@@ -26,7 +26,7 @@ jobs:
       - run: pnpm exec tsc
       - run: pnpm run lint
 
-  test:
+  test-each-version:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -53,6 +53,14 @@ jobs:
 
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v3
+
+  test:
+    runs-on: ubuntu-latest
+    needs:
+      - test-each-version
+
+    steps:
+      - run: echo OK
 
   build:
     runs-on: ubuntu-latest
