@@ -69,7 +69,7 @@
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
-    "@shopify/prettier-plugin-liquid": "^1.1.0",
+    "@shopify/prettier-plugin-liquid": "^1.2.2",
     "@types/conventional-changelog": "^3.1.1",
     "@types/ioredis-mock": "^8.2.2",
     "@types/js-yaml": "^4.0.5",
