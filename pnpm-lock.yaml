@@ -30,8 +30,8 @@ dependencies:
     specifier: ^8.0.0
     version: 8.0.0
   '@node-rs/bcrypt':
-    specifier: ^1.7.1
-    version: 1.7.1
+    specifier: ^1.7.3
+    version: 1.7.3
   '@sinclair/typebox':
     specifier: ~0.29.6
     version: 0.29.6
@@ -1291,8 +1291,8 @@ packages:
     resolution: {integrity: sha512-9b8mPpKrfeGRuhFH5iO1iwCLeIIsV6+H1sRfxbkoGXIyQE2BTsPd9zqSqQJ+pv5sJ/hT5M1zvOFL02MnEezFug==}
     dev: true
 
-  /@node-rs/bcrypt-android-arm-eabi@1.7.1:
-    resolution: {integrity: sha512-HLAybGThRHTn6gN+2ORL2nQ1/9XDCU4VOc7mJhv9k3MSg/oW/vMSIZKAtAcSD+GB4g6nIi6Jxi3qBNqp9r4TAg==}
+  /@node-rs/bcrypt-android-arm-eabi@1.7.3:
+    resolution: {integrity: sha512-l53RuBqnqNvBN2jx09Ws6jpLmuQdSDx10n0GeaTfwh1svxsC8bPpVmxkfBExsT2Tu7KF38gTnPZvwsxysZQyPQ==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [android]
@@ -1300,8 +1300,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-android-arm64@1.7.1:
-    resolution: {integrity: sha512-gEBUIcBIFQmhWMh61PbBtaIIEWZIJyAog2gw3ipkWYGlCJfHb3wFQ3HgZohz1n8e9l700SLWIBDR+sZ7CBSKFw==}
+  /@node-rs/bcrypt-android-arm64@1.7.3:
+    resolution: {integrity: sha512-TZpm4VbiViqDMvusrcYzLr1b1M5FDF0cDNiTUciLeBSsKtU5lNdEZGAU7gvCnrKoUWpGuOblHU7613zuB7SiNQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [android]
@@ -1309,8 +1309,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-darwin-arm64@1.7.1:
-    resolution: {integrity: sha512-9AJiPUb05ezu65F9+JwjoqUN9/kzTnKpUUIkyRB8mMi6vB86CykNpueplqvsHFA2m4HZhdPzcX37hhAMcWlRxg==}
+  /@node-rs/bcrypt-darwin-arm64@1.7.3:
+    resolution: {integrity: sha512-SiUuAabynVsmixZMjh5xrn8w47EnV0HzbW9st4DPoVhn/wzdUcksIXDY75aoQG2EIzKLN8IGb+CIVnPGmRyhxw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -1318,8 +1318,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-darwin-x64@1.7.1:
-    resolution: {integrity: sha512-dAOPZJA5K8Z0e4DytKX2SOd2VkRXxqDC98sl+qDjL0lBP4TqIr3B7cdJouZ+S5s71gk2oECh7VJPC8nOXrQGpw==}
+  /@node-rs/bcrypt-darwin-x64@1.7.3:
+    resolution: {integrity: sha512-R+81Z0eX4hZPvCXY5Z6l0l+JrTU3WcSYGHP0QYV9uwdaafOz6EhrCXUzZ02AIcAbNoVR8eucYVruq9PiasXoVw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -1327,8 +1327,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-freebsd-x64@1.7.1:
-    resolution: {integrity: sha512-PR5DBeNUvzUm7TbeqAypALy6tOXQmqmIjmJconh2/xF7SasZtgTLTTHcW9rGuEm/Klf+zSjZ40m6CPyNiuFDDw==}
+  /@node-rs/bcrypt-freebsd-x64@1.7.3:
+    resolution: {integrity: sha512-0pItU/5K3e83JjcJj9fZv+78txUoZ3hHCT7n/UMdu9mkpUzhX/rqb4jmQpJpD+UQoR76xp3qDo5RMgQBffBVNg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [freebsd]
@@ -1336,8 +1336,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-linux-arm-gnueabihf@1.7.1:
-    resolution: {integrity: sha512-6ovC/VQTiXJGGhxBl9uPx6VVoh75A5783oCvjUOBOXFh6mu2WNbD26V+mQlE9ZSxI2rniVP/6HD6+maZo69DcA==}
+  /@node-rs/bcrypt-linux-arm-gnueabihf@1.7.3:
+    resolution: {integrity: sha512-HTSybWUjNe8rWuXkTkMeFDiQNHc6VioRcgv6AeHZphIxiT6dFbnhXNkfz4Hr0zxvyPhZ3NrYjT2AmPVFT6VW3Q==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
@@ -1345,8 +1345,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-linux-arm64-gnu@1.7.1:
-    resolution: {integrity: sha512-+UFyHCW7O5GwGt9qre3TSGVP9sMfCk9jynC9+r/GiwRcf0As/id8+PK1BloUCyETIzlQ+vqoqtL/crVHWfnL8g==}
+  /@node-rs/bcrypt-linux-arm64-gnu@1.7.3:
+    resolution: {integrity: sha512-rWep6Y+v/c4bZHaM8LmSsrMwMmDR9wG4/q+3Z9VzR8xdnt5VCbuQdYWpf3sgGRGjTRdTBAdSK8x1reOjqsJ3Jg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -1354,8 +1354,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-linux-arm64-musl@1.7.1:
-    resolution: {integrity: sha512-NoxYH4P4Iywgz9ELkkwTNcoxB2L/Pxzqm2miV+8s81gQbUraZEzIv3+1bgwmPw8yQRb+DEU/JxPPKPk9W/p8Ig==}
+  /@node-rs/bcrypt-linux-arm64-musl@1.7.3:
+    resolution: {integrity: sha512-TyWEKhxr+yfGcMKzVV/ARZw+Hrky2yl91bo0XYU2ZW6I6LDC0emNsXugdWjwz8ADI4OWhhrOjXD8GCilxiB2Rg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -1363,8 +1363,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-linux-x64-gnu@1.7.1:
-    resolution: {integrity: sha512-BN2f+D4GbMfYYp4n8wLIa1Q+eWZcCDyoykmknr53mcYhpTjz2HzH208V08jfmvt0O98JBPijgFR9e0m28SN0uw==}
+  /@node-rs/bcrypt-linux-x64-gnu@1.7.3:
+    resolution: {integrity: sha512-PofxM1Qg7tZKj1oP0I7tBTSSLr8Xc2uxx+P3pBCPmYzaBwWqGteNHJlF7n2q5xiH7YOlguH4w5CmcEjsiA3K4A==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -1372,8 +1372,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-linux-x64-musl@1.7.1:
-    resolution: {integrity: sha512-DVilfjinvnGblXEXznzlwR/PckuMIkIQgXmITS2h0rw1u3MQSvabCc8h83Vg6mzS8iOZQ9XkdEZ2JoAE8L9D6Q==}
+  /@node-rs/bcrypt-linux-x64-musl@1.7.3:
+    resolution: {integrity: sha512-D5V6/dDVKP8S/ieDBLGhTn4oTo3upbrpWInynbhOMjJvPiIxVG1PiI3MXkWBtG9qtfleDk7gUkEKtAOxlIxDTQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -1381,8 +1381,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-win32-arm64-msvc@1.7.1:
-    resolution: {integrity: sha512-s0djj8Bbe2VXRfCgxBHYVVXnYqHNxhgaAxxr6Eurh4H9iqcjHYH+fHCEk+T0bPUMZOlK6j+2IBlgspjVuJQrjA==}
+  /@node-rs/bcrypt-win32-arm64-msvc@1.7.3:
+    resolution: {integrity: sha512-b4gH2Yj5R4TwULrfMHd1Qqr+MrnFjVRUAJujDKPqi+PppSqezW8QF6DRSOL4GjnBmz5JEd64wxgeidvy7dsbGw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -1390,8 +1390,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-win32-ia32-msvc@1.7.1:
-    resolution: {integrity: sha512-xQ8e6G8YjRB5z+EzHmbsxRgCq1OF4yqwN2s1SeSpsWr6mPUFwJyRvQFuda0IkKYS0aTDjLi7OqXs8rhxiY4Dzg==}
+  /@node-rs/bcrypt-win32-ia32-msvc@1.7.3:
+    resolution: {integrity: sha512-E91ro+ybI0RhNc89aGaZQGll0YhPoHr8JacoWrNKwhg9zwNOYeuO0tokdMZdm6nF0/8obll0Mq7wO9AXO9iffw==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -1399,8 +1399,8 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt-win32-x64-msvc@1.7.1:
-    resolution: {integrity: sha512-HKI/aMhqYwB7bfQBBREF1wbD8tLdOLg5o+y09gT8GwBcmy6vOYCEsBICC3ehJ5/xXCY2rY0JONElhB7Zb/xLeg==}
+  /@node-rs/bcrypt-win32-x64-msvc@1.7.3:
+    resolution: {integrity: sha512-LO/p9yjPODj/pQvPnowBuwpDdqiyUXQbqL1xb1RSP3NoyCFAGmjL5h0plSQrhLh8hskQiozBRXNaQurtsM7o0Q==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -1408,23 +1408,23 @@ packages:
     dev: false
     optional: true
 
-  /@node-rs/bcrypt@1.7.1:
-    resolution: {integrity: sha512-86GTEldBGa2iJTC4VrMP3VZCuxe8g8cX9jmI+TUzMo7MJA3tVLBUv7WnxQdQy+NXmn8lGwEWrYoC7JqoXCfZvA==}
+  /@node-rs/bcrypt@1.7.3:
+    resolution: {integrity: sha512-BF6u9CBPUiyk1zU+5iwikezf+xM4MFSu5cmrrg/PLKffGgIM13ZsY6DHftcTraETB04ryasjM/5IejotH+sO5Q==}
     engines: {node: '>= 10'}
     optionalDependencies:
-      '@node-rs/bcrypt-android-arm-eabi': 1.7.1
-      '@node-rs/bcrypt-android-arm64': 1.7.1
-      '@node-rs/bcrypt-darwin-arm64': 1.7.1
-      '@node-rs/bcrypt-darwin-x64': 1.7.1
-      '@node-rs/bcrypt-freebsd-x64': 1.7.1
-      '@node-rs/bcrypt-linux-arm-gnueabihf': 1.7.1
-      '@node-rs/bcrypt-linux-arm64-gnu': 1.7.1
-      '@node-rs/bcrypt-linux-arm64-musl': 1.7.1
-      '@node-rs/bcrypt-linux-x64-gnu': 1.7.1
-      '@node-rs/bcrypt-linux-x64-musl': 1.7.1
-      '@node-rs/bcrypt-win32-arm64-msvc': 1.7.1
-      '@node-rs/bcrypt-win32-ia32-msvc': 1.7.1
-      '@node-rs/bcrypt-win32-x64-msvc': 1.7.1
+      '@node-rs/bcrypt-android-arm-eabi': 1.7.3
+      '@node-rs/bcrypt-android-arm64': 1.7.3
+      '@node-rs/bcrypt-darwin-arm64': 1.7.3
+      '@node-rs/bcrypt-darwin-x64': 1.7.3
+      '@node-rs/bcrypt-freebsd-x64': 1.7.3
+      '@node-rs/bcrypt-linux-arm-gnueabihf': 1.7.3
+      '@node-rs/bcrypt-linux-arm64-gnu': 1.7.3
+      '@node-rs/bcrypt-linux-arm64-musl': 1.7.3
+      '@node-rs/bcrypt-linux-x64-gnu': 1.7.3
+      '@node-rs/bcrypt-linux-x64-musl': 1.7.3
+      '@node-rs/bcrypt-win32-arm64-msvc': 1.7.3
+      '@node-rs/bcrypt-win32-ia32-msvc': 1.7.3
+      '@node-rs/bcrypt-win32-x64-msvc': 1.7.3
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
