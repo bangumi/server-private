@@ -80,8 +80,8 @@
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "@typescript-eslint/utils": "^6.3.0",
-    "@vitest/coverage-v8": "^0.33.0",
-    "@vitest/ui": "^0.33.0",
+    "@vitest/coverage-v8": "^0.34.3",
+    "@vitest/ui": "^0.34.3",
     "conventional-changelog": "^4.0.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.46.0",
@@ -108,7 +108,7 @@
     "std-env": "^3.3.3",
     "typescript": "~5.1.6",
     "vite": "^4.4.8",
-    "vitest": "^0.33.0",
+    "vitest": "^0.34.3",
     "vitest-github-actions-reporter": "^0.10.0"
   },
   "nodemonConfig": {
