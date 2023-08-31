@@ -27,7 +27,7 @@
     "@aws-sdk/client-s3": "^3.379.1",
     "@bgm38/wiki": "^0.2.6",
     "@esbuild-kit/esm-loader": "^2.5.5",
-    "@fastify/cookie": "^9.0.1",
+    "@fastify/cookie": "^9.0.4",
     "@fastify/error": "^3.3.0",
     "@fastify/static": "^6.10.2",
     "@fastify/swagger": "^8.8.0",
