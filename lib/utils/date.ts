@@ -1,5 +1,9 @@
 export class DATE {
-  constructor(readonly year?: number, readonly month?: number, readonly day?: number) {}
+  constructor(
+    readonly year?: number,
+    readonly month?: number,
+    readonly day?: number,
+  ) {}
 
   static parse(s: string): DATE {
     const [year, month, day] = s.split('-');
