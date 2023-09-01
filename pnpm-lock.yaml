@@ -138,7 +138,7 @@ dependencies:
 devDependencies:
   '@shopify/prettier-plugin-liquid':
     specifier: ^1.2.2
-    version: 1.2.2(prettier@2.8.8)
+    version: 1.2.2(prettier@3.0.3)
   '@types/conventional-changelog':
     specifier: ^3.1.1
     version: 3.1.1
@@ -239,11 +239,11 @@ devDependencies:
     specifier: ^4.0.0
     version: 4.0.0
   prettier:
-    specifier: ^2.8.8
-    version: 2.8.8
+    specifier: ^3.0.3
+    version: 3.0.3
   prettier-plugin-jsdoc:
-    specifier: ^0.4.2
-    version: 0.4.2(prettier@2.8.8)
+    specifier: ^1.0.1
+    version: 1.0.1(prettier@3.0.3)
   std-env:
     specifier: ^3.4.3
     version: 3.4.3
@@ -1667,7 +1667,7 @@ packages:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
 
-  /@shopify/prettier-plugin-liquid@1.2.2(prettier@2.8.8):
+  /@shopify/prettier-plugin-liquid@1.2.2(prettier@3.0.3):
     resolution: {integrity: sha512-6FlxKWrT02PcyBLd4baU/vdP4BsvmWP5UMcAv+ZUpQ6TZFM6qBtu6Bntd2d6mtjafNaUU7Gnh0v1DonQnDp45A==}
     peerDependencies:
       prettier: ^2.0.0 || ^3.0.0
@@ -1675,7 +1675,7 @@ packages:
       html-styles: 1.0.0
       line-column: 1.0.2
       ohm-js: 16.6.0
-      prettier: 2.8.8
+      prettier: 3.0.3
     dev: true
 
   /@sinclair/typebox@0.27.8:
@@ -5933,23 +5933,23 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-jsdoc@0.4.2(prettier@2.8.8):
-    resolution: {integrity: sha512-w2jnAQm3z0GAG0bhzVJeehzDtrhGMSxJjit5ApCc2oxWfc7+jmLAkbtdOXaSpfwZz3IWkk+PiQPeRrLNpbM+Mw==}
-    engines: {node: '>=12.0.0'}
+  /prettier-plugin-jsdoc@1.0.1(prettier@3.0.3):
+    resolution: {integrity: sha512-07q74MfX9m+xHK2+Lr4c+igiEzAKVDWhqkvlm65WoYJUlRiaV6STXcEtcZMhrPPYgNeQRgb9FJmgE/n+OI4MpQ==}
+    engines: {node: '>=14.13.1 || >=16.0.0'}
     peerDependencies:
-      prettier: '>=2.1.2'
+      prettier: ^3.0.0
     dependencies:
       binary-searching: 2.0.5
       comment-parser: 1.3.1
       mdast-util-from-markdown: 1.3.1
-      prettier: 2.8.8
+      prettier: 3.0.3
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /prettier@2.8.8:
-    resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
-    engines: {node: '>=10.13.0'}
+  /prettier@3.0.3:
+    resolution: {integrity: sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==}
+    engines: {node: '>=14'}
     hasBin: true
     dev: true
 

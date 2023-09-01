@@ -2,9 +2,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { RedisLimiter } from '@app/lib/utils/rate-limit/redis.ts';
 
-const { default: redis } = await vi.importActual<typeof import('@app/lib/redis.ts')>(
-  '@app/lib/redis.ts',
-);
+const { default: redis } =
+  await vi.importActual<typeof import('@app/lib/redis.ts')>('@app/lib/redis.ts');
 
 describe('redis limit', () => {
   const limiter = new RedisLimiter({ redisClient: redis });
