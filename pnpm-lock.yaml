@@ -33,8 +33,8 @@ dependencies:
     specifier: ^1.7.3
     version: 1.7.3
   '@sinclair/typebox':
-    specifier: ~0.30.2
-    version: 0.30.2
+    specifier: ~0.31.8
+    version: 0.31.8
   '@trim21/php-serialize':
     specifier: ^0.1.1
     version: 0.1.1
@@ -1706,8 +1706,8 @@ packages:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
     dev: true
 
-  /@sinclair/typebox@0.30.2:
-    resolution: {integrity: sha512-PNEojrBZGQL+llfGfGn6EZNHUXxyvA3LeySMUxMk+i+GrtuT1nBBP3BPzzgJKW9b7lUMa9KxHVx+CIPEy5bL5w==}
+  /@sinclair/typebox@0.31.8:
+    resolution: {integrity: sha512-1FdxgmuUqQWprlAHzGKTH3qSeNzbYnHXD65WIZOI037hcCZVw+r8SoFd8OIFUrbQxEI+MhHArCvKlndLvfw/bg==}
     dev: false
 
   /@sindresorhus/is@5.4.1:
