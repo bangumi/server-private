@@ -87,8 +87,8 @@ dependencies:
     specifier: ^4.17.21
     version: 4.17.21
   luxon:
-    specifier: ^3.3.0
-    version: 3.3.0
+    specifier: ^3.4.2
+    version: 3.4.2
   mercurius:
     specifier: ^13.1.0
     version: 13.1.0(graphql@16.7.1)
@@ -152,8 +152,8 @@ devDependencies:
     specifier: ^4.17.9
     version: 4.17.9
   '@types/luxon':
-    specifier: ^3.3.1
-    version: 3.3.1
+    specifier: ^3.3.2
+    version: 3.3.2
   '@types/mime-types':
     specifier: ^2.1.1
     version: 2.1.1
@@ -2264,8 +2264,8 @@ packages:
     resolution: {integrity: sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==}
     dev: true
 
-  /@types/luxon@3.3.1:
-    resolution: {integrity: sha512-XOS5nBcgEeP2PpcqJHjCWhUCAzGfXIU8ILOSLpx2FhxqMW9KdxgCGXNOEKGVBfveKtIpztHzKK5vSRVLyW/NqA==}
+  /@types/luxon@3.3.2:
+    resolution: {integrity: sha512-l5cpE57br4BIjK+9BSkFBOsWtwv6J9bJpC7gdXIzZyI0vuKvNTk0wZZrkQxMGsUAuGW9+WMNWF2IJMD7br2yeQ==}
     dev: true
 
   /@types/mdast@3.0.11:
@@ -5185,8 +5185,8 @@ packages:
     engines: {node: '>=16.14'}
     dev: false
 
-  /luxon@3.3.0:
-    resolution: {integrity: sha512-An0UCfG/rSiqtAIiBPO0Y9/zAnHUZxAMiCpTd5h2smgsj7GGmcenvrvww2cqNA8/4A5ZrD1gJpHN2mIHZQF+Mg==}
+  /luxon@3.4.2:
+    resolution: {integrity: sha512-uBoAVCVcajsrqy3pv7eo5jEUz1oeLmCcnMv8n4AJpT5hbpN9lUssAXibNElpbLce3Mhm9dyBzwYLs9zctM/0tA==}
     engines: {node: '>=12'}
     dev: false
 
