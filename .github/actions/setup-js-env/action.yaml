@@ -2,7 +2,7 @@ inputs:
   node-version:
     description: 'node version'
     required: false
-    default: '20.x'
+    default: '^20.6.1'
 
 name: 'Setup Node and run npm ci'
 description: 'setup node env'
