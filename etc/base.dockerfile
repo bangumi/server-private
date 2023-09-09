@@ -1,4 +1,4 @@
-FROM node:20-slim as builder
+FROM node:20.6.1-slim as builder
 
 WORKDIR /app
 
@@ -13,9 +13,9 @@ RUN corepack enable && corepack prepare --activate \
   && pnpm install -r --offline --prod \
   && rm -rf package.json pnpm-lock.yaml .npmrc patches
 
-FROM gcr.io/distroless/nodejs20-debian11:latest
+FROM node:20.6.1-slim
 
-ENTRYPOINT ["/nodejs/bin/node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./bin/main.ts"]
+ENTRYPOINT ["node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./bin/main.ts"]
 
 WORKDIR /app
 
