@@ -10,12 +10,12 @@ jobs:
   openapi:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-js-env
 
       - run: pnpm run file ./bin/export-openapi.ts
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: 'bangumi/dev-docs'
           path: dev-docs
