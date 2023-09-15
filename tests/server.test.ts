@@ -12,15 +12,13 @@ const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/g
 describe('graphql', () => {
   test('should return current user', async () => {
     await expect(
-      testClient.query(
-        gql`
-          query {
-            me {
-              id
-            }
+      testClient.query(gql`
+        query {
+          me {
+            id
           }
-        `,
-      ),
+        }
+      `),
     ).resolves.toEqual({
       data: {
         me: null,
@@ -72,15 +70,13 @@ describe('graphql', () => {
 describe('subject', () => {
   test('should get', async () => {
     await expect(
-      testClient.query(
-        gql`
-          query {
-            subject(id: 8) {
-              name_cn
-            }
+      testClient.query(gql`
+        query {
+          subject(id: 8) {
+            name_cn
           }
-        `,
-      ),
+        }
+      `),
     ).resolves.toEqual({
       data: {
         subject: { name_cn: 'Code Geass 反叛的鲁路修R2' },
@@ -90,15 +86,13 @@ describe('subject', () => {
 
   test('should not found', async () => {
     await expect(
-      testClient.query(
-        gql`
-          query {
-            subject(id: 4040404) {
-              name_cn
-            }
+      testClient.query(gql`
+        query {
+          subject(id: 4040404) {
+            name_cn
           }
-        `,
-      ),
+        }
+      `),
     ).resolves.toEqual({
       data: {
         subject: null,
@@ -129,15 +123,13 @@ describe('subject', () => {
 
   test('should return null for non-authorized request', async () => {
     await expect(
-      testClient.query(
-        gql`
-          query {
-            subject(id: 16) {
-              name_cn
-            }
+      testClient.query(gql`
+        query {
+          subject(id: 16) {
+            name_cn
           }
-        `,
-      ),
+        }
+      `),
     ).resolves.toEqual({
       data: {
         subject: null,
@@ -146,54 +138,48 @@ describe('subject', () => {
   });
 
   test('should get episodes, limit', async () => {
-    const query = await testClient.query(
-      gql`
-        query {
-          subject(id: 8) {
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 8) {
+          id
+          episodes(limit: 3) {
             id
-            episodes(limit: 3) {
-              id
-            }
           }
         }
-      `,
-    );
+      }
+    `);
 
     expect(query.data.subject.id).toBe(8);
     expect(query.data.subject.episodes).toHaveLength(3);
   });
 
   test('should get episodes, -offset', async () => {
-    const query = await testClient.query(
-      gql`
-        query {
-          subject(id: 8) {
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 8) {
+          id
+          episodes(offset: -3) {
             id
-            episodes(offset: -3) {
-              id
-            }
           }
         }
-      `,
-    );
+      }
+    `);
 
     expect(query.data.subject.id).toBe(8);
     expect(query.data.subject.episodes).toHaveLength(3);
   });
 
   test('should subject tags', async () => {
-    const query = await testClient.query(
-      gql`
-        query {
-          subject(id: 8) {
-            tags(limit: 3) {
-              name
-              count
-            }
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 8) {
+          tags(limit: 3) {
+            name
+            count
           }
         }
-      `,
-    );
+      }
+    `);
 
     expect(query.data.subject).toMatchSnapshot();
   });

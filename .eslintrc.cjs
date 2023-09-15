@@ -82,7 +82,7 @@ module.exports = {
         'array-element-newline': ['error', 'consistent'],
         'array-bracket-newline': ['error', 'consistent'],
         'promise/catch-or-return': ['error', { allowFinally: true }],
-        '@typescript-eslint/restrict-plus-operands': ['error', { checkCompoundAssignments: true }],
+        '@typescript-eslint/restrict-plus-operands': ['error', { skipCompoundAssignments: false }],
         '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
         '@typescript-eslint/object-curly-spacing': ['error', 'always'],
         'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],

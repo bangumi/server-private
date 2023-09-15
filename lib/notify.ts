@@ -149,11 +149,11 @@ export async function markAllAsRead(userID: number, id: number[] | undefined): P
     const notifyRepo = t.getRepository(entity.Notify);
     const memberRepo = t.getRepository(entity.User);
     await notifyRepo.update(
-      orm.stripWhere({
+      {
         uid: userID,
         unread: true,
         id: id ? orm.In(id) : undefined,
-      }),
+      },
       { unread: false },
     );
 
@@ -221,7 +221,7 @@ interface Filter {
 /** 返回通知 */
 export async function list(userID: number, { unread, limit = 30 }: Filter): Promise<INotify[]> {
   const notifications: Notify[] = await NotifyRepo.find({
-    where: orm.stripWhere({ uid: userID, unread }),
+    where: { uid: userID, unread },
     order: { dateline: 'desc' },
     take: limit,
   });

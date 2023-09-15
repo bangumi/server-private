@@ -1,4 +1,4 @@
-FROM node:18-slim@sha256:77618f025144304c1e678fe27b3d67072da8ace6f0d99339b50c545d532f4475 as builder
+FROM node:20.6.1-slim@sha256:2dab2d0e8813ee1601f8d25a8e4aa5530ffc4d0cc16600ec4fd080263b5b1ccd as builder
 
 WORKDIR /app
 
@@ -13,9 +13,9 @@ RUN corepack enable && corepack prepare --activate \
   && pnpm install -r --offline --prod \
   && rm -rf package.json pnpm-lock.yaml .npmrc patches
 
-FROM gcr.io/distroless/nodejs18-debian11:latest@sha256:c73d0509171d06c166a5e4ffb0b6a547623e5666f2764651f7dff7a3a97f2678
+FROM node:20.6.1-slim@sha256:2dab2d0e8813ee1601f8d25a8e4aa5530ffc4d0cc16600ec4fd080263b5b1ccd
 
-ENTRYPOINT ["/nodejs/bin/node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./bin/main.ts"]
+ENTRYPOINT ["node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./bin/main.ts"]
 
 WORKDIR /app
 

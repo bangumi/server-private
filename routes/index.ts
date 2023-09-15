@@ -12,7 +12,6 @@ import type { App } from '@app/routes/type.ts';
 export async function setup(app: App) {
   logger.debug('setup rest routes');
 
-  // @ts-expect-error upstream bug
   app.decorateRequest('auth', null);
 
   await app.register(privateAPI.setup, { prefix: '/p1' });

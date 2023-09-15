@@ -166,9 +166,6 @@ export function setup(app: App) {
       ],
     },
     async ({ body: { content }, auth, params: { subjectID } }) => {
-      if (!SandBox.has(subjectID)) {
-        throw new NotAllowedError('non sandbox subject');
-      }
       let raw = Buffer.from(content, 'base64');
       // 4mb
       if (raw.length > sizeLimit) {
@@ -197,7 +194,7 @@ export function setup(app: App) {
         ext = 'jpeg';
       }
 
-      const h = crypto.createHash('blake2b512').update(raw).digest('base64url').slice(0, 32);
+      const h = crypto.createHash('sha384').update(raw).digest().toString('base64url');
 
       const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
 

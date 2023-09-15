@@ -103,7 +103,7 @@ export async function setup(app: App) {
           },
         ),
         response: {
-          200: t.Void({ description: '没有返回值' }),
+          200: t.Null({ description: '没有返回值' }),
           401: t.Ref(res.Error, {
             description: '未登录',
             'x-examples': {

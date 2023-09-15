@@ -1,9 +1,7 @@
 import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
-import type { FindOptionsWhere } from 'typeorm';
 import { DataSource, In } from 'typeorm';
-import * as typeorm from 'typeorm';
 
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
@@ -304,7 +302,7 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
   }
 
   const users = await UserRepo.find({
-    where: { id: typeorm.In(lo.uniq(userIDs)) },
+    where: { id: In(lo.uniq(userIDs)) },
   });
 
   return Object.fromEntries(
@@ -525,16 +523,3 @@ export async function fetchUserX(id: number): Promise<IUser> {
 }
 
 export { MoreThan as Gt, MoreThanOrEqual as Gte, In, Like } from 'typeorm';
-
-/**
- * Typeorm 不会省略 value 为 `undefined` 的 where 条件.
- *
- * https://github.com/typeorm/typeorm/pull/9487
- *
- * https://github.com/typeorm/typeorm/issues/9316
- */
-export function stripWhere<T>(w: FindOptionsWhere<T>): FindOptionsWhere<T> {
-  return Object.fromEntries(
-    Object.entries(w).filter(([_, value]) => value !== undefined),
-  ) as FindOptionsWhere<T>;
-}

@@ -1,6 +1,5 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime, Duration } from 'luxon';
-import * as typeorm from 'typeorm';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import type * as entity from '@app/lib/orm/entity/index.ts';
@@ -88,11 +87,11 @@ export function setup(app: App) {
     async (req, reply) => {
       const tokens = await orm.AccessTokenRepo.findBy({
         userId: req.auth.userID.toString(),
-        expires: typeorm.MoreThan(new Date()),
+        expires: orm.Gt(new Date()),
       });
 
       const clients = await orm.OauthClientRepo.findBy({
-        clientID: typeorm.In(tokens.map((x) => x.clientId)),
+        clientID: orm.In(tokens.map((x) => x.clientId)),
       });
 
       const cm = Object.fromEntries(clients.map((x) => [x.clientID, x]));

@@ -1,10 +1,10 @@
 import { createError } from '@fastify/error';
 import { DateTime } from 'luxon';
-import * as typeorm from 'typeorm';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
+import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import type { IBaseReply, IUser, Page } from '@app/lib/orm/index.ts';
 import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm/index.ts';
@@ -164,7 +164,7 @@ export async function fetchTopicList(
 
   const where = {
     gid: id,
-    display: typeorm.In(ListTopicDisplays(auth)),
+    display: orm.In(ListTopicDisplays(auth)),
   } as const;
 
   const total = await GroupTopicRepo.count({ where });
