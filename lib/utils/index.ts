@@ -1,32 +1,10 @@
 import * as crypto from 'node:crypto';
 
+import { customAlphabet } from 'nanoid/async';
+
 const base62Chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 if (base62Chars.length !== 62) {
   throw new TypeError('characters is not 62 length');
-}
-
-export function customAlphabet(
-  alphabet: string,
-  defaultSize = 21,
-): (size: number) => Promise<string> {
-  const mask = (2 << (31 - Math.clz32((alphabet.length - 1) | 1))) - 1;
-  const step = Math.ceil((1.6 * mask * defaultSize) / alphabet.length);
-  const tick: (init: string, size: number) => Promise<string> = (
-    prefix: string,
-    size: number = defaultSize,
-  ) =>
-    randomBytes(step).then((bytes: Buffer) => {
-      let i = step;
-      while (i--) {
-        // @ts-expect-error ignore string overload
-        prefix += alphabet[bytes[i] & mask] || '';
-        if (prefix.length === size) {
-          return prefix;
-        }
-      }
-      return tick(prefix, size);
-    });
-  return (size) => tick('', size);
 }
 
 const generator = customAlphabet(base62Chars, 32);

@@ -1,6 +1,7 @@
 import * as console from 'node:console';
-import * as crypto from 'node:crypto';
 import * as process from 'node:process';
+
+import { nanoid } from 'nanoid';
 
 import config, { production } from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger.ts';
@@ -19,7 +20,7 @@ const server = await createServer({
   logger: logger.child({ name: 'fastify' }, { level: production ? 'warn' : 'info' }),
   disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
   genReqId: (): string => {
-    return `dummy-${crypto.randomUUID()}`;
+    return `dummy-${nanoid()}`;
   },
 });
 
