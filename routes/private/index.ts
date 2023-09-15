@@ -8,6 +8,7 @@ import type { App } from '@app/routes/type.ts';
 
 import * as login from './routes/login.ts';
 import * as post from './routes/post.ts';
+import * as subject from './routes/subject/index.ts';
 import * as group from './routes/topic.ts';
 import * as user from './routes/user.ts';
 import * as wiki from './routes/wiki/index.ts';
@@ -43,5 +44,6 @@ async function API(app: App) {
   await app.register(group.setup);
   await app.register(post.setup);
   await app.register(user.setup);
+  await app.register(subject.setup);
   await app.register(wiki.setup, { prefix: '/wiki' });
 }
