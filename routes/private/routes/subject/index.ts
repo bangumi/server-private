@@ -1,13 +1,17 @@
 import { Type as t } from '@sinclair/typebox';
 
 import { NeedLoginError } from '@app/lib/auth/index.ts';
+import { NotFoundError } from '@app/lib/error.ts';
 import { Security } from '@app/lib/openapi/index.ts';
+import { SubjectRepo } from '@app/lib/orm/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
 const SubjectRes = t.Object(
   {
     id: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
   },
   { $id: 'Subject' },
 );
@@ -41,11 +45,15 @@ export async function setup(app: App) {
         },
       },
     },
-    ({ auth: { login }, params: { subjectID } }) => {
-      if (!login) {
-        return { id: subjectID };
+    async ({ auth: { login }, params: { subjectID } }) => {
+      const s = await SubjectRepo.findOneBy({ id: subjectID });
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
       }
-      return { id: subjectID };
+      if (s.subjectNsfw && !login) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      return { id: subjectID, name: s.name, nameCN: s.nameCN };
     },
   );
 }
