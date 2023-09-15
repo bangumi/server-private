@@ -12,6 +12,8 @@ import { formatDuration, parseDuration } from '@app/lib/utils/index.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
+const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
 type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
 export const EpisodeWikiInfo = t.Object(
   {
@@ -20,8 +22,14 @@ export const EpisodeWikiInfo = t.Object(
     nameCN: t.String(),
     type: t.Enum(EpisodeType),
     ep: t.Number(),
-    duration: t.String(),
-    date: t.String({ description: 'YYYY-MM-DD', pattern: /(^\d{4}-\d{2}-\d{2}$|^$)/.source }),
+    duration: t.String({ examples: ['24:53', '24m52s'] }),
+    date: t.Optional(
+      t.String({
+        description: 'YYYY-MM-DD',
+        pattern: datePattern.source,
+        examples: ['2022-02-02'],
+      }),
+    ),
     summary: t.String(),
   },
   {
@@ -97,10 +105,28 @@ export async function setup(app: App) {
           episodeID: t.Integer({ examples: [1148124], minimum: 0 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Object({
-          commitMessage: t.String(),
-          episode: t.Partial(t.Omit(EpisodeWikiInfo, ['id']), { $id: undefined }),
-        }),
+        body: t.Object(
+          {
+            commitMessage: t.String(),
+            episode: t.Partial(t.Omit(EpisodeWikiInfo, ['id']), { $id: undefined }),
+          },
+          {
+            examples: [
+              {
+                commitMessage: 'why this episode is edited',
+                episode: {
+                  date: '2022-01-20',
+                  duration: '24:53',
+                  ep: 4,
+                  name: 'name',
+                  nameCN: '中文名',
+                  summary: 'a short description',
+                  type: 0,
+                },
+              },
+            ],
+          },
+        ),
         response: {
           200: t.Object({}),
           400: t.Ref(res.Error, { description: 'invalid input' }),
@@ -127,7 +153,7 @@ export async function setup(app: App) {
       }
 
       if (body.date) {
-        if (datePattern.test(body.date)) {
+        if (!datePattern.test(body.date)) {
           throw new BadRequestError(`${body.date} is not valid date`);
         }
 
@@ -171,5 +197,3 @@ export async function setup(app: App) {
     },
   );
 }
-
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
