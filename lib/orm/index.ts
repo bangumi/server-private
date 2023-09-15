@@ -35,6 +35,8 @@ import {
   WebSessions,
 } from './entity/index.ts';
 
+export * as entity from './entity/index.ts';
+
 export const AppDataSource = new DataSource({
   type: 'mysql',
   host: config.mysql.host,

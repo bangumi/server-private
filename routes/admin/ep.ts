@@ -1,6 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 
+import type { EpTextRev } from '@app/lib/orm/entity/index.ts';
 import { RevHistory, RevText } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import {
@@ -50,8 +51,8 @@ export async function setup(app: App) {
 
       // `episodeID=123` 时可能查询到 `123456` 的批量修改
       const epBatchRevs = await EpRevRepo.findBy([
-        { revEids: orm.Like(`%${episodeID}%`), revSid: ep.epSubjectId },
-        { revEids: episodeID.toString(), revSid: ep.epSubjectId },
+        { revEids: orm.Like(`%${episodeID}%`), revSid: ep.subjectID },
+        { revEids: episodeID.toString(), revSid: ep.subjectID },
       ]);
 
       const batchRevs = epBatchRevs
@@ -112,14 +113,4 @@ export async function setup(app: App) {
       });
     },
   );
-}
-
-interface EpTextRev {
-  ep_sort: string;
-  ep_type: string;
-  ep_name: string;
-  ep_name_cn: string;
-  ep_duration: string;
-  ep_airdate: string;
-  ep_desc: string;
 }
