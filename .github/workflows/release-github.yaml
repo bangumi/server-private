@@ -13,13 +13,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: ./.github/actions/setup-js-env
-
-      - run: node .github/scripts/changelog.js | tee changelog.md
-
-      - run: echo "TAG=${GITHUB_REF##*/}" >> $GITHUB_ENV
+      - name: Generate Changelog
+        id: changelog
+        uses: trim21/action-changelog@includeTypes
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+          writeToFile: false
+          includeTypes: feat,fix,revert
 
       - name: Upload GitHub Release
-        run: gh release create "$TAG" --title "$TAG" -F changelog.md
+        run: gh release create "${GITHUB_REF}" --notes "${CHANGELOG}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGELOG: '${{ steps.changelog.outputs.changes }}'
