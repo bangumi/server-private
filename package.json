@@ -43,7 +43,7 @@
     "fastify-metrics": "^10.3.0",
     "fastify-socket.io": "^4.0.0",
     "got": "^13.0.0",
-    "graphql": "^16.8.0",
+    "graphql": "^16.8.1",
     "http-proxy-agent": "^7.0.0",
     "http-status-codes": "^2.2.0",
     "https-proxy-agent": "^7.0.1",
