@@ -33,7 +33,7 @@
     "@fastify/swagger": "^8.9.0",
     "@fastify/view": "^8.0.0",
     "@node-rs/bcrypt": "^1.7.3",
-    "@sinclair/typebox": "~0.31.8",
+    "@sinclair/typebox": "~0.31.17",
     "@trim21/php-serialize": "^0.1.1",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
