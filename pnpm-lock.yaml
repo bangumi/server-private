@@ -24,8 +24,8 @@ dependencies:
     specifier: ^6.11.2
     version: 6.11.2
   '@fastify/swagger':
-    specifier: ^8.9.0
-    version: 8.9.0
+    specifier: ^8.10.1
+    version: 8.10.1
   '@fastify/view':
     specifier: ^8.2.0
     version: 8.2.0
@@ -1159,8 +1159,8 @@ packages:
       glob: 8.1.0
       p-limit: 3.1.0
 
-  /@fastify/swagger@8.9.0:
-    resolution: {integrity: sha512-Y0gqpqDZBxbnr/OWmiFI1Ub8I0jPlCSa1LvRsmnf/IDSsleqXdPnIMnxMRuXA1NpQ8TtbEWoFFMlnuOX43uv3g==}
+  /@fastify/swagger@8.10.1:
+    resolution: {integrity: sha512-NZ4PyppZWEd4j8qPt4AKGhuMm7dALe2IntmI2NrdlnPno+rFRyQJHw3XHdziN7yirYGhCGM+vByItWEnPHLu4w==}
     dependencies:
       fastify-plugin: 4.5.0
       json-schema-resolver: 2.0.0
