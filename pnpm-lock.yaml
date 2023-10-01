@@ -152,8 +152,8 @@ devDependencies:
     specifier: ^3.3.2
     version: 3.3.2
   '@types/mime-types':
-    specifier: ^2.1.1
-    version: 2.1.1
+    specifier: ^2.1.2
+    version: 2.1.2
   '@types/node':
     specifier: ^18.17.12
     version: 18.17.12
@@ -1969,8 +1969,8 @@ packages:
       '@types/unist': 2.0.6
     dev: true
 
-  /@types/mime-types@2.1.1:
-    resolution: {integrity: sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==}
+  /@types/mime-types@2.1.2:
+    resolution: {integrity: sha512-q9QGHMGCiBJCHEvd4ZLdasdqXv570agPsUW0CeIm/B8DzhxsYMerD0l3IlI+EQ1A2RWHY2mmM9x1YIuuWxisCg==}
     dev: true
 
   /@types/ms@0.7.31:
