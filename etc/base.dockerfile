@@ -1,4 +1,4 @@
-FROM node:20.7.0-slim@sha256:24a8b77508a4edaa99ef31f020e915da31c87068b4164d6746bf0c1684c71f98 as builder
+FROM node:20.8.0-slim@sha256:8d26608b65edb3b0a0e1958a0a5a45209524c4df54bbe21a4ca53548bc97a3a5 as builder
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ RUN corepack enable && corepack prepare --activate \
   && pnpm install -r --offline --prod \
   && rm -rf package.json pnpm-lock.yaml .npmrc patches
 
-FROM node:20.7.0-slim@sha256:24a8b77508a4edaa99ef31f020e915da31c87068b4164d6746bf0c1684c71f98
+FROM node:20.8.0-slim@sha256:8d26608b65edb3b0a0e1958a0a5a45209524c4df54bbe21a4ca53548bc97a3a5
 
 ENTRYPOINT ["node", "--no-warnings", "--loader=@esbuild-kit/esm-loader", "--enable-source-maps", "./bin/main.ts"]
 
