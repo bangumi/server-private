@@ -27,8 +27,8 @@ dependencies:
     specifier: ^8.9.0
     version: 8.9.0
   '@fastify/view':
-    specifier: ^8.0.0
-    version: 8.0.0
+    specifier: ^8.2.0
+    version: 8.2.0
   '@node-rs/bcrypt':
     specifier: ^1.7.3
     version: 1.7.3
@@ -1157,8 +1157,8 @@ packages:
       - supports-color
     dev: false
 
-  /@fastify/view@8.0.0:
-    resolution: {integrity: sha512-XfAffgqRj+AtEtkZeAAkMwTtu32Ve6xWkhxWQ9JOwXm2qQM6Fj+xphxnLvqpvQ0hJAYFYGiTOpB5ZS2VI5u00Q==}
+  /@fastify/view@8.2.0:
+    resolution: {integrity: sha512-hBSiBofCnJNlPHEMZWpO1SL84eqOaqujJ1hR3jntFyZZCkweH5jMs12DKYyGesjVll7SJFRRxPUBB8kmUmneRQ==}
     dependencies:
       fastify-plugin: 4.5.0
       hashlru: 2.3.0
