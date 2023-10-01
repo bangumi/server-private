@@ -1,5 +1,6 @@
 import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
+import type { Server } from 'socket.io';
 
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
@@ -26,7 +27,11 @@ const NoticeRes = t.Object(
   },
   { $id: 'Notice' },
 );
-
+declare module 'fastify' {
+  interface FastifyInstance {
+    io: Server;
+  }
+}
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
