@@ -45,7 +45,7 @@
     "got": "^13.0.0",
     "graphql": "^16.8.1",
     "http-proxy-agent": "^7.0.0",
-    "http-status-codes": "^2.2.0",
+    "http-status-codes": "^2.3.0",
     "https-proxy-agent": "^7.0.1",
     "ioredis": "^5.3.2",
     "js-yaml": "^4.1.0",
