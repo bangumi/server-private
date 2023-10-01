@@ -129,8 +129,8 @@ dependencies:
     specifier: ^4.7.2
     version: 4.7.2
   socks-proxy-agent:
-    specifier: ^8.0.1
-    version: 8.0.1
+    specifier: ^8.0.2
+    version: 8.0.2
   typeorm:
     specifier: ^0.3.17
     version: 0.3.17(ioredis@5.3.2)(mysql2@3.6.0)
@@ -5780,8 +5780,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /socks-proxy-agent@8.0.1:
-    resolution: {integrity: sha512-59EjPbbgg8U3x62hhKOFVAmySQUcfRQ4C7Q/D5sEHnZTQRrQlNKINks44DMR1gwXp0p4LaVIeccX2KHTTcHVqQ==}
+  /socks-proxy-agent@8.0.2:
+    resolution: {integrity: sha512-8zuqoLv1aP/66PHF5TqwJ7Czm3Yv32urJQHrVyhD7mmA6d61Zv8cIXQYPTWwmg6qlupnPvs/QKDmfa4P/qct2g==}
     engines: {node: '>= 14'}
     dependencies:
       agent-base: 7.1.0
