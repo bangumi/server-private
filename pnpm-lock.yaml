@@ -137,8 +137,8 @@ dependencies:
 
 devDependencies:
   '@shopify/prettier-plugin-liquid':
-    specifier: ^1.3.0
-    version: 1.3.0(prettier@3.0.3)
+    specifier: ^1.3.1
+    version: 1.3.1(prettier@3.0.3)
   '@types/ioredis-mock':
     specifier: ^8.2.3
     version: 8.2.3
@@ -1452,8 +1452,8 @@ packages:
       ohm-js: 16.6.0
     dev: true
 
-  /@shopify/prettier-plugin-liquid@1.3.0(prettier@3.0.3):
-    resolution: {integrity: sha512-QkJ9YSTiV0wMsHKWfmYhWmQJJK7R8Tm/s82KCm3llhhdbN8fHMGm6lKTfP7EwVzpKA2kjqUkDAc97tBHicmHUA==}
+  /@shopify/prettier-plugin-liquid@1.3.1(prettier@3.0.3):
+    resolution: {integrity: sha512-VEETCuU94VXY3itpV1d56VZYudcGofz1kMzezbWYJXQ8z40g3eDneTIb7G+JnswJhbnzmn9L/Q1bDHNMHdml2w==}
     peerDependencies:
       prettier: ^2.0.0 || ^3.0.0
     dependencies:
