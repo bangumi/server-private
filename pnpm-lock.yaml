@@ -117,8 +117,8 @@ dependencies:
     specifier: ^8.15.3
     version: 8.15.3
   pino-pretty:
-    specifier: ^10.2.0
-    version: 10.2.0
+    specifier: ^10.2.3
+    version: 10.2.3
   prom-client:
     specifier: ^14.2.0
     version: 14.2.0
@@ -5261,8 +5261,8 @@ packages:
       readable-stream: 4.4.1
       split2: 4.2.0
 
-  /pino-pretty@10.2.0:
-    resolution: {integrity: sha512-tRvpyEmGtc2D+Lr3FulIZ+R1baggQ4S3xD2Ar93KixFEDx6SEAUP3W5aYuEw1C73d6ROrNcB2IXLteW8itlwhA==}
+  /pino-pretty@10.2.3:
+    resolution: {integrity: sha512-4jfIUc8TC1GPUfDyMSlW1STeORqkoxec71yhxIpLDQapUu8WOuoz2TTCoidrIssyz78LZC69whBMPIKCMbi3cw==}
     hasBin: true
     dependencies:
       colorette: 2.0.20
