@@ -49,7 +49,7 @@
     "https-proxy-agent": "^7.0.2",
     "ioredis": "^5.3.2",
     "js-yaml": "^4.1.0",
-    "liquidjs": "^10.9.2",
+    "liquidjs": "^10.9.3",
     "lodash-es": "^4.17.21",
     "luxon": "^3.4.3",
     "mercurius": "^13.1.0",
