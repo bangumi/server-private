@@ -21,8 +21,8 @@ dependencies:
     specifier: ^3.4.0
     version: 3.4.0
   '@fastify/static':
-    specifier: ^6.11.2
-    version: 6.11.2
+    specifier: ^6.12.0
+    version: 6.12.0
   '@fastify/swagger':
     specifier: ^8.10.1
     version: 8.10.1
@@ -1169,8 +1169,8 @@ packages:
       http-errors: 2.0.0
       mime: 3.0.0
 
-  /@fastify/static@6.11.2:
-    resolution: {integrity: sha512-EH7mh7q4MfNdT7N07ZVlwsX/ObngMvQ7KBP0FXAuPov99Fjn80KSJMdxQhhYKAKWW1jXiFdrk8X7d6uGWdZFxg==}
+  /@fastify/static@6.12.0:
+    resolution: {integrity: sha512-KK1B84E6QD/FcQWxDI2aiUCwHxMJBI1KeCUzm1BwYpPY1b742+jeKruGHP2uOluuM6OkBPI8CIANrXcCRtC2oQ==}
     dependencies:
       '@fastify/accept-negotiator': 1.1.0
       '@fastify/send': 2.1.0
@@ -2363,7 +2363,7 @@ packages:
     peerDependencies:
       fastify: ^4.0.3
     dependencies:
-      '@fastify/static': 6.11.2
+      '@fastify/static': 6.12.0
       altair-static: 5.2.5
       fastify: 4.24.3
       fastify-plugin: 2.3.4
@@ -4647,7 +4647,7 @@ packages:
       graphql: ^16.0.0
     dependencies:
       '@fastify/error': 3.4.0
-      '@fastify/static': 6.11.2
+      '@fastify/static': 6.12.0
       '@fastify/websocket': 8.1.0
       fastify-plugin: 4.5.1
       graphql: 16.8.1
