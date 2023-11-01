@@ -90,8 +90,8 @@ dependencies:
     specifier: ^3.4.3
     version: 3.4.3
   mercurius:
-    specifier: ^13.1.0
-    version: 13.1.0(graphql@16.8.1)
+    specifier: ^13.2.2
+    version: 13.2.2(graphql@16.8.1)
   micromatch:
     specifier: ^4.0.5
     version: 4.0.5
@@ -225,7 +225,7 @@ devDependencies:
     version: 15.0.2
   mercurius-integration-testing:
     specifier: ^8.1.1
-    version: 8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.1.0)
+    version: 8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.2.2)
   nodemon:
     specifier: ^3.0.1
     version: 3.0.1
@@ -4569,7 +4569,7 @@ packages:
       '@types/mdast': 4.0.1
     dev: true
 
-  /mercurius-integration-testing@8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.1.0):
+  /mercurius-integration-testing@8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.2.2):
     resolution: {integrity: sha512-JyyKGw4pXe+Hy8huDIMjIO1B0DIJkQDXuWX9+gtAQXKlwICQrTzUAfQGtqVMFypsvV8W15TUCxZraIqt01mFGg==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -4588,15 +4588,15 @@ packages:
       cookie: 0.5.0
       fastify: 4.24.3
       graphql: 16.8.1
-      mercurius: 13.1.0(graphql@16.8.1)
+      mercurius: 13.2.2(graphql@16.8.1)
       ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
     dev: true
 
-  /mercurius@13.1.0(graphql@16.8.1):
-    resolution: {integrity: sha512-MDCmgNLk77f6Epe4af78Z36XChQ/TeHIO3l8Aoyj3whEqzlXxODNaNHt4vEfLDHCSbuLoLJTaK6bpWN0MtomUA==}
+  /mercurius@13.2.2(graphql@16.8.1):
+    resolution: {integrity: sha512-Bj5hrkJZgFOk4zo4ZcfP3k7P85Gdsxh9gGOLLQxCR+zXzHkia9o6FJuMebJjXhuWXybqFbWon3YmWx3/JaniVA==}
     engines: {node: '>=14.19.3'}
     peerDependencies:
       graphql: ^16.0.0
