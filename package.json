@@ -24,7 +24,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.421.0",
+    "@aws-sdk/client-s3": "^3.440.0",
     "@bgm38/wiki": "^0.2.6",
     "@esbuild-kit/esm-loader": "^2.6.5",
     "@fastify/cookie": "^9.1.0",
