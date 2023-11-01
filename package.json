@@ -52,7 +52,7 @@
     "liquidjs": "^10.9.3",
     "lodash-es": "^4.17.21",
     "luxon": "^3.4.3",
-    "mercurius": "^13.1.0",
+    "mercurius": "^13.2.2",
     "micromatch": "^4.0.5",
     "mime-types": "^2.1.35",
     "mysql2": "^3.6.2",
