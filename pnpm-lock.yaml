@@ -137,8 +137,8 @@ dependencies:
 
 devDependencies:
   '@shopify/prettier-plugin-liquid':
-    specifier: ^1.3.1
-    version: 1.3.1(prettier@3.0.3)
+    specifier: ^1.3.3
+    version: 1.3.3(prettier@3.0.3)
   '@types/ioredis-mock':
     specifier: ^8.2.3
     version: 8.2.3
@@ -1449,19 +1449,19 @@ packages:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
 
-  /@shopify/liquid-html-parser@1.0.0:
-    resolution: {integrity: sha512-z64n4gbS41tHsvuB6JoC8cxnsgLXWtauiBzB0pOsF5+Zl5aR+IcBhLDQLkBJs78tuafk42BO4GAm5ge4L7lxTw==}
+  /@shopify/liquid-html-parser@1.1.0:
+    resolution: {integrity: sha512-6CiBpZsWfz6JJ54f+R2ln67MxukVqm0X9VIzDniwLpsn7NSTzfDRcr2ttuxX695aUFTixO97soCbW8ac0F4Olg==}
     dependencies:
       line-column: 1.0.2
       ohm-js: 16.6.0
     dev: true
 
-  /@shopify/prettier-plugin-liquid@1.3.1(prettier@3.0.3):
-    resolution: {integrity: sha512-VEETCuU94VXY3itpV1d56VZYudcGofz1kMzezbWYJXQ8z40g3eDneTIb7G+JnswJhbnzmn9L/Q1bDHNMHdml2w==}
+  /@shopify/prettier-plugin-liquid@1.3.3(prettier@3.0.3):
+    resolution: {integrity: sha512-ZYiaJW6ZfJcBvu13FliEcxTRnYt+J/ri9dfEuHC5CuN7H+RwUSA+yQSoiReiAdCJExqHSXCO8tLev507AeK7uw==}
     peerDependencies:
       prettier: ^2.0.0 || ^3.0.0
     dependencies:
-      '@shopify/liquid-html-parser': 1.0.0
+      '@shopify/liquid-html-parser': 1.1.0
       html-styles: 1.0.0
       prettier: 3.0.3
     dev: true
