@@ -239,8 +239,8 @@ devDependencies:
     specifier: ^1.1.1
     version: 1.1.1(prettier@3.0.3)
   std-env:
-    specifier: ^3.4.3
-    version: 3.4.3
+    specifier: ^3.5.0
+    version: 3.5.0
   typescript:
     specifier: ~5.3.2
     version: 5.3.2
@@ -2211,7 +2211,7 @@ packages:
       istanbul-reports: 3.1.5
       magic-string: 0.30.2
       picocolors: 1.0.0
-      std-env: 3.4.3
+      std-env: 3.5.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.1.0
       vitest: 0.34.6(@vitest/ui@0.34.6)
@@ -6019,8 +6019,8 @@ packages:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
 
-  /std-env@3.4.3:
-    resolution: {integrity: sha512-f9aPhy8fYBuMN+sNfakZV18U39PbalgjXG3lLB9WkaYTxijru61wb57V9wxxNthXM5Sd88ETBWi29qLAsHO52Q==}
+  /std-env@3.5.0:
+    resolution: {integrity: sha512-JGUEaALvL0Mf6JCfYnJOTcobY+Nc7sG/TemDRBqCA0wEr4DER7zDchaaixTlmOxAjG1uRJmX82EQcxwTQTkqVA==}
     dev: true
 
   /string-argv@0.3.2:
@@ -6614,7 +6614,7 @@ packages:
       magic-string: 0.30.2
       pathe: 1.1.1
       picocolors: 1.0.0
-      std-env: 3.4.3
+      std-env: 3.5.0
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.7.0
