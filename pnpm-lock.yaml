@@ -143,8 +143,8 @@ devDependencies:
     specifier: ^8.2.4
     version: 8.2.4
   '@types/js-yaml':
-    specifier: ^4.0.8
-    version: 4.0.8
+    specifier: ^4.0.9
+    version: 4.0.9
   '@types/lodash-es':
     specifier: ^4.17.10
     version: 4.17.10
@@ -2001,8 +2001,8 @@ packages:
     resolution: {integrity: sha512-z/QT1XN4K4KYuslS23k62yDIDLwLFkzxOuMplDtObz0+y7VqJCaO2o+SPwHCvLFZh7xazvvoor2tA/hPz9ee7g==}
     dev: true
 
-  /@types/js-yaml@4.0.8:
-    resolution: {integrity: sha512-m6jnPk1VhlYRiLFm3f8X9Uep761f+CK8mHyS65LutH2OhmBF0BeMEjHgg05usH8PLZMWWc/BUR9RPmkvpWnyRA==}
+  /@types/js-yaml@4.0.9:
+    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
     dev: true
 
   /@types/json-schema@7.0.12:
