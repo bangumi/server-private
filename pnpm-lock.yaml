@@ -81,8 +81,8 @@ dependencies:
     specifier: ^4.1.0
     version: 4.1.0
   liquidjs:
-    specifier: ^10.9.3
-    version: 10.9.3
+    specifier: ^10.9.4
+    version: 10.9.4
   lodash-es:
     specifier: ^4.17.21
     version: 4.17.21
@@ -4471,8 +4471,8 @@ packages:
       - supports-color
     dev: true
 
-  /liquidjs@10.9.3:
-    resolution: {integrity: sha512-vG8fLPSBtf0C6FJg0DwzxwWF0sPE+wIRrrGsNoe0DP3Pg4HOPqycGDT14V4UfyskUXsum7DkhUuZQ9tBRjbX+g==}
+  /liquidjs@10.9.4:
+    resolution: {integrity: sha512-E7SmGMwhv0Pa1Yau6odd2EgNPAmrx1OOjzvpm9AFxBGVtCX2Bx4fOCDtDCML13L7g6zjLPN7Kb/kakyAl2HTPQ==}
     engines: {node: '>=14'}
     hasBin: true
     dependencies:
