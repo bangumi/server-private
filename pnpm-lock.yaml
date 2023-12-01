@@ -54,8 +54,8 @@ dependencies:
     specifier: ^4.24.3
     version: 4.24.3
   fastify-metrics:
-    specifier: ^10.3.3
-    version: 10.3.3(fastify@4.24.3)
+    specifier: ^10.4.1
+    version: 10.4.1(fastify@4.24.3)
   fastify-socket.io:
     specifier: ^5.0.0
     version: 5.0.0(fastify@4.24.3)
@@ -3561,8 +3561,8 @@ packages:
       strnum: 1.0.5
     dev: false
 
-  /fastify-metrics@10.3.3(fastify@4.24.3):
-    resolution: {integrity: sha512-TmMcfrMWBSbA7yk31tFtJnWKtNXLSO7jmTRIjPX9HKC4pLmyd0JnOQ3r9XCYnev6NL9/eVRXxNfrsqQdKTLZkw==}
+  /fastify-metrics@10.4.1(fastify@4.24.3):
+    resolution: {integrity: sha512-RW3DHzQw2OmJ/oNClvbMJJVB9ZOxsG0Qh2zOkk5YebNN1e+DM7bxxnKdX1QafOfTxh6xRSPojM4c7Y7EXQFQlw==}
     peerDependencies:
       fastify: '>=4'
     dependencies:
