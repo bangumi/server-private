@@ -24,8 +24,8 @@ dependencies:
     specifier: ^6.12.0
     version: 6.12.0
   '@fastify/swagger':
-    specifier: ^8.12.0
-    version: 8.12.0
+    specifier: ^8.12.1
+    version: 8.12.1
   '@fastify/view':
     specifier: ^8.2.0
     version: 8.2.0
@@ -1404,8 +1404,8 @@ packages:
       glob: 8.1.0
       p-limit: 3.1.0
 
-  /@fastify/swagger@8.12.0:
-    resolution: {integrity: sha512-IMRc0xYuzRvtFDMuaWHyVbvM7CuAi0g3o2jaVgLDvETXPrXWAMWsHYR5niIdWBDPgGUq+soHkag1DKXyhPDB0w==}
+  /@fastify/swagger@8.12.1:
+    resolution: {integrity: sha512-0GATwS+a1QHHhTYtyZfoIpRD5lL1XlDSiV2DqsTVMQxKpL18kx5o6oMz0l0rtFr4883XIGiRuvTv2rxFRIxp4Q==}
     dependencies:
       fastify-plugin: 4.5.1
       json-schema-resolver: 2.0.0
@@ -4903,6 +4903,7 @@ packages:
 
   /loupe@2.3.6:
     resolution: {integrity: sha512-RaPMZKiMy8/JruncMU5Bt6na1eftNoo++R4Y+N2FrxkDVTrGvcyzFTsaGif4QTeKESheMGegbhw6iUAq+5A8zA==}
+    deprecated: Please upgrade to 2.3.7 which fixes GHSA-4q6p-r6v2-jvc5
     dependencies:
       get-func-name: 2.0.2
     dev: true
