@@ -99,7 +99,7 @@
     "license-checker": "^25.0.1",
     "lint-staged": "^15.1.0",
     "mercurius-integration-testing": "^8.1.1",
-    "nodemon": "^3.0.1",
+    "nodemon": "^3.0.2",
     "p-limit": "^5.0.0",
     "prettier": "^3.1.0",
     "prettier-plugin-jsdoc": "^1.1.1",
