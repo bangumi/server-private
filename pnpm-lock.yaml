@@ -90,8 +90,8 @@ dependencies:
     specifier: ^3.4.4
     version: 3.4.4
   mercurius:
-    specifier: ^13.3.1
-    version: 13.3.1(graphql@16.8.1)
+    specifier: ^13.3.3
+    version: 13.3.3(graphql@16.8.1)
   micromatch:
     specifier: ^4.0.5
     version: 4.0.5
@@ -225,7 +225,7 @@ devDependencies:
     version: 15.2.0
   mercurius-integration-testing:
     specifier: ^8.1.1
-    version: 8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.3.1)
+    version: 8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.3.3)
   nodemon:
     specifier: ^3.0.2
     version: 3.0.2
@@ -5039,7 +5039,7 @@ packages:
       '@types/mdast': 4.0.1
     dev: true
 
-  /mercurius-integration-testing@8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.3.1):
+  /mercurius-integration-testing@8.1.1(fastify@4.24.3)(graphql@16.8.1)(mercurius@13.3.3):
     resolution: {integrity: sha512-JyyKGw4pXe+Hy8huDIMjIO1B0DIJkQDXuWX9+gtAQXKlwICQrTzUAfQGtqVMFypsvV8W15TUCxZraIqt01mFGg==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -5058,15 +5058,15 @@ packages:
       cookie: 0.5.0
       fastify: 4.24.3
       graphql: 16.8.1
-      mercurius: 13.3.1(graphql@16.8.1)
+      mercurius: 13.3.3(graphql@16.8.1)
       ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
     dev: true
 
-  /mercurius@13.3.1(graphql@16.8.1):
-    resolution: {integrity: sha512-jUeo3pO1H/Etpipa9RB5kDbXX2NsIH3IBnAIlDYoNaOeuo3Ka9nNH0ujYTnjkpytuAdygnStU/hcm1afwTKYlA==}
+  /mercurius@13.3.3(graphql@16.8.1):
+    resolution: {integrity: sha512-42IWxrvKjzOwdd+HdwV8AgYL8kpARJ0BzcqczWDFFsxgDM3MDlGm7PpesT1BsohvnYCN+5OU6Xk5vySkd2x9Eg==}
     engines: {node: '>=14.19.3'}
     peerDependencies:
       graphql: ^16.0.0
@@ -5084,7 +5084,7 @@ packages:
       secure-json-parse: 2.7.0
       single-user-cache: 0.6.0
       tiny-lru: 11.0.1
-      undici: 5.26.3
+      undici: 5.28.1
       ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil
@@ -6883,8 +6883,8 @@ packages:
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  /undici@5.26.3:
-    resolution: {integrity: sha512-H7n2zmKEWgOllKkIUkLvFmsJQj062lSm3uA4EYApG8gLuiOM0/go9bIoC3HVaSnfg4xunowDE2i9p8drkXuvDw==}
+  /undici@5.28.1:
+    resolution: {integrity: sha512-xcIIvj1LOQH9zAL54iWFkuDEaIVEjLrru7qRpa3GrEEHk6OBhb/LycuUY2m7VCcTuDeLziXCxobQVyKExyGeIA==}
     engines: {node: '>=14.0'}
     dependencies:
       '@fastify/busboy': 2.0.0
