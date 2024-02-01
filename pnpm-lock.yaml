@@ -149,8 +149,8 @@ devDependencies:
     specifier: ^4.17.12
     version: 4.17.12
   '@types/luxon':
-    specifier: ^3.3.8
-    version: 3.3.8
+    specifier: ^3.4.2
+    version: 3.4.2
   '@types/mime-types':
     specifier: ^2.1.4
     version: 2.1.4
@@ -2358,8 +2358,8 @@ packages:
     resolution: {integrity: sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==}
     dev: true
 
-  /@types/luxon@3.3.8:
-    resolution: {integrity: sha512-jYvz8UMLDgy3a5SkGJne8H7VA7zPV2Lwohjx0V8V31+SqAjNmurWMkk9cQhfvlcnXWudBpK9xPM1n4rljOcHYQ==}
+  /@types/luxon@3.4.2:
+    resolution: {integrity: sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA==}
     dev: true
 
   /@types/mdast@4.0.1:
