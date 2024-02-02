@@ -1,11 +1,11 @@
 import pLimit from 'p-limit';
-import { expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { formatDuration, intval, parseDuration, randomBase62String, randomBytes } from './index.ts';
 
 const limit = pLimit(10);
 
-test('random should not have bias', async () => {
+describe('random should not have bias', async () => {
   const step = 4000;
   const loop = 2000;
   const length = step * loop;
