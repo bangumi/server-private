@@ -18,7 +18,7 @@
     "test": "vitest --run",
     "vitest": "vitest",
     "file": "node --no-warnings --loader @esbuild-kit/esm-loader",
-    "license-check": "license-checker --excludePrivatePackages --production --summary --onlyAllow=\"0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;Python-2.0;\"",
+    "license-check": "license-checker --excludePrivatePackages --production --summary --onlyAllow=\"0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;Python-2.0;BlueOak-1.0.0\"",
     "e": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader",
     "lint-staged": "lint-staged -q",
     "prepare": "husky install"
@@ -66,7 +66,7 @@
     "reflect-metadata": "^0.2.1",
     "socket.io": "^4.7.4",
     "socks-proxy-agent": "^8.0.2",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@shopify/prettier-plugin-liquid": "^1.4.1",
