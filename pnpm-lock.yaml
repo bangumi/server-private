@@ -66,8 +66,8 @@ dependencies:
     specifier: ^16.8.1
     version: 16.8.1
   http-proxy-agent:
-    specifier: ^7.0.0
-    version: 7.0.0
+    specifier: ^7.0.2
+    version: 7.0.2
   http-status-codes:
     specifier: ^2.3.0
     version: 2.3.0
@@ -4566,8 +4566,8 @@ packages:
       statuses: 2.0.1
       toidentifier: 1.0.1
 
-  /http-proxy-agent@7.0.0:
-    resolution: {integrity: sha512-+ZT+iBxVUQ1asugqnD6oWoRiS25AkjNfG085dKJGtGxkdwLQrMKU5wJr2bOOFAXzKcTuqq+7fZlTMgG3SRfIYQ==}
+  /http-proxy-agent@7.0.2:
+    resolution: {integrity: sha512-T1gkAiYYDWYx3V5Bmyu7HcfcvL7mUrTWiM6yOfa3PIphViJ/gFPbvidQ+veqSOHci/PxBcDabeUNCzpOODJZig==}
     engines: {node: '>= 14'}
     dependencies:
       agent-base: 7.1.0
