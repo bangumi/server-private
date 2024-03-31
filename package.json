@@ -36,7 +36,7 @@
     "@sinclair/typebox": "~0.32.15",
     "@trim21/php-serialize": "^0.1.1",
     "ajv": "^8.12.0",
-    "ajv-formats": "^2.1.1",
+    "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
     "altair-fastify-plugin": "^6.3.0",
     "fastify": "^4.26.1",
