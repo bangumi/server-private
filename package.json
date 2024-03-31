@@ -62,7 +62,7 @@
     "parse-duration": "^1.1.0",
     "pino": "^8.19.0",
     "pino-pretty": "^11.0.0",
-    "prom-client": "^15.1.0",
+    "prom-client": "^15.1.1",
     "reflect-metadata": "^0.2.1",
     "socket.io": "^4.7.4",
     "socks-proxy-agent": "^8.0.2",
