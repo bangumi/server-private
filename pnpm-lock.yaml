@@ -21,8 +21,8 @@ dependencies:
     specifier: ^3.4.1
     version: 3.4.1
   '@fastify/static':
-    specifier: ^7.0.1
-    version: 7.0.1
+    specifier: ^7.0.2
+    version: 7.0.2
   '@fastify/swagger':
     specifier: ^8.14.0
     version: 8.14.0
@@ -1491,8 +1491,8 @@ packages:
       glob: 8.1.0
       p-limit: 3.1.0
 
-  /@fastify/static@7.0.1:
-    resolution: {integrity: sha512-i1p/nELMknAisNfnjo7yhfoUOdKzA+n92QaMirv2NkZrJ1Wl12v2nyTYlDwPN8XoStMBAnRK/Kx6zKmfrXUPXw==}
+  /@fastify/static@7.0.2:
+    resolution: {integrity: sha512-5opbHpZj29EGVBNgELW6gDkueiFWxjLsLVQQCgKencJctq0aqk3vBlkO97z5It4zaSAb3FXOeAxm7KP2tL/hQA==}
     dependencies:
       '@fastify/accept-negotiator': 1.1.0
       '@fastify/send': 2.1.0
