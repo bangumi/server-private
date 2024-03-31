@@ -39,7 +39,7 @@
     "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
     "altair-fastify-plugin": "^6.3.1",
-    "fastify": "^4.26.1",
+    "fastify": "^4.26.2",
     "fastify-metrics": "^11.0.0",
     "fastify-socket.io": "^5.0.0",
     "got": "^14.2.0",
