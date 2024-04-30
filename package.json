@@ -75,7 +75,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.4.2",
     "@types/mime-types": "^2.1.4",
-    "@types/node": "^20.12.2",
+    "@types/node": "^20.12.7",
     "@typescript-eslint/eslint-plugin": "^7.4.0",
     "@typescript-eslint/parser": "^7.4.0",
     "@typescript-eslint/utils": "^7.4.0",
