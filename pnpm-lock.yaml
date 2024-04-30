@@ -27,8 +27,8 @@ dependencies:
     specifier: ^8.14.0
     version: 8.14.0
   '@fastify/view':
-    specifier: ^9.0.0
-    version: 9.0.0
+    specifier: ^9.1.0
+    version: 9.1.0
   '@node-rs/bcrypt':
     specifier: ^1.10.1
     version: 1.10.1
@@ -1516,11 +1516,11 @@ packages:
       - supports-color
     dev: false
 
-  /@fastify/view@9.0.0:
-    resolution: {integrity: sha512-4KSM75Ad7Q9adQWJK17XAJlmwNE9HhIe8TdSTnvFzDvt0aOwmS4iY6k+Xd4NWuEk0JbteS6kzo0eZOr0ZZgPVg==}
+  /@fastify/view@9.1.0:
+    resolution: {integrity: sha512-jRTGDljs/uB2p8bf6c1x4stGjP7H84VQkhbtDgCx55Mxf9Fplud5UZIHubvL4BTTX8jNYEzP1FpNAOBi7vibxg==}
     dependencies:
       fastify-plugin: 4.5.1
-      hashlru: 2.3.0
+      toad-cache: 3.7.0
     dev: false
 
   /@fastify/websocket@8.3.1:
@@ -4601,10 +4601,6 @@ packages:
     dependencies:
       has-symbols: 1.0.3
     dev: true
-
-  /hashlru@2.3.0:
-    resolution: {integrity: sha512-0cMsjjIC8I+D3M44pOQdsy0OHXGLVz6Z0beRuufhKa0KfaD2wGwAev6jILzXsd3/vpnNQJmWyZtIILqM1N+n5A==}
-    dev: false
 
   /hasown@2.0.2:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
