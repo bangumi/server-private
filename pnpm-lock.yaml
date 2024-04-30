@@ -224,8 +224,8 @@ devDependencies:
     specifier: ^15.2.2
     version: 15.2.2
   mercurius-integration-testing:
-    specifier: ^8.1.1
-    version: 8.1.1(fastify@4.26.2)(graphql@16.8.1)(mercurius@13.4.1)
+    specifier: ^8.2.0
+    version: 8.2.0(fastify@4.26.2)(graphql@16.8.1)(mercurius@13.4.1)
   nodemon:
     specifier: ^3.1.0
     version: 3.1.0
@@ -5326,15 +5326,15 @@ packages:
       '@types/mdast': 4.0.3
     dev: true
 
-  /mercurius-integration-testing@8.1.1(fastify@4.26.2)(graphql@16.8.1)(mercurius@13.4.1):
-    resolution: {integrity: sha512-JyyKGw4pXe+Hy8huDIMjIO1B0DIJkQDXuWX9+gtAQXKlwICQrTzUAfQGtqVMFypsvV8W15TUCxZraIqt01mFGg==}
+  /mercurius-integration-testing@8.2.0(fastify@4.26.2)(graphql@16.8.1)(mercurius@13.4.1):
+    resolution: {integrity: sha512-ew677oij/lTiLXECZsVIZfLxIFnur9Q+rKb20kP3OJmlxFqJH0IqawDW+CfHXBFqZPi19FSEGzzde2zr0ceiDw==}
     engines: {node: '>=14'}
     peerDependencies:
       '@mercuriusjs/federation': ^1 || ^2
       '@mercuriusjs/gateway': ^1.2.0
       fastify: ^4.0.0
       graphql: '*'
-      mercurius: ^12 || ^13
+      mercurius: ^12 || ^13 || ^14
     peerDependenciesMeta:
       '@mercuriusjs/federation':
         optional: true
