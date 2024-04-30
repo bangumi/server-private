@@ -32,7 +32,7 @@
     "@fastify/static": "^7.0.3",
     "@fastify/swagger": "^8.14.0",
     "@fastify/view": "^9.1.0",
-    "@node-rs/bcrypt": "^1.10.1",
+    "@node-rs/bcrypt": "^1.10.4",
     "@sinclair/typebox": "~0.32.27",
     "@trim21/php-serialize": "^0.1.1",
     "ajv": "^8.13.0",
