@@ -1,0 +1,101 @@
+{% assign title = '登录至 Bangumi 番组计划' %}
+{% layout 'oauth/layout' %}
+
+{% block head %}
+<script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>
+{% endblock %}
+
+{% block content %}
+<div
+  class='container d-flex flex-column justify-content-center align-items-center'
+  style='height: 100%;'
+>
+  <div class='shadow rounded p-4'>
+    <h1 style='color: #F09199;'>登录至 Bangumi</h1>
+    <div class='row m-1'>
+      <ul class='list-group error-details'></ul>
+    </div>
+    <div class='row'>
+      <form id='loginForm' name='login'>
+        <div class='mb-3'>
+          <label for='email' class='form-label'>你的 Email 地址</label>
+          <input
+            id='email'
+            name='email'
+            type='email'
+            class='form-control shadow-sm'
+          >
+        </div>
+        <div class='mb-3'>
+          <label for='password' class='form-label'>你的密码</label>
+          <input
+            id='password'
+            type='password'
+            name='password'
+            class='form-control shadow-sm'
+          >
+        </div>
+        <div class='mb-3'>
+          <div
+            class='cf-turnstile shadow-sm'
+            data-action='login'
+            data-sitekey='{{ TURNSTILE_SITE_KEY }}'
+          ></div>
+        </div>
+        <button type='submit' class='btn btn-primary shadow'>登录</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('form').on('submit', function (e) {
+      e.preventDefault();
+      $('.error-details').html('');
+      const data = {};
+      Array.from($('form').serializeArray()).forEach(({ name, value }, index) => {
+        data[name] = value;
+      });
+
+      if (!('cf-turnstile-response' in data)) {
+        return;
+      }
+
+      async function submit() {
+        const res = await fetch('/p1/login', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        if (res.status > 300) {
+          turnstile.reset();
+          const d = await res.json();
+          if (res.status === 401) {
+            const remain = res.headers.get('X-RateLimit-Remaining');
+            $('.error-details')
+              .append(`<li class="list-group-item list-group-item-danger">${d.message}</li>`)
+              .append(
+                `<li class="list-group-item list-group-item-danger">剩余登录次数: ${remain}</li>`,
+              );
+          } else {
+            $('.error-details').prepend(
+              `<li class="list-group-item list-group-item-danger">${d.message}</li>`,
+            );
+          }
+        } else {
+          let qs = new URLSearchParams(location.search);
+          const to = qs.get('to') ?? '/';
+          if (to.startsWith('/')) {
+            location.href = to;
+          } else {
+            location.href = '/';
+          }
+        }
+      }
+
+      submit();
+    });
+  });
+</script>
+{% endblock %}

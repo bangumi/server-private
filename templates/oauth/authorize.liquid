@@ -1,0 +1,31 @@
+{% assign title = '授权应用访问' %}
+{% layout 'oauth/layout' %}
+
+{% block content %}
+<div
+  class='container d-flex flex-column justify-content-center align-items-center'
+  style='height: 100%;'
+>
+  {% if app %}
+    <div class='shadow rounded p-4'>
+      <h1 style='color: #F09199;'>授权 {{ app.name }} 访问你的账户</h1>
+      <div class='row m-1'>
+        <ul class='list-group error-details'></ul>
+      </div>
+      <div class='row'></div>
+    </div>
+  {% else %}
+    <div class='shadow rounded p-5 text-center'>
+      <div class='row'>
+        <div class='col-md-auto'>
+          <img src='/oauth/static/img/404.png'>
+        </div>
+        <div class='col-md-auto  align-self-center'>
+          <h3 style='color: #F09199;'>呜咕，出错了</h3>
+          <p>{{ error_message }}</p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
