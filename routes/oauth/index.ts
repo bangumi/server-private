@@ -1,5 +1,6 @@
 import Cookie from '@fastify/cookie';
 import { createError } from '@fastify/error';
+import * as formbody from '@fastify/formbody';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
@@ -139,6 +140,7 @@ export async function setup(app: App) {
     }
   });
 
+  await app.register(formbody);
   await app.register(userOauthRoutes);
 }
 
@@ -201,7 +203,7 @@ async function userOauthRoutes(app: App) {
         }),
       },
     },
-    async (req) => {
+    async (req, reply) => {
       if (!req.auth.login) {
         throw new NeedLoginError('oauth authorize');
       }
@@ -218,14 +220,8 @@ async function userOauthRoutes(app: App) {
       const buf = await randomBytes(20);
       const code = buf.toString('hex');
       await redis.setex(`${redisOauthPrefix}:code:${code}`, 60, req.auth.userID);
-      const qs = new URLSearchParams({
-        code,
-      });
-
-      const redirect = `${client.redirectUri}?${qs.toString()}`;
-      return {
-        redirect,
-      };
+      const qs = new URLSearchParams({ code });
+      return await reply.redirect(`${client.redirectUri}?${qs.toString()}`);
     },
   );
 

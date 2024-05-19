@@ -116,34 +116,4 @@
     </div>
   {% endif %}
 </div>
-
-<script>
-  $(document).ready(function () {
-    $('form').on('submit', function (e) {
-      e.preventDefault();
-      $('.error-details').html('');
-      const data = {};
-      Array.from($('form').serializeArray()).forEach(({ name, value }, index) => {
-        data[name] = value;
-      });
-
-      async function submit() {
-        const res = await fetch('/oauth/authorize', {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-        const d = await res.json();
-        if (res.status > 300) {
-          alert('出错了: ' + d.message);
-        } else {
-          location = d.redirect;
-        }
-      }
-
-      submit();
-    });
-  });
-</script>
-
 {% endblock %}
