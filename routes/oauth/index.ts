@@ -217,11 +217,12 @@ async function userOauthRoutes(app: App) {
         throw RedirectUriMismatchError;
       }
 
-      const buf = await randomBytes(20);
-      const code = buf.toString('hex');
+      const buf = await randomBytes(30);
+      const code = buf.toString('base64url');
       await redis.setex(`${redisOauthPrefix}:code:${code}`, 60, req.auth.userID);
-      const qs = new URLSearchParams({ code });
-      return await reply.redirect(`${client.redirectUri}?${qs.toString()}`);
+      const u = new URL(client.redirectUri);
+      u.searchParams.set('code', code);
+      return reply.redirect(u.toString());
     },
   );
 
