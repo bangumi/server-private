@@ -10,40 +10,42 @@
   class='container d-flex flex-column justify-content-center align-items-center'
   style='height: 100%;'
 >
-  <div class='shadow rounded p-4'>
-    <h1 style='color: #F09199;'>登录至 Bangumi</h1>
-    <div class='row m-1'>
-      <ul class='list-group error-details'></ul>
-    </div>
-    <div class='row'>
-      <form id='loginForm' name='login'>
-        <div class='mb-3'>
-          <label for='email' class='form-label'>你的 Email 地址</label>
-          <input
-            id='email'
-            name='email'
-            type='email'
-            class='form-control shadow-sm'
-          >
-        </div>
-        <div class='mb-3'>
-          <label for='password' class='form-label'>你的密码</label>
-          <input
-            id='password'
-            type='password'
-            name='password'
-            class='form-control shadow-sm'
-          >
-        </div>
-        <div class='mb-3'>
-          <div
-            class='cf-turnstile shadow-sm'
-            data-action='login'
-            data-sitekey='{{ TURNSTILE_SITE_KEY }}'
-          ></div>
-        </div>
-        <button type='submit' class='btn btn-primary shadow'>登录</button>
-      </form>
+  <div class='card shadow rounded p-4'>
+    <div class='card-body'>
+      <h1 style='color: #F09199;'>登录至 Bangumi</h1>
+      <div class='row m-1'>
+        <ul class='list-group error-details'></ul>
+      </div>
+      <div class='row'>
+        <form id='loginForm' name='login'>
+          <div class='mb-3'>
+            <label for='email' class='form-label'>你的 Email 地址</label>
+            <input
+              id='email'
+              name='email'
+              type='email'
+              class='form-control shadow-sm'
+            >
+          </div>
+          <div class='mb-3'>
+            <label for='password' class='form-label'>你的密码</label>
+            <input
+              id='password'
+              type='password'
+              name='password'
+              class='form-control shadow-sm'
+            >
+          </div>
+          <div class='mb-3'>
+            <div
+              class='cf-turnstile shadow-sm'
+              data-action='login'
+              data-sitekey='{{ TURNSTILE_SITE_KEY }}'
+            ></div>
+          </div>
+          <button type='submit' class='btn btn-primary shadow'>登录</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>

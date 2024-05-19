@@ -6,26 +6,140 @@
   class='container d-flex flex-column justify-content-center align-items-center'
   style='height: 100%;'
 >
-  {% if app %}
-    <div class='shadow rounded p-4'>
-      <h1 style='color: #F09199;'>授权 {{ app.name }} 访问你的账户</h1>
-      <div class='row m-1'>
-        <ul class='list-group error-details'></ul>
+  {% if client %}
+    <div class='card shadow rounded p-4'>
+      <div class='card-body'>
+        <h1 class='card-title' style='color: #F09199;'>
+          授权 {{ client.app.appName }} 访问你的账户
+        </h1>
+        <ul class='list-group list-group-flush'>
+          <li class='list-group-item d-flex align-items-start border-0'>
+            <a href='https://bgm.tv/user/{{ creator.username }}'>
+              <img
+                with='64px'
+                height='64px'
+                class='rounded'
+                src='{{ creator.avatar | default: '/img/no_icon_subject.png' }}'
+              >
+            </a>
+            <div class='px-2' style='width: 100%;'>
+              <span>
+                <b>{{ client.app.appName }}</b> by
+                <a href='https://bgm.tv/user/{{ creator.username }}' class='link-underline-light'>
+                  {{ creator.nickname }}
+                </a>
+              </span>
+              <div>
+                <p>{{ client.app.appDesc }}</p>
+              </div>
+              <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
+            </div>
+          </li>
+          <li class='list-group-item d-flex align-items-start border-0'>
+            <img
+              with='48px'
+              height='48px'
+              class='mx-2 rounded'
+              src='/img/no_icon_app.png'
+            >
+            <div class='px-2' style='width: 100%;'>
+              <span>
+                <b>读取你的账户信息</b>
+              </span>
+              <div class='small text-secondary'>
+                <span class='badge border border-secondary text-secondary'>只读</span>
+              </div>
+              <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
+            </div>
+          </li>
+          <li class='list-group-item d-flex align-items-start border-0'>
+            <img
+              with='48px'
+              height='48px'
+              class='mx-2 rounded'
+              src='/img/no_icon_app.png'
+            >
+            <div class='px-2' style='width: 100%;'>
+              <span>
+                <b>读写你的收藏信息</b>
+              </span>
+              <div class='small text-secondary'>
+                <span class='badge border border-secondary text-secondary'>只读</span>
+                <span>允许应用读写你收藏、收视进度等信息</span>
+              </div>
+              <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
+            </div>
+          </li>
+        </ul>
+
+        <div class='row mt-2'>
+          <form id='authForm' method='post' name='auth'>
+            <input id='client_id' type='hidden' name='client_id' value='{{ client.clientID }}'>
+            <input
+              id='redirect_uri'
+              type='hidden'
+              name='redirect_uri'
+              value='{{ client.redirectUri }}'
+            >
+            <button
+              style='width: 100%; background: #F09199;'
+              type='submit'
+              class='btn btn-primary shadow-sm border-0'
+            >
+              授权
+            </button>
+          </form>
+          <hr>
+          <span class='small'>
+            <span class='text-black-50'>应用创建于</span>
+            <span>
+              {{ client.app.appTimestamp | date: '%Y-%m-%d %H:%M:%S', 'Asia/Shanghai' }}
+            </span>
+          </span>
+        </div>
       </div>
-      <div class='row'></div>
-    </div>
   {% else %}
     <div class='shadow rounded p-5 text-center'>
       <div class='row'>
         <div class='col-md-auto'>
-          <img src='/oauth/static/img/404.png'>
+          <img src='/img/404.png'>
         </div>
         <div class='col-md-auto  align-self-center'>
           <h3 style='color: #F09199;'>呜咕，出错了</h3>
-          <p>{{ error_message }}</p>
+          <p>{{ error }}</p>
         </div>
       </div>
     </div>
   {% endif %}
 </div>
+
+<script>
+  $(document).ready(function () {
+    $('form').on('submit', function (e) {
+      e.preventDefault();
+      $('.error-details').html('');
+      const data = {};
+      Array.from($('form').serializeArray()).forEach(({ name, value }, index) => {
+        data[name] = value;
+      });
+
+      async function submit() {
+        const res = await fetch('/oauth/authorize', {
+          method: 'post',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const d = await res.json();
+        if (res.status > 300) {
+          alert('出错了: ' + d.message);
+        } else {
+          location = d.redirect;
+        }
+      }
+
+      submit();
+    });
+  });
+</script>
+
 {% endblock %}
