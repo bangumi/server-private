@@ -68,62 +68,62 @@ const TokenResponse = t.Object(
 );
 type ITokenResponse = Static<typeof TokenResponse>;
 
-const AppNonexistenceError = createError(
+const AppNonexistenceError = createError<[]>(
   'APP_NONEXISTENCE',
   `App does not exist`,
   StatusCodes.NOT_FOUND,
 );
-const InvalidResponseTypeError = createError(
+const InvalidResponseTypeError = createError<[]>(
   'INVALID_RESPONSE_TYPE',
   `Invalid response type`,
   StatusCodes.BAD_REQUEST,
 );
-const RedirectUriMismatchError = createError(
+const RedirectUriMismatchError = createError<[]>(
   'REDIRECT_URI_MISMATCH',
   `Redirect URI mismatch`,
   StatusCodes.BAD_REQUEST,
 );
-const AppCreatorNonexsistenceError = createError(
+const AppCreatorNonexsistenceError = createError<[]>(
   'APP_CREATOR_NONEXISTENCE',
   `App creator does not exist`,
   StatusCodes.NOT_FOUND,
 );
-const MissingCodeError = createError(
-  'MISSING_CODE',
+const MissingAuthorizationCodeError = createError<[]>(
+  'MISSING_AUTHORIZATION_CODE',
   `Authorization code is missing`,
   StatusCodes.BAD_REQUEST,
 );
-const MissingRefreshTokenError = createError(
+const MissingRefreshTokenError = createError<[]>(
   'MISSING_REFRESH_TOKEN',
   `Refresh token is missing`,
   StatusCodes.BAD_REQUEST,
 );
-const InvalidGrantTypeError = createError(
+const InvalidGrantTypeError = createError<[]>(
   'INVALID_GRANT_TYPE',
   `Invalid grant type`,
   StatusCodes.BAD_REQUEST,
 );
-const InvalidClientSecretError = createError(
+const InvalidClientSecretError = createError<[]>(
   'INVALID_CLIENT_SECRET',
   `Invalid client secret`,
   StatusCodes.BAD_REQUEST,
 );
-const InvalidCodeError = createError(
-  'INVALID_CODE',
+const InvalidAuthorizationCodeError = createError<[]>(
+  'INVALID_AUTHORIZATION_CODE',
   `Invalid authorization code`,
   StatusCodes.BAD_REQUEST,
 );
-const InvalidRefreshTokenError = createError(
+const InvalidRefreshTokenError = createError<[]>(
   'INVALID_REFRESH_TOKEN',
   `Invalid refresh token`,
   StatusCodes.BAD_REQUEST,
 );
-const InvalidClientIDError = createError(
+const InvalidClientIDError = createError<[]>(
   'INVALID_CLIENT_ID',
   `Invalid client ID`,
   StatusCodes.BAD_REQUEST,
 );
-const RefreshTokenExpiredError = createError(
+const RefreshTokenExpiredError = createError<[]>(
   'REFRESH_TOKEN_EXPIRED',
   `Refresh token expired`,
   StatusCodes.BAD_REQUEST,
@@ -270,7 +270,7 @@ async function userOauthRoutes(app: App) {
       switch (req.body.grant_type) {
         case 'authorization_code': {
           if (!req.body.code) {
-            throw MissingCodeError;
+            throw MissingAuthorizationCodeError;
           }
           const tokenReq = {
             clientID: req.body.client_id,
@@ -315,7 +315,7 @@ async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
   }
   const userID = await redis.get(`${redisOauthPrefix}:code:${req.code}`);
   if (!userID) {
-    throw InvalidCodeError;
+    throw InvalidAuthorizationCodeError;
   }
   await redis.del(`${redisOauthPrefix}:code:${req.code}`);
   const tokenInfo = JSON.stringify({
