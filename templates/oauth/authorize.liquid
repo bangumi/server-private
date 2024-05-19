@@ -15,7 +15,7 @@
         </h1>
         <ul class='list-group list-group-flush'>
           <li class='list-group-item d-flex align-items-start border-0'>
-            <a href='https://bgm.tv/user/{{ creator.username | escape  }}'>
+            <a href='https://bgm.tv/user/{{ creator.username }}'>
               <img
                 with='64px'
                 height='64px'
@@ -27,7 +27,7 @@
               <span>
                 <b>{{ client.app.appName | escape }}</b> by
                 <a
-                  href='https://bgm.tv/user/{{ creator.username | escape  }}'
+                  href='https://bgm.tv/user/{{ creator.username }}'
                   class='link-underline-light'
                 >
                   {{ creator.nickname | escape }}
