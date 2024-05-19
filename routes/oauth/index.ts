@@ -175,6 +175,13 @@ async function userOauthRoutes(app: App) {
           error: AppNonexistenceError,
         });
       }
+
+      if (!client.redirectUri) {
+        return await reply.view('oauth/authorize', {
+          error: { message: 'client missing redirect_uri config' },
+        });
+      }
+
       if (req.query.redirect_uri && client.redirectUri !== req.query.redirect_uri) {
         return await reply.view('oauth/authorize', {
           error: RedirectUriMismatchError,
