@@ -5,6 +5,7 @@ import { createError } from '@fastify/error';
 import { fastifyView } from '@fastify/view';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { StatusCodes } from 'http-status-codes';
 import { Liquid } from 'liquidjs';
 import { DateTime, Duration } from 'luxon';
 
@@ -67,6 +68,67 @@ const TokenResponse = t.Object(
 );
 type ITokenResponse = Static<typeof TokenResponse>;
 
+const AppNonexistenceError = createError(
+  'APP_NONEXISTENCE',
+  `App does not exist`,
+  StatusCodes.NOT_FOUND,
+);
+const InvalidResponseTypeError = createError(
+  'INVALID_RESPONSE_TYPE',
+  `Invalid response type`,
+  StatusCodes.BAD_REQUEST,
+);
+const RedirectUriMismatchError = createError(
+  'REDIRECT_URI_MISMATCH',
+  `Redirect URI mismatch`,
+  StatusCodes.BAD_REQUEST,
+);
+const AppCreatorNonexsistenceError = createError(
+  'APP_CREATOR_NONEXISTENCE',
+  `App creator does not exist`,
+  StatusCodes.NOT_FOUND,
+);
+const MissingCodeError = createError(
+  'MISSING_CODE',
+  `Authorization code is missing`,
+  StatusCodes.BAD_REQUEST,
+);
+const MissingRefreshTokenError = createError(
+  'MISSING_REFRESH_TOKEN',
+  `Refresh token is missing`,
+  StatusCodes.BAD_REQUEST,
+);
+const InvalidGrantTypeError = createError(
+  'INVALID_GRANT_TYPE',
+  `Invalid grant type`,
+  StatusCodes.BAD_REQUEST,
+);
+const InvalidClientSecretError = createError(
+  'INVALID_CLIENT_SECRET',
+  `Invalid client secret`,
+  StatusCodes.BAD_REQUEST,
+);
+const InvalidCodeError = createError(
+  'INVALID_CODE',
+  `Invalid authorization code`,
+  StatusCodes.BAD_REQUEST,
+);
+const InvalidRefreshTokenError = createError(
+  'INVALID_REFRESH_TOKEN',
+  `Invalid refresh token`,
+  StatusCodes.BAD_REQUEST,
+);
+const InvalidClientIDError = createError(
+  'INVALID_CLIENT_ID',
+  `Invalid client ID`,
+  StatusCodes.BAD_REQUEST,
+);
+const RefreshTokenExpiredError = createError(
+  'REFRESH_TOKEN_EXPIRED',
+  `Refresh token expired`,
+  StatusCodes.BAD_REQUEST,
+);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   await app.register(Cookie, {
@@ -122,25 +184,23 @@ async function userOauthRoutes(app: App) {
       }
 
       if (req.query.response_type !== 'code') {
-        return await reply.view('oauth/authorize', {
-          error: 'invalid_response_type',
-        });
+        return await reply.view('oauth/authorize', { error: InvalidResponseTypeError });
       }
       const client = await orm.OauthClientRepo.findOneBy({ clientID: req.query.client_id });
       if (client === null) {
         return await reply.view('oauth/authorize', {
-          error: 'app_nonexistence',
+          error: AppNonexistenceError,
         });
       }
       if (req.query.redirect_uri !== null && client.redirectUri !== req.query.redirect_uri) {
         return await reply.view('oauth/authorize', {
-          error: 'redirect_uri_mismatch',
+          error: RedirectUriMismatchError,
         });
       }
       const creator = await orm.UserRepo.findOneBy({ id: client.app.appCreator });
       if (creator === null) {
         return await reply.view('oauth/authorize', {
-          error: 'app_creator_nonexistence',
+          error: AppCreatorNonexsistenceError,
         });
       }
       await reply.view('oauth/authorize', {
@@ -167,11 +227,11 @@ async function userOauthRoutes(app: App) {
 
       const client = await orm.OauthClientRepo.findOneBy({ clientID: req.body.client_id });
       if (client === null) {
-        throw createError('NOT_FOUND', 'app_nonexistence', 404);
+        throw AppNonexistenceError;
       }
 
       if (client.redirectUri !== req.body.redirect_uri) {
-        throw createError('BAD_REQUEST', 'redirect_uri_mismatch', 400);
+        throw RedirectUriMismatchError;
       }
 
       const buf = await randomBytes(20);
@@ -210,7 +270,7 @@ async function userOauthRoutes(app: App) {
       switch (req.body.grant_type) {
         case 'authorization_code': {
           if (!req.body.code) {
-            throw createError('BAD_REQUEST', 'missing_code', 400);
+            throw MissingCodeError;
           }
           const tokenReq = {
             clientID: req.body.client_id,
@@ -223,7 +283,7 @@ async function userOauthRoutes(app: App) {
         }
         case 'refresh_token': {
           if (!req.body.refresh_token) {
-            throw createError('BAD_REQUEST', 'missing_refresh_token', 400);
+            throw MissingRefreshTokenError;
           }
           const tokenReq = {
             clientID: req.body.client_id,
@@ -235,7 +295,7 @@ async function userOauthRoutes(app: App) {
           return await tokenFromRefresh(tokenReq);
         }
         default: {
-          throw createError('BAD_REQUEST', 'invalid_grant_type', 400);
+          throw InvalidGrantTypeError;
         }
       }
     },
@@ -245,17 +305,17 @@ async function userOauthRoutes(app: App) {
 async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
   const client = await orm.OauthClientRepo.findOneBy({ clientID: req.clientID });
   if (client === null) {
-    throw createError('NOT_FOUND', 'app_nonexistence', 404);
+    throw AppNonexistenceError;
   }
   if (client.redirectUri !== req.redirectUri) {
-    throw createError('BAD_REQUEST', 'redirect_uri_mismatch', 400);
+    throw RedirectUriMismatchError;
   }
   if (client.clientSecret !== req.clientSecret) {
-    throw createError('BAD_REQUEST', 'invalid_client_secret', 400);
+    throw InvalidClientSecretError;
   }
   const userID = await redis.get(`${redisOauthPrefix}:code:${req.code}`);
   if (!userID) {
-    throw createError('BAD_REQUEST', 'invalid_code', 400);
+    throw InvalidCodeError;
   }
   await redis.del(`${redisOauthPrefix}:code:${req.code}`);
   const tokenInfo = JSON.stringify({
@@ -301,26 +361,26 @@ async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
 async function tokenFromRefresh(req: ITokenRequestRefresh): Promise<ITokenResponse> {
   const client = await orm.OauthClientRepo.findOneBy({ clientID: req.clientID });
   if (client === null) {
-    throw createError('NOT_FOUND', 'app_nonexistence', 404);
+    throw AppNonexistenceError;
   }
   if (client.redirectUri !== req.redirectUri) {
-    throw createError('BAD_REQUEST', 'redirect_uri_mismatch', 400);
+    throw RedirectUriMismatchError;
   }
   if (client.clientSecret !== req.clientSecret) {
-    throw createError('BAD_REQUEST', 'invalid_client_secret', 400);
+    throw InvalidClientSecretError;
   }
   const refresh = await orm.AccessTokenRepo.findOneBy({
     type: TokenType.OauthToken,
     accessToken: req.refreshToken,
   });
   if (refresh === null) {
-    throw createError('BAD_REQUEST', 'invalid_refresh_token', 400);
+    throw InvalidRefreshTokenError;
   }
   if (refresh.clientId !== client.clientID) {
-    throw createError('BAD_REQUEST', 'invalid_client_id', 400);
+    throw InvalidClientIDError;
   }
   if (refresh.expires < new Date()) {
-    throw createError('BAD_REQUEST', 'refresh_token_expired', 400);
+    throw RefreshTokenExpiredError;
   }
 
   const token = {
