@@ -1,17 +1,13 @@
-import * as path from 'node:path';
-
 import Cookie from '@fastify/cookie';
 import { createError } from '@fastify/error';
-import { fastifyView } from '@fastify/view';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
-import { Liquid } from 'liquidjs';
 import { DateTime, Duration } from 'luxon';
 
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
-import { production, projectRoot, redisOauthPrefix } from '@app/lib/config.ts';
+import { redisOauthPrefix } from '@app/lib/config.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { AppDataSource, fetchUserX } from '@app/lib/orm/index.ts';
@@ -141,21 +137,6 @@ export async function setup(app: App) {
       const user = res.toResUser(await fetchUserX(req.auth.userID));
       reply.locals = { user };
     }
-  });
-
-  const liquid = new Liquid({
-    root: path.resolve(projectRoot, 'templates'),
-    extname: '.liquid',
-    cache: production,
-  });
-
-  await app.register(fastifyView, {
-    engine: {
-      liquid,
-    },
-    defaultContext: { production },
-    root: path.resolve(projectRoot, 'templates'),
-    production,
   });
 
   await app.register(userOauthRoutes);

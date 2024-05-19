@@ -2,11 +2,9 @@ import * as path from 'node:path';
 
 import Cookie from '@fastify/cookie';
 import { fastifyStatic } from '@fastify/static';
-import { fastifyView } from '@fastify/view';
-import { Liquid } from 'liquidjs';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
-import config, { production, projectRoot } from '@app/lib/config.ts';
+import config, { projectRoot } from '@app/lib/config.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -45,21 +43,6 @@ export async function setup(app: App) {
     root: path.resolve(projectRoot, 'static'),
     dotfiles: 'ignore',
     prefix: '/static/',
-  });
-
-  const liquid = new Liquid({
-    root: path.resolve(projectRoot, 'templates'),
-    extname: '.liquid',
-    cache: production,
-  });
-
-  await app.register(fastifyView, {
-    engine: {
-      liquid,
-    },
-    defaultContext: { production },
-    root: path.resolve(projectRoot, 'templates'),
-    production,
   });
 
   await app.register(admin.setup, { prefix: '/admin' });
