@@ -57,6 +57,7 @@ export const pkg = JSON.parse(
 export const VERSION = developing ? 'development' : REF || pkg.version;
 
 export const redisPrefix = `graphql-${VERSION}`;
+export const redisOauthPrefix = `oauth`;
 
 export { HTTPS_PROXY };
 

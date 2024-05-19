@@ -125,6 +125,7 @@ module.exports = {
         'import/first': 'error',
         'import/no-duplicates': 'error',
         'import/newline-after-import': 'error',
+        'import/no-named-as-default': 'off',
         'simple-import-sort/imports': [
           'error',
           {
