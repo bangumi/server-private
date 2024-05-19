@@ -10,9 +10,11 @@ import { DateTime, Duration } from 'luxon';
 
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
-import config, { production, projectRoot, redisOauthPrefix } from '@app/lib/config.ts';
+import { production, projectRoot, redisOauthPrefix } from '@app/lib/config.ts';
 import * as orm from '@app/lib/orm/index.ts';
+import { fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
+import * as res from '@app/lib/types/res.ts';
 import { randomBase62String, randomBytes } from '@app/lib/utils/index.ts';
 import { SessionAuth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -71,6 +73,12 @@ export async function setup(app: App) {
     parseOptions: cookiesPluginOption,
   });
   app.addHook('preHandler', SessionAuth);
+  app.addHook('preHandler', async function (req, reply) {
+    if (req.auth.login) {
+      const user = res.toResUser(await fetchUserX(req.auth.userID));
+      reply.locals = { user };
+    }
+  });
 
   const liquid = new Liquid({
     root: path.resolve(projectRoot, 'templates'),
@@ -92,9 +100,6 @@ export async function setup(app: App) {
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function userOauthRoutes(app: App) {
-  app.get('/login', { schema: { hide: true } }, async (req, reply) => {
-    await reply.view('oauth/login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
-  });
   app.get(
     '/authorize',
     {
@@ -111,8 +116,8 @@ async function userOauthRoutes(app: App) {
     },
     async (req, reply) => {
       if (!req.auth.login) {
-        const qs = new URLSearchParams({ to: req.url });
-        return reply.redirect(`/oauth/login?${qs.toString()}`);
+        const qs = new URLSearchParams({ backTo: req.url });
+        return reply.redirect(`/login?${qs.toString()}`);
       }
 
       if (req.query.response_type !== 'code') {
