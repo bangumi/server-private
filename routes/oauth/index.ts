@@ -173,7 +173,7 @@ async function userOauthRoutes(app: App) {
           error: AppNonexistenceError,
         });
       }
-      if (req.query.redirect_uri !== null && client.redirectUri !== req.query.redirect_uri) {
+      if (req.query.redirect_uri && client.redirectUri !== req.query.redirect_uri) {
         return await reply.view('oauth/authorize', {
           error: RedirectUriMismatchError,
         });
