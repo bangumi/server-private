@@ -11,8 +11,9 @@ import { DateTime, Duration } from 'luxon';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { production, projectRoot, redisOauthPrefix } from '@app/lib/config.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { fetchUserX } from '@app/lib/orm/index.ts';
+import { AppDataSource, fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import * as res from '@app/lib/types/res.ts';
 import { randomBase62String, randomBytes } from '@app/lib/utils/index.ts';
@@ -281,8 +282,13 @@ async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
       .toJSDate(),
     info: tokenInfo,
   };
-  await orm.AccessTokenRepo.insert(token);
-  await orm.AccessTokenRepo.insert(refresh);
+
+  await AppDataSource.transaction(async (t) => {
+    const AccessTokenRepo = t.getRepository(entity.OauthAccessTokens);
+    await AccessTokenRepo.insert(token);
+    await AccessTokenRepo.insert(refresh);
+  });
+
   return {
     access_token: token.accessToken,
     expires_in: 604800,
