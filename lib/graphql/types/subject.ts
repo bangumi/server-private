@@ -300,7 +300,7 @@ const SubjectByIDQuery = extendType({
           type: subject.typeID,
           name: subject.name,
           name_cn: subject.nameCN,
-          images: subject.subjectImage ? subjectCover(subject.subjectImage) : null,
+          images: subjectCover(subject.subjectImage),
           platform: platform,
           infobox: infobox,
           summary: subject.fieldSummary,
