@@ -11,7 +11,6 @@ type Avatar {
 type Episode {
   airdate: String!
   comment: Int!
-  dateline: Int!
   description: String!
   disc: Int!
   duration: String!
