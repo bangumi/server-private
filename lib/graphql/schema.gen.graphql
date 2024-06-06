@@ -50,7 +50,7 @@ type Subject {
   ): [Episode!]
   eps: Int!
   id: Int!
-  images: SubjectImages!
+  images: SubjectImages
   infobox(limit: Int = 0): [Infobox!]
   locked: Boolean!
   name: String!

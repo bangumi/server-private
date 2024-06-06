@@ -113,7 +113,7 @@ const Subject = objectType({
     t.nonNull.int('type');
     t.nonNull.string('name');
     t.nonNull.string('name_cn');
-    t.nonNull.field('images', { type: SubjectImages });
+    t.nullable.field('images', { type: SubjectImages });
     t.nonNull.field('platform', { type: SubjectPlatform });
     t.list.nonNull.field('infobox', {
       type: InfoboxItem,
@@ -302,7 +302,7 @@ const SubjectByIDQuery = extendType({
           type: subject.typeID,
           name: subject.name,
           name_cn: subject.nameCN,
-          images: subjectCover(subject.subjectImage),
+          images: subject.subjectImage ? subjectCover(subject.subjectImage) : null,
           platform: platform,
           infobox: infobox,
           summary: subject.fieldSummary,
