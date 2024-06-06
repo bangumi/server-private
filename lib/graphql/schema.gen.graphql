@@ -9,13 +9,27 @@ type Avatar {
 }
 
 type Episode {
+  airdate: String!
+  comment: Int!
   description: String!
+  disc: Int!
   duration: String!
   id: Int!
+  last_post: Int!
   name: String!
   name_cn: String!
   sort: Float!
   type: Int!
+}
+
+type Infobox {
+  key: String!
+  values: [InfoboxValue!]
+}
+
+type InfoboxValue {
+  k: String
+  v: String
 }
 
 type Query {
@@ -24,6 +38,8 @@ type Query {
 }
 
 type Subject {
+  airtime: SubjectAirtime!
+  collection: SubjectCollection!
   episodes(
     limit: Int! = 30
 
@@ -31,10 +47,60 @@ type Subject {
     offset: Int! = 0
     type: Int
   ): [Episode!]
+  eps: Int!
   id: Int!
+  images: SubjectImages
+  infobox(limit: Int = 0): [Infobox!]
+  locked: Boolean!
   name: String!
   name_cn: String!
+  nsfw: Boolean!
+  platform: SubjectPlatform!
+  rating: SubjectRating!
+  redirect: Int!
+  series: Boolean!
+  series_entry: Int!
+  summary: String!
   tags(limit: Int = 0): [SubjectTag!]
+  type: Int!
+  volumes: Int!
+}
+
+type SubjectAirtime {
+  date: String!
+  month: Int!
+  weekday: Int!
+  year: Int!
+}
+
+type SubjectCollection {
+  collect: Int!
+  doing: Int!
+  dropped: Int!
+  on_hold: Int!
+  wish: Int!
+}
+
+type SubjectImages {
+  common: String!
+  grid: String!
+  large: String!
+  medium: String!
+  small: String!
+}
+
+type SubjectPlatform {
+  alias: String
+  id: Int!
+  type: String!
+  type_cn: String
+}
+
+type SubjectRating {
+  count: [Int!]
+  rank: Int!
+  score: Float!
+  total: Int!
 }
 
 type SubjectTag {

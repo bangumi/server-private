@@ -277,7 +277,7 @@ export class SubjectFields {
     comment: '放送日(星期X)',
     width: 1,
   })
-  fieldWeekDay!: boolean;
+  fieldWeekDay!: number;
 
   @Column('date', { name: 'field_date', comment: '放送日期' })
   date!: string;
