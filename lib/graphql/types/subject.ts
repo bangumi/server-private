@@ -52,9 +52,6 @@ const SubjectPlatform = objectType({
     t.nonNull.string('type');
     t.nullable.string('type_cn');
     t.nullable.string('alias');
-    t.nullable.string('wiki_tpl');
-    t.nullable.string('search_string');
-    t.nullable.boolean('enable_header');
   },
 });
 

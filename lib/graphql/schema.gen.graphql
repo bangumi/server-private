@@ -91,12 +91,9 @@ type SubjectImages {
 
 type SubjectPlatform {
   alias: String
-  enable_header: Boolean
   id: Int!
-  search_string: String
   type: String!
   type_cn: String
-  wiki_tpl: String
 }
 
 type SubjectRating {
