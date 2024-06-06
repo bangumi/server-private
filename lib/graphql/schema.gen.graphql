@@ -16,6 +16,7 @@ type Episode {
   disc: Int!
   duration: String!
   id: Int!
+  lastpost: Int!
   name: String!
   name_cn: String!
   sort: Float!

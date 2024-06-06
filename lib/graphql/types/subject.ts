@@ -18,6 +18,7 @@ const Episode = objectType({
     t.nonNull.string('description');
     t.nonNull.string('airdate');
     t.nonNull.int('dateline');
+    t.nonNull.int('lastpost');
     t.nonNull.int('comment');
     t.nonNull.int('type');
     t.nonNull.int('disc');
@@ -192,6 +193,7 @@ const Subject = objectType({
             description: e.summary,
             airdate: e.airDate,
             dateline: e.epDateline,
+            lastpost: e.epLastpost,
             comment: e.epComment,
             disc: e.epDisc,
             duration: e.duration,
