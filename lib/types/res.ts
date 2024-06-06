@@ -26,6 +26,18 @@ export enum EpisodeType {
   Other = 6,
 }
 
+export type ISubjectImages = Static<typeof SubjectImages>;
+export const SubjectImages = t.Object(
+  {
+    large: t.String(),
+    common: t.String(),
+    medium: t.String(),
+    small: t.String(),
+    grid: t.String(),
+  },
+  { $id: 'SubjectImages', title: 'SubjectImages' },
+);
+
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
   {
