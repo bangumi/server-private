@@ -116,6 +116,7 @@ export async function createServer(
     schema,
     path: '/v0/graphql',
     graphiql: false,
+    queryDepth: 4,
     allowBatchedQueries: true,
     context: async (request: FastifyRequest): Promise<Context> => {
       const a = await auth.byHeader(request.headers.authorization);
