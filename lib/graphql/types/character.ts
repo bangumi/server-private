@@ -15,18 +15,7 @@ const Character = objectType({
     t.nonNull.int('id');
     t.nonNull.string('name');
     t.nonNull.int('role');
-    t.list.nonNull.field('infobox', {
-      type: InfoboxItem,
-      args: {
-        limit: intArg({ default: 0 }),
-      },
-      resolve({ infobox }: { infobox: unknown[] }, { limit }: { limit?: number }) {
-        if (limit && limit > 0) {
-          return infobox.slice(0, limit);
-        }
-        return infobox;
-      },
-    });
+    t.list.nonNull.field('infobox', { type: InfoboxItem });
     t.nonNull.string('summary');
     t.nullable.field('images', { type: Images });
     t.nonNull.int('comment');

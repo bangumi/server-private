@@ -14,7 +14,7 @@ type Character {
   comment: Int!
   id: Int!
   images: Images
-  infobox(limit: Int = 0): [Infobox!]
+  infobox: [Infobox!]
   lastpost: Int!
   lock: Int!
   name: String!
@@ -74,7 +74,7 @@ type Subject {
   eps: Int!
   id: Int!
   images: SubjectImages
-  infobox(limit: Int = 0): [Infobox!]
+  infobox: [Infobox!]
   locked: Boolean!
   name: String!
   name_cn: String!

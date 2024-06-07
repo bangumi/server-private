@@ -108,19 +108,7 @@ const Subject = objectType({
     t.nonNull.string('name_cn');
     t.nullable.field('images', { type: SubjectImages });
     t.nonNull.field('platform', { type: SubjectPlatform });
-    t.list.nonNull.field('infobox', {
-      type: InfoboxItem,
-      args: {
-        limit: intArg({ default: 0 }),
-      },
-      resolve({ infobox }: { infobox: unknown[] }, { limit }: { limit?: number }) {
-        if (limit && limit > 0) {
-          return infobox.slice(0, limit);
-        }
-
-        return infobox;
-      },
-    });
+    t.list.nonNull.field('infobox', { type: InfoboxItem });
     t.nonNull.string('summary');
     t.nonNull.int('volumes');
     t.nonNull.int('eps');
