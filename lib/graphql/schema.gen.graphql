@@ -58,7 +58,7 @@ type Subject {
   platform: SubjectPlatform!
   rating: SubjectRating!
   redirect: Int!
-  relations(limit: Int! = 30, offset: Int! = 0, type: Int): [SubjectRelation!]
+  relations(excludeTypes: [Int!], includeTypes: [Int!], limit: Int! = 30, offset: Int! = 0): [SubjectRelation!]
   series: Boolean!
   series_entry: Int!
   summary: String!

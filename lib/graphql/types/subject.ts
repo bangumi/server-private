@@ -1,7 +1,7 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import * as php from '@trim21/php-serialize';
-import { extendType, intArg, nonNull, objectType } from 'nexus';
+import { extendType, intArg, list, nonNull, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
@@ -208,20 +208,23 @@ const Subject = objectType({
     t.list.nonNull.field('relations', {
       type: SubjectRelation,
       args: {
-        type: intArg(),
         limit: nonNull(intArg({ default: 30 })),
         offset: nonNull(intArg({ default: 0 })),
+        includeTypes: list(nonNull(intArg())),
+        excludeTypes: list(nonNull(intArg())),
       },
       async resolve(
         parent: { id: number },
         {
-          type,
           limit,
           offset,
+          includeTypes,
+          excludeTypes,
         }: {
-          type: number | undefined;
           limit: number;
           offset: number;
+          includeTypes?: number[];
+          excludeTypes?: number[];
         },
         { auth: { allowNsfw } }: Context,
       ) {
@@ -229,8 +232,11 @@ const Subject = objectType({
           .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
           .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
           .where('r.subjectId = :id', { id: parent.id });
-        if (type) {
-          query = query.andWhere('r.relationType = :type', { type });
+        if (includeTypes) {
+          query = query.andWhere('r.relationType IN (:...includeTypes)', { includeTypes });
+        }
+        if (excludeTypes) {
+          query = query.andWhere('r.relationType NOT IN (:...excludeTypes)', { excludeTypes });
         }
         if (!allowNsfw) {
           query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
