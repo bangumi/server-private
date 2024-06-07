@@ -28,6 +28,7 @@ import {
   Subject,
   SubjectFields,
   SubjectImage,
+  SubjectRelation,
   SubjectRev,
   User,
   UserField,
@@ -91,6 +92,7 @@ export const AppDataSource = new DataSource({
     RevText,
     Subject,
     SubjectFields,
+    SubjectRelation,
     GroupTopic,
     GroupPost,
     SubjectRev,
@@ -105,6 +107,7 @@ export const FriendRepo = AppDataSource.getRepository(Friends);
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
+export const SubjectRelationRepo = AppDataSource.getRepository(SubjectRelation);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
 export const EpRevRepo = AppDataSource.getRepository(EpRevision);
 
@@ -134,6 +137,7 @@ export const repo = {
   Friend: FriendRepo,
   Subject: SubjectRepo,
   SubjectFields: SubjectFieldsRepo,
+  SubjectRelation: SubjectRelationRepo,
   Episode: EpisodeRepo,
   AccessToken: AccessTokenRepo,
   Session: SessionRepo,

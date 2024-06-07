@@ -4,8 +4,8 @@ import * as php from '@trim21/php-serialize';
 import { extendType, intArg, nonNull, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context.ts';
-import type * as entity from '@app/lib/orm/entity/index.ts';
-import { SubjectRepo } from '@app/lib/orm/index.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import { SubjectRelationRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
 import { platforms } from '@app/lib/subject/index.ts';
 
@@ -23,6 +23,18 @@ const Episode = objectType({
     t.nonNull.int('disc');
     t.nonNull.string('duration');
     t.nonNull.float('sort');
+  },
+});
+
+const SubjectRelation = objectType({
+  name: 'SubjectRelation',
+  definition(t) {
+    t.nonNull.field('subject', {
+      type: 'Subject',
+    });
+    t.nonNull.int('relation');
+    t.nonNull.int('viceVersa');
+    t.nonNull.int('order');
   },
 });
 
@@ -197,8 +209,130 @@ const Subject = objectType({
         });
       },
     });
+    t.list.nonNull.field('relations', {
+      type: SubjectRelation,
+      args: {
+        limit: nonNull(intArg({ default: 30 })),
+        offset: nonNull(intArg({ default: 0 })),
+        type: intArg(),
+      },
+      async resolve(
+        parent: { id: number },
+        { limit, offset, type }: { limit: number; offset: number; type: number | undefined },
+      ) {
+        let query = SubjectRelationRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
+          .where('r.subjectId = :id', { id: parent.id });
+        if (type) {
+          query = query.andWhere('r.relationType = :type', { type });
+        }
+        const relations = await query
+          .orderBy('r.relationType', 'ASC')
+          .orderBy('r.order', 'ASC')
+          .orderBy('r.relatedSubjectId', 'ASC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+
+        return relations.map((r: entity.SubjectRelation) => {
+          return {
+            subject: convertSubject(r.relatedSubject),
+            relation: r.relationType,
+            viceVersa: r.viceVersa,
+            order: r.order,
+          };
+        });
+      },
+    });
   },
 });
+
+function convertSubject(subject: entity.Subject) {
+  const fields = subject.fields;
+  const platform = platforms(subject.typeID).find((x) => x.id === subject.platform);
+  let wiki: Wiki = {
+    type: '',
+    data: [],
+  };
+  try {
+    wiki = parseWiki(subject.fieldInfobox);
+  } catch (error) {
+    if (!(error instanceof WikiSyntaxError)) {
+      throw error;
+    }
+  }
+  const infobox = wiki.data.map((item) => {
+    if (item.array) {
+      return item;
+    }
+    return {
+      key: item.key,
+      values: [
+        {
+          v: item.value,
+        },
+      ],
+    };
+  });
+  const collection = {
+    wish: subject.subjectWish,
+    collect: subject.subjectCollect,
+    doing: subject.subjectDoing,
+    on_hold: subject.subjectOnHold,
+    dropped: subject.subjectDropped,
+  };
+  const airtime = {
+    year: fields.year,
+    month: fields.month,
+    weekday: fields.fieldWeekDay,
+    date: fields.date,
+  };
+  const ratingCount = [
+    fields.fieldRate_1,
+    fields.fieldRate_2,
+    fields.fieldRate_3,
+    fields.fieldRate_4,
+    fields.fieldRate_5,
+    fields.fieldRate_6,
+    fields.fieldRate_7,
+    fields.fieldRate_8,
+    fields.fieldRate_9,
+    fields.fieldRate_10,
+  ];
+  const total = ratingCount.reduce((a, b) => a + b, 0);
+  const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
+  const rating = {
+    rank: fields.fieldRank,
+    total: total,
+    score: Math.round((totalScore * 100) / total) / 100,
+    count: ratingCount,
+  };
+  return {
+    id: subject.id,
+    type: subject.typeID,
+    name: subject.name,
+    name_cn: subject.nameCN,
+    images: subjectCover(subject.subjectImage),
+    platform: platform,
+    infobox: infobox,
+    summary: subject.fieldSummary,
+    volumes: subject.fieldVolumes,
+    eps: subject.fieldEps,
+    collection: collection,
+    series: Boolean(subject.subjectSeries),
+    series_entry: subject.subjectSeriesEntry,
+    airtime: airtime,
+    rating: rating,
+    nsfw: subject.subjectNsfw,
+    locked: subject.locked(),
+    redirect: fields.fieldRedirect,
+    tags: (php.parse(fields.fieldTags) as { tag_name: string | undefined; result: string }[])
+      .filter((x) => x.tag_name !== undefined)
+      .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
+      .filter((x) => !Number.isNaN(x.count)),
+  };
+}
 
 const SubjectByIDQuery = extendType({
   type: 'Query',
@@ -206,116 +340,18 @@ const SubjectByIDQuery = extendType({
     t.field('subject', {
       type: Subject,
       args: { id: nonNull(intArg()) },
-      async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw }, repo }: Context) {
-        const subject = await SubjectRepo.findOne({
-          where: {
-            id,
-          },
-        });
-
+      async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
+        let query = SubjectRepo.createQueryBuilder('s')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
+          .where('s.id = :id', { id });
+        if (!allowNsfw) {
+          query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        }
+        const subject = await query.getOne();
         if (!subject) {
           return null;
         }
-
-        if (subject.subjectNsfw && !allowNsfw) {
-          return null;
-        }
-
-        const fields = await repo.SubjectFields.findOne({
-          where: {
-            subject_id: id,
-          },
-        });
-
-        if (!fields) {
-          return null;
-        }
-
-        const platform = platforms(subject.typeID).find((x) => x.id === subject.platform);
-
-        let wiki: Wiki = {
-          type: '',
-          data: [],
-        };
-        try {
-          wiki = parseWiki(subject.fieldInfobox);
-        } catch (error) {
-          if (!(error instanceof WikiSyntaxError)) {
-            throw error;
-          }
-        }
-        const infobox = wiki.data.map((item) => {
-          if (item.array) {
-            return item;
-          }
-          return {
-            key: item.key,
-            values: [
-              {
-                v: item.value,
-              },
-            ],
-          };
-        });
-
-        const collection = {
-          wish: subject.subjectWish,
-          collect: subject.subjectCollect,
-          doing: subject.subjectDoing,
-          on_hold: subject.subjectOnHold,
-          dropped: subject.subjectDropped,
-        };
-        const airtime = {
-          year: fields.year,
-          month: fields.month,
-          weekday: fields.fieldWeekDay,
-          date: fields.date,
-        };
-        const ratingCount = [
-          fields.fieldRate_1,
-          fields.fieldRate_2,
-          fields.fieldRate_3,
-          fields.fieldRate_4,
-          fields.fieldRate_5,
-          fields.fieldRate_6,
-          fields.fieldRate_7,
-          fields.fieldRate_8,
-          fields.fieldRate_9,
-          fields.fieldRate_10,
-        ];
-        const total = ratingCount.reduce((a, b) => a + b, 0);
-        const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
-        const rating = {
-          rank: fields.fieldRank,
-          total: total,
-          score: Math.round((totalScore * 100) / total) / 100,
-          count: ratingCount,
-        };
-
-        return {
-          id: subject.id,
-          type: subject.typeID,
-          name: subject.name,
-          name_cn: subject.nameCN,
-          images: subjectCover(subject.subjectImage),
-          platform: platform,
-          infobox: infobox,
-          summary: subject.fieldSummary,
-          volumes: subject.fieldVolumes,
-          eps: subject.fieldEps,
-          collection: collection,
-          series: Boolean(subject.subjectSeries),
-          series_entry: subject.subjectSeriesEntry,
-          airtime: airtime,
-          rating: rating,
-          nsfw: subject.subjectNsfw,
-          locked: subject.locked(),
-          redirect: fields.fieldRedirect,
-          tags: (php.parse(fields.fieldTags) as { tag_name: string | undefined; result: string }[])
-            .filter((x) => x.tag_name !== undefined)
-            .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
-            .filter((x) => !Number.isNaN(x.count)),
-        };
+        return convertSubject(subject);
       },
     });
   },

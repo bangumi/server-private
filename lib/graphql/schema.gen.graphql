@@ -58,6 +58,7 @@ type Subject {
   platform: SubjectPlatform!
   rating: SubjectRating!
   redirect: Int!
+  relations(limit: Int! = 30, offset: Int! = 0, type: Int): [SubjectRelation!]
   series: Boolean!
   series_entry: Int!
   summary: String!
@@ -101,6 +102,13 @@ type SubjectRating {
   rank: Int!
   score: Float!
   total: Int!
+}
+
+type SubjectRelation {
+  order: Int!
+  relation: Int!
+  subject: Subject!
+  viceVersa: Int!
 }
 
 type SubjectTag {

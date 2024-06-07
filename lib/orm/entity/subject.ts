@@ -162,6 +162,8 @@ export class Subject {
   locked(): boolean {
     return this.subjectBan === 2;
   }
+
+  fields!: SubjectFields;
 }
 
 @Index('sort_id', ['fieldTid'], {})
