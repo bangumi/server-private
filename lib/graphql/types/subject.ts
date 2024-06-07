@@ -155,7 +155,6 @@ const Subject = objectType({
         if (limit && limit > 0) {
           return tags.slice(0, limit);
         }
-
         return tags;
       },
     });
@@ -183,14 +182,12 @@ const Subject = objectType({
           });
           offset = count + offset;
         }
-
         const episodes = await repo.Episode.find({
           order: { sort: 'asc' },
           where: { type: type ?? undefined, subjectID: parent.id },
           skip: offset,
           take: limit,
         });
-
         return episodes.map((e: entity.Episode) => {
           return {
             id: e.id,
@@ -204,6 +201,52 @@ const Subject = objectType({
             disc: e.epDisc,
             duration: e.duration,
             sort: e.sort,
+          };
+        });
+      },
+    });
+    t.list.nonNull.field('relations', {
+      type: SubjectRelation,
+      args: {
+        type: intArg(),
+        limit: nonNull(intArg({ default: 30 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        parent: { id: number },
+        {
+          type,
+          limit,
+          offset,
+        }: {
+          type: number | undefined;
+          limit: number;
+          offset: number;
+        },
+        { auth: { allowNsfw } }: Context,
+      ) {
+        let query = SubjectRelationRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
+          .where('r.subjectId = :id', { id: parent.id });
+        if (type) {
+          query = query.andWhere('r.relationType = :type', { type });
+        }
+        if (!allowNsfw) {
+          query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        }
+        const relations = await query
+          .orderBy('r.relationType', 'ASC')
+          .orderBy('r.order', 'ASC')
+          .orderBy('r.relatedSubjectId', 'ASC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+        return relations.map((r: entity.SubjectRelation) => {
+          return {
+            subject: convertSubject(r.relatedSubject),
+            relation: r.relationType,
+            order: r.order,
           };
         });
       },
@@ -315,56 +358,6 @@ const SubjectByIDQuery = extendType({
           return null;
         }
         return convertSubject(subject);
-      },
-    });
-    t.list.nonNull.field('subjectRelations', {
-      type: SubjectRelation,
-      args: {
-        subject_id: nonNull(intArg()),
-        type: intArg(),
-        limit: nonNull(intArg({ default: 30 })),
-        offset: nonNull(intArg({ default: 0 })),
-      },
-      async resolve(
-        _parent,
-        {
-          subject_id,
-          type,
-          limit,
-          offset,
-        }: {
-          subject_id: number;
-          type: number | undefined;
-          limit: number;
-          offset: number;
-        },
-        { auth: { allowNsfw } }: Context,
-      ) {
-        let query = SubjectRelationRepo.createQueryBuilder('r')
-          .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
-          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
-          .where('r.subjectId = :id', { id: subject_id });
-        if (type) {
-          query = query.andWhere('r.relationType = :type', { type });
-        }
-        if (!allowNsfw) {
-          query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
-        }
-        const relations = await query
-          .orderBy('r.relationType', 'ASC')
-          .orderBy('r.order', 'ASC')
-          .orderBy('r.relatedSubjectId', 'ASC')
-          .skip(offset)
-          .take(limit)
-          .getMany();
-
-        return relations.map((r: entity.SubjectRelation) => {
-          return {
-            subject: convertSubject(r.relatedSubject),
-            relation: r.relationType,
-            order: r.order,
-          };
-        });
       },
     });
   },

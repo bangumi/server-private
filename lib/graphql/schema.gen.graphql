@@ -35,7 +35,6 @@ type InfoboxValue {
 type Query {
   me: User
   subject(id: Int!): Subject
-  subjectRelations(limit: Int! = 30, offset: Int! = 0, subject_id: Int!, type: Int): [SubjectRelation!]
 }
 
 type Subject {
@@ -59,6 +58,7 @@ type Subject {
   platform: SubjectPlatform!
   rating: SubjectRating!
   redirect: Int!
+  relations(limit: Int! = 30, offset: Int! = 0, type: Int): [SubjectRelation!]
   series: Boolean!
   series_entry: Int!
   summary: String!
