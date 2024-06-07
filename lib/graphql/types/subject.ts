@@ -33,7 +33,6 @@ const SubjectRelation = objectType({
       type: 'Subject',
     });
     t.nonNull.int('relation');
-    t.nonNull.int('viceVersa');
     t.nonNull.int('order');
   },
 });
@@ -209,42 +208,6 @@ const Subject = objectType({
         });
       },
     });
-    t.list.nonNull.field('relations', {
-      type: SubjectRelation,
-      args: {
-        limit: nonNull(intArg({ default: 30 })),
-        offset: nonNull(intArg({ default: 0 })),
-        type: intArg(),
-      },
-      async resolve(
-        parent: { id: number },
-        { limit, offset, type }: { limit: number; offset: number; type: number | undefined },
-      ) {
-        let query = SubjectRelationRepo.createQueryBuilder('r')
-          .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
-          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
-          .where('r.subjectId = :id', { id: parent.id });
-        if (type) {
-          query = query.andWhere('r.relationType = :type', { type });
-        }
-        const relations = await query
-          .orderBy('r.relationType', 'ASC')
-          .orderBy('r.order', 'ASC')
-          .orderBy('r.relatedSubjectId', 'ASC')
-          .skip(offset)
-          .take(limit)
-          .getMany();
-
-        return relations.map((r: entity.SubjectRelation) => {
-          return {
-            subject: convertSubject(r.relatedSubject),
-            relation: r.relationType,
-            viceVersa: r.viceVersa,
-            order: r.order,
-          };
-        });
-      },
-    });
   },
 });
 
@@ -352,6 +315,56 @@ const SubjectByIDQuery = extendType({
           return null;
         }
         return convertSubject(subject);
+      },
+    });
+    t.list.nonNull.field('subjectRelations', {
+      type: SubjectRelation,
+      args: {
+        subject_id: nonNull(intArg()),
+        type: intArg(),
+        limit: nonNull(intArg({ default: 30 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        _parent,
+        {
+          subject_id,
+          type,
+          limit,
+          offset,
+        }: {
+          subject_id: number;
+          type: number | undefined;
+          limit: number;
+          offset: number;
+        },
+        { auth: { allowNsfw } }: Context,
+      ) {
+        let query = SubjectRelationRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
+          .where('r.subjectId = :id', { id: subject_id });
+        if (type) {
+          query = query.andWhere('r.relationType = :type', { type });
+        }
+        if (!allowNsfw) {
+          query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        }
+        const relations = await query
+          .orderBy('r.relationType', 'ASC')
+          .orderBy('r.order', 'ASC')
+          .orderBy('r.relatedSubjectId', 'ASC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+
+        return relations.map((r: entity.SubjectRelation) => {
+          return {
+            subject: convertSubject(r.relatedSubject),
+            relation: r.relationType,
+            order: r.order,
+          };
+        });
       },
     });
   },
