@@ -39,6 +39,7 @@ export class SubjectRelation {
   })
   relatedSubjectTypeId!: number;
 
+  /** @deprecated 未使用 */
   @PrimaryColumn('tinyint', { name: 'rlt_vice_versa', unsigned: true })
   viceVersa!: number;
 
