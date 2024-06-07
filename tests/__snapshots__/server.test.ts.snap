@@ -9,6 +9,17 @@ Object {
 }
 `;
 
+exports[`subject > should reject nested subject relations 1`] = `
+Object {
+  "data": null,
+  "errors": Array [
+    Object {
+      "message": "\`unnamedQuery query depth (6) exceeds the query depth limit of 4\`",
+    },
+  ],
+}
+`;
+
 exports[`subject > should subject tags 1`] = `
 Object {
   "tags": Array [

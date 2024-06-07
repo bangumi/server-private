@@ -183,4 +183,66 @@ describe('subject', () => {
 
     expect(query.data.subject).toMatchSnapshot();
   });
+
+  test('should subject relations', async () => {
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          relations(limit: 1) {
+            relation
+            subject {
+              id
+              name
+            }
+          }
+        }
+      }
+    `);
+
+    expect(query.data.subject.relations[0].relation).toBe(1004);
+    expect(query.data.subject.relations[0].subject.id).toBe(11);
+  });
+
+  test('should subject relations with exclude', async () => {
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          relations(limit: 1, excludeTypes: [1004]) {
+            relation
+            subject {
+              id
+              name
+            }
+          }
+        }
+      }
+    `);
+
+    expect(query.data.subject.relations).toHaveLength(0);
+  });
+
+  test('should reject nested subject relations', async () => {
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          relations(limit: 1) {
+            relation
+            subject {
+              id
+              name
+              relations(limit: 1) {
+                relation
+                subject {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    `);
+
+    expect(query).toMatchSnapshot();
+  });
 });
