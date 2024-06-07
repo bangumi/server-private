@@ -12,7 +12,6 @@ type Character {
   ban: Int!
   collects: Int!
   comment: Int!
-  dateline: Int!
   id: Int!
   images: Images
   infobox(limit: Int = 0): [Infobox!]

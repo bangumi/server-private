@@ -31,7 +31,6 @@ const Character = objectType({
     t.nullable.field('images', { type: Images });
     t.nonNull.int('comment');
     t.nonNull.int('collects');
-    t.nonNull.int('dateline');
     t.nonNull.int('lastpost');
     t.nonNull.int('lock');
     t.nonNull.int('ban');
@@ -74,7 +73,6 @@ function convertCharacter(character: entity.Character) {
     images: personImages(character.img),
     comment: character.comment,
     collects: character.collects,
-    dateline: character.dateline,
     lastpost: character.lastpost,
     lock: character.lock,
     ban: character.ban,

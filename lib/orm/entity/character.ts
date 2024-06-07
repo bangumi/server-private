@@ -38,7 +38,7 @@ export class Character {
   collects!: number;
 
   @Column('int', { name: 'crt_dateline', unsigned: true })
-  dateline!: number;
+  updatedAt!: number;
 
   @Column('int', { name: 'crt_lastpost', unsigned: true })
   lastpost!: number;
