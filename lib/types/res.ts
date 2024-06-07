@@ -38,6 +38,17 @@ export const SubjectImages = t.Object(
   { $id: 'SubjectImages', title: 'SubjectImages' },
 );
 
+export type IPersonImages = Static<typeof PersonImages>;
+export const PersonImages = t.Object(
+  {
+    large: t.String(),
+    medium: t.String(),
+    small: t.String(),
+    grid: t.String(),
+  },
+  { $id: 'PersonImages', title: 'PersonImages' },
+);
+
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
   {

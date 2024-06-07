@@ -9,6 +9,8 @@ import { SubjectRelationRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
 import { platforms } from '@app/lib/subject/index.ts';
 
+import { InfoboxItem } from './common.ts';
+
 const Episode = objectType({
   name: 'Episode',
   definition(t) {
@@ -18,7 +20,7 @@ const Episode = objectType({
     t.nonNull.string('description');
     t.nonNull.string('airdate');
     t.nonNull.int('comment');
-    t.nonNull.int('last_post');
+    t.nonNull.int('lastpost');
     t.nonNull.int('type');
     t.nonNull.int('disc');
     t.nonNull.string('duration');
@@ -63,22 +65,6 @@ const SubjectPlatform = objectType({
     t.nonNull.string('type');
     t.nullable.string('type_cn');
     t.nullable.string('alias');
-  },
-});
-
-const InfoboxValuesItem = objectType({
-  name: 'InfoboxValue',
-  definition(t) {
-    t.nullable.string('k');
-    t.nullable.string('v');
-  },
-});
-
-const InfoboxItem = objectType({
-  name: 'Infobox',
-  definition(t) {
-    t.nonNull.string('key');
-    t.list.nonNull.field('values', { type: InfoboxValuesItem });
   },
 });
 
@@ -197,7 +183,7 @@ const Subject = objectType({
             description: e.summary,
             airdate: e.airDate,
             comment: e.epComment,
-            last_post: e.epLastpost,
+            lastpost: e.epLastpost,
             disc: e.epDisc,
             duration: e.duration,
             sort: e.sort,
