@@ -232,10 +232,10 @@ const Subject = objectType({
           .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
           .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
           .where('r.subjectId = :id', { id: parent.id });
-        if (includeTypes) {
+        if (includeTypes && includeTypes.length > 0) {
           query = query.andWhere('r.relationType IN (:...includeTypes)', { includeTypes });
         }
-        if (excludeTypes) {
+        if (excludeTypes && excludeTypes.length > 0) {
           query = query.andWhere('r.relationType NOT IN (:...excludeTypes)', { excludeTypes });
         }
         if (!allowNsfw) {
