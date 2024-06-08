@@ -62,7 +62,7 @@ function convertCharacter(character: entity.Character) {
     images: personImages(character.img),
     comment: character.comment,
     collects: character.collects,
-    lastpost: character.lastpost,
+    last_post: character.lastPost,
     lock: character.lock,
     ban: character.ban,
     redirect: character.redirect,

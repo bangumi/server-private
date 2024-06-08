@@ -41,7 +41,7 @@ export class Character {
   updatedAt!: number;
 
   @Column('int', { name: 'crt_lastpost', unsigned: true })
-  lastpost!: number;
+  lastPost!: number;
 
   @Column('tinyint', { name: 'crt_lock', default: () => "'0'" })
   lock!: number;

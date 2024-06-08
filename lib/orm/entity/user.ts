@@ -33,7 +33,7 @@ export class User {
   lastactivity!: number;
 
   @Column('int', { name: 'lastpost', unsigned: true, default: () => "'0'" })
-  lastpost!: number;
+  lastPost!: number;
 
   @Column('char', { name: 'dateformat', length: 10 })
   dateformat!: string;

@@ -51,7 +51,7 @@ export class Group {
   description!: string;
 
   @Column('int', { name: 'grp_lastpost', unsigned: true })
-  lastpost!: number;
+  lastPost!: number;
 
   @Column('int', { name: 'grp_builddate', unsigned: true })
   builddate!: number;
