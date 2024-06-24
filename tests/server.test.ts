@@ -279,8 +279,10 @@ describe('person', () => {
       `),
     ).resolves.toEqual({
       data: {
-        person: { name: '水樹奈々' },
-        career: ['artist', 'seiyu'],
+        person: {
+          name: '水樹奈々',
+          career: ['artist', 'seiyu'],
+        },
       },
     });
   });
