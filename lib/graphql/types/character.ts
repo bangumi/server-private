@@ -22,7 +22,6 @@ const Character = objectType({
     t.nonNull.int('collects');
     t.nonNull.int('lastpost');
     t.nonNull.int('lock');
-    t.nonNull.int('ban');
     t.nonNull.int('redirect');
     t.nonNull.boolean('nsfw');
   },
@@ -64,7 +63,6 @@ function convertCharacter(character: entity.Character) {
     collects: character.collects,
     last_post: character.lastPost,
     lock: character.lock,
-    ban: character.ban,
     redirect: character.redirect,
     nsfw: character.nsfw,
   };
@@ -81,6 +79,7 @@ const CharacterByIDQuery = extendType({
         if (!allowNsfw) {
           query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
         }
+        query = query.andWhere('c.ban = 0');
         const character = await query.getOne();
         if (!character) {
           return null;
