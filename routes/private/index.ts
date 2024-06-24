@@ -2,7 +2,7 @@ import Cookie from '@fastify/cookie';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { production } from '@app/lib/config.ts';
-import { SessionAuth } from '@app/routes/hooks/pre-handler.ts';
+import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import * as swagger from '@app/routes/swagger.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -31,7 +31,7 @@ export async function setup(app: App) {
     parseOptions: cookiesPluginOption,
   });
 
-  void app.addHook('preHandler', SessionAuth);
+  void app.addHook('preHandler', Auth);
 
   await app.register(API);
 }
