@@ -6,6 +6,7 @@ import { DataSource, In } from 'typeorm';
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
+import type { IBaseSubjectPost, ISubjectPost, PostState } from '@app/lib/subject/index.ts';
 import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
 
 import * as entity from './entity/index.ts';
@@ -28,6 +29,7 @@ import {
   Subject,
   SubjectFields,
   SubjectImage,
+  SubjectPost,
   SubjectRelation,
   SubjectRev,
   User,
@@ -91,6 +93,7 @@ export const AppDataSource = new DataSource({
     RevHistory,
     RevText,
     Subject,
+    SubjectPost,
     SubjectFields,
     SubjectRelation,
     GroupTopic,
@@ -105,6 +108,7 @@ export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const FriendRepo = AppDataSource.getRepository(Friends);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
+export const SubjectPostsRepo = AppDataSource.getRepository(SubjectPost);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const SubjectRelationRepo = AppDataSource.getRepository(SubjectRelation);
@@ -446,6 +450,57 @@ export async function fetchSubject(id: number) {
     locked: subject.locked(),
     image: subject.subjectImage,
   };
+}
+
+export async function fetchSubjectPosts(subjectID: number): Promise<ISubjectPost[]> {
+  const posts = await SubjectPostsRepo.find({
+    where: { subjectID: subjectID },
+  });
+  if (!posts) {
+    return [];
+  }
+
+  const basePostsPromises: Promise<IBaseSubjectPost>[] = posts.map(
+    async (post): Promise<IBaseSubjectPost> => {
+      return {
+        id: post.id,
+        relatedID: post.relatedID,
+        subjectID: post.subjectID,
+        user: await fetchUser(post.userID),
+        createdAt: post.dateline,
+        state: post.state as PostState,
+        content: post.content,
+      };
+    },
+  );
+
+  const basePosts: IBaseSubjectPost[] = await Promise.all(basePostsPromises);
+
+  const postMap: Map<number, ISubjectPost> = new Map();
+  const repliesMap: Map<number, IBaseSubjectPost[]> = new Map();
+
+  for (const post of posts) {
+    const basePost = basePosts.find((p) => p.id === post.id);
+    if (!basePost) {
+      continue;
+    }
+
+    if (post.relatedID === 0) {
+      postMap.set(post.id, { ...basePost, replies: [] } as ISubjectPost);
+    } else {
+      const relatedReplies = repliesMap.get(post.relatedID) ?? [];
+      relatedReplies.push(basePost);
+      repliesMap.set(post.relatedID, relatedReplies);
+    }
+  }
+  for (const [id, replies] of repliesMap.entries()) {
+    const mainPost = postMap.get(id);
+    if (mainPost) {
+      mainPost.replies = replies;
+    }
+  }
+
+  return [...postMap.values()];
 }
 
 export async function fetchFriends(id?: number): Promise<Record<number, boolean>> {

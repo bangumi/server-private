@@ -6,6 +6,7 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
+import { avatar } from '@app/lib/response.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -92,6 +93,41 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
+export const BaseSubjectPost = t.Object(
+  {
+    id: t.Integer(),
+    subjectID: t.Integer(),
+    relatedID: t.Integer(),
+    user: t.Union([
+      t.Object({
+        id: t.Integer(),
+        nickname: t.String(),
+        avatar: t.Object({
+          small: t.String(),
+          medium: t.String(),
+          large: t.String(),
+        }),
+      }),
+      t.Null(),
+    ]),
+    createdAt: t.Integer(),
+    state: t.Integer(),
+    content: t.String(),
+  },
+  { $id: 'BaseSubjectPost' },
+);
+
+type ISubjectPost = Static<typeof SubjectPost>;
+const SubjectPost = t.Intersect(
+  [
+    BaseSubjectPost,
+    t.Object({
+      replies: t.Array(t.Ref(BaseSubjectPost)),
+    }),
+  ],
+  { $id: 'SubjectPost' },
+);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   imageRoutes.setup(app);
@@ -100,6 +136,68 @@ export async function setup(app: App) {
   app.addSchema(Platform);
   app.addSchema(res.SubjectType);
   app.addSchema(SubjectWikiInfo);
+  app.addSchema(SubjectPost);
+
+  app.get(
+    '/subjects/:subjectID/posts',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectPosts',
+        description: [
+          '获取当前 wiki 的评论信息',
+          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
+        ].join('\n\n'),
+        params: t.Object({
+          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Array(SubjectPost),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+    },
+    async ({ params: { subjectID } }): Promise<ISubjectPost[]> => {
+      const posts = await orm.fetchSubjectPosts(subjectID);
+      if (!posts) {
+        throw new NotFoundError(`subject post ${subjectID}`);
+      }
+
+      const convertUser = (user: orm.IUser | null) => {
+        return user
+          ? {
+              id: user.id,
+              nickname: user.nickname,
+              avatar: avatar(user.img),
+            }
+          : null;
+      };
+
+      const convertReply = (reply: Subject.IBaseSubjectPost) => ({
+        id: reply.id,
+        subjectID: reply.subjectID,
+        relatedID: reply.relatedID,
+        user: convertUser(reply.user),
+        createdAt: reply.createdAt,
+        state: reply.state,
+        content: reply.content,
+      });
+
+      return posts.map((p) => ({
+        id: p.id,
+        content: p.content,
+        createdAt: p.createdAt,
+        user: convertUser(p.user),
+        replies: p.replies ? p.replies.map((r) => convertReply(r)) : [],
+        state: p.state,
+        subjectID: p.subjectID,
+        relatedID: p.relatedID,
+      }));
+    },
+  );
 
   app.get(
     '/subjects/:subjectID',
