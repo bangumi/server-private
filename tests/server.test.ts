@@ -246,3 +246,22 @@ describe('subject', () => {
     expect(query).toMatchSnapshot();
   });
 });
+
+describe('character', () => {
+  test('should get', async () => {
+    await expect(
+      testClient.query(gql`
+        query {
+          character(id: 1) {
+            name
+            role
+          }
+        }
+      `),
+    ).resolves.toEqual({
+      data: {
+        character: { name: 'ルルーシュ・ランペルージ', role: 1 },
+      },
+    });
+  });
+});

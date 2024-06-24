@@ -9,6 +9,8 @@ import { SubjectRelationRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
 import { platforms } from '@app/lib/subject/index.ts';
 
+import { InfoboxItem } from './common.ts';
+
 const Episode = objectType({
   name: 'Episode',
   definition(t) {
@@ -66,22 +68,6 @@ const SubjectPlatform = objectType({
   },
 });
 
-const InfoboxValuesItem = objectType({
-  name: 'InfoboxValue',
-  definition(t) {
-    t.nullable.string('k');
-    t.nullable.string('v');
-  },
-});
-
-const InfoboxItem = objectType({
-  name: 'Infobox',
-  definition(t) {
-    t.nonNull.string('key');
-    t.list.nonNull.field('values', { type: InfoboxValuesItem });
-  },
-});
-
 const SubjectCollection = objectType({
   name: 'SubjectCollection',
   definition(t) {
@@ -122,19 +108,7 @@ const Subject = objectType({
     t.nonNull.string('name_cn');
     t.nullable.field('images', { type: SubjectImages });
     t.nonNull.field('platform', { type: SubjectPlatform });
-    t.list.nonNull.field('infobox', {
-      type: InfoboxItem,
-      args: {
-        limit: intArg({ default: 0 }),
-      },
-      resolve({ infobox }: { infobox: unknown[] }, { limit }: { limit?: number }) {
-        if (limit && limit > 0) {
-          return infobox.slice(0, limit);
-        }
-
-        return infobox;
-      },
-    });
+    t.list.nonNull.field('infobox', { type: InfoboxItem });
     t.nonNull.string('summary');
     t.nonNull.int('volumes');
     t.nonNull.int('eps');
@@ -197,7 +171,7 @@ const Subject = objectType({
             description: e.summary,
             airdate: e.airDate,
             comment: e.epComment,
-            last_post: e.epLastpost,
+            last_post: e.epLastPost,
             disc: e.epDisc,
             duration: e.duration,
             sort: e.sort,
