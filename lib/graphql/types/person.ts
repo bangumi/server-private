@@ -4,18 +4,19 @@ import { extendType, intArg, nonNull, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context.ts';
 import type * as entity from '@app/lib/orm/entity/index.ts';
-import { CharacterRepo } from '@app/lib/orm/index.ts';
+import { PersonRepo } from '@app/lib/orm/index.ts';
 import { personImages } from '@app/lib/response.ts';
 
 import { Images, InfoboxItem } from './common.ts';
 
-const Character = objectType({
-  name: 'Character',
+const Person = objectType({
+  name: 'Person',
   definition(t) {
     t.nonNull.int('id');
     t.nonNull.string('name');
-    t.nonNull.int('role');
+    t.nonNull.int('type');
     t.list.nonNull.field('infobox', { type: InfoboxItem });
+    t.nonNull.list.nonNull.string('career');
     t.nonNull.string('summary');
     t.nullable.field('images', { type: Images });
     t.nonNull.int('comment');
@@ -27,13 +28,39 @@ const Character = objectType({
   },
 });
 
-function convertCharacter(character: entity.Character) {
+function convertCareer(person: entity.Person) {
+  const result: string[] = [];
+  if (person.producer) {
+    result.push('producer');
+  }
+  if (person.mangaka) {
+    result.push('mangaka');
+  }
+  if (person.artist) {
+    result.push('artist');
+  }
+  if (person.seiyu) {
+    result.push('seiyu');
+  }
+  if (person.writer) {
+    result.push('writer');
+  }
+  if (person.illustrator) {
+    result.push('illustrator');
+  }
+  if (person.actor) {
+    result.push('actor');
+  }
+  return result;
+}
+
+function convertPerson(person: entity.Person) {
   let wiki: Wiki = {
     type: '',
     data: [],
   };
   try {
-    wiki = parseWiki(character.infobox);
+    wiki = parseWiki(person.infobox);
   } catch (error) {
     if (!(error instanceof WikiSyntaxError)) {
       throw error;
@@ -53,41 +80,42 @@ function convertCharacter(character: entity.Character) {
     };
   });
   return {
-    id: character.id,
-    name: character.name,
-    role: character.role,
+    id: person.id,
+    name: person.name,
+    type: person.type,
     infobox,
-    summary: character.summary,
-    images: personImages(character.img),
-    comment: character.comment,
-    collects: character.collects,
-    last_post: character.lastPost,
-    lock: character.lock,
-    redirect: character.redirect,
-    nsfw: character.nsfw,
+    career: convertCareer(person),
+    summary: person.summary,
+    images: personImages(person.img),
+    comment: person.comment,
+    collects: person.collects,
+    last_post: person.lastPost,
+    lock: person.lock,
+    redirect: person.redirect,
+    nsfw: person.nsfw,
   };
 }
 
-const CharacterByIDQuery = extendType({
+const PersonByIDQuery = extendType({
   type: 'Query',
   definition(t) {
-    t.nonNull.field('character', {
-      type: 'Character',
+    t.nonNull.field('person', {
+      type: 'Person',
       args: { id: nonNull(intArg()) },
       async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
-        let query = CharacterRepo.createQueryBuilder('c').where('c.id = :id', { id });
+        let query = PersonRepo.createQueryBuilder('c').where('c.id = :id', { id });
         if (!allowNsfw) {
           query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
         }
         query = query.andWhere('c.ban = 0');
-        const character = await query.getOne();
-        if (!character) {
+        const person = await query.getOne();
+        if (!person) {
           return null;
         }
-        return convertCharacter(character);
+        return convertPerson(person);
       },
     });
   },
 });
 
-export default [Character, CharacterByIDQuery];
+export default [Person, PersonByIDQuery];
