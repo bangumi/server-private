@@ -265,3 +265,25 @@ describe('character', () => {
     });
   });
 });
+
+describe('person', () => {
+  test('should get', async () => {
+    await expect(
+      testClient.query(gql`
+        query {
+          person(id: 1) {
+            name
+            career
+          }
+        }
+      `),
+    ).resolves.toEqual({
+      data: {
+        person: {
+          name: '水樹奈々',
+          career: ['artist', 'seiyu'],
+        },
+      },
+    });
+  });
+});

@@ -9,13 +9,12 @@ type Avatar {
 }
 
 type Character {
-  ban: Int!
   collects: Int!
   comment: Int!
   id: Int!
   images: Images
   infobox: [Infobox!]
-  lastpost: Int!
+  last_post: Int!
   lock: Int!
   name: String!
   nsfw: Boolean!
@@ -55,9 +54,26 @@ type InfoboxValue {
   v: String
 }
 
+type Person {
+  career: [String!]!
+  collects: Int!
+  comment: Int!
+  id: Int!
+  images: Images
+  infobox: [Infobox!]
+  last_post: Int!
+  lock: Int!
+  name: String!
+  nsfw: Boolean!
+  redirect: Int!
+  summary: String!
+  type: Int!
+}
+
 type Query {
   character(id: Int!): Character!
   me: User
+  person(id: Int!): Person!
   subject(id: Int!): Subject
 }
 
