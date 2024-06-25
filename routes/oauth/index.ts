@@ -15,7 +15,7 @@ import { AppDataSource, fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import * as res from '@app/lib/types/res.ts';
 import { randomBase62String, randomBytes } from '@app/lib/utils/index.ts';
-import { SessionAuth } from '@app/routes/hooks/pre-handler.ts';
+import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 export const enum TokenType {
@@ -132,7 +132,7 @@ export async function setup(app: App) {
     hook: 'preHandler',
     parseOptions: cookiesPluginOption,
   });
-  app.addHook('preHandler', SessionAuth);
+  app.addHook('preHandler', Auth);
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {
       const user = res.toResUser(await fetchUserX(req.auth.userID));
