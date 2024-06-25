@@ -67,7 +67,7 @@ module.exports = {
         'unicorn/no-new-array': 'error',
         'unicorn/no-new-buffer': 'error',
         'unicorn/no-unnecessary-await': 'error',
-        'unicorn/throw-new-error': 'error',
+        'unicorn/throw-new-error': 'off',
         'unicorn/no-useless-promise-resolve-reject': 'error',
         'unicorn/prefer-string-starts-ends-with': 'error',
         'unicorn/prefer-string-slice': 'error',
@@ -132,7 +132,7 @@ module.exports = {
           {
             groups: [
               // Side effect imports.
-              ['^\\u0000'],
+              [String.raw`^\u0000`],
               // Node.js builtins prefixed with `node:`.
               ['^node:'],
               // Absolute imports and other imports such as Vue-style `@/foo`.
@@ -143,7 +143,7 @@ module.exports = {
               ['^@app/.*'],
               // Relative imports.
               // Anything that starts with a dot.
-              ['^\\.'],
+              [String.raw`^\.`],
             ],
           },
         ],
