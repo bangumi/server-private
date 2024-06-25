@@ -265,8 +265,8 @@ function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.Group
     const $created_hours = (timestamp - $created_at) / 3600;
     const $gravity = 1.8;
     const $base_score = (Math.pow($created_hours + 0.1, $gravity) / main_info.replies) * 200;
-    const $scored_lastpost = Math.trunc(timestamp - $base_score);
-    return Math.min($scored_lastpost, timestamp);
+    const $scored_last_post = Math.trunc(timestamp - $base_score);
+    return Math.min($scored_last_post, timestamp);
   }
 
   return timestamp;

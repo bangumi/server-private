@@ -3,7 +3,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 @Index('ep_sort', ['sort'], {})
 @Index('ep_disc', ['epDisc'], {})
 @Index('ep_subject_id', ['subjectID'], {})
-@Index('ep_lastpost', ['epLastpost'], {})
+@Index('ep_lastpost', ['epLastPost'], {})
 @Index('ep_ban', ['epBan'], {})
 @Index('ep_subject_id_2', ['subjectID', 'epBan', 'sort'], {})
 @Entity('chii_episodes', { schema: 'bangumi' })
@@ -65,7 +65,7 @@ export class Episode {
   epDateline!: number;
 
   @Column('int', { name: 'ep_lastpost', unsigned: true })
-  epLastpost!: number;
+  epLastPost!: number;
 
   @Column('tinyint', { name: 'ep_lock', unsigned: true, default: () => "'0'" })
   epLock!: number;

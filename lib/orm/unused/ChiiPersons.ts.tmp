@@ -80,7 +80,7 @@ export class ChiiPersons {
   prsnDateline: number;
 
   @Column("int", { name: "prsn_lastpost", unsigned: true })
-  prsnLastpost: number;
+  prsnLastPost: number;
 
   @Column("tinyint", { name: "prsn_lock" })
   prsnLock: number;

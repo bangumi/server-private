@@ -1,5 +1,6 @@
 export * from './app.ts';
 export * from './auth.ts';
+export * from './character.ts';
 export * from './episode.ts';
 export * from './group.ts';
 export * from './like.ts';
