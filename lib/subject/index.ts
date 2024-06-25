@@ -296,21 +296,3 @@ const subjectImageVoteOrder = [
   UserGroup.WikiAdmin,
   UserGroup.WikiEditor,
 ] as const;
-
-export const enum PostState {
-  Normal = 0, // 正常
-}
-
-export interface IBaseSubjectPost {
-  id: number;
-  subjectID: number;
-  relatedID: number;
-  user: orm.IUser | null;
-  createdAt: number;
-  state: PostState;
-  content: string;
-}
-
-export interface ISubjectPost extends IBaseSubjectPost {
-  replies: IBaseSubjectPost[];
-}

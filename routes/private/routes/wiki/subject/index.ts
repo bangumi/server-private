@@ -4,7 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { SubjectRevRepo } from '@app/lib/orm/index.ts';
+import { fetchUser, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
 import * as Subject from '@app/lib/subject/index.ts';
@@ -111,7 +111,6 @@ export const BaseSubjectPost = t.Object(
       t.Null(),
     ]),
     createdAt: t.Integer(),
-    state: t.Integer(),
     content: t.String(),
   },
   { $id: 'BaseSubjectPost' },
@@ -144,12 +143,9 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectPosts',
-        description: [
-          '获取当前 wiki 的评论信息',
-          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
-        ].join('\n\n'),
+        description: ['获取当前 wiki 的评论信息'].join('\n\n'),
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ examples: [1], minimum: 0 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
@@ -166,36 +162,48 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject post ${subjectID}`);
       }
 
-      const convertUser = (user: orm.IUser | null) => {
-        return user
-          ? {
-              id: user.id,
-              nickname: user.nickname,
-              avatar: avatar(user.img),
-            }
-          : null;
-      };
+      const postMap: Map<number, ISubjectPost> = new Map();
+      const repliesMap: Map<number, ISubjectPost[]> = new Map();
 
-      const convertReply = (reply: Subject.IBaseSubjectPost) => ({
-        id: reply.id,
-        subjectID: reply.subjectID,
-        relatedID: reply.relatedID,
-        user: convertUser(reply.user),
-        createdAt: reply.createdAt,
-        state: reply.state,
-        content: reply.content,
-      });
+      for (const post of posts) {
+        const u = await fetchUser(post.userID);
+        const basePost = posts
+          .map((v) => ({
+            id: v.id,
+            subjectID: v.subjectID,
+            relatedID: v.relatedID,
+            createdAt: v.dateline,
+            content: v.content,
+            user: u
+              ? {
+                  id: u.id,
+                  nickname: u.nickname,
+                  avatar: avatar(u.img),
+                }
+              : null,
+            replies: [],
+          }))
+          .find((p) => p.id === post.id);
+        if (!basePost) {
+          continue;
+        }
 
-      return posts.map((p) => ({
-        id: p.id,
-        content: p.content,
-        createdAt: p.createdAt,
-        user: convertUser(p.user),
-        replies: p.replies ? p.replies.map((r) => convertReply(r)) : [],
-        state: p.state,
-        subjectID: p.subjectID,
-        relatedID: p.relatedID,
-      }));
+        if (post.relatedID === 0) {
+          postMap.set(post.id, basePost);
+        } else {
+          const relatedReplies = repliesMap.get(post.relatedID) ?? [];
+          relatedReplies.push(basePost);
+          repliesMap.set(post.relatedID, relatedReplies);
+        }
+      }
+      for (const [id, replies] of repliesMap.entries()) {
+        const mainPost = postMap.get(id);
+        if (mainPost) {
+          mainPost.replies = replies;
+        }
+      }
+
+      return [...postMap.values()];
     },
   );
 
