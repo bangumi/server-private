@@ -4,9 +4,8 @@ import { Type as t } from '@sinclair/typebox';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUser, SubjectRevRepo } from '@app/lib/orm/index.ts';
+import { SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { avatar } from '@app/lib/response.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -93,40 +92,6 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
-export const BaseSubjectPost = t.Object(
-  {
-    id: t.Integer(),
-    subjectID: t.Integer(),
-    relatedID: t.Integer(),
-    user: t.Union([
-      t.Object({
-        id: t.Integer(),
-        nickname: t.String(),
-        avatar: t.Object({
-          small: t.String(),
-          medium: t.String(),
-          large: t.String(),
-        }),
-      }),
-      t.Null(),
-    ]),
-    createdAt: t.Integer(),
-    content: t.String(),
-  },
-  { $id: 'BaseSubjectPost' },
-);
-
-type ISubjectPost = Static<typeof SubjectPost>;
-const SubjectPost = t.Intersect(
-  [
-    BaseSubjectPost,
-    t.Object({
-      replies: t.Array(t.Ref(BaseSubjectPost)),
-    }),
-  ],
-  { $id: 'SubjectPost' },
-);
-
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   imageRoutes.setup(app);
@@ -135,77 +100,6 @@ export async function setup(app: App) {
   app.addSchema(Platform);
   app.addSchema(res.SubjectType);
   app.addSchema(SubjectWikiInfo);
-  app.addSchema(SubjectPost);
-
-  app.get(
-    '/subjects/:subjectID/posts',
-    {
-      schema: {
-        tags: [Tag.Wiki],
-        operationId: 'subjectPosts',
-        description: ['获取当前 wiki 的评论信息'].join('\n\n'),
-        params: t.Object({
-          subjectID: t.Integer({ examples: [1], minimum: 0 }),
-        }),
-        security: [{ [Security.CookiesSession]: [] }],
-        response: {
-          200: t.Array(SubjectPost),
-          401: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
-          }),
-        },
-      },
-    },
-    async ({ params: { subjectID } }): Promise<ISubjectPost[]> => {
-      const posts = await orm.fetchSubjectPosts(subjectID);
-      if (!posts) {
-        throw new NotFoundError(`subject post ${subjectID}`);
-      }
-
-      const postMap: Map<number, ISubjectPost> = new Map();
-      const repliesMap: Map<number, ISubjectPost[]> = new Map();
-
-      for (const post of posts) {
-        const u = await fetchUser(post.userID);
-        const basePost = posts
-          .map((v) => ({
-            id: v.id,
-            subjectID: v.subjectID,
-            relatedID: v.relatedID,
-            createdAt: v.dateline,
-            content: v.content,
-            user: u
-              ? {
-                  id: u.id,
-                  nickname: u.nickname,
-                  avatar: avatar(u.img),
-                }
-              : null,
-            replies: [],
-          }))
-          .find((p) => p.id === post.id);
-        if (!basePost) {
-          continue;
-        }
-
-        if (post.relatedID === 0) {
-          postMap.set(post.id, basePost);
-        } else {
-          const relatedReplies = repliesMap.get(post.relatedID) ?? [];
-          relatedReplies.push(basePost);
-          repliesMap.set(post.relatedID, relatedReplies);
-        }
-      }
-      for (const [id, replies] of repliesMap.entries()) {
-        const mainPost = postMap.get(id);
-        if (mainPost) {
-          mainPost.replies = replies;
-        }
-      }
-
-      return [...postMap.values()];
-    },
-  );
 
   app.get(
     '/subjects/:subjectID',

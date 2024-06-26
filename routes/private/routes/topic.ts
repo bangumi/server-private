@@ -171,9 +171,7 @@ export async function setup(app: App) {
   );
 
   app.addSchema(SubReply);
-
   app.addSchema(Reply);
-
   app.addSchema(Reaction);
   app.addSchema(TopicDetail);
 

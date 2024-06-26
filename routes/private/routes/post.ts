@@ -9,14 +9,49 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { IBaseReply } from '@app/lib/orm/index.ts';
-import { fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
+import { fetchUser, fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
+import { avatar } from '@app/lib/response';
 import { CommentState, NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+
+export const BaseSubjectTopicPost = t.Object(
+  {
+    id: t.Integer(),
+    topicID: t.Integer(),
+    relatedID: t.Integer(),
+    user: t.Union([
+      t.Object({
+        id: t.Integer(),
+        nickname: t.String(),
+        avatar: t.Object({
+          small: t.String(),
+          medium: t.String(),
+          large: t.String(),
+        }),
+      }),
+      t.Null(),
+    ]),
+    createdAt: t.Integer(),
+    content: t.String(),
+  },
+  { $id: 'BaseSubjectTopicPost' },
+);
+
+type ISubjectTopicPost = Static<typeof SubjectPost>;
+const SubjectPost = t.Intersect(
+  [
+    BaseSubjectTopicPost,
+    t.Object({
+      replies: t.Array(t.Ref(BaseSubjectTopicPost)),
+    }),
+  ],
+  { $id: 'SubjectTopicPost' },
+);
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -45,17 +80,20 @@ export async function setup(app: App) {
   app.addSchema(BasicReply);
   app.addSchema(Reply);
 
-  async function getGroupPost(auth: IAuth, postID: number) {
-    const post = await orm.GroupPostRepo.findOneBy({ id: postID });
+  async function getPost(auth: IAuth, postID: number, type: 'group' | 'subject') {
+    const post =
+      type === 'group'
+        ? await orm.GroupPostRepo.findOneBy({ id: postID })
+        : await orm.SubjectPostRepo.findOneBy({ id: postID });
     if (!post) {
-      throw new NotFoundError(`group post ${postID}`);
+      throw new NotFoundError(`${type} post ${postID}`);
     }
 
     if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(post.state)) {
-      throw new NotFoundError(`group post ${postID}`);
+      throw new NotFoundError(`${type} post ${postID}`);
     }
 
-    const topic = await Topic.fetchDetail(auth, 'group', post.topicID);
+    const topic = await Topic.fetchDetail(auth, type, post.topicID);
     if (!topic) {
       throw new NotFoundError(`group topic ${post.topicID}`);
     }
@@ -90,7 +128,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const { topic, post } = await getGroupPost(auth, postID);
+      const { topic, post } = await getPost(auth, postID, 'group');
 
       const creator = res.toResUser(await fetchUserX(post.uid));
 
@@ -204,7 +242,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('delete a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const { post } = await getGroupPost(auth, postID);
+      const { post } = await getPost(auth, postID, 'group');
 
       if (auth.userID !== post.uid) {
         throw new NotAllowedError('delete this post');
@@ -347,6 +385,114 @@ export async function setup(app: App) {
         text: t.content,
         creator: toResUser(t.user),
       };
+    },
+  );
+
+  app.addSchema(SubjectPost);
+
+  app.get(
+    '/subjects/-/topics/:topicID/replies',
+    {
+      schema: {
+        tags: [Tag.Group],
+        operationId: 'subjectReples',
+        summary: '获取条目的讨论版回复',
+        description: ['获取条目的讨论版回复'].join('\n\n'),
+        params: t.Object({
+          topicID: t.Integer({ examples: [1], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Array(SubjectPost),
+        },
+      },
+    },
+    async ({ params: { topicID } }): Promise<ISubjectTopicPost[]> => {
+      const posts = await orm.fetchSubjectTopicPosts(topicID);
+      if (!posts) {
+        throw new NotFoundError(`subject topic ${topicID}`);
+      }
+
+      const postMap: Map<number, ISubjectTopicPost> = new Map();
+      const repliesMap: Map<number, ISubjectTopicPost[]> = new Map();
+
+      for (const post of posts) {
+        const u = await fetchUser(post.uid);
+        const basePost = posts
+          .map((v) => ({
+            id: v.id,
+            topicID: v.topicID,
+            relatedID: v.related,
+            createdAt: v.dateline,
+            content: v.content,
+            user: u
+              ? {
+                  id: u.id,
+                  nickname: u.nickname,
+                  avatar: avatar(u.img),
+                }
+              : null,
+            replies: [],
+          }))
+          .find((p) => p.id === post.id);
+        if (!basePost) {
+          continue;
+        }
+
+        if (post.related === 0) {
+          postMap.set(post.id, basePost);
+        } else {
+          const relatedReplies = repliesMap.get(post.related) ?? [];
+          relatedReplies.push(basePost);
+          repliesMap.set(post.related, relatedReplies);
+        }
+      }
+      for (const [id, replies] of repliesMap.entries()) {
+        const mainPost = postMap.get(id);
+        if (mainPost) {
+          mainPost.replies = replies;
+        }
+      }
+
+      return [...postMap.values()];
+    },
+  );
+
+  app.delete(
+    '/subjects/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'deleteSubjectPost',
+        params: t.Object({
+          postID: t.Integer({ examples: [2092074] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Object({}),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('delete this post')),
+          }),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotFoundError('post')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+      },
+      preHandler: [requireLogin('delete a post')],
+    },
+    async ({ auth, params: { postID } }) => {
+      const { post } = await getPost(auth, postID, 'subject');
+
+      if (auth.userID !== post.uid) {
+        throw new NotAllowedError('delete this post');
+      }
+
+      if (post.state !== Topic.CommentState.Normal) {
+        return {};
+      }
+
+      await orm.SubjectPostRepo.update({ id: postID }, { state: Topic.CommentState.UserDelete });
+      return {};
     },
   );
 }

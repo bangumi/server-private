@@ -33,6 +33,7 @@ import {
   SubjectPost,
   SubjectRelation,
   SubjectRev,
+  SubjectTopic,
   User,
   UserField,
   UserGroup,
@@ -96,6 +97,7 @@ export const AppDataSource = new DataSource({
     RevHistory,
     RevText,
     Subject,
+    SubjectTopic,
     SubjectPost,
     SubjectFields,
     SubjectRelation,
@@ -114,7 +116,8 @@ export const CharacterRepo = AppDataSource.getRepository(Character);
 export const PersonRepo = AppDataSource.getRepository(Person);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
-export const SubjectPostsRepo = AppDataSource.getRepository(SubjectPost);
+export const SubjectTopicRepo = AppDataSource.getRepository(SubjectTopic);
+export const SubjectPostRepo = AppDataSource.getRepository(SubjectPost);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const SubjectRelationRepo = AppDataSource.getRepository(SubjectRelation);
@@ -460,9 +463,9 @@ export async function fetchSubject(id: number) {
   };
 }
 
-export async function fetchSubjectPosts(subjectID: number) {
-  return await SubjectPostsRepo.find({
-    where: { subjectID: subjectID, state: 0 },
+export async function fetchSubjectTopicPosts(topicID: number) {
+  return await SubjectPostRepo.find({
+    where: { topicID: topicID, state: 0 },
   });
 }
 

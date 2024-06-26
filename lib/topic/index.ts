@@ -7,7 +7,14 @@ import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
 import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import type { IBaseReply, IUser, Page } from '@app/lib/orm/index.ts';
-import { AppDataSource, fetchUserX, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm/index.ts';
+import {
+  AppDataSource,
+  fetchUserX,
+  GroupPostRepo,
+  GroupTopicRepo,
+  SubjectPostRepo,
+  SubjectTopicRepo,
+} from '@app/lib/orm/index.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
 
 export { CanViewTopicContent, ListTopicDisplays } from './display.ts';
@@ -70,12 +77,13 @@ export interface ITopicDetails {
 
 export async function fetchDetail(
   auth: IAuth,
-  type: 'group',
+  type: 'group' | 'subject',
   id: number,
 ): Promise<ITopicDetails | null> {
-  const topic = await GroupTopicRepo.findOne({
-    where: { id: id },
-  });
+  const topic =
+    type === 'group'
+      ? await GroupTopicRepo.findOne({ where: { id: id } })
+      : await SubjectTopicRepo.findOne({ where: { id: id } });
 
   if (!topic) {
     return null;
@@ -85,11 +93,10 @@ export async function fetchDetail(
     return null;
   }
 
-  const replies = await GroupPostRepo.find({
-    where: {
-      topicID: topic.id,
-    },
-  });
+  const replies =
+    type === 'group'
+      ? await GroupPostRepo.find({ where: { topicID: topic.id } })
+      : await SubjectPostRepo.find({ where: { topicID: topic.id } });
 
   const top = replies.shift();
   if (!top) {
