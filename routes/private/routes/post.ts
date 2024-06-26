@@ -732,4 +732,86 @@ export async function setup(app: App) {
       };
     },
   );
+
+  type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
+  const SubjectInterestComment = t.Object(
+    {
+      total: t.Integer(),
+      list: t.Array(
+        t.Object({
+          user: t.Union([
+            t.Object({
+              id: t.Integer(),
+              nickname: t.String(),
+              avatar: t.Object({
+                small: t.String(),
+                medium: t.String(),
+                large: t.String(),
+              }),
+            }),
+            t.Null(),
+          ]),
+          rate: t.Integer(),
+          comment: t.String(),
+          updatedAt: t.Integer(),
+        }),
+      ),
+    },
+    { $id: 'SubjectInterestComment' },
+  );
+
+  app.addSchema(SubjectInterestComment);
+
+  app.get(
+    '/subjects/:subjectID/comments',
+    {
+      schema: {
+        summary: '获取条目的吐槽箱',
+        tags: [Tag.Subject],
+        operationId: 'subjectComments',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [8], minimum: 0 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(t.Integer({ default: 20 })),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Ref(SubjectInterestComment),
+        },
+      },
+    },
+    async ({ params: { subjectID }, query }): Promise<ISubjectInterestComment> => {
+      const where = { subjectID: subjectID, private: 0, hasComment: 1 };
+
+      const count = await orm.SubjectInterestRepo.count({ where });
+      const comments = await orm.SubjectInterestRepo.find({
+        where: where,
+        skip: query.offset,
+        take: query.limit,
+      });
+
+      const commentPromises = comments.map(async (v) => {
+        const u = await fetchUser(v.uid);
+        return {
+          user: u
+            ? {
+                id: u.id,
+                nickname: u.nickname,
+                avatar: avatar(u.img),
+              }
+            : null,
+          rate: v.rate,
+          comment: v.comment,
+          updatedAt: v.lastTouch,
+        };
+      });
+
+      return {
+        total: count,
+        list: await Promise.all(commentPromises),
+      };
+    },
+  );
 }

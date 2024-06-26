@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
-import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
+import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import type { IBaseReply, IUser, Page } from '@app/lib/orm/index.ts';
@@ -165,22 +165,29 @@ export async function fetchTopicList(
   id: number,
   { limit = 30, offset = 0 }: Page,
 ): Promise<[number, ITopic[]]> {
-  if (type !== 'group') {
-    throw new UnimplementedError(`topic type ${type}`);
-  }
-
   const where = {
-    gid: id,
+    parentID: id,
     display: orm.In(ListTopicDisplays(auth)),
   } as const;
 
-  const total = await GroupTopicRepo.count({ where });
-  const topics = await GroupTopicRepo.find({
-    where,
-    order: { createdAt: 'desc' },
-    skip: offset,
-    take: limit,
-  });
+  const total =
+    type === 'group'
+      ? await GroupTopicRepo.count({ where })
+      : await SubjectTopicRepo.count({ where });
+  const topics =
+    type === 'group'
+      ? await GroupTopicRepo.find({
+          where,
+          order: { createdAt: 'desc' },
+          skip: offset,
+          take: limit,
+        })
+      : await SubjectTopicRepo.find({
+          where,
+          order: { createdAt: 'desc' },
+          skip: offset,
+          take: limit,
+        });
 
   return [
     total,

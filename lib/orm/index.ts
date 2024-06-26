@@ -30,6 +30,7 @@ import {
   Subject,
   SubjectFields,
   SubjectImage,
+  SubjectInterest,
   SubjectPost,
   SubjectRelation,
   SubjectRev,
@@ -104,6 +105,7 @@ export const AppDataSource = new DataSource({
     GroupTopic,
     GroupPost,
     SubjectRev,
+    SubjectInterest,
     Like,
   ],
 });
@@ -128,6 +130,7 @@ export const RevHistoryRepo = AppDataSource.getRepository(RevHistory);
 export const RevTextRepo = AppDataSource.getRepository(RevText);
 
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
+export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const AppRepo = AppDataSource.getRepository(App);

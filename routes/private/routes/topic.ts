@@ -295,9 +295,9 @@ export async function setup(app: App) {
     '/subjects/:subjectID/topics',
     {
       schema: {
-        description: '获取帖子列表',
+        summary: '获取条目讨论版列表',
         operationId: 'getSubjectTopicsBySubjectId',
-        tags: [Tag.Topic],
+        tags: [Tag.Subject],
         params: t.Object({
           subjectID: t.Integer({ exclusiveMinimum: 0 }),
         }),
