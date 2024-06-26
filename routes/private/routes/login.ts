@@ -56,7 +56,6 @@ export async function setup(app: App) {
   app.get(
     '/me',
     {
-      websocket: false,
       schema: {
         operationId: 'getCurrentUser',
         tags: [Tag.User],

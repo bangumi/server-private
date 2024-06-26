@@ -11,6 +11,7 @@ import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
 import * as entity from './entity/index.ts';
 import {
   App,
+  Character,
   Episode,
   EpRevision,
   Friends,
@@ -23,6 +24,7 @@ import {
   NotifyField,
   OauthAccessTokens,
   OauthClient,
+  Person,
   RevHistory,
   RevText,
   Subject,
@@ -75,6 +77,7 @@ export const AppDataSource = new DataSource({
   },
   entities: [
     App,
+    Character,
     EpRevision,
     User,
     UserField,
@@ -89,6 +92,7 @@ export const AppDataSource = new DataSource({
     GroupMembers,
     Episode,
     OauthClient,
+    Person,
     RevHistory,
     RevText,
     Subject,
@@ -105,6 +109,9 @@ export const AppDataSource = new DataSource({
 export const UserRepo = AppDataSource.getRepository(User);
 export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const FriendRepo = AppDataSource.getRepository(Friends);
+
+export const CharacterRepo = AppDataSource.getRepository(Character);
+export const PersonRepo = AppDataSource.getRepository(Person);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectPostsRepo = AppDataSource.getRepository(SubjectPost);
@@ -142,6 +149,8 @@ export const repo = {
   SubjectFields: SubjectFieldsRepo,
   SubjectRelation: SubjectRelationRepo,
   Episode: EpisodeRepo,
+  Character: CharacterRepo,
+  Person: PersonRepo,
   AccessToken: AccessTokenRepo,
   Session: SessionRepo,
   UserGroup: UserGroupRepo,

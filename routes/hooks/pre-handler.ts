@@ -74,7 +74,7 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
   return false;
 }
 
-export async function SessionAuth(req: FastifyRequest, res: FastifyReply) {
+export async function sessionAuth(req: FastifyRequest, res: FastifyReply) {
   if (await legacySessionAuth(req)) {
     return;
   }
@@ -94,6 +94,26 @@ export async function SessionAuth(req: FastifyRequest, res: FastifyReply) {
   }
 
   req.auth = a;
+}
+
+export async function Auth(req: FastifyRequest, res: FastifyReply) {
+  if (await accessTokenAuth(req)) {
+    return;
+  }
+  await sessionAuth(req, res);
+}
+
+export async function accessTokenAuth(req: FastifyRequest): Promise<boolean> {
+  const token = req.headers['authorization'];
+  if (!token) {
+    return false;
+  }
+  const a = await auth.byHeader(token);
+  if (a) {
+    req.auth = a;
+    return true;
+  }
+  return false;
 }
 
 export async function redirectIfNotLogin(req: FastifyRequest, reply: FastifyReply) {

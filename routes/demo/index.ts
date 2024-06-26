@@ -9,7 +9,7 @@ import * as Notify from '@app/lib/notify.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import * as admin from '@app/routes/admin/index.ts';
-import { SessionAuth } from '@app/routes/hooks/pre-handler.ts';
+import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 import * as editor from './editor.ts';
@@ -30,7 +30,7 @@ export async function setup(app: App) {
     parseOptions: cookiesPluginOption,
   });
 
-  void app.addHook('preHandler', SessionAuth);
+  void app.addHook('preHandler', Auth);
 
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {

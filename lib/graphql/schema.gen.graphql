@@ -8,6 +8,21 @@ type Avatar {
   small: String!
 }
 
+type Character {
+  collects: Int!
+  comment: Int!
+  id: Int!
+  images: Images
+  infobox: [Infobox!]
+  last_post: Int!
+  lock: Int!
+  name: String!
+  nsfw: Boolean!
+  redirect: Int!
+  role: Int!
+  summary: String!
+}
+
 type Episode {
   airdate: String!
   comment: Int!
@@ -22,6 +37,13 @@ type Episode {
   type: Int!
 }
 
+type Images {
+  grid: String!
+  large: String!
+  medium: String!
+  small: String!
+}
+
 type Infobox {
   key: String!
   values: [InfoboxValue!]
@@ -32,8 +54,26 @@ type InfoboxValue {
   v: String
 }
 
+type Person {
+  career: [String!]!
+  collects: Int!
+  comment: Int!
+  id: Int!
+  images: Images
+  infobox: [Infobox!]
+  last_post: Int!
+  lock: Int!
+  name: String!
+  nsfw: Boolean!
+  redirect: Int!
+  summary: String!
+  type: Int!
+}
+
 type Query {
+  character(id: Int!): Character!
   me: User
+  person(id: Int!): Person!
   subject(id: Int!): Subject
 }
 
@@ -50,7 +90,7 @@ type Subject {
   eps: Int!
   id: Int!
   images: SubjectImages
-  infobox(limit: Int = 0): [Infobox!]
+  infobox: [Infobox!]
   locked: Boolean!
   name: String!
   name_cn: String!

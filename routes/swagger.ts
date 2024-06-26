@@ -123,6 +123,11 @@ export async function privateAPI(app: App) {
           description:
             '使用 [login](#/auth/login) 调用 API 登录，或者 使用 [demo](/demo/login) 登录',
         },
+        [Security.HTTPBearer]: {
+          type: 'http',
+          scheme: 'Bearer',
+          description: '使用 [demo](/demo/login) 登录后创建个人令牌',
+        },
       },
     },
   });
