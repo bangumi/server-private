@@ -86,7 +86,7 @@ describe('group topics', () => {
 
 describe('create group post', () => {
   const createPostInGroup = vi.fn().mockResolvedValue({ id: 1 });
-  vi.spyOn(orm, 'createPostInGroup').mockImplementation(createPostInGroup);
+  vi.spyOn(orm, 'createPost').mockImplementation(createPostInGroup);
 
   test('should create group topic', async () => {
     const app = fastify();

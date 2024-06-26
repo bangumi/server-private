@@ -493,22 +493,29 @@ export async function isFriends(userID: number, another: number): Promise<boolea
 interface PostCreation {
   title: string;
   content: string;
-  groupID: number;
+  parentID: number;
   userID: number;
   display: TopicDisplay;
   state: CommentState;
+  topicType: 'group' | 'subject';
 }
 
-export async function createPostInGroup(post: PostCreation): Promise<{ id: number }> {
+export async function createPost(post: PostCreation): Promise<{ id: number }> {
   const now = DateTime.now();
 
   return await AppDataSource.transaction(async (t) => {
-    const GroupTopicRepo = t.getRepository(entity.GroupTopic);
-    const GroupPostRepo = t.getRepository(entity.GroupPost);
+    const postRepo =
+      post.topicType === 'group'
+        ? t.getRepository(entity.GroupPost)
+        : t.getRepository(entity.SubjectPost);
+    const topicRepo =
+      post.topicType === 'group'
+        ? t.getRepository(entity.GroupTopic)
+        : t.getRepository(entity.SubjectTopic);
 
-    const topic = await GroupTopicRepo.save({
+    const topic = await topicRepo.save({
       title: post.title,
-      gid: post.groupID,
+      parentID: post.parentID,
       creatorID: post.userID,
       state: post.state,
       updatedAt: now.toUnixInteger(),
@@ -517,7 +524,7 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
       display: post.display,
     });
 
-    await GroupPostRepo.insert({
+    await postRepo.insert({
       topicID: topic.id,
       dateline: now.toUnixInteger(),
       state: post.state,

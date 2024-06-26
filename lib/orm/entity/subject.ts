@@ -330,10 +330,10 @@ export class SubjectImage {
   createdAt!: Date;
 }
 
-@Index('sbj_tpc_lastpost', ['updatedAt', 'gid', 'display'], {})
+@Index('sbj_tpc_lastpost', ['updatedAt', 'parentID', 'display'], {})
 @Index('tpc_display', ['display'], {})
 @Index('sbj_tpc_uid', ['creatorID'], {})
-@Index('tpc_subject_id', ['gid'], {})
+@Index('tpc_subject_id', ['parentID'], {})
 @Entity('chii_subject_topics', { schema: 'bangumi' })
 export class SubjectTopic {
   @PrimaryGeneratedColumn({
@@ -344,7 +344,7 @@ export class SubjectTopic {
   id!: number;
 
   @Column('mediumint', { name: 'sbj_tpc_subject_id', unsigned: true })
-  gid!: number;
+  parentID!: number;
 
   @Column('mediumint', { name: 'sbj_tpc_uid', unsigned: true })
   creatorID!: number;

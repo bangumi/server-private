@@ -369,13 +369,14 @@ export async function setup(app: App) {
         throw new NotAllowedError('create posts, join group first');
       }
 
-      return await orm.createPostInGroup({
+      return await orm.createPost({
         title,
         content: text,
         display,
         userID: auth.userID,
-        groupID: group.id,
+        parentID: group.id,
         state: Topic.CommentState.Normal,
+        topicType: 'group',
       });
     },
   );
@@ -447,6 +448,133 @@ export async function setup(app: App) {
       }
 
       await orm.GroupTopicRepo.update({ id: topicID }, { title, display });
+
+      const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
+
+      if (topicPost) {
+        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: text });
+      }
+
+      return {};
+    },
+  );
+
+  app.post(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '创建条目讨论版',
+        tags: [Tag.Group],
+        operationId: 'createNewSubjectTopic',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+        }),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new topic id' }),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+        body: t.Ref(TopicBasic),
+      },
+      preHandler: [requireLogin('creating a topic')],
+    },
+    async ({ auth, body: { text, title }, params: { subjectID } }) => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create topic');
+      }
+
+      const subject = await orm.fetchSubject(subjectID);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      let display = TopicDisplay.Normal;
+
+      if (dam.needReview(title) || dam.needReview(text)) {
+        display = TopicDisplay.Review;
+      }
+
+      return await orm.createPost({
+        title,
+        content: text,
+        display,
+        userID: auth.userID,
+        parentID: subject.id,
+        state: Topic.CommentState.Normal,
+        topicType: 'subject',
+      });
+    },
+  );
+
+  app.put(
+    '/subjects/-/topics/:topicID',
+    {
+      schema: {
+        summary: '编辑自己创建的条目讨论版',
+        operationId: 'editSubjectTopic',
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Object({}),
+          400: t.Ref(res.Error),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('edit a topic')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+        body: t.Ref(TopicBasic),
+      },
+      preHandler: [requireLogin('edit a topic')],
+    },
+    /**
+     * @param auth -
+     * @param title - 帖子标题
+     * @param text - 帖子内容
+     * @param topicID - 帖子 ID
+     */
+    async function ({
+      auth,
+      body: { title, text },
+      params: { topicID },
+    }): Promise<Record<string, never>> {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+
+      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(text))) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const topic = await Topic.fetchDetail(auth, 'subject', topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+
+      if (
+        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
+          topic.state,
+        )
+      ) {
+        throw new NotAllowedError('edit this topic');
+      }
+
+      if (topic.creatorID !== auth.userID) {
+        throw new NotAllowedError('edit this topic');
+      }
+
+      let display = topic.display;
+      if (dam.needReview(title) || dam.needReview(text)) {
+        if (display === TopicDisplay.Normal) {
+          display = TopicDisplay.Review;
+        } else {
+          return {};
+        }
+      }
+
+      await orm.SubjectTopicRepo.update({ id: topicID }, { title, display });
 
       const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
 

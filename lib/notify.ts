@@ -29,9 +29,10 @@ export const enum Type {
   GroupPostReply = 2,
   IndexTopicReply = 3,
   IndexPostReply = 4,
-
   CharacterTopicReply = 5,
   CharacterPostReply = 6,
+  SubjectTopicReply = 7,
+  SubjectPostReply = 8,
   _7,
   _8,
   _9,

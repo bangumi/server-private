@@ -139,7 +139,7 @@ export async function fetchDetail(
     contentPost: top,
     id: topic.id,
     title: topic.title,
-    parentID: topic.gid,
+    parentID: topic.parentID,
     text: top.content,
     display: topic.display,
     state: topic.state,
@@ -187,7 +187,7 @@ export async function fetchTopicList(
     topics.map((x) => {
       return {
         id: x.id,
-        parentID: x.gid,
+        parentID: x.parentID,
         creatorID: x.creatorID,
         title: x.title,
         createdAt: x.createdAt,
@@ -219,21 +219,23 @@ export async function createTopicReply({
   parentID: number;
   state?: CommentState;
 }): Promise<IPost> {
-  if (topicType !== Type.group) {
-    throw new UnimplementedError('creating group reply');
-  }
-
   const now = DateTime.now();
 
   const p = await AppDataSource.transaction(async (t) => {
-    const GroupPostRepo = t.getRepository(entity.GroupPost);
-    const GroupTopicRepo = t.getRepository(entity.GroupTopic);
+    const postRepo =
+      topicType === Type.group
+        ? t.getRepository(entity.GroupPost)
+        : t.getRepository(entity.SubjectPost);
+    const topicRepo =
+      topicType === Type.group
+        ? t.getRepository(entity.GroupTopic)
+        : t.getRepository(entity.SubjectTopic);
 
-    const topic = await GroupTopicRepo.findOneOrFail({ where: { id: topicID } });
-    const posts = await GroupPostRepo.countBy({ topicID, state: CommentState.Normal });
+    const topic = await topicRepo.findOneOrFail({ where: { id: topicID } });
+    const posts = await postRepo.countBy({ topicID, state: CommentState.Normal });
 
     // 创建回帖
-    const post = await GroupPostRepo.save({
+    const post = await postRepo.save({
       topicID: topicID,
       content,
       uid: userID,
@@ -242,15 +244,21 @@ export async function createTopicReply({
       dateline: now.toUnixInteger(),
     });
 
-    const topicUpdate: QueryDeepPartialEntity<entity.GroupTopic> = {
+    let topicUpdate = {
       replies: posts,
-    };
+    } as QueryDeepPartialEntity<entity.GroupTopic>;
+
+    if (topicType === Type.subject) {
+      topicUpdate = {
+        replies: posts,
+      } as QueryDeepPartialEntity<entity.SubjectTopic>;
+    }
 
     if (topic.state !== CommentState.AdminSilentTopic) {
       topicUpdate.updatedAt = scoredUpdateTime(now.toUnixInteger(), topicType, topic);
     }
 
-    await GroupTopicRepo.update({ id: topic.id }, topicUpdate);
+    await topicRepo.update({ id: topic.id }, topicUpdate);
 
     return post;
   });
@@ -267,7 +275,7 @@ export async function createTopicReply({
 }
 
 function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
-  if (type === Type.group && [364].includes(main_info.gid) && main_info.replies > 0) {
+  if (type === Type.group && [364].includes(main_info.parentID) && main_info.replies > 0) {
     const $created_at = main_info.createdAt;
     const $created_hours = (timestamp - $created_at) / 3600;
     const $gravity = 1.8;

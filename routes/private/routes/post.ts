@@ -95,15 +95,15 @@ export async function setup(app: App) {
 
     const topic = await Topic.fetchDetail(auth, type, post.topicID);
     if (!topic) {
-      throw new NotFoundError(`group topic ${post.topicID}`);
+      throw new NotFoundError(`${type} topic ${post.topicID}`);
     }
 
     if (topic.contentPost.id === post.id) {
-      throw new NotFoundError(`group post ${postID}`);
+      throw new NotFoundError(`${type} post ${postID}`);
     }
 
     if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(topic.state)) {
-      throw new NotFoundError(`group topic ${post.topicID}`);
+      throw new NotFoundError(`${type} topic ${post.topicID}`);
     }
 
     return { post, topic };
@@ -396,8 +396,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Group],
         operationId: 'subjectReples',
-        summary: '获取条目的讨论版回复',
-        description: ['获取条目的讨论版回复'].join('\n\n'),
+        summary: '获取条目讨论版回复',
         params: t.Object({
           topicID: t.Integer({ examples: [1], minimum: 0 }),
         }),
@@ -463,6 +462,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'deleteSubjectPost',
+        summary: '删除自己创建的条目讨论版回复',
         params: t.Object({
           postID: t.Integer({ examples: [2092074] }),
         }),
@@ -493,6 +493,243 @@ export async function setup(app: App) {
 
       await orm.SubjectPostRepo.update({ id: postID }, { state: Topic.CommentState.UserDelete });
       return {};
+    },
+  );
+
+  app.get(
+    '/subjects/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'getSubjectPost',
+        summary: '获取指定的条目讨论版回复',
+        params: t.Object({
+          postID: t.Integer({ examples: [2092074] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Ref(Reply),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotFoundError('post')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+      },
+    },
+    async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
+      const { topic, post } = await getPost(auth, postID, 'subject');
+
+      const creator = res.toResUser(await fetchUserX(post.uid));
+
+      return {
+        id: postID,
+        creator,
+        topicID: topic.id,
+        state: post.state,
+        createdAt: post.dateline,
+        text: post.content,
+        topicTitle: topic.title,
+      };
+    },
+  );
+
+  app.put(
+    '/subjects/-/posts/:postID',
+    {
+      schema: {
+        summary: '编辑自己创建的条目讨论版回复',
+        operationId: 'editSubjectPost',
+        params: t.Object({
+          postID: t.Integer({ examples: [2092074] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Object({}),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('edit reply')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+        body: t.Object(
+          {
+            text: t.String({ minLength: 1 }),
+          },
+          {
+            examples: [{ text: 'new post contents' }],
+          },
+        ),
+      },
+      preHandler: [requireLogin('edit a post')],
+    },
+    /**
+     * @param auth -
+     * @param text - 回帖内容
+     * @param postID - 回复 ID
+     */
+    async function ({ auth, body: { text }, params: { postID } }): Promise<Record<string, never>> {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const post = await orm.SubjectPostRepo.findOneBy({ id: postID });
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('edit reply not created by you');
+      }
+
+      const topic = await Topic.fetchDetail(auth, 'subject', post.topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${post.topicID}`);
+      }
+
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('edit reply in a closed topic');
+      }
+
+      if ([CommentState.AdminDelete, CommentState.UserDelete].includes(topic.state)) {
+        throw new NotAllowedError('edit a deleted reply');
+      }
+
+      for (const reply of topic.replies) {
+        if (reply.id === post.id && reply.replies.length > 0) {
+          throw new NotAllowedError('edit a reply with sub-reply');
+        }
+      }
+
+      await orm.SubjectPostRepo.update({ id: postID }, { content: text });
+
+      return {};
+    },
+  );
+
+  app.post(
+    '/subjects/-/topics/:topicID/replies',
+    {
+      schema: {
+        summary: '创建条目讨论版回复',
+        operationId: 'createSubjectReply',
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602] }),
+        }),
+        tags: [Tag.Group],
+        response: {
+          200: t.Ref(BasicReply),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [] }],
+        body: t.Object(
+          {
+            replyTo: t.Optional(
+              t.Integer({
+                examples: [0],
+                default: 0,
+                description: '被回复的 topic ID, `0` 代表回复楼主',
+              }),
+            ),
+            content: t.String({ minLength: 1 }),
+          },
+          {
+            examples: [
+              { content: 'post contents' },
+              {
+                content: 'post contents',
+                replyTo: 2,
+              },
+            ],
+          },
+        ),
+      },
+      preHandler: [requireLogin('creating a reply')],
+    },
+    /**
+     * @param auth -
+     * @param content - 回帖内容
+     * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
+     * @param topicID - 帖子 ID
+     */
+    async ({
+      auth,
+      body: { content, replyTo = 0 },
+      params: { topicID },
+    }): Promise<Static<typeof BasicReply>> => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+
+      const topic = await Topic.fetchDetail(auth, 'subject', topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('reply to a closed topic');
+      }
+
+      const now = DateTime.now();
+
+      let parentID = 0;
+      let dstUserID = topic.creatorID;
+      if (replyTo) {
+        const parents: Record<number, IBaseReply> = Object.fromEntries(
+          topic.replies.flatMap((x): [number, IBaseReply][] => {
+            // 管理员操作不能回复
+            if (
+              [
+                CommentState.AdminCloseTopic,
+                CommentState.AdminReopen,
+                CommentState.AdminSilentTopic,
+              ].includes(x.state)
+            ) {
+              return [];
+            }
+            return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
+          }),
+        );
+
+        const replied = parents[replyTo];
+
+        if (!replied) {
+          throw new NotFoundError(`parent post id ${replyTo}`);
+        }
+
+        dstUserID = replied.creatorID;
+        parentID = replied.repliedTo || replied.id;
+      }
+
+      const t = await Topic.createTopicReply({
+        topicType: Topic.Type.subject,
+        topicID: topicID,
+        userID: auth.userID,
+        content,
+        parentID,
+      });
+
+      const notifyType =
+        replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
+      await Notify.create({
+        destUserID: dstUserID,
+        sourceUserID: auth.userID,
+        now,
+        type: notifyType,
+        postID: t.id,
+        topicID: topic.id,
+        title: topic.title,
+      });
+
+      return {
+        id: t.id,
+        state: t.state,
+        createdAt: t.createdAt,
+        text: t.content,
+        creator: toResUser(t.user),
+      };
     },
   );
 }
