@@ -186,7 +186,7 @@ describe('create group post reply', () => {
     vi.spyOn(Topic, 'createTopicReply').mockImplementation(createTopicReply);
     vi.spyOn(Notify, 'create').mockImplementation(notifyMock);
     vi.spyOn(Topic, 'fetchDetail').mockImplementationOnce(
-      (_: IAuth, type: 'group', id: number): Promise<ITopicDetails | null> => {
+      (_: IAuth, type: 'group' | 'subject', id: number): Promise<ITopicDetails | null> => {
         if (id !== 371602) {
           return Promise.resolve(null);
         }
