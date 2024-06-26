@@ -394,7 +394,7 @@ export async function setup(app: App) {
     '/subjects/-/topics/:topicID/replies',
     {
       schema: {
-        tags: [Tag.Group],
+        tags: [Tag.Subject],
         operationId: 'subjectReples',
         summary: '获取条目讨论版回复',
         params: t.Object({
@@ -466,7 +466,7 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer({ examples: [2092074] }),
         }),
-        tags: [Tag.Group],
+        tags: [Tag.Subject],
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
@@ -505,7 +505,7 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer({ examples: [2092074] }),
         }),
-        tags: [Tag.Group],
+        tags: [Tag.Subject],
         response: {
           200: t.Ref(Reply),
           404: t.Ref(res.Error, {
@@ -541,7 +541,7 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer({ examples: [2092074] }),
         }),
-        tags: [Tag.Group],
+        tags: [Tag.Subject],
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
@@ -617,7 +617,7 @@ export async function setup(app: App) {
         params: t.Object({
           topicID: t.Integer({ examples: [371602] }),
         }),
-        tags: [Tag.Group],
+        tags: [Tag.Subject],
         response: {
           200: t.Ref(BasicReply),
           401: t.Ref(res.Error, {

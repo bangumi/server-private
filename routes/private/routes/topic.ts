@@ -464,7 +464,7 @@ export async function setup(app: App) {
     {
       schema: {
         summary: '创建条目讨论版',
-        tags: [Tag.Group],
+        tags: [Tag.Subject],
         operationId: 'createNewSubjectTopic',
         params: t.Object({
           subjectID: t.Integer({ examples: [114514], minimum: 0 }),
@@ -516,7 +516,7 @@ export async function setup(app: App) {
         params: t.Object({
           topicID: t.Integer({ examples: [371602] }),
         }),
-        tags: [Tag.Group],
+        tags: [Tag.Subject],
         response: {
           200: t.Object({}),
           400: t.Ref(res.Error),
