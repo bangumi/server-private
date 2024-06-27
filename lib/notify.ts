@@ -33,8 +33,6 @@ export const enum Type {
   CharacterPostReply = 6,
   SubjectTopicReply = 7,
   SubjectPostReply = 8,
-  _7,
-  _8,
   _9,
   _10,
   _11,
