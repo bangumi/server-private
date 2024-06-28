@@ -20,7 +20,14 @@ type Character {
   nsfw: Boolean!
   redirect: Int!
   role: Int!
+  subjects(limit: Int! = 10, offset: Int! = 0): [CharacterRelatedSubject!]
   summary: String!
+}
+
+type CharacterRelatedSubject {
+  order: Int!
+  subject: Subject!
+  type: Int!
 }
 
 type Episode {
@@ -66,8 +73,14 @@ type Person {
   name: String!
   nsfw: Boolean!
   redirect: Int!
+  subjects(limit: Int! = 10, offset: Int! = 0): [PersonRelatedSubject!]
   summary: String!
   type: Int!
+}
+
+type PersonRelatedSubject {
+  position: Int!
+  subject: Subject!
 }
 
 type Query {
@@ -79,6 +92,7 @@ type Query {
 
 type Subject {
   airtime: SubjectAirtime!
+  characters(limit: Int! = 10, offset: Int! = 0): [SubjectRelatedCharacter!]
   collection: SubjectCollection!
   episodes(
     limit: Int! = 30
@@ -95,6 +109,7 @@ type Subject {
   name: String!
   name_cn: String!
   nsfw: Boolean!
+  persons(limit: Int! = 10, offset: Int! = 0): [SubjectRelatedPerson!]
   platform: SubjectPlatform!
   rating: SubjectRating!
   redirect: Int!
@@ -142,6 +157,17 @@ type SubjectRating {
   rank: Int!
   score: Float!
   total: Int!
+}
+
+type SubjectRelatedCharacter {
+  character: Character!
+  order: Int!
+  type: Int!
+}
+
+type SubjectRelatedPerson {
+  person: Person!
+  position: Int!
 }
 
 type SubjectRelation {

@@ -172,7 +172,7 @@ export class Subject {
 @Index('field_date', ['date'], {})
 @Index('field_year_mon', ['year', 'month'], {})
 @Index('field_year', ['year'], {})
-@Index('query_date', ['subject_id', 'date'], {})
+@Index('query_date', ['subjectID', 'date'], {})
 @Entity('chii_subject_fields', { schema: 'bangumi' })
 export class SubjectFields {
   @PrimaryGeneratedColumn({
@@ -180,7 +180,7 @@ export class SubjectFields {
     name: 'field_sid',
     unsigned: true,
   })
-  subject_id!: number;
+  subjectID!: number;
 
   @Column('smallint', {
     name: 'field_tid',

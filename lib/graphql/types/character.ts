@@ -3,11 +3,23 @@ import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import { extendType, intArg, nonNull, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context.ts';
-import type * as entity from '@app/lib/orm/entity/index.ts';
-import { CharacterRepo } from '@app/lib/orm/index.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import { CharacterRepo, CharacterSubjectsRepo } from '@app/lib/orm/index.ts';
 import { personImages } from '@app/lib/response.ts';
 
 import { Images, InfoboxItem } from './common.ts';
+import { convertSubject } from './subject.ts';
+
+const CharacterRelatedSubject = objectType({
+  name: 'CharacterRelatedSubject',
+  definition(t) {
+    t.nonNull.field('subject', {
+      type: 'Subject',
+    });
+    t.nonNull.int('type');
+    t.nonNull.int('order');
+  },
+});
 
 const Character = objectType({
   name: 'Character',
@@ -24,10 +36,41 @@ const Character = objectType({
     t.nonNull.int('lock');
     t.nonNull.int('redirect');
     t.nonNull.boolean('nsfw');
+    t.list.nonNull.field('subjects', {
+      type: CharacterRelatedSubject,
+      args: {
+        limit: nonNull(intArg({ default: 10 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        parent: { id: number },
+        { limit, offset }: { limit: number; offset: number },
+        { auth: { allowNsfw } }: Context,
+      ) {
+        let query = CharacterSubjectsRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+          .where('r.characterID = :id', { id: parent.id });
+        if (!allowNsfw) {
+          query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        }
+        const relations = await query
+          .orderBy('r.type', 'ASC')
+          .orderBy('r.order', 'ASC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+        return relations.map((r) => ({
+          subject: convertSubject(r.subject),
+          type: r.type,
+          order: r.order,
+        }));
+      },
+    });
   },
 });
 
-function convertCharacter(character: entity.Character) {
+export function convertCharacter(character: entity.Character) {
   let wiki: Wiki = {
     type: '',
     data: [],

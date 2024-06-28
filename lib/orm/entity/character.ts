@@ -1,4 +1,6 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+
+import type { Subject } from './subject.ts';
 
 @Index('crt_role', ['role'], {})
 @Index('crt_lock', ['lock'], {})
@@ -60,4 +62,39 @@ export class Character {
 
   @Column('tinyint', { name: 'crt_nsfw', unsigned: true, width: 1 })
   nsfw!: boolean;
+}
+
+@Index('subject_id', ['subjectID'], {})
+@Index('crt_type', ['type'], {})
+@Index('subject_type_id', ['subjectTypeID'], {})
+@Entity('chii_crt_subject_index', { schema: 'bangumi' })
+export class CharacterSubjects {
+  @PrimaryColumn('mediumint', { primary: true, name: 'crt_id', unsigned: true })
+  characterID!: number;
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'subject_id', unsigned: true })
+  subjectID!: number;
+
+  @Column('tinyint', { name: 'subject_type_id', unsigned: true })
+  subjectTypeID!: number;
+
+  @Column('tinyint', {
+    name: 'crt_type',
+    comment: '主角，配角',
+    unsigned: true,
+  })
+  type!: number;
+
+  // @Column('mediumtext', {
+  //   name: 'ctr_appear_eps',
+  //   comment: '可选，角色出场的的章节',
+  // })
+  // appearEps: string;
+
+  @Column('tinyint', { name: 'crt_order', unsigned: true })
+  order!: number;
+
+  character!: Character;
+
+  subject!: Subject;
 }

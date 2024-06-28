@@ -12,6 +12,7 @@ import * as entity from './entity/index.ts';
 import {
   App,
   Character,
+  CharacterSubjects,
   Episode,
   EpRevision,
   Friends,
@@ -25,6 +26,7 @@ import {
   OauthAccessTokens,
   OauthClient,
   Person,
+  PersonSubjects,
   RevHistory,
   RevText,
   Subject,
@@ -77,6 +79,7 @@ export const AppDataSource = new DataSource({
   entities: [
     App,
     Character,
+    CharacterSubjects,
     EpRevision,
     User,
     UserField,
@@ -92,6 +95,7 @@ export const AppDataSource = new DataSource({
     Episode,
     OauthClient,
     Person,
+    PersonSubjects,
     RevHistory,
     RevText,
     Subject,
@@ -109,7 +113,10 @@ export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const FriendRepo = AppDataSource.getRepository(Friends);
 
 export const CharacterRepo = AppDataSource.getRepository(Character);
+export const CharacterSubjectsRepo = AppDataSource.getRepository(CharacterSubjects);
+
 export const PersonRepo = AppDataSource.getRepository(Person);
+export const PersonSubjectsRepo = AppDataSource.getRepository(PersonSubjects);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
@@ -435,7 +442,7 @@ export async function fetchSubject(id: number) {
   }
 
   const f = await SubjectFieldsRepo.findOne({
-    where: { subject_id: id },
+    where: { subjectID: id },
   });
 
   if (!f) {

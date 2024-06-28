@@ -3,11 +3,22 @@ import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import { extendType, intArg, nonNull, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context.ts';
-import type * as entity from '@app/lib/orm/entity/index.ts';
-import { PersonRepo } from '@app/lib/orm/index.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import { PersonRepo, PersonSubjectsRepo } from '@app/lib/orm/index.ts';
 import { personImages } from '@app/lib/response.ts';
 
 import { Images, InfoboxItem } from './common.ts';
+import { convertSubject } from './subject.ts';
+
+const PersonRelatedSubject = objectType({
+  name: 'PersonRelatedSubject',
+  definition(t) {
+    t.nonNull.field('subject', {
+      type: 'Subject',
+    });
+    t.nonNull.int('position');
+  },
+});
 
 const Person = objectType({
   name: 'Person',
@@ -25,6 +36,35 @@ const Person = objectType({
     t.nonNull.int('lock');
     t.nonNull.int('redirect');
     t.nonNull.boolean('nsfw');
+    t.list.nonNull.field('subjects', {
+      type: PersonRelatedSubject,
+      args: {
+        limit: nonNull(intArg({ default: 10 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        parent: { id: number },
+        { limit, offset }: { limit: number; offset: number },
+        { auth: { allowNsfw } }: Context,
+      ) {
+        let query = PersonSubjectsRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+          .where('r.personID = :id', { id: parent.id });
+        if (!allowNsfw) {
+          query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        }
+        const relations = await query
+          .orderBy('r.position', 'ASC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+        return relations.map((r) => ({
+          subject: convertSubject(r.subject),
+          position: r.position,
+        }));
+      },
+    });
   },
 });
 
@@ -54,7 +94,7 @@ function convertCareer(person: entity.Person) {
   return result;
 }
 
-function convertPerson(person: entity.Person) {
+export function convertPerson(person: entity.Person) {
   let wiki: Wiki = {
     type: '',
     data: [],
