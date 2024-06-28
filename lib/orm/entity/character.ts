@@ -52,7 +52,7 @@ export class Character {
   imgAnidb!: string;
 
   @Column('mediumint', { name: 'crt_anidb_id', unsigned: true })
-  anidbId!: number;
+  anidbID!: number;
 
   @Column('tinyint', { name: 'crt_ban', unsigned: true, default: () => "'0'" })
   ban!: number;
