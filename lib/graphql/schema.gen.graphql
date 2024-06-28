@@ -18,9 +18,16 @@ type Character {
   lock: Int!
   name: String!
   nsfw: Boolean!
+  persons(limit: Int! = 10, offset: Int! = 0): [CharacterRelatedPerson!]
   redirect: Int!
   role: Int!
   subjects(limit: Int! = 10, offset: Int! = 0): [CharacterRelatedSubject!]
+  summary: String!
+}
+
+type CharacterRelatedPerson {
+  person: Person!
+  subject: Subject!
   summary: String!
 }
 
@@ -63,6 +70,7 @@ type InfoboxValue {
 
 type Person {
   career: [String!]!
+  characters(limit: Int! = 10, offset: Int! = 0): [PersonRelatedCharacter!]
   collects: Int!
   comment: Int!
   id: Int!
@@ -76,6 +84,12 @@ type Person {
   subjects(limit: Int! = 10, offset: Int! = 0): [PersonRelatedSubject!]
   summary: String!
   type: Int!
+}
+
+type PersonRelatedCharacter {
+  character: Character!
+  subject: Subject!
+  summary: String!
 }
 
 type PersonRelatedSubject {

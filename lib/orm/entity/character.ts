@@ -1,5 +1,6 @@
 import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
+import type { Person } from './person.ts';
 import type { Subject } from './subject.ts';
 
 @Index('crt_role', ['role'], {})
@@ -96,5 +97,38 @@ export class CharacterSubjects {
 
   character!: Character;
 
+  subject!: Subject;
+}
+
+@Index('prsn_id', ['personID'], {})
+@Index('subject_id', ['subjectID'], {})
+@Index('subject_type_id', ['subjectTypeID'], {})
+@Entity('chii_crt_cast_index', { schema: 'bangumi' })
+export class Cast {
+  @PrimaryColumn('mediumint', { primary: true, name: 'crt_id', unsigned: true })
+  characterID!: number;
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'prsn_id', unsigned: true })
+  personID!: number;
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'subject_id', unsigned: true })
+  subjectID!: number;
+
+  @Column('tinyint', {
+    name: 'subject_type_id',
+    comment: '根据人物归类查询角色，动画，书籍，游戏',
+    unsigned: true,
+  })
+  subjectTypeID!: number;
+
+  @Column('varchar', {
+    name: 'summary',
+    comment: '幼年，男乱马，女乱马，变身形态，少女形态。。',
+    length: 255,
+  })
+  summary!: string;
+
+  character!: Character;
+  person!: Person;
   subject!: Subject;
 }

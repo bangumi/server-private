@@ -4,9 +4,10 @@ import { extendType, intArg, nonNull, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
-import { PersonRepo, PersonSubjectsRepo } from '@app/lib/orm/index.ts';
+import { CastRepo, PersonRepo, PersonSubjectsRepo } from '@app/lib/orm/index.ts';
 import { personImages } from '@app/lib/response.ts';
 
+import { convertCharacter } from './character.ts';
 import { Images, InfoboxItem } from './common.ts';
 import { convertSubject } from './subject.ts';
 
@@ -17,6 +18,19 @@ const PersonRelatedSubject = objectType({
       type: 'Subject',
     });
     t.nonNull.int('position');
+  },
+});
+
+const PersonRelatedCharacter = objectType({
+  name: 'PersonRelatedCharacter',
+  definition(t) {
+    t.nonNull.field('character', {
+      type: 'Character',
+    });
+    t.nonNull.field('subject', {
+      type: 'Subject',
+    });
+    t.nonNull.string('summary');
   },
 });
 
@@ -62,6 +76,33 @@ const Person = objectType({
         return relations.map((r) => ({
           subject: convertSubject(r.subject),
           position: r.position,
+        }));
+      },
+    });
+    t.list.nonNull.field('characters', {
+      type: PersonRelatedCharacter,
+      args: {
+        limit: nonNull(intArg({ default: 10 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        parent: { id: number },
+        { limit, offset }: { limit: number; offset: number },
+        { auth: { allowNsfw } }: Context,
+      ) {
+        const query = CastRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.character', entity.Character, 'c', 'c.id = r.characterID')
+          .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+          .where('r.personID = :id', { id: parent.id });
+        if (!allowNsfw) {
+          query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        }
+        const relations = await query.skip(offset).take(limit).getMany();
+        return relations.map((r) => ({
+          character: convertCharacter(r.character),
+          subject: convertSubject(r.subject),
+          summary: r.summary,
         }));
       },
     });
