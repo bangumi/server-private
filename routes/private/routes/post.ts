@@ -733,32 +733,32 @@ export async function setup(app: App) {
   //   },
   // );
 
-  // type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
-  // const SubjectInterestComment = t.Object(
-  //   {
-  //     total: t.Integer(),
-  //     list: t.Array(
-  //       t.Object({
-  //         user: t.Union([
-  //           t.Object({
-  //             id: t.Integer(),
-  //             nickname: t.String(),
-  //             avatar: t.Object({
-  //               small: t.String(),
-  //               medium: t.String(),
-  //               large: t.String(),
-  //             }),
-  //           }),
-  //           t.Null(),
-  //         ]),
-  //         rate: t.Integer(),
-  //         comment: t.String(),
-  //         updatedAt: t.Integer(),
-  //       }),
-  //     ),
-  //   },
-  //   { $id: 'SubjectInterestComment' },
-  // );
+  type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
+  const SubjectInterestComment = t.Object(
+    {
+      total: t.Integer(),
+      list: t.Array(
+        t.Object({
+          user: t.Union([
+            t.Object({
+              id: t.Integer(),
+              nickname: t.String(),
+              avatar: t.Object({
+                small: t.String(),
+                medium: t.String(),
+                large: t.String(),
+              }),
+            }),
+            t.Null(),
+          ]),
+          rate: t.Integer(),
+          comment: t.String(),
+          updatedAt: t.Integer(),
+        }),
+      ),
+    },
+    { $id: 'SubjectInterestComment' },
+  );
 
   app.addSchema(SubjectInterestComment);
 
