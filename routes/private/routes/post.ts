@@ -608,157 +608,157 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
-    '/subjects/-/topics/:topicID/replies',
-    {
-      schema: {
-        summary: '创建条目讨论版回复',
-        operationId: 'createSubjectReply',
-        params: t.Object({
-          topicID: t.Integer({ examples: [371602] }),
-        }),
-        tags: [Tag.Subject],
-        response: {
-          200: t.Ref(BasicReply),
-          401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
-          }),
-        },
-        security: [{ [Security.CookiesSession]: [] }],
-        body: t.Object(
-          {
-            replyTo: t.Optional(
-              t.Integer({
-                examples: [0],
-                default: 0,
-                description: '被回复的 topic ID, `0` 代表回复楼主',
-              }),
-            ),
-            content: t.String({ minLength: 1 }),
-          },
-          {
-            examples: [
-              { content: 'post contents' },
-              {
-                content: 'post contents',
-                replyTo: 2,
-              },
-            ],
-          },
-        ),
-      },
-      preHandler: [requireLogin('creating a reply')],
-    },
-    /**
-     * @param auth -
-     * @param content - 回帖内容
-     * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
-     * @param topicID - 帖子 ID
-     */
-    async ({
-      auth,
-      body: { content, replyTo = 0 },
-      params: { topicID },
-    }): Promise<Static<typeof BasicReply>> => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create reply');
-      }
+  // app.post(
+  //   '/subjects/-/topics/:topicID/replies',
+  //   {
+  //     schema: {
+  //       summary: '创建条目讨论版回复',
+  //       operationId: 'createSubjectReply',
+  //       params: t.Object({
+  //         topicID: t.Integer({ examples: [371602] }),
+  //       }),
+  //       tags: [Tag.Subject],
+  //       response: {
+  //         200: t.Ref(BasicReply),
+  //         401: t.Ref(res.Error, {
+  //           'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
+  //         }),
+  //       },
+  //       security: [{ [Security.CookiesSession]: [] }],
+  //       body: t.Object(
+  //         {
+  //           replyTo: t.Optional(
+  //             t.Integer({
+  //               examples: [0],
+  //               default: 0,
+  //               description: '被回复的 topic ID, `0` 代表回复楼主',
+  //             }),
+  //           ),
+  //           content: t.String({ minLength: 1 }),
+  //         },
+  //         {
+  //           examples: [
+  //             { content: 'post contents' },
+  //             {
+  //               content: 'post contents',
+  //               replyTo: 2,
+  //             },
+  //           ],
+  //         },
+  //       ),
+  //     },
+  //     preHandler: [requireLogin('creating a reply')],
+  //   },
+  //   /**
+  //    * @param auth -
+  //    * @param content - 回帖内容
+  //    * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
+  //    * @param topicID - 帖子 ID
+  //    */
+  //   async ({
+  //     auth,
+  //     body: { content, replyTo = 0 },
+  //     params: { topicID },
+  //   }): Promise<Static<typeof BasicReply>> => {
+  //     if (auth.permission.ban_post) {
+  //       throw new NotAllowedError('create reply');
+  //     }
 
-      const topic = await Topic.fetchDetail(auth, 'subject', topicID);
-      if (!topic) {
-        throw new NotFoundError(`topic ${topicID}`);
-      }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('reply to a closed topic');
-      }
+  //     const topic = await Topic.fetchDetail(auth, 'subject', topicID);
+  //     if (!topic) {
+  //       throw new NotFoundError(`topic ${topicID}`);
+  //     }
+  //     if (topic.state === CommentState.AdminCloseTopic) {
+  //       throw new NotAllowedError('reply to a closed topic');
+  //     }
 
-      const now = DateTime.now();
+  //     const now = DateTime.now();
 
-      let parentID = 0;
-      let dstUserID = topic.creatorID;
-      if (replyTo) {
-        const parents: Record<number, IBaseReply> = Object.fromEntries(
-          topic.replies.flatMap((x): [number, IBaseReply][] => {
-            // 管理员操作不能回复
-            if (
-              [
-                CommentState.AdminCloseTopic,
-                CommentState.AdminReopen,
-                CommentState.AdminSilentTopic,
-              ].includes(x.state)
-            ) {
-              return [];
-            }
-            return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
-          }),
-        );
+  //     let parentID = 0;
+  //     let dstUserID = topic.creatorID;
+  //     if (replyTo) {
+  //       const parents: Record<number, IBaseReply> = Object.fromEntries(
+  //         topic.replies.flatMap((x): [number, IBaseReply][] => {
+  //           // 管理员操作不能回复
+  //           if (
+  //             [
+  //               CommentState.AdminCloseTopic,
+  //               CommentState.AdminReopen,
+  //               CommentState.AdminSilentTopic,
+  //             ].includes(x.state)
+  //           ) {
+  //             return [];
+  //           }
+  //           return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
+  //         }),
+  //       );
 
-        const replied = parents[replyTo];
+  //       const replied = parents[replyTo];
 
-        if (!replied) {
-          throw new NotFoundError(`parent post id ${replyTo}`);
-        }
+  //       if (!replied) {
+  //         throw new NotFoundError(`parent post id ${replyTo}`);
+  //       }
 
-        dstUserID = replied.creatorID;
-        parentID = replied.repliedTo || replied.id;
-      }
+  //       dstUserID = replied.creatorID;
+  //       parentID = replied.repliedTo || replied.id;
+  //     }
 
-      const t = await Topic.createTopicReply({
-        topicType: Topic.Type.subject,
-        topicID: topicID,
-        userID: auth.userID,
-        content,
-        parentID,
-      });
+  //     const t = await Topic.createTopicReply({
+  //       topicType: Topic.Type.subject,
+  //       topicID: topicID,
+  //       userID: auth.userID,
+  //       content,
+  //       parentID,
+  //     });
 
-      const notifyType =
-        replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
-      await Notify.create({
-        destUserID: dstUserID,
-        sourceUserID: auth.userID,
-        now,
-        type: notifyType,
-        postID: t.id,
-        topicID: topic.id,
-        title: topic.title,
-      });
+  //     const notifyType =
+  //       replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
+  //     await Notify.create({
+  //       destUserID: dstUserID,
+  //       sourceUserID: auth.userID,
+  //       now,
+  //       type: notifyType,
+  //       postID: t.id,
+  //       topicID: topic.id,
+  //       title: topic.title,
+  //     });
 
-      return {
-        id: t.id,
-        state: t.state,
-        createdAt: t.createdAt,
-        text: t.content,
-        creator: toResUser(t.user),
-      };
-    },
-  );
+  //     return {
+  //       id: t.id,
+  //       state: t.state,
+  //       createdAt: t.createdAt,
+  //       text: t.content,
+  //       creator: toResUser(t.user),
+  //     };
+  //   },
+  // );
 
-  type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
-  const SubjectInterestComment = t.Object(
-    {
-      total: t.Integer(),
-      list: t.Array(
-        t.Object({
-          user: t.Union([
-            t.Object({
-              id: t.Integer(),
-              nickname: t.String(),
-              avatar: t.Object({
-                small: t.String(),
-                medium: t.String(),
-                large: t.String(),
-              }),
-            }),
-            t.Null(),
-          ]),
-          rate: t.Integer(),
-          comment: t.String(),
-          updatedAt: t.Integer(),
-        }),
-      ),
-    },
-    { $id: 'SubjectInterestComment' },
-  );
+  // type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
+  // const SubjectInterestComment = t.Object(
+  //   {
+  //     total: t.Integer(),
+  //     list: t.Array(
+  //       t.Object({
+  //         user: t.Union([
+  //           t.Object({
+  //             id: t.Integer(),
+  //             nickname: t.String(),
+  //             avatar: t.Object({
+  //               small: t.String(),
+  //               medium: t.String(),
+  //               large: t.String(),
+  //             }),
+  //           }),
+  //           t.Null(),
+  //         ]),
+  //         rate: t.Integer(),
+  //         comment: t.String(),
+  //         updatedAt: t.Integer(),
+  //       }),
+  //     ),
+  //   },
+  //   { $id: 'SubjectInterestComment' },
+  // );
 
   app.addSchema(SubjectInterestComment);
 

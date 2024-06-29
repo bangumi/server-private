@@ -459,53 +459,53 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
-    '/subjects/:subjectID/topics',
-    {
-      schema: {
-        summary: '创建条目讨论版',
-        tags: [Tag.Subject],
-        operationId: 'createNewSubjectTopic',
-        params: t.Object({
-          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
-        }),
-        response: {
-          200: t.Object({
-            id: t.Integer({ description: 'new topic id' }),
-          }),
-        },
-        security: [{ [Security.CookiesSession]: [] }],
-        body: t.Ref(TopicBasic),
-      },
-      preHandler: [requireLogin('creating a topic')],
-    },
-    async ({ auth, body: { text, title }, params: { subjectID } }) => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create topic');
-      }
+  // app.post(
+  //   '/subjects/:subjectID/topics',
+  //   {
+  //     schema: {
+  //       summary: '创建条目讨论版',
+  //       tags: [Tag.Subject],
+  //       operationId: 'createNewSubjectTopic',
+  //       params: t.Object({
+  //         subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+  //       }),
+  //       response: {
+  //         200: t.Object({
+  //           id: t.Integer({ description: 'new topic id' }),
+  //         }),
+  //       },
+  //       security: [{ [Security.CookiesSession]: [] }],
+  //       body: t.Ref(TopicBasic),
+  //     },
+  //     preHandler: [requireLogin('creating a topic')],
+  //   },
+  //   async ({ auth, body: { text, title }, params: { subjectID } }) => {
+  //     if (auth.permission.ban_post) {
+  //       throw new NotAllowedError('create topic');
+  //     }
 
-      const subject = await orm.fetchSubject(subjectID);
-      if (!subject) {
-        throw new NotFoundError(`subject ${subjectID}`);
-      }
+  //     const subject = await orm.fetchSubject(subjectID);
+  //     if (!subject) {
+  //       throw new NotFoundError(`subject ${subjectID}`);
+  //     }
 
-      let display = TopicDisplay.Normal;
+  //     let display = TopicDisplay.Normal;
 
-      if (dam.needReview(title) || dam.needReview(text)) {
-        display = TopicDisplay.Review;
-      }
+  //     if (dam.needReview(title) || dam.needReview(text)) {
+  //       display = TopicDisplay.Review;
+  //     }
 
-      return await orm.createPost({
-        title,
-        content: text,
-        display,
-        userID: auth.userID,
-        parentID: subject.id,
-        state: Topic.CommentState.Normal,
-        topicType: 'subject',
-      });
-    },
-  );
+  //     return await orm.createPost({
+  //       title,
+  //       content: text,
+  //       display,
+  //       userID: auth.userID,
+  //       parentID: subject.id,
+  //       state: Topic.CommentState.Normal,
+  //       topicType: 'subject',
+  //     });
+  //   },
+  // );
 
   app.put(
     '/subjects/-/topics/:topicID',
