@@ -21,8 +21,8 @@ importers:
         specifier: ^9.3.1
         version: 9.3.1
       '@fastify/error':
-        specifier: ^3.4.1
-        version: 3.4.1
+        specifier: ^4.0.0
+        version: 4.0.0
       '@fastify/formbody':
         specifier: ^7.4.0
         version: 7.4.0
@@ -796,6 +796,9 @@ packages:
 
   '@fastify/error@3.4.1':
     resolution: {integrity: sha512-wWSvph+29GR783IhmvdwWnN4bUxTD01Vm5Xad4i7i1VuAOItLvbPAb69sb0IQ2N57yprvhNIwAP5B6xfKTmjmQ==}
+
+  '@fastify/error@4.0.0':
+    resolution: {integrity: sha512-OO/SA8As24JtT1usTUTKgGH7uLvhfwZPwlptRi2Dp5P4KKmJI3gvsZ8MIHnNwDs4sLf/aai5LzTyl66xr7qMxA==}
 
   '@fastify/fast-json-stringify-compiler@4.3.0':
     resolution: {integrity: sha512-aZAXGYo6m22Fk1zZzEUKBvut/CIIQe/BapEORnxiD5Qr0kPHqqI69NtEMCme74h+at72sPhbkb4ZrLd1W3KRLA==}
@@ -4879,6 +4882,8 @@ snapshots:
       fastify-plugin: 4.5.1
 
   '@fastify/error@3.4.1': {}
+
+  '@fastify/error@4.0.0': {}
 
   '@fastify/fast-json-stringify-compiler@4.3.0':
     dependencies:
