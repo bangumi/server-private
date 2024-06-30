@@ -27,7 +27,7 @@
     "@bgm38/wiki": "^0.2.6",
     "@esbuild-kit/esm-loader": "^2.6.5",
     "@fastify/cookie": "^9.3.1",
-    "@fastify/error": "^3.4.1",
+    "@fastify/error": "^4.0.0",
     "@fastify/formbody": "^7.4.0",
     "@fastify/static": "^7.0.4",
     "@fastify/swagger": "^8.14.0",
