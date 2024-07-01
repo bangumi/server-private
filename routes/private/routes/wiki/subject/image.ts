@@ -72,7 +72,7 @@ export function setup(app: App) {
         throw new BadRequestError('暂时只能修改沙盒条目');
       }
 
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -198,7 +198,7 @@ export function setup(app: App) {
 
       const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
 
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }

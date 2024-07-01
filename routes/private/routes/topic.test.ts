@@ -5,7 +5,7 @@ import type { IAuth } from '@app/lib/auth/index.ts';
 import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { createServer } from '@app/lib/server.ts';
-import { fetchDetail } from '@app/lib/topic/index.ts';
+import { fetchDetail, Type } from '@app/lib/topic/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './topic.ts';
@@ -175,7 +175,7 @@ describe('edit topic', () => {
 
       expect(res.statusCode).toBe(200);
 
-      const topic = await fetchDetail(emptyAuth(), 'group', 375793);
+      const topic = await fetchDetail(emptyAuth(), Type.group, 375793);
 
       expect(topic?.title).toBe('new topic title');
       expect(topic?.text).toBe('new contents');
@@ -193,7 +193,7 @@ describe('edit topic', () => {
 
       expect(res.statusCode).toBe(200);
 
-      const topic = await fetchDetail(emptyAuth(), 'group', 375793);
+      const topic = await fetchDetail(emptyAuth(), Type.group, 375793);
 
       expect(topic?.title).toBe('new topic title 2');
       expect(topic?.text).toBe('new contents 2');
