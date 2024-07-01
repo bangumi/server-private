@@ -8,50 +8,16 @@ import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import type { IBaseReply } from '@app/lib/orm/index.ts';
+import type { entity, IBaseReply } from '@app/lib/orm/index.ts';
 import { fetchUser, fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response';
-import { CommentState, NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
+import { CommentState, NotJoinPrivateGroupError, Type } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
-
-export const BaseSubjectTopicPost = t.Object(
-  {
-    id: t.Integer(),
-    topicID: t.Integer(),
-    relatedID: t.Integer(),
-    user: t.Union([
-      t.Object({
-        id: t.Integer(),
-        nickname: t.String(),
-        avatar: t.Object({
-          small: t.String(),
-          medium: t.String(),
-          large: t.String(),
-        }),
-      }),
-      t.Null(),
-    ]),
-    createdAt: t.Integer(),
-    content: t.String(),
-  },
-  { $id: 'BaseSubjectTopicPost' },
-);
-
-type ISubjectTopicPost = Static<typeof SubjectPost>;
-const SubjectPost = t.Intersect(
-  [
-    BaseSubjectTopicPost,
-    t.Object({
-      replies: t.Array(t.Ref(BaseSubjectTopicPost)),
-    }),
-  ],
-  { $id: 'SubjectTopicPost' },
-);
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -80,11 +46,19 @@ export async function setup(app: App) {
   app.addSchema(BasicReply);
   app.addSchema(Reply);
 
-  async function getPost(auth: IAuth, postID: number, type: 'group' | 'subject') {
-    const post =
-      type === 'group'
-        ? await orm.GroupPostRepo.findOneBy({ id: postID })
-        : await orm.SubjectPostRepo.findOneBy({ id: postID });
+  async function getPost(auth: IAuth, postID: number, type: Type) {
+    let post: entity.GroupPost | entity.SubjectPost | null;
+    switch (type) {
+      case Type.group: {
+        post = await orm.GroupPostRepo.findOneBy({ id: postID });
+        break;
+      }
+      case Type.subject: {
+        post = await orm.SubjectPostRepo.findOneBy({ id: postID });
+        break;
+      }
+    }
+
     if (!post) {
       throw new NotFoundError(`${type} post ${postID}`);
     }
@@ -128,7 +102,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const { topic, post } = await getPost(auth, postID, 'group');
+      const { topic, post } = await getPost(auth, postID, Type.group);
 
       const creator = res.toResUser(await fetchUserX(post.uid));
 
@@ -194,7 +168,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit reply not created by you');
       }
 
-      const topic = await Topic.fetchDetail(auth, 'group', post.topicID);
+      const topic = await Topic.fetchDetail(auth, Type.group, post.topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${post.topicID}`);
       }
@@ -242,7 +216,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('delete a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const { post } = await getPost(auth, postID, 'group');
+      const { post } = await getPost(auth, postID, Type.group);
 
       if (auth.userID !== post.uid) {
         throw new NotAllowedError('delete this post');
@@ -312,7 +286,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('create reply');
       }
 
-      const topic = await Topic.fetchDetail(auth, 'group', topicID);
+      const topic = await Topic.fetchDetail(auth, Type.group, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -388,75 +362,6 @@ export async function setup(app: App) {
     },
   );
 
-  app.addSchema(SubjectPost);
-
-  app.get(
-    '/subjects/-/topics/:topicID/replies',
-    {
-      schema: {
-        tags: [Tag.Subject],
-        operationId: 'subjectReples',
-        summary: '获取条目讨论版回复',
-        params: t.Object({
-          topicID: t.Integer({ examples: [1], minimum: 0 }),
-        }),
-        security: [{ [Security.CookiesSession]: [] }],
-        response: {
-          200: t.Array(SubjectPost),
-        },
-      },
-    },
-    async ({ params: { topicID } }): Promise<ISubjectTopicPost[]> => {
-      const posts = await orm.fetchSubjectTopicPosts(topicID);
-      if (!posts) {
-        throw new NotFoundError(`subject topic ${topicID}`);
-      }
-
-      const postMap: Map<number, ISubjectTopicPost> = new Map();
-      const repliesMap: Map<number, ISubjectTopicPost[]> = new Map();
-
-      for (const post of posts) {
-        const u = await fetchUser(post.uid);
-        const basePost = posts
-          .map((v) => ({
-            id: v.id,
-            topicID: v.topicID,
-            relatedID: v.related,
-            createdAt: v.dateline,
-            content: v.content,
-            user: u
-              ? {
-                  id: u.id,
-                  nickname: u.nickname,
-                  avatar: avatar(u.img),
-                }
-              : null,
-            replies: [],
-          }))
-          .find((p) => p.id === post.id);
-        if (!basePost) {
-          continue;
-        }
-
-        if (post.related === 0) {
-          postMap.set(post.id, basePost);
-        } else {
-          const relatedReplies = repliesMap.get(post.related) ?? [];
-          relatedReplies.push(basePost);
-          repliesMap.set(post.related, relatedReplies);
-        }
-      }
-      for (const [id, replies] of repliesMap.entries()) {
-        const mainPost = postMap.get(id);
-        if (mainPost) {
-          mainPost.replies = replies;
-        }
-      }
-
-      return [...postMap.values()];
-    },
-  );
-
   app.delete(
     '/subjects/-/posts/:postID',
     {
@@ -481,7 +386,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('delete a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const { post } = await getPost(auth, postID, 'subject');
+      const { post } = await getPost(auth, postID, Type.subject);
 
       if (auth.userID !== post.uid) {
         throw new NotAllowedError('delete this post');
@@ -516,7 +421,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const { topic, post } = await getPost(auth, postID, 'subject');
+      const { topic, post } = await getPost(auth, postID, Type.subject);
 
       const creator = res.toResUser(await fetchUserX(post.uid));
 
@@ -583,7 +488,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit reply not created by you');
       }
 
-      const topic = await Topic.fetchDetail(auth, 'subject', post.topicID);
+      const topic = await Topic.fetchDetail(auth, Type.subject, post.topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${post.topicID}`);
       }

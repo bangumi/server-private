@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
-import { UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
 import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import type { IBaseReply, IUser, Page } from '@app/lib/orm/index.ts';
@@ -77,13 +77,20 @@ export interface ITopicDetails {
 
 export async function fetchDetail(
   auth: IAuth,
-  type: 'group' | 'subject',
+  type: Type,
   id: number,
 ): Promise<ITopicDetails | null> {
-  const topic =
-    type === 'group'
-      ? await GroupTopicRepo.findOne({ where: { id: id } })
-      : await SubjectTopicRepo.findOne({ where: { id: id } });
+  let topic: orm.entity.GroupTopic | orm.entity.SubjectTopic | null;
+  switch (type) {
+    case Type.group: {
+      topic = await GroupTopicRepo.findOne({ where: { id: id } });
+      break;
+    }
+    case Type.subject: {
+      topic = await SubjectTopicRepo.findOne({ where: { id: id } });
+      break;
+    }
+  }
 
   if (!topic) {
     return null;
@@ -93,10 +100,17 @@ export async function fetchDetail(
     return null;
   }
 
-  const replies =
-    type === 'group'
-      ? await GroupPostRepo.find({ where: { topicID: topic.id } })
-      : await SubjectPostRepo.find({ where: { topicID: topic.id } });
+  let replies: orm.entity.GroupPost[] | orm.entity.SubjectPost[] | null;
+  switch (type) {
+    case Type.group: {
+      replies = await GroupPostRepo.find({ where: { topicID: topic.id } });
+      break;
+    }
+    case Type.subject: {
+      replies = await SubjectPostRepo.find({ where: { topicID: topic.id } });
+      break;
+    }
+  }
 
   const top = replies.shift();
   if (!top) {
@@ -161,7 +175,7 @@ export interface ITopic {
 
 export async function fetchTopicList(
   auth: IAuth,
-  type: 'group' | 'subject',
+  topicType: Type,
   id: number,
   { limit = 30, offset = 0 }: Page,
 ): Promise<[number, ITopic[]]> {
@@ -170,24 +184,33 @@ export async function fetchTopicList(
     display: orm.In(ListTopicDisplays(auth)),
   } as const;
 
-  const total =
-    type === 'group'
-      ? await GroupTopicRepo.count({ where })
-      : await SubjectTopicRepo.count({ where });
-  const topics =
-    type === 'group'
-      ? await GroupTopicRepo.find({
-          where,
-          order: { createdAt: 'desc' },
-          skip: offset,
-          take: limit,
-        })
-      : await SubjectTopicRepo.find({
-          where,
-          order: { createdAt: 'desc' },
-          skip: offset,
-          take: limit,
-        });
+  let total = 0;
+  let topics: entity.GroupTopic[] | entity.SubjectTopic[];
+  switch (topicType) {
+    case Type.group: {
+      total = await GroupTopicRepo.count({ where });
+      topics = await GroupTopicRepo.find({
+        where,
+        order: { createdAt: 'desc' },
+        skip: offset,
+        take: limit,
+      });
+      break;
+    }
+    case Type.subject: {
+      total = await SubjectTopicRepo.count({ where });
+      topics = await SubjectTopicRepo.find({
+        where,
+        order: { createdAt: 'desc' },
+        skip: offset,
+        take: limit,
+      });
+      break;
+    }
+    default: {
+      throw new UnimplementedError('unsupported topic type');
+    }
+  }
 
   return [
     total,

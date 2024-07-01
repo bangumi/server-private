@@ -13,7 +13,12 @@ import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm/index.ts';
 import { avatar, groupIcon } from '@app/lib/response.ts';
 import type { ITopic } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
-import { CommentState, NotJoinPrivateGroupError, TopicDisplay } from '@app/lib/topic/index.ts';
+import {
+  CommentState,
+  NotJoinPrivateGroupError,
+  TopicDisplay,
+  Type,
+} from '@app/lib/topic/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -31,6 +36,23 @@ const Group = t.Object(
     createdAt: t.Integer(),
   },
   { $id: 'Group' },
+);
+
+const Subject = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    typeID: t.Integer(),
+    infobox: t.String(),
+    platform: t.Integer(),
+    summary: t.String(),
+    nsfw: t.Boolean(),
+    date: t.String(),
+    redirect: t.Integer(),
+    locked: t.Boolean(),
+    image: t.String(),
+  },
+  { $id: 'Subject' },
 );
 
 type IGroupMember = Static<typeof GroupMember>;
@@ -84,7 +106,7 @@ const Reply = t.Object(
 const TopicDetail = t.Object(
   {
     id: t.Integer(),
-    group: t.Ref(Group),
+    parent: t.Union([t.Ref(Group), t.Ref(Subject)]),
     creator: t.Ref(res.User),
     title: t.String(),
     text: t.String(),
@@ -109,6 +131,7 @@ export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(res.Topic);
   app.addSchema(Group);
+  app.addSchema(Subject);
   app.addSchema(TopicBasic);
 
   const GroupProfile = t.Object(
@@ -156,7 +179,7 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
-      const [total, topicList] = await Topic.fetchTopicList(auth, 'group', group.id, query);
+      const [total, topicList] = await Topic.fetchTopicList(auth, Type.group, group.id, query);
 
       const topics = await addCreators(topicList, group.id);
 
@@ -174,6 +197,27 @@ export async function setup(app: App) {
   app.addSchema(Reply);
   app.addSchema(Reaction);
   app.addSchema(TopicDetail);
+
+  app.get(
+    '/subjects/-/topics/:id',
+    {
+      schema: {
+        tags: [Tag.Subject],
+        operationId: 'getSubjectTopicDetail',
+        summary: '获取帖子列表',
+        params: t.Object({
+          id: t.Integer({ examples: [1], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Ref(TopicDetail),
+        },
+      },
+    },
+    async ({ auth, params: { id } }) => {
+      return await handleTopicDetail(auth, Type.subject, id);
+    },
+  );
 
   app.get(
     '/groups/-/topics/:id',
@@ -196,7 +240,9 @@ export async function setup(app: App) {
         },
       },
     },
-    handleTopicDetail,
+    async ({ auth, params: { id } }) => {
+      return await handleTopicDetail(auth, Type.group, id);
+    },
   );
 
   app.addSchema(GroupMember);
@@ -285,7 +331,7 @@ export async function setup(app: App) {
         throw new NotJoinPrivateGroupError(group.name);
       }
 
-      const [total, topics] = await Topic.fetchTopicList(auth, 'group', group.id, query);
+      const [total, topics] = await Topic.fetchTopicList(auth, Type.group, group.id, query);
 
       return { total, data: await addCreators(topics, group.id) };
     },
@@ -317,7 +363,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID }, query, auth }) => {
-      const subject = await orm.fetchSubject(subjectID);
+      const subject = await orm.fetchSubjectByID(subjectID);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -325,7 +371,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      const [total, topics] = await Topic.fetchTopicList(auth, 'subject', subjectID, query);
+      const [total, topics] = await Topic.fetchTopicList(auth, Type.subject, subjectID, query);
       return { total, data: await addCreators(topics, subjectID) };
     },
   );
@@ -421,7 +467,7 @@ export async function setup(app: App) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await Topic.fetchDetail(auth, 'group', topicID);
+      const topic = await Topic.fetchDetail(auth, Type.group, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -548,7 +594,7 @@ export async function setup(app: App) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await Topic.fetchDetail(auth, 'subject', topicID);
+      const topic = await Topic.fetchDetail(auth, Type.subject, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -649,21 +695,29 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
   return members;
 }
 
-export async function handleTopicDetail({
-  params: { id },
-  auth,
-}: {
-  params: { id: number };
-  auth: IAuth;
-}): Promise<Static<typeof TopicDetail>> {
-  const topic = await Topic.fetchDetail(auth, 'group', id);
+export async function handleTopicDetail(
+  auth: IAuth,
+  type: Type,
+  id: number,
+): Promise<Static<typeof TopicDetail>> {
+  const topic = await Topic.fetchDetail(auth, type, id);
   if (!topic) {
     throw new NotFoundError(`topic ${id}`);
   }
 
-  const group = await orm.fetchGroupByID(topic.parentID);
-  if (!group) {
-    throw new UnexpectedNotFoundError(`group ${topic.parentID}`);
+  let parent: orm.IGroup | orm.ISubject | null;
+  switch (type) {
+    case Type.group: {
+      parent = await orm.fetchGroupByID(topic.parentID);
+      break;
+    }
+    case Type.subject: {
+      parent = await orm.fetchSubjectByID(topic.parentID);
+      break;
+    }
+  }
+  if (!parent) {
+    throw new UnexpectedNotFoundError(`parent ${topic.parentID}`);
   }
 
   const userIds: number[] = [
@@ -679,13 +733,16 @@ export async function handleTopicDetail({
     throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
   }
 
-  const reactions = await Like.fetchGroupTopic(id, auth.userID);
+  const reactions = await Like.fetchTopicReactions(id, auth.userID);
 
   return {
     ...topic,
     creator: toResUser(creator),
     text: topic.text,
-    group: { ...group, icon: groupIcon(group.icon) },
+    parent: {
+      ...parent,
+      icon: type === Type.group ? groupIcon((parent as orm.IGroup).icon) : '',
+    },
     reactions: reactions[topic.contentPost.id] ?? [],
     replies: topic.replies.map((x) => {
       const user = users[x.creatorID];

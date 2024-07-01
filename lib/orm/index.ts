@@ -344,7 +344,7 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
   );
 }
 
-interface IGroup {
+export interface IGroup {
   id: number;
   name: string;
   nsfw: boolean;
@@ -434,7 +434,21 @@ export interface IBaseReply {
   repliedTo: number;
 }
 
-export async function fetchSubject(id: number) {
+export interface ISubject {
+  id: number;
+  name: string;
+  typeID: number;
+  infobox: string;
+  platform: number;
+  summary: string;
+  nsfw: boolean;
+  date: string;
+  redirect: number;
+  locked: boolean;
+  image: string;
+}
+
+export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
   const subject = await SubjectRepo.findOne({
     where: { id },
   });
@@ -463,7 +477,7 @@ export async function fetchSubject(id: number) {
     redirect: f.fieldRedirect,
     locked: subject.locked(),
     image: subject.subjectImage,
-  };
+  } satisfies ISubject;
 }
 
 export async function fetchSubjectTopicPosts(topicID: number) {
