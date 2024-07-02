@@ -13,6 +13,7 @@ import {
   App,
   Character,
   Episode,
+  EpisodeComment,
   EpRevision,
   Friends,
   Group,
@@ -93,6 +94,7 @@ export const AppDataSource = new DataSource({
     Group,
     GroupMembers,
     Episode,
+    EpisodeComment,
     OauthClient,
     Person,
     RevHistory,
@@ -124,6 +126,7 @@ export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const SubjectRelationRepo = AppDataSource.getRepository(SubjectRelation);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
+export const EpisodeCommentRepo = AppDataSource.getRepository(EpisodeComment);
 export const EpRevRepo = AppDataSource.getRepository(EpRevision);
 
 export const RevHistoryRepo = AppDataSource.getRepository(RevHistory);

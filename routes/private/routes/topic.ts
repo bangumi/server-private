@@ -715,6 +715,9 @@ export async function handleTopicDetail(
       parent = await orm.fetchSubjectByID(topic.parentID);
       break;
     }
+    default: {
+      parent = null;
+    }
   }
   if (!parent) {
     throw new UnexpectedNotFoundError(`parent ${topic.parentID}`);

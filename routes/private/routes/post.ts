@@ -9,7 +9,7 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { entity, IBaseReply } from '@app/lib/orm/index.ts';
-import { fetchUser, fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
+import { EpisodeCommentRepo, fetchUser, fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response';
 import { CommentState, NotJoinPrivateGroupError, Type } from '@app/lib/topic/index.ts';
@@ -18,6 +18,44 @@ import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+
+const BaseEpisodeComment = t.Object(
+  {
+    id: t.Integer(),
+    epID: t.Integer(),
+    creatorID: t.Integer(),
+    relatedID: t.Integer(),
+    createdAt: t.Integer(),
+    content: t.String(),
+    state: t.Integer(),
+    user: t.Union([
+      t.Object({
+        id: t.Integer(),
+        nickname: t.String(),
+        avatar: t.Object({
+          small: t.String(),
+          medium: t.String(),
+          large: t.String(),
+        }),
+      }),
+      t.Null(),
+    ]),
+  },
+  {
+    $id: 'BaseEpisodeComment',
+  },
+);
+
+type IEpisodeComment = Static<typeof EpisodeComment>;
+const EpisodeComment = t.Intersect(
+  [
+    BaseEpisodeComment,
+    t.Object({
+      replies: t.Array(t.Ref(BaseEpisodeComment)),
+    }),
+  ],
+  { $id: 'EpisodeComments' },
+);
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -57,6 +95,9 @@ export async function setup(app: App) {
         post = await orm.SubjectPostRepo.findOneBy({ id: postID });
         break;
       }
+      default: {
+        post = null;
+      }
     }
 
     if (!post) {
@@ -82,6 +123,76 @@ export async function setup(app: App) {
 
     return { post, topic };
   }
+
+  app.addSchema(EpisodeComment);
+  app.get(
+    '/subjects/-/episode/:episodeID/comments',
+    {
+      schema: {
+        summary: '获取条目的剧集评论',
+        tags: [Tag.Subject],
+        operationId: 'getSubjectEpisodeComments',
+        params: t.Object({
+          episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: t.Array(EpisodeComment),
+        },
+      },
+    },
+    async ({ params: { episodeID } }): Promise<IEpisodeComment[]> => {
+      const comments = await EpisodeCommentRepo.find({ where: { epID: episodeID } });
+      if (!comments) {
+        throw new NotFoundError(`comments of ep id ${episodeID}`);
+      }
+
+      const commentMap: Map<number, IEpisodeComment> = new Map();
+      const repliesMap: Map<number, IEpisodeComment[]> = new Map();
+
+      for (const comment of comments) {
+        const u = await fetchUser(comment.creatorID);
+        const baseComment = comments
+          .map((v) => ({
+            id: v.id,
+            epID: v.epID,
+            creatorID: v.creatorID,
+            relatedID: v.relatedID,
+            createdAt: v.createdAt,
+            content: v.content,
+            state: v.state,
+            user: u
+              ? {
+                  id: u.id,
+                  nickname: u.nickname,
+                  avatar: avatar(u.img),
+                }
+              : null,
+            replies: [],
+          }))
+          .find((p) => p.id === comment.id);
+        if (!baseComment) {
+          continue;
+        }
+
+        if (comment.relatedID === 0) {
+          commentMap.set(comment.id, baseComment);
+        } else {
+          const relatedReplies = repliesMap.get(comment.relatedID) ?? [];
+          relatedReplies.push(baseComment);
+          repliesMap.set(comment.relatedID, relatedReplies);
+        }
+      }
+      for (const [id, replies] of repliesMap.entries()) {
+        const mainPost = commentMap.get(id);
+        if (mainPost) {
+          mainPost.replies = replies;
+        }
+      }
+
+      return [...commentMap.values()];
+    },
+  );
 
   app.get(
     '/groups/-/posts/:postID',

@@ -90,6 +90,9 @@ export async function fetchDetail(
       topic = await SubjectTopicRepo.findOne({ where: { id: id } });
       break;
     }
+    default: {
+      return null;
+    }
   }
 
   if (!topic) {
@@ -100,7 +103,7 @@ export async function fetchDetail(
     return null;
   }
 
-  let replies: orm.entity.GroupPost[] | orm.entity.SubjectPost[] | null;
+  let replies: orm.entity.GroupPost[] | orm.entity.SubjectPost[];
   switch (type) {
     case Type.group: {
       replies = await GroupPostRepo.find({ where: { topicID: topic.id } });
@@ -109,6 +112,9 @@ export async function fetchDetail(
     case Type.subject: {
       replies = await SubjectPostRepo.find({ where: { topicID: topic.id } });
       break;
+    }
+    default: {
+      replies = [];
     }
   }
 
