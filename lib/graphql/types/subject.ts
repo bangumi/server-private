@@ -5,11 +5,18 @@ import { extendType, intArg, list, nonNull, objectType } from 'nexus';
 
 import type { Context } from '@app/lib/graphql/context.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
-import { SubjectRelationRepo, SubjectRepo } from '@app/lib/orm/index.ts';
+import {
+  CharacterSubjectsRepo,
+  PersonSubjectsRepo,
+  SubjectRelationRepo,
+  SubjectRepo,
+} from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
 import { platforms } from '@app/lib/subject/index.ts';
 
+import { convertCharacter } from './character.ts';
 import { InfoboxItem } from './common.ts';
+import { convertPerson } from './person.ts';
 
 const Episode = objectType({
   name: 'Episode',
@@ -25,6 +32,27 @@ const Episode = objectType({
     t.nonNull.int('disc');
     t.nonNull.string('duration');
     t.nonNull.float('sort');
+  },
+});
+
+const SubjectRelatedCharacter = objectType({
+  name: 'SubjectRelatedCharacter',
+  definition(t) {
+    t.nonNull.field('character', {
+      type: 'Character',
+    });
+    t.nonNull.int('type');
+    t.nonNull.int('order');
+  },
+});
+
+const SubjectRelatedPerson = objectType({
+  name: 'SubjectRelatedPerson',
+  definition(t) {
+    t.nonNull.field('person', {
+      type: 'Person',
+    });
+    t.nonNull.int('position');
   },
 });
 
@@ -203,9 +231,9 @@ const Subject = objectType({
         { auth: { allowNsfw } }: Context,
       ) {
         let query = SubjectRelationRepo.createQueryBuilder('r')
-          .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectId')
-          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
-          .where('r.subjectId = :id', { id: parent.id });
+          .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectID')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+          .where('r.subjectID = :id', { id: parent.id });
         if (includeTypes && includeTypes.length > 0) {
           query = query.andWhere('r.relationType IN (:...includeTypes)', { includeTypes });
         }
@@ -218,7 +246,7 @@ const Subject = objectType({
         const relations = await query
           .orderBy('r.relationType', 'ASC')
           .orderBy('r.order', 'ASC')
-          .orderBy('r.relatedSubjectId', 'ASC')
+          .orderBy('r.relatedSubjectID', 'ASC')
           .skip(offset)
           .take(limit)
           .getMany();
@@ -231,10 +259,72 @@ const Subject = objectType({
         });
       },
     });
+    t.list.nonNull.field('characters', {
+      type: SubjectRelatedCharacter,
+      args: {
+        limit: nonNull(intArg({ default: 10 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        parent: { id: number },
+        { limit, offset }: { limit: number; offset: number },
+        { auth: { allowNsfw } }: Context,
+      ) {
+        let query = CharacterSubjectsRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.character', entity.Character, 'c', 'c.id = r.characterID')
+          .where('r.subjectID = :id', { id: parent.id });
+        if (!allowNsfw) {
+          query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
+        }
+        const relations = await query
+          .orderBy('r.type', 'ASC')
+          .orderBy('r.order', 'ASC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+        return relations.map((r) => {
+          return {
+            character: convertCharacter(r.character),
+            type: r.type,
+            order: r.order,
+          };
+        });
+      },
+    });
+    t.list.nonNull.field('persons', {
+      type: SubjectRelatedPerson,
+      args: {
+        limit: nonNull(intArg({ default: 10 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        parent: { id: number },
+        { limit, offset }: { limit: number; offset: number },
+        { auth: { allowNsfw } }: Context,
+      ) {
+        let query = PersonSubjectsRepo.createQueryBuilder('r')
+          .innerJoinAndMapOne('r.person', entity.Person, 'p', 'p.id = r.personID')
+          .where('r.subjectID = :id', { id: parent.id });
+        if (!allowNsfw) {
+          query = query.andWhere('p.nsfw = :allowNsfw', { allowNsfw });
+        }
+        const relations = await query
+          .orderBy('r.position', 'ASC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+        return relations.map((r) => {
+          return {
+            person: convertPerson(r.person),
+            position: r.position,
+          };
+        });
+      },
+    });
   },
 });
 
-function convertSubject(subject: entity.Subject) {
+export function convertSubject(subject: entity.Subject) {
   const fields = subject.fields;
   const platform = platforms(subject.typeID).find((x) => x.id === subject.platform);
   let wiki: Wiki = {
@@ -328,7 +418,7 @@ const SubjectByIDQuery = extendType({
       args: { id: nonNull(intArg()) },
       async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
         let query = SubjectRepo.createQueryBuilder('s')
-          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subject_id = s.id')
+          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
           .where('s.id = :id', { id });
         if (!allowNsfw) {
           query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });

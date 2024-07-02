@@ -9,6 +9,5 @@ export * from './oauth-client.ts';
 export * from './person.ts';
 export * from './rev.ts';
 export * from './subject.ts';
-export * from './subject-relation.ts';
 export * from './subject-rev.ts';
 export * from './user.ts';
