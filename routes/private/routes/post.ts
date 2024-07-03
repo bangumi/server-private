@@ -517,7 +517,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'getSubjectPost',
-        summary: '获取指定的条目讨论版回复',
+        summary: '获取条目讨论版回复',
         params: t.Object({
           postID: t.Integer({ examples: [2092074] }),
         }),
