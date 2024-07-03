@@ -15,7 +15,7 @@ export function setup(app: App) {
     },
     async (req, res) => {
       const subjectID = 184017;
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -42,7 +42,7 @@ export function setup(app: App) {
     },
     async (req, res) => {
       const subjectID = 184017;
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }

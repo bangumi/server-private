@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import { htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
+import { BooleanTransformer, htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
 
 @Index('subject_name_cn', ['nameCN'], {})
 @Index('subject_platform', ['platform'], {})
@@ -149,7 +149,7 @@ export class Subject {
   @Column('tinyint', { name: 'subject_airtime', unsigned: true })
   subjectAirtime!: number;
 
-  @Column('tinyint', { name: 'subject_nsfw', width: 1 })
+  @Column('tinyint', { name: 'subject_nsfw', width: 1, transformer: BooleanTransformer })
   subjectNsfw!: boolean;
 
   @Column('tinyint', {
@@ -328,4 +328,193 @@ export class SubjectImage {
     transformer: UnixTimestamp,
   })
   createdAt!: Date;
+}
+
+@Index('sbj_tpc_lastpost', ['updatedAt', 'parentID', 'display'], {})
+@Index('tpc_display', ['display'], {})
+@Index('sbj_tpc_uid', ['creatorID'], {})
+@Index('tpc_subject_id', ['parentID'], {})
+@Entity('chii_subject_topics', { schema: 'bangumi' })
+export class SubjectTopic {
+  @PrimaryGeneratedColumn({
+    type: 'mediumint',
+    name: 'sbj_tpc_id',
+    unsigned: true,
+  })
+  id!: number;
+
+  @Column('mediumint', { name: 'sbj_tpc_subject_id', unsigned: true })
+  parentID!: number;
+
+  @Column('mediumint', { name: 'sbj_tpc_uid', unsigned: true })
+  creatorID!: number;
+
+  @Column('varchar', { name: 'sbj_tpc_title', length: 80, transformer: htmlEscapedString })
+  title!: string;
+
+  @Column('int', {
+    name: 'sbj_tpc_dateline',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  createdAt!: number;
+
+  @Column('int', {
+    name: 'sbj_tpc_lastpost',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  updatedAt!: number;
+
+  @Column('mediumint', {
+    name: 'sbj_tpc_replies',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  replies!: number;
+
+  @Column('tinyint', { name: 'sbj_tpc_state', unsigned: true })
+  state!: number;
+
+  @Column('tinyint', {
+    name: 'sbj_tpc_display',
+    unsigned: true,
+    default: () => "'1'",
+  })
+  display!: number;
+}
+
+@Index('pss_topic_id', ['topicID'], {})
+@Index('sbj_pst_related', ['related'], {})
+@Index('sbj_pst_uid', ['uid'], {})
+@Entity('chii_subject_posts', { schema: 'bangumi' })
+export class SubjectPost {
+  @PrimaryGeneratedColumn({ name: 'sbj_pst_id', type: 'mediumint', unsigned: true })
+  id!: number;
+
+  @Column('mediumint', { name: 'sbj_pst_mid', unsigned: true })
+  topicID!: number;
+
+  @Column('mediumint', { name: 'sbj_pst_uid', unsigned: true })
+  uid!: number;
+
+  @Column('mediumint', { name: 'sbj_pst_related', unsigned: true, default: 0 })
+  related!: number;
+
+  @Column('mediumint', { name: 'sbj_pst_content' })
+  content!: string;
+
+  @Column('tinyint', { name: 'sbj_pst_state', width: 1, unsigned: true })
+  state!: number;
+
+  @Column('int', { name: 'sbj_pst_dateline', unsigned: true, default: 0 })
+  dateline!: number;
+}
+
+@Index('interest_collect_dateline', ['collectDateline'], {})
+@Index('interest_id', ['uid', 'private'], {})
+@Index('interest_lasttouch', ['lastTouch'], {})
+@Index('interest_private', ['private'], {})
+@Index('interest_rate', ['rate'], {})
+@Index('interest_subject_id', ['subjectID', 'type'], {})
+@Index('interest_subject_id_2', ['subjectID'], {})
+@Index('interest_subject_type', ['type'], {})
+@Index('interest_type', ['type'], {})
+@Index('interest_type_2', ['type', 'uid'], {})
+@Index('interest_uid', ['uid'], {})
+@Index('interest_uid_2', ['uid', 'private', 'lastTouch'], {})
+@Index('subject_collect', ['subjectID', 'type', 'private', 'collectDateline'], {})
+@Index('subject_comment', ['subjectID', 'hasComment', 'private', 'lastTouch'], {})
+@Index('subject_lasttouch', ['subjectID', 'private', 'lastTouch'], {})
+@Index('subject_rate', ['type', 'rate', 'private'], {})
+@Index('tag_subject_id', ['subjectType', 'type', 'uid'], {})
+@Index('top_subject', ['subjectID', 'subjectType', 'doingDateline'], {})
+@Index('user_collect_latest', ['subjectType', 'type', 'uid', 'private'], {})
+@Index('user_collect_type', ['subjectType', 'type', 'uid', 'private', 'collectDateline'], {})
+@Index('user_collects', ['subjectType', 'uid'], {})
+@Entity('chii_subject_interests', { schema: 'bangumi' })
+export class SubjectInterest {
+  @PrimaryGeneratedColumn({ type: 'int', name: 'interest_id', unsigned: true })
+  id!: number;
+
+  @Column('mediumint', { name: 'interest_uid', unsigned: true })
+  uid!: number;
+
+  @Column('mediumint', { name: 'interest_subject_id', unsigned: true })
+  subjectID!: number;
+
+  @Column('smallint', {
+    name: 'interest_subject_type',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  subjectType!: number;
+
+  @Column('tinyint', {
+    name: 'interest_rate',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  rate!: number;
+
+  @Column('tinyint', {
+    name: 'interest_type',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  type!: number;
+
+  @Column('tinyint', { name: 'interest_has_comment', unsigned: true })
+  hasComment!: number;
+
+  @Column('mediumtext', { name: 'interest_comment' })
+  comment!: string;
+
+  @Column('mediumtext', { name: 'interest_tag' })
+  tag!: string;
+
+  @Column('mediumint', {
+    name: 'interest_ep_status',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  epStatus!: number;
+
+  @Column('mediumint', {
+    name: 'interest_vol_status',
+    comment: '卷数',
+    unsigned: true,
+  })
+  volStatus!: number;
+
+  @Column('int', { name: 'interest_wish_dateline', unsigned: true })
+  wishDateline!: number;
+
+  @Column('int', { name: 'interest_doing_dateline', unsigned: true })
+  doingDateline!: number;
+
+  @Column('int', { name: 'interest_collect_dateline', unsigned: true })
+  collectDateline!: number;
+
+  @Column('int', { name: 'interest_on_hold_dateline', unsigned: true })
+  onHoldDateline!: number;
+
+  @Column('int', { name: 'interest_dropped_dateline', unsigned: true })
+  droppedDateline!: number;
+
+  @Column('char', { name: 'interest_create_ip', length: 15 })
+  createIp!: string;
+
+  @Column('char', { name: 'interest_lasttouch_ip', length: 15 })
+  lastTouchIp!: string;
+
+  @Column('int', {
+    name: 'interest_lasttouch',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  lastTouch!: number;
+
+  @Column('tinyint', { name: 'interest_private', unsigned: true })
+  private!: number;
 }

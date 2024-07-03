@@ -13,6 +13,7 @@ import {
   App,
   Character,
   Episode,
+  EpisodeComment,
   EpRevision,
   Friends,
   Group,
@@ -30,8 +31,11 @@ import {
   Subject,
   SubjectFields,
   SubjectImage,
+  SubjectInterest,
+  SubjectPost,
   SubjectRelation,
   SubjectRev,
+  SubjectTopic,
   User,
   UserField,
   UserGroup,
@@ -90,16 +94,20 @@ export const AppDataSource = new DataSource({
     Group,
     GroupMembers,
     Episode,
+    EpisodeComment,
     OauthClient,
     Person,
     RevHistory,
     RevText,
     Subject,
+    SubjectTopic,
+    SubjectPost,
     SubjectFields,
     SubjectRelation,
     GroupTopic,
     GroupPost,
     SubjectRev,
+    SubjectInterest,
     Like,
   ],
 });
@@ -112,16 +120,20 @@ export const CharacterRepo = AppDataSource.getRepository(Character);
 export const PersonRepo = AppDataSource.getRepository(Person);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
+export const SubjectTopicRepo = AppDataSource.getRepository(SubjectTopic);
+export const SubjectPostRepo = AppDataSource.getRepository(SubjectPost);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const SubjectRelationRepo = AppDataSource.getRepository(SubjectRelation);
 export const EpisodeRepo = AppDataSource.getRepository(Episode);
+export const EpisodeCommentRepo = AppDataSource.getRepository(EpisodeComment);
 export const EpRevRepo = AppDataSource.getRepository(EpRevision);
 
 export const RevHistoryRepo = AppDataSource.getRepository(RevHistory);
 export const RevTextRepo = AppDataSource.getRepository(RevText);
 
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
+export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const AppRepo = AppDataSource.getRepository(App);
@@ -335,7 +347,7 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
   );
 }
 
-interface IGroup {
+export interface IGroup {
   id: number;
   name: string;
   nsfw: boolean;
@@ -425,7 +437,21 @@ export interface IBaseReply {
   repliedTo: number;
 }
 
-export async function fetchSubject(id: number) {
+export interface ISubject {
+  id: number;
+  name: string;
+  typeID: number;
+  infobox: string;
+  platform: number;
+  summary: string;
+  nsfw: boolean;
+  date: string;
+  redirect: number;
+  locked: boolean;
+  image: string;
+}
+
+export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
   const subject = await SubjectRepo.findOne({
     where: { id },
   });
@@ -454,7 +480,13 @@ export async function fetchSubject(id: number) {
     redirect: f.fieldRedirect,
     locked: subject.locked(),
     image: subject.subjectImage,
-  };
+  } satisfies ISubject;
+}
+
+export async function fetchSubjectTopicPosts(topicID: number) {
+  return await SubjectPostRepo.find({
+    where: { topicID: topicID, state: 0 },
+  });
 }
 
 export async function fetchFriends(id?: number): Promise<Record<number, boolean>> {
@@ -481,22 +513,29 @@ export async function isFriends(userID: number, another: number): Promise<boolea
 interface PostCreation {
   title: string;
   content: string;
-  groupID: number;
+  parentID: number;
   userID: number;
   display: TopicDisplay;
   state: CommentState;
+  topicType: 'group' | 'subject';
 }
 
-export async function createPostInGroup(post: PostCreation): Promise<{ id: number }> {
+export async function createPost(post: PostCreation): Promise<{ id: number }> {
   const now = DateTime.now();
 
   return await AppDataSource.transaction(async (t) => {
-    const GroupTopicRepo = t.getRepository(entity.GroupTopic);
-    const GroupPostRepo = t.getRepository(entity.GroupPost);
+    const postRepo =
+      post.topicType === 'group'
+        ? t.getRepository(entity.GroupPost)
+        : t.getRepository(entity.SubjectPost);
+    const topicRepo =
+      post.topicType === 'group'
+        ? t.getRepository(entity.GroupTopic)
+        : t.getRepository(entity.SubjectTopic);
 
-    const topic = await GroupTopicRepo.save({
+    const topic = await topicRepo.save({
       title: post.title,
-      gid: post.groupID,
+      parentID: post.parentID,
       creatorID: post.userID,
       state: post.state,
       updatedAt: now.toUnixInteger(),
@@ -505,7 +544,7 @@ export async function createPostInGroup(post: PostCreation): Promise<{ id: numbe
       display: post.display,
     });
 
-    await GroupPostRepo.insert({
+    await postRepo.insert({
       topicID: topic.id,
       dateline: now.toUnixInteger(),
       state: post.state,

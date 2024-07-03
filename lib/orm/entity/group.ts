@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import { htmlEscapedString } from '@app/lib/orm/transformer.ts';
+import { BooleanTransformer, htmlEscapedString } from '@app/lib/orm/transformer.ts';
 
 @Entity('chii_groups', { schema: 'bangumi' })
 export class Group {
@@ -64,7 +64,11 @@ export class Group {
   })
   accessible!: boolean;
 
-  @Column('tinyint', { name: 'grp_nsfw', unsigned: true })
+  @Column('tinyint', {
+    name: 'grp_nsfw',
+    unsigned: true,
+    transformer: BooleanTransformer,
+  })
   nsfw!: boolean;
 }
 
@@ -83,7 +87,7 @@ export class GroupMembers {
   gmbDateline!: number;
 }
 
-@Index('grp_tpc_gid', ['gid'], {})
+@Index('grp_tpc_gid', ['parentID'], {})
 @Index('grp_tpc_display', ['display'], {})
 @Index('grp_tpc_uid', ['creatorID'], {})
 @Index('grp_tpc_lastpost', ['updatedAt'], {})
@@ -97,7 +101,7 @@ export class GroupTopic {
   id!: number;
 
   @Column('mediumint', { name: 'grp_tpc_gid', unsigned: true })
-  gid!: number;
+  parentID!: number;
 
   @Column('mediumint', { name: 'grp_tpc_uid', unsigned: true })
   creatorID!: number;

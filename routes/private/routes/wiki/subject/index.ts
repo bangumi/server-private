@@ -124,7 +124,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID } }): Promise<Static<typeof SubjectWikiInfo>> => {
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -262,7 +262,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -334,7 +334,7 @@ export async function setup(app: App) {
         return;
       }
 
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new BadRequestError(`subject ${subjectID}`);
       }

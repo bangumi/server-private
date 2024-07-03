@@ -24,7 +24,8 @@ Object {
     "user_group": 0,
     "username": "287622",
   },
-  "group": Object {
+  "id": 371602,
+  "parent": Object {
     "createdAt": 1531631310,
     "description": "[s]非[/s]官方沙盒",
     "icon": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
@@ -34,7 +35,6 @@ Object {
     "title": "沙盒",
     "totalMembers": 3,
   },
-  "id": 371602,
   "reactions": Array [],
   "replies": Array [
     Object {
