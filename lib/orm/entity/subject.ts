@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-import { htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
+import { BooleanTransformer, htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
 
 @Index('subject_name_cn', ['nameCN'], {})
 @Index('subject_platform', ['platform'], {})
@@ -149,7 +149,7 @@ export class Subject {
   @Column('tinyint', { name: 'subject_airtime', unsigned: true })
   subjectAirtime!: number;
 
-  @Column('tinyint', { name: 'subject_nsfw', width: 1 })
+  @Column('tinyint', { name: 'subject_nsfw', width: 1, transformer: BooleanTransformer })
   subjectNsfw!: boolean;
 
   @Column('tinyint', {

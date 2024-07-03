@@ -108,7 +108,7 @@ export async function setup(app: App) {
       throw new NotFoundError(`${type} post ${postID}`);
     }
 
-    const topic = await Topic.fetchDetail(auth, type, post.topicID);
+    const topic = await Topic.fetchTopicDetail(auth, type, post.topicID);
     if (!topic) {
       throw new NotFoundError(`${type} topic ${post.topicID}`);
     }
@@ -279,7 +279,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit reply not created by you');
       }
 
-      const topic = await Topic.fetchDetail(auth, Type.group, post.topicID);
+      const topic = await Topic.fetchTopicDetail(auth, Type.group, post.topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${post.topicID}`);
       }
@@ -397,7 +397,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('create reply');
       }
 
-      const topic = await Topic.fetchDetail(auth, Type.group, topicID);
+      const topic = await Topic.fetchTopicDetail(auth, Type.group, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -599,7 +599,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit reply not created by you');
       }
 
-      const topic = await Topic.fetchDetail(auth, Type.subject, post.topicID);
+      const topic = await Topic.fetchTopicDetail(auth, Type.subject, post.topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${post.topicID}`);
       }
@@ -680,7 +680,7 @@ export async function setup(app: App) {
   //       throw new NotAllowedError('create reply');
   //     }
 
-  //     const topic = await Topic.fetchDetail(auth, 'subject', topicID);
+  //     const topic = await Topic.fetchTopicDetail(auth, 'subject', topicID);
   //     if (!topic) {
   //       throw new NotFoundError(`topic ${topicID}`);
   //     }

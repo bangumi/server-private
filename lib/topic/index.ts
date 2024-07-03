@@ -75,7 +75,7 @@ export interface ITopicDetails {
   contentPost: { id: number };
 }
 
-export async function fetchDetail(
+export async function fetchTopicDetail(
   auth: IAuth,
   type: Type,
   id: number,

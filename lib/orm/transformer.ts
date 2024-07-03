@@ -15,3 +15,8 @@ export const UnixTimestamp: Transformer<number, Date> = {
   to: (value: Date) => Math.trunc(value.getTime() / 1000),
   from: (value: number) => new Date(value * 1000),
 };
+
+export const BooleanTransformer: Transformer<number, boolean> = {
+  to: (value: boolean) => (value ? 1 : 0),
+  from: (value: number) => value === 1,
+};

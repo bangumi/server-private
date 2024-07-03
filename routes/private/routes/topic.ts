@@ -467,7 +467,7 @@ export async function setup(app: App) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await Topic.fetchDetail(auth, Type.group, topicID);
+      const topic = await Topic.fetchTopicDetail(auth, Type.group, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -594,7 +594,7 @@ export async function setup(app: App) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await Topic.fetchDetail(auth, Type.subject, topicID);
+      const topic = await Topic.fetchTopicDetail(auth, Type.subject, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -700,7 +700,7 @@ export async function handleTopicDetail(
   type: Type,
   id: number,
 ): Promise<Static<typeof TopicDetail>> {
-  const topic = await Topic.fetchDetail(auth, type, id);
+  const topic = await Topic.fetchTopicDetail(auth, type, id);
   if (!topic) {
     throw new NotFoundError(`topic ${id}`);
   }
