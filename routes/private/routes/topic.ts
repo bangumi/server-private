@@ -22,6 +22,7 @@ import {
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimiter } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const Group = t.Object(
@@ -208,11 +209,12 @@ export async function setup(app: App) {
         params: t.Object({
           id: t.Integer({ examples: [1], minimum: 0 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Ref(TopicDetail),
         },
       },
+      preHandler: [requireLogin('get a topics')],
     },
     async ({ auth, params: { id } }) => {
       return await handleTopicDetail(auth, Type.subject, id);
@@ -360,7 +362,9 @@ export async function setup(app: App) {
             },
           }),
         },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
+      preHandler: [requireLogin('get a topics')],
     },
     async ({ params: { subjectID }, query, auth }) => {
       const subject = await orm.fetchSubjectByID(subjectID);
@@ -505,53 +509,53 @@ export async function setup(app: App) {
     },
   );
 
-  // app.post(
-  //   '/subjects/:subjectID/topics',
-  //   {
-  //     schema: {
-  //       summary: '创建条目讨论版',
-  //       tags: [Tag.Subject],
-  //       operationId: 'createNewSubjectTopic',
-  //       params: t.Object({
-  //         subjectID: t.Integer({ examples: [114514], minimum: 0 }),
-  //       }),
-  //       response: {
-  //         200: t.Object({
-  //           id: t.Integer({ description: 'new topic id' }),
-  //         }),
-  //       },
-  //       security: [{ [Security.CookiesSession]: [] }],
-  //       body: t.Ref(TopicBasic),
-  //     },
-  //     preHandler: [requireLogin('creating a topic')],
-  //   },
-  //   async ({ auth, body: { text, title }, params: { subjectID } }) => {
-  //     if (auth.permission.ban_post) {
-  //       throw new NotAllowedError('create topic');
-  //     }
+  app.post(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '创建条目讨论版',
+        tags: [Tag.Subject],
+        operationId: 'createNewSubjectTopic',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+        }),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new topic id' }),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Ref(TopicBasic),
+      },
+      preHandler: [requireLogin('creating a topic'), rateLimiter('subject')],
+    },
+    async ({ auth, body: { text, title }, params: { subjectID } }) => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create topic');
+      }
 
-  //     const subject = await orm.fetchSubject(subjectID);
-  //     if (!subject) {
-  //       throw new NotFoundError(`subject ${subjectID}`);
-  //     }
+      const subject = await orm.fetchSubjectByID(subjectID);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
 
-  //     let display = TopicDisplay.Normal;
+      let display = TopicDisplay.Normal;
 
-  //     if (dam.needReview(title) || dam.needReview(text)) {
-  //       display = TopicDisplay.Review;
-  //     }
+      if (dam.needReview(title) || dam.needReview(text)) {
+        display = TopicDisplay.Review;
+      }
 
-  //     return await orm.createPost({
-  //       title,
-  //       content: text,
-  //       display,
-  //       userID: auth.userID,
-  //       parentID: subject.id,
-  //       state: Topic.CommentState.Normal,
-  //       topicType: 'subject',
-  //     });
-  //   },
-  // );
+      return await orm.createPost({
+        title,
+        content: text,
+        display,
+        userID: auth.userID,
+        parentID: subject.id,
+        state: Topic.CommentState.Normal,
+        topicType: 'subject',
+      });
+    },
+  );
 
   app.put(
     '/subjects/-/topics/:topicID',
@@ -570,7 +574,7 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotAllowedError('edit a topic')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Ref(TopicBasic),
       },
       preHandler: [requireLogin('edit a topic')],

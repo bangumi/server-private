@@ -17,6 +17,7 @@ import * as Topic from '@app/lib/topic/index.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimiter } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const BaseEpisodeComment = t.Object(
@@ -135,7 +136,6 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
         response: {
           200: t.Array(EpisodeComment),
         },
@@ -492,7 +492,7 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotFoundError('post')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
       preHandler: [requireLogin('delete a post')],
     },
@@ -528,8 +528,9 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotFoundError('post')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
+      preHandler: [requireLogin('get a posts')],
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
       const { topic, post } = await getPost(auth, postID, Type.subject);
@@ -564,7 +565,7 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotAllowedError('edit reply')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             text: t.String({ minLength: 1 }),
@@ -624,130 +625,130 @@ export async function setup(app: App) {
     },
   );
 
-  // app.post(
-  //   '/subjects/-/topics/:topicID/replies',
-  //   {
-  //     schema: {
-  //       summary: '创建条目讨论版回复',
-  //       operationId: 'createSubjectReply',
-  //       params: t.Object({
-  //         topicID: t.Integer({ examples: [371602] }),
-  //       }),
-  //       tags: [Tag.Subject],
-  //       response: {
-  //         200: t.Ref(BasicReply),
-  //         401: t.Ref(res.Error, {
-  //           'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
-  //         }),
-  //       },
-  //       security: [{ [Security.CookiesSession]: [] }],
-  //       body: t.Object(
-  //         {
-  //           replyTo: t.Optional(
-  //             t.Integer({
-  //               examples: [0],
-  //               default: 0,
-  //               description: '被回复的 topic ID, `0` 代表回复楼主',
-  //             }),
-  //           ),
-  //           content: t.String({ minLength: 1 }),
-  //         },
-  //         {
-  //           examples: [
-  //             { content: 'post contents' },
-  //             {
-  //               content: 'post contents',
-  //               replyTo: 2,
-  //             },
-  //           ],
-  //         },
-  //       ),
-  //     },
-  //     preHandler: [requireLogin('creating a reply')],
-  //   },
-  //   /**
-  //    * @param auth -
-  //    * @param content - 回帖内容
-  //    * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
-  //    * @param topicID - 帖子 ID
-  //    */
-  //   async ({
-  //     auth,
-  //     body: { content, replyTo = 0 },
-  //     params: { topicID },
-  //   }): Promise<Static<typeof BasicReply>> => {
-  //     if (auth.permission.ban_post) {
-  //       throw new NotAllowedError('create reply');
-  //     }
+  app.post(
+    '/subjects/-/topics/:topicID/replies',
+    {
+      schema: {
+        summary: '创建条目讨论版回复',
+        operationId: 'createSubjectReply',
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Ref(BasicReply),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            replyTo: t.Optional(
+              t.Integer({
+                examples: [0],
+                default: 0,
+                description: '被回复的 topic ID, `0` 代表回复楼主',
+              }),
+            ),
+            content: t.String({ minLength: 1 }),
+          },
+          {
+            examples: [
+              { content: 'post contents' },
+              {
+                content: 'post contents',
+                replyTo: 2,
+              },
+            ],
+          },
+        ),
+      },
+      preHandler: [requireLogin('creating a reply'), rateLimiter('subject')],
+    },
+    /**
+     * @param auth -
+     * @param content - 回帖内容
+     * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
+     * @param topicID - 帖子 ID
+     */
+    async ({
+      auth,
+      body: { content, replyTo = 0 },
+      params: { topicID },
+    }): Promise<Static<typeof BasicReply>> => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
 
-  //     const topic = await Topic.fetchTopicDetail(auth, 'subject', topicID);
-  //     if (!topic) {
-  //       throw new NotFoundError(`topic ${topicID}`);
-  //     }
-  //     if (topic.state === CommentState.AdminCloseTopic) {
-  //       throw new NotAllowedError('reply to a closed topic');
-  //     }
+      const topic = await Topic.fetchTopicDetail(auth, Type.subject, topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('reply to a closed topic');
+      }
 
-  //     const now = DateTime.now();
+      const now = DateTime.now();
 
-  //     let parentID = 0;
-  //     let dstUserID = topic.creatorID;
-  //     if (replyTo) {
-  //       const parents: Record<number, IBaseReply> = Object.fromEntries(
-  //         topic.replies.flatMap((x): [number, IBaseReply][] => {
-  //           // 管理员操作不能回复
-  //           if (
-  //             [
-  //               CommentState.AdminCloseTopic,
-  //               CommentState.AdminReopen,
-  //               CommentState.AdminSilentTopic,
-  //             ].includes(x.state)
-  //           ) {
-  //             return [];
-  //           }
-  //           return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
-  //         }),
-  //       );
+      let parentID = 0;
+      let dstUserID = topic.creatorID;
+      if (replyTo) {
+        const parents: Record<number, IBaseReply> = Object.fromEntries(
+          topic.replies.flatMap((x): [number, IBaseReply][] => {
+            // 管理员操作不能回复
+            if (
+              [
+                CommentState.AdminCloseTopic,
+                CommentState.AdminReopen,
+                CommentState.AdminSilentTopic,
+              ].includes(x.state)
+            ) {
+              return [];
+            }
+            return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
+          }),
+        );
 
-  //       const replied = parents[replyTo];
+        const replied = parents[replyTo];
 
-  //       if (!replied) {
-  //         throw new NotFoundError(`parent post id ${replyTo}`);
-  //       }
+        if (!replied) {
+          throw new NotFoundError(`parent post id ${replyTo}`);
+        }
 
-  //       dstUserID = replied.creatorID;
-  //       parentID = replied.repliedTo || replied.id;
-  //     }
+        dstUserID = replied.creatorID;
+        parentID = replied.repliedTo || replied.id;
+      }
 
-  //     const t = await Topic.createTopicReply({
-  //       topicType: Topic.Type.subject,
-  //       topicID: topicID,
-  //       userID: auth.userID,
-  //       content,
-  //       parentID,
-  //     });
+      const t = await Topic.createTopicReply({
+        topicType: Topic.Type.subject,
+        topicID: topicID,
+        userID: auth.userID,
+        content,
+        parentID,
+      });
 
-  //     const notifyType =
-  //       replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
-  //     await Notify.create({
-  //       destUserID: dstUserID,
-  //       sourceUserID: auth.userID,
-  //       now,
-  //       type: notifyType,
-  //       postID: t.id,
-  //       topicID: topic.id,
-  //       title: topic.title,
-  //     });
+      const notifyType =
+        replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
+      await Notify.create({
+        destUserID: dstUserID,
+        sourceUserID: auth.userID,
+        now,
+        type: notifyType,
+        postID: t.id,
+        topicID: topic.id,
+        title: topic.title,
+      });
 
-  //     return {
-  //       id: t.id,
-  //       state: t.state,
-  //       createdAt: t.createdAt,
-  //       text: t.content,
-  //       creator: toResUser(t.user),
-  //     };
-  //   },
-  // );
+      return {
+        id: t.id,
+        state: t.state,
+        createdAt: t.createdAt,
+        text: t.content,
+        creator: toResUser(t.user),
+      };
+    },
+  );
 
   type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
   const SubjectInterestComment = t.Object(
@@ -792,7 +793,6 @@ export async function setup(app: App) {
           limit: t.Optional(t.Integer({ default: 20 })),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
         response: {
           200: t.Ref(SubjectInterestComment),
         },
