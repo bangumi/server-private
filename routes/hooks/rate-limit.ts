@@ -2,7 +2,8 @@
 import { createError } from '@fastify/error';
 
 import type { IAuth } from '@app/lib/auth';
-import { TypedCache } from '@app/lib/cache';
+import type { LimitAction } from '@app/lib/utils/rate-limit';
+import { createLimiter } from '@app/lib/utils/rate-limit';
 
 export const InvalidRateLimitType = createError<[string]>(
   'RATE_LIMIT_TYPE_INVALID',
@@ -16,58 +17,38 @@ export const RateLimitExceeded = createError<[]>(
   429,
 );
 
-const cache = TypedCache<string, number[]>((key) => key);
-
-type LimitType = keyof typeof LIMIT_RULES;
-
 interface LimitRule {
-  count: number;
-  minutes: number;
+  limit: number;
+  duration: number;
   validate?: number;
   hibernate?: number;
 }
 
-const LIMIT_RULES: Record<string, LimitRule> = {
-  app: { count: 5, minutes: 10 },
-  ep: { count: 10, minutes: 10 },
-  blog: { count: 3, minutes: 30 },
-  index: { count: 3, minutes: 30 },
-  group: { count: 3, minutes: 30 },
-  doujin: { count: 3, minutes: 30 },
-  event: { count: 1, minutes: 60 },
-  event_topics: { count: 3, minutes: 30 },
-  subject: { count: 3, minutes: 30 },
-  club_topics: { count: 1, minutes: 30 },
-  crt_post: { count: 1, minutes: 1, validate: 7, hibernate: 5 },
-  prsn_post: { count: 1, minutes: 1, validate: 7, hibernate: 5 },
-  like: { count: 2, minutes: 1 },
+const LIMIT_RULES: Record<LimitAction, LimitRule> = {
+  app: { limit: 5, duration: 10 },
+  ep: { limit: 10, duration: 10 },
+  blog: { limit: 3, duration: 30 },
+  index: { limit: 3, duration: 30 },
+  group: { limit: 3, duration: 30 },
+  doujin: { limit: 3, duration: 30 },
+  event: { limit: 1, duration: 60 },
+  event_topics: { limit: 3, duration: 30 },
+  subject: { limit: 3, duration: 30 },
+  club_topics: { limit: 1, duration: 30 },
+  crt_post: { limit: 1, duration: 1, validate: 7, hibernate: 5 },
+  prsn_post: { limit: 1, duration: 1, validate: 7, hibernate: 5 },
+  like: { limit: 2, duration: 1 },
 };
 
-const isRateLimited = async (uid: number, type: LimitType) => {
-  const limitRule = LIMIT_RULES[type];
-  if (!limitRule) {
-    throw new InvalidRateLimitType(type);
+const limiter = createLimiter();
+
+export const rateLimiter = (action: LimitAction) => async (req: { auth: IAuth }) => {
+  const rule = LIMIT_RULES[action];
+  if (!rule) {
+    throw new InvalidRateLimitType(action);
   }
-  const { count, minutes } = limitRule;
-
-  const now = Date.now();
-  const cacheKey = `rate-limit:${type}:${uid}`;
-
-  const userRequests = (await cache.get(cacheKey)) || [];
-
-  const validRequests = userRequests.filter((timestamp) => now - timestamp < minutes * 60 * 1000);
-
-  if (validRequests.length >= count) {
-    return true;
-  }
-
-  validRequests.push(now);
-  await cache.set(cacheKey, validRequests, minutes * 60);
-  return false;
-};
-
-export const rateLimiter = (type: LimitType) => async (req: { auth: IAuth }) => {
-  if (await isRateLimited(req.auth.userID, type)) {
+  const result = await limiter.userAction(req.auth.userID, action, rule.duration * 60, rule.limit);
+  if (result.limited) {
     throw new RateLimitExceeded();
   }
 };

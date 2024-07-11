@@ -16,6 +16,7 @@ import { CommentState, NotJoinPrivateGroupError, Type } from '@app/lib/topic/ind
 import * as Topic from '@app/lib/topic/index.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimiter } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
@@ -664,7 +665,7 @@ export async function setup(app: App) {
           },
         ),
       },
-      preHandler: [requireLogin('creating a reply'), rateLimiter('subject')],
+      preHandler: [requireLogin('creating a reply'), rateLimiter(LimitAction.Subject)],
     },
     /**
      * @param auth -

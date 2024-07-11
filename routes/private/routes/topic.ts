@@ -21,6 +21,7 @@ import {
 } from '@app/lib/topic/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimiter } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
@@ -527,7 +528,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Ref(TopicBasic),
       },
-      preHandler: [requireLogin('creating a topic'), rateLimiter('subject')],
+      preHandler: [requireLogin('creating a topic'), rateLimiter(LimitAction.Subject)],
     },
     async ({ auth, body: { text, title }, params: { subjectID } }) => {
       if (auth.permission.ban_post) {
