@@ -9,7 +9,13 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { entity, IBaseReply } from '@app/lib/orm/index.ts';
-import { EpisodeCommentRepo, fetchUser, fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
+import {
+  EpisodeCommentRepo,
+  EpisodeRepo,
+  fetchUser,
+  fetchUserX,
+  GroupRepo,
+} from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response';
 import { CommentState, NotJoinPrivateGroupError, Type } from '@app/lib/topic/index.ts';
@@ -131,7 +137,7 @@ export async function setup(app: App) {
     '/subjects/-/episode/:episodeID/comments',
     {
       schema: {
-        summary: '获取条目的剧集评论',
+        summary: '获取条目的剧集吐槽箱',
         tags: [Tag.Subject],
         operationId: 'getSubjectEpisodeComments',
         params: t.Object({
@@ -192,6 +198,185 @@ export async function setup(app: App) {
       }
 
       return [...commentMap.values()];
+    },
+  );
+
+  app.post(
+    '/subjects/-/episode/:episodeID/comments',
+    {
+      schema: {
+        summary: '创建条目的剧集吐槽',
+        operationId: 'createSubjectEpComment',
+        params: t.Object({
+          episodeID: t.Integer({ examples: [1075440] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Ref(BasicReply),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            replyTo: t.Optional(
+              t.Integer({
+                examples: [0],
+                default: 0,
+                description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
+              }),
+            ),
+            content: t.String({ minLength: 1 }),
+          },
+          {
+            examples: [
+              { content: 'comment contents' },
+              {
+                content: 'comment contents',
+                replyTo: 2,
+              },
+            ],
+          },
+        ),
+      },
+      preHandler: [requireLogin('creating a comment'), rateLimiter(LimitAction.Subject)],
+    },
+    /**
+     * @param auth -
+     * @param content - 吐槽内容
+     * @param relatedID - 子吐槽的父吐槽ID，默认为 `0` 代表发送顶层吐槽
+     * @param episodeID - 剧集 ID
+     */
+    async ({
+      auth,
+      body: { content, replyTo = 0 },
+      params: { episodeID },
+    }): Promise<Static<typeof BasicReply>> => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create comment');
+      }
+
+      const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
+      if (!ep) {
+        throw new NotFoundError(`episode ${episodeID}`);
+      }
+      if (ep.epBan !== 0) {
+        throw new NotAllowedError('comment to a closed episode');
+      }
+
+      if (replyTo !== 0) {
+        const replied = await EpisodeCommentRepo.findOne({ where: { id: replyTo } });
+        if (!replied) {
+          throw new NotFoundError(`parent comment id ${replyTo}`);
+        }
+        if (replied.state !== CommentState.Normal) {
+          throw new NotAllowedError(`reply to a abnormal state comment`);
+        }
+      }
+
+      const c = await EpisodeCommentRepo.save({
+        content: content,
+        creatorID: auth.userID,
+        epID: episodeID,
+        relatedID: replyTo,
+        createdAt: DateTime.now().toUnixInteger(),
+        state: CommentState.Normal,
+      });
+
+      return {
+        id: c.id,
+        state: c.state,
+        createdAt: c.createdAt,
+        text: c.content,
+        creator: toResUser(await fetchUserX(auth.userID)),
+      };
+    },
+  );
+
+  app.put(
+    '/subjects/-/episode/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑条目的剧集吐槽',
+        operationId: 'editSubjectEpComment',
+        params: t.Object({
+          commentID: t.Integer({ examples: [1075440] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Object({}),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            content: t.String({ minLength: 1 }),
+          },
+          {
+            examples: [{ content: 'new comment contents' }],
+          },
+        ),
+      },
+      preHandler: [requireLogin('edit a comment')],
+    },
+
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      const comment = await EpisodeCommentRepo.findOne({ where: { id: commentID } });
+      if (!comment) {
+        throw new NotFoundError(`comment id ${commentID}`);
+      }
+      if (comment.creatorID !== auth.userID) {
+        throw new NotAllowedError('edit a comment which is not yours');
+      }
+      if (comment.state !== CommentState.Normal) {
+        throw new NotAllowedError(`edit to a abnormal state comment`);
+      }
+
+      await EpisodeCommentRepo.update(
+        { id: commentID },
+        {
+          content: content,
+        },
+      );
+
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/episode/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除条目的剧集吐槽',
+        operationId: 'deleteSubjectEpComment',
+        params: t.Object({
+          commentID: t.Integer({ examples: [1034989] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Object({}),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('delete this comment')),
+          }),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotFoundError('comment')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+      },
+      preHandler: [requireLogin('delete a comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      const comment = await EpisodeCommentRepo.findOne({ where: { id: commentID } });
+      if (!comment) {
+        throw new NotFoundError(`comment id ${commentID}`);
+      }
+      if (comment.creatorID !== auth.userID) {
+        throw new NotAllowedError('delete a comment which is not yours');
+      }
+      if (comment.state !== CommentState.Normal) {
+        throw new NotAllowedError('delete a abnormal state comment');
+      }
+
+      await EpisodeCommentRepo.update({ id: commentID }, { state: CommentState.UserDelete });
+      return {};
     },
   );
 
