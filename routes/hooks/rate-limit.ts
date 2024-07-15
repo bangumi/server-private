@@ -18,26 +18,26 @@ export const RateLimitExceeded = createError<[]>(
 );
 
 interface LimitRule {
-  limitCount: number;
+  limit: number;
   durationMinutes: number;
   validate?: number;
   hibernate?: number;
 }
 
 const LIMIT_RULES: Record<LimitAction, LimitRule> = {
-  app: { limitCount: 5, durationMinutes: 10 },
-  ep: { limitCount: 10, durationMinutes: 10 },
-  blog: { limitCount: 3, durationMinutes: 30 },
-  index: { limitCount: 3, durationMinutes: 30 },
-  group: { limitCount: 3, durationMinutes: 30 },
-  doujin: { limitCount: 3, durationMinutes: 30 },
-  event: { limitCount: 1, durationMinutes: 60 },
-  event_topics: { limitCount: 3, durationMinutes: 30 },
-  subject: { limitCount: 3, durationMinutes: 30 },
-  club_topics: { limitCount: 1, durationMinutes: 30 },
-  crt_post: { limitCount: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
-  prsn_post: { limitCount: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
-  like: { limitCount: 2, durationMinutes: 1 },
+  app: { limit: 5, durationMinutes: 10 },
+  ep: { limit: 10, durationMinutes: 10 },
+  blog: { limit: 3, durationMinutes: 30 },
+  index: { limit: 3, durationMinutes: 30 },
+  group: { limit: 3, durationMinutes: 30 },
+  doujin: { limit: 3, durationMinutes: 30 },
+  event: { limit: 1, durationMinutes: 60 },
+  event_topics: { limit: 3, durationMinutes: 30 },
+  subject: { limit: 3, durationMinutes: 30 },
+  club_topics: { limit: 1, durationMinutes: 30 },
+  crt_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
+  prsn_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
+  like: { limit: 2, durationMinutes: 1 },
 };
 
 const limiter = createLimiter();
@@ -51,7 +51,7 @@ export const rateLimiter = (action: LimitAction) => async (req: { auth: IAuth })
     req.auth.userID,
     action,
     rule.durationMinutes * 60,
-    rule.limitCount,
+    rule.limit,
   );
   if (result.limited) {
     throw new RateLimitExceeded();
