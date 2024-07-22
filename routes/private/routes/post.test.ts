@@ -388,3 +388,119 @@ describe('delete post', () => {
     expect(res.statusCode).toBe(401);
   });
 });
+
+describe('get ep comment', () => {
+  test('ok', async () => {
+    const app = createTestServer();
+
+    await app.register(setup);
+
+    const res = await app.inject({ method: 'get', url: '/subjects/-/episode/1075440/comments' });
+    expect(res.json()).toMatchSnapshot();
+  });
+});
+
+describe('edit ep comment', () => {
+  test('should edit ep comment', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 448570,
+      },
+    });
+
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/subjects/-/episode/-/comments/1569874',
+      method: 'put',
+      payload: { content: 'new comment' },
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    const pst = await orm.EpisodeCommentRepo.findOneBy({
+      id: 1569874,
+    });
+
+    expect(pst?.content).toBe('new comment');
+  });
+
+  test('should not edit ep comment', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 448570 + 1,
+      },
+    });
+
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/subjects/-/episode/-/comments/1569874',
+      method: 'put',
+      payload: { content: 'new comment again' },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "NOT_ALLOWED",
+        "error": "Unauthorized",
+        "message": "you don't have permission to edit a comment which is not yours",
+        "statusCode": 401,
+      }
+    `);
+    expect(res.statusCode).toBe(401);
+  });
+});
+
+describe('delete ep comment', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('not found', async () => {
+    const app = await testServer({ auth: { login: true, userID: 2 } });
+    const res = await app.inject({
+      url: '/subjects/-/episode/-/comments/114514',
+      method: 'delete',
+    });
+
+    expect(res.statusCode).toBe(404);
+  });
+
+  test('not allowed not login', async () => {
+    const app = await testServer();
+    const res = await app.inject({
+      url: '/subjects/-/episode/-/comments/114514',
+      method: 'delete',
+    });
+
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('not allowed wrong user', async () => {
+    const app = await testServer({ auth: { login: true, userID: 1122 } });
+    const res = await app.inject({
+      url: '/subjects/-/episode/-/comments/1569874',
+      method: 'delete',
+    });
+
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('ok', async () => {
+    const app = await testServer({ auth: { login: true, userID: 448570 } });
+
+    const res = await app.inject({
+      method: 'delete',
+      url: '/subjects/-/episode/-/comments/1569874',
+    });
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(200);
+  });
+});
