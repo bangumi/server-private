@@ -18,26 +18,6 @@ Object {
 }
 `;
 
-exports[`delete ep comment > not allowed not login 1`] = `
-Object {
-  "code": "NEED_LOGIN",
-  "error": "Unauthorized",
-  "message": "you need to login before delete a comment",
-  "statusCode": 401,
-}
-`;
-
-exports[`delete ep comment > not allowed wrong user 1`] = `
-Object {
-  "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
-  "message": "you don't have permission to delete a comment which is not yours",
-  "statusCode": 401,
-}
-`;
-
-exports[`delete ep comment > ok 1`] = `Object {}`;
-
 exports[`delete post > not allowed not login 1`] = `
 Object {
   "code": "NEED_LOGIN",
@@ -57,41 +37,3 @@ Object {
 `;
 
 exports[`delete post > ok 1`] = `Object {}`;
-
-exports[`get ep comment > ok 1`] = `
-Array [
-  Object {
-    "content": "sandbox",
-    "createdAt": 1640462712,
-    "creatorID": 600046,
-    "epID": 1075440,
-    "id": 1034989,
-    "relatedID": 0,
-    "replies": Array [],
-    "state": 0,
-    "user": null,
-  },
-  Object {
-    "content": "这是一条测试内容",
-    "createdAt": 1719389390,
-    "creatorID": 448570,
-    "epID": 1075440,
-    "id": 1569792,
-    "relatedID": 0,
-    "replies": Array [],
-    "state": 0,
-    "user": null,
-  },
-  Object {
-    "content": "new comment",
-    "createdAt": 1719399020,
-    "creatorID": 448570,
-    "epID": 1075440,
-    "id": 1569874,
-    "relatedID": 0,
-    "replies": Array [],
-    "state": 0,
-    "user": null,
-  },
-]
-`;
