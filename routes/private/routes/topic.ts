@@ -201,14 +201,14 @@ export async function setup(app: App) {
   app.addSchema(TopicDetail);
 
   app.get(
-    '/subjects/-/topics/:id',
+    '/subjects/-/topics/:topicID',
     {
       schema: {
         tags: [Tag.Subject],
         operationId: 'getSubjectTopicDetail',
         summary: '获取帖子列表',
         params: t.Object({
-          id: t.Integer({ examples: [1], minimum: 0 }),
+          topicID: t.Integer({ examples: [1], minimum: 0 }),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
@@ -217,8 +217,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('get a topics')],
     },
-    async ({ auth, params: { id } }) => {
-      return await handleTopicDetail(auth, Type.subject, id);
+    async ({ auth, params: { topicID } }) => {
+      return await handleTopicDetail(auth, Type.subject, topicID);
     },
   );
 
@@ -627,10 +627,10 @@ export async function setup(app: App) {
 
       await orm.SubjectTopicRepo.update({ id: topicID }, { title, display });
 
-      const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
+      const topicPost = await orm.SubjectPostRepo.findOneBy({ topicID });
 
       if (topicPost) {
-        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: text });
+        await orm.SubjectPostRepo.update({ id: topicPost.id }, { content: text });
       }
 
       return {};
