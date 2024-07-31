@@ -215,7 +215,6 @@ export async function setup(app: App) {
           200: t.Ref(TopicDetail),
         },
       },
-      preHandler: [requireLogin('get a topics')],
     },
     async ({ auth, params: { topicID } }) => {
       return await handleTopicDetail(auth, Type.subject, topicID);
