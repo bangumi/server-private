@@ -41,7 +41,7 @@ export class RedisLimiter implements Limiter {
   ): Promise<Result> {
     const limitKey = `${redisPrefix}:rate-limit:${action}:${userID}`;
 
-    return this.get(limitKey, limit, timeWindow);
+    return this.get(limitKey, timeWindow, limit);
   }
 
   async reset(key: string): Promise<void> {

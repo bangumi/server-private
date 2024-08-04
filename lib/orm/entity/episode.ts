@@ -105,6 +105,6 @@ export class EpisodeComment {
   @Column('mediumtext', { name: 'ep_pst_content' })
   content!: string;
 
-  @Column('mediumtext', { name: 'ep_pst_state' })
+  @Column('mediumtext', { name: 'ep_pst_state', default: () => "'0'" })
   state!: number;
 }
