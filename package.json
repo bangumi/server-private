@@ -16,16 +16,15 @@
     "start": "nodemon ./bin/main.ts",
     "test": "vitest --run",
     "vitest": "vitest",
-    "file": "node --no-warnings --loader @esbuild-kit/esm-loader",
+    "file": "node --no-warnings --import tsx/esm",
     "license-check": "license-checker --excludePrivatePackages --production --summary --onlyAllow=\"0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;Python-2.0;BlueOak-1.0.0\"",
-    "e": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader",
+    "e": "node --no-warnings -r dotenv/config --import tsx/esm",
     "lint-staged": "lint-staged -q",
     "prepare": "husky"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",
     "@bgm38/wiki": "^0.2.6",
-    "@esbuild-kit/esm-loader": "^2.6.5",
     "@fastify/cookie": "^9.3.1",
     "@fastify/error": "^4.0.0",
     "@fastify/formbody": "^7.4.0",
@@ -66,6 +65,7 @@
     "reflect-metadata": "^0.2.1",
     "socket.io": "^4.7.5",
     "socks-proxy-agent": "^8.0.4",
+    "tsx": "^4.17.0",
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
@@ -124,7 +124,7 @@
     ],
     "delay": 100,
     "execMap": {
-      "ts": "node --no-warnings -r dotenv/config --loader @esbuild-kit/esm-loader"
+      "ts": "node --no-warnings -r dotenv/config --import tsx/esm"
     },
     "env": {
       "NODE_ENV": "development",
