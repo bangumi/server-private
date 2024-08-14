@@ -35,7 +35,7 @@ jobs:
           repository: 'bangumi/dev-env'
           path: 'dev-env'
       - run: mv dev-env $HOME/dev-env
-      - run: cd ~/dev-env && docker-compose up -d
+      - run: cd ~/dev-env && docker compose up -d
 
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-js-env
