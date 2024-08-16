@@ -102,6 +102,9 @@ export async function edit({
     const SubjectFieldRepo = t.getRepository(entity.SubjectFields);
     const SubjectRepo = t.getRepository(entity.Subject);
 
+    // eslint-disable-next-line  no-console
+    console.log(SubjectRepo, SubjectRepo.findOneByOrFail);
+
     const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
 
     const availablePlatforms = platforms(s.typeID);
