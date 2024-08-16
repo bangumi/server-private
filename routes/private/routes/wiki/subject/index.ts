@@ -69,6 +69,22 @@ export const SubjectEdit = t.Object(
   },
 );
 
+const SubjectExpected = t.Optional(
+  t.Partial(
+    t.Object(
+      {
+        name: t.String({ minLength: 1 }),
+        infobox: t.String({ minLength: 1 }),
+        platform: t.Integer(),
+      },
+      {
+        description:
+          "a optional object to check if input is changed by others\nif `infobox` is given, and current data in database doesn't match input, subject will not be changed",
+      },
+    ),
+  ),
+);
+
 const Platform = t.Object(
   {
     id: t.Integer(),
@@ -233,6 +249,7 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
+            expectedRevision: SubjectExpected,
             subject: t.Ref(SubjectEdit),
           },
           {
@@ -255,7 +272,7 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, subject: input },
+      body: { commitMessage, subject: input, expectedRevision },
       params: { subjectID },
     }): Promise<void> => {
       if (!auth.permission.subject_edit) {
@@ -283,6 +300,7 @@ export async function setup(app: App) {
         nsfw: body.nsfw,
         userID: auth.userID,
         commitMessage,
+        expectedRevision,
       });
     },
   );
@@ -301,6 +319,7 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
+            expectedRevision: SubjectExpected,
             subject: t.Partial(SubjectEdit, { $id: undefined }),
           },
           {
@@ -323,7 +342,7 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, subject: input },
+      body: { commitMessage, subject: input, expectedRevision },
       params: { subjectID },
     }): Promise<void> => {
       if (!auth.permission.subject_edit) {
@@ -374,6 +393,7 @@ export async function setup(app: App) {
         nsfw,
         date,
         userID: auth.userID,
+        expectedRevision,
       });
     },
   );
