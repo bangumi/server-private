@@ -22,7 +22,14 @@ describe('should update subject', () => {
       return await fn({
         getRepository(t: unknown) {
           if (t === entity.Subject) {
-            return { update: subjectMock };
+            return {
+              update: subjectMock,
+              findOneByOrFail: vi.fn(function () {
+                return {
+                  typeID: SubjectType.Anime,
+                };
+              }),
+            };
           }
 
           if (t === entity.SubjectFields) {
@@ -30,7 +37,9 @@ describe('should update subject', () => {
           }
 
           if (t == entity.SubjectRev) {
-            return { insert: subjectRevMock };
+            return {
+              insert: subjectRevMock,
+            };
           }
 
           throw new Error('unexpected entity');
@@ -81,7 +90,6 @@ describe('should update subject', () => {
         name: 'q',
         nameCN: '',
         platform: 3,
-        updatedAt: now.toUnixInteger(),
       },
     );
 
