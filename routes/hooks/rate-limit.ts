@@ -42,18 +42,20 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
 
 const limiter = createLimiter();
 
-export const rateLimiter = (action: LimitAction) => async (req: { auth: IAuth }) => {
+export const rateLimiter = (action: LimitAction) => {
   const rule = LIMIT_RULES[action];
   if (!rule) {
     throw new InvalidRateLimitType(action);
   }
-  const result = await limiter.userAction(
-    req.auth.userID,
-    action,
-    rule.durationMinutes * 60,
-    rule.limit,
-  );
-  if (result.limited) {
-    throw new RateLimitExceeded();
-  }
+  return async (req: { auth: IAuth }) => {
+    const result = await limiter.userAction(
+      req.auth.userID,
+      action,
+      rule.durationMinutes * 60,
+      rule.limit,
+    );
+    if (result.limited) {
+      throw new RateLimitExceeded();
+    }
+  };
 };

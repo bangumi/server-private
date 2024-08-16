@@ -329,6 +329,13 @@ export async function setup(app: App) {
         throw new NotAllowedError(`edit to a abnormal state comment`);
       }
 
+      const repliesCount = await EpisodeCommentRepo.count({
+        where: { relatedID: commentID },
+      });
+      if (repliesCount > 0) {
+        throw new NotAllowedError('cannot edit a comment with replies');
+      }
+
       await EpisodeCommentRepo.update(
         { id: commentID },
         {
