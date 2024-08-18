@@ -69,16 +69,15 @@ export async function createServer(
 
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message
-    void reply.type('application/json');
     if (error instanceof TypeORMError) {
       this.log.error(error);
-      void reply.status(500).send({
+      void reply.type('application/json').status(500).send({
         error: 'Internal Server Error',
         message: 'internal database error, please contact admin',
         statusCode: 500,
       });
     } else {
-      void reply.send(error);
+      void reply.type('application/json').send(error);
     }
   });
 
