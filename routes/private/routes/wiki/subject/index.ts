@@ -7,7 +7,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError, platforms } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -123,10 +123,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectInfo',
-        description: [
-          '获取当前的 wiki 信息',
-          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
-        ].join('\n\n'),
+        description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
@@ -189,10 +186,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectEditHistorySummary',
-        description: [
-          '获取当前的 wiki 信息',
-          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
-        ].join('\n\n'),
+        description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
           subjectID: t.Integer({ examples: [8], minimum: 0 }),
         }),
@@ -239,9 +233,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'putSubjectInfo',
-        description: `暂时只能修改沙盒条目 ${[...SandBox]
-          .sort()
-          .join(',')}\n\n需要 \`subjectWikiEdit\` 权限`,
+        description: '需要 `subjectWikiEdit` 权限',
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
@@ -311,7 +303,6 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'patchSubjectInfo',
-        description: `暂时只能修改沙盒条目 ${[...SandBox].sort().join(',')}`,
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
