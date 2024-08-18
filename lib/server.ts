@@ -68,7 +68,6 @@ export async function createServer(
   });
 
   server.setErrorHandler(function (error, request, reply) {
-    void reply.header('content-type', 'application/json');
     // hide TypeORM message
     if (error instanceof TypeORMError) {
       this.log.error(error);
