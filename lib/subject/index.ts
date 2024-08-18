@@ -31,8 +31,6 @@ export const InvalidWikiSyntaxError = createError(
   StatusCodes.BAD_REQUEST,
 );
 
-export const SandBox = new Set([184017, 354677, 354667, 309445, 363612]);
-
 interface Create {
   subjectID: number;
   name: string;
@@ -70,10 +68,6 @@ export async function edit({
   now = DateTime.now(),
   expectedRevision,
 }: Create): Promise<void> {
-  if (!SandBox.has(subjectID)) {
-    return;
-  }
-
   let w: Wiki;
   try {
     w = parse(infobox);
