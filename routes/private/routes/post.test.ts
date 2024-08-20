@@ -335,7 +335,7 @@ describe('create group post reply', () => {
         permission: {},
         allowNsfw: true,
         regTime: 0,
-        userID: 100,
+        userID: 1,
       },
     });
 
@@ -356,15 +356,14 @@ describe('create group post reply', () => {
           medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
           small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
         },
-        id: 9,
-        nickname: 'n',
-        sign: '',
-        user_group: 10,
-        username: 'u',
+        id: 1,
+        nickname: 'nickname 1',
+        sign: 'sing 1',
+        user_group: 0,
+        username: '1',
       },
-      id: 6,
       state: 0,
-      text: '',
+      text: 'post contents',
     });
     expect(res.statusCode).toBe(200);
     expect(notifyMock).toHaveBeenCalledOnce();
@@ -401,7 +400,7 @@ describe('create group post reply', () => {
     });
 
     expect(res.statusCode).toBe(401);
-    expect(createTopicReply).toBeCalledTimes(1);
+    expect(createTopicReply).toBeCalledTimes(0);
   });
 
   test('should not create on non-existing topic', async () => {

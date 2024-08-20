@@ -11,7 +11,7 @@ Object {
 
 exports[`group topics > should fetch topic details 1`] = `
 Object {
-  "createdAt": 1657885648,
+  "createdAt": 1680273073,
   "creator": Object {
     "avatar": Object {
       "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -24,7 +24,7 @@ Object {
     "user_group": 0,
     "username": "287622",
   },
-  "id": 371602,
+  "id": 379821,
   "parent": Object {
     "createdAt": 1531631310,
     "description": "[s]非[/s]官方沙盒",
@@ -35,10 +35,46 @@ Object {
     "title": "沙盒",
     "totalMembers": 3,
   },
-  "reactions": Array [],
+  "reactions": Array [
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 54,
+    },
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 68,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 92,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 122,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 128,
+    },
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 132,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 137,
+    },
+  ],
   "replies": Array [
     Object {
-      "createdAt": 1658030918,
+      "createdAt": 1680273078,
       "creator": Object {
         "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -51,117 +87,43 @@ Object {
         "user_group": 0,
         "username": "287622",
       },
-      "id": 2056216,
+      "id": 2288669,
       "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 6,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662276469,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      "reactions": Array [
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 68,
         },
-        "id": 287622,
-        "nickname": "nickname 287622",
-        "sign": "sing 287622",
-        "user_group": 0,
-        "username": "287622",
-      },
-      "id": 2092004,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 7,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282514,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 85,
         },
-        "id": 1,
-        "nickname": "nickname 1",
-        "sign": "sing 1",
-        "user_group": 0,
-        "username": "1",
-      },
-      "id": 2092065,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 5,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282518,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 90,
         },
-        "id": 1,
-        "nickname": "nickname 1",
-        "sign": "sing 1",
-        "user_group": 0,
-        "username": "1",
-      },
-      "id": 2092066,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 1,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282523,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 92,
         },
-        "id": 1,
-        "nickname": "nickname 1",
-        "sign": "sing 1",
-        "user_group": 0,
-        "username": "1",
-      },
-      "id": 2092067,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 2,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282554,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 122,
         },
-        "id": 287622,
-        "nickname": "nickname 287622",
-        "sign": "sing 287622",
-        "user_group": 0,
-        "username": "287622",
-      },
-      "id": 2092069,
-      "isFriend": false,
-      "reactions": Array [],
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 132,
+        },
+      ],
       "replies": Array [
         Object {
-          "createdAt": 1662283112,
+          "createdAt": 1680273085,
           "creator": Object {
             "avatar": Object {
               "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -174,20 +136,67 @@ Object {
             "user_group": 0,
             "username": "287622",
           },
-          "id": 2092074,
+          "id": 2288670,
           "isFriend": false,
-          "reactions": Array [],
+          "reactions": Array [
+            Object {
+              "selected": false,
+              "total": 1,
+              "value": 60,
+            },
+            Object {
+              "selected": false,
+              "total": 2,
+              "value": 62,
+            },
+            Object {
+              "selected": false,
+              "total": 1,
+              "value": 122,
+            },
+            Object {
+              "selected": false,
+              "total": 1,
+              "value": 128,
+            },
+            Object {
+              "selected": false,
+              "total": 3,
+              "value": 137,
+            },
+          ],
           "state": 0,
-          "text": "sub",
+          "text": "bb",
         },
       ],
       "state": 0,
-      "text": "q",
+      "text": "11",
+    },
+    Object {
+      "createdAt": 1680275867,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 287622,
+        "nickname": "nickname 287622",
+        "sign": "sing 287622",
+        "user_group": 0,
+        "username": "287622",
+      },
+      "id": 2288733,
+      "isFriend": false,
+      "reactions": Array [],
+      "replies": Array [],
+      "state": 0,
+      "text": "no reactions in this post",
     },
   ],
-  "state": 2,
-  "text": "tt",
-  "title": "tes",
+  "state": 0,
+  "text": "t",
+  "title": "reaction",
 }
 `;
 

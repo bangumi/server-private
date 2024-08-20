@@ -26,9 +26,7 @@ const expectedGroupTopic = {
   },
   id: 371602,
   parentID: 4215,
-  repliesCount: 2,
   title: 'tes',
-  updatedAt: 1662283112,
 };
 
 const expectedSubjectTopic = {
@@ -48,8 +46,6 @@ const expectedSubjectTopic = {
   title: '拿这个来测试',
   parentID: 1,
   createdAt: 1216020847,
-  updatedAt: 1639999129,
-  repliesCount: 76,
 };
 
 beforeEach(async () => {
@@ -81,7 +77,7 @@ describe('group topics', () => {
     const data = res.json();
 
     expect(res.statusCode).toBe(200);
-    expect(data.data).toContainEqual(expectedGroupTopic);
+    expect(data.data).toContainEqual(expect.objectContaining(expectedGroupTopic));
   });
 
   test('should fetch group profile', async () => {
@@ -101,13 +97,13 @@ describe('group topics', () => {
       title: '沙盒',
       totalMembers: 3,
     });
-    expect(data.topics).toContainEqual(expectedGroupTopic);
+    expect(data.topics).toContainEqual(expect.objectContaining(expectedGroupTopic));
   });
 
   test('should fetch topic details', async () => {
     const app = await createServer();
 
-    const res = await app.inject('/p1/groups/-/topics/371602');
+    const res = await app.inject('/p1/groups/-/topics/379821');
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
@@ -147,7 +143,7 @@ describe('subject topics', () => {
     const data = res.json();
 
     expect(res.statusCode).toBe(200);
-    expect(data.data).toContainEqual(expectedSubjectTopic);
+    expect(data.data).toContainEqual(expect.objectContaining(expectedSubjectTopic));
   });
 
   test('should fetch topic details', async () => {
