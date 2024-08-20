@@ -1,11 +1,11 @@
 {
   "name": "app",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "",
   "private": true,
   "type": "module",
   "main": "bin/main.ts",
-  "packageManager": "pnpm@9.6.0",
+  "packageManager": "pnpm@9.7.1",
   "engines": {
     "node": "^20"
   },
