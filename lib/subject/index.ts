@@ -98,10 +98,14 @@ export async function edit({
 
     const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
 
-    const availablePlatforms = platforms(s.typeID);
+    // only validate platform when it changed.
+    // sometimes main website will add new platform, and our config maybe out-dated.
+    if (platform !== s.platform) {
+      const availablePlatforms = platforms(s.typeID);
 
-    if (!availablePlatforms.map((x) => x.id).includes(platform)) {
-      throw new BadRequestError(`platform ${platform} is not a valid platform for subject`);
+      if (!availablePlatforms.map((x) => x.id).includes(platform)) {
+        throw new BadRequestError(`platform ${platform} is not a valid platform for subject`);
+      }
     }
 
     const nameCN: string = extractNameCN(w);
