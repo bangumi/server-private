@@ -1,5 +1,6 @@
 import { createError } from '@fastify/error';
 import { DateTime } from 'luxon';
+import type { Repository } from 'typeorm';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
@@ -264,14 +265,21 @@ export async function createTopicReply({
   const now = DateTime.now();
 
   const p = await AppDataSource.transaction(async (t) => {
-    const postRepo =
-      topicType === Type.group
-        ? t.getRepository(entity.GroupPost)
-        : t.getRepository(entity.SubjectPost);
-    const topicRepo =
-      topicType === Type.group
-        ? t.getRepository(entity.GroupTopic)
-        : t.getRepository(entity.SubjectTopic);
+    let postRepo: Repository<entity.GroupPost> | Repository<entity.SubjectPost>;
+    let topicRepo: Repository<entity.GroupTopic> | Repository<entity.SubjectTopic>;
+
+    switch (topicType) {
+      case Type.group: {
+        postRepo = t.getRepository(entity.GroupPost);
+        topicRepo = t.getRepository(entity.GroupTopic);
+        break;
+      }
+      case Type.subject: {
+        postRepo = t.getRepository(entity.SubjectPost);
+        topicRepo = t.getRepository(entity.SubjectTopic);
+        break;
+      }
+    }
 
     const topic = await topicRepo.findOneOrFail({ where: { id: topicID } });
     const posts = await postRepo.countBy({ topicID, state: CommentState.Normal });
@@ -307,7 +315,7 @@ export async function createTopicReply({
 
   return {
     id: p.id,
-    type: Type.group,
+    type: topicType,
     user: await fetchUserX(p.uid),
     createdAt: p.dateline,
     state: p.state,

@@ -585,7 +585,7 @@ export async function setup(app: App) {
       body: { content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
-      return handleTopicReply(auth, Topic.Type.group, topicID, content, replyTo);
+      return await handleTopicReply(auth, Topic.Type.group, topicID, content, replyTo);
     },
   );
 
@@ -641,7 +641,7 @@ export async function setup(app: App) {
       body: { content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
-      return handleTopicReply(auth, Topic.Type.subject, topicID, content, replyTo);
+      return await handleTopicReply(auth, Topic.Type.subject, topicID, content, replyTo);
     },
   );
 
