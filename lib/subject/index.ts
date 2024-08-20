@@ -101,7 +101,7 @@ export async function edit({
     const availablePlatforms = platforms(s.typeID);
 
     if (!availablePlatforms.map((x) => x.id).includes(platform)) {
-      throw new BadRequestError('platform not available');
+      throw new BadRequestError(`platform ${platform} is not a valid platform for subject`);
     }
 
     const nameCN: string = extractNameCN(w);
