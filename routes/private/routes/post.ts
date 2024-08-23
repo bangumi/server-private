@@ -4,19 +4,27 @@ import { DateTime } from 'luxon';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config';
 import { Dam } from '@app/lib/dam.ts';
-import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
-import * as Notify from '@app/lib/notify.ts';
+import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import type { entity, IBaseReply } from '@app/lib/orm/index.ts';
-import { EpisodeCommentRepo, fetchUser, fetchUserX, GroupRepo } from '@app/lib/orm/index.ts';
+import type { entity } from '@app/lib/orm/index.ts';
+import { EpisodeCommentRepo, EpisodeRepo, fetchUser, fetchUserX } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response';
-import { CommentState, NotJoinPrivateGroupError, Type } from '@app/lib/topic/index.ts';
+import { createTurnstileDriver } from '@app/lib/services/turnstile';
+import {
+  CommentState,
+  handleTopicReply,
+  NotJoinPrivateGroupError,
+  Type,
+} from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimiter } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const BaseEpisodeComment = t.Object(
@@ -57,30 +65,31 @@ const EpisodeComment = t.Intersect(
   { $id: 'EpisodeComments' },
 );
 
+export type IBasicReply = Static<typeof BasicReply>;
+const BasicReply = t.Object(
+  {
+    id: t.Integer(),
+    creator: t.Ref(res.User),
+    createdAt: t.Integer(),
+    text: t.String(),
+    state: t.Integer(),
+  },
+  { $id: 'BasicReply' },
+);
+
+const Reply = t.Object(
+  {
+    ...BasicReply.properties,
+    topicID: t.Integer(),
+    topicTitle: t.String(),
+  },
+  { $id: 'GroupReply' },
+);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(res.User);
-  const BasicReply = t.Object(
-    {
-      id: t.Integer(),
-      creator: t.Ref(res.User),
-      createdAt: t.Integer(),
-      text: t.String(),
-      state: t.Integer(),
-    },
-    { $id: 'BasicReply' },
-  );
-
-  const Reply = t.Object(
-    {
-      ...BasicReply.properties,
-      topicID: t.Integer(),
-      topicTitle: t.String(),
-    },
-    { $id: 'GroupReply' },
-  );
-
   app.addSchema(BasicReply);
   app.addSchema(Reply);
 
@@ -129,13 +138,12 @@ export async function setup(app: App) {
     '/subjects/-/episode/:episodeID/comments',
     {
       schema: {
-        summary: '获取条目的剧集评论',
+        summary: '获取条目的剧集吐槽箱',
         tags: [Tag.Subject],
         operationId: 'getSubjectEpisodeComments',
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
         response: {
           200: t.Array(EpisodeComment),
         },
@@ -191,6 +199,212 @@ export async function setup(app: App) {
       }
 
       return [...commentMap.values()];
+    },
+  );
+
+  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
+
+  app.post(
+    '/subjects/-/episode/:episodeID/comments',
+    {
+      schema: {
+        summary: '创建条目的剧集吐槽',
+        operationId: 'createSubjectEpComment',
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
+        params: t.Object({
+          episodeID: t.Integer({ examples: [1075440] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Ref(BasicReply),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            replyTo: t.Optional(
+              t.Integer({
+                examples: [0],
+                default: 0,
+                description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
+              }),
+            ),
+            content: t.String({ minLength: 1 }),
+            'cf-turnstile-response': t.String({ minLength: 1 }),
+          },
+          {
+            examples: [
+              {
+                content: 'comment contents',
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
+              {
+                content: 'comment contents',
+                replyTo: 2,
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
+            ],
+          },
+        ),
+      },
+      preHandler: [requireLogin('creating a comment'), rateLimiter(LimitAction.Subject)],
+    },
+    /**
+     * @param auth -
+     * @param content - 吐槽内容
+     * @param relatedID - 子吐槽的父吐槽ID，默认为 `0` 代表发送顶层吐槽
+     * @param episodeID - 剧集 ID
+     */
+    async ({
+      auth,
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
+      params: { episodeID },
+    }): Promise<Static<typeof BasicReply>> => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create comment');
+      }
+
+      const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
+      if (!ep) {
+        throw new NotFoundError(`episode ${episodeID}`);
+      }
+      if (ep.epBan !== 0) {
+        throw new NotAllowedError('comment to a closed episode');
+      }
+
+      if (replyTo !== 0) {
+        const replied = await EpisodeCommentRepo.findOne({ where: { id: replyTo } });
+        if (!replied) {
+          throw new NotFoundError(`parent comment id ${replyTo}`);
+        }
+        if (replied.state !== CommentState.Normal) {
+          throw new NotAllowedError(`reply to a abnormal state comment`);
+        }
+      }
+
+      const c = await EpisodeCommentRepo.save({
+        content: content,
+        creatorID: auth.userID,
+        epID: episodeID,
+        relatedID: replyTo,
+        createdAt: DateTime.now().toUnixInteger(),
+        state: CommentState.Normal,
+      });
+
+      return {
+        id: c.id,
+        state: c.state,
+        createdAt: c.createdAt,
+        text: c.content,
+        creator: toResUser(await fetchUserX(auth.userID)),
+      };
+    },
+  );
+
+  app.put(
+    '/subjects/-/episode/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑条目的剧集吐槽',
+        operationId: 'editSubjectEpComment',
+        params: t.Object({
+          commentID: t.Integer({ examples: [1075440] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Object({}),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            content: t.String({ minLength: 1 }),
+          },
+          {
+            examples: [{ content: 'new comment contents' }],
+          },
+        ),
+      },
+      preHandler: [requireLogin('edit a comment')],
+    },
+
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      const comment = await EpisodeCommentRepo.findOne({ where: { id: commentID } });
+      if (!comment) {
+        throw new NotFoundError(`comment id ${commentID}`);
+      }
+      if (comment.creatorID !== auth.userID) {
+        throw new NotAllowedError('edit a comment which is not yours');
+      }
+      if (comment.state !== CommentState.Normal) {
+        throw new NotAllowedError(`edit to a abnormal state comment`);
+      }
+
+      const repliesCount = await EpisodeCommentRepo.count({
+        where: { relatedID: commentID },
+      });
+      if (repliesCount > 0) {
+        throw new NotAllowedError('cannot edit a comment with replies');
+      }
+
+      await EpisodeCommentRepo.update(
+        { id: commentID },
+        {
+          content: content,
+        },
+      );
+
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/episode/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除条目的剧集吐槽',
+        operationId: 'deleteSubjectEpComment',
+        params: t.Object({
+          commentID: t.Integer({ examples: [1034989] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Object({}),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('delete this comment')),
+          }),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotFoundError('comment')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+      },
+      preHandler: [requireLogin('delete a comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      const comment = await EpisodeCommentRepo.findOne({ where: { id: commentID } });
+      if (!comment) {
+        throw new NotFoundError(`comment id ${commentID}`);
+      }
+      if (comment.creatorID !== auth.userID) {
+        throw new NotAllowedError('delete a comment which is not yours');
+      }
+      if (comment.state !== CommentState.Normal) {
+        throw new NotAllowedError('delete a abnormal state comment');
+      }
+
+      await EpisodeCommentRepo.update({ id: commentID }, { state: CommentState.UserDelete });
+      return {};
     },
   );
 
@@ -368,13 +582,18 @@ export async function setup(app: App) {
               }),
             ),
             content: t.String({ minLength: 1 }),
+            'cf-turnstile-response': t.String({ minLength: 1 }),
           },
           {
             examples: [
-              { content: 'post contents' },
+              {
+                content: 'post contents',
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
               {
                 content: 'post contents',
                 replyTo: 2,
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
               },
             ],
           },
@@ -390,86 +609,82 @@ export async function setup(app: App) {
      */
     async ({
       auth,
-      body: { content, replyTo = 0 },
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create reply');
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
       }
+      return await handleTopicReply(auth, Topic.Type.group, topicID, content, replyTo);
+    },
+  );
 
-      const topic = await Topic.fetchTopicDetail(auth, Type.group, topicID);
-      if (!topic) {
-        throw new NotFoundError(`topic ${topicID}`);
-      }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('reply to a closed topic');
-      }
+  app.post(
+    '/subjects/-/topics/:topicID/replies',
+    {
+      schema: {
+        summary: '创建条目讨论版回复',
+        operationId: 'createSubjectReply',
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
 
-      const now = DateTime.now();
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-      let parentID = 0;
-      let dstUserID = topic.creatorID;
-      if (replyTo) {
-        const parents: Record<number, IBaseReply> = Object.fromEntries(
-          topic.replies.flatMap((x): [number, IBaseReply][] => {
-            // 管理员操作不能回复
-            if (
-              [
-                CommentState.AdminCloseTopic,
-                CommentState.AdminReopen,
-                CommentState.AdminSilentTopic,
-              ].includes(x.state)
-            ) {
-              return [];
-            }
-            return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Ref(BasicReply),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
           }),
-        );
-
-        const replied = parents[replyTo];
-
-        if (!replied) {
-          throw new NotFoundError(`parent post id ${replyTo}`);
-        }
-
-        dstUserID = replied.creatorID;
-        parentID = replied.repliedTo || replied.id;
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            replyTo: t.Optional(
+              t.Integer({
+                examples: [0],
+                default: 0,
+                description: '被回复的 topic ID, `0` 代表回复楼主',
+              }),
+            ),
+            content: t.String({ minLength: 1 }),
+            'cf-turnstile-response': t.String({ minLength: 1 }),
+          },
+          {
+            examples: [
+              {
+                content: 'post contents',
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
+              {
+                content: 'post contents',
+                replyTo: 2,
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
+            ],
+          },
+        ),
+      },
+      preHandler: [requireLogin('creating a reply'), rateLimiter(LimitAction.Subject)],
+    },
+    /**
+     * @param auth -
+     * @param content - 回帖内容
+     * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
+     * @param topicID - 帖子 ID
+     */
+    async ({
+      auth,
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
+      params: { topicID },
+    }): Promise<Static<typeof BasicReply>> => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
       }
-
-      const group = await GroupRepo.findOneOrFail({
-        where: { id: topic.parentID },
-      });
-
-      if (!group.accessible && !(await orm.isMemberInGroup(group.id, auth.userID))) {
-        throw new NotJoinPrivateGroupError(group.name);
-      }
-
-      const t = await Topic.createTopicReply({
-        topicType: Topic.Type.group,
-        topicID: topicID,
-        userID: auth.userID,
-        content,
-        parentID,
-      });
-
-      const notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
-      await Notify.create({
-        destUserID: dstUserID,
-        sourceUserID: auth.userID,
-        now,
-        type: notifyType,
-        postID: t.id,
-        topicID: topic.id,
-        title: topic.title,
-      });
-
-      return {
-        id: t.id,
-        state: t.state,
-        createdAt: t.createdAt,
-        text: t.content,
-        creator: toResUser(t.user),
-      };
+      return await handleTopicReply(auth, Topic.Type.subject, topicID, content, replyTo);
     },
   );
 
@@ -492,7 +707,7 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotFoundError('post')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
       preHandler: [requireLogin('delete a post')],
     },
@@ -528,8 +743,9 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotFoundError('post')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
+      preHandler: [requireLogin('get a posts')],
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
       const { topic, post } = await getPost(auth, postID, Type.subject);
@@ -564,7 +780,7 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotAllowedError('edit reply')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             text: t.String({ minLength: 1 }),
@@ -624,131 +840,6 @@ export async function setup(app: App) {
     },
   );
 
-  // app.post(
-  //   '/subjects/-/topics/:topicID/replies',
-  //   {
-  //     schema: {
-  //       summary: '创建条目讨论版回复',
-  //       operationId: 'createSubjectReply',
-  //       params: t.Object({
-  //         topicID: t.Integer({ examples: [371602] }),
-  //       }),
-  //       tags: [Tag.Subject],
-  //       response: {
-  //         200: t.Ref(BasicReply),
-  //         401: t.Ref(res.Error, {
-  //           'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
-  //         }),
-  //       },
-  //       security: [{ [Security.CookiesSession]: [] }],
-  //       body: t.Object(
-  //         {
-  //           replyTo: t.Optional(
-  //             t.Integer({
-  //               examples: [0],
-  //               default: 0,
-  //               description: '被回复的 topic ID, `0` 代表回复楼主',
-  //             }),
-  //           ),
-  //           content: t.String({ minLength: 1 }),
-  //         },
-  //         {
-  //           examples: [
-  //             { content: 'post contents' },
-  //             {
-  //               content: 'post contents',
-  //               replyTo: 2,
-  //             },
-  //           ],
-  //         },
-  //       ),
-  //     },
-  //     preHandler: [requireLogin('creating a reply')],
-  //   },
-  //   /**
-  //    * @param auth -
-  //    * @param content - 回帖内容
-  //    * @param relatedID - 子回复时的父回复ID，默认为 `0` 代表回复帖子
-  //    * @param topicID - 帖子 ID
-  //    */
-  //   async ({
-  //     auth,
-  //     body: { content, replyTo = 0 },
-  //     params: { topicID },
-  //   }): Promise<Static<typeof BasicReply>> => {
-  //     if (auth.permission.ban_post) {
-  //       throw new NotAllowedError('create reply');
-  //     }
-
-  //     const topic = await Topic.fetchTopicDetail(auth, 'subject', topicID);
-  //     if (!topic) {
-  //       throw new NotFoundError(`topic ${topicID}`);
-  //     }
-  //     if (topic.state === CommentState.AdminCloseTopic) {
-  //       throw new NotAllowedError('reply to a closed topic');
-  //     }
-
-  //     const now = DateTime.now();
-
-  //     let parentID = 0;
-  //     let dstUserID = topic.creatorID;
-  //     if (replyTo) {
-  //       const parents: Record<number, IBaseReply> = Object.fromEntries(
-  //         topic.replies.flatMap((x): [number, IBaseReply][] => {
-  //           // 管理员操作不能回复
-  //           if (
-  //             [
-  //               CommentState.AdminCloseTopic,
-  //               CommentState.AdminReopen,
-  //               CommentState.AdminSilentTopic,
-  //             ].includes(x.state)
-  //           ) {
-  //             return [];
-  //           }
-  //           return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
-  //         }),
-  //       );
-
-  //       const replied = parents[replyTo];
-
-  //       if (!replied) {
-  //         throw new NotFoundError(`parent post id ${replyTo}`);
-  //       }
-
-  //       dstUserID = replied.creatorID;
-  //       parentID = replied.repliedTo || replied.id;
-  //     }
-
-  //     const t = await Topic.createTopicReply({
-  //       topicType: Topic.Type.subject,
-  //       topicID: topicID,
-  //       userID: auth.userID,
-  //       content,
-  //       parentID,
-  //     });
-
-  //     const notifyType =
-  //       replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
-  //     await Notify.create({
-  //       destUserID: dstUserID,
-  //       sourceUserID: auth.userID,
-  //       now,
-  //       type: notifyType,
-  //       postID: t.id,
-  //       topicID: topic.id,
-  //       title: topic.title,
-  //     });
-
-  //     return {
-  //       id: t.id,
-  //       state: t.state,
-  //       createdAt: t.createdAt,
-  //       text: t.content,
-  //       creator: toResUser(t.user),
-  //     };
-  //   },
-  // );
-
   type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
   const SubjectInterestComment = t.Object(
     {
@@ -792,7 +883,6 @@ export async function setup(app: App) {
           limit: t.Optional(t.Integer({ default: 20 })),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
         response: {
           200: t.Ref(SubjectInterestComment),
         },

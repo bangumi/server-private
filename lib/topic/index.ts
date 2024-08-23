@@ -1,9 +1,17 @@
 import { createError } from '@fastify/error';
 import { DateTime } from 'luxon';
+import type { Repository } from 'typeorm';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
-import { UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
+import { Dam } from '@app/lib/dam.ts';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnexpectedNotFoundError,
+  UnimplementedError,
+} from '@app/lib/error.ts';
+import * as Notify from '@app/lib/notify.ts';
 import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import type { IBaseReply, IUser, Page } from '@app/lib/orm/index.ts';
@@ -11,11 +19,16 @@ import {
   AppDataSource,
   fetchUserX,
   GroupPostRepo,
+  GroupRepo,
   GroupTopicRepo,
   SubjectPostRepo,
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
+import { toResUser } from '@app/lib/types/res.ts';
+import type { IBasicReply } from '@app/routes/private/routes/post.ts';
+
+import { NotAllowedError } from './../auth/index';
 
 export { CanViewTopicContent, ListTopicDisplays } from './display.ts';
 
@@ -258,14 +271,21 @@ export async function createTopicReply({
   const now = DateTime.now();
 
   const p = await AppDataSource.transaction(async (t) => {
-    const postRepo =
-      topicType === Type.group
-        ? t.getRepository(entity.GroupPost)
-        : t.getRepository(entity.SubjectPost);
-    const topicRepo =
-      topicType === Type.group
-        ? t.getRepository(entity.GroupTopic)
-        : t.getRepository(entity.SubjectTopic);
+    let postRepo: Repository<entity.GroupPost> | Repository<entity.SubjectPost>;
+    let topicRepo: Repository<entity.GroupTopic> | Repository<entity.SubjectTopic>;
+
+    switch (topicType) {
+      case Type.group: {
+        postRepo = t.getRepository(entity.GroupPost);
+        topicRepo = t.getRepository(entity.GroupTopic);
+        break;
+      }
+      case Type.subject: {
+        postRepo = t.getRepository(entity.SubjectPost);
+        topicRepo = t.getRepository(entity.SubjectTopic);
+        break;
+      }
+    }
 
     const topic = await topicRepo.findOneOrFail({ where: { id: topicID } });
     const posts = await postRepo.countBy({ topicID, state: CommentState.Normal });
@@ -301,7 +321,7 @@ export async function createTopicReply({
 
   return {
     id: p.id,
-    type: Type.group,
+    type: topicType,
     user: await fetchUserX(p.uid),
     createdAt: p.dateline,
     state: p.state,
@@ -321,4 +341,109 @@ function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.Group
   }
 
   return timestamp;
+}
+
+export async function handleTopicReply(
+  auth: IAuth,
+  topicType: Type,
+  topicID: number,
+  content: string,
+  replyTo: number,
+): Promise<IBasicReply> {
+  if (!Dam.allCharacterPrintable(content)) {
+    throw new BadRequestError('text contains invalid invisible character');
+  }
+
+  if (auth.permission.ban_post) {
+    throw new NotAllowedError('create reply');
+  }
+
+  const topic = await fetchTopicDetail(auth, topicType, topicID);
+  if (!topic) {
+    throw new NotFoundError(`topic ${topicID}`);
+  }
+  if (topic.state === CommentState.AdminCloseTopic) {
+    throw new NotAllowedError('reply to a closed topic');
+  }
+
+  const now = DateTime.now();
+
+  let parentID = 0;
+  let dstUserID = topic.creatorID;
+  if (replyTo) {
+    const parents: Record<number, IBaseReply> = Object.fromEntries(
+      topic.replies.flatMap((x): [number, IBaseReply][] => {
+        if (
+          [
+            CommentState.AdminCloseTopic,
+            CommentState.AdminReopen,
+            CommentState.AdminSilentTopic,
+          ].includes(x.state)
+        ) {
+          return [];
+        }
+        return [[x.id, x], ...x.replies.map((x): [number, IBaseReply] => [x.id, x])];
+      }),
+    );
+
+    const replied = parents[replyTo];
+
+    if (!replied) {
+      throw new NotFoundError(`parent post id ${replyTo}`);
+    }
+
+    dstUserID = replied.creatorID;
+    parentID = replied.repliedTo || replied.id;
+  }
+
+  if (topicType === Type.group) {
+    const group = await GroupRepo.findOneOrFail({
+      where: { id: topic.parentID },
+    });
+
+    if (!group.accessible && !(await orm.isMemberInGroup(group.id, auth.userID))) {
+      throw new NotJoinPrivateGroupError(group.name);
+    }
+  }
+
+  const t = await createTopicReply({
+    topicType,
+    topicID,
+    userID: auth.userID,
+    content,
+    parentID,
+  });
+
+  let notifyType;
+  switch (topicType) {
+    case Type.group: {
+      notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
+      break;
+    }
+    case Type.subject: {
+      notifyType = replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
+      break;
+    }
+    default: {
+      throw new Error('unsupported topic type');
+    }
+  }
+
+  await Notify.create({
+    destUserID: dstUserID,
+    sourceUserID: auth.userID,
+    now,
+    type: notifyType,
+    postID: t.id,
+    topicID: topic.id,
+    title: topic.title,
+  });
+
+  return {
+    id: t.id,
+    state: t.state,
+    createdAt: t.createdAt,
+    text: t.content,
+    creator: toResUser(t.user),
+  };
 }

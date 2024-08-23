@@ -3,14 +3,21 @@ import { Type as t } from '@sinclair/typebox';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config';
 import { Dam, dam } from '@app/lib/dam.ts';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import {
+  BadRequestError,
+  CaptchaError,
+  NotFoundError,
+  UnexpectedNotFoundError,
+} from '@app/lib/error.ts';
 import * as Like from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { Page } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm/index.ts';
 import { avatar, groupIcon } from '@app/lib/response.ts';
+import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import type { ITopic } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import {
@@ -21,7 +28,9 @@ import {
 } from '@app/lib/topic/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimiter } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const Group = t.Object(
@@ -122,8 +131,18 @@ const TopicBasic = t.Object(
   {
     title: t.String({ minLength: 1 }),
     text: t.String({ minLength: 1, description: 'bbcode' }),
+    'cf-turnstile-response': t.String({ minLength: 1 }),
   },
-  { $id: 'TopicCreation', examples: [{ title: 'topic title', content: 'topic content' }] },
+  {
+    $id: 'TopicCreation',
+    examples: [
+      {
+        title: 'topic title',
+        content: 'topic content',
+        'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+      },
+    ],
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -199,23 +218,23 @@ export async function setup(app: App) {
   app.addSchema(TopicDetail);
 
   app.get(
-    '/subjects/-/topics/:id',
+    '/subjects/-/topics/:topicID',
     {
       schema: {
         tags: [Tag.Subject],
         operationId: 'getSubjectTopicDetail',
         summary: '获取帖子列表',
         params: t.Object({
-          id: t.Integer({ examples: [1], minimum: 0 }),
+          topicID: t.Integer({ examples: [1], minimum: 0 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Ref(TopicDetail),
         },
       },
     },
-    async ({ auth, params: { id } }) => {
-      return await handleTopicDetail(auth, Type.subject, id);
+    async ({ auth, params: { topicID } }) => {
+      return await handleTopicDetail(auth, Type.subject, topicID);
     },
   );
 
@@ -360,7 +379,9 @@ export async function setup(app: App) {
             },
           }),
         },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
+      preHandler: [requireLogin('get a topics')],
     },
     async ({ params: { subjectID }, query, auth }) => {
       const subject = await orm.fetchSubjectByID(subjectID);
@@ -505,53 +526,72 @@ export async function setup(app: App) {
     },
   );
 
-  // app.post(
-  //   '/subjects/:subjectID/topics',
-  //   {
-  //     schema: {
-  //       summary: '创建条目讨论版',
-  //       tags: [Tag.Subject],
-  //       operationId: 'createNewSubjectTopic',
-  //       params: t.Object({
-  //         subjectID: t.Integer({ examples: [114514], minimum: 0 }),
-  //       }),
-  //       response: {
-  //         200: t.Object({
-  //           id: t.Integer({ description: 'new topic id' }),
-  //         }),
-  //       },
-  //       security: [{ [Security.CookiesSession]: [] }],
-  //       body: t.Ref(TopicBasic),
-  //     },
-  //     preHandler: [requireLogin('creating a topic')],
-  //   },
-  //   async ({ auth, body: { text, title }, params: { subjectID } }) => {
-  //     if (auth.permission.ban_post) {
-  //       throw new NotAllowedError('create topic');
-  //     }
+  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
 
-  //     const subject = await orm.fetchSubject(subjectID);
-  //     if (!subject) {
-  //       throw new NotFoundError(`subject ${subjectID}`);
-  //     }
+  app.post(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '创建条目讨论版',
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
 
-  //     let display = TopicDisplay.Normal;
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-  //     if (dam.needReview(title) || dam.needReview(text)) {
-  //       display = TopicDisplay.Review;
-  //     }
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
+        tags: [Tag.Subject],
+        operationId: 'createNewSubjectTopic',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+        }),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new topic id' }),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Ref(TopicBasic),
+      },
+      preHandler: [requireLogin('creating a topic'), rateLimiter(LimitAction.Subject)],
+    },
+    async ({
+      auth,
+      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      params: { subjectID },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
 
-  //     return await orm.createPost({
-  //       title,
-  //       content: text,
-  //       display,
-  //       userID: auth.userID,
-  //       parentID: subject.id,
-  //       state: Topic.CommentState.Normal,
-  //       topicType: 'subject',
-  //     });
-  //   },
-  // );
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create topic');
+      }
+
+      const subject = await orm.fetchSubjectByID(subjectID);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      let display = TopicDisplay.Normal;
+
+      if (dam.needReview(title) || dam.needReview(text)) {
+        display = TopicDisplay.Review;
+      }
+
+      return await orm.createPost({
+        title,
+        content: text,
+        display,
+        userID: auth.userID,
+        parentID: subject.id,
+        state: Topic.CommentState.Normal,
+        topicType: 'subject',
+      });
+    },
+  );
 
   app.put(
     '/subjects/-/topics/:topicID',
@@ -570,7 +610,7 @@ export async function setup(app: App) {
             'x-examples': formatErrors(NotAllowedError('edit a topic')),
           }),
         },
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Ref(TopicBasic),
       },
       preHandler: [requireLogin('edit a topic')],
@@ -622,10 +662,10 @@ export async function setup(app: App) {
 
       await orm.SubjectTopicRepo.update({ id: topicID }, { title, display });
 
-      const topicPost = await orm.GroupPostRepo.findOneBy({ topicID });
+      const topicPost = await orm.SubjectPostRepo.findOneBy({ topicID });
 
       if (topicPost) {
-        await orm.GroupPostRepo.update({ id: topicPost.id }, { content: text });
+        await orm.SubjectPostRepo.update({ id: topicPost.id }, { content: text });
       }
 
       return {};

@@ -30,15 +30,24 @@ beforeEach(async () => {
       content: 'before-test',
     },
   );
+  await orm.SubjectPostRepo.update(
+    {
+      id: 3,
+    },
+    {
+      state: 0,
+      content: 'before-test',
+    },
+  );
 });
 
-describe('get post', () => {
+describe('get group post', () => {
   test('ok', async () => {
     const app = createTestServer({
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 287622,
+        userID: 2,
       },
     });
 
@@ -78,7 +87,59 @@ describe('get post', () => {
   });
 });
 
-describe('edit post', () => {
+describe('get subject post', () => {
+  test('ok', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 2,
+      },
+    });
+
+    await app.register(setup);
+
+    const res = await app.inject({ method: 'get', url: '/subjects/-/posts/3' });
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "createdAt": 1216021295,
+        "creator": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "id": 2,
+          "nickname": "nickname 2",
+          "sign": "sing 2",
+          "user_group": 11,
+          "username": "2",
+        },
+        "id": 3,
+        "state": 0,
+        "text": "before-test",
+        "topicID": 1,
+        "topicTitle": "拿这个来测试",
+      }
+    `);
+  });
+
+  test('not found', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 2,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({ method: 'get', url: '/subjects/-/posts/114514' });
+    expect(res.statusCode).toBe(404);
+  });
+});
+
+describe('edit group post', () => {
   test('should edit post', async () => {
     const app = createTestServer({
       auth: {
@@ -162,6 +223,61 @@ describe('edit post', () => {
   });
 });
 
+describe('edit subject post', () => {
+  test('should edit post', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 2,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/subjects/-/posts/3',
+      method: 'put',
+      payload: { text: 'new content' },
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    const pst = await orm.SubjectPostRepo.findOneBy({
+      id: 3,
+    });
+
+    expect(pst?.content).toBe('new content');
+  });
+
+  test('should not edit post', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 2 + 1,
+      },
+    });
+
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/subjects/-/posts/3',
+      method: 'put',
+      payload: { text: 'new new content' },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "NOT_ALLOWED",
+        "error": "Unauthorized",
+        "message": "you don't have permission to edit reply not created by you",
+        "statusCode": 401,
+      }
+    `);
+    expect(res.statusCode).toBe(401);
+  });
+});
+
 describe('create group post reply', () => {
   const createTopicReply = vi.fn().mockResolvedValue({
     id: 6,
@@ -219,7 +335,7 @@ describe('create group post reply', () => {
         permission: {},
         allowNsfw: true,
         regTime: 0,
-        userID: 100,
+        userID: 1,
       },
     });
 
@@ -230,6 +346,7 @@ describe('create group post reply', () => {
       method: 'post',
       payload: {
         content: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -240,15 +357,14 @@ describe('create group post reply', () => {
           medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
           small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
         },
-        id: 9,
-        nickname: 'n',
-        sign: '',
-        user_group: 10,
-        username: 'u',
+        id: 1,
+        nickname: 'nickname 1',
+        sign: 'sing 1',
+        user_group: 0,
+        username: '1',
       },
-      id: 6,
       state: 0,
-      text: '',
+      text: 'post contents',
     });
     expect(res.statusCode).toBe(200);
     expect(notifyMock).toHaveBeenCalledOnce();
@@ -281,11 +397,12 @@ describe('create group post reply', () => {
       method: 'post',
       payload: {
         content: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
     expect(res.statusCode).toBe(401);
-    expect(createTopicReply).toBeCalledTimes(1);
+    expect(createTopicReply).toBeCalledTimes(0);
   });
 
   test('should not create on non-existing topic', async () => {
@@ -307,6 +424,7 @@ describe('create group post reply', () => {
       method: 'post',
       payload: {
         content: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -334,6 +452,7 @@ describe('create group post reply', () => {
       payload: {
         content: 'post contents',
         replyTo: 11,
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -349,7 +468,7 @@ async function testServer(...arg: Parameters<typeof createTestServer>) {
   return app;
 }
 
-describe('delete post', () => {
+describe('delete group post', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -383,6 +502,46 @@ describe('delete post', () => {
   test('not allowed wrong user', async () => {
     const app = await testServer({ auth: { login: true, userID: 1122 } });
     const res = await app.inject({ url: '/groups/-/posts/2177420', method: 'delete' });
+
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(401);
+  });
+});
+
+describe('delete subject post', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  test('not found', async () => {
+    const app = await testServer({ auth: { login: true, userID: 2 } });
+    const res = await app.inject({
+      url: '/subjects/-/posts/114514',
+      method: 'delete',
+    });
+
+    expect(res.statusCode).toBe(404);
+  });
+
+  test('ok', async () => {
+    const app = await testServer({ auth: { login: true, userID: 2 } });
+
+    const res = await app.inject({ method: 'delete', url: '/subjects/-/posts/3' });
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(200);
+  });
+
+  test('not allowed not login', async () => {
+    const app = await testServer();
+    const res = await app.inject({ url: '/subjects/-/posts/3', method: 'delete' });
+
+    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('not allowed wrong user', async () => {
+    const app = await testServer({ auth: { login: true, userID: 1122 } });
+    const res = await app.inject({ url: '/subjects/-/posts/3', method: 'delete' });
 
     expect(res.json()).toMatchSnapshot();
     expect(res.statusCode).toBe(401);

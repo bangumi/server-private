@@ -11,7 +11,7 @@ Object {
 
 exports[`group topics > should fetch topic details 1`] = `
 Object {
-  "createdAt": 1657885648,
+  "createdAt": 1680273073,
   "creator": Object {
     "avatar": Object {
       "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -24,7 +24,7 @@ Object {
     "user_group": 0,
     "username": "287622",
   },
-  "id": 371602,
+  "id": 379821,
   "parent": Object {
     "createdAt": 1531631310,
     "description": "[s]非[/s]官方沙盒",
@@ -35,10 +35,46 @@ Object {
     "title": "沙盒",
     "totalMembers": 3,
   },
-  "reactions": Array [],
+  "reactions": Array [
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 54,
+    },
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 68,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 92,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 122,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 128,
+    },
+    Object {
+      "selected": false,
+      "total": 2,
+      "value": 132,
+    },
+    Object {
+      "selected": false,
+      "total": 1,
+      "value": 137,
+    },
+  ],
   "replies": Array [
     Object {
-      "createdAt": 1658030918,
+      "createdAt": 1680273078,
       "creator": Object {
         "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -51,117 +87,43 @@ Object {
         "user_group": 0,
         "username": "287622",
       },
-      "id": 2056216,
+      "id": 2288669,
       "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 6,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662276469,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      "reactions": Array [
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 68,
         },
-        "id": 287622,
-        "nickname": "nickname 287622",
-        "sign": "sing 287622",
-        "user_group": 0,
-        "username": "287622",
-      },
-      "id": 2092004,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 7,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282514,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 85,
         },
-        "id": 1,
-        "nickname": "nickname 1",
-        "sign": "sing 1",
-        "user_group": 0,
-        "username": "1",
-      },
-      "id": 2092065,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 5,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282518,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 90,
         },
-        "id": 1,
-        "nickname": "nickname 1",
-        "sign": "sing 1",
-        "user_group": 0,
-        "username": "1",
-      },
-      "id": 2092066,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 1,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282523,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 92,
         },
-        "id": 1,
-        "nickname": "nickname 1",
-        "sign": "sing 1",
-        "user_group": 0,
-        "username": "1",
-      },
-      "id": 2092067,
-      "isFriend": false,
-      "reactions": Array [],
-      "replies": Array [],
-      "state": 2,
-      "text": "",
-    },
-    Object {
-      "createdAt": 1662282554,
-      "creator": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 122,
         },
-        "id": 287622,
-        "nickname": "nickname 287622",
-        "sign": "sing 287622",
-        "user_group": 0,
-        "username": "287622",
-      },
-      "id": 2092069,
-      "isFriend": false,
-      "reactions": Array [],
+        Object {
+          "selected": false,
+          "total": 1,
+          "value": 132,
+        },
+      ],
       "replies": Array [
         Object {
-          "createdAt": 1662283112,
+          "createdAt": 1680273085,
           "creator": Object {
             "avatar": Object {
               "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -174,19 +136,170 @@ Object {
             "user_group": 0,
             "username": "287622",
           },
-          "id": 2092074,
+          "id": 2288670,
           "isFriend": false,
-          "reactions": Array [],
+          "reactions": Array [
+            Object {
+              "selected": false,
+              "total": 1,
+              "value": 60,
+            },
+            Object {
+              "selected": false,
+              "total": 2,
+              "value": 62,
+            },
+            Object {
+              "selected": false,
+              "total": 1,
+              "value": 122,
+            },
+            Object {
+              "selected": false,
+              "total": 1,
+              "value": 128,
+            },
+            Object {
+              "selected": false,
+              "total": 3,
+              "value": 137,
+            },
+          ],
           "state": 0,
-          "text": "sub",
+          "text": "bb",
         },
       ],
       "state": 0,
-      "text": "q",
+      "text": "11",
+    },
+    Object {
+      "createdAt": 1680275867,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 287622,
+        "nickname": "nickname 287622",
+        "sign": "sing 287622",
+        "user_group": 0,
+        "username": "287622",
+      },
+      "id": 2288733,
+      "isFriend": false,
+      "reactions": Array [],
+      "replies": Array [],
+      "state": 0,
+      "text": "no reactions in this post",
     },
   ],
-  "state": 2,
-  "text": "tt",
-  "title": "tes",
+  "state": 0,
+  "text": "t",
+  "title": "reaction",
+}
+`;
+
+exports[`subject topics > should failed on not found subject 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "subject 114514 not found",
+  "statusCode": 404,
+}
+`;
+
+exports[`subject topics > should fetch topic details 1`] = `
+Object {
+  "createdAt": 1216022809,
+  "creator": Object {
+    "avatar": Object {
+      "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+      "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+      "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+    },
+    "id": 2,
+    "nickname": "nickname 2",
+    "sign": "sing 2",
+    "user_group": 11,
+    "username": "2",
+  },
+  "id": 3,
+  "parent": Object {
+    "date": "2008-07-17",
+    "id": 4,
+    "image": "a8/7f/4_cMMK5.jpg",
+    "infobox": "{{Infobox Game
+|中文名= 合金弹头7
+|别名={
+[Metal Slug 7]
+}
+|平台= NDS
+|游戏类型= ACT
+|游戏引擎= 
+|游玩人数= 1人
+|发行日期= 2008-07-17
+|售价= 5040円
+|website= 
+|开发= SNKプレイモア
+|发行= SNKプレイモア
+}}",
+    "locked": false,
+    "name": "メタルスラッグ7",
+    "nsfw": false,
+    "platform": 5,
+    "redirect": 0,
+    "summary": "　　以细腻的画风、搞笑的动作和刺激的战斗被人们所熟知的“合金弹头系列”在NDS 平台推出正统续作！虽然本系列的前几部作品最早都是作为街机游戏而推出的，不过这一次的“7”不但先推出NDS版，而且是独占！日前SNK playmore宣布了这款游戏，目前发售日定为2008年3月。据称，本作中将搭载任务模式，在关卡中不断完成教官所下达的任务，提升军衔。
+　　游戏依然保持了系列一贯的风格，战斗的场面也没有因为是掌机游戏而进行削减，游戏依然是射击、跳跃和手雷三个按键，虽然是NDS游戏，不过本作却并不对应触摸屏，游戏的画面显示在上屏幕，而下屏幕则用来显示地图。在TGS 2007（Tokyo Game Show）大会上SNK放出了《合金弹头7》的试玩版。这代产品沿袭了前代风格，战斗的对象似乎也没有多大变化，没有分支路线，不过游戏性和关卡设计却不比前几代差，关卡数也有7关，另外还增加了一种武器。",
+    "typeID": 4,
+  },
+  "reactions": Array [],
+  "replies": Array [
+    Object {
+      "createdAt": 1216023735,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 1,
+        "nickname": "nickname 1",
+        "sign": "sing 1",
+        "user_group": 0,
+        "username": "1",
+      },
+      "id": 6,
+      "isFriend": false,
+      "reactions": Array [],
+      "replies": Array [],
+      "state": 0,
+      "text": "NDS被别人借走了……",
+    },
+    Object {
+      "createdAt": 1217552145,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 101,
+        "nickname": "nickname 101",
+        "sign": "sing 101",
+        "user_group": 0,
+        "username": "101",
+      },
+      "id": 38,
+      "isFriend": false,
+      "reactions": Array [],
+      "replies": Array [],
+      "state": 0,
+      "text": "里层众占领了这里",
+    },
+  ],
+  "state": 0,
+  "text": "new contents 2",
+  "title": "new topic title 2",
 }
 `;
