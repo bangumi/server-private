@@ -530,6 +530,10 @@ export async function setup(app: App) {
       preHandler: [requireLogin('creating a topic'), rateLimiter(LimitAction.Subject)],
     },
     async ({ auth, body: { text, title }, params: { subjectID } }) => {
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create topic');
       }

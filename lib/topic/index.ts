@@ -4,7 +4,13 @@ import type { Repository } from 'typeorm';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
-import { NotFoundError, UnexpectedNotFoundError, UnimplementedError } from '@app/lib/error.ts';
+import { Dam } from '@app/lib/dam.ts';
+import {
+  BadRequestError,
+  NotFoundError,
+  UnexpectedNotFoundError,
+  UnimplementedError,
+} from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity/index.ts';
@@ -344,6 +350,10 @@ export async function handleTopicReply(
   content: string,
   replyTo: number,
 ): Promise<IBasicReply> {
+  if (!Dam.allCharacterPrintable(content)) {
+    throw new BadRequestError('text contains invalid invisible character');
+  }
+
   if (auth.permission.ban_post) {
     throw new NotAllowedError('create reply');
   }

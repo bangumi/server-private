@@ -249,6 +249,10 @@ export async function setup(app: App) {
       body: { content, replyTo = 0 },
       params: { episodeID },
     }): Promise<Static<typeof BasicReply>> => {
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create comment');
       }
