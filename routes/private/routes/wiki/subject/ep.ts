@@ -83,13 +83,13 @@ export async function setup(app: App) {
 
       return {
         id: ep.id,
-        name: ep.name,
-        nameCN: ep.nameCN,
+        name: decodeURIComponent(ep.name),
+        nameCN: decodeURIComponent(ep.nameCN),
         ep: ep.sort,
         date: ep.airDate,
         type: 0,
         duration: ep.duration,
-        summary: ep.summary,
+        summary: decodeURIComponent(ep.summary),
       };
     },
   );
@@ -171,9 +171,17 @@ export async function setup(app: App) {
         ep.duration = formatDuration(duration);
       }
 
-      ep.name = body.name ?? ep.name;
-      ep.nameCN = body.nameCN ?? ep.nameCN;
-      ep.summary = body.summary ?? ep.summary;
+      if (body.name !== undefined) {
+        ep.name = encodeURIComponent(body.name);
+      }
+
+      if (body.nameCN !== undefined) {
+        ep.nameCN = encodeURIComponent(body.nameCN);
+      }
+
+      if (body.summary !== undefined) {
+        ep.summary = encodeURIComponent(body.summary);
+      }
 
       const now = new Date();
 
