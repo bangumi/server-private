@@ -4,9 +4,11 @@ import type { Repository } from 'typeorm';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config.ts';
 import { Dam } from '@app/lib/dam.ts';
 import {
   BadRequestError,
+  CaptchaError,
   NotFoundError,
   UnexpectedNotFoundError,
   UnimplementedError,
@@ -24,6 +26,7 @@ import {
   SubjectPostRepo,
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
+import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
 import { toResUser } from '@app/lib/types/res.ts';
 import type { IBasicReply } from '@app/routes/private/routes/post.ts';
@@ -343,13 +346,20 @@ function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.Group
   return timestamp;
 }
 
+const turnstile = createTurnstileDriver(config.turnstile.secretKey);
+
 export async function handleTopicReply(
+  cfCaptchaResponse: string,
   auth: IAuth,
   topicType: Type,
   topicID: number,
   content: string,
   replyTo: number,
 ): Promise<IBasicReply> {
+  if (!(await turnstile.verify(cfCaptchaResponse))) {
+    throw new CaptchaError();
+  }
+
   if (!Dam.allCharacterPrintable(content)) {
     throw new BadRequestError('text contains invalid invisible character');
   }

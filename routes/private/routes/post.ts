@@ -4,13 +4,15 @@ import { DateTime } from 'luxon';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config';
 import { Dam } from '@app/lib/dam.ts';
-import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
+import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { entity } from '@app/lib/orm/index.ts';
 import { EpisodeCommentRepo, EpisodeRepo, fetchUser, fetchUserX } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response';
+import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import {
   CommentState,
   handleTopicReply,
@@ -200,12 +202,19 @@ export async function setup(app: App) {
     },
   );
 
+  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
+
   app.post(
     '/subjects/-/episode/:episodeID/comments',
     {
       schema: {
         summary: '创建条目的剧集吐槽',
         operationId: 'createSubjectEpComment',
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
@@ -224,13 +233,18 @@ export async function setup(app: App) {
               }),
             ),
             content: t.String({ minLength: 1 }),
+            'cf-turnstile-response': t.String({ minLength: 1 }),
           },
           {
             examples: [
-              { content: 'comment contents' },
+              {
+                content: 'comment contents',
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
               {
                 content: 'comment contents',
                 replyTo: 2,
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
               },
             ],
           },
@@ -246,9 +260,13 @@ export async function setup(app: App) {
      */
     async ({
       auth,
-      body: { content, replyTo = 0 },
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { episodeID },
     }): Promise<Static<typeof BasicReply>> => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+
       if (!Dam.allCharacterPrintable(content)) {
         throw new BadRequestError('text contains invalid invisible character');
       }
@@ -564,13 +582,18 @@ export async function setup(app: App) {
               }),
             ),
             content: t.String({ minLength: 1 }),
+            'cf-turnstile-response': t.String({ minLength: 1 }),
           },
           {
             examples: [
-              { content: 'post contents' },
+              {
+                content: 'post contents',
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
               {
                 content: 'post contents',
                 replyTo: 2,
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
               },
             ],
           },
@@ -586,10 +609,17 @@ export async function setup(app: App) {
      */
     async ({
       auth,
-      body: { content, replyTo = 0 },
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
-      return await handleTopicReply(auth, Topic.Type.group, topicID, content, replyTo);
+      return await handleTopicReply(
+        cfCaptchaResponse,
+        auth,
+        Topic.Type.group,
+        topicID,
+        content,
+        replyTo,
+      );
     },
   );
 
@@ -599,6 +629,11 @@ export async function setup(app: App) {
       schema: {
         summary: '创建条目讨论版回复',
         operationId: 'createSubjectReply',
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         params: t.Object({
           topicID: t.Integer({ examples: [371602] }),
         }),
@@ -620,13 +655,18 @@ export async function setup(app: App) {
               }),
             ),
             content: t.String({ minLength: 1 }),
+            'cf-turnstile-response': t.String({ minLength: 1 }),
           },
           {
             examples: [
-              { content: 'post contents' },
+              {
+                content: 'post contents',
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+              },
               {
                 content: 'post contents',
                 replyTo: 2,
+                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
               },
             ],
           },
@@ -642,10 +682,17 @@ export async function setup(app: App) {
      */
     async ({
       auth,
-      body: { content, replyTo = 0 },
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
-      return await handleTopicReply(auth, Topic.Type.subject, topicID, content, replyTo);
+      return await handleTopicReply(
+        cfCaptchaResponse,
+        auth,
+        Topic.Type.subject,
+        topicID,
+        content,
+        replyTo,
+      );
     },
   );
 

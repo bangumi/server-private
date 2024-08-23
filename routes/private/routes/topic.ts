@@ -3,14 +3,21 @@ import { Type as t } from '@sinclair/typebox';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config';
 import { Dam, dam } from '@app/lib/dam.ts';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import {
+  BadRequestError,
+  CaptchaError,
+  NotFoundError,
+  UnexpectedNotFoundError,
+} from '@app/lib/error.ts';
 import * as Like from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { Page } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm/index.ts';
 import { avatar, groupIcon } from '@app/lib/response.ts';
+import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import type { ITopic } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import {
@@ -124,8 +131,18 @@ const TopicBasic = t.Object(
   {
     title: t.String({ minLength: 1 }),
     text: t.String({ minLength: 1, description: 'bbcode' }),
+    'cf-turnstile-response': t.String({ minLength: 1 }),
   },
-  { $id: 'TopicCreation', examples: [{ title: 'topic title', content: 'topic content' }] },
+  {
+    $id: 'TopicCreation',
+    examples: [
+      {
+        title: 'topic title',
+        content: 'topic content',
+        'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+      },
+    ],
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -509,11 +526,18 @@ export async function setup(app: App) {
     },
   );
 
+  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
+
   app.post(
     '/subjects/:subjectID/topics',
     {
       schema: {
         summary: '创建条目讨论版',
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         tags: [Tag.Subject],
         operationId: 'createNewSubjectTopic',
         params: t.Object({
@@ -529,7 +553,15 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a topic'), rateLimiter(LimitAction.Subject)],
     },
-    async ({ auth, body: { text, title }, params: { subjectID } }) => {
+    async ({
+      auth,
+      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      params: { subjectID },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+
       if (!Dam.allCharacterPrintable(text)) {
         throw new BadRequestError('text contains invalid invisible character');
       }
