@@ -171,6 +171,10 @@ export async function setup(app: App) {
         ep.duration = formatDuration(duration);
       }
 
+      ep.name = body.name ?? ep.name;
+      ep.nameCN = body.nameCN ?? ep.nameCN;
+      ep.summary = body.summary ?? ep.summary;
+
       const now = new Date();
 
       await AppDataSource.transaction(async (t) => {
@@ -178,10 +182,10 @@ export async function setup(app: App) {
           episodeID,
           rev: {
             ep_airdate: ep.airDate,
-            ep_desc: body.summary ?? ep.summary,
+            ep_desc: ep.summary,
             ep_duration: ep.duration,
-            ep_name: body.name ?? ep.name,
-            ep_name_cn: body.nameCN ?? ep.nameCN,
+            ep_name: ep.name,
+            ep_name_cn: ep.nameCN,
             ep_sort: '0',
             ep_type: '0',
           },
