@@ -1,5 +1,6 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import * as lo from 'lodash-es';
 
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -83,13 +84,13 @@ export async function setup(app: App) {
 
       return {
         id: ep.id,
-        name: decodeURIComponent(ep.name),
-        nameCN: decodeURIComponent(ep.nameCN),
+        name: lo.unescape(ep.name),
+        nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,
         date: ep.airDate,
         type: 0,
         duration: ep.duration,
-        summary: decodeURIComponent(ep.summary),
+        summary: lo.unescape(ep.summary),
       };
     },
   );
@@ -172,15 +173,15 @@ export async function setup(app: App) {
       }
 
       if (body.name !== undefined) {
-        ep.name = encodeURIComponent(body.name);
+        ep.name = lo.escape(body.name);
       }
 
       if (body.nameCN !== undefined) {
-        ep.nameCN = encodeURIComponent(body.nameCN);
+        ep.nameCN = lo.escape(body.nameCN);
       }
 
       if (body.summary !== undefined) {
-        ep.summary = encodeURIComponent(body.summary);
+        ep.summary = lo.escape(body.summary);
       }
 
       const now = new Date();
