@@ -90,7 +90,7 @@ export async function setup(app: App) {
         date: ep.airDate,
         type: 0,
         duration: ep.duration,
-        summary: lo.unescape(ep.summary),
+        summary: ep.summary,
       };
     },
   );
@@ -181,7 +181,7 @@ export async function setup(app: App) {
       }
 
       if (body.summary !== undefined) {
-        ep.summary = lo.escape(body.summary);
+        ep.summary = body.summary;
       }
 
       const now = new Date();
