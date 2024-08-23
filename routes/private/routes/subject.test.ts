@@ -61,7 +61,7 @@ describe('create ep comment', () => {
     const res = await app.inject({
       url: '/subjects/-/episode/1075440/comments',
       method: 'post',
-      payload: { content: '114514' },
+      payload: { content: '114514', 'cf-turnstile-response': 'fake-response' },
     });
     expect(res.statusCode).toBe(401);
   });
@@ -78,7 +78,7 @@ describe('create ep comment', () => {
     const res = await app.inject({
       url: '/subjects/-/episode/1075440/comments',
       method: 'post',
-      payload: { content: '114514' },
+      payload: { content: '114514', 'cf-turnstile-response': 'fake-response' },
     });
     const pst = await orm.EpisodeCommentRepo.findOneBy({
       id: res.json().id,

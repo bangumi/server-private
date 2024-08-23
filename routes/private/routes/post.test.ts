@@ -346,6 +346,7 @@ describe('create group post reply', () => {
       method: 'post',
       payload: {
         content: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -396,6 +397,7 @@ describe('create group post reply', () => {
       method: 'post',
       payload: {
         content: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -422,6 +424,7 @@ describe('create group post reply', () => {
       method: 'post',
       payload: {
         content: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -449,6 +452,7 @@ describe('create group post reply', () => {
       payload: {
         content: 'post contents',
         replyTo: 11,
+        'cf-turnstile-response': 'fake-response',
       },
     });
 

@@ -612,14 +612,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
-      return await handleTopicReply(
-        cfCaptchaResponse,
-        auth,
-        Topic.Type.group,
-        topicID,
-        content,
-        replyTo,
-      );
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+      return await handleTopicReply(auth, Topic.Type.group, topicID, content, replyTo);
     },
   );
 
@@ -685,14 +681,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
     }): Promise<Static<typeof BasicReply>> => {
-      return await handleTopicReply(
-        cfCaptchaResponse,
-        auth,
-        Topic.Type.subject,
-        topicID,
-        content,
-        replyTo,
-      );
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+      return await handleTopicReply(auth, Topic.Type.subject, topicID, content, replyTo);
     },
   );
 

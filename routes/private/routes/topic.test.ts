@@ -188,6 +188,7 @@ describe('create group post', () => {
       payload: {
         title: 'post title',
         text: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -220,6 +221,7 @@ describe('create group post', () => {
       payload: {
         title: 'post title',
         text: 'post contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -247,6 +249,7 @@ describe('edit group topic', () => {
         payload: {
           title: 'new topic title',
           text: 'new contents',
+          'cf-turnstile-response': 'fake-response',
         },
       });
 
@@ -265,6 +268,7 @@ describe('edit group topic', () => {
         payload: {
           title: 'new topic title 2',
           text: 'new contents 2',
+          'cf-turnstile-response': 'fake-response',
         },
       });
 
@@ -294,6 +298,7 @@ describe('edit group topic', () => {
       payload: {
         title: 'new topic title',
         text: 'new contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
@@ -328,6 +333,7 @@ describe('edit subjec topic', () => {
         payload: {
           title: 'new topic title',
           text: 'new contents',
+          'cf-turnstile-response': 'fake-response',
         },
       });
 
@@ -346,6 +352,7 @@ describe('edit subjec topic', () => {
         payload: {
           title: 'new topic title 2',
           text: 'new contents 2',
+          'cf-turnstile-response': 'fake-response',
         },
       });
 
@@ -375,6 +382,7 @@ describe('edit subjec topic', () => {
       payload: {
         title: 'new topic title',
         text: 'new contents',
+        'cf-turnstile-response': 'fake-response',
       },
     });
 
