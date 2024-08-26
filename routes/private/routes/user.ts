@@ -140,17 +140,21 @@ export async function setup(app: App) {
         tags: [Tag.User],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: t.Array(t.Integer()),
+          200: t.Object({
+            blocklist: t.Array(t.Integer()),
+          }),
         },
       },
       preHandler: [requireLogin('get blocklist')],
     },
     async ({ auth: { userID } }) => {
       const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
-      return f.blocklist
-        .split(',')
-        .map((x) => x.trim())
-        .map((x) => intval(x));
+      return {
+        blocklist: f.blocklist
+          .split(',')
+          .map((x) => x.trim())
+          .map((x) => intval(x)),
+      };
     },
   );
 
@@ -166,12 +170,14 @@ export async function setup(app: App) {
           id: t.Integer(),
         }),
         response: {
-          200: t.Array(t.Integer()),
+          200: t.Object({
+            blocklist: t.Array(t.Integer()),
+          }),
         },
       },
       preHandler: [requireLogin('add to blocklist')],
     },
-    async ({ auth: { userID }, body: { id } }): Promise<number[]> => {
+    async ({ auth: { userID }, body: { id } }) => {
       const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
       const blocklist = f.blocklist.split(',').map((x) => intval(x.trim()));
       if (!blocklist.includes(id)) {
@@ -179,7 +185,7 @@ export async function setup(app: App) {
       }
       f.blocklist = blocklist.join(',');
       await UserFieldRepo.save(f);
-      return blocklist;
+      return { blocklist: blocklist };
     },
   );
 
@@ -195,18 +201,20 @@ export async function setup(app: App) {
           id: t.Integer(),
         }),
         response: {
-          200: t.Array(t.Integer()),
+          200: t.Object({
+            blocklist: t.Array(t.Integer()),
+          }),
         },
       },
       preHandler: [requireLogin('remove from blocklist')],
     },
-    async ({ auth: { userID }, params: { id } }): Promise<number[]> => {
+    async ({ auth: { userID }, params: { id } }) => {
       const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
       let blocklist = f.blocklist.split(',').map((x) => intval(x.trim()));
       blocklist = blocklist.filter((v) => v !== id);
       f.blocklist = blocklist.join(',');
       await UserFieldRepo.save(f);
-      return blocklist;
+      return { blocklist: blocklist };
     },
   );
 
