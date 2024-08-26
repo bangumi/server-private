@@ -576,7 +576,10 @@ export async function fetchUserX(id: number): Promise<IUser> {
 }
 
 export async function fetchUserBlockList(id: number): Promise<number[]> {
-  const f = await UserFieldRepo.findOneOrFail({ where: { uid: id } });
+  const f = await UserFieldRepo.findOne({ where: { uid: id } });
+  if (!f || !f.blocklist) {
+    return [];
+  }
   return f.blocklist
     .split(',')
     .map((x) => x.trim())
