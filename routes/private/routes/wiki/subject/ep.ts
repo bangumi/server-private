@@ -1,5 +1,6 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import * as lo from 'lodash-es';
 
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -83,8 +84,8 @@ export async function setup(app: App) {
 
       return {
         id: ep.id,
-        name: ep.name,
-        nameCN: ep.nameCN,
+        name: lo.unescape(ep.name),
+        nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,
         date: ep.airDate,
         type: 0,
@@ -171,6 +172,18 @@ export async function setup(app: App) {
         ep.duration = formatDuration(duration);
       }
 
+      if (body.name !== undefined) {
+        ep.name = lo.escape(body.name);
+      }
+
+      if (body.nameCN !== undefined) {
+        ep.nameCN = lo.escape(body.nameCN);
+      }
+
+      if (body.summary !== undefined) {
+        ep.summary = body.summary;
+      }
+
       const now = new Date();
 
       await AppDataSource.transaction(async (t) => {
@@ -178,10 +191,10 @@ export async function setup(app: App) {
           episodeID,
           rev: {
             ep_airdate: ep.airDate,
-            ep_desc: body.summary ?? ep.summary,
+            ep_desc: ep.summary,
             ep_duration: ep.duration,
-            ep_name: body.name ?? ep.name,
-            ep_name_cn: body.nameCN ?? ep.nameCN,
+            ep_name: ep.name,
+            ep_name_cn: ep.nameCN,
             ep_sort: '0',
             ep_type: '0',
           },

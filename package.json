@@ -19,7 +19,7 @@
     "file": "node --no-warnings --import tsx/esm",
     "license-check": "license-checker --excludePrivatePackages --production --summary --onlyAllow=\"0BSD;Apache-2.0;BSD-2-Clause;BSD-3-Clause;ISC;MIT;Python-2.0;BlueOak-1.0.0\"",
     "e": "node --no-warnings -r dotenv/config --import tsx/esm",
-    "lint-staged": "lint-staged -q",
+    "lint-staged": "lint-staged",
     "prepare": "husky"
   },
   "dependencies": {
