@@ -127,6 +127,13 @@ export async function privateAPI(app: App) {
           type: 'http',
           scheme: 'Bearer',
           description: '使用 [demo](/demo/login) 登录后创建个人令牌',
+          bearerFormat: 'Bearer <token>',
+        },
+        [Security.OptionalHTTPBearer]: {
+          type: 'http',
+          scheme: 'Bearer',
+          description: '使用 [demo](/demo/login) 登录后创建个人令牌',
+          bearerFormat: 'Bearer <token>',
         },
       },
     },

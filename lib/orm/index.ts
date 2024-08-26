@@ -7,6 +7,7 @@ import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
 import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
+import { intval } from '@app/lib/utils/index.ts';
 
 import * as entity from './entity/index.ts';
 import {
@@ -572,6 +573,14 @@ export async function fetchUserX(id: number): Promise<IUser> {
   }
 
   return u;
+}
+
+export async function fetchUserBlockList(id: number): Promise<number[]> {
+  const f = await UserFieldRepo.findOneOrFail({ where: { uid: id } });
+  return f.blocklist
+    .split(',')
+    .map((x) => x.trim())
+    .map((x) => intval(x));
 }
 
 export { MoreThan as Gt, MoreThanOrEqual as Gte, In, Like } from 'typeorm';

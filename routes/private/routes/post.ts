@@ -1,6 +1,7 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
+import { In, Not } from 'typeorm';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
@@ -94,14 +95,19 @@ export async function setup(app: App) {
   app.addSchema(Reply);
 
   async function getPost(auth: IAuth, postID: number, type: Type) {
+    let blocklist: number[] = [];
+    if (auth.login) {
+      blocklist = await orm.fetchUserBlockList(auth.userID);
+    }
+
     let post: entity.GroupPost | entity.SubjectPost | null;
     switch (type) {
       case Type.group: {
-        post = await orm.GroupPostRepo.findOneBy({ id: postID });
+        post = await orm.GroupPostRepo.findOneBy({ id: postID, uid: Not(In(blocklist)) });
         break;
       }
       case Type.subject: {
-        post = await orm.SubjectPostRepo.findOneBy({ id: postID });
+        post = await orm.SubjectPostRepo.findOneBy({ id: postID, uid: Not(In(blocklist)) });
         break;
       }
       default: {
@@ -147,10 +153,18 @@ export async function setup(app: App) {
         response: {
           200: t.Array(EpisodeComment),
         },
+        security: [{ [Security.OptionalHTTPBearer]: [] }],
       },
     },
-    async ({ params: { episodeID } }): Promise<IEpisodeComment[]> => {
-      const comments = await EpisodeCommentRepo.find({ where: { epID: episodeID } });
+    async ({ auth, params: { episodeID } }): Promise<IEpisodeComment[]> => {
+      let blocklist: number[] = [];
+      if (auth.login) {
+        blocklist = await orm.fetchUserBlockList(auth.userID);
+      }
+
+      const comments = await EpisodeCommentRepo.find({
+        where: { epID: episodeID, creatorID: Not(In(blocklist)) },
+      });
       if (!comments) {
         throw new NotFoundError(`comments of ep id ${episodeID}`);
       }
@@ -886,10 +900,21 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Ref(SubjectInterestComment),
         },
+        security: [{ [Security.OptionalHTTPBearer]: [] }],
       },
     },
-    async ({ params: { subjectID }, query }): Promise<ISubjectInterestComment> => {
-      const where = { subjectID: subjectID, private: 0, hasComment: 1 };
+    async ({ auth, params: { subjectID }, query }): Promise<ISubjectInterestComment> => {
+      let blocklist: number[] = [];
+      if (auth.login) {
+        blocklist = await orm.fetchUserBlockList(auth.userID);
+      }
+
+      const where = {
+        subjectID: subjectID,
+        private: 0,
+        hasComment: 1,
+        uid: Not(In(blocklist)),
+      };
 
       const count = await orm.SubjectInterestRepo.count({ where });
       const comments = await orm.SubjectInterestRepo.find({

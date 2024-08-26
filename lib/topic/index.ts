@@ -1,6 +1,7 @@
 import { createError } from '@fastify/error';
 import { DateTime } from 'luxon';
 import type { Repository } from 'typeorm';
+import { In, Not } from 'typeorm';
 import type { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity.d.ts';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
@@ -93,14 +94,19 @@ export async function fetchTopicDetail(
   type: Type,
   id: number,
 ): Promise<ITopicDetails | null> {
+  let blocklist: number[] = [];
+  if (auth.login) {
+    blocklist = await orm.fetchUserBlockList(auth.userID);
+  }
+
   let topic: orm.entity.GroupTopic | orm.entity.SubjectTopic | null;
   switch (type) {
     case Type.group: {
-      topic = await GroupTopicRepo.findOne({ where: { id: id } });
+      topic = await GroupTopicRepo.findOne({ where: { id: id, creatorID: Not(In(blocklist)) } });
       break;
     }
     case Type.subject: {
-      topic = await SubjectTopicRepo.findOne({ where: { id: id } });
+      topic = await SubjectTopicRepo.findOne({ where: { id: id, creatorID: Not(In(blocklist)) } });
       break;
     }
     default: {
@@ -119,11 +125,13 @@ export async function fetchTopicDetail(
   let replies: orm.entity.GroupPost[] | orm.entity.SubjectPost[];
   switch (type) {
     case Type.group: {
-      replies = await GroupPostRepo.find({ where: { topicID: topic.id } });
+      replies = await GroupPostRepo.find({ where: { topicID: topic.id, uid: Not(In(blocklist)) } });
       break;
     }
     case Type.subject: {
-      replies = await SubjectPostRepo.find({ where: { topicID: topic.id } });
+      replies = await SubjectPostRepo.find({
+        where: { topicID: topic.id, uid: Not(In(blocklist)) },
+      });
       break;
     }
     default: {
@@ -198,9 +206,15 @@ export async function fetchTopicList(
   id: number,
   { limit = 30, offset = 0 }: Page,
 ): Promise<[number, ITopic[]]> {
+  let blocklist: number[] = [];
+  if (auth.login) {
+    blocklist = await orm.fetchUserBlockList(auth.userID);
+  }
+
   const where = {
     parentID: id,
     display: orm.In(ListTopicDisplays(auth)),
+    creatorID: Not(In(blocklist)),
   } as const;
 
   let total = 0;
