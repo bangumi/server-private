@@ -8,10 +8,12 @@ import { CookieKey } from '@app/lib/auth/session.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUsers } from '@app/lib/orm/index.ts';
+import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import { Paged, toResUser } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
+import { intval } from '@app/lib/utils';
+import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
 const NoticeRes = t.Object(
@@ -126,6 +128,85 @@ export async function setup(app: App) {
       }
 
       await Notify.markAllAsRead(userID, id);
+    },
+  );
+
+  app.get(
+    '/blocklist',
+    {
+      schema: {
+        summary: '获取绝交用户列表',
+        operationId: 'getBlocklist',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Array(t.Integer()),
+        },
+      },
+      preHandler: [requireLogin('get blocklist')],
+    },
+    async ({ auth: { userID } }) => {
+      const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
+      return f.blocklist
+        .split(',')
+        .map((x) => x.trim())
+        .map((x) => intval(x));
+    },
+  );
+
+  app.post(
+    '/blocklist',
+    {
+      schema: {
+        summary: '将用户添加到绝交列表',
+        operationId: 'addToBlocklist',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object({
+          id: t.Integer(),
+        }),
+        response: {
+          200: t.Array(t.Integer()),
+        },
+      },
+      preHandler: [requireLogin('add to blocklist')],
+    },
+    async ({ auth: { userID }, body: { id } }): Promise<number[]> => {
+      const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
+      const blocklist = f.blocklist.split(',').map((x) => intval(x.trim()));
+      if (!blocklist.includes(id)) {
+        blocklist.push(id);
+      }
+      f.blocklist = blocklist.join(',');
+      await UserFieldRepo.save(f);
+      return blocklist;
+    },
+  );
+
+  app.delete(
+    '/blocklist/:id',
+    {
+      schema: {
+        summary: '将用户从绝交列表移出',
+        operationId: 'removeFromBlocklist',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          id: t.Integer(),
+        }),
+        response: {
+          200: t.Array(t.Integer()),
+        },
+      },
+      preHandler: [requireLogin('remove from blocklist')],
+    },
+    async ({ auth: { userID }, params: { id } }): Promise<number[]> => {
+      const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
+      let blocklist = f.blocklist.split(',').map((x) => intval(x.trim()));
+      blocklist = blocklist.filter((v) => v !== id);
+      f.blocklist = blocklist.join(',');
+      await UserFieldRepo.save(f);
+      return blocklist;
     },
   );
 
