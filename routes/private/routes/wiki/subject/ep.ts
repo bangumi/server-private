@@ -9,7 +9,7 @@ import { pushRev } from '@app/lib/rev/ep.ts';
 import * as res from '@app/lib/types/res.ts';
 import { EpisodeType, formatErrors } from '@app/lib/types/res.ts';
 import type { EmptyObject } from '@app/lib/types/util.ts';
-import { formatDuration, parseDuration } from '@app/lib/utils/index.ts';
+import { parseDuration } from '@app/lib/utils/index.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -172,7 +172,7 @@ export async function setup(app: App) {
           );
         }
 
-        ep.duration = formatDuration(duration);
+        ep.duration = body.duration;
       }
 
       if (body.name !== undefined) {
