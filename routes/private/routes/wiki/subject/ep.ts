@@ -19,6 +19,7 @@ type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
 export const EpisodeWikiInfo = t.Object(
   {
     id: t.Integer(),
+    subjectID: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
     type: t.Enum(EpisodeType),
@@ -59,6 +60,7 @@ export async function setup(app: App) {
             examples: [
               {
                 id: 1148124,
+                subjectID: 65536,
                 name: 'キマリ×ト×ハジマリ',
                 nameCN: '结末×与×开始',
                 ep: 60,
@@ -84,6 +86,7 @@ export async function setup(app: App) {
 
       return {
         id: ep.id,
+        subjectID: ep.subjectID,
         name: lo.unescape(ep.name),
         nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,

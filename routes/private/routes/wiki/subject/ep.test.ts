@@ -24,6 +24,7 @@ describe('edit subject ', () => {
         "id": 8,
         "name": "蒼と白の境界線",
         "nameCN": "",
+        "subjectID": 15,
         "summary": "",
         "type": 0,
       }
