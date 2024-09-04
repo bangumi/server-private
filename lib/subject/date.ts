@@ -1,4 +1,4 @@
-import type { Wiki, WikiItem } from '@bgm38/wiki';
+import type { Wiki } from '@bgm38/wiki';
 
 import { SubjectType } from './type';
 
@@ -15,7 +15,7 @@ const keyConfig = {
 export function extractDate(w: Wiki, typeID: SubjectType): string {
   const keys = keyConfig[typeID] ?? defaultKeys;
 
-  const values: WikiItem[] = keys
+  const values = keys
     .map((key) => {
       return w.data.find((v) => v.key === key);
     })
