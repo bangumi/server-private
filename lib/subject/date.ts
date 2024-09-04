@@ -1,20 +1,37 @@
 import type { Wiki } from '@bgm38/wiki';
 
-const dateKeys = new Set(['放送开始', '发行日期', '开始']);
+import { SubjectType } from './type';
 
-export function extractDate(w: Wiki): string {
-  const v = w.data.find((v) => {
-    return dateKeys.has(v.key);
+const defaultKeys = new Set(['放送开始', '发行日期', '开始']);
+
+const keyConfig = {
+  [SubjectType.Book]: new Set(['发售日', '开始']),
+  [SubjectType.Anime]: defaultKeys,
+  [SubjectType.Music]: defaultKeys,
+  [SubjectType.Game]: defaultKeys,
+  [SubjectType.Real]: defaultKeys,
+};
+
+export function extractDate(w: Wiki, typeID: SubjectType): string {
+  const keys = keyConfig[typeID] ?? defaultKeys;
+
+  const values = w.data.filter((v) => {
+    return keys.has(v.key);
   });
 
-  if (v?.value) {
-    return extractFromString(v.value);
+  for (const item of values) {
+    if (item.value) {
+      const parsed = extractFromString(item.value);
+      if (parsed) {
+        return parsed;
+      }
+    }
   }
 
   return '0000-00-00';
 }
 
-export function extractFromString(s: string): string {
+export function extractFromString(s: string): string | undefined {
   let year, month, day;
 
   for (const pattern of simple_patterns) {
@@ -27,7 +44,7 @@ export function extractFromString(s: string): string {
   }
 
   if (!year || !month || !day) {
-    return '0000-00-00';
+    return;
   }
 
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
