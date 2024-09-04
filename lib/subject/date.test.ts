@@ -29,7 +29,7 @@ test.each([
 |结束= 2021-06-02
 }}`),
     SubjectType.Book,
-    '2021-04-16',
+    '2024-02-24',
   ],
   [
     parse(`{{Infobox animanga/Novel

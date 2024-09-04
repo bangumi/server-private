@@ -1,11 +1,11 @@
-import type { Wiki } from '@bgm38/wiki';
+import type { Wiki, WikiItem } from '@bgm38/wiki';
 
 import { SubjectType } from './type';
 
-const defaultKeys = new Set(['放送开始', '发行日期', '开始']);
+const defaultKeys = Object.freeze(['放送开始', '发行日期', '开始']);
 
 const keyConfig = {
-  [SubjectType.Book]: new Set(['发售日', '开始']),
+  [SubjectType.Book]: Object.freeze(['发售日', '开始']),
   [SubjectType.Anime]: defaultKeys,
   [SubjectType.Music]: defaultKeys,
   [SubjectType.Game]: defaultKeys,
@@ -15,9 +15,11 @@ const keyConfig = {
 export function extractDate(w: Wiki, typeID: SubjectType): string {
   const keys = keyConfig[typeID] ?? defaultKeys;
 
-  const values = w.data.filter((v) => {
-    return keys.has(v.key);
-  });
+  const values: WikiItem[] = keys
+    .map((key) => {
+      return w.data.find((v) => v.key === key);
+    })
+    .filter((v) => v !== undefined);
 
   for (const item of values) {
     if (item.value) {
