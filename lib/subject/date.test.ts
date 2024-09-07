@@ -4,23 +4,25 @@ import { expect, test } from 'vitest';
 
 import { extractDate, extractFromString } from '@app/lib/subject/date.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
+import { DATE } from '@app/lib/utils/date.ts';
 
 test.each([
   ['', undefined],
-  ['2020年1月3日', '2020-01-03'],
-  ['2017-12-22(2018年1月5日・12日合併号)', '2017-12-22'],
+  ['2020年1月3日', DATE.parse('2020-01-03')],
+  ['2017-12-22(2018年1月5日・12日合併号)', DATE.parse('2017-12-22')],
+  ['2025年', new DATE(2025)],
 ])('extractFromString(%s) -> %s', (input, expected) => {
-  expect(extractFromString(input)).toBe(expected);
+  expect(extractFromString(input)).toEqual(expected);
 });
 
 test.each([
-  [parse(`{{Infobox}}`), SubjectType.Book, '0000-00-00'],
+  [parse(`{{Infobox}}`), SubjectType.Book, new DATE(0)],
   [
     parse(`{{Infobox
 |放送开始=1887-07-01
 }}`),
     SubjectType.Anime,
-    '1887-07-01',
+    DATE.parse('1887-07-01'),
   ],
   [
     parse(`{{Infobox animanga/Novel
@@ -29,7 +31,7 @@ test.each([
 |结束= 2021-06-02
 }}`),
     SubjectType.Book,
-    '2024-02-24',
+    DATE.parse('2024-02-24'),
   ],
   [
     parse(`{{Infobox animanga/Novel
@@ -50,8 +52,8 @@ test.each([
 |插图= 中村明日美子
 }}`),
     SubjectType.Book,
-    '2019-11-28',
+    DATE.parse('2019-11-28'),
   ],
-])('extractDate(%s) = %s', (w: Wiki, t: SubjectType, date: string) => {
-  expect(extractDate(w, t, 0)).toBe(date);
+])('extractDate(%s) = %s', (w: Wiki, t: SubjectType, date: DATE) => {
+  expect(extractDate(w, t, 0)).toEqual(date);
 });

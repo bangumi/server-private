@@ -1,7 +1,7 @@
 import type { Wiki } from '@bgm38/wiki';
 
 import PlatformConfig, { DefaultSortKeys, PlatformSortKeys } from '@app/lib/subject/platform.ts';
-import type { DATE } from '@app/lib/utils/date.ts';
+import { DATE } from '@app/lib/utils/date.ts';
 
 import type { SubjectType } from './type';
 
@@ -29,10 +29,10 @@ export function extractDate(w: Wiki, typeID: SubjectType, platform: number): DAT
     }
   }
 
-  return '0000-00-00';
+  return new DATE(0, 0, 0);
 }
 
-export function extractFromString(s: string): string | undefined {
+export function extractFromString(s: string): DATE | undefined {
   let year, month, day;
 
   for (const pattern of simple_patterns) {
@@ -44,11 +44,15 @@ export function extractFromString(s: string): string | undefined {
     }
   }
 
-  if (!year || !month || !day) {
+  if (!year) {
     return;
   }
 
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  return new DATE(
+    Number.parseInt(year),
+    month ? Number.parseInt(month) : 0,
+    day ? Number.parseInt(day) : 0,
+  );
 }
 
 const simple_patterns = [
@@ -61,7 +65,8 @@ const simple_patterns = [
   /（(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})）$/, //（YYYY-MM-DD）
   /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})$/, // YYYY-MM-DD"
   /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})[ ([（].*$/, // YYYY-MM-DD...
-  /^(?<year>\d{4})年(?<month>\d{1,2})月(?<day>\d{1,2})日/,
+  /^(?<year>\d{4})年(?<month>\d{1,2})月(?<day>\d{1,2})日/, // YYYY年MM月DD日
+  /^(?<year>\d{4})年(?:(?<month>\d{1,2})月)?(?:(?<day>\d{1,2})日)?/, // YYYY年MM月DD日
 ];
 
 const simple_dash_patterns = [
