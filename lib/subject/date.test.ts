@@ -53,5 +53,5 @@ test.each([
     '2019-11-28',
   ],
 ])('extractDate(%s) = %s', (w: Wiki, t: SubjectType, date: string) => {
-  expect(extractDate(w, t)).toBe(date);
+  expect(extractDate(w, t, 0)).toBe(date);
 });

@@ -1,19 +1,18 @@
 import type { Wiki } from '@bgm38/wiki';
 
-import { SubjectType } from './type';
+import PlatformConfig, { DefaultSortKeys, PlatformSortKeys } from '@app/lib/subject/platform.ts';
+import type { DATE } from '@app/lib/utils/date.ts';
 
-const defaultKeys = Object.freeze(['放送开始', '发行日期', '开始']);
+import type { SubjectType } from './type';
 
-const keyConfig = {
-  [SubjectType.Book]: Object.freeze(['发售日', '开始']),
-  [SubjectType.Anime]: defaultKeys,
-  [SubjectType.Music]: defaultKeys,
-  [SubjectType.Game]: defaultKeys,
-  [SubjectType.Real]: defaultKeys,
-};
+function getSortKeys(typeID: SubjectType, platform: number): readonly string[] {
+  return (
+    PlatformConfig[typeID]?.[platform]?.sortKeys ?? PlatformSortKeys[typeID] ?? DefaultSortKeys
+  );
+}
 
-export function extractDate(w: Wiki, typeID: SubjectType): string {
-  const keys = keyConfig[typeID] ?? defaultKeys;
+export function extractDate(w: Wiki, typeID: SubjectType, platform: number): DATE {
+  const keys = getSortKeys(typeID, platform);
 
   const values = keys
     .map((key) => {

@@ -155,7 +155,7 @@ export async function edit({
       },
     );
 
-    const d = DATE.parse(date ?? extractDate(w, s.typeID));
+    const d: DATE = date ? DATE.parse(date) : extractDate(w, s.typeID, platform);
 
     await SubjectFieldRepo.update(
       {
