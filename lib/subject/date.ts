@@ -1,19 +1,18 @@
 import type { Wiki } from '@bgm38/wiki';
 
-import { SubjectType } from './type';
+import PlatformConfig, { DefaultSortKeys, PlatformSortKeys } from '@app/lib/subject/platform.ts';
+import { DATE } from '@app/lib/utils/date.ts';
 
-const defaultKeys = Object.freeze(['放送开始', '发行日期', '开始']);
+import type { SubjectType } from './type';
 
-const keyConfig = {
-  [SubjectType.Book]: Object.freeze(['发售日', '开始']),
-  [SubjectType.Anime]: defaultKeys,
-  [SubjectType.Music]: defaultKeys,
-  [SubjectType.Game]: defaultKeys,
-  [SubjectType.Real]: defaultKeys,
-};
+function getSortKeys(typeID: SubjectType, platform: number): readonly string[] {
+  return (
+    PlatformConfig[typeID]?.[platform]?.sortKeys ?? PlatformSortKeys[typeID] ?? DefaultSortKeys
+  );
+}
 
-export function extractDate(w: Wiki, typeID: SubjectType): string {
-  const keys = keyConfig[typeID] ?? defaultKeys;
+export function extractDate(w: Wiki, typeID: SubjectType, platform: number): DATE {
+  const keys = getSortKeys(typeID, platform);
 
   const values = keys
     .map((key) => {
@@ -30,10 +29,10 @@ export function extractDate(w: Wiki, typeID: SubjectType): string {
     }
   }
 
-  return '0000-00-00';
+  return new DATE(0, 0, 0);
 }
 
-export function extractFromString(s: string): string | undefined {
+export function extractFromString(s: string): DATE | undefined {
   let year, month, day;
 
   for (const pattern of simple_patterns) {
@@ -45,11 +44,15 @@ export function extractFromString(s: string): string | undefined {
     }
   }
 
-  if (!year || !month || !day) {
+  if (!year) {
     return;
   }
 
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  return new DATE(
+    Number.parseInt(year),
+    month ? Number.parseInt(month) : 0,
+    day ? Number.parseInt(day) : 0,
+  );
 }
 
 const simple_patterns = [
@@ -62,7 +65,7 @@ const simple_patterns = [
   /（(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})）$/, //（YYYY-MM-DD）
   /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})$/, // YYYY-MM-DD"
   /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})[ ([（].*$/, // YYYY-MM-DD...
-  /^(?<year>\d{4})年(?<month>\d{1,2})月(?<day>\d{1,2})日/,
+  /^(?<year>\d{4})年(?:(?<month>\d{1,2})月)?(?:(?<day>\d{1,2})日)?/, // YYYY年(MM月)?(DD日)?
 ];
 
 const simple_dash_patterns = [

@@ -1,17 +1,17 @@
 export class DATE {
   constructor(
-    readonly year?: number,
-    readonly month?: number,
-    readonly day?: number,
+    readonly year: number,
+    readonly month: number = 0,
+    readonly day: number = 0,
   ) {}
 
   static parse(s: string): DATE {
     const [year, month, day] = s.split('-');
 
     return new DATE(
-      year ? Number.parseInt(year) || 0 : undefined,
-      month ? Number.parseInt(month) || 0 : undefined,
-      day ? Number.parseInt(day) || 0 : undefined,
+      year ? Number.parseInt(year) || 0 : 0,
+      month ? Number.parseInt(month) || 0 : 0,
+      day ? Number.parseInt(day) || 0 : 0,
     );
   }
 
