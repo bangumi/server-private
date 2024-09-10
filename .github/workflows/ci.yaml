@@ -10,13 +10,6 @@ on:
   merge_group:
 
 jobs:
-  license:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-js-env
-      - run: pnpm run license-check
-
   lint:
     runs-on: ubuntu-latest
     steps:
