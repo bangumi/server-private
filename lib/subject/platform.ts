@@ -90,7 +90,7 @@ export default {
       type: 'movie',
       type_cn: '剧场版',
       wiki_tpl: 'Movie',
-      sortKeys: Object.freeze(['上映日']),
+      sortKeys: Object.freeze(['上映日', '上映年度']),
     },
     '5': {
       alias: 'web',
