@@ -16,7 +16,7 @@ export interface Platform {
 export const DefaultSortKeys = Object.freeze(['放送开始', '发行日期', '开始']);
 
 export const PlatformSortKeys = {
-  [SubjectType.Book]: Object.freeze(['发售日', '开始']),
+  [SubjectType.Book]: Object.freeze(['发售日']),
   [SubjectType.Anime]: DefaultSortKeys,
   [SubjectType.Music]: DefaultSortKeys,
   [SubjectType.Game]: DefaultSortKeys,
