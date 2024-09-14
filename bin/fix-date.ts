@@ -1,7 +1,6 @@
 import * as console from 'node:console';
 
 import * as wiki from '@bgm38/wiki';
-import { Between } from 'typeorm';
 
 import { AppDataSource, SubjectFieldsRepo, SubjectRepo } from '@app/lib/orm';
 import { extractDate } from '@app/lib/subject/date.ts';
@@ -11,15 +10,23 @@ async function main() {
 
   const step = 1000;
 
-  for (let i = 0; i <= 600000; i += step) {
-    const fields = await SubjectFieldsRepo.find({
-      where: {
+  let start = 0;
+
+  for (;;) {
+    const fields = await SubjectFieldsRepo.createQueryBuilder('t')
+      .where('t.year = :year and t.subject_id > :start', {
         year: 0,
-        subject_id: Between(i, i + step),
-      },
-      order: { subject_id: 'asc' },
-      take: step,
-    });
+        start: start,
+      })
+      .take(step)
+      .orderBy('t.subject_id')
+      .getMany();
+
+    if (fields.length === 0) {
+      return;
+    }
+
+    start = fields.at(-1)?.subject_id ?? start;
 
     for (const s of fields) {
       const subject = await SubjectRepo.findOne({ where: { id: s.subject_id, subjectBan: 0 } });
@@ -36,6 +43,10 @@ async function main() {
 
       const date = extractDate(info, subject.typeID, subject.platform);
       if (date.year === 0) {
+        continue;
+      }
+
+      if (date.year <= 1900) {
         continue;
       }
 
