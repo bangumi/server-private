@@ -8,7 +8,20 @@ export interface Platform {
   wiki_tpl?: string;
   search_string?: string;
   enable_header?: boolean;
+  sortKeys?: readonly string[];
 }
+
+// sorting date key will be searched from platformConfig, platformSortKeys, then default sort keys
+
+export const DefaultSortKeys = Object.freeze(['放送开始', '发行日期', '开始']);
+
+export const PlatformSortKeys = {
+  [SubjectType.Book]: Object.freeze(['发售日']),
+  [SubjectType.Anime]: DefaultSortKeys,
+  [SubjectType.Music]: DefaultSortKeys,
+  [SubjectType.Game]: DefaultSortKeys,
+  [SubjectType.Real]: DefaultSortKeys,
+};
 
 export default {
   [SubjectType.Book]: {
@@ -59,6 +72,7 @@ export default {
       type: 'TV',
       type_cn: 'TV',
       wiki_tpl: 'TVAnime',
+      sortKeys: Object.freeze(['放送开始']),
     },
     '2': {
       alias: 'ova',
@@ -67,6 +81,7 @@ export default {
       type: 'OVA',
       type_cn: 'OVA',
       wiki_tpl: 'OVA',
+      sortKeys: Object.freeze(['发售日期']),
     },
     '3': {
       alias: 'movie',
@@ -75,6 +90,7 @@ export default {
       type: 'movie',
       type_cn: '剧场版',
       wiki_tpl: 'Movie',
+      sortKeys: Object.freeze(['上映日', '上映年度']),
     },
     '5': {
       alias: 'web',
@@ -83,6 +99,7 @@ export default {
       type: 'web',
       type_cn: 'WEB',
       wiki_tpl: 'TVAnime',
+      sortKeys: Object.freeze(['放送开始']),
     },
   },
   [SubjectType.Music]: {},

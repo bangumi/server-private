@@ -73,3 +73,38 @@ export class Episode {
   @Column('tinyint', { name: 'ep_ban', unsigned: true, default: () => "'0'" })
   epBan!: number;
 }
+
+@Index('ep_cmt_crt_id', ['epID'], {})
+@Index('ep_pst_related', ['relatedID'], {})
+@Index('ep_pst_uid', ['creatorID'], {})
+@Entity('chii_ep_comments', { schema: 'bangumi' })
+export class EpisodeComment {
+  @PrimaryGeneratedColumn({
+    type: 'mediumint',
+    name: 'ep_pst_id',
+    unsigned: true,
+  })
+  id!: number;
+
+  @Column('mediumint', { name: 'ep_pst_mid', unsigned: true })
+  epID!: number;
+
+  @Column('mediumint', { name: 'ep_pst_uid', unsigned: true })
+  creatorID!: number;
+
+  @Column('mediumint', {
+    name: 'ep_pst_related',
+    unsigned: true,
+    default: () => "'0'",
+  })
+  relatedID!: number;
+
+  @Column('int', { name: 'ep_pst_dateline', unsigned: true })
+  createdAt!: number;
+
+  @Column('mediumtext', { name: 'ep_pst_content' })
+  content!: string;
+
+  @Column('mediumtext', { name: 'ep_pst_state', default: () => "'0'" })
+  state!: number;
+}

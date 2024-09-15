@@ -36,3 +36,5 @@ export class UnreachableError extends Error {
     this.name = this.constructor.name;
   }
 }
+
+export const CaptchaError = createError('CAPTCHA_ERROR', 'wrong captcha', httpCodes.UNAUTHORIZED);

@@ -8,7 +8,7 @@ export interface Reaction {
   value: number;
 }
 
-export async function fetchGroupTopic(
+export async function fetchTopicReactions(
   id: number,
   uid: number,
 ): Promise<Record<number, Reaction[]>> {

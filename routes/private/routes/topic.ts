@@ -3,20 +3,34 @@ import { Type as t } from '@sinclair/typebox';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config';
 import { Dam, dam } from '@app/lib/dam.ts';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import {
+  BadRequestError,
+  CaptchaError,
+  NotFoundError,
+  UnexpectedNotFoundError,
+} from '@app/lib/error.ts';
 import * as Like from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { Page } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm/index.ts';
 import { avatar, groupIcon } from '@app/lib/response.ts';
+import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import type { ITopic } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
-import { CommentState, NotJoinPrivateGroupError, TopicDisplay } from '@app/lib/topic/index.ts';
+import {
+  CommentState,
+  NotJoinPrivateGroupError,
+  TopicDisplay,
+  Type,
+} from '@app/lib/topic/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors, toResUser } from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimiter } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const Group = t.Object(
@@ -31,6 +45,23 @@ const Group = t.Object(
     createdAt: t.Integer(),
   },
   { $id: 'Group' },
+);
+
+const Subject = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    typeID: t.Integer(),
+    infobox: t.String(),
+    platform: t.Integer(),
+    summary: t.String(),
+    nsfw: t.Boolean(),
+    date: t.String(),
+    redirect: t.Integer(),
+    locked: t.Boolean(),
+    image: t.String(),
+  },
+  { $id: 'Subject' },
 );
 
 type IGroupMember = Static<typeof GroupMember>;
@@ -84,7 +115,7 @@ const Reply = t.Object(
 const TopicDetail = t.Object(
   {
     id: t.Integer(),
-    group: t.Ref(Group),
+    parent: t.Union([t.Ref(Group), t.Ref(Subject)]),
     creator: t.Ref(res.User),
     title: t.String(),
     text: t.String(),
@@ -100,8 +131,18 @@ const TopicBasic = t.Object(
   {
     title: t.String({ minLength: 1 }),
     text: t.String({ minLength: 1, description: 'bbcode' }),
+    'cf-turnstile-response': t.String({ minLength: 1 }),
   },
-  { $id: 'TopicCreation', examples: [{ title: 'topic title', content: 'topic content' }] },
+  {
+    $id: 'TopicCreation',
+    examples: [
+      {
+        title: 'topic title',
+        content: 'topic content',
+        'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+      },
+    ],
+  },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -109,6 +150,7 @@ export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(res.Topic);
   app.addSchema(Group);
+  app.addSchema(Subject);
   app.addSchema(TopicBasic);
 
   const GroupProfile = t.Object(
@@ -156,7 +198,7 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
-      const [total, topicList] = await Topic.fetchTopicList(auth, 'group', group.id, query);
+      const [total, topicList] = await Topic.fetchTopicList(auth, Type.group, group.id, query);
 
       const topics = await addCreators(topicList, group.id);
 
@@ -171,11 +213,30 @@ export async function setup(app: App) {
   );
 
   app.addSchema(SubReply);
-
   app.addSchema(Reply);
-
   app.addSchema(Reaction);
   app.addSchema(TopicDetail);
+
+  app.get(
+    '/subjects/-/topics/:topicID',
+    {
+      schema: {
+        tags: [Tag.Subject],
+        operationId: 'getSubjectTopicDetail',
+        summary: '获取帖子列表',
+        params: t.Object({
+          topicID: t.Integer({ examples: [1], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Ref(TopicDetail),
+        },
+      },
+    },
+    async ({ auth, params: { topicID } }) => {
+      return await handleTopicDetail(auth, Type.subject, topicID);
+    },
+  );
 
   app.get(
     '/groups/-/topics/:id',
@@ -198,7 +259,9 @@ export async function setup(app: App) {
         },
       },
     },
-    handleTopicDetail,
+    async ({ auth, params: { id } }) => {
+      return await handleTopicDetail(auth, Type.group, id);
+    },
   );
 
   app.addSchema(GroupMember);
@@ -287,7 +350,7 @@ export async function setup(app: App) {
         throw new NotJoinPrivateGroupError(group.name);
       }
 
-      const [total, topics] = await Topic.fetchTopicList(auth, 'group', group.id, query);
+      const [total, topics] = await Topic.fetchTopicList(auth, Type.group, group.id, query);
 
       return { total, data: await addCreators(topics, group.id) };
     },
@@ -297,9 +360,9 @@ export async function setup(app: App) {
     '/subjects/:subjectID/topics',
     {
       schema: {
-        description: '获取帖子列表',
+        summary: '获取条目讨论版列表',
         operationId: 'getSubjectTopicsBySubjectId',
-        tags: [Tag.Topic],
+        tags: [Tag.Subject],
         params: t.Object({
           subjectID: t.Integer({ exclusiveMinimum: 0 }),
         }),
@@ -316,10 +379,12 @@ export async function setup(app: App) {
             },
           }),
         },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
+      preHandler: [requireLogin('get a topics')],
     },
     async ({ params: { subjectID }, query, auth }) => {
-      const subject = await orm.fetchSubject(subjectID);
+      const subject = await orm.fetchSubjectByID(subjectID);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -327,7 +392,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      const [total, topics] = await Topic.fetchTopicList(auth, 'subject', subjectID, query);
+      const [total, topics] = await Topic.fetchTopicList(auth, Type.subject, subjectID, query);
       return { total, data: await addCreators(topics, subjectID) };
     },
   );
@@ -371,13 +436,14 @@ export async function setup(app: App) {
         throw new NotAllowedError('create posts, join group first');
       }
 
-      return await orm.createPostInGroup({
+      return await orm.createPost({
         title,
         content: text,
         display,
         userID: auth.userID,
-        groupID: group.id,
+        parentID: group.id,
         state: Topic.CommentState.Normal,
+        topicType: 'group',
       });
     },
   );
@@ -422,7 +488,7 @@ export async function setup(app: App) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await Topic.fetchDetail(auth, 'group', topicID);
+      const topic = await Topic.fetchTopicDetail(auth, Type.group, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -454,6 +520,152 @@ export async function setup(app: App) {
 
       if (topicPost) {
         await orm.GroupPostRepo.update({ id: topicPost.id }, { content: text });
+      }
+
+      return {};
+    },
+  );
+
+  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
+
+  app.post(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '创建条目讨论版',
+        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
+        tags: [Tag.Subject],
+        operationId: 'createNewSubjectTopic',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+        }),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new topic id' }),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Ref(TopicBasic),
+      },
+      preHandler: [requireLogin('creating a topic'), rateLimiter(LimitAction.Subject)],
+    },
+    async ({
+      auth,
+      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      params: { subjectID },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create topic');
+      }
+
+      const subject = await orm.fetchSubjectByID(subjectID);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      let display = TopicDisplay.Normal;
+
+      if (dam.needReview(title) || dam.needReview(text)) {
+        display = TopicDisplay.Review;
+      }
+
+      return await orm.createPost({
+        title,
+        content: text,
+        display,
+        userID: auth.userID,
+        parentID: subject.id,
+        state: Topic.CommentState.Normal,
+        topicType: 'subject',
+      });
+    },
+  );
+
+  app.put(
+    '/subjects/-/topics/:topicID',
+    {
+      schema: {
+        summary: '编辑自己创建的条目讨论版',
+        operationId: 'editSubjectTopic',
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602] }),
+        }),
+        tags: [Tag.Subject],
+        response: {
+          200: t.Object({}),
+          400: t.Ref(res.Error),
+          401: t.Ref(res.Error, {
+            'x-examples': formatErrors(NotAllowedError('edit a topic')),
+          }),
+        },
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Ref(TopicBasic),
+      },
+      preHandler: [requireLogin('edit a topic')],
+    },
+    /**
+     * @param auth -
+     * @param title - 帖子标题
+     * @param text - 帖子内容
+     * @param topicID - 帖子 ID
+     */
+    async function ({
+      auth,
+      body: { title, text },
+      params: { topicID },
+    }): Promise<Record<string, never>> {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+
+      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(text))) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const topic = await Topic.fetchTopicDetail(auth, Type.subject, topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+
+      if (
+        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
+          topic.state,
+        )
+      ) {
+        throw new NotAllowedError('edit this topic');
+      }
+
+      if (topic.creatorID !== auth.userID) {
+        throw new NotAllowedError('edit this topic');
+      }
+
+      let display = topic.display;
+      if (dam.needReview(title) || dam.needReview(text)) {
+        if (display === TopicDisplay.Normal) {
+          display = TopicDisplay.Review;
+        } else {
+          return {};
+        }
+      }
+
+      await orm.SubjectTopicRepo.update({ id: topicID }, { title, display });
+
+      const topicPost = await orm.SubjectPostRepo.findOneBy({ topicID });
+
+      if (topicPost) {
+        await orm.SubjectPostRepo.update({ id: topicPost.id }, { content: text });
       }
 
       return {};
@@ -523,21 +735,32 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
   return members;
 }
 
-export async function handleTopicDetail({
-  params: { id },
-  auth,
-}: {
-  params: { id: number };
-  auth: IAuth;
-}): Promise<Static<typeof TopicDetail>> {
-  const topic = await Topic.fetchDetail(auth, 'group', id);
+export async function handleTopicDetail(
+  auth: IAuth,
+  type: Type,
+  id: number,
+): Promise<Static<typeof TopicDetail>> {
+  const topic = await Topic.fetchTopicDetail(auth, type, id);
   if (!topic) {
     throw new NotFoundError(`topic ${id}`);
   }
 
-  const group = await orm.fetchGroupByID(topic.parentID);
-  if (!group) {
-    throw new UnexpectedNotFoundError(`group ${topic.parentID}`);
+  let parent: orm.IGroup | orm.ISubject | null;
+  switch (type) {
+    case Type.group: {
+      parent = await orm.fetchGroupByID(topic.parentID);
+      break;
+    }
+    case Type.subject: {
+      parent = await orm.fetchSubjectByID(topic.parentID);
+      break;
+    }
+    default: {
+      parent = null;
+    }
+  }
+  if (!parent) {
+    throw new UnexpectedNotFoundError(`parent ${topic.parentID}`);
   }
 
   const userIds: number[] = [
@@ -553,13 +776,16 @@ export async function handleTopicDetail({
     throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
   }
 
-  const reactions = await Like.fetchGroupTopic(id, auth.userID);
+  const reactions = await Like.fetchTopicReactions(id, auth.userID);
 
   return {
     ...topic,
     creator: toResUser(creator),
     text: topic.text,
-    group: { ...group, icon: groupIcon(group.icon) },
+    parent: {
+      ...parent,
+      icon: type === Type.group ? groupIcon((parent as orm.IGroup).icon) : '',
+    },
     reactions: reactions[topic.contentPost.id] ?? [],
     replies: topic.replies.map((x) => {
       const user = users[x.creatorID];

@@ -7,7 +7,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import { InvalidWikiSyntaxError, platforms, SandBox } from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError, platforms } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -69,6 +69,22 @@ export const SubjectEdit = t.Object(
   },
 );
 
+const SubjectExpected = t.Optional(
+  t.Partial(
+    t.Object(
+      {
+        name: t.String({ minLength: 1 }),
+        infobox: t.String({ minLength: 1 }),
+        platform: t.Integer(),
+      },
+      {
+        description:
+          "a optional object to check if input is changed by others\nif `infobox` is given, and current data in database doesn't match input, subject will not be changed",
+      },
+    ),
+  ),
+);
+
 const Platform = t.Object(
   {
     id: t.Integer(),
@@ -107,10 +123,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectInfo',
-        description: [
-          '获取当前的 wiki 信息',
-          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
-        ].join('\n\n'),
+        description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
@@ -124,7 +137,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID } }): Promise<Static<typeof SubjectWikiInfo>> => {
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -173,10 +186,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectEditHistorySummary',
-        description: [
-          '获取当前的 wiki 信息',
-          `暂时只能修改沙盒条目 ${[...SandBox].sort().join(', ')}`,
-        ].join('\n\n'),
+        description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
           subjectID: t.Integer({ examples: [8], minimum: 0 }),
         }),
@@ -223,9 +233,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'putSubjectInfo',
-        description: `暂时只能修改沙盒条目 ${[...SandBox]
-          .sort()
-          .join(',')}\n\n需要 \`subjectWikiEdit\` 权限`,
+        description: '需要 `subjectWikiEdit` 权限',
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
@@ -233,6 +241,7 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
+            expectedRevision: SubjectExpected,
             subject: t.Ref(SubjectEdit),
           },
           {
@@ -255,14 +264,14 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, subject: input },
+      body: { commitMessage, subject: input, expectedRevision },
       params: { subjectID },
     }): Promise<void> => {
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
 
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -283,6 +292,7 @@ export async function setup(app: App) {
         nsfw: body.nsfw,
         userID: auth.userID,
         commitMessage,
+        expectedRevision,
       });
     },
   );
@@ -293,7 +303,6 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'patchSubjectInfo',
-        description: `暂时只能修改沙盒条目 ${[...SandBox].sort().join(',')}`,
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
@@ -301,6 +310,7 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
+            expectedRevision: SubjectExpected,
             subject: t.Partial(SubjectEdit, { $id: undefined }),
           },
           {
@@ -323,7 +333,7 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, subject: input },
+      body: { commitMessage, subject: input, expectedRevision },
       params: { subjectID },
     }): Promise<void> => {
       if (!auth.permission.subject_edit) {
@@ -334,7 +344,7 @@ export async function setup(app: App) {
         return;
       }
 
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new BadRequestError(`subject ${subjectID}`);
       }
@@ -374,6 +384,7 @@ export async function setup(app: App) {
         nsfw,
         date,
         userID: auth.userID,
+        expectedRevision,
       });
     },
   );

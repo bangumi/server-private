@@ -113,12 +113,11 @@ export function formatDuration(durationSeconds: number): string {
   const minutes = Math.floor((durationSeconds %= 3600) / 60);
   if (minutes) {
     s.push(pad(minutes));
+  } else {
+    s.push('00');
   }
 
-  const seconds = Math.floor(durationSeconds % 60);
-  if (seconds) {
-    s.push(pad(seconds));
-  }
+  s.push(pad(Math.floor(durationSeconds % 60)));
 
   return s.join(':');
 }

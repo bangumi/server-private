@@ -31,8 +31,6 @@ export const InvalidWikiSyntaxError = createError(
   StatusCodes.BAD_REQUEST,
 );
 
-export const SandBox = new Set([184017, 354677, 354667, 309445, 363612]);
-
 interface Create {
   subjectID: number;
   name: string;
@@ -44,7 +42,18 @@ interface Create {
   date?: string;
   now?: DateTime;
   nsfw?: boolean;
+  expectedRevision?: Partial<{
+    name: string;
+    infobox: string;
+    summary: string;
+  }>;
 }
+
+export const SubjectChangedError = createError<[]>(
+  'SUBJECT_CHANGED',
+  "expected data doesn't match",
+  StatusCodes.BAD_REQUEST,
+);
 
 export async function edit({
   subjectID,
@@ -57,11 +66,8 @@ export async function edit({
   nsfw,
   userID,
   now = DateTime.now(),
+  expectedRevision,
 }: Create): Promise<void> {
-  if (!SandBox.has(subjectID)) {
-    return;
-  }
-
   let w: Wiki;
   try {
     w = parse(infobox);
@@ -85,23 +91,41 @@ export async function edit({
     throw error;
   }
 
-  const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
-
-  const availablePlatforms = platforms(s.typeID);
-
-  if (!availablePlatforms.map((x) => x.id).includes(platform)) {
-    throw new BadRequestError('platform not available');
-  }
-
-  const nameCN: string = extractNameCN(w);
-  const episodes: number = extractEpisode(w);
-
-  logger.info('user %d edit subject %d', userID, subjectID);
-
   await AppDataSource.transaction(async (t) => {
     const SubjectRevRepo = t.getRepository(entity.SubjectRev);
     const SubjectFieldRepo = t.getRepository(entity.SubjectFields);
     const SubjectRepo = t.getRepository(entity.Subject);
+
+    const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
+
+    // only validate platform when it changed.
+    // sometimes main website will add new platform, and our config maybe out-dated.
+    if (platform !== s.platform) {
+      const availablePlatforms = platforms(s.typeID);
+
+      if (!availablePlatforms.map((x) => x.id).includes(platform)) {
+        throw new BadRequestError(`platform ${platform} is not a valid platform for subject`);
+      }
+    }
+
+    const nameCN: string = extractNameCN(w);
+    const episodes: number = extractEpisode(w);
+
+    logger.info('user %d edit subject %d', userID, subjectID);
+
+    if (expectedRevision) {
+      if (expectedRevision.name && expectedRevision.name !== s.name) {
+        throw new SubjectChangedError();
+      }
+
+      if (expectedRevision.summary && expectedRevision.summary !== s.fieldSummary) {
+        throw new SubjectChangedError();
+      }
+
+      if (expectedRevision.infobox && expectedRevision.infobox !== s.fieldInfobox) {
+        throw new SubjectChangedError();
+      }
+    }
 
     await SubjectRevRepo.insert({
       subjectID,
@@ -128,11 +152,10 @@ export async function edit({
         fieldSummary: summary,
         subjectNsfw: nsfw,
         fieldInfobox: infobox,
-        updatedAt: now.toUnixInteger(),
       },
     );
 
-    const d = DATE.parse(date ?? extractDate(w));
+    const d: DATE = date ? DATE.parse(date) : extractDate(w, s.typeID, platform);
 
     await SubjectFieldRepo.update(
       {

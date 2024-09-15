@@ -7,7 +7,7 @@ import { comparePassword, NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import config, { redisPrefix } from '@app/lib/config.ts';
-import { UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { CaptchaError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUser, UserRepo } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
@@ -23,8 +23,6 @@ const TooManyRequestsError = createError(
   'too many failed login attempts',
   httpCodes.TOO_MANY_REQUESTS,
 );
-
-const CaptchaError = createError('CAPTCHA_ERROR', 'wrong captcha', httpCodes.UNAUTHORIZED);
 
 const EmailOrPasswordError = createError(
   'EMAIL_PASSWORD_ERROR',

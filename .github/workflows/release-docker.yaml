@@ -39,7 +39,7 @@ jobs:
           BASE_TAG: "base-${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
 
       - name: Build Base Docker Image (if needed)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         if: ${{ env.NEED_BUILD_BASE == 'true' }}
         with:
           context: ./
@@ -69,7 +69,7 @@ jobs:
             type=raw,value=${{ env.SHA }}
 
       - name: Build Final Docker Image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./
           provenance: false

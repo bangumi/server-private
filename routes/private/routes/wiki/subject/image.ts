@@ -7,14 +7,13 @@ import * as lo from 'lodash-es';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { imageDomain } from '@app/lib/config.ts';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image/index.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { Like } from '@app/lib/orm/entity/index.ts';
 import { LikeRepo, SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
-import { SandBox } from '@app/lib/subject/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { errorResponses } from '@app/lib/types/res.ts';
@@ -68,11 +67,7 @@ export function setup(app: App) {
       preHandler: [requireLogin('list subject covers')],
     },
     async ({ params: { subjectID }, auth }) => {
-      if (!SandBox.has(subjectID)) {
-        throw new BadRequestError('暂时只能修改沙盒条目');
-      }
-
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -198,7 +193,7 @@ export function setup(app: App) {
 
       const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
 
-      const s = await orm.fetchSubject(subjectID);
+      const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }

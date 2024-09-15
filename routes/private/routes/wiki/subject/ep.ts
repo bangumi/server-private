@@ -1,5 +1,6 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import * as lo from 'lodash-es';
 
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -8,7 +9,7 @@ import { pushRev } from '@app/lib/rev/ep.ts';
 import * as res from '@app/lib/types/res.ts';
 import { EpisodeType, formatErrors } from '@app/lib/types/res.ts';
 import type { EmptyObject } from '@app/lib/types/util.ts';
-import { formatDuration, parseDuration } from '@app/lib/utils/index.ts';
+import { parseDuration } from '@app/lib/utils/index.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -18,6 +19,7 @@ type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
 export const EpisodeWikiInfo = t.Object(
   {
     id: t.Integer(),
+    subjectID: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
     type: t.Enum(EpisodeType),
@@ -58,6 +60,7 @@ export async function setup(app: App) {
             examples: [
               {
                 id: 1148124,
+                subjectID: 65536,
                 name: 'キマリ×ト×ハジマリ',
                 nameCN: '结末×与×开始',
                 ep: 60,
@@ -83,8 +86,9 @@ export async function setup(app: App) {
 
       return {
         id: ep.id,
-        name: ep.name,
-        nameCN: ep.nameCN,
+        subjectID: ep.subjectID,
+        name: lo.unescape(ep.name),
+        nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,
         date: ep.airDate,
         type: 0,
@@ -168,7 +172,19 @@ export async function setup(app: App) {
           );
         }
 
-        ep.duration = formatDuration(duration);
+        ep.duration = body.duration;
+      }
+
+      if (body.name !== undefined) {
+        ep.name = lo.escape(body.name);
+      }
+
+      if (body.nameCN !== undefined) {
+        ep.nameCN = lo.escape(body.nameCN);
+      }
+
+      if (body.summary !== undefined) {
+        ep.summary = body.summary;
       }
 
       const now = new Date();
@@ -178,10 +194,10 @@ export async function setup(app: App) {
           episodeID,
           rev: {
             ep_airdate: ep.airDate,
-            ep_desc: body.summary ?? ep.summary,
+            ep_desc: ep.summary,
             ep_duration: ep.duration,
-            ep_name: body.name ?? ep.name,
-            ep_name_cn: body.nameCN ?? ep.nameCN,
+            ep_name: ep.name,
+            ep_name_cn: ep.nameCN,
             ep_sort: '0',
             ep_type: '0',
           },
