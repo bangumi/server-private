@@ -2,6 +2,7 @@ import { extendType, objectType } from 'nexus';
 
 import { imageDomain } from '@app/lib/config.ts';
 import type { Context } from '@app/lib/graphql/context.ts';
+import type * as entity from '@app/lib/orm/entity/index.ts';
 import type { IUser } from '@app/lib/orm/index.ts';
 import { fetchUser } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
@@ -36,6 +37,15 @@ const User = objectType({
     });
   },
 });
+
+export function convertUser(user: entity.User) {
+  return {
+    id: user.id,
+    username: user.username,
+    nickname: user.nickname,
+    avatar: avatar(user.avatar),
+  };
+}
 
 const GetCurrentUser = extendType({
   type: 'Query',

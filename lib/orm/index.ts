@@ -537,36 +537,54 @@ export async function createPost(post: PostCreation): Promise<{ id: number }> {
   const now = DateTime.now();
 
   return await AppDataSource.transaction(async (t) => {
-    const postRepo =
-      post.topicType === 'group'
-        ? t.getRepository(entity.GroupPost)
-        : t.getRepository(entity.SubjectPost);
-    const topicRepo =
-      post.topicType === 'group'
-        ? t.getRepository(entity.GroupTopic)
-        : t.getRepository(entity.SubjectTopic);
-
-    const topic = await topicRepo.save({
-      title: post.title,
-      parentID: post.parentID,
-      creatorID: post.userID,
-      state: post.state,
-      updatedAt: now.toUnixInteger(),
-      createdAt: now.toUnixInteger(),
-      replies: 0,
-      display: post.display,
-    });
-
-    await postRepo.insert({
-      topicID: topic.id,
-      dateline: now.toUnixInteger(),
-      state: post.state,
-      uid: post.userID,
-      content: post.content,
-      related: 0,
-    });
-
-    return { id: topic.id };
+    switch (post.topicType) {
+      case 'group': {
+        const postRepo = t.getRepository(entity.GroupPost);
+        const topicRepo = t.getRepository(entity.GroupTopic);
+        const topic = await topicRepo.save({
+          title: post.title,
+          parentID: post.parentID,
+          creatorID: post.userID,
+          state: post.state,
+          updatedAt: now.toUnixInteger(),
+          createdAt: now.toUnixInteger(),
+          replies: 0,
+          display: post.display,
+        });
+        await postRepo.insert({
+          topicID: topic.id,
+          dateline: now.toUnixInteger(),
+          state: post.state,
+          uid: post.userID,
+          content: post.content,
+          related: 0,
+        });
+        return { id: topic.id };
+      }
+      case 'subject': {
+        const postRepo = t.getRepository(entity.SubjectPost);
+        const topicRepo = t.getRepository(entity.SubjectTopic);
+        const topic = await topicRepo.save({
+          title: post.title,
+          parentID: post.parentID,
+          creatorID: post.userID,
+          state: post.state,
+          updatedAt: now.toUnixInteger(),
+          createdAt: now.toUnixInteger(),
+          replies: 0,
+          display: post.display,
+        });
+        await postRepo.insert({
+          topicID: topic.id,
+          dateline: now.toUnixInteger(),
+          state: post.state,
+          uid: post.userID,
+          content: post.content,
+          related: 0,
+        });
+        return { id: topic.id };
+      }
+    }
   });
 }
 
