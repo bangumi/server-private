@@ -1,4 +1,7 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+
+import type { Person } from './person.ts';
+import type { Subject } from './subject.ts';
 
 @Index('crt_role', ['role'], {})
 @Index('crt_lock', ['lock'], {})
@@ -50,7 +53,7 @@ export class Character {
   imgAnidb!: string;
 
   @Column('mediumint', { name: 'crt_anidb_id', unsigned: true })
-  anidbId!: number;
+  anidbID!: number;
 
   @Column('tinyint', { name: 'crt_ban', unsigned: true, default: () => "'0'" })
   ban!: number;
@@ -60,4 +63,72 @@ export class Character {
 
   @Column('tinyint', { name: 'crt_nsfw', unsigned: true, width: 1 })
   nsfw!: boolean;
+}
+
+@Index('subject_id', ['subjectID'], {})
+@Index('crt_type', ['type'], {})
+@Index('subject_type_id', ['subjectTypeID'], {})
+@Entity('chii_crt_subject_index', { schema: 'bangumi' })
+export class CharacterSubjects {
+  @PrimaryColumn('mediumint', { primary: true, name: 'crt_id', unsigned: true })
+  characterID!: number;
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'subject_id', unsigned: true })
+  subjectID!: number;
+
+  @Column('tinyint', { name: 'subject_type_id', unsigned: true })
+  subjectTypeID!: number;
+
+  @Column('tinyint', {
+    name: 'crt_type',
+    comment: '主角，配角',
+    unsigned: true,
+  })
+  type!: number;
+
+  // @Column('mediumtext', {
+  //   name: 'ctr_appear_eps',
+  //   comment: '可选，角色出场的的章节',
+  // })
+  // appearEps: string;
+
+  @Column('tinyint', { name: 'crt_order', unsigned: true })
+  order!: number;
+
+  character!: Character;
+
+  subject!: Subject;
+}
+
+@Index('prsn_id', ['personID'], {})
+@Index('subject_id', ['subjectID'], {})
+@Index('subject_type_id', ['subjectTypeID'], {})
+@Entity('chii_crt_cast_index', { schema: 'bangumi' })
+export class Cast {
+  @PrimaryColumn('mediumint', { primary: true, name: 'crt_id', unsigned: true })
+  characterID!: number;
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'prsn_id', unsigned: true })
+  personID!: number;
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'subject_id', unsigned: true })
+  subjectID!: number;
+
+  @Column('tinyint', {
+    name: 'subject_type_id',
+    comment: '根据人物归类查询角色，动画，书籍，游戏',
+    unsigned: true,
+  })
+  subjectTypeID!: number;
+
+  @Column('varchar', {
+    name: 'summary',
+    comment: '幼年，男乱马，女乱马，变身形态，少女形态。。',
+    length: 255,
+  })
+  summary!: string;
+
+  character!: Character;
+  person!: Person;
+  subject!: Subject;
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BooleanTransformer, htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
 
@@ -171,7 +171,7 @@ export class Subject {
 @Index('field_date', ['date'], {})
 @Index('field_year_mon', ['year', 'month'], {})
 @Index('field_year', ['year'], {})
-@Index('query_date', ['subject_id', 'date'], {})
+@Index('query_date', ['subjectID', 'date'], {})
 @Entity('chii_subject_fields', { schema: 'bangumi' })
 export class SubjectFields {
   @PrimaryGeneratedColumn({
@@ -179,7 +179,7 @@ export class SubjectFields {
     name: 'field_sid',
     unsigned: true,
   })
-  subject_id!: number;
+  subjectID!: number;
 
   @Column('smallint', {
     name: 'field_tid',
@@ -327,6 +327,53 @@ export class SubjectImage {
     transformer: UnixTimestamp,
   })
   createdAt!: Date;
+}
+
+@Index('rlt_subject_id', ['subjectID', 'relatedSubjectID', 'viceVersa'], { unique: true })
+@Index('rlt_related_subject_type_id', ['relatedSubjectTypeID', 'order'], {})
+@Index('rlt_subject_type_id', ['subjectTypeID'], {})
+@Index('rlt_relation_type', ['relationType', 'subjectID', 'relatedSubjectID'], {})
+@Entity('chii_subject_relations', { schema: 'bangumi' })
+export class SubjectRelation {
+  @PrimaryColumn('mediumint', {
+    name: 'rlt_subject_id',
+    comment: '关联主 ID',
+    unsigned: true,
+  })
+  subjectID!: number;
+
+  @PrimaryColumn('tinyint', { name: 'rlt_subject_type_id', unsigned: true })
+  subjectTypeID!: number;
+
+  @Column('smallint', {
+    name: 'rlt_relation_type',
+    comment: '关联类型',
+    unsigned: true,
+  })
+  relationType!: number;
+
+  @Column('mediumint', {
+    name: 'rlt_related_subject_id',
+    comment: '关联目标 ID',
+    unsigned: true,
+  })
+  relatedSubjectID!: number;
+
+  @Column('tinyint', {
+    name: 'rlt_related_subject_type_id',
+    comment: '关联目标类型',
+    unsigned: true,
+  })
+  relatedSubjectTypeID!: number;
+
+  /** @deprecated 未使用 */
+  @PrimaryColumn('tinyint', { name: 'rlt_vice_versa', unsigned: true })
+  viceVersa!: number;
+
+  @Column('tinyint', { name: 'rlt_order', comment: '关联排序', unsigned: true })
+  order!: number;
+
+  relatedSubject!: Subject;
 }
 
 @Index('sbj_tpc_lastpost', ['updatedAt', 'parentID', 'display'], {})

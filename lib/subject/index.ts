@@ -159,7 +159,7 @@ export async function edit({
 
     await SubjectFieldRepo.update(
       {
-        subject_id: subjectID,
+        subjectID: subjectID,
       },
       {
         date: d.toString(),

@@ -1,6 +1,3 @@
-// remember to wrap all graphql string with gql,
-// so vscode, webstorm and prettier will know the string content
-// is graphql and support language specific features
 import { gql } from 'graphql-tag';
 import { createMercuriusTestClient } from 'mercurius-integration-testing';
 import { describe, expect, test } from 'vitest';
@@ -8,64 +5,6 @@ import { describe, expect, test } from 'vitest';
 import { createServer } from '@app/lib/server.ts';
 
 const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
-
-describe('graphql', () => {
-  test('should return current user', async () => {
-    await expect(
-      testClient.query(gql`
-        query {
-          me {
-            id
-          }
-        }
-      `),
-    ).resolves.toEqual({
-      data: {
-        me: null,
-      },
-    });
-  });
-
-  test('should return current user', async () => {
-    await expect(
-      testClient.query(
-        gql`
-          query {
-            me {
-              id
-              username
-              nickname
-            }
-          }
-        `,
-        {
-          headers: { authorization: 'Bearer a_development_access_token' },
-        },
-      ),
-    ).resolves.toEqual({
-      data: {
-        me: { id: 382951, username: '382951', nickname: '树洞酱' },
-      },
-    });
-  });
-
-  test('should return error', async () => {
-    await expect(
-      testClient.query(
-        gql`
-          query {
-            me {
-              id
-            }
-          }
-        `,
-        {
-          headers: { authorization: 'Bearer a' },
-        },
-      ),
-    ).resolves.toMatchSnapshot();
-  });
-});
 
 describe('subject', () => {
   test('should get', async () => {
@@ -138,7 +77,7 @@ describe('subject', () => {
   });
 
   test('should get episodes, limit', async () => {
-    const query = await testClient.query(gql`
+    const res = await testClient.query(gql`
       query {
         subject(id: 8) {
           id
@@ -149,12 +88,12 @@ describe('subject', () => {
       }
     `);
 
-    expect(query.data.subject.id).toBe(8);
-    expect(query.data.subject.episodes).toHaveLength(3);
+    expect(res.data.subject.id).toBe(8);
+    expect(res.data.subject.episodes).toHaveLength(3);
   });
 
   test('should get episodes, -offset', async () => {
-    const query = await testClient.query(gql`
+    const res = await testClient.query(gql`
       query {
         subject(id: 8) {
           id
@@ -165,12 +104,12 @@ describe('subject', () => {
       }
     `);
 
-    expect(query.data.subject.id).toBe(8);
-    expect(query.data.subject.episodes).toHaveLength(3);
+    expect(res.data.subject.id).toBe(8);
+    expect(res.data.subject.episodes).toHaveLength(3);
   });
 
   test('should subject tags', async () => {
-    const query = await testClient.query(gql`
+    const res = await testClient.query(gql`
       query {
         subject(id: 8) {
           tags(limit: 3) {
@@ -181,11 +120,11 @@ describe('subject', () => {
       }
     `);
 
-    expect(query.data.subject).toMatchSnapshot();
+    expect(res.data.subject).toMatchSnapshot();
   });
 
   test('should subject relations', async () => {
-    const query = await testClient.query(gql`
+    const res = await testClient.query(gql`
       query {
         subject(id: 12) {
           relations(limit: 1) {
@@ -199,12 +138,12 @@ describe('subject', () => {
       }
     `);
 
-    expect(query.data.subject.relations[0].relation).toBe(1004);
-    expect(query.data.subject.relations[0].subject.id).toBe(11);
+    expect(res.data.subject.relations[0].relation).toBe(1004);
+    expect(res.data.subject.relations[0].subject.id).toBe(11);
   });
 
   test('should subject relations with exclude', async () => {
-    const query = await testClient.query(gql`
+    const res = await testClient.query(gql`
       query {
         subject(id: 12) {
           relations(limit: 1, excludeTypes: [1004]) {
@@ -218,11 +157,11 @@ describe('subject', () => {
       }
     `);
 
-    expect(query.data.subject.relations).toHaveLength(0);
+    expect(res.data.subject.relations).toHaveLength(0);
   });
 
   test('should reject nested subject relations', async () => {
-    const query = await testClient.query(gql`
+    const res = await testClient.query(gql`
       query {
         subject(id: 12) {
           relations(limit: 1) {
@@ -243,47 +182,43 @@ describe('subject', () => {
       }
     `);
 
-    expect(query).toMatchSnapshot();
+    expect(res).toMatchSnapshot();
   });
-});
 
-describe('character', () => {
-  test('should get', async () => {
-    await expect(
-      testClient.query(gql`
-        query {
-          character(id: 1) {
-            name
-            role
+  test('should subject characters', async () => {
+    const res = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          characters(limit: 3) {
+            character {
+              id
+              name
+            }
+            order
+            type
           }
         }
-      `),
-    ).resolves.toEqual({
-      data: {
-        character: { name: 'ルルーシュ・ランペルージ', role: 1 },
-      },
-    });
-  });
-});
+      }
+    `);
 
-describe('person', () => {
-  test('should get', async () => {
-    await expect(
-      testClient.query(gql`
-        query {
-          person(id: 1) {
-            name
-            career
+    expect(res).toMatchSnapshot();
+  });
+
+  test('should subject persons', async () => {
+    const res = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          persons(limit: 3) {
+            person {
+              id
+              name
+            }
+            position
           }
         }
-      `),
-    ).resolves.toEqual({
-      data: {
-        person: {
-          name: '水樹奈々',
-          career: ['artist', 'seiyu'],
-        },
-      },
-    });
+      }
+    `);
+
+    expect(res).toMatchSnapshot();
   });
 });

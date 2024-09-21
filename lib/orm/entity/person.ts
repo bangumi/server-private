@@ -1,4 +1,6 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+
+import type { Subject } from './subject.ts';
 
 @Index('prsn_type', ['type'], {})
 @Index('prsn_producer', ['producer'], {})
@@ -86,7 +88,7 @@ export class Person {
   lock!: number;
 
   @Column('mediumint', { name: 'prsn_anidb_id', unsigned: true })
-  anidbId!: number;
+  anidbID!: number;
 
   @Column('tinyint', { name: 'prsn_ban', unsigned: true, default: () => "'0'" })
   ban!: number;
@@ -100,4 +102,44 @@ export class Person {
 
   @Column('tinyint', { name: 'prsn_nsfw', unsigned: true, width: 1 })
   nsfw!: boolean;
+}
+
+@Index('subject_id', ['subjectID'], {})
+@Index('prsn_position', ['position'], {})
+@Index('prsn_id', ['personID'], {})
+@Index('subject_type_id', ['subjectTypeID'], {})
+@Entity('chii_person_cs_index', { schema: 'bangumi' })
+export class PersonSubjects {
+  // @Column("enum", { primary: true, name: "prsn_type", enum: ["prsn", "crt"] })
+  // personType: "prsn" | "crt";
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'prsn_id', unsigned: true })
+  personID!: number;
+
+  @Column('smallint', {
+    primary: true,
+    name: 'prsn_position',
+    comment: '监督，原案，脚本,..',
+    unsigned: true,
+  })
+  position!: number;
+
+  @PrimaryColumn('mediumint', { primary: true, name: 'subject_id', unsigned: true })
+  subjectID!: number;
+
+  @Column('tinyint', { name: 'subject_type_id', unsigned: true })
+  subjectTypeID!: number;
+
+  @Column('mediumtext', { name: 'summary' })
+  summary!: string;
+
+  // @Column('mediumtext', {
+  //   name: 'prsn_appear_eps',
+  //   comment: '可选，人物参与的章节',
+  // })
+  // appearEps: string;
+
+  person!: Person;
+
+  subject!: Subject;
 }

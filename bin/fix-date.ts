@@ -26,10 +26,10 @@ async function main() {
       return;
     }
 
-    start = fields.at(-1)?.subject_id ?? start;
+    start = fields.at(-1)?.subjectID ?? start;
 
     for (const s of fields) {
-      const subject = await SubjectRepo.findOne({ where: { id: s.subject_id, subjectBan: 0 } });
+      const subject = await SubjectRepo.findOne({ where: { id: s.subjectID, subjectBan: 0 } });
       if (!subject) {
         continue;
       }
@@ -50,11 +50,11 @@ async function main() {
         continue;
       }
 
-      console.log(s.subject_id, date);
+      console.log(s.subjectID, date);
 
       await SubjectFieldsRepo.update(
         {
-          subject_id: s.subject_id,
+          subjectID: s.subjectID,
         },
         {
           year: date.year,

@@ -95,7 +95,7 @@ describe('should update subject', () => {
 
     expect(subjectFieldMock).toBeCalledWith(
       {
-        subject_id: 363612,
+        subjectID: 363612,
       },
       {
         date: '1997-11-11',

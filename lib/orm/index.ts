@@ -11,7 +11,9 @@ import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
 import * as entity from './entity/index.ts';
 import {
   App,
+  Cast,
   Character,
+  CharacterSubjects,
   Episode,
   EpisodeComment,
   EpRevision,
@@ -26,6 +28,7 @@ import {
   OauthAccessTokens,
   OauthClient,
   Person,
+  PersonSubjects,
   RevHistory,
   RevText,
   Subject,
@@ -80,7 +83,9 @@ export const AppDataSource = new DataSource({
   },
   entities: [
     App,
+    Cast,
     Character,
+    CharacterSubjects,
     EpRevision,
     User,
     UserField,
@@ -97,6 +102,7 @@ export const AppDataSource = new DataSource({
     EpisodeComment,
     OauthClient,
     Person,
+    PersonSubjects,
     RevHistory,
     RevText,
     Subject,
@@ -117,7 +123,11 @@ export const UserFieldRepo = AppDataSource.getRepository(UserField);
 export const FriendRepo = AppDataSource.getRepository(Friends);
 
 export const CharacterRepo = AppDataSource.getRepository(Character);
+export const CharacterSubjectsRepo = AppDataSource.getRepository(CharacterSubjects);
+export const CastRepo = AppDataSource.getRepository(Cast);
+
 export const PersonRepo = AppDataSource.getRepository(Person);
+export const PersonSubjectsRepo = AppDataSource.getRepository(PersonSubjects);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectTopicRepo = AppDataSource.getRepository(SubjectTopic);
@@ -159,7 +169,10 @@ export const repo = {
   SubjectRelation: SubjectRelationRepo,
   Episode: EpisodeRepo,
   Character: CharacterRepo,
+  CharacterSubjects: CharacterSubjectsRepo,
+  Cast: CastRepo,
   Person: PersonRepo,
+  PersonSubjects: PersonSubjectsRepo,
   AccessToken: AccessTokenRepo,
   Session: SessionRepo,
   UserGroup: UserGroupRepo,
@@ -461,7 +474,7 @@ export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
   }
 
   const f = await SubjectFieldsRepo.findOne({
-    where: { subject_id: id },
+    where: { subjectID: id },
   });
 
   if (!f) {
