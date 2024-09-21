@@ -8,22 +8,33 @@ const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/g
 
 describe('person', () => {
   test('should get', async () => {
-    await expect(
-      testClient.query(gql`
-        query {
-          person(id: 1) {
-            name
-            career
+    const res = await testClient.query(gql`
+      query {
+        person(id: 1) {
+          name
+          career
+        }
+      }
+    `);
+
+    expect(res).toMatchSnapshot();
+  });
+
+  test('should person subjects', async () => {
+    const res = await testClient.query(gql`
+      query {
+        person(id: 39) {
+          subjects(limit: 1) {
+            subject {
+              id
+              name
+            }
+            position
           }
         }
-      `),
-    ).resolves.toEqual({
-      data: {
-        person: {
-          name: '水樹奈々',
-          career: ['artist', 'seiyu'],
-        },
-      },
-    });
+      }
+    `);
+
+    expect(res).toMatchSnapshot();
   });
 });

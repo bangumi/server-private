@@ -23,4 +23,23 @@ describe('character', () => {
       },
     });
   });
+
+  test('should character subjects', async () => {
+    const res = await testClient.query(gql`
+      query {
+        character(id: 32) {
+          subjects(limit: 1) {
+            subject {
+              id
+              name
+            }
+            type
+            order
+          }
+        }
+      }
+    `);
+
+    expect(res).toMatchSnapshot();
+  });
 });

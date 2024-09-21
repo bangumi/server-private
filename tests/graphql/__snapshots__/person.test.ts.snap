@@ -1,0 +1,33 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`person > should get 1`] = `
+Object {
+  "data": Object {
+    "person": Object {
+      "career": Array [
+        "artist",
+        "seiyu",
+      ],
+      "name": "水樹奈々",
+    },
+  },
+}
+`;
+
+exports[`person > should person subjects 1`] = `
+Object {
+  "data": Object {
+    "person": Object {
+      "subjects": Array [
+        Object {
+          "position": 1,
+          "subject": Object {
+            "id": 12,
+            "name": "ちょびっツ",
+          },
+        },
+      ],
+    },
+  },
+}
+`;
