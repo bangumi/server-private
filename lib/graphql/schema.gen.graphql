@@ -132,6 +132,7 @@ type Subject {
   series_entry: Int!
   summary: String!
   tags(limit: Int = 0): [SubjectTag!]
+  topics(limit: Int! = 10, offset: Int! = 0): [SubjectTopic!]
   type: Int!
   volumes: Int!
 }
@@ -193,6 +194,17 @@ type SubjectRelation {
 type SubjectTag {
   count: Int!
   name: String!
+}
+
+type SubjectTopic {
+  created_at: Int!
+  creator: User!
+  display: Int!
+  id: Int!
+  replies: Int!
+  state: Int!
+  title: String!
+  updated_at: Int!
 }
 
 type User {

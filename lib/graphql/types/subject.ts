@@ -10,13 +10,16 @@ import {
   PersonSubjectsRepo,
   SubjectRelationRepo,
   SubjectRepo,
+  SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
 import { platforms } from '@app/lib/subject/index.ts';
+import { ListTopicDisplays } from '@app/lib/topic/display.ts';
 
 import { convertCharacter } from './character.ts';
 import { InfoboxItem } from './common.ts';
 import { convertPerson } from './person.ts';
+import { convertUser } from './user.ts';
 
 const Episode = objectType({
   name: 'Episode',
@@ -124,6 +127,22 @@ const SubjectAirtime = objectType({
     t.nonNull.int('month');
     t.nonNull.int('weekday');
     t.nonNull.string('date');
+  },
+});
+
+const SubjectTopic = objectType({
+  name: 'SubjectTopic',
+  definition(t) {
+    t.nonNull.int('id');
+    t.nonNull.field('creator', {
+      type: 'User',
+    });
+    t.nonNull.string('title');
+    t.nonNull.int('created_at');
+    t.nonNull.int('updated_at');
+    t.nonNull.int('replies');
+    t.nonNull.int('state');
+    t.nonNull.int('display');
   },
 });
 
@@ -321,6 +340,34 @@ const Subject = objectType({
         });
       },
     });
+    t.list.nonNull.field('topics', {
+      type: SubjectTopic,
+      args: {
+        limit: nonNull(intArg({ default: 10 })),
+        offset: nonNull(intArg({ default: 0 })),
+      },
+      async resolve(
+        parent: { id: number },
+        { limit, offset }: { limit: number; offset: number },
+        { auth: u }: Context,
+      ) {
+        let query = SubjectTopicRepo.createQueryBuilder('t')
+          .innerJoinAndMapOne('t.creator', entity.User, 'u', 'u.id = t.creatorID')
+          .where('t.parentID = :id', { id: parent.id });
+        const displays = ListTopicDisplays(u);
+        if (displays.length > 0) {
+          query = query.andWhere('t.display IN (:...displays)', { displays });
+        }
+        const topics = await query
+          .orderBy('t.createdAt', 'DESC')
+          .skip(offset)
+          .take(limit)
+          .getMany();
+        return topics.map((t) => {
+          return convertTopic(t);
+        });
+      },
+    });
   },
 });
 
@@ -407,6 +454,19 @@ export function convertSubject(subject: entity.Subject) {
       .filter((x) => x.tag_name !== undefined)
       .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
       .filter((x) => !Number.isNaN(x.count)),
+  };
+}
+
+export function convertTopic(topic: entity.SubjectTopic) {
+  return {
+    id: topic.id,
+    creator: convertUser(topic.creator),
+    title: topic.title,
+    created_at: topic.createdAt,
+    updated_at: topic.updatedAt,
+    replies: topic.replies,
+    state: topic.state,
+    display: topic.display,
   };
 }
 
