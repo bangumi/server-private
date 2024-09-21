@@ -5,7 +5,7 @@ Object {
   "data": null,
   "errors": Array [
     Object {
-      "message": "\`unnamedQuery query depth (6) exceeds the query depth limit of 4\`",
+      "message": "\`unnamedQuery query depth (6) exceeds the query depth limit of 5\`",
     },
   ],
 }
@@ -94,5 +94,30 @@ Object {
       "name": "反逆のルルーシュ",
     },
   ],
+}
+`;
+
+exports[`subject > should subject topics 1`] = `
+Object {
+  "data": Object {
+    "subject": Object {
+      "topics": Array [
+        Object {
+          "created_at": 1462335911,
+          "creator": Object {
+            "id": 142527,
+            "nickname": "nickname 142527",
+            "username": "142527",
+          },
+          "display": 1,
+          "id": 6873,
+          "replies": 8,
+          "state": 0,
+          "title": "这条目简介也太剧透了吧",
+          "updated_at": 1481098545,
+        },
+      ],
+    },
+  },
 }
 `;

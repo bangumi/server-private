@@ -221,4 +221,29 @@ describe('subject', () => {
 
     expect(res).toMatchSnapshot();
   });
+
+  test('should subject topics', async () => {
+    const res = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          topics(limit: 1) {
+            id
+            creator {
+              id
+              username
+              nickname
+            }
+            created_at
+            updated_at
+            title
+            replies
+            state
+            display
+          }
+        }
+      }
+    `);
+
+    expect(res).toMatchSnapshot();
+  });
 });
