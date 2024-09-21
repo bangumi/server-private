@@ -146,19 +146,6 @@ const SubjectTopic = objectType({
   },
 });
 
-// const SubjectPost = objectType({
-//   name: 'SubjectPost',
-//   definition(t) {
-//     t.nonNull.int('id');
-//     t.nonNull.int('topic_id');
-//     t.nonNull.int('uid');
-//     t.nonNull.int('related');
-//     t.nonNull.string('content');
-//     t.nonNull.int('state');
-//     t.nonNull.int('dateline');
-//   },
-// });
-
 const Subject = objectType({
   name: 'Subject',
   definition(t) {
