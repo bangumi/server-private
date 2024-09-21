@@ -11,6 +11,73 @@ Object {
 }
 `;
 
+exports[`subject > should subject characters 1`] = `
+Object {
+  "data": Object {
+    "subject": Object {
+      "characters": Array [
+        Object {
+          "character": Object {
+            "id": 32,
+            "name": "ちぃ",
+          },
+          "order": 0,
+          "type": 1,
+        },
+        Object {
+          "character": Object {
+            "id": 33,
+            "name": "本須和秀樹",
+          },
+          "order": 0,
+          "type": 1,
+        },
+        Object {
+          "character": Object {
+            "id": 34,
+            "name": "すもも",
+          },
+          "order": 0,
+          "type": 2,
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`subject > should subject persons 1`] = `
+Object {
+  "data": Object {
+    "subject": Object {
+      "persons": Array [
+        Object {
+          "person": Object {
+            "id": 39,
+            "name": "CLAMP",
+          },
+          "position": 1,
+        },
+        Object {
+          "person": Object {
+            "id": 40,
+            "name": "浅香守生",
+          },
+          "position": 2,
+        },
+        Object {
+          "person": Object {
+            "id": 19,
+            "name": "大久保智康",
+          },
+          "position": 3,
+        },
+      ],
+    },
+  },
+}
+`;
+
 exports[`subject > should subject tags 1`] = `
 Object {
   "tags": Array [

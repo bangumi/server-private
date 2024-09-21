@@ -184,4 +184,41 @@ describe('subject', () => {
 
     expect(query).toMatchSnapshot();
   });
+
+  test('should subject characters', async () => {
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          characters(limit: 3) {
+            character {
+              id
+              name
+            }
+            order
+            type
+          }
+        }
+      }
+    `);
+
+    expect(query).toMatchSnapshot();
+  });
+
+  test('should subject persons', async () => {
+    const query = await testClient.query(gql`
+      query {
+        subject(id: 12) {
+          persons(limit: 3) {
+            person {
+              id
+              name
+            }
+            position
+          }
+        }
+      }
+    `);
+
+    expect(query).toMatchSnapshot();
+  });
 });
