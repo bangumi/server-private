@@ -189,9 +189,11 @@ export function setup(app: App) {
         ext = 'jpeg';
       }
 
-      const h = crypto.createHash('sha384').update(raw).digest().toString('base64url');
+      // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
+      const h = crypto.randomUUID();
 
-      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
+      // for example raw/36/b8/${subject_id}_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h}.${ext}`;
 
       const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
