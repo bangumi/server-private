@@ -1,14 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`graphql > should return error 1`] = `
-Object {
-  "code": "TOKEN_INVALID",
-  "error": "Unauthorized",
-  "message": "can't find access token or it has been expired",
-  "statusCode": 401,
-}
-`;
-
 exports[`subject > should reject nested subject relations 1`] = `
 Object {
   "data": null,

@@ -1,6 +1,3 @@
-// remember to wrap all graphql string with gql,
-// so vscode, webstorm and prettier will know the string content
-// is graphql and support language specific features
 import { gql } from 'graphql-tag';
 import { createMercuriusTestClient } from 'mercurius-integration-testing';
 import { describe, expect, test } from 'vitest';
@@ -8,64 +5,6 @@ import { describe, expect, test } from 'vitest';
 import { createServer } from '@app/lib/server.ts';
 
 const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
-
-describe('graphql', () => {
-  test('should return current user', async () => {
-    await expect(
-      testClient.query(gql`
-        query {
-          me {
-            id
-          }
-        }
-      `),
-    ).resolves.toEqual({
-      data: {
-        me: null,
-      },
-    });
-  });
-
-  test('should return current user', async () => {
-    await expect(
-      testClient.query(
-        gql`
-          query {
-            me {
-              id
-              username
-              nickname
-            }
-          }
-        `,
-        {
-          headers: { authorization: 'Bearer a_development_access_token' },
-        },
-      ),
-    ).resolves.toEqual({
-      data: {
-        me: { id: 382951, username: '382951', nickname: '树洞酱' },
-      },
-    });
-  });
-
-  test('should return error', async () => {
-    await expect(
-      testClient.query(
-        gql`
-          query {
-            me {
-              id
-            }
-          }
-        `,
-        {
-          headers: { authorization: 'Bearer a' },
-        },
-      ),
-    ).resolves.toMatchSnapshot();
-  });
-});
 
 describe('subject', () => {
   test('should get', async () => {
@@ -244,46 +183,5 @@ describe('subject', () => {
     `);
 
     expect(query).toMatchSnapshot();
-  });
-});
-
-describe('character', () => {
-  test('should get', async () => {
-    await expect(
-      testClient.query(gql`
-        query {
-          character(id: 1) {
-            name
-            role
-          }
-        }
-      `),
-    ).resolves.toEqual({
-      data: {
-        character: { name: 'ルルーシュ・ランペルージ', role: 1 },
-      },
-    });
-  });
-});
-
-describe('person', () => {
-  test('should get', async () => {
-    await expect(
-      testClient.query(gql`
-        query {
-          person(id: 1) {
-            name
-            career
-          }
-        }
-      `),
-    ).resolves.toEqual({
-      data: {
-        person: {
-          name: '水樹奈々',
-          career: ['artist', 'seiyu'],
-        },
-      },
-    });
   });
 });

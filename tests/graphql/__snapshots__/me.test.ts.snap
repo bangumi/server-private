@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`me > should return error 1`] = `
+Object {
+  "code": "TOKEN_INVALID",
+  "error": "Unauthorized",
+  "message": "can't find access token or it has been expired",
+  "statusCode": 401,
+}
+`;
