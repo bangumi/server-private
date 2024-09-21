@@ -2,6 +2,8 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 import { BooleanTransformer, htmlEscapedString } from '@app/lib/orm/transformer.ts';
 
+import type { User } from './user';
+
 @Entity('chii_groups', { schema: 'bangumi' })
 export class Group {
   @PrimaryGeneratedColumn({ type: 'smallint', name: 'grp_id', unsigned: true })
@@ -139,6 +141,8 @@ export class GroupTopic {
     default: () => "'1'",
   })
   display!: number;
+
+  creator!: User;
 }
 
 @Index('pss_topic_id', ['topicID'], {})
@@ -179,4 +183,6 @@ export class GroupPost {
     default: () => "'0'",
   })
   dateline!: number;
+
+  creator!: User;
 }

@@ -459,6 +459,8 @@ export class SubjectPost {
 
   @Column('int', { name: 'sbj_pst_dateline', unsigned: true, default: 0 })
   dateline!: number;
+
+  creator!: User;
 }
 
 @Index('interest_collect_dateline', ['collectDateline'], {})
