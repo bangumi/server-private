@@ -79,7 +79,7 @@ export function setup(app: App) {
     },
     async ({ body, auth }) => {
       if (!auth.permission.subject_lock) {
-        throw NotAllowedError('lock a subject');
+        throw NotAllowedError('unlock a subject');
       }
 
       await AppDataSource.transaction(async (txn) => {
