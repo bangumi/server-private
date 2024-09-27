@@ -232,13 +232,14 @@ export async function setup(app: App) {
         eps = Number.parseInt(w.data.get('集数')?.value ?? '0') || 0;
       }
 
-      const newSubject = {
+      const newSubject: Partial<entity.Subject> = {
         name: body.name,
         nameCN: w.data.get('中文名')?.value ?? '',
         platform: body.platform,
         fieldInfobox: body.infobox,
         typeID: body.type,
         fieldSummary: body.summary,
+        subjectNsfw: body.nsfw,
         fieldEps: eps,
         updatedAt: DateTime.now().toUnixInteger(),
       };
