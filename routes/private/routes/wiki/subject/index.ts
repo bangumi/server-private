@@ -12,7 +12,12 @@ import * as entity from '@app/lib/orm/entity';
 import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import { InvalidWikiSyntaxError, platforms, SubjectType } from '@app/lib/subject/index.ts';
+import {
+  InvalidWikiSyntaxError,
+  platforms,
+  SubjectRevType,
+  SubjectType,
+} from '@app/lib/subject/index.ts';
 import PlatformConfig from '@app/lib/subject/platform.ts';
 import { SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -21,6 +26,7 @@ import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 import * as imageRoutes from './image.ts';
+import * as manageRoutes from './mgr.ts';
 
 const exampleSubjectEdit = {
   name: '沙盒',
@@ -133,6 +139,7 @@ export const SubjectWikiInfo = t.Object(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   imageRoutes.setup(app);
+  manageRoutes.setup(app);
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
@@ -286,6 +293,7 @@ export async function setup(app: App) {
           .insert()
           .values({
             subjectID: r.insertId,
+            type: SubjectRevType.edit,
             name: newSubject.name,
             nameCN: newSubject.nameCN,
             infobox: newSubject.fieldInfobox,

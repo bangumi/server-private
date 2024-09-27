@@ -7,6 +7,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
+import type { Permission } from '@app/lib/orm/index.ts';
+import { SubjectRepo } from '@app/lib/orm/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
@@ -330,5 +332,56 @@ describe('should upload image', () => {
       expect.stringMatching(/.*\.jpe?g$/),
       expect.objectContaining({}),
     );
+  });
+});
+
+const lockSubjectApp = () =>
+  testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true, subject_lock: true } as Permission,
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
+describe('lock subject', () => {
+  const subjectID = 12;
+  test('lock subject', async () => {
+    const app = await lockSubjectApp();
+    const res = await app.inject({
+      url: '/lock/subjects',
+      method: 'post',
+      payload: {
+        reason: 'string',
+        subjectID: subjectID,
+      },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`Object {}`);
+    expect(res.statusCode).toBe(200);
+
+    const subject = await SubjectRepo.findOneBy({ id: subjectID });
+    expect(subject?.subjectBan).toBe(1);
+  });
+
+  test('unlock subject', async () => {
+    const app = await lockSubjectApp();
+    const res = await app.inject({
+      url: '/unlock/subjects',
+      method: 'post',
+      payload: {
+        reason: 'string',
+        subjectID: subjectID,
+      },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`Object {}`);
+    expect(res.statusCode).toBe(200);
+
+    const subject = await SubjectRepo.findOneBy({ id: subjectID });
+    expect(subject?.subjectBan).toBe(0);
   });
 });
