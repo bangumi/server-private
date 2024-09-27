@@ -5,7 +5,7 @@ import * as entity from '@app/lib/orm/entity/index.ts';
 import { AppDataSource, SubjectRepo, SubjectRevRepo } from '@app/lib/orm/index.ts';
 
 import * as Subject from './index.ts';
-import { SubjectType } from './index.ts';
+import { SubjectRevType, SubjectType } from './index.ts';
 
 describe('should update subject', () => {
   const subjectMock = vi.fn();
@@ -74,6 +74,7 @@ describe('should update subject', () => {
       name: 'q',
       nameCN: '',
       platform: 3,
+      type: SubjectRevType.edit,
       subjectID: 363612,
       summary: 'summary summary 2',
       typeID: SubjectType.Anime,

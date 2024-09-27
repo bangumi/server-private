@@ -348,6 +348,7 @@ const lockSubjectApp = () =>
   });
 
 describe('lock subject', () => {
+  const subjectID = 12;
   test('lock subject', async () => {
     const app = await lockSubjectApp();
     const res = await app.inject({
@@ -355,14 +356,14 @@ describe('lock subject', () => {
       method: 'post',
       payload: {
         reason: 'string',
-        subjectID: 8,
+        subjectID: subjectID,
       },
     });
 
     expect(res.json()).toMatchInlineSnapshot(`Object {}`);
     expect(res.statusCode).toBe(200);
 
-    const subject = await SubjectRepo.findOneBy({ id: 8 });
+    const subject = await SubjectRepo.findOneBy({ id: subjectID });
     expect(subject?.subjectBan).toBe(1);
   });
 
@@ -373,14 +374,14 @@ describe('lock subject', () => {
       method: 'post',
       payload: {
         reason: 'string',
-        subjectID: 8,
+        subjectID: subjectID,
       },
     });
 
     expect(res.json()).toMatchInlineSnapshot(`Object {}`);
     expect(res.statusCode).toBe(200);
 
-    const subject = await SubjectRepo.findOneBy({ id: 8 });
+    const subject = await SubjectRepo.findOneBy({ id: subjectID });
     expect(subject?.subjectBan).toBe(0);
   });
 });
