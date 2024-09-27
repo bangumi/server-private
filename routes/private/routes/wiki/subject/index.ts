@@ -198,10 +198,10 @@ export async function setup(app: App) {
         body: SubjectNew,
         response: {
           200: t.Object({ subjectID: t.Number() }),
-          401: t.Ref(res.Error, {}),
-          [StatusCodes.BAD_REQUEST]: {
+          [StatusCodes.BAD_REQUEST]: t.Ref(res.Error, {
             'x-examples': formatErrors(InvalidWikiSyntaxError()),
-          },
+          }),
+          401: t.Ref(res.Error, {}),
         },
       },
     },
