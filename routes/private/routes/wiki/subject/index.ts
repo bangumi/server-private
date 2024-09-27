@@ -269,6 +269,9 @@ export async function setup(app: App) {
           .execute();
 
         if (eps) {
+          // avoid create too many episodes, 50 is enough.
+          eps = Math.min(eps, 50);
+
           const episodes = Array.from({ length: eps })
             .fill(null)
             .map((_, index) => {
