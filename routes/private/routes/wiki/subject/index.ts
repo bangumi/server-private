@@ -1,6 +1,7 @@
 import { parseToMap } from '@bgm38/wiki';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
@@ -196,9 +197,10 @@ export async function setup(app: App) {
         body: SubjectNew,
         response: {
           200: t.Object({ subjectID: t.Number() }),
-          401: t.Ref(res.Error, {
+          401: t.Ref(res.Error, {}),
+          [StatusCodes.BAD_REQUEST]: {
             'x-examples': formatErrors(InvalidWikiSyntaxError()),
-          }),
+          },
         },
       },
     },
