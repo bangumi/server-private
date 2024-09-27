@@ -14,6 +14,7 @@ import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError, platforms, SubjectType } from '@app/lib/subject/index.ts';
 import PlatformConfig from '@app/lib/subject/platform.ts';
+import { SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -209,7 +210,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
-      if (!(body.type in SubjectType)) {
+      if (!SubjectTypeValues.has(body.type)) {
         throw new BadRequestError(`条目类型错误`);
       }
 
