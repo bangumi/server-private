@@ -49,6 +49,7 @@ module.exports = {
       ],
       plugins: ['@typescript-eslint', 'tsdoc'],
       rules: {
+        '@typescript-eslint/restrict-template-expressions': 'off',
         'unicorn/import-style': 'off',
         'rulesdir/no-relative-parent-import': 'error',
         'unused-imports/no-unused-imports': 'error',
