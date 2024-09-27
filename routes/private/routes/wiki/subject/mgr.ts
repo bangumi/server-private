@@ -36,7 +36,7 @@ export function setup(app: App) {
           .getRepository(entity.Subject)
           .createQueryBuilder()
           .update({ subjectBan: 1 })
-          .where('id = :l', { l: body.subjectID })
+          .where('id = :id', { id: body.subjectID })
           .execute();
 
         await txn
@@ -83,7 +83,7 @@ export function setup(app: App) {
           .getRepository(entity.Subject)
           .createQueryBuilder()
           .update({ subjectBan: 0 })
-          .where('id = :l', { l: body.subjectID })
+          .where('id = :id', { id: body.subjectID })
           .execute();
 
         await txn
