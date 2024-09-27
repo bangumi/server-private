@@ -132,6 +132,7 @@ export async function edit({
       summary,
       infobox,
       creatorID: userID,
+      type: SubjectRevType.edit,
       typeID: s.typeID,
       name,
       platform,
@@ -319,3 +320,9 @@ const subjectImageVoteOrder = [
   UserGroup.WikiAdmin,
   UserGroup.WikiEditor,
 ] as const;
+
+export const SubjectRevType = Object.freeze({
+  edit: 1,
+  lock: 103,
+  unlock: 104,
+});

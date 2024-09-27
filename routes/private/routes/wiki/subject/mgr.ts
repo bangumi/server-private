@@ -5,13 +5,9 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
 import { AppDataSource } from '@app/lib/orm/index.ts';
+import { SubjectRevType } from '@app/lib/subject/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
-
-const SubjectRevType = Object.freeze({
-  lock: 103,
-  unlock: 104,
-});
 
 export function setup(app: App) {
   app.post(
