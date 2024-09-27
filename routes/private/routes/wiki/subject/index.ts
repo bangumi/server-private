@@ -21,6 +21,7 @@ import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 import * as imageRoutes from './image.ts';
+import * as manageRoutes from './mgr.ts';
 
 const exampleSubjectEdit = {
   name: '沙盒',
@@ -133,6 +134,7 @@ export const SubjectWikiInfo = t.Object(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   imageRoutes.setup(app);
+  manageRoutes.setup(app);
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
