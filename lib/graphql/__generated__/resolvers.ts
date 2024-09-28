@@ -58,7 +58,7 @@ export type CharacterSubjectsArgs = {
 
 export type CharacterRelatedPerson = {
   __typename?: 'CharacterRelatedPerson';
-  person: Person;
+  person: SlimPerson;
   subject: SlimSubject;
   summary: Scalars['String']['output'];
 };
@@ -136,7 +136,7 @@ export type PersonSubjectsArgs = {
 
 export type PersonRelatedCharacter = {
   __typename?: 'PersonRelatedCharacter';
-  character: Character;
+  character: SlimCharacter;
   subject: SlimSubject;
   summary: Scalars['String']['output'];
 };
@@ -165,6 +165,41 @@ export type QueryPersonArgs = {
 
 export type QuerySubjectArgs = {
   id: Scalars['Int']['input'];
+};
+
+/** Basic character info as field of other types to avoid recursive query */
+export type SlimCharacter = {
+  __typename?: 'SlimCharacter';
+  collects: Scalars['Int']['output'];
+  comment: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  images?: Maybe<Images>;
+  infobox?: Maybe<Array<Infobox>>;
+  last_post: Scalars['Int']['output'];
+  lock: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  nsfw: Scalars['Boolean']['output'];
+  redirect: Scalars['Int']['output'];
+  role: Scalars['Int']['output'];
+  summary: Scalars['String']['output'];
+};
+
+/** Basic person info as field of other types to avoid recursive query */
+export type SlimPerson = {
+  __typename?: 'SlimPerson';
+  career: Array<Scalars['String']['output']>;
+  collects: Scalars['Int']['output'];
+  comment: Scalars['Int']['output'];
+  id: Scalars['Int']['output'];
+  images?: Maybe<Images>;
+  infobox?: Maybe<Array<Infobox>>;
+  last_post: Scalars['Int']['output'];
+  lock: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  nsfw: Scalars['Boolean']['output'];
+  redirect: Scalars['Int']['output'];
+  summary: Scalars['String']['output'];
+  type: Scalars['Int']['output'];
 };
 
 /** A subject as field of other types to avoid recursive query */
@@ -293,14 +328,14 @@ export type SubjectRating = {
 
 export type SubjectRelatedCharacter = {
   __typename?: 'SubjectRelatedCharacter';
-  character: Character;
+  character: SlimCharacter;
   order: Scalars['Int']['output'];
   type: Scalars['Int']['output'];
 };
 
 export type SubjectRelatedPerson = {
   __typename?: 'SubjectRelatedPerson';
-  person: Person;
+  person: SlimPerson;
   position: Scalars['Int']['output'];
 };
 
@@ -436,6 +471,8 @@ export type ResolversTypes = {
   PersonRelatedCharacter: ResolverTypeWrapper<PersonRelatedCharacter>;
   PersonRelatedSubject: ResolverTypeWrapper<PersonRelatedSubject>;
   Query: ResolverTypeWrapper<{}>;
+  SlimCharacter: ResolverTypeWrapper<SlimCharacter>;
+  SlimPerson: ResolverTypeWrapper<SlimPerson>;
   SlimSubject: ResolverTypeWrapper<SlimSubject>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subject: ResolverTypeWrapper<Subject>;
@@ -469,6 +506,8 @@ export type ResolversParentTypes = {
   PersonRelatedCharacter: PersonRelatedCharacter;
   PersonRelatedSubject: PersonRelatedSubject;
   Query: {};
+  SlimCharacter: SlimCharacter;
+  SlimPerson: SlimPerson;
   SlimSubject: SlimSubject;
   String: Scalars['String']['output'];
   Subject: Subject;
@@ -531,7 +570,7 @@ export type CharacterRelatedPersonResolvers<
   ParentType extends
     ResolversParentTypes['CharacterRelatedPerson'] = ResolversParentTypes['CharacterRelatedPerson'],
 > = {
-  person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
+  person?: Resolver<ResolversTypes['SlimPerson'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -632,7 +671,7 @@ export type PersonRelatedCharacterResolvers<
   ParentType extends
     ResolversParentTypes['PersonRelatedCharacter'] = ResolversParentTypes['PersonRelatedCharacter'],
 > = {
-  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>;
+  character?: Resolver<ResolversTypes['SlimCharacter'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -671,6 +710,45 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QuerySubjectArgs, 'id'>
   >;
+};
+
+export type SlimCharacterResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['SlimCharacter'] = ResolversParentTypes['SlimCharacter'],
+> = {
+  collects?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  comment?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  images?: Resolver<Maybe<ResolversTypes['Images']>, ParentType, ContextType>;
+  infobox?: Resolver<Maybe<Array<ResolversTypes['Infobox']>>, ParentType, ContextType>;
+  last_post?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lock?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nsfw?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  redirect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SlimPersonResolvers<
+  ContextType = Context,
+  ParentType extends ResolversParentTypes['SlimPerson'] = ResolversParentTypes['SlimPerson'],
+> = {
+  career?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  collects?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  comment?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  images?: Resolver<Maybe<ResolversTypes['Images']>, ParentType, ContextType>;
+  infobox?: Resolver<Maybe<Array<ResolversTypes['Infobox']>>, ParentType, ContextType>;
+  last_post?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  lock?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  nsfw?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  redirect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type SlimSubjectResolvers<
@@ -823,7 +901,7 @@ export type SubjectRelatedCharacterResolvers<
   ParentType extends
     ResolversParentTypes['SubjectRelatedCharacter'] = ResolversParentTypes['SubjectRelatedCharacter'],
 > = {
-  character?: Resolver<ResolversTypes['Character'], ParentType, ContextType>;
+  character?: Resolver<ResolversTypes['SlimCharacter'], ParentType, ContextType>;
   order?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -834,7 +912,7 @@ export type SubjectRelatedPersonResolvers<
   ParentType extends
     ResolversParentTypes['SubjectRelatedPerson'] = ResolversParentTypes['SubjectRelatedPerson'],
 > = {
-  person?: Resolver<ResolversTypes['Person'], ParentType, ContextType>;
+  person?: Resolver<ResolversTypes['SlimPerson'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -898,6 +976,8 @@ export type Resolvers<ContextType = Context> = {
   PersonRelatedCharacter?: PersonRelatedCharacterResolvers<ContextType>;
   PersonRelatedSubject?: PersonRelatedSubjectResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SlimCharacter?: SlimCharacterResolvers<ContextType>;
+  SlimPerson?: SlimPersonResolvers<ContextType>;
   SlimSubject?: SlimSubjectResolvers<ContextType>;
   Subject?: SubjectResolvers<ContextType>;
   SubjectAirtime?: SubjectAirtimeResolvers<ContextType>;

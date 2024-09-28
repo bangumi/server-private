@@ -1,6 +1,6 @@
 type Query {
-    character(id: Int!): Character
     me: User
+    character(id: Int!): Character
     person(id: Int!): Person
     subject(id: Int!): Subject
 }
@@ -9,6 +9,22 @@ type Avatar {
     large: String!
     medium: String!
     small: String!
+}
+
+"""basic character info as field of other types to avoid recursive query"""
+type SlimCharacter {
+    collects: Int!
+    comment: Int!
+    id: Int!
+    images: Images
+    infobox: [Infobox!]
+    last_post: Int!
+    lock: Int!
+    name: String!
+    nsfw: Boolean!
+    redirect: Int!
+    role: Int!
+    summary: String!
 }
 
 type Character {
@@ -29,7 +45,7 @@ type Character {
 }
 
 type CharacterRelatedPerson {
-    person: Person!
+    person: SlimPerson!
     subject: SlimSubject!
     summary: String!
 }
@@ -71,6 +87,23 @@ type InfoboxValue {
     v: String
 }
 
+"""basic person info as field of other types to avoid recursive query"""
+type SlimPerson {
+    career: [String!]!
+    collects: Int!
+    comment: Int!
+    id: Int!
+    images: Images
+    infobox: [Infobox!]
+    last_post: Int!
+    lock: Int!
+    name: String!
+    nsfw: Boolean!
+    redirect: Int!
+    summary: String!
+    type: Int!
+}
+
 type Person {
     career: [String!]!
     characters(limit: Int! = 10, offset: Int! = 0): [PersonRelatedCharacter!]
@@ -90,7 +123,7 @@ type Person {
 }
 
 type PersonRelatedCharacter {
-    character: Character!
+    character: SlimCharacter!
     subject: SlimSubject!
     summary: String!
 }
@@ -192,13 +225,13 @@ type SubjectRating {
 }
 
 type SubjectRelatedCharacter {
-    character: Character!
+    character: SlimCharacter!
     order: Int!
     type: Int!
 }
 
 type SubjectRelatedPerson {
-    person: Person!
+    person: SlimPerson!
     position: Int!
 }
 
