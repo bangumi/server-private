@@ -1,15 +1,15 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import * as php from '@trim21/php-serialize';
-import { extendType, intArg, list, nonNull, objectType } from 'nexus';
+import { intArg, list, nonNull, objectType } from 'nexus';
 
+import type * as types from '@app/lib/graphql/__generated__/resolvers.ts';
 import type { Context } from '@app/lib/graphql/context.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import {
   CharacterSubjectsRepo,
   PersonSubjectsRepo,
   SubjectRelationRepo,
-  SubjectRepo,
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
@@ -371,9 +371,13 @@ const Subject = objectType({
   },
 });
 
-export function convertSubject(subject: entity.Subject) {
+export function convertSubject(subject: entity.Subject): types.Subject {
   const fields = subject.fields;
-  const platform = platforms(subject.typeID).find((x) => x.id === subject.platform);
+  const platform = platforms(subject.typeID).find((x) => x.id === subject.platform) ?? {
+    id: 0,
+    type: '',
+    type_cn: '',
+  };
   let wiki: Wiki = {
     type: '',
     data: [],
@@ -450,7 +454,7 @@ export function convertSubject(subject: entity.Subject) {
     nsfw: subject.subjectNsfw,
     locked: subject.locked(),
     redirect: fields.fieldRedirect,
-    tags: (php.parse(fields.fieldTags) as { tag_name: string | undefined; result: string }[])
+    tags: (php.parse(fields.fieldTags) as { tag_name: string; result: string }[])
       .filter((x) => x.tag_name !== undefined)
       .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
       .filter((x) => !Number.isNaN(x.count)),
@@ -470,27 +474,4 @@ export function convertTopic(topic: entity.SubjectTopic) {
   };
 }
 
-const SubjectByIDQuery = extendType({
-  type: 'Query',
-  definition(t) {
-    t.field('subject', {
-      type: Subject,
-      args: { id: nonNull(intArg()) },
-      async resolve(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
-        let query = SubjectRepo.createQueryBuilder('s')
-          .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
-          .where('s.id = :id', { id });
-        if (!allowNsfw) {
-          query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
-        }
-        const subject = await query.getOne();
-        if (!subject) {
-          return null;
-        }
-        return convertSubject(subject);
-      },
-    });
-  },
-});
-
-export default [Episode, Subject, SubjectByIDQuery];
+export default [Episode, Subject];

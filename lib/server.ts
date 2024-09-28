@@ -15,7 +15,7 @@ import { emptyAuth } from './auth/index.ts';
 import * as auth from './auth/index.ts';
 import config, { testing, VERSION } from './config.ts';
 import type { Context } from './graphql/context.ts';
-import { schema } from './graphql/schema.ts';
+import { resolvers, schema } from './graphql/schema.ts';
 import { repo } from './orm/index.ts';
 import type * as res from './types/res.ts';
 
@@ -114,6 +114,7 @@ export async function createServer(
 
   await server.register(mercurius, {
     schema,
+    resolvers,
     path: '/v0/graphql',
     graphiql: false,
     queryDepth: 5,

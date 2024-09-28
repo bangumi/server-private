@@ -15,7 +15,7 @@ module.exports = {
     'prettier',
   ],
   plugins: ['import', 'unicorn', 'unused-imports', 'rulesdir', 'simple-import-sort'],
-  ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*'],
+  ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*', '**/__generated__/**'],
   env: {
     browser: false,
     node: true,
