@@ -116,7 +116,6 @@ export async function createServer(
     schema,
     resolvers,
     path: '/v0/graphql',
-    graphiql: false,
     queryDepth: 5,
     allowBatchedQueries: true,
     context: async (request: FastifyRequest): Promise<Context> => {

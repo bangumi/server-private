@@ -74,8 +74,9 @@ export const AppDataSource = new DataSource({
       logger.error({ error, query, parameters }, 'query error');
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    logQuery() {},
+    logQuery(query, params) {
+      logger.trace({ query, params });
+    },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     logSchemaBuild() {},
     // eslint-disable-next-line @typescript-eslint/no-empty-function
