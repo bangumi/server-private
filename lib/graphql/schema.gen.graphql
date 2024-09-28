@@ -98,7 +98,6 @@ type PersonRelatedSubject {
 }
 
 type Query {
-  _service: _Service!
   character(id: Int!): Character!
   me: User
   person(id: Int!): Person!
@@ -213,8 +212,4 @@ type User {
   id: Int!
   nickname: String!
   username: String!
-}
-
-type _Service {
-  sdl: String!
 }

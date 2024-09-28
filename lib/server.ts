@@ -113,7 +113,7 @@ export async function createServer(
   }
 
   await server.register(mercurius, {
-    schema: schema,
+    schema,
     path: '/v0/graphql',
     graphiql: false,
     queryDepth: 5,
