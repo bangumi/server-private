@@ -6,7 +6,7 @@ import { production, stage, testing, VERSION } from './config.ts';
 
 function createLogger() {
   if (testing) {
-    return pino({ level: 'trace' });
+    return pino({ level: 'error' });
   }
 
   if (production || stage) {

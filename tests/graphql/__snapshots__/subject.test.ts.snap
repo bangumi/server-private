@@ -5,7 +5,13 @@ Object {
   "data": null,
   "errors": Array [
     Object {
-      "message": "\`unnamedQuery query depth (6) exceeds the query depth limit of 5\`",
+      "locations": Array [
+        Object {
+          "column": 9,
+          "line": 8,
+        },
+      ],
+      "message": "Cannot query field "relations" on type "SlimSubject". Did you mean "rating"?",
     },
   ],
 }

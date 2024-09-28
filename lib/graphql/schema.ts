@@ -3,16 +3,22 @@ import * as path from 'node:path';
 
 import { projectRoot } from '@app/lib/config.ts';
 import type { Context } from '@app/lib/graphql/context.ts';
-import { convertCharacter } from '@app/lib/graphql/types/character.ts';
-import { convertPerson } from '@app/lib/graphql/types/person.ts';
-import { convertSubject, convertTopic } from '@app/lib/graphql/types/subject.ts';
+import { convertCharacter } from '@app/lib/graphql/resolvers/character.ts';
+import { convertPerson } from '@app/lib/graphql/resolvers/person.ts';
+import {
+  convertSubject,
+  convertTopic,
+  subjectResolver,
+} from '@app/lib/graphql/resolvers/subject.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import {
+  CastRepo,
+  CharacterRepo,
   CharacterSubjectsRepo,
   fetchUser,
+  PersonRepo,
   PersonSubjectsRepo,
   SubjectRelationRepo,
-  SubjectRepo,
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
@@ -20,24 +26,14 @@ import { ListTopicDisplays } from '@app/lib/topic/index.ts';
 
 import type * as types from './__generated__/resolvers.ts';
 
-const subjectResolver: types.QueryResolvers['subject'] = async (
-  _parent,
-  { id },
-  { auth: { allowNsfw } },
-): Promise<types.Subject | null> => {
-  let query = SubjectRepo.createQueryBuilder('s')
-    .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
-    .where('s.id = :id', { id });
-  if (!allowNsfw) {
-    query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
-  }
-  const subject = await query.getOne();
-  if (!subject) {
-    return null;
-  }
-
-  return convertSubject(subject);
-};
+export function convertUser(user: entity.User) {
+  return {
+    id: user.id,
+    username: user.username,
+    nickname: user.nickname,
+    avatar: avatar(user.avatar),
+  };
+}
 
 export const resolvers = {
   Query: {
@@ -60,6 +56,32 @@ export const resolvers = {
     },
 
     subject: subjectResolver,
+
+    async person(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
+      let query = PersonRepo.createQueryBuilder('c').where('c.id = :id', { id });
+      if (!allowNsfw) {
+        query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
+      }
+      query = query.andWhere('c.ban = 0');
+      const person = await query.getOne();
+      if (!person) {
+        return null;
+      }
+      return convertPerson(person);
+    },
+
+    async character(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
+      let query = CharacterRepo.createQueryBuilder('c').where('c.id = :id', { id });
+      if (!allowNsfw) {
+        query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
+      }
+      query = query.andWhere('c.ban = 0');
+      const character = await query.getOne();
+      if (!character) {
+        return null;
+      }
+      return convertCharacter(character);
+    },
   },
 
   Subject: {
@@ -209,6 +231,93 @@ export const resolvers = {
           order: r.order,
         };
       });
+    },
+  },
+  Character: {
+    async subjects(
+      parent: { id: number },
+      { limit, offset }: { limit: number; offset: number },
+      { auth: { allowNsfw } }: Context,
+    ) {
+      let query = CharacterSubjectsRepo.createQueryBuilder('r')
+        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
+        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+        .where('r.characterID = :id', { id: parent.id });
+      if (!allowNsfw) {
+        query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+      }
+      const relations = await query
+        .orderBy('r.type', 'ASC')
+        .orderBy('r.order', 'ASC')
+        .skip(offset)
+        .take(limit)
+        .getMany();
+      return relations.map((r) => ({
+        subject: convertSubject(r.subject),
+        type: r.type,
+        order: r.order,
+      }));
+    },
+    async persons(
+      parent: { id: number },
+      { limit, offset }: { limit: number; offset: number },
+      { auth: { allowNsfw } }: Context,
+    ) {
+      const query = CastRepo.createQueryBuilder('r')
+        .innerJoinAndMapOne('r.person', entity.Person, 'p', 'p.id = r.personID')
+        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
+        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+        .where('r.characterID = :id', { id: parent.id });
+      if (!allowNsfw) {
+        query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+      }
+      const relations = await query.skip(offset).take(limit).getMany();
+      return relations.map((r) => ({
+        person: convertPerson(r.person),
+        subject: convertSubject(r.subject),
+        summary: r.summary,
+      }));
+    },
+  },
+  Person: {
+    async characters(
+      parent: { id: number },
+      { limit, offset }: { limit: number; offset: number },
+      { auth: { allowNsfw } }: Context,
+    ) {
+      const query = CastRepo.createQueryBuilder('r')
+        .innerJoinAndMapOne('r.character', entity.Character, 'c', 'c.id = r.characterID')
+        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
+        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+        .where('r.personID = :id', { id: parent.id });
+      if (!allowNsfw) {
+        query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+      }
+      const relations = await query.skip(offset).take(limit).getMany();
+      return relations.map((r) => ({
+        character: convertCharacter(r.character),
+        subject: convertSubject(r.subject),
+        summary: r.summary,
+      }));
+    },
+
+    async subjects(
+      parent: { id: number },
+      { limit, offset }: { limit: number; offset: number },
+      { auth: { allowNsfw } }: Context,
+    ) {
+      let query = PersonSubjectsRepo.createQueryBuilder('r')
+        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
+        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+        .where('r.personID = :id', { id: parent.id });
+      if (!allowNsfw) {
+        query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+      }
+      const relations = await query.orderBy('r.position', 'ASC').skip(offset).take(limit).getMany();
+      return relations.map((r) => ({
+        subject: convertSubject(r.subject),
+        position: r.position,
+      }));
     },
   },
 } satisfies types.Resolvers;

@@ -1,30 +1,13 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import * as php from '@trim21/php-serialize';
-import { objectType } from 'nexus';
 
-import type * as entity from '@app/lib/orm/entity/index.ts';
+import type * as types from '@app/lib/graphql/__generated__/resolvers.ts';
+import { convertUser } from '@app/lib/graphql/schema.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import { SubjectRepo } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
 import { platforms } from '@app/lib/subject/index.ts';
-
-import { convertUser } from './user.ts';
-
-const Episode = objectType({
-  name: 'Episode',
-  definition(t) {
-    t.nonNull.int('id');
-    t.nonNull.string('name');
-    t.nonNull.string('name_cn');
-    t.nonNull.string('description');
-    t.nonNull.string('airdate');
-    t.nonNull.int('comment');
-    t.nonNull.int('last_post');
-    t.nonNull.int('type');
-    t.nonNull.int('disc');
-    t.nonNull.string('duration');
-    t.nonNull.float('sort');
-  },
-});
 
 export function convertSubject(subject: entity.Subject) {
   const fields = subject.fields;
@@ -129,4 +112,21 @@ export function convertTopic(topic: entity.SubjectTopic) {
   };
 }
 
-export default [Episode];
+export const subjectResolver: types.QueryResolvers['subject'] = async (
+  _parent,
+  { id },
+  { auth: { allowNsfw } },
+): Promise<types.Subject | null> => {
+  let query = SubjectRepo.createQueryBuilder('s')
+    .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
+    .where('s.id = :id', { id });
+  if (!allowNsfw) {
+    query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+  }
+  const subject = await query.getOne();
+  if (!subject) {
+    return null;
+  }
+
+  return convertSubject(subject);
+};
