@@ -31,6 +31,7 @@
     "@fastify/static": "^7.0.4",
     "@fastify/swagger": "^8.15.0",
     "@fastify/view": "^9.1.0",
+    "@mercuriusjs/federation": "^4.0.0",
     "@node-rs/bcrypt": "^1.10.4",
     "@sinclair/typebox": "~0.33.12",
     "@trim21/php-serialize": "^0.1.1",
