@@ -3,13 +3,13 @@
 [![deployed version](https://img.shields.io/badge/dynamic/yaml?label=deployed&query=info.version&url=https%3A%2F%2Fnext.bgm.tv%2Fp1%2Fopenapi.yaml)](https://next.bgm.tv/p1/)
 ![Codecov](https://img.shields.io/codecov/c/github/bangumi/server-private)
 
-fastify + TypeORM + mercurius + nexus
+fastify + TypeORM + mercurius
 
 ## GraphQL API
 
 <https://api.bgm.tv/v0/altair/>
 
-[schema](./lib/graphql/schema.gen.graphql)
+[schema](./lib/graphql/schema.graphql)
 
 ## REST API
 
@@ -19,7 +19,7 @@ fastify + TypeORM + mercurius + nexus
 
 ### 安装依赖
 
-使用 `pnpm@8` 进行依赖管理
+使用 `pnpm` 进行依赖管理
 
 #### 启用 pnpm
 
