@@ -3,3 +3,4 @@ dist/
 coverage/
 .husky/_/
 pnpm-lock.yaml
+vendor/common

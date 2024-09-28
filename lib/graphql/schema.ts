@@ -85,7 +85,7 @@ export const resolvers = {
   },
 
   Subject: {
-    tags(parent, { limit }): types.SubjectTag[] {
+    tags(parent: types.Subject, { limit }): types.SubjectTag[] {
       if (limit && limit > 0) {
         return parent.tags.slice(0, limit);
       }

@@ -16,7 +16,7 @@
     "strictNullChecks": true,
     "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": true,
     "pretty": true,
     "sourceMap": false,
     "declaration": false,
