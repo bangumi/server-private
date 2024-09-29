@@ -61,7 +61,7 @@ export function setup(app: App) {
     '/unlock/subjects',
     {
       schema: {
-        operationId: 'lockSubject',
+        operationId: 'unlockSubject',
         tags: [Tag.Wiki],
         body: t.Object({
           subjectID: t.Integer({ examples: [184017] }),
