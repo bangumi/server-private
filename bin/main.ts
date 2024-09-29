@@ -16,7 +16,7 @@ if (process.argv.includes('--help') || process.argv.includes('-h')) {
 }
 
 const server = await createServer({
-  logger: logger.child({ name: 'fastify' }, { level: production ? 'warn' : 'info' }),
+  loggerInstance: logger.child({ name: 'fastify' }, { level: production ? 'warn' : 'info' }),
   disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
   genReqId: (): string => {
     return `dummy-${crypto.randomUUID()}`;

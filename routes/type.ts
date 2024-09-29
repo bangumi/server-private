@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
-import type { Static, TSchema } from '@sinclair/typebox';
+import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import type {
   ContextConfigDefault,
   FastifyBaseLogger,
@@ -8,7 +8,6 @@ import type {
   FastifyReply,
   FastifyRequest,
   FastifySchema,
-  FastifyTypeProvider,
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault,
@@ -16,11 +15,6 @@ import type {
   RouteHandlerMethod,
 } from 'fastify';
 import type { ResolveFastifyRequestType } from 'fastify/types/type-provider.d.ts';
-
-// from https://github.com/fastify/fastify-type-provider-typebox/blob/v3.1.0/index.ts#L56
-export interface TypeBoxTypeProvider extends FastifyTypeProvider {
-  output: this['input'] extends TSchema ? Static<this['input']> : never;
-}
 
 export type App = FastifyInstance<
   RawServerDefault,
@@ -46,10 +40,10 @@ export type Request<schema extends FastifySchema> = FastifyRequest<
 >;
 
 export type Reply<schema extends FastifySchema> = FastifyReply<
+  RouteGenericInterface,
   RawServerDefault,
   RawRequestDefaultExpression,
   RawReplyDefaultExpression,
-  RouteGenericInterface,
   ContextConfigDefault,
   schema,
   TypeBoxTypeProvider

@@ -1,7 +1,6 @@
 import type { Static } from '@sinclair/typebox';
 import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-import AltairFastify from 'altair-fastify-plugin';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 import type { FastifySchemaValidationError } from 'fastify/types/schema.d.ts';
@@ -9,6 +8,7 @@ import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
 import { TypeORMError } from 'typeorm';
 
+import { fastifyAltairPlugin } from '@app/lib/graphql/ui.ts';
 import * as routes from '@app/routes/index.ts';
 
 import { emptyAuth } from './auth/index.ts';
@@ -128,7 +128,7 @@ export async function createServer(
     },
   });
 
-  await server.register(AltairFastify, {
+  await server.register(fastifyAltairPlugin, {
     path: '/v0/altair/',
     baseURL: '/v0/altair/',
     endpointURL: '/v0/graphql',

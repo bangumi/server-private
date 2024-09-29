@@ -15,7 +15,7 @@ import type { App } from '@app/routes/type.ts';
 export async function setup(app: App) {
   logger.debug('setup rest routes');
 
-  app.decorateRequest('auth', null);
+  app.decorateRequest('auth');
 
   const liquid = new Liquid({
     root: path.resolve(projectRoot, 'templates'),
