@@ -4,8 +4,8 @@ import { DateTime } from 'luxon';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
+import { RevType } from '@app/lib/orm/entity';
 import { AppDataSource } from '@app/lib/orm/index.ts';
-import { SubjectRevType } from '@app/lib/subject/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -44,7 +44,7 @@ export function setup(app: App) {
           .createQueryBuilder()
           .insert()
           .values({
-            type: SubjectRevType.lock,
+            type: RevType.subjectLock,
             subjectID: body.subjectID,
             commitMessage: body.reason,
             creatorID: auth.userID,
@@ -91,7 +91,7 @@ export function setup(app: App) {
           .createQueryBuilder()
           .insert()
           .values({
-            type: SubjectRevType.unlock,
+            type: RevType.subjectUnlock,
             subjectID: body.subjectID,
             commitMessage: body.reason,
             creatorID: auth.userID,

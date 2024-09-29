@@ -9,7 +9,7 @@ import { UserGroup } from '@app/lib/auth/index.ts';
 import { BadRequestError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
-import { Like } from '@app/lib/orm/entity/index.ts';
+import { Like, RevType } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import {
   AppDataSource,
@@ -132,7 +132,7 @@ export async function edit({
       summary,
       infobox,
       creatorID: userID,
-      type: SubjectRevType.edit,
+      type: RevType.subjectEdit,
       typeID: s.typeID,
       name,
       platform,
@@ -320,9 +320,3 @@ const subjectImageVoteOrder = [
   UserGroup.WikiAdmin,
   UserGroup.WikiEditor,
 ] as const;
-
-export const SubjectRevType = Object.freeze({
-  edit: 1,
-  lock: 103,
-  unlock: 104,
-});
