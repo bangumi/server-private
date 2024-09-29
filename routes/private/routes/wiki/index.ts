@@ -41,6 +41,7 @@ export async function setupRecentChangeList(app: App) {
         description: '获取最近两天的wiki更新',
         params: t.Object({
           since: t.Integer({
+            default: 0,
             description:
               'unix time stamp, only return last update time >= since\n\nonly allow recent 2 days',
           }),
@@ -51,8 +52,9 @@ export async function setupRecentChangeList(app: App) {
         },
       },
     },
-    async ({ params: { since = 0 } }): Promise<Static<typeof RecentWikiChange>> => {
+    async ({ params: { since } }): Promise<Static<typeof RecentWikiChange>> => {
       since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
+
       const subjects = await orm.SubjectRevRepo.find({
         select: ['subjectID', 'createdAt', 'commitMessage'],
         where: {
@@ -75,7 +77,9 @@ export async function setupRecentChangeList(app: App) {
       });
 
       return {
-        subject: subjects,
+        subject: subjects.map((o) => {
+          return { id: o.subjectID, createdAt: o.createdAt };
+        }),
         persons: persons.map((o) => {
           return { id: o.revMid, createdAt: o.createdAt };
         }),
