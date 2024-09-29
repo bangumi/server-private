@@ -21,7 +21,7 @@ const validChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWX
 export function addRoute(app: App) {
   app.get('/', (req, res) => {
     if (!req.url.endsWith('/')) {
-      return res.redirect(req.routerPath + '/');
+      return res.redirect(req.routeOptions.url + '/');
     }
     void res.type('text/html').send(swaggerUI);
   });
