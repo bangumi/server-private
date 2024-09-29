@@ -9,15 +9,11 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
+import { RevType } from '@app/lib/orm/entity';
 import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import {
-  InvalidWikiSyntaxError,
-  platforms,
-  SubjectRevType,
-  SubjectType,
-} from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError, platforms, SubjectType } from '@app/lib/subject/index.ts';
 import PlatformConfig from '@app/lib/subject/platform.ts';
 import { SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -296,7 +292,7 @@ export async function setup(app: App) {
           .insert()
           .values({
             subjectID: r.insertId,
-            type: SubjectRevType.edit,
+            type: RevType.subjectEdit,
             name: newSubject.name,
             nameCN: newSubject.nameCN,
             infobox: newSubject.fieldInfobox,
