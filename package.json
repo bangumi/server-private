@@ -40,7 +40,7 @@
     "ajv-keywords": "^5.1.0",
     "altair-fastify-plugin": "^7.3.6",
     "fastify": "^4.28.1",
-    "fastify-metrics": "^11.0.0",
+    "fastify-metrics": "^12.1.0",
     "fastify-socket.io": "^5.1.0",
     "got": "^14.4.2",
     "graphql": "^16.9.0",
