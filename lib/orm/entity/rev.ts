@@ -17,6 +17,8 @@ export const RevType = {
 
   characterEdit: 2, // 角色编辑
   personEdit: 3, // 人物编辑
+  personMerge: 15,
+  personErase: 16,
 
   episodeEdit: 18, // 章节
 
@@ -42,8 +44,6 @@ export const RevType = {
 // const TypeCharacterErase = 14;
 // const TypePersonCastRelation = 8; // 人物->声优关联
 // const TypePersonSubjectRelation = 9; // 人物->条目关联
-// const TypePersonMerge = 15; // 人物管理
-// const TypePersonErase = 16;
 
 @Index('rev_crt_id', ['revType', 'revMid'], {})
 @Index('rev_crt_creator', ['revCreator'], {})
@@ -80,7 +80,7 @@ export class RevHistory {
   revTextId!: number;
 
   @Column('int', { name: 'rev_dateline', unsigned: true })
-  revDateline!: number;
+  createdAt!: number;
 
   @Column('mediumint', { name: 'rev_creator', unsigned: true })
   revCreator!: number;

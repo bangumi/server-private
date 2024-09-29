@@ -74,7 +74,7 @@ async function updatePreviousRevRecords({
     revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revText.revTextId,
-    revDateline: now.getTime() / 1000,
+    createdAt: now.getTime() / 1000,
     revMid: episodeID,
     revEditSummary: comment,
   });
@@ -109,7 +109,7 @@ async function createRevRecords({
     revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revText.revTextId,
-    revDateline: now.getTime() / 1000,
+    createdAt: now.getTime() / 1000,
     revMid: episodeID,
     revEditSummary: comment,
   });

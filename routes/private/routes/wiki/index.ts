@@ -2,6 +2,7 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { Tag } from '@app/lib/openapi/index.ts';
+import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
@@ -22,7 +23,8 @@ export async function setup(app: App) {
 export async function setupRecentChangeList(app: App) {
   const RecentWikiChange = t.Object(
     {
-      subject: t.Array(t.Any({})),
+      subject: t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() })),
+      persons: t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() })),
     },
     { $id: 'RecentWikiChange' },
   );
@@ -37,24 +39,50 @@ export async function setupRecentChangeList(app: App) {
         tags: [Tag.Wiki],
         operationId: 'getRecentWiki',
         description: '获取最近两天的wiki更新',
+        params: t.Object({
+          since: t.Integer({
+            default: 0,
+            description:
+              'unix time stamp, only return last update time >= since\n\nonly allow recent 2 days',
+          }),
+        }),
         response: {
           200: t.Ref(RecentWikiChange),
           401: t.Ref(res.Error),
         },
       },
     },
-    async (): Promise<Static<typeof RecentWikiChange>> => {
+    async ({ params: { since } }): Promise<Static<typeof RecentWikiChange>> => {
+      since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
+
       const subjects = await orm.SubjectRevRepo.find({
         select: ['subjectID', 'createdAt', 'commitMessage'],
         where: {
-          createdAt: orm.Gt(Date.now() / 1000 - 3600 * 24 * 2),
+          createdAt: orm.Gte(since),
         },
         order: {
           createdAt: 'DESC',
         },
       });
+
+      const persons = await orm.RevHistoryRepo.find({
+        select: ['revMid', 'createdAt'],
+        where: {
+          createdAt: orm.Gte(since),
+          revType: orm.In([RevType.personEdit, RevType.personMerge, RevType.personErase]),
+        },
+        order: {
+          createdAt: 'DESC',
+        },
+      });
+
       return {
-        subject: subjects,
+        subject: subjects.map((o) => {
+          return { id: o.subjectID, createdAt: o.createdAt };
+        }),
+        persons: persons.map((o) => {
+          return { id: o.revMid, createdAt: o.createdAt };
+        }),
       };
     },
   );
