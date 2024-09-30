@@ -158,8 +158,6 @@ export const GroupTopicRepo = AppDataSource.getRepository(GroupTopic);
 export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
 export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
 
-export const LikeRepo = AppDataSource.getRepository(Like);
-
 export const repo = {
   UserField: UserFieldRepo,
   Friend: FriendRepo,

@@ -401,8 +401,8 @@ export const chiiLikes = mysqlTable(
     mainID: int('main_id').default(0).notNull(),
     relatedID: int('related_id').notNull(),
     uid: mediumint('uid').notNull(),
-    value: mediumint('value').notNull(),
-    ban: tinyint('ban').default(0).notNull(),
+    value: mediumint('value').default(0).notNull(),
+    deleted: tinyint('ban').default(0).notNull(),
     createdAt: int('created_at').notNull(),
   },
   (table) => {
