@@ -1,22 +1,31 @@
 import Cookie from '@fastify/cookie';
 import { createError } from '@fastify/error';
-import * as formbody from '@fastify/formbody';
+import * as formBody from '@fastify/formbody';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime, Duration } from 'luxon';
 
+import { db, op } from '@app/drizzle/db.ts';
+import {
+  chiiAccessToken,
+  chiiApp,
+  chiiOauthClients,
+  chiiOAuthRefreshToken,
+  chiiUser,
+} from '@app/drizzle/schema.ts';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { redisOauthPrefix } from '@app/lib/config.ts';
-import * as entity from '@app/lib/orm/entity/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
-import { AppDataSource, fetchUserX } from '@app/lib/orm/index.ts';
+import { fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import * as res from '@app/lib/types/res.ts';
-import { randomBase62String, randomBytes } from '@app/lib/utils/index.ts';
+import { randomBase62String, randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+
+// 14 days
+const DEFAULT_TOKEN_TTL_SECONDS = 1209600;
 
 export const enum TokenType {
   OauthToken = 0,
@@ -46,7 +55,6 @@ const TokenRequestRefresh = t.Object(
     clientSecret: t.String(),
     refreshToken: t.String(),
     redirectUri: t.String(),
-    state: t.Optional(t.String()),
   },
   { $id: 'TokenRequestRefresh' },
 );
@@ -112,17 +120,12 @@ const InvalidAuthorizationCodeError = createError<[]>(
 );
 const InvalidRefreshTokenError = createError<[]>(
   'INVALID_REFRESH_TOKEN',
-  `Invalid refresh token`,
+  `Invalid refresh token or expired`,
   StatusCodes.BAD_REQUEST,
 );
 const InvalidClientIDError = createError<[]>(
   'INVALID_CLIENT_ID',
   `Invalid client ID`,
-  StatusCodes.BAD_REQUEST,
-);
-const RefreshTokenExpiredError = createError<[]>(
-  'REFRESH_TOKEN_EXPIRED',
-  `Refresh token expired`,
   StatusCodes.BAD_REQUEST,
 );
 
@@ -140,12 +143,13 @@ export async function setup(app: App) {
     }
   });
 
-  await app.register(formbody);
+  await app.register(formBody);
   await app.register(userOauthRoutes);
 }
 
+// export for testing
 // eslint-disable-next-line @typescript-eslint/require-await
-async function userOauthRoutes(app: App) {
+export async function userOauthRoutes(app: App) {
   app.get(
     '/authorize',
     {
@@ -169,8 +173,16 @@ async function userOauthRoutes(app: App) {
       if (req.query.response_type !== 'code') {
         return await reply.view('oauth/authorize', { error: InvalidResponseTypeError });
       }
-      const client = await orm.OauthClientRepo.findOneBy({ clientID: req.query.client_id });
-      if (client === null) {
+
+      const [{ chii_oauth_clients: client = null, chii_members: creator = null } = {}] = await db
+        .select()
+        .from(chiiOauthClients)
+        .innerJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
+        .innerJoin(chiiUser, op.eq(chiiApp.creator, chiiUser.id))
+        .where(op.eq(chiiOauthClients.clientID, req.query.client_id))
+        .limit(1);
+
+      if (!client) {
         return await reply.view('oauth/authorize', {
           error: AppNonexistenceError,
         });
@@ -187,8 +199,7 @@ async function userOauthRoutes(app: App) {
           error: RedirectUriMismatchError,
         });
       }
-      const creator = await orm.UserRepo.findOneBy({ id: client.app.appCreator });
-      if (creator === null) {
+      if (!creator) {
         return await reply.view('oauth/authorize', {
           error: AppCreatorNonexsistenceError,
         });
@@ -199,6 +210,7 @@ async function userOauthRoutes(app: App) {
       });
     },
   );
+
   app.post(
     '/authorize',
     {
@@ -215,17 +227,21 @@ async function userOauthRoutes(app: App) {
         throw new NeedLoginError('oauth authorize');
       }
 
-      const client = await orm.OauthClientRepo.findOneBy({ clientID: req.body.client_id });
-      if (client === null) {
-        throw AppNonexistenceError;
+      const [client] = await db
+        .select()
+        .from(chiiOauthClients)
+        .where(op.eq(chiiOauthClients.clientID, req.body.client_id))
+        .limit(1)
+        .execute();
+      if (!client) {
+        throw new AppNonexistenceError();
       }
 
       if (client.redirectUri !== req.body.redirect_uri) {
-        throw RedirectUriMismatchError;
+        throw new RedirectUriMismatchError();
       }
 
-      const buf = await randomBytes(30);
-      const code = buf.toString('base64url');
+      const code = await randomBase64url(30);
       await redis.setex(`${redisOauthPrefix}:code:${code}`, 60, req.auth.userID);
       const u = new URL(client.redirectUri);
       u.searchParams.set('code', code);
@@ -252,142 +268,172 @@ async function userOauthRoutes(app: App) {
       },
     },
     async (req) => {
-      switch (req.body.grant_type) {
-        case 'authorization_code': {
-          if (!req.body.code) {
-            throw MissingAuthorizationCodeError;
-          }
-          const tokenReq = {
-            clientID: req.body.client_id,
-            clientSecret: req.body.client_secret,
-            code: req.body.code,
-            redirectUri: req.body.redirect_uri,
-            state: req.body.state,
-          };
-          return await tokenFromCode(tokenReq);
+      if (req.body.grant_type === 'authorization_code') {
+        if (!req.body.code) {
+          throw new MissingAuthorizationCodeError();
         }
-        case 'refresh_token': {
-          if (!req.body.refresh_token) {
-            throw MissingRefreshTokenError;
-          }
-          const tokenReq = {
-            clientID: req.body.client_id,
-            clientSecret: req.body.client_secret,
-            refreshToken: req.body.refresh_token,
-            redirectUri: req.body.redirect_uri,
-            state: req.body.state,
-          };
-          return await tokenFromRefresh(tokenReq);
-        }
-        default: {
-          throw InvalidGrantTypeError;
-        }
+
+        return await tokenFromCode({
+          clientID: req.body.client_id,
+          clientSecret: req.body.client_secret,
+          code: req.body.code,
+          redirectUri: req.body.redirect_uri,
+          state: req.body.state,
+        });
       }
+
+      if (req.body.grant_type === 'refresh_token') {
+        if (!req.body.refresh_token) {
+          throw new MissingRefreshTokenError();
+        }
+
+        return await tokenFromRefresh({
+          clientID: req.body.client_id,
+          clientSecret: req.body.client_secret,
+          refreshToken: req.body.refresh_token,
+          redirectUri: req.body.redirect_uri,
+        });
+      }
+
+      throw new InvalidGrantTypeError();
     },
   );
 }
 
 async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
-  const client = await orm.OauthClientRepo.findOneBy({ clientID: req.clientID });
-  if (client === null) {
-    throw AppNonexistenceError;
+  const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await db
+    .select()
+    .from(chiiOauthClients)
+    .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
+    .where(op.eq(chiiOauthClients.clientID, req.clientID))
+    .limit(1)
+    .execute();
+
+  if (!client || !app) {
+    throw new AppNonexistenceError();
   }
   if (client.redirectUri !== req.redirectUri) {
-    throw RedirectUriMismatchError;
+    throw new RedirectUriMismatchError();
   }
   if (client.clientSecret !== req.clientSecret) {
-    throw InvalidClientSecretError;
+    throw new InvalidClientSecretError();
   }
   const userID = await redis.get(`${redisOauthPrefix}:code:${req.code}`);
   if (!userID) {
-    throw InvalidAuthorizationCodeError;
+    throw new InvalidAuthorizationCodeError();
   }
+
+  const now = new Date();
+
   await redis.del(`${redisOauthPrefix}:code:${req.code}`);
   const tokenInfo = JSON.stringify({
-    name: client.app.appName,
-    created_at: new Date().toISOString(),
+    name: app.name,
+    created_at: now.toISOString(),
   } satisfies TokenInfo);
-  const token = {
+
+  const token: typeof chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
-    userId: userID,
-    clientId: client.clientID,
+    userID: userID,
+    clientID: client.clientID,
     accessToken: await randomBase62String(40),
-    expires: DateTime.now()
-      .plus(Duration.fromObject({ day: 7 }))
-      .toJSDate(),
-    info: tokenInfo,
-  };
-  const refresh = {
-    type: TokenType.OauthToken,
-    userId: userID,
-    clientId: client.clientID,
-    accessToken: await randomBase62String(40),
-    expires: DateTime.now()
-      .plus(Duration.fromObject({ day: 365 }))
+    expiredAt: DateTime.fromJSDate(now)
+      .plus(Duration.fromObject({ seconds: DEFAULT_TOKEN_TTL_SECONDS }))
       .toJSDate(),
     info: tokenInfo,
   };
 
-  await AppDataSource.transaction(async (t) => {
-    const AccessTokenRepo = t.getRepository(entity.OauthAccessTokens);
-    await AccessTokenRepo.insert(token);
-    await AccessTokenRepo.insert(refresh);
+  const refresh: typeof chiiOAuthRefreshToken.$inferInsert = {
+    userID: userID,
+    clientID: client.clientID,
+    refreshToken: await randomBase62String(40),
+    expiredAt: DateTime.fromJSDate(now)
+      .plus(Duration.fromObject({ seconds: DEFAULT_TOKEN_TTL_SECONDS }))
+      .toJSDate(),
+  };
+
+  await db.transaction(async (t) => {
+    await t.insert(chiiAccessToken).values(token);
+    await t.insert(chiiOAuthRefreshToken).values(refresh);
   });
 
   return {
     access_token: token.accessToken,
-    expires_in: 604800,
+    expires_in: DEFAULT_TOKEN_TTL_SECONDS,
     token_type: 'Bearer',
-    refresh_token: refresh.accessToken,
+    refresh_token: refresh.refreshToken,
     user_id: userID,
   };
 }
 
 async function tokenFromRefresh(req: ITokenRequestRefresh): Promise<ITokenResponse> {
-  const client = await orm.OauthClientRepo.findOneBy({ clientID: req.clientID });
-  if (client === null) {
-    throw AppNonexistenceError;
-  }
-  if (client.redirectUri !== req.redirectUri) {
-    throw RedirectUriMismatchError;
-  }
-  if (client.clientSecret !== req.clientSecret) {
-    throw InvalidClientSecretError;
-  }
-  const refresh = await orm.AccessTokenRepo.findOneBy({
-    type: TokenType.OauthToken,
-    accessToken: req.refreshToken,
+  const now = DateTime.now();
+
+  const refresh = await db.query.chiiOAuthRefreshToken.findFirst({
+    where: op.and(
+      op.eq(chiiOAuthRefreshToken.refreshToken, req.refreshToken),
+      op.gt(chiiOAuthRefreshToken.expiredAt, now.toJSDate()),
+    ),
   });
-  if (refresh === null) {
-    throw InvalidRefreshTokenError;
-  }
-  if (refresh.clientId !== client.clientID) {
-    throw InvalidClientIDError;
-  }
-  if (refresh.expires < new Date()) {
-    throw RefreshTokenExpiredError;
+  if (!refresh) {
+    throw new InvalidRefreshTokenError();
   }
 
-  const token = {
+  const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await db
+    .select()
+    .from(chiiOauthClients)
+    .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
+    .where(op.eq(chiiOauthClients.clientID, req.clientID))
+    .limit(1)
+    .execute();
+  if (!client || !app) {
+    throw new InvalidClientIDError();
+  }
+  if (client.redirectUri !== req.redirectUri) {
+    throw new RedirectUriMismatchError();
+  }
+  if (client.clientSecret !== req.clientSecret) {
+    throw new InvalidClientSecretError();
+  }
+
+  const ttl_seconds = DEFAULT_TOKEN_TTL_SECONDS;
+
+  const token: typeof chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
-    userId: refresh.userId,
-    clientId: client.clientID,
+    userID: refresh.userID,
+    clientID: client.clientID,
     accessToken: await randomBase62String(40),
-    expires: DateTime.now()
-      .plus(Duration.fromObject({ day: 7 }))
-      .toJSDate(),
+    expiredAt: now.plus(Duration.fromObject({ seconds: ttl_seconds })).toJSDate(),
     scope: refresh.scope,
     info: JSON.stringify({
-      name: client.app.appName,
-      created_at: new Date().toISOString(),
+      name: app.name,
+      created_at: now.toISO(),
     } satisfies TokenInfo),
   };
-  await orm.AccessTokenRepo.insert(token);
+
+  const newRefresh: typeof chiiOAuthRefreshToken.$inferInsert = {
+    userID: refresh.userID,
+    clientID: client.clientID,
+    refreshToken: await randomBase62String(40),
+    expiredAt: now.plus(Duration.fromObject({ seconds: ttl_seconds })).toJSDate(),
+    scope: refresh.scope,
+  };
+
+  await db.transaction(async (t) => {
+    await t.insert(chiiAccessToken).values(token);
+    await t.insert(chiiOAuthRefreshToken).values(newRefresh);
+
+    await t
+      .update(chiiOAuthRefreshToken)
+      .set({ expiredAt: now.toJSDate() })
+      .where(op.eq(chiiOAuthRefreshToken.refreshToken, req.refreshToken))
+      .execute();
+  });
+
   return {
     access_token: token.accessToken,
-    expires_in: 604800,
+    expires_in: ttl_seconds,
     token_type: 'Bearer',
-    refresh_token: refresh.accessToken,
-    user_id: refresh.userId,
+    refresh_token: newRefresh.refreshToken,
+    user_id: newRefresh.userID,
   };
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, Index, OneToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import type { ACL } from '@app/lib/auth/acl.ts';
 import type { Transformer } from '@app/lib/orm/transformer.ts';
@@ -123,36 +123,4 @@ export class UserField {
 
   @Column('mediumtext', { name: 'blocklist' })
   blocklist!: string;
-}
-
-@Index('uid', ['frdUid'], {})
-@Index('frd_fid', ['frdFid'], {})
-@Entity('chii_friends', { schema: 'bangumi' })
-export class Friends {
-  @PrimaryColumn('mediumint', {
-    name: 'frd_uid',
-    unsigned: true,
-    default: () => "'0'",
-  })
-  frdUid!: number;
-
-  @PrimaryColumn('mediumint', {
-    name: 'frd_fid',
-    unsigned: true,
-    default: () => "'0'",
-  })
-  frdFid!: number;
-
-  @Column('tinyint', {
-    name: 'frd_grade',
-    unsigned: true,
-    default: () => "'1'",
-  })
-  frdGrade!: number;
-
-  @Column('int', { name: 'frd_dateline', unsigned: true, default: () => "'0'" })
-  frdDateline!: number;
-
-  @Column('char', { name: 'frd_description', length: 255 })
-  frdDescription!: string;
 }

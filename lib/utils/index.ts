@@ -34,6 +34,8 @@ export function customAlphabet(
 const generator = customAlphabet(base62Chars, 32);
 
 export const randomBase62String = (size: number) => generator(size);
+export const randomBase64url = (byteSize: number) =>
+  randomBytes(byteSize).then((s) => s.toString('base64url'));
 
 export async function randomBytes(size: number): Promise<Buffer> {
   return new Promise((resolve, reject) => {

@@ -2,9 +2,8 @@ import { Type as t } from '@sinclair/typebox';
 import { DateTime, Duration } from 'luxon';
 
 import { db, op } from '@app/drizzle/db';
-import { chiiApp, chiiOauthAccessTokens, chiiOauthClients } from '@app/drizzle/schema.ts';
+import { chiiAccessToken, chiiApp, chiiOauthClients } from '@app/drizzle/schema.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
 import { randomBase62String } from '@app/lib/utils/index.ts';
 import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -30,17 +29,22 @@ export function setup(app: App) {
       preHandler: [requireLogin('delete your token')],
     },
     async ({ auth, body }) => {
-      const token = await orm.AccessTokenRepo.findOneBy({ id: body.id });
+      const token = await db.query.chiiAccessToken.findFirst({
+        where: op.eq(chiiAccessToken.id, body.id),
+      });
 
       if (!token) {
         throw new NotAllowedError("delete a token not belong to you or token doesn't exist");
       }
 
-      if (token.userId !== auth.userID.toString()) {
+      if (token.userID !== auth.userID.toString()) {
         throw new NotAllowedError("delete a token not belong to you or token doesn't exist");
       }
 
-      await orm.AccessTokenRepo.update({ id: body.id }, { expires: new Date() });
+      await db
+        .update(chiiAccessToken)
+        .set({ expiredAt: new Date() })
+        .where(op.eq(chiiAccessToken.id, body.id));
     },
   );
 
@@ -61,13 +65,13 @@ export function setup(app: App) {
     },
     async ({ auth, body: { duration_days, name } }) => {
       const token = await randomBase62String(40);
-      await orm.AccessTokenRepo.insert({
-        userId: auth.userID.toString(),
-        expires: DateTime.now()
+      await db.insert(chiiAccessToken).values({
+        userID: auth.userID.toString(),
+        expiredAt: DateTime.now()
           .plus(Duration.fromObject({ day: duration_days }))
           .toJSDate(),
         type: TokenType.AccessToken,
-        clientId: '',
+        clientID: '',
         accessToken: token,
         info: JSON.stringify({
           name: name,
@@ -88,16 +92,13 @@ export function setup(app: App) {
     async (req, reply) => {
       const tokens = await db
         .select()
-        .from(chiiOauthAccessTokens)
-        .leftJoin(
-          chiiOauthClients,
-          op.eq(chiiOauthClients.clientID, chiiOauthAccessTokens.clientID),
-        )
+        .from(chiiAccessToken)
+        .leftJoin(chiiOauthClients, op.eq(chiiOauthClients.clientID, chiiAccessToken.clientID))
         .leftJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
         .where(
           op.and(
-            op.eq(chiiOauthAccessTokens.userID, req.auth.userID.toString()),
-            op.gt(chiiOauthAccessTokens.expiredAt, new Date()),
+            op.eq(chiiAccessToken.userID, req.auth.userID.toString()),
+            op.gt(chiiAccessToken.expiredAt, new Date()),
           ),
         );
 
@@ -132,7 +133,7 @@ export function setup(app: App) {
   app.get(
     '/access-token/create',
     { preHandler: [redirectIfNotLogin], schema: { hide: true } },
-    async (req, reply) => {
+    async (_req, reply) => {
       await reply.view('token/create');
     },
   );

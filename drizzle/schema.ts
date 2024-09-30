@@ -424,10 +424,10 @@ export const chiiMemberfields = mysqlTable('chii_memberfields', {
   blocklist: mediumtext('blocklist').notNull(),
 });
 
-export const chiiMembers = mysqlTable(
+export const chiiUser = mysqlTable(
   'chii_members',
   {
-    uid: mediumint('uid').autoincrement().notNull(),
+    id: mediumint('uid').autoincrement().notNull(),
     username: char('username', { length: 15 }).default('').notNull(),
     nickname: varchar('nickname', { length: 30 }).notNull(),
     avatar: varchar('avatar', { length: 255 }).notNull(),
@@ -490,14 +490,14 @@ export const chiiNotifyField = mysqlTable(
   },
 );
 
-export const chiiOauthAccessTokens = mysqlTable(
+export const chiiAccessToken = mysqlTable(
   'chii_oauth_access_tokens',
   {
     id: mediumint('id').autoincrement().notNull(),
     type: tinyint('type').default(0).notNull(),
     accessToken: varchar('access_token', { length: 40 }).notNull(),
     clientID: varchar('client_id', { length: 80 }).notNull(),
-    userID: varchar('user_id', { length: 80 }),
+    userID: varchar('user_id', { length: 80 }).notNull(),
     expiredAt: timestamp('expires', { mode: 'date' })
       .default(sql.raw('CURRENT_TIMESTAMP'))
       .notNull(),
@@ -511,6 +511,14 @@ export const chiiOauthAccessTokens = mysqlTable(
     };
   },
 );
+
+export const chiiOAuthRefreshToken = mysqlTable('chii_oauth_refresh_tokens', {
+  refreshToken: varchar('refresh_token', { length: 40 }).notNull(),
+  clientID: varchar('client_id', { length: 80 }).notNull(),
+  userID: varchar('user_id', { length: 80 }).notNull(),
+  expiredAt: timestamp('expires', { mode: 'date' }).default(sql.raw('CURRENT_TIMESTAMP')).notNull(),
+  scope: varchar('scope', { length: 4000 }),
+});
 
 export const chiiOauthClients = mysqlTable(
   'chii_oauth_clients',
