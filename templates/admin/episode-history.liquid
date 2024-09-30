@@ -5,7 +5,7 @@
 <div class='container mt-5' id='container'>
   <div class='row'>
     <p>
-      编辑历史：<a href='https://bgm.tv/ep/{{ ep.id }}' target='_blank'>{{ ep.epName | escape }}</a>
+      编辑历史：<a href='https://bgm.tv/ep/{{ ep.id }}' target='_blank'>{{ ep.epName }}</a>
     </p>
   </div>
   <br>
@@ -33,10 +33,10 @@
           >
             <div class='accordion-body'>
               <a
-                href='https://bgm.tv/user/{{ history.creator.username | escape }}'
+                href='https://bgm.tv/user/{{ history.creator.username }}'
                 target='_blank'
               >
-                {{ history.creator.nickname | escape }}
+                {{ history.creator.nickname }}
               </a>
 
               <hr>
@@ -45,19 +45,19 @@
                 <h2>批量修改</h2>
                 <pre class='border border-b'><code>{{ history.batch }}</code></pre>
               {% else %}
-                标题：<span class='border border-b'>{{ history.name | escape }}</span>
+                标题：<span class='border border-b'>{{ history.name }}</span>
                 <br>
-                简体中文标题：<span class='border border-b'>{{ history.name_cn | escape }}</span>
+                简体中文标题：<span class='border border-b'>{{ history.name_cn }}</span>
                 <br>
                 话数： <span class='border border-b'>{{ history.sort }}</span>
                 <br>
-                播出日期：<span class='border border-b'>{{ history.airdate | escape }}</span>
+                播出日期：<span class='border border-b'>{{ history.airdate }}</span>
                 <br>
-                简介：<span class='border border-b'>{{ history.desc | escape }}</span>
+                简介：<span class='border border-b'>{{ history.desc }}</span>
                 <br>
-                时长：<span class='border border-b'>{{ history.duration | escape }}</span>
+                时长：<span class='border border-b'>{{ history.duration }}</span>
                 <br>
-                播出日期：<span class='border border-b'>{{ history.airdate | escape }}</span>
+                播出日期：<span class='border border-b'>{{ history.airdate }}</span>
               {% endif %}
             </div>
           </div>

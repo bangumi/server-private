@@ -21,6 +21,7 @@ export async function setup(app: App) {
     root: path.resolve(projectRoot, 'templates'),
     extname: '.liquid',
     cache: production,
+    outputEscape: 'escape',
   });
 
   await app.register(fastifyView, {

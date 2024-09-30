@@ -11,7 +11,7 @@
     <div class='card shadow rounded p-4'>
       <div class='card-body'>
         <h1 class='card-title' style='color: #F09199;'>
-          授权 {{ client.app.appName | escape }} 访问你的账户
+          授权 {{ client.app.appName }} 访问你的账户
         </h1>
         <ul class='list-group list-group-flush'>
           <li class='list-group-item d-flex align-items-start border-0'>
@@ -25,16 +25,16 @@
             </a>
             <div class='px-2' style='width: 100%;'>
               <span>
-                <b>{{ client.app.appName | escape }}</b> by
+                <b>{{ client.app.appName }}</b> by
                 <a
                   href='https://bgm.tv/user/{{ creator.username }}'
                   class='link-underline-light'
                 >
-                  {{ creator.nickname | escape }}
+                  {{ creator.nickname }}
                 </a>
               </span>
               <div>
-                <p>{{ client.app.appDesc | escape }}</p>
+                <p>{{ client.app.appDesc }}</p>
               </div>
               <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
             </div>
@@ -83,7 +83,7 @@
               id='redirect_uri'
               type='hidden'
               name='redirect_uri'
-              value='{{ client.redirectUri | escape }}'
+              value='{{ client.redirectUri }}'
             >
             <button
               style='width: 100%; background: #F09199;'
@@ -110,7 +110,7 @@
         </div>
         <div class='col-md-auto  align-self-center'>
           <h3 style='color: #F09199;'>呜咕，出错了</h3>
-          <p>{{ error.message | escape }}</p>
+          <p>{{ error.message }}</p>
         </div>
       </div>
     </div>
