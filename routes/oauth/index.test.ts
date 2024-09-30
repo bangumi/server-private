@@ -25,8 +25,6 @@ const createApp = async () => {
   return app;
 };
 
-// 1,bgmabcdefg,abcdefg,bangumi://oauth/callback,"","",2
-
 describe('oauth', () => {
   const clientID = 'bgmabcdefg';
   const redirectUri = 'bangumi://oauth/callback';
