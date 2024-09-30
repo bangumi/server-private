@@ -2,12 +2,14 @@ import * as crypto from 'node:crypto';
 
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
+import * as op from 'drizzle-orm';
 import { DateTime } from 'luxon';
 
+import { db } from '@app/drizzle/db.ts';
+import { chiiOauthAccessTokens } from '@app/drizzle/schema.ts';
 import { TypedCache } from '@app/lib/cache.ts';
 import type { IUser, Permission } from '@app/lib/orm/index.ts';
-import { AccessTokenRepo, fetchPermission, fetchUserX } from '@app/lib/orm/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
+import { fetchPermission, fetchUserX } from '@app/lib/orm/index.ts';
 import { intval } from '@app/lib/utils/index.ts';
 import NodeCache from '@app/vendor/node-cache.ts';
 
@@ -86,19 +88,22 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
     return await userToAuth(cached);
   }
 
-  const token = await AccessTokenRepo.findOne({
-    where: { accessToken, expires: orm.Gt(new Date()) },
+  const token = await db.query.chiiOauthAccessTokens.findFirst({
+    where: op.and(
+      op.eq(chiiOauthAccessTokens.accessToken, accessToken),
+      op.gt(chiiOauthAccessTokens.expiredAt, new Date()),
+    ),
   });
 
   if (!token) {
     throw new TokenNotValidError();
   }
 
-  if (!token.userId) {
+  if (!token.userID) {
     throw new Error('access token without user id');
   }
 
-  const u = await fetchUserX(intval(token.userId));
+  const u = await fetchUserX(intval(token.userID));
 
   await tokenAuthCache.set(accessToken, u, 60 * 60 * 24);
 

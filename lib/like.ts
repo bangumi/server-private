@@ -1,6 +1,7 @@
 import * as lo from 'lodash-es';
 
-import { LikeRepo } from '@app/lib/orm/index.ts';
+import { db, op } from '@app/drizzle/db.ts';
+import { chiiLikes } from '@app/drizzle/schema.ts';
 
 export interface Reaction {
   selected: boolean;
@@ -12,7 +13,7 @@ export async function fetchTopicReactions(
   id: number,
   uid: number,
 ): Promise<Record<number, Reaction[]>> {
-  const data = await LikeRepo.findBy({ mainID: id });
+  const data = await db.select().from(chiiLikes).where(op.eq(chiiLikes.mainID, id)).execute();
 
   const r = lo.groupBy(data, (x) => x.relatedID);
 
