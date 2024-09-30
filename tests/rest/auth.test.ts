@@ -1,18 +1,19 @@
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
+import { db } from '@app/drizzle/db.ts';
+import { chiiOsWebSessions } from '@app/drizzle/schema.ts';
 import * as session from '@app/lib/auth/session.ts';
-import { SessionRepo } from '@app/lib/orm/index.ts';
 import { createServer } from '@app/lib/server.ts';
 
 const treeHoleUser = { id: 382951, nickname: '树洞酱', username: '382951' };
 const fakeIP = 'fake-client-ip-should-not-fail';
 
 beforeEach(async () => {
-  await SessionRepo.createQueryBuilder().where('true').delete().execute();
+  await db.delete(chiiOsWebSessions).execute();
 });
 
 afterEach(async () => {
-  await SessionRepo.createQueryBuilder().where('true').delete().execute();
+  await db.delete(chiiOsWebSessions).execute();
 });
 
 test('should pass login/logout authorization flow', async () => {

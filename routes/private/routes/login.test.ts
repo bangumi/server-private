@@ -1,19 +1,20 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
+import { db } from '@app/drizzle/db.ts';
+import { chiiOsWebSessions } from '@app/drizzle/schema.ts';
 import * as session from '@app/lib/auth/session.ts';
-import { SessionRepo } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
 
 describe('login', () => {
   beforeEach(async () => {
     await redis.flushdb('SYNC');
-    await SessionRepo.createQueryBuilder().where('true').delete().execute();
+    await db.delete(chiiOsWebSessions).execute();
   });
 
   afterEach(async () => {
     await redis.flushdb('SYNC');
-    await SessionRepo.createQueryBuilder().where('true').delete().execute();
+    await db.delete(chiiOsWebSessions).execute();
   });
 
   test('should failed on too many requests', async () => {

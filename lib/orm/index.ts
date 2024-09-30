@@ -147,9 +147,7 @@ export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
-export const AppRepo = AppDataSource.getRepository(App);
 export const OauthClientRepo = AppDataSource.getRepository(OauthClient);
-export const SessionRepo = AppDataSource.getRepository(WebSessions);
 export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
 
 export const NotifyRepo = AppDataSource.getRepository(Notify);
@@ -175,7 +173,6 @@ export const repo = {
   Person: PersonRepo,
   PersonSubjects: PersonSubjectsRepo,
   AccessToken: AccessTokenRepo,
-  Session: SessionRepo,
   UserGroup: UserGroupRepo,
   Notify: NotifyRepo,
   NotifyField: NotifyFieldRepo,

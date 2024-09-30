@@ -1,7 +1,7 @@
 import {
   bigint,
-  binary,
   char,
+  customType,
   date,
   float,
   index,
@@ -530,11 +530,25 @@ export const chiiOauthClients = mysqlTable(
   },
 );
 
+const mediumblob = (name: string) =>
+  customType<{ data: Buffer; driverData: string }>({
+    dataType() {
+      return 'mediumblob';
+    },
+    fromDriver(value) {
+      return Buffer.from(value);
+    },
+
+    toDriver(value: Buffer): string {
+      // @ts-expect-error https://github.com/drizzle-team/drizzle-orm/issues/1188
+      return value;
+    },
+  })(name);
+
 export const chiiOsWebSessions = mysqlTable('chii_os_web_sessions', {
   key: char('key', { length: 64 }).notNull(),
   userID: int('user_id').notNull(),
-  // Warning: Can't parse mediumblob from database
-  value: binary('value').notNull(),
+  value: mediumblob('value').notNull(),
   createdAt: bigint('created_at', { mode: 'number' }).notNull(),
   expiredAt: bigint('expired_at', { mode: 'number' }).notNull(),
 });
