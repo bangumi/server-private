@@ -17,9 +17,11 @@
           <div class=''>
             <div class='fw-bold'>{{ token.name }}</div>
             <span>
-              创建日期： {{ token.createdAt | date: '%Y-%m-%d %H:%M:%S', 'Asia/Colombo' -}}
+              创建日期： {{ token.createdAt | date: '%Y-%m-%d %H:%M:%S', 'Asia/Shanghai' -}}
             </span>
-            <span> 有效期至： {{ token.expires | date: '%Y-%m-%d %H:%M:%S', 'Asia/Colombo' }}</span>
+            <span>
+              有效期至： {{ token.expiredAt | date: '%Y-%m-%d %H:%M:%S', 'Asia/Shanghai' -}}
+            </span>
           </div>
           <button class='btn btn-danger' onclick="revoke('{{ token.id }}')">delete</button>
         </li>

@@ -1,3 +1,4 @@
+import { relations, sql } from 'drizzle-orm';
 import {
   bigint,
   char,
@@ -498,8 +499,7 @@ export const chiiOauthAccessTokens = mysqlTable(
     clientID: varchar('client_id', { length: 80 }).notNull(),
     userID: varchar('user_id', { length: 80 }),
     expiredAt: timestamp('expires', { mode: 'date' })
-      // .default('CURRENT_TIMESTAMP')
-      // .onUpdateNow()
+      .default(sql.raw('CURRENT_TIMESTAMP'))
       .notNull(),
     scope: varchar('scope', { length: 4000 }),
     info: varchar('info', { length: 255 }).notNull(),
@@ -516,7 +516,7 @@ export const chiiOauthClients = mysqlTable(
   'chii_oauth_clients',
   {
     appId: mediumint('app_id').notNull(),
-    clientId: varchar('client_id', { length: 80 }).notNull(),
+    clientID: varchar('client_id', { length: 80 }).notNull(),
     clientSecret: varchar('client_secret', { length: 80 }),
     redirectUri: varchar('redirect_uri', { length: 2000 }),
     grantTypes: varchar('grant_types', { length: 80 }),
@@ -525,10 +525,17 @@ export const chiiOauthClients = mysqlTable(
   },
   (table) => {
     return {
-      clientId: index('client_id').on(table.clientId),
+      clientID: index('client_id').on(table.clientID),
     };
   },
 );
+
+export const accessTokenClientRelation = relations(chiiOauthAccessTokens, ({ one }) => ({
+  client: one(chiiOauthClients, {
+    fields: [chiiOauthAccessTokens.clientID],
+    references: [chiiOauthClients.clientID],
+  }),
+}));
 
 const mediumblob = (name: string) =>
   customType<{ data: Buffer; driverData: string }>({
