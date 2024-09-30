@@ -6,7 +6,7 @@ import * as op from 'drizzle-orm';
 import { DateTime } from 'luxon';
 
 import { db } from '@app/drizzle/db.ts';
-import { chiiOauthAccessTokens } from '@app/drizzle/schema.ts';
+import { chiiAccessToken } from '@app/drizzle/schema.ts';
 import { TypedCache } from '@app/lib/cache.ts';
 import type { IUser, Permission } from '@app/lib/orm/index.ts';
 import { fetchPermission, fetchUserX } from '@app/lib/orm/index.ts';
@@ -88,10 +88,10 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
     return await userToAuth(cached);
   }
 
-  const token = await db.query.chiiOauthAccessTokens.findFirst({
+  const token = await db.query.chiiAccessToken.findFirst({
     where: op.and(
-      op.eq(chiiOauthAccessTokens.accessToken, accessToken),
-      op.gt(chiiOauthAccessTokens.expiredAt, new Date()),
+      op.eq(chiiAccessToken.accessToken, accessToken),
+      op.gt(chiiAccessToken.expiredAt, new Date()),
     ),
   });
 

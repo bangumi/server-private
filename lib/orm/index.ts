@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { DataSource, In } from 'typeorm';
 
 import { db, op } from '@app/drizzle/db.ts';
-import { chiiUsergroup } from '@app/drizzle/schema.ts';
+import { chiiFriends, chiiUsergroup } from '@app/drizzle/schema.ts';
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
@@ -19,7 +19,6 @@ import {
   Episode,
   EpisodeComment,
   EpRevision,
-  Friends,
   Group,
   GroupMembers,
   GroupPost,
@@ -28,7 +27,6 @@ import {
   Notify,
   NotifyField,
   OauthAccessTokens,
-  OauthClient,
   Person,
   PersonSubjects,
   RevHistory,
@@ -94,12 +92,10 @@ export const AppDataSource = new DataSource({
     Notify,
     NotifyField,
     SubjectImage,
-    Friends,
     Group,
     GroupMembers,
     Episode,
     EpisodeComment,
-    OauthClient,
     Person,
     PersonSubjects,
     RevHistory,
@@ -119,7 +115,6 @@ export const AppDataSource = new DataSource({
 
 export const UserRepo = AppDataSource.getRepository(User);
 export const UserFieldRepo = AppDataSource.getRepository(UserField);
-export const FriendRepo = AppDataSource.getRepository(Friends);
 
 export const CharacterRepo = AppDataSource.getRepository(Character);
 export const CharacterSubjectsRepo = AppDataSource.getRepository(CharacterSubjects);
@@ -144,9 +139,6 @@ export const RevTextRepo = AppDataSource.getRepository(RevText);
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
-export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
-export const OauthClientRepo = AppDataSource.getRepository(OauthClient);
-
 export const NotifyRepo = AppDataSource.getRepository(Notify);
 export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
 
@@ -157,7 +149,6 @@ export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
 
 export const repo = {
   UserField: UserFieldRepo,
-  Friend: FriendRepo,
   Subject: SubjectRepo,
   SubjectFields: SubjectFieldsRepo,
   SubjectRelation: SubjectRelationRepo,
@@ -167,7 +158,6 @@ export const repo = {
   Cast: CastRepo,
   Person: PersonRepo,
   PersonSubjects: PersonSubjectsRepo,
-  AccessToken: AccessTokenRepo,
   Notify: NotifyRepo,
   NotifyField: NotifyFieldRepo,
   Group: GroupRepo,
@@ -501,18 +491,17 @@ export async function fetchFriends(id?: number): Promise<Record<number, boolean>
     return {};
   }
 
-  const friends = await FriendRepo.find({
-    where: { frdUid: id },
-  });
+  const friends = await db.select().from(chiiFriends).where(op.eq(chiiFriends.frdUid, id));
 
   return Object.fromEntries(friends.map((x) => [x.frdFid, true]));
 }
 
 /** Is user(another) is friend of user(userID) */
 export async function isFriends(userID: number, another: number): Promise<boolean> {
-  const friends = await FriendRepo.count({
-    where: { frdUid: userID, frdFid: another },
-  });
+  const [friends = 0] = await db
+    .select({ count: op.count() })
+    .from(chiiFriends)
+    .where(op.and(op.eq(chiiFriends.frdUid, userID), op.eq(chiiFriends.frdFid, another)));
 
   return friends !== 0;
 }
