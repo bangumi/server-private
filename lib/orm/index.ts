@@ -3,6 +3,8 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { DataSource, In } from 'typeorm';
 
+import { db, op } from '@app/drizzle/db.ts';
+import { chiiUsergroup } from '@app/drizzle/schema.ts';
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
@@ -41,7 +43,6 @@ import {
   SubjectTopic,
   User,
   UserField,
-  UserGroup,
   WebSessions,
 } from './entity/index.ts';
 
@@ -92,7 +93,6 @@ export const AppDataSource = new DataSource({
     UserField,
     OauthAccessTokens,
     WebSessions,
-    UserGroup,
     Notify,
     NotifyField,
     SubjectImage,
@@ -148,7 +148,6 @@ export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
 export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
 export const OauthClientRepo = AppDataSource.getRepository(OauthClient);
-export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
 
 export const NotifyRepo = AppDataSource.getRepository(Notify);
 export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
@@ -171,7 +170,6 @@ export const repo = {
   Person: PersonRepo,
   PersonSubjects: PersonSubjectsRepo,
   AccessToken: AccessTokenRepo,
-  UserGroup: UserGroupRepo,
   Notify: NotifyRepo,
   NotifyField: NotifyFieldRepo,
   Group: GroupRepo,
@@ -279,19 +277,21 @@ const defaultPermission: Permission = {
 };
 
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
-  const permission = await UserGroupRepo.findOne({ where: { id: userGroup } });
+  const permission = await db.query.chiiUsergroup.findFirst({
+    where: op.eq(chiiUsergroup.id, userGroup),
+  });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
     return Object.freeze({ ...defaultPermission });
   }
 
-  if (!permission.Permission) {
+  if (!permission.perm) {
     return Object.freeze({ ...defaultPermission });
   }
 
   return Object.freeze(
     Object.fromEntries(
-      Object.entries(php.parse(permission.Permission) as Record<keyof Permission, string>).map(
+      Object.entries(php.parse(permission.perm) as Record<keyof Permission, string>).map(
         ([key, value]) => [key, value === '1'],
       ),
     ),

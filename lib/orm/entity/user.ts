@@ -125,25 +125,6 @@ export class UserField {
   blocklist!: string;
 }
 
-@Entity('chii_usergroup', { schema: 'bangumi' })
-export class UserGroup {
-  @PrimaryGeneratedColumn({
-    type: 'mediumint',
-    name: 'usr_grp_id',
-    unsigned: true,
-  })
-  id!: number;
-
-  @Column('varchar', { name: 'usr_grp_name', length: 255 })
-  name!: string;
-
-  @Column('mediumtext', { name: 'usr_grp_perm' })
-  Permission!: string;
-
-  @Column('int', { name: 'usr_grp_dateline', unsigned: true })
-  updatedAt!: number;
-}
-
 @Index('uid', ['frdUid'], {})
 @Index('frd_fid', ['frdFid'], {})
 @Entity('chii_friends', { schema: 'bangumi' })

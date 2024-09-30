@@ -1186,8 +1186,8 @@ export const chiiTimeline = mysqlTable(
 );
 
 export const chiiUsergroup = mysqlTable('chii_usergroup', {
-  usrGrpId: mediumint('usr_grp_id').autoincrement().notNull(),
-  usrGrpName: varchar('usr_grp_name', { length: 255 }).notNull(),
-  usrGrpPerm: mediumtext('usr_grp_perm').notNull(),
-  usrGrpDateline: int('usr_grp_dateline').notNull(),
+  id: mediumint('usr_grp_id').autoincrement().notNull(),
+  name: varchar('usr_grp_name', { length: 255 }).notNull(),
+  perm: mediumtext('usr_grp_perm').notNull(),
+  updatedAt: int('usr_grp_dateline').notNull(),
 });
