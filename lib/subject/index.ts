@@ -9,9 +9,10 @@ import { db, op } from '@app/drizzle/db.ts';
 import { chiiLikes } from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { BadRequestError } from '@app/lib/error.ts';
+import { LikeType } from '@app/lib/like.ts';
 import { logger } from '@app/lib/logger.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
-import { Like, RevType } from '@app/lib/orm/entity/index.ts';
+import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { AppDataSource, fetchUsers, SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { extractDate } from '@app/lib/subject/date.ts';
@@ -251,7 +252,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
     .from(chiiLikes)
     .where(
       op.and(
-        op.eq(chiiLikes.type, Like.TYPE_SUBJECT_COVER),
+        op.eq(chiiLikes.type, LikeType.subject_cover),
         op.inArray(
           chiiLikes.relatedID,
           images.map((x) => x.id),

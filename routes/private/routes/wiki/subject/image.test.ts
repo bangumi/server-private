@@ -6,7 +6,7 @@ import { db, op } from '@app/drizzle/db.ts';
 import { chiiLikes } from '@app/drizzle/schema.ts';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
-import { Like } from '@app/lib/orm/entity/index.ts';
+import { LikeType } from '@app/lib/like.ts';
 import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
@@ -36,7 +36,7 @@ vi.spyOn(Subject, 'onSubjectVote').mockImplementation(() => Promise.resolve());
 
 describe('should vote for subject cover', () => {
   beforeAll(async () => {
-    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, Like.TYPE_SUBJECT_COVER));
+    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
     await SubjectImageRepo.upsert(
       {
         ban: 0,
@@ -52,7 +52,7 @@ describe('should vote for subject cover', () => {
   });
 
   afterAll(async () => {
-    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, Like.TYPE_SUBJECT_COVER));
+    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
     await SubjectImageRepo.delete({ id: 100 });
   });
 

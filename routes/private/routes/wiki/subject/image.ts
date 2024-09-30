@@ -12,8 +12,8 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { imageDomain } from '@app/lib/config.ts';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image/index.ts';
+import { LikeType } from '@app/lib/like.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
-import { Like } from '@app/lib/orm/entity/index.ts';
 import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
@@ -101,7 +101,7 @@ export function setup(app: App) {
                 chiiLikes.relatedID,
                 images.map((x) => x.id),
               ),
-              op.eq(chiiLikes.type, Like.TYPE_SUBJECT_COVER),
+              op.eq(chiiLikes.type, LikeType.subject_cover),
               op.eq(chiiLikes.uid, auth.userID),
               op.eq(chiiLikes.deleted, 0),
             ),
@@ -256,7 +256,7 @@ export function setup(app: App) {
       await db
         .insert(chiiLikes)
         .values({
-          type: Like.TYPE_SUBJECT_COVER,
+          type: LikeType.subject_cover,
           relatedID: imageID,
           uid: auth.userID,
           createdAt: DateTime.now().toUnixInteger(),
@@ -297,7 +297,7 @@ export function setup(app: App) {
         .set({ deleted: 1 })
         .where(
           op.and(
-            op.eq(chiiLikes.type, Like.TYPE_SUBJECT_COVER),
+            op.eq(chiiLikes.type, LikeType.subject_cover),
             op.eq(chiiLikes.uid, auth.userID),
             op.eq(chiiLikes.relatedID, imageID),
             op.eq(chiiLikes.deleted, 0),

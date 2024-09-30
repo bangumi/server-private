@@ -395,6 +395,7 @@ export const chiiIndexRelated = mysqlTable(
   },
 );
 
+/** 用于点赞/封面投票 */
 export const chiiLikes = mysqlTable(
   'chii_likes',
   {

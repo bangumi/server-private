@@ -23,10 +23,8 @@ import {
   GroupMembers,
   GroupPost,
   GroupTopic,
-  Like,
   Notify,
   NotifyField,
-  OauthAccessTokens,
   Person,
   PersonSubjects,
   RevHistory,
@@ -88,7 +86,6 @@ export const AppDataSource = new DataSource({
     EpRevision,
     User,
     UserField,
-    OauthAccessTokens,
     Notify,
     NotifyField,
     SubjectImage,
@@ -109,7 +106,6 @@ export const AppDataSource = new DataSource({
     GroupPost,
     SubjectRev,
     SubjectInterest,
-    Like,
   ],
 });
 
