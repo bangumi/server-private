@@ -43,7 +43,6 @@ import {
   SubjectTopic,
   User,
   UserField,
-  WebSessions,
 } from './entity/index.ts';
 
 export * as entity from './entity/index.ts';
@@ -92,7 +91,6 @@ export const AppDataSource = new DataSource({
     User,
     UserField,
     OauthAccessTokens,
-    WebSessions,
     Notify,
     NotifyField,
     SubjectImage,
