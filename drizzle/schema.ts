@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import {
   bigint,
   char,
@@ -20,26 +20,26 @@ import {
   year,
 } from 'drizzle-orm/mysql-core';
 
-export const chiiApps = mysqlTable(
+export const chiiApp = mysqlTable(
   'chii_apps',
   {
-    appId: mediumint('app_id').autoincrement().notNull(),
-    appType: tinyint('app_type').notNull(),
-    appCreator: mediumint('app_creator').notNull(),
-    appName: varchar('app_name', { length: 255 }).notNull(),
-    appDesc: mediumtext('app_desc').notNull(),
-    appUrl: varchar('app_url', { length: 2000 }).notNull(),
-    appCollects: mediumint('app_collects').notNull(),
-    appStatus: tinyint('app_status').notNull(),
-    appTimestamp: int('app_timestamp').notNull(),
-    appLasttouch: int('app_lasttouch').notNull(),
-    appBan: tinyint('app_ban').notNull(),
+    id: mediumint('app_id').autoincrement().notNull(),
+    type: tinyint('app_type').notNull(),
+    creator: mediumint('app_creator').notNull(),
+    name: varchar('app_name', { length: 255 }).notNull(),
+    description: mediumtext('app_desc').notNull(),
+    url: varchar('app_url', { length: 2000 }).notNull(),
+    collects: mediumint('app_collects').notNull(),
+    status: tinyint('app_status').notNull(),
+    createdAt: int('app_timestamp').notNull(),
+    updatedAt: int('app_lasttouch').notNull(),
+    deleted: tinyint('app_ban').notNull(),
   },
   (table) => {
     return {
-      appType: index('app_type').on(table.appType, table.appCreator),
-      appBan: index('app_ban').on(table.appBan),
-      appStatus: index('app_status').on(table.appStatus),
+      appType: index('app_type').on(table.type, table.creator),
+      appBan: index('app_ban').on(table.deleted),
+      appStatus: index('app_status').on(table.status),
     };
   },
 );
@@ -515,7 +515,7 @@ export const chiiOauthAccessTokens = mysqlTable(
 export const chiiOauthClients = mysqlTable(
   'chii_oauth_clients',
   {
-    appId: mediumint('app_id').notNull(),
+    appID: mediumint('app_id').notNull(),
     clientID: varchar('client_id', { length: 80 }).notNull(),
     clientSecret: varchar('client_secret', { length: 80 }),
     redirectUri: varchar('redirect_uri', { length: 2000 }),
@@ -529,13 +529,6 @@ export const chiiOauthClients = mysqlTable(
     };
   },
 );
-
-export const accessTokenClientRelation = relations(chiiOauthAccessTokens, ({ one }) => ({
-  client: one(chiiOauthClients, {
-    fields: [chiiOauthAccessTokens.clientID],
-    references: [chiiOauthClients.clientID],
-  }),
-}));
 
 const mediumblob = (name: string) =>
   customType<{ data: Buffer; driverData: string }>({

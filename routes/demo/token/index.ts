@@ -2,7 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 import { DateTime, Duration } from 'luxon';
 
 import { db, op } from '@app/drizzle/db';
-import { chiiApps, chiiOauthAccessTokens, chiiOauthClients } from '@app/drizzle/schema.ts';
+import { chiiApp, chiiOauthAccessTokens, chiiOauthClients } from '@app/drizzle/schema.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { randomBase62String } from '@app/lib/utils/index.ts';
@@ -93,7 +93,7 @@ export function setup(app: App) {
           chiiOauthClients,
           op.eq(chiiOauthClients.clientID, chiiOauthAccessTokens.clientID),
         )
-        .leftJoin(chiiApps, op.eq(chiiApps.appId, chiiOauthClients.appId))
+        .leftJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
         .where(
           op.and(
             op.eq(chiiOauthAccessTokens.userID, req.auth.userID.toString()),
@@ -109,7 +109,7 @@ export function setup(app: App) {
               createdAt: DateTime.fromJSDate(token.expiredAt)
                 .plus(Duration.fromObject({ hour: -168 }))
                 .toJSDate(),
-              name: app?.appName ?? '',
+              name: app?.name ?? '',
               client,
             };
           }
