@@ -76,6 +76,7 @@
 
         <div class='row mt-2'>
           <form id='authForm' method='post' name='auth'>
+            <input type='hidden' name='csrf_token' value='{{ csrfToken }}'>
             <input id='client_id' type='hidden' name='client_id' value='{{ client.clientID }}'>
             <input
               id='redirect_uri'

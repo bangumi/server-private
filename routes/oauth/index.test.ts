@@ -7,6 +7,8 @@ import { fetchUserX } from '@app/lib/orm';
 import * as res from '@app/lib/types/res.ts';
 import { userOauthRoutes } from '@app/routes/oauth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
+import fastifyCookie from '@fastify/cookie';
+import * as cheerio from 'cheerio';
 
 const createApp = async () => {
   const app = createTestServer({
@@ -20,6 +22,7 @@ const createApp = async () => {
   });
 
   await app.register(formBody);
+  await app.register(fastifyCookie);
   await app.register(userOauthRoutes);
 
   return app;
@@ -46,12 +49,19 @@ describe('oauth', () => {
     expect(res.statusCode).toBe(200);
     expect(res.headers['content-type']).toMatchInlineSnapshot(`"text/html; charset=utf-8"`);
 
+    const $ = cheerio.load(res.body);
+    const csrfToken = $('input[name="csrf_token"]').val() as string;
+
     const res2 = await app.inject({
       url: '/authorize',
       method: 'post',
-      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+        cookie: `csrf-secret=${res.cookies.find((c) => c.name === 'csrf-secret')?.value}`,
+      },
       payload: new URLSearchParams({
         client_id: 'bgmabcdefg',
+        csrf_token: csrfToken,
         redirect_uri: 'bangumi://oauth/callback',
       }).toString(),
     });

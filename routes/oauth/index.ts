@@ -16,7 +16,7 @@ import {
 } from '@app/drizzle/schema.ts';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
-import { redisOauthPrefix } from '@app/lib/config.ts';
+import config, { redisOauthPrefix } from '@app/lib/config.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -125,9 +125,18 @@ export async function setup(app: App) {
   await app.register(userOauthRoutes);
 }
 
+import CSRF from '@fastify/csrf';
+
+import { BadRequestError } from '@app/lib/error.ts';
+
 // export for testing
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function userOauthRoutes(app: App) {
+  const csrf = new CSRF({
+    userInfo: true,
+    hmacKey: Buffer.from(config.csrf_secret_token, 'hex'),
+  });
+
   app.get(
     '/authorize',
     {
@@ -188,8 +197,15 @@ export async function userOauthRoutes(app: App) {
           error: AppCreatorNonexsistenceError,
         });
       }
+
+      const csrfSecret = req.cookies['csrf-secret'] || (await csrf.secret());
+      const csrfToken = csrf.create(csrfSecret, req.auth.userID.toString());
+
+      reply.cookie('csrf-secret', csrfSecret, { httpOnly: true, secure: true });
+
       await reply.view('oauth/authorize', {
         app,
+        csrfToken,
         client,
         creator,
       });
@@ -202,6 +218,7 @@ export async function userOauthRoutes(app: App) {
       schema: {
         hide: true,
         body: t.Object({
+          csrf_token: t.String(),
           client_id: t.String(),
           redirect_uri: t.String(),
         }),
@@ -210,6 +227,15 @@ export async function userOauthRoutes(app: App) {
     async (req, reply) => {
       if (!req.auth.login) {
         throw new NeedLoginError('oauth authorize');
+      }
+
+      const csrfSecret = req.cookies['csrf-secret'];
+      if (!csrfSecret) {
+        throw new BadRequestError('Invalid CSRF token');
+      }
+
+      if (!csrf.verify(csrfSecret, req.body.csrf_token, req.auth.userID.toString())) {
+        throw new BadRequestError('Invalid CSRF token');
       }
 
       const [client] = await db

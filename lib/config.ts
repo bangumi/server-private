@@ -80,6 +80,12 @@ export const schema = Obj({
 
   siteUrl: t.String({ default: 'https://next.bgm.tv ', transform: ['trim'] }),
 
+  csrf_secret_token: t.String({
+    env: 'CSRF_SECRET_TOKEN',
+    description: 'hex encoded csrf secret token',
+    minLength: 32,
+  }),
+
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
   disable_words: t.Optional(t.String()),
   banned_domain: t.Optional(t.String()),
