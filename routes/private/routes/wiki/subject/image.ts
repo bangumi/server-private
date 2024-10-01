@@ -156,7 +156,7 @@ export function setup(app: App) {
           ...errorResponses(
             ImageFileTooLarge(),
             UnsupportedImageFormat(),
-            NotAllowedError('non sandbox subject'),
+            new NotAllowedError('non sandbox subject'),
           ),
         },
         body: t.Object({

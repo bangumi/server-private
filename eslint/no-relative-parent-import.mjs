@@ -1,15 +1,15 @@
 // TODO: remove this after https://github.com/import-js/eslint-plugin-import/issues/2467 is fixed
 
-const path = require('node:path');
-const posix = require('node:path/posix');
+import * as path from 'node:path';
+import * as posix from 'node:path/posix';
 
-const { ESLintUtils } = require('@typescript-eslint/utils');
+import { ESLintUtils } from '@typescript-eslint/utils';
 
-const projectRoot = posix.normalize(path.dirname(__dirname));
+const projectRoot = posix.normalize(path.dirname(import.meta.dirname));
 
 const createRule = ESLintUtils.RuleCreator((name) => name);
 
-module.exports = createRule({
+export default createRule({
   name: 'no-relative-parent-import',
   meta: {
     type: 'problem',

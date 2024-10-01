@@ -10,7 +10,6 @@ import type { App } from '@app/routes/type.ts';
 
 import * as ep from './ep.ts';
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addHook('preHandler', redirectIfNotLogin);
 

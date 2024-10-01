@@ -104,7 +104,7 @@ export async function Auth(req: FastifyRequest, res: FastifyReply) {
 }
 
 export async function accessTokenAuth(req: FastifyRequest): Promise<boolean> {
-  const token = req.headers['authorization'];
+  const token = req.headers.authorization;
   if (!token) {
     return false;
   }

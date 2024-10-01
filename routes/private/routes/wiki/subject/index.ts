@@ -156,7 +156,7 @@ export async function setup(app: App) {
         response: {
           200: t.Ref(SubjectWikiInfo),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },
@@ -202,7 +202,7 @@ export async function setup(app: App) {
         response: {
           200: t.Object({ subjectID: t.Number() }),
           [StatusCodes.BAD_REQUEST]: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
           401: t.Ref(res.Error, {}),
         },
@@ -343,7 +343,7 @@ export async function setup(app: App) {
         response: {
           200: t.Array(t.Ref(HistorySummary)),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },
@@ -405,7 +405,7 @@ export async function setup(app: App) {
         response: {
           200: t.Null(),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },
@@ -474,7 +474,7 @@ export async function setup(app: App) {
         response: {
           200: t.Null(),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },

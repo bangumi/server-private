@@ -73,7 +73,7 @@ export async function setup(app: App) {
             ] satisfies IEpisodeWikiInfo[],
           }),
           404: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotFoundError('episode')),
+            'x-examples': formatErrors(new NotFoundError('episode')),
           }),
         },
       },
@@ -134,7 +134,7 @@ export async function setup(app: App) {
         response: {
           200: t.Object({}),
           400: t.Ref(res.Error, { description: 'invalid input' }),
-          404: t.Ref(res.Error, { 'x-examples': formatErrors(NotFoundError('episode 1')) }),
+          404: t.Ref(res.Error, { 'x-examples': formatErrors(new NotFoundError('episode 1')) }),
         },
       },
       preHandler: [

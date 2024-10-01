@@ -66,7 +66,6 @@ type transformer = <S extends FastifySchema = FastifySchema>({
 }) => { schema: JSONObject; url: string };
 
 const transform: transformer = ({ schema, url }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!schema) {
     return { schema, url };
   }

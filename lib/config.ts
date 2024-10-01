@@ -183,7 +183,6 @@ export function validateConfig(config: unknown) {
       ajv.errors
         ?.map((x) => {
           if (x.keyword === 'additionalProperties') {
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             return `$${x.instancePath}: ${x.message}: ${JSON.stringify(
               x.params.additionalProperty,
             )}`;

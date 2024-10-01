@@ -1,4 +1,5 @@
 import type { GraphQLResolveInfo } from 'graphql';
+
 import type { Context } from '@app/lib/graphql/context.ts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;

@@ -3,7 +3,6 @@ import 'dotenv/config';
 import * as url from 'node:url';
 
 import { isCI } from 'std-env';
-// eslint-disable-next-line import/extensions
 import { defineConfig } from 'vitest/config';
 import GithubActionsReporter from 'vitest-github-actions-reporter';
 

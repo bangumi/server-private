@@ -61,7 +61,7 @@ export async function setup(app: App) {
         response: {
           200: t.Ref(currentUser),
           401: t.Ref(res.Error, {
-            examples: [res.formatError(NeedLoginError('get current user'))],
+            examples: [res.formatError(new NeedLoginError('get current user'))],
           }),
         },
       },
@@ -99,7 +99,7 @@ export async function setup(app: App) {
           401: t.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
-              NeedLoginError: { value: res.formatError(NeedLoginError('logout')) },
+              NeedLoginError: { value: res.formatError(new NeedLoginError('logout')) },
             },
           }),
         },
@@ -178,7 +178,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
               'X-RateLimit-Limit': t.Integer({ description: 'limit per 10 minutes' }),
               'X-RateLimit-Reset': t.Integer({ description: 'seconds to reset rate limit' }),
             },
-            examples: [res.formatError(TooManyRequestsError())],
+            examples: [res.formatError(new TooManyRequestsError())],
           }),
         },
         body: t.Ref(loginRequestBody),

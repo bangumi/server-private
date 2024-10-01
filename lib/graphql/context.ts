@@ -7,5 +7,6 @@ export interface Context {
 }
 
 declare module 'mercurius' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface MercuriusContext extends Context {}
 }
