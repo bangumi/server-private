@@ -163,8 +163,8 @@ importers:
         specifier: 4.2.1
         version: 4.2.1(graphql@16.9.0)
       '@shopify/prettier-plugin-liquid':
-        specifier: ^1.5.0
-        version: 1.5.0(prettier@3.3.3)
+        specifier: ^1.5.1
+        version: 1.5.1(prettier@3.3.3)
       '@types/ioredis-mock':
         specifier: ^8.2.5
         version: 8.2.5
@@ -1873,11 +1873,11 @@ packages:
   '@sec-ant/readable-stream@0.4.1':
     resolution: {integrity: sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==}
 
-  '@shopify/liquid-html-parser@2.0.3':
-    resolution: {integrity: sha512-aIkZ5TJWG7/ztd1sZm5XNpBNTG3B+Q0gv3WN/QahmNQzm2wmKYSHiRLOA8JALAnOGTmH0uqOJ7jzdqoATcZSxw==}
+  '@shopify/liquid-html-parser@2.0.4':
+    resolution: {integrity: sha512-H8M0yuFnkPB5AsSLws5uDjkTdtnT8NfrFYMbW2oUbbvGbXDFk1c36pw7zHcIT1yAfgHGAZ+Nq6aSK04zgb7qgA==}
 
-  '@shopify/prettier-plugin-liquid@1.5.0':
-    resolution: {integrity: sha512-CuWjUnBCvq/RTmubEa5RfwW2oP2gYfTXaJ39t4apAYm//1v5Ftvv1bbhEnoEZwCjPshaAJLhSzP9dvCel4cebw==}
+  '@shopify/prettier-plugin-liquid@1.5.1':
+    resolution: {integrity: sha512-Sr0+mfIOyTvNBbW8lplo1oY7VUXsVnky6oH7ycPhA/7/u80ZXIrZHBKd4+bikS9WosCPNJSMFI1AgmwfFl92fA==}
     peerDependencies:
       prettier: ^2.0.0 || ^3.0.0
 
@@ -7242,14 +7242,14 @@ snapshots:
 
   '@sec-ant/readable-stream@0.4.1': {}
 
-  '@shopify/liquid-html-parser@2.0.3':
+  '@shopify/liquid-html-parser@2.0.4':
     dependencies:
       line-column: 1.0.2
       ohm-js: 16.6.0
 
-  '@shopify/prettier-plugin-liquid@1.5.0(prettier@3.3.3)':
+  '@shopify/prettier-plugin-liquid@1.5.1(prettier@3.3.3)':
     dependencies:
-      '@shopify/liquid-html-parser': 2.0.3
+      '@shopify/liquid-html-parser': 2.0.4
       html-styles: 1.0.0
       prettier: 3.3.3
 
