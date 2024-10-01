@@ -88,6 +88,13 @@ export const schema = Obj({
     default: randomBytes(32).toString('hex'),
   }),
 
+  cookie_secret_token: t.String({
+    env: 'COOKIE_SECRET_TOKEN',
+    description: 'hex encoded secret token for cookies',
+    minLength: 32,
+    default: randomBytes(32).toString('hex'),
+  }),
+
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
   disable_words: t.Optional(t.String()),
   banned_domain: t.Optional(t.String()),

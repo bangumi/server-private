@@ -25,6 +25,7 @@ declare module 'fastify' {
 
 export async function setup(app: App) {
   await app.register(Cookie, {
+    secret: Buffer.from(config.cookie_secret_token, 'hex'),
     hook: 'preHandler',
     parseOptions: cookiesPluginOption,
   });

@@ -22,7 +22,7 @@ const createApp = async () => {
   });
 
   await app.register(formBody);
-  await app.register(fastifyCookie);
+  await app.register(fastifyCookie, { secret: 'hello world' });
   await app.register(userOauthRoutes);
 
   return app;
