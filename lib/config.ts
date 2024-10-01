@@ -26,6 +26,7 @@
  *
  * @packageDocumentation
  */
+import { randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
@@ -84,6 +85,7 @@ export const schema = Obj({
     env: 'CSRF_SECRET_TOKEN',
     description: 'hex encoded csrf secret token',
     minLength: 32,
+    default: randomBytes(32).toString('hex'),
   }),
 
   nsfw_word: t.Optional(t.String({ minLength: 1 })),
