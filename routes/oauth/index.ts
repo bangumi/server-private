@@ -24,8 +24,10 @@ import { randomBase62String, randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
-// 14 days
-const DEFAULT_TOKEN_TTL_SECONDS = 1209600;
+// valid in 2 weeks
+const ACCESS_TOKEN_TTL_SECONDS = 1209600;
+// refresh in 3 month
+const REFRESH_TOKEN_TTL_SECONDS = 8035200;
 
 export const enum TokenType {
   OauthToken = 0,
@@ -337,7 +339,7 @@ async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
     clientID: client.clientID,
     accessToken: await randomBase62String(40),
     expiredAt: DateTime.fromJSDate(now)
-      .plus(Duration.fromObject({ seconds: DEFAULT_TOKEN_TTL_SECONDS }))
+      .plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS }))
       .toJSDate(),
     info: tokenInfo,
   };
@@ -347,7 +349,7 @@ async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
     clientID: client.clientID,
     refreshToken: await randomBase62String(40),
     expiredAt: DateTime.fromJSDate(now)
-      .plus(Duration.fromObject({ seconds: DEFAULT_TOKEN_TTL_SECONDS }))
+      .plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS }))
       .toJSDate(),
   };
 
@@ -358,7 +360,7 @@ async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
 
   return {
     access_token: token.accessToken,
-    expires_in: DEFAULT_TOKEN_TTL_SECONDS,
+    expires_in: ACCESS_TOKEN_TTL_SECONDS,
     token_type: 'Bearer',
     refresh_token: refresh.refreshToken,
     user_id: userID,
@@ -395,14 +397,12 @@ async function tokenFromRefresh(req: ITokenRequestRefresh): Promise<ITokenRespon
     throw new InvalidClientSecretError();
   }
 
-  const ttl_seconds = DEFAULT_TOKEN_TTL_SECONDS;
-
   const token: typeof chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
     userID: refresh.userID,
     clientID: client.clientID,
     accessToken: await randomBase62String(40),
-    expiredAt: now.plus(Duration.fromObject({ seconds: ttl_seconds })).toJSDate(),
+    expiredAt: now.plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS })).toJSDate(),
     scope: refresh.scope,
     info: JSON.stringify({
       name: app.name,
@@ -414,7 +414,7 @@ async function tokenFromRefresh(req: ITokenRequestRefresh): Promise<ITokenRespon
     userID: refresh.userID,
     clientID: client.clientID,
     refreshToken: await randomBase62String(40),
-    expiredAt: now.plus(Duration.fromObject({ seconds: ttl_seconds })).toJSDate(),
+    expiredAt: now.plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS })).toJSDate(),
     scope: refresh.scope,
   };
 
@@ -431,7 +431,7 @@ async function tokenFromRefresh(req: ITokenRequestRefresh): Promise<ITokenRespon
 
   return {
     access_token: token.accessToken,
-    expires_in: ttl_seconds,
+    expires_in: ACCESS_TOKEN_TTL_SECONDS,
     token_type: 'Bearer',
     refresh_token: newRefresh.refreshToken,
     user_id: newRefresh.userID,
