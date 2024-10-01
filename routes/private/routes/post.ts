@@ -381,10 +381,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('delete this comment')),
+            'x-examples': formatErrors(new NotAllowedError('delete this comment')),
           }),
           404: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotFoundError('comment')),
+            'x-examples': formatErrors(new NotFoundError('comment')),
           }),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -420,7 +420,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Ref(Reply),
           404: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotFoundError('post')),
+            'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
@@ -455,7 +455,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('edit reply')),
+            'x-examples': formatErrors(new NotAllowedError('edit reply')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
@@ -530,10 +530,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('delete this post')),
+            'x-examples': formatErrors(new NotAllowedError('delete this post')),
           }),
           404: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotFoundError('post')),
+            'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
@@ -568,7 +568,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Ref(BasicReply),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
+            'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
@@ -637,7 +637,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Ref(BasicReply),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotJoinPrivateGroupError('沙盒')),
+            'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -701,10 +701,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('delete this post')),
+            'x-examples': formatErrors(new NotAllowedError('delete this post')),
           }),
           404: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotFoundError('post')),
+            'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -740,7 +740,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Ref(Reply),
           404: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotFoundError('post')),
+            'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -777,7 +777,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         response: {
           200: t.Object({}),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('edit reply')),
+            'x-examples': formatErrors(new NotAllowedError('edit reply')),
           }),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],

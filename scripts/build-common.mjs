@@ -1,5 +1,7 @@
-const fs = require('node:fs');
-const yaml = require('yaml');
+import * as console from 'node:console';
+import * as fs from 'node:fs';
+
+import * as yaml from 'yaml';
 
 const to_json = (file) => {
   try {

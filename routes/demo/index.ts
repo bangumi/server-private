@@ -23,7 +23,6 @@ declare module 'fastify' {
   }
 }
 
-/* eslint-disable-next-line @typescript-eslint/require-await */
 export async function setup(app: App) {
   await app.register(Cookie, {
     hook: 'preHandler',

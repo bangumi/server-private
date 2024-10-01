@@ -44,7 +44,6 @@ function authCode(str: string, decode: boolean, key = '') {
   }
 
   if (decode) {
-    // eslint-disable-next-line @typescript-eslint/prefer-string-starts-ends-with
     if (result.slice(0, 8) === md5(result.slice(8) + key).slice(0, 8)) {
       return result.slice(8);
     }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 import config, { Image, testing } from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger.ts';
 

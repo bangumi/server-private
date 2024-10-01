@@ -73,9 +73,9 @@ export const AppDataSource = new DataSource({
     logQuery(query, params) {
       logger.trace({ query, params });
     },
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     logSchemaBuild() {},
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+
     logMigration() {},
   },
   entities: [

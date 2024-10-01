@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 import { createError } from '@fastify/error';
 
 import type { IAuth } from '@app/lib/auth';

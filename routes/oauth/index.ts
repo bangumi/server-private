@@ -37,29 +37,6 @@ interface TokenInfo {
   name: string;
 }
 
-const TokenRequestCode = t.Object(
-  {
-    clientID: t.String(),
-    clientSecret: t.String(),
-    code: t.String(),
-    redirectUri: t.String(),
-    state: t.Optional(t.String()),
-  },
-  { $id: 'TokenRequestCode' },
-);
-type ITokenRequestCode = Static<typeof TokenRequestCode>;
-
-const TokenRequestRefresh = t.Object(
-  {
-    clientID: t.String(),
-    clientSecret: t.String(),
-    refreshToken: t.String(),
-    redirectUri: t.String(),
-  },
-  { $id: 'TokenRequestRefresh' },
-);
-type ITokenRequestRefresh = Static<typeof TokenRequestRefresh>;
-
 const TokenResponse = t.Object(
   {
     access_token: t.String(),
@@ -129,7 +106,6 @@ const InvalidClientIDError = createError<[]>(
   StatusCodes.BAD_REQUEST,
 );
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   await app.register(Cookie, {
     hook: 'preHandler',
@@ -257,7 +233,7 @@ export async function userOauthRoutes(app: App) {
       schema: {
         hide: true,
         body: t.Object({
-          grant_type: t.String(),
+          grant_type: t.Union([t.Literal('authorization_code'), t.Literal('authorization_code')]),
           client_id: t.String(),
           client_secret: t.String(),
           code: t.Optional(t.String()),
@@ -300,7 +276,13 @@ export async function userOauthRoutes(app: App) {
   );
 }
 
-async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
+async function tokenFromCode(req: {
+  code: string;
+  clientID: string;
+  redirectUri: string;
+  clientSecret: string;
+  state?: string;
+}): Promise<ITokenResponse> {
   const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await db
     .select()
     .from(chiiOauthClients)
@@ -365,7 +347,12 @@ async function tokenFromCode(req: ITokenRequestCode): Promise<ITokenResponse> {
   };
 }
 
-async function tokenFromRefresh(req: ITokenRequestRefresh): Promise<ITokenResponse> {
+async function tokenFromRefresh(req: {
+  refreshToken: string;
+  clientID: string;
+  redirectUri: string;
+  clientSecret: string;
+}): Promise<ITokenResponse> {
   const now = DateTime.now();
 
   const refresh = await db.query.chiiOAuthRefreshToken.findFirst({

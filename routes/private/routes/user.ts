@@ -34,7 +34,7 @@ declare module 'fastify' {
     io: Server;
   }
 }
-// eslint-disable-next-line @typescript-eslint/require-await
+
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(NoticeRes);
@@ -57,7 +57,7 @@ export async function setup(app: App) {
             description: '未登录',
             'x-examples': {
               NeedLoginError: {
-                value: res.formatError(NeedLoginError('getting notifications')),
+                value: res.formatError(new NeedLoginError('getting notifications')),
               },
             },
           }),
@@ -115,7 +115,7 @@ export async function setup(app: App) {
             description: '未登录',
             'x-examples': {
               NeedLoginError: {
-                value: res.formatError(NeedLoginError('marking notifications as read')),
+                value: res.formatError(new NeedLoginError('marking notifications as read')),
               },
             },
           }),

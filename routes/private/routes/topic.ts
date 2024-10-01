@@ -185,7 +185,7 @@ export async function setup(app: App) {
           404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
             },
           }),
         },
@@ -253,7 +253,7 @@ export async function setup(app: App) {
           404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
             },
           }),
         },
@@ -333,7 +333,7 @@ export async function setup(app: App) {
           404: t.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
-              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
             },
           }),
         },
@@ -375,7 +375,7 @@ export async function setup(app: App) {
           404: t.Ref(res.Error, {
             description: '条目不存在',
             'x-examples': {
-              NotFoundError: { value: res.formatError(NotFoundError('topic')) },
+              NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
             },
           }),
         },
@@ -461,7 +461,7 @@ export async function setup(app: App) {
           200: t.Object({}),
           400: t.Ref(res.Error),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('edit a topic')),
+            'x-examples': formatErrors(new NotAllowedError('edit a topic')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
@@ -607,7 +607,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           200: t.Object({}),
           400: t.Ref(res.Error),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(NotAllowedError('edit a topic')),
+            'x-examples': formatErrors(new NotAllowedError('edit a topic')),
           }),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],

@@ -64,7 +64,7 @@ export async function setup(app: App) {
         response: {
           200: t.Ref(PersonWikiInfo),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
           404: t.Ref(res.Error, {
             description: '角色不存在',
@@ -113,10 +113,10 @@ export async function setup(app: App) {
         response: {
           200: t.Object({}),
           400: t.Ref(res.Error, {
-            'x-examples': formatErrors(WikiChangedError()),
+            'x-examples': formatErrors(new WikiChangedError()),
           }),
           401: t.Ref(res.Error, {
-            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },
@@ -138,7 +138,7 @@ export async function setup(app: App) {
           throw new NotFoundError(`person ${personID}`);
         }
         if (p.lock || p.redirect) {
-          throw BadRequestError('locked person');
+          throw new BadRequestError('locked person');
         }
 
         matchExpected(p, expectedRevision);
@@ -180,7 +180,7 @@ function matchExpected<A extends object, B extends Record<keyof A, string>>(
     }
 
     if (w[key as keyof A] !== value) {
-      throw WikiChangedError();
+      throw new WikiChangedError();
     }
   }
 }
