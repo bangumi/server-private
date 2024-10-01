@@ -152,7 +152,13 @@ export async function userOauthRoutes(app: App) {
         return await reply.view('oauth/authorize', { error: InvalidResponseTypeError });
       }
 
-      const [{ chii_oauth_clients: client = null, chii_members: creator = null } = {}] = await db
+      const [
+        {
+          chii_oauth_clients: client = null,
+          chii_members: creator = null,
+          chii_apps: app = null,
+        } = {},
+      ] = await db
         .select()
         .from(chiiOauthClients)
         .innerJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
@@ -183,6 +189,7 @@ export async function userOauthRoutes(app: App) {
         });
       }
       await reply.view('oauth/authorize', {
+        app,
         client,
         creator,
       });

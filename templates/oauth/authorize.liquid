@@ -10,9 +10,7 @@
   {% if client %}
     <div class='card shadow rounded p-4'>
       <div class='card-body'>
-        <h1 class='card-title' style='color: #F09199;'>
-          授权 {{ client.app.appName }} 访问你的账户
-        </h1>
+        <h1 class='card-title' style='color: #F09199;'>授权 {{ app.name }} 访问你的账户</h1>
         <ul class='list-group list-group-flush'>
           <li class='list-group-item d-flex align-items-start border-0'>
             <a href='https://bgm.tv/user/{{ creator.username }}'>
@@ -25,7 +23,7 @@
             </a>
             <div class='px-2' style='width: 100%;'>
               <span>
-                <b>{{ client.app.appName }}</b> by
+                <b>{{ app.name }}</b> by
                 <a
                   href='https://bgm.tv/user/{{ creator.username }}'
                   class='link-underline-light'
@@ -34,7 +32,7 @@
                 </a>
               </span>
               <div>
-                <p>{{ client.app.appDesc }}</p>
+                <p>{{ app.appDesc }}</p>
               </div>
               <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
             </div>
@@ -68,7 +66,7 @@
                 <b>读写你的收藏信息</b>
               </span>
               <div class='small text-secondary'>
-                <span class='badge border border-secondary text-secondary'>只读</span>
+                <span class='badge border border-secondary text-secondary'>读写</span>
                 <span>允许应用读写你收藏、收视进度等信息</span>
               </div>
               <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
@@ -97,7 +95,7 @@
           <span class='small'>
             <span class='text-black-50'>应用创建于</span>
             <span>
-              {{ client.app.appTimestamp | date: '%Y-%m-%d %H:%M:%S', 'Asia/Shanghai' }}
+              {{ app.createdAt | date: '%Y-%m-%d %H:%M:%S', 'Asia/Shanghai' }}
             </span>
           </span>
         </div>
