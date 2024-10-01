@@ -96,6 +96,7 @@ export default tsEslint.config(
       'array-bracket-newline': ['error', 'consistent'],
       'promise/catch-or-return': ['error', { allowFinally: true }],
       'require-await': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/restrict-plus-operands': ['error', { skipCompoundAssignments: false }],
