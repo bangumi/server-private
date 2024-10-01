@@ -2,7 +2,7 @@
 
 import { md5 } from '@app/lib/utils/index.ts';
 
-/* eslint-disable unicorn/prefer-code-point,@typescript-eslint/no-non-null-assertion */
+/* eslint-disable unicorn/prefer-code-point */
 
 /**
  * @param str - 加密内容

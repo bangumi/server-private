@@ -1,8 +1,8 @@
 export class DATE {
   constructor(
     readonly year: number,
-    readonly month: number = 0,
-    readonly day: number = 0,
+    readonly month = 0,
+    readonly day = 0,
   ) {}
 
   static parse(s: string): DATE {

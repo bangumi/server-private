@@ -155,8 +155,8 @@ export async function setup(app: App) {
         throw new NotFoundError(`comments of ep id ${episodeID}`);
       }
 
-      const commentMap: Map<number, IEpisodeComment> = new Map();
-      const repliesMap: Map<number, IEpisodeComment[]> = new Map();
+      const commentMap = new Map<number, IEpisodeComment>();
+      const repliesMap = new Map<number, IEpisodeComment[]>();
 
       for (const comment of comments) {
         const u = await fetchUser(comment.creatorID);

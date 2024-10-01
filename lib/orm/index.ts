@@ -74,8 +74,10 @@ export const AppDataSource = new DataSource({
       logger.trace({ query, params });
     },
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     logSchemaBuild() {},
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     logMigration() {},
   },
   entities: [

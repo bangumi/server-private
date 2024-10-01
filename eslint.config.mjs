@@ -1,6 +1,5 @@
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
-import pluginNode from 'eslint-plugin-n';
 import pluginPromise from 'eslint-plugin-promise';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import eslintPluginTsDoc from 'eslint-plugin-tsdoc';
@@ -15,7 +14,7 @@ export default tsEslint.config(
   eslint.configs.recommended,
   pluginPromise.configs['flat/recommended'],
   ...tsEslint.configs.recommendedTypeChecked,
-  ...tsEslint.configs.strict,
+  ...tsEslint.configs.stylisticTypeChecked,
   {
     languageOptions: {
       parserOptions: {
@@ -53,7 +52,6 @@ export default tsEslint.config(
   },
   {
     plugins: {
-      n: pluginNode,
       tsdoc: eslintPluginTsDoc,
       'simple-import-sort': simpleImportSort,
       'first-part': firstPartEslintPlugin,
@@ -97,6 +95,8 @@ export default tsEslint.config(
       'array-element-newline': ['error', 'consistent'],
       'array-bracket-newline': ['error', 'consistent'],
       'promise/catch-or-return': ['error', { allowFinally: true }],
+      'require-await': 'off',
+      '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/restrict-plus-operands': ['error', { skipCompoundAssignments: false }],
       '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
