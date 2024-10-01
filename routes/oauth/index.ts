@@ -24,10 +24,10 @@ import { randomBase62String, randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
-// valid in 24 hours
-const ACCESS_TOKEN_TTL_SECONDS = 86400;
-// refresh in 1 month
-const REFRESH_TOKEN_TTL_SECONDS = 2678400;
+// valid in 2 weeks
+const ACCESS_TOKEN_TTL_SECONDS = 1209600;
+// refresh in 3 month
+const REFRESH_TOKEN_TTL_SECONDS = 8035200;
 
 export const enum TokenType {
   OauthToken = 0,
