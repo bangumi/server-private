@@ -84,7 +84,7 @@ export async function setup(app: App) {
                 }
 
                 return {
-                  revDateline: x.revDateline,
+                  revDateline: x.createdAt,
                   creatorID: x.revCreator,
                   airdate: data.ep_airdate,
                   desc: data.ep_desc,

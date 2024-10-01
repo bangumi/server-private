@@ -1,14 +1,18 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
+import { StatusCodes } from 'http-status-codes';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
+import type { Permission } from '@app/lib/orm/index.ts';
+import { SubjectRepo } from '@app/lib/orm/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import type { ISubjectEdit } from '@app/routes/private/routes/wiki/subject/index.ts';
+import { SubjectType } from '@app/lib/subject/index.ts';
+import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -17,6 +21,102 @@ async function testApp(...args: Parameters<typeof createTestServer>) {
   await app.register(setup);
   return app;
 }
+
+const newSubjectApp = () =>
+  testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
+describe('create subject', () => {
+  test('create new subject', async () => {
+    const app = await newSubjectApp();
+    const res = await app.inject({
+      url: '/subjects',
+      method: 'post',
+      payload: {
+        name: 'New Subject',
+        infobox: `{{Infobox
+        | 话数 = 10
+        }}`,
+        type: SubjectType.Anime,
+        platform: 0,
+        summary: 'A brief summary of the subject',
+        nsfw: false,
+      } satisfies ISubjectNew,
+    });
+
+    expect(res.statusCode).toBe(200);
+
+    expect(res.json()).toEqual({
+      subjectID: expect.any(Number),
+    });
+  });
+
+  test('create type', async () => {
+    const app = await newSubjectApp();
+    const res = await app.inject({
+      url: '/subjects',
+      method: 'post',
+      payload: {
+        name: 'New Subject',
+        infobox: `{{Infobox
+        | 话数 = 10
+        }}`,
+        type: 0,
+        platform: 0,
+        summary: 'A brief summary of the subject',
+        nsfw: false,
+      },
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "REQUEST_VALIDATION_ERROR",
+        "error": "Bad Request",
+        "message": "body/type must be equal to constant, body/type must be equal to constant, body/type must be equal to constant, body/type must be equal to constant, body/type must be equal to constant, body/type must match a schema in anyOf",
+        "statusCode": 400,
+      }
+    `);
+  });
+
+  test('invalid platform', async () => {
+    const app = await newSubjectApp();
+    const res = await app.inject({
+      url: '/subjects',
+      method: 'post',
+      payload: {
+        name: 'New Subject',
+        infobox: `{{Infobox
+        | 话数 = 10
+        }}`,
+        type: SubjectType.Anime,
+        platform: 777777888,
+        summary: 'A brief summary of the subject',
+        nsfw: false,
+      },
+    });
+
+    expect(res.statusCode).toBe(StatusCodes.BAD_REQUEST);
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "BAD_REQUEST",
+        "error": "Bad Request",
+        "message": "条目分类错误",
+        "statusCode": 400,
+      }
+    `);
+  });
+});
 
 describe('edit subject ', () => {
   const editSubject = vi.fn();
@@ -232,5 +332,56 @@ describe('should upload image', () => {
       expect.stringMatching(/.*\.jpe?g$/),
       expect.objectContaining({}),
     );
+  });
+});
+
+const lockSubjectApp = () =>
+  testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true, subject_lock: true } as Permission,
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
+describe('lock subject', () => {
+  const subjectID = 12;
+  test('lock subject', async () => {
+    const app = await lockSubjectApp();
+    const res = await app.inject({
+      url: '/lock/subjects',
+      method: 'post',
+      payload: {
+        reason: 'string',
+        subjectID: subjectID,
+      },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`Object {}`);
+    expect(res.statusCode).toBe(200);
+
+    const subject = await SubjectRepo.findOneBy({ id: subjectID });
+    expect(subject?.subjectBan).toBe(1);
+  });
+
+  test('unlock subject', async () => {
+    const app = await lockSubjectApp();
+    const res = await app.inject({
+      url: '/unlock/subjects',
+      method: 'post',
+      payload: {
+        reason: 'string',
+        subjectID: subjectID,
+      },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`Object {}`);
+    expect(res.statusCode).toBe(200);
+
+    const subject = await SubjectRepo.findOneBy({ id: subjectID });
+    expect(subject?.subjectBan).toBe(0);
   });
 });

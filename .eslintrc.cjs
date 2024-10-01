@@ -15,7 +15,7 @@ module.exports = {
     'prettier',
   ],
   plugins: ['import', 'unicorn', 'unused-imports', 'rulesdir', 'simple-import-sort'],
-  ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*'],
+  ignorePatterns: ['**/dist/*', 'lib/generated/**/*', 'coverage/**/*', '**/__generated__/**'],
   env: {
     browser: false,
     node: true,
@@ -49,6 +49,7 @@ module.exports = {
       ],
       plugins: ['@typescript-eslint', 'tsdoc'],
       rules: {
+        '@typescript-eslint/restrict-template-expressions': 'off',
         'unicorn/import-style': 'off',
         'rulesdir/no-relative-parent-import': 'error',
         'unused-imports/no-unused-imports': 'error',

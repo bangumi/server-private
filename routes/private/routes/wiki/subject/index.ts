@@ -1,19 +1,28 @@
+import { parseToMap } from '@bgm38/wiki';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { StatusCodes } from 'http-status-codes';
+import { DateTime } from 'luxon';
+import type { ResultSetHeader } from 'mysql2';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { SubjectRevRepo } from '@app/lib/orm/index.ts';
+import * as entity from '@app/lib/orm/entity';
+import { RevType } from '@app/lib/orm/entity';
+import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import { InvalidWikiSyntaxError, platforms } from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError, platforms, SubjectType } from '@app/lib/subject/index.ts';
+import PlatformConfig from '@app/lib/subject/platform.ts';
+import { SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 import * as imageRoutes from './image.ts';
+import * as manageRoutes from './mgr.ts';
 
 const exampleSubjectEdit = {
   name: '沙盒',
@@ -47,6 +56,21 @@ const exampleSubjectEdit = {
 
 https://bgm.tv/group/topic/366812#post_1923517`,
 };
+
+export type ISubjectNew = Static<typeof SubjectNew>;
+export const SubjectNew = t.Object(
+  {
+    name: t.String({ minLength: 1 }),
+    type: t.Enum(SubjectType),
+    platform: t.Integer(),
+    infobox: t.String({ minLength: 1 }),
+    nsfw: t.Boolean(),
+    summary: t.String(),
+  },
+  {
+    $id: 'SubjectNew',
+  },
+);
 
 export type ISubjectEdit = Static<typeof SubjectEdit>;
 export const SubjectEdit = t.Object(
@@ -111,6 +135,7 @@ export const SubjectWikiInfo = t.Object(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   imageRoutes.setup(app);
+  manageRoutes.setup(app);
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
@@ -160,6 +185,130 @@ export async function setup(app: App) {
         nsfw: s.nsfw,
         typeID: s.typeID,
       };
+    },
+  );
+
+  app.addSchema(SubjectNew);
+
+  app.post(
+    '/subjects',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'createNewSubject',
+        description: '创建新条目',
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: SubjectNew,
+        response: {
+          200: t.Object({ subjectID: t.Number() }),
+          [StatusCodes.BAD_REQUEST]: t.Ref(res.Error, {
+            'x-examples': formatErrors(InvalidWikiSyntaxError()),
+          }),
+          401: t.Ref(res.Error, {}),
+        },
+      },
+    },
+    async ({ auth, body }) => {
+      if (!auth.permission.subject_edit) {
+        throw new NotAllowedError('edit subject');
+      }
+
+      if (!SubjectTypeValues.has(body.type)) {
+        throw new BadRequestError(`条目类型错误`);
+      }
+
+      if (!(body.platform in PlatformConfig[body.type])) {
+        throw new BadRequestError(`条目分类错误`);
+      }
+
+      let w;
+      try {
+        w = parseToMap(body.infobox);
+      } catch (error) {
+        throw new BadRequestError(`infobox 包含语法错误 ${error}`);
+      }
+
+      let eps = 0;
+      if (body.type === SubjectType.Anime) {
+        eps = Number.parseInt(w.data.get('话数')?.value ?? '0') || 0;
+      } else if (body.type === SubjectType.Real) {
+        eps = Number.parseInt(w.data.get('集数')?.value ?? '0') || 0;
+      }
+
+      const newSubject: Partial<entity.Subject> = {
+        name: body.name,
+        nameCN: w.data.get('中文名')?.value ?? '',
+        platform: body.platform,
+        fieldInfobox: body.infobox,
+        typeID: body.type,
+        fieldSummary: body.summary,
+        subjectNsfw: body.nsfw,
+        fieldEps: eps,
+        updatedAt: DateTime.now().toUnixInteger(),
+      };
+
+      const subjectID = await AppDataSource.transaction(async (txn) => {
+        const s = await txn
+          .getRepository(entity.Subject)
+          .createQueryBuilder()
+          .insert()
+          .values(newSubject)
+          .execute();
+
+        const r = s.raw as ResultSetHeader;
+
+        await txn
+          .getRepository(entity.SubjectFields)
+          .createQueryBuilder()
+          .insert()
+          .values({ subjectID: r.insertId })
+          .execute();
+
+        if (eps) {
+          // avoid create too many episodes, 50 is enough.
+          eps = Math.min(eps, 50);
+
+          const episodes = Array.from({ length: eps })
+            .fill(null)
+            .map((_, index) => {
+              return {
+                subjectID: r.insertId,
+                sort: index + 1,
+                type: 0,
+              };
+            });
+
+          await txn
+            .getRepository(entity.Episode)
+            .createQueryBuilder()
+            .insert()
+            .values(episodes)
+            .execute();
+        }
+
+        await txn
+          .getRepository(entity.SubjectRev)
+          .createQueryBuilder()
+          .insert()
+          .values({
+            subjectID: r.insertId,
+            type: RevType.subjectEdit,
+            name: newSubject.name,
+            nameCN: newSubject.nameCN,
+            infobox: newSubject.fieldInfobox,
+            summary: newSubject.fieldSummary,
+            createdAt: newSubject.updatedAt,
+            typeID: newSubject.typeID,
+            platform: newSubject.platform,
+            eps: eps,
+            creatorID: auth.userID,
+          })
+          .execute();
+
+        return r.insertId;
+      });
+
+      return { subjectID };
     },
   );
 

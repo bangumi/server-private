@@ -2,55 +2,61 @@ import { promisify } from 'node:util';
 import * as zlib from 'node:zlib';
 
 import * as php from '@trim21/php-serialize';
+import type { EntityManager } from 'typeorm';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-const inflateRaw = promisify(zlib.inflateRaw);
-const deflateRaw = promisify(zlib.deflateRaw);
+import * as entity from '@app/lib/orm/entity/index.ts';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
+const decompress = promisify(zlib.inflateRaw);
+const compress = promisify(zlib.deflateRaw);
 
-const TypeSubject = 1; // 条目
-const TypeSubjectCharacterRelation = 5; // 条目->角色关联
-const TypeSubjectCastRelation = 6; // 条目->声优关联
-const TypeSubjectPersonRelation = 10; // 条目->人物关联
-const TypeSubjectMerge = 11; // 条目管理
-const TypeSubjectErase = 12;
-const TypeSubjectRelation = 17; // 条目关联
-const TypeSubjectLock = 103;
-const TypeSubjectUnlock = 104;
-const TypeCharacter = 2; // 角色
-const TypeCharacterSubjectRelation = 4; // 角色->条目关联
-const TypeCharacterCastRelation = 7; // 角色->声优关联
-const TypeCharacterMerge = 13; // 角色管理
-const TypeCharacterErase = 14;
-const TypePerson = 3; // 人物
-const TypePersonCastRelation = 8; // 人物->声优关联
-const TypePersonSubjectRelation = 9; // 人物->条目关联
-const TypePersonMerge = 15; // 人物管理
-const TypePersonErase = 16;
-const TypeEp = 18; // 章节
-const TypeEpMerge = 181; // 章节管理
-const TypeEpMove = 182;
-const TypeEpLock = 183;
-const TypeEpUnlock = 184;
-const TypeEpErase = 185;
+export const RevType = {
+  subjectEdit: 1,
+  subjectLock: 103,
+  subjectUnlock: 104,
 
-/* eslint-enable @typescript-eslint/no-unused-vars */
+  characterEdit: 2, // 角色编辑
+  personEdit: 3, // 人物编辑
+  personMerge: 15,
+  personErase: 16,
+
+  episodeEdit: 18, // 章节
+
+  // 章节管理
+  episodeMerge: 181,
+  episodeMove: 182,
+  episodeLock: 183,
+  episodeUnlock: 184,
+  episodeErase: 185,
+} as const;
+
+// const TypeSubjectCharacterRelation = 5; // 条目->角色关联
+// const TypeSubjectCastRelation = 6; // 条目->声优关联
+// const TypeSubjectPersonRelation = 10; // 条目->人物关联
+// const TypeSubjectMerge = 11; // 条目管理
+// const TypeSubjectErase = 12;
+// const TypeSubjectRelation = 17; // 条目关联
+// const TypeSubjectLock = 103;
+// const TypeSubjectUnlock = 104;
+// const TypeCharacterSubjectRelation = 4; // 角色->条目关联
+// const TypeCharacterCastRelation = 7; // 角色->声优关联
+// const TypeCharacterMerge = 13; // 角色管理
+// const TypeCharacterErase = 14;
+// const TypePersonCastRelation = 8; // 人物->声优关联
+// const TypePersonSubjectRelation = 9; // 人物->条目关联
 
 @Index('rev_crt_id', ['revType', 'revMid'], {})
 @Index('rev_crt_creator', ['revCreator'], {})
 @Index('rev_id', ['revId', 'revType', 'revCreator'], {})
 @Entity('chii_rev_history', { schema: 'bangumi' })
 export class RevHistory {
-  static readonly TypeEp = TypeEp;
-
   static episodeTypes = [
-    TypeEp,
-    TypeEpMerge,
-    TypeEpMove,
-    TypeEpLock,
-    TypeEpUnlock,
-    TypeEpErase,
+    RevType.episodeEdit,
+    RevType.episodeMerge,
+    RevType.episodeMove,
+    RevType.episodeLock,
+    RevType.episodeUnlock,
+    RevType.episodeErase,
   ] as const;
 
   @PrimaryGeneratedColumn({ type: 'mediumint', name: 'rev_id', unsigned: true })
@@ -74,7 +80,7 @@ export class RevHistory {
   revTextId!: number;
 
   @Column('int', { name: 'rev_dateline', unsigned: true })
-  revDateline!: number;
+  createdAt!: number;
 
   @Column('mediumint', { name: 'rev_creator', unsigned: true })
   revCreator!: number;
@@ -114,11 +120,11 @@ export class RevText {
   }
 
   static async deserialize(o: Buffer): Promise<Record<string, unknown>> {
-    return php.parse(await inflateRaw(o)) as Record<string, unknown>;
+    return php.parse(await decompress(o)) as Record<string, unknown>;
   }
 
   static async serialize(o: unknown): Promise<Buffer> {
-    return await deflateRaw(php.stringify(o));
+    return await compress(php.stringify(o));
   }
 }
 
@@ -166,4 +172,48 @@ export interface EpTextRev {
   ep_duration: string;
   ep_airdate: string;
   ep_desc: string;
+}
+
+export interface PersonRev {
+  crt_name: string;
+  crt_infobox: string;
+  crt_summary: string;
+  extra: {
+    img?: string;
+  };
+}
+
+export async function createRevision(
+  t: EntityManager,
+  {
+    mid,
+    type,
+    rev,
+    creator,
+    now = new Date(),
+    comment,
+  }: {
+    mid: number;
+    type: number;
+    rev: unknown;
+    creator: number;
+    now?: Date;
+    comment: string;
+  },
+) {
+  const revText = await t.save(entity.RevText, {
+    revText: await entity.RevText.serialize({}),
+  });
+
+  const revHistory = await t.save(entity.RevHistory, {
+    revType: type,
+    revCreator: creator,
+    revTextId: revText.revTextId,
+    revDateline: now.getTime() / 1000,
+    revMid: mid,
+    revEditSummary: comment,
+  });
+
+  revText.revText = await entity.RevText.serialize({ [revHistory.revId]: rev });
+  await t.save(entity.RevText, revText);
 }

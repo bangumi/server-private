@@ -16,7 +16,7 @@ export interface Platform {
 export const DefaultSortKeys = Object.freeze(['放送开始', '发行日期', '开始']);
 
 export const PlatformSortKeys = {
-  [SubjectType.Book]: Object.freeze(['发售日', '开始']),
+  [SubjectType.Book]: Object.freeze(['发售日']),
   [SubjectType.Anime]: DefaultSortKeys,
   [SubjectType.Music]: DefaultSortKeys,
   [SubjectType.Game]: DefaultSortKeys,
@@ -90,7 +90,7 @@ export default {
       type: 'movie',
       type_cn: '剧场版',
       wiki_tpl: 'Movie',
-      sortKeys: Object.freeze(['上映日']),
+      sortKeys: Object.freeze(['上映日', '上映年度']),
     },
     '5': {
       alias: 'web',

@@ -5,3 +5,7 @@ export interface Context {
   repo: typeof repo;
   auth: IAuth;
 }
+
+declare module 'mercurius' {
+  interface MercuriusContext extends Context {}
+}

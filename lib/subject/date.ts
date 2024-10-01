@@ -21,6 +21,9 @@ export function extractDate(w: Wiki, typeID: SubjectType, platform: number): DAT
     .filter((v) => v !== undefined);
 
   for (const item of values) {
+    if (!item) {
+      continue;
+    }
     if (item.value) {
       const parsed = extractFromString(item.value);
       if (parsed) {

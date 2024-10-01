@@ -2,10 +2,12 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 
+import { db, op } from '@app/drizzle/db.ts';
+import { chiiLikes } from '@app/drizzle/schema.ts';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
-import { Like } from '@app/lib/orm/entity/index.ts';
-import { LikeRepo, SubjectImageRepo } from '@app/lib/orm/index.ts';
+import { LikeType } from '@app/lib/like.ts';
+import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
@@ -34,7 +36,7 @@ vi.spyOn(Subject, 'onSubjectVote').mockImplementation(() => Promise.resolve());
 
 describe('should vote for subject cover', () => {
   beforeAll(async () => {
-    await LikeRepo.delete({ type: Like.TYPE_SUBJECT_COVER });
+    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
     await SubjectImageRepo.upsert(
       {
         ban: 0,
@@ -50,7 +52,7 @@ describe('should vote for subject cover', () => {
   });
 
   afterAll(async () => {
-    await LikeRepo.delete({ type: Like.TYPE_SUBJECT_COVER });
+    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
     await SubjectImageRepo.delete({ id: 100 });
   });
 
@@ -64,7 +66,7 @@ describe('should vote for subject cover', () => {
       });
 
       expect(res.statusCode).toBe(200);
-      const likes = await LikeRepo.findBy({ ban: 0 });
+      const likes = await db.select().from(chiiLikes).where(op.eq(chiiLikes.deleted, 0));
       expect(likes).not.toHaveLength(0);
     }
 
@@ -76,7 +78,7 @@ describe('should vote for subject cover', () => {
       });
 
       expect(res.statusCode).toBe(200);
-      const likes = await LikeRepo.findBy({ ban: 1 });
+      const likes = await db.select().from(chiiLikes).where(op.eq(chiiLikes.deleted, 1));
       expect(likes).not.toHaveLength(0);
     }
   });

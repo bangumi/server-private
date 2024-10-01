@@ -3,6 +3,8 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { DataSource, In } from 'typeorm';
 
+import { db, op } from '@app/drizzle/db.ts';
+import { chiiFriends, chiiUsergroup } from '@app/drizzle/schema.ts';
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
@@ -11,21 +13,20 @@ import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
 import * as entity from './entity/index.ts';
 import {
   App,
+  Cast,
   Character,
+  CharacterSubjects,
   Episode,
   EpisodeComment,
   EpRevision,
-  Friends,
   Group,
   GroupMembers,
   GroupPost,
   GroupTopic,
-  Like,
   Notify,
   NotifyField,
-  OauthAccessTokens,
-  OauthClient,
   Person,
+  PersonSubjects,
   RevHistory,
   RevText,
   Subject,
@@ -38,8 +39,6 @@ import {
   SubjectTopic,
   User,
   UserField,
-  UserGroup,
-  WebSessions,
 } from './entity/index.ts';
 
 export * as entity from './entity/index.ts';
@@ -71,8 +70,9 @@ export const AppDataSource = new DataSource({
       logger.error({ error, query, parameters }, 'query error');
     },
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    logQuery() {},
+    logQuery(query, params) {
+      logger.trace({ query, params });
+    },
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     logSchemaBuild() {},
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -80,23 +80,21 @@ export const AppDataSource = new DataSource({
   },
   entities: [
     App,
+    Cast,
     Character,
+    CharacterSubjects,
     EpRevision,
     User,
     UserField,
-    OauthAccessTokens,
-    WebSessions,
-    UserGroup,
     Notify,
     NotifyField,
     SubjectImage,
-    Friends,
     Group,
     GroupMembers,
     Episode,
     EpisodeComment,
-    OauthClient,
     Person,
+    PersonSubjects,
     RevHistory,
     RevText,
     Subject,
@@ -108,16 +106,18 @@ export const AppDataSource = new DataSource({
     GroupPost,
     SubjectRev,
     SubjectInterest,
-    Like,
   ],
 });
 
 export const UserRepo = AppDataSource.getRepository(User);
 export const UserFieldRepo = AppDataSource.getRepository(UserField);
-export const FriendRepo = AppDataSource.getRepository(Friends);
 
 export const CharacterRepo = AppDataSource.getRepository(Character);
+export const CharacterSubjectsRepo = AppDataSource.getRepository(CharacterSubjects);
+export const CastRepo = AppDataSource.getRepository(Cast);
+
 export const PersonRepo = AppDataSource.getRepository(Person);
+export const PersonSubjectsRepo = AppDataSource.getRepository(PersonSubjects);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
 export const SubjectTopicRepo = AppDataSource.getRepository(SubjectTopic);
@@ -135,12 +135,6 @@ export const RevTextRepo = AppDataSource.getRepository(RevText);
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
-export const AccessTokenRepo = AppDataSource.getRepository(OauthAccessTokens);
-export const AppRepo = AppDataSource.getRepository(App);
-export const OauthClientRepo = AppDataSource.getRepository(OauthClient);
-export const SessionRepo = AppDataSource.getRepository(WebSessions);
-export const UserGroupRepo = AppDataSource.getRepository(UserGroup);
-
 export const NotifyRepo = AppDataSource.getRepository(Notify);
 export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
 
@@ -149,20 +143,17 @@ export const GroupTopicRepo = AppDataSource.getRepository(GroupTopic);
 export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
 export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
 
-export const LikeRepo = AppDataSource.getRepository(Like);
-
 export const repo = {
   UserField: UserFieldRepo,
-  Friend: FriendRepo,
   Subject: SubjectRepo,
   SubjectFields: SubjectFieldsRepo,
   SubjectRelation: SubjectRelationRepo,
   Episode: EpisodeRepo,
   Character: CharacterRepo,
+  CharacterSubjects: CharacterSubjectsRepo,
+  Cast: CastRepo,
   Person: PersonRepo,
-  AccessToken: AccessTokenRepo,
-  Session: SessionRepo,
-  UserGroup: UserGroupRepo,
+  PersonSubjects: PersonSubjectsRepo,
   Notify: NotifyRepo,
   NotifyField: NotifyFieldRepo,
   Group: GroupRepo,
@@ -270,19 +261,21 @@ const defaultPermission: Permission = {
 };
 
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
-  const permission = await UserGroupRepo.findOne({ where: { id: userGroup } });
+  const permission = await db.query.chiiUsergroup.findFirst({
+    where: op.eq(chiiUsergroup.id, userGroup),
+  });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
     return Object.freeze({ ...defaultPermission });
   }
 
-  if (!permission.Permission) {
+  if (!permission.perm) {
     return Object.freeze({ ...defaultPermission });
   }
 
   return Object.freeze(
     Object.fromEntries(
-      Object.entries(php.parse(permission.Permission) as Record<keyof Permission, string>).map(
+      Object.entries(php.parse(permission.perm) as Record<keyof Permission, string>).map(
         ([key, value]) => [key, value === '1'],
       ),
     ),
@@ -461,7 +454,7 @@ export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
   }
 
   const f = await SubjectFieldsRepo.findOne({
-    where: { subject_id: id },
+    where: { subjectID: id },
   });
 
   if (!f) {
@@ -494,18 +487,17 @@ export async function fetchFriends(id?: number): Promise<Record<number, boolean>
     return {};
   }
 
-  const friends = await FriendRepo.find({
-    where: { frdUid: id },
-  });
+  const friends = await db.select().from(chiiFriends).where(op.eq(chiiFriends.frdUid, id));
 
   return Object.fromEntries(friends.map((x) => [x.frdFid, true]));
 }
 
 /** Is user(another) is friend of user(userID) */
 export async function isFriends(userID: number, another: number): Promise<boolean> {
-  const friends = await FriendRepo.count({
-    where: { frdUid: userID, frdFid: another },
-  });
+  const [friends = 0] = await db
+    .select({ count: op.count() })
+    .from(chiiFriends)
+    .where(op.and(op.eq(chiiFriends.frdUid, userID), op.eq(chiiFriends.frdFid, another)));
 
   return friends !== 0;
 }

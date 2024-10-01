@@ -1,9 +1,9 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime, Duration } from 'luxon';
 
+import { db, op } from '@app/drizzle/db';
+import { chiiAccessToken, chiiApp, chiiOauthClients } from '@app/drizzle/schema.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import type * as entity from '@app/lib/orm/entity/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
 import { randomBase62String } from '@app/lib/utils/index.ts';
 import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -29,17 +29,22 @@ export function setup(app: App) {
       preHandler: [requireLogin('delete your token')],
     },
     async ({ auth, body }) => {
-      const token = await orm.AccessTokenRepo.findOneBy({ id: body.id });
+      const token = await db.query.chiiAccessToken.findFirst({
+        where: op.eq(chiiAccessToken.id, body.id),
+      });
 
       if (!token) {
         throw new NotAllowedError("delete a token not belong to you or token doesn't exist");
       }
 
-      if (token.userId !== auth.userID.toString()) {
+      if (token.userID !== auth.userID.toString()) {
         throw new NotAllowedError("delete a token not belong to you or token doesn't exist");
       }
 
-      await orm.AccessTokenRepo.update({ id: body.id }, { expires: new Date() });
+      await db
+        .update(chiiAccessToken)
+        .set({ expiredAt: new Date() })
+        .where(op.eq(chiiAccessToken.id, body.id));
     },
   );
 
@@ -60,13 +65,13 @@ export function setup(app: App) {
     },
     async ({ auth, body: { duration_days, name } }) => {
       const token = await randomBase62String(40);
-      await orm.AccessTokenRepo.insert({
-        userId: auth.userID.toString(),
-        expires: DateTime.now()
+      await db.insert(chiiAccessToken).values({
+        userID: auth.userID.toString(),
+        expiredAt: DateTime.now()
           .plus(Duration.fromObject({ day: duration_days }))
           .toJSDate(),
         type: TokenType.AccessToken,
-        clientId: '',
+        clientID: '',
         accessToken: token,
         info: JSON.stringify({
           name: name,
@@ -85,58 +90,51 @@ export function setup(app: App) {
       schema: { hide: true },
     },
     async (req, reply) => {
-      const tokens = await orm.AccessTokenRepo.findBy({
-        userId: req.auth.userID.toString(),
-        expires: orm.Gt(new Date()),
-      });
+      const tokens = await db
+        .select()
+        .from(chiiAccessToken)
+        .leftJoin(chiiOauthClients, op.eq(chiiOauthClients.clientID, chiiAccessToken.clientID))
+        .leftJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
+        .where(
+          op.and(
+            op.eq(chiiAccessToken.userID, req.auth.userID.toString()),
+            op.gt(chiiAccessToken.expiredAt, new Date()),
+          ),
+        );
 
-      const clients = await orm.OauthClientRepo.findBy({
-        clientID: orm.In(tokens.map((x) => x.clientId)),
-      });
+      const data = tokens.map(
+        ({ chii_oauth_access_tokens: token, chii_oauth_clients: client, chii_apps: app }) => {
+          if (token.type === TokenType.OauthToken) {
+            return {
+              ...token,
+              createdAt: DateTime.fromJSDate(token.expiredAt)
+                .plus(Duration.fromObject({ hour: -168 }))
+                .toJSDate(),
+              name: app?.name ?? '',
+              client,
+            };
+          }
 
-      const cm = Object.fromEntries(clients.map((x) => [x.clientID, x]));
+          const info = JSON.parse(token.info) as TokenInfo;
 
-      const data = {
-        tokens: tokens.map((x) => {
-          const client = cm[x.clientId];
           return {
-            ...x,
-            ...info(x, client),
+            ...token,
             client,
+            createdAt: DateTime.fromISO(info.created_at).toJSDate(),
+            name: info.name,
           };
-        }),
-      };
+        },
+      );
 
-      await reply.view('token/list', data);
+      await reply.view('token/list', { tokens: data });
     },
   );
 
   app.get(
     '/access-token/create',
     { preHandler: [redirectIfNotLogin], schema: { hide: true } },
-    async (req, reply) => {
+    async (_req, reply) => {
       await reply.view('token/create');
     },
   );
-}
-
-function info(
-  token: entity.OauthAccessTokens,
-  client?: entity.OauthClient,
-): { createdAt: Date; name: string } {
-  if (token.type === TokenType.OauthToken) {
-    return {
-      createdAt: DateTime.fromJSDate(token.expires)
-        .plus(Duration.fromObject({ hour: -168 }))
-        .toJSDate(),
-      name: client?.app.appName ?? '',
-    };
-  }
-
-  const info = JSON.parse(token.info) as TokenInfo;
-
-  return {
-    createdAt: DateTime.fromISO(info.created_at).toJSDate(),
-    name: info.name,
-  };
 }

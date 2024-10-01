@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import * as entity from '@app/lib/orm/entity/index.ts';
+import { RevType } from '@app/lib/orm/entity/index.ts';
 import { AppDataSource, SubjectRepo, SubjectRevRepo } from '@app/lib/orm/index.ts';
 
 import * as Subject from './index.ts';
@@ -74,6 +75,7 @@ describe('should update subject', () => {
       name: 'q',
       nameCN: '',
       platform: 3,
+      type: RevType.subjectEdit,
       subjectID: 363612,
       summary: 'summary summary 2',
       typeID: SubjectType.Anime,
@@ -95,7 +97,7 @@ describe('should update subject', () => {
 
     expect(subjectFieldMock).toBeCalledWith(
       {
-        subject_id: 363612,
+        subjectID: 363612,
       },
       {
         date: '1997-11-11',

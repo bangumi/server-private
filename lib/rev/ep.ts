@@ -1,6 +1,7 @@
 import type { EntityManager } from 'typeorm';
 
 import type { EpTextRev, RevHistory } from '@app/lib/orm/entity/index.ts';
+import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 
 export async function pushRev(
@@ -21,7 +22,7 @@ export async function pushRev(
 ) {
   const revs = await t.findBy(entity.RevHistory, {
     revMid: episodeID,
-    revType: entity.RevHistory.TypeEp,
+    revType: RevType.episodeEdit,
   });
   const o = revs.pop();
   if (!o) {
@@ -70,10 +71,10 @@ async function updatePreviousRevRecords({
   });
 
   const revHistory = await t.save(entity.RevHistory, {
-    revType: entity.RevHistory.TypeEp,
+    revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revText.revTextId,
-    revDateline: now.getTime() / 1000,
+    createdAt: now.getTime() / 1000,
     revMid: episodeID,
     revEditSummary: comment,
   });
@@ -105,10 +106,10 @@ async function createRevRecords({
   });
 
   const revHistory = await t.save(entity.RevHistory, {
-    revType: entity.RevHistory.TypeEp,
+    revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revText.revTextId,
-    revDateline: now.getTime() / 1000,
+    createdAt: now.getTime() / 1000,
     revMid: episodeID,
     revEditSummary: comment,
   });

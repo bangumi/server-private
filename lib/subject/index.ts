@@ -5,19 +5,16 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
+import { db, op } from '@app/drizzle/db.ts';
+import { chiiLikes } from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { BadRequestError } from '@app/lib/error.ts';
+import { LikeType } from '@app/lib/like.ts';
 import { logger } from '@app/lib/logger.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
-import { Like } from '@app/lib/orm/entity/index.ts';
+import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import {
-  AppDataSource,
-  fetchUsers,
-  LikeRepo,
-  SubjectImageRepo,
-  SubjectRepo,
-} from '@app/lib/orm/index.ts';
+import { AppDataSource, fetchUsers, SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { extractDate } from '@app/lib/subject/date.ts';
 import { DATE } from '@app/lib/utils/date.ts';
 
@@ -132,6 +129,7 @@ export async function edit({
       summary,
       infobox,
       creatorID: userID,
+      type: RevType.subjectEdit,
       typeID: s.typeID,
       name,
       platform,
@@ -159,7 +157,7 @@ export async function edit({
 
     await SubjectFieldRepo.update(
       {
-        subject_id: subjectID,
+        subjectID: subjectID,
       },
       {
         date: d.toString(),
@@ -249,11 +247,19 @@ export { SubjectType } from './type.ts';
 export async function onSubjectVote(subjectID: number): Promise<void> {
   const images = await SubjectImageRepo.findBy({ subjectID, ban: 0 });
 
-  const likes = await LikeRepo.findBy({
-    type: Like.TYPE_SUBJECT_COVER,
-    relatedID: orm.In(images.map((x) => x.id)),
-    ban: 0,
-  });
+  const likes = await db
+    .select()
+    .from(chiiLikes)
+    .where(
+      op.and(
+        op.eq(chiiLikes.type, LikeType.subject_cover),
+        op.inArray(
+          chiiLikes.relatedID,
+          images.map((x) => x.id),
+        ),
+        op.eq(chiiLikes.deleted, 0),
+      ),
+    );
 
   const users = await fetchUsers(likes.map((x) => x.uid));
 

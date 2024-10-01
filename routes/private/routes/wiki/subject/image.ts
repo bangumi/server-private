@@ -4,14 +4,17 @@ import { createError } from '@fastify/error';
 import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
+import { DateTime } from 'luxon';
 
+import { db, op } from '@app/drizzle/db.ts';
+import { chiiLikes } from '@app/drizzle/schema.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { imageDomain } from '@app/lib/config.ts';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image/index.ts';
+import { LikeType } from '@app/lib/like.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
-import { Like } from '@app/lib/orm/entity/index.ts';
-import { LikeRepo, SubjectImageRepo } from '@app/lib/orm/index.ts';
+import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
@@ -89,12 +92,20 @@ export function setup(app: App) {
 
       const users = await orm.fetchUsers(images.map((x) => x.uid));
       const likes = lo.groupBy(
-        await orm.LikeRepo.findBy({
-          relatedID: orm.In(images.map((x) => x.id)),
-          type: Like.TYPE_SUBJECT_COVER,
-          uid: auth.userID,
-          ban: 0,
-        }),
+        await db
+          .select()
+          .from(chiiLikes)
+          .where(
+            op.and(
+              op.inArray(
+                chiiLikes.relatedID,
+                images.map((x) => x.id),
+              ),
+              op.eq(chiiLikes.type, LikeType.subject_cover),
+              op.eq(chiiLikes.uid, auth.userID),
+              op.eq(chiiLikes.deleted, 0),
+            ),
+          ),
         (x) => x.relatedID,
       );
 
@@ -189,9 +200,11 @@ export function setup(app: App) {
         ext = 'jpeg';
       }
 
-      const h = crypto.createHash('sha384').update(raw).digest().toString('base64url');
+      // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
+      const h = crypto.randomUUID();
 
-      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h.slice(4)}.${ext}`;
+      // for example raw/36/b8/${subject_id}_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h}.${ext}`;
 
       const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
@@ -240,16 +253,16 @@ export function setup(app: App) {
         throw new NotFoundError(`image(id=${imageID}, subjectID=${subjectID})`);
       }
 
-      await LikeRepo.upsert(
-        {
-          type: Like.TYPE_SUBJECT_COVER,
+      await db
+        .insert(chiiLikes)
+        .values({
+          type: LikeType.subject_cover,
           relatedID: imageID,
           uid: auth.userID,
-          createdAt: new Date(),
-          ban: 0,
-        },
-        { conflictPaths: [], skipUpdateIfNoValuesChanged: false },
-      );
+          createdAt: DateTime.now().toUnixInteger(),
+          deleted: 0,
+        })
+        .execute();
 
       await Subject.onSubjectVote(subjectID);
 
@@ -279,17 +292,20 @@ export function setup(app: App) {
       ],
     },
     async ({ params: { subjectID, imageID }, auth }) => {
-      const result = await LikeRepo.update(
-        {
-          type: Like.TYPE_SUBJECT_COVER,
-          uid: auth.userID,
-          relatedID: imageID,
-          ban: 0,
-        },
-        { ban: 1 },
-      );
+      const [result] = await db
+        .update(chiiLikes)
+        .set({ deleted: 1 })
+        .where(
+          op.and(
+            op.eq(chiiLikes.type, LikeType.subject_cover),
+            op.eq(chiiLikes.uid, auth.userID),
+            op.eq(chiiLikes.relatedID, imageID),
+            op.eq(chiiLikes.deleted, 0),
+          ),
+        )
+        .execute();
 
-      if (result.affected) {
+      if (result.affectedRows) {
         await Subject.onSubjectVote(subjectID);
       }
 
