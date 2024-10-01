@@ -81,13 +81,6 @@ export const schema = Obj({
 
   siteUrl: t.String({ default: 'https://next.bgm.tv ', transform: ['trim'] }),
 
-  csrf_secret_token: t.String({
-    env: 'CSRF_SECRET_TOKEN',
-    description: 'hex encoded csrf secret token',
-    minLength: 32,
-    default: randomBytes(32).toString('hex'),
-  }),
-
   cookie_secret_token: t.String({
     env: 'COOKIE_SECRET_TOKEN',
     description: 'hex encoded secret token for cookies',

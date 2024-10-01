@@ -1,9 +1,9 @@
 import Cookie from '@fastify/cookie';
-import CSRF from '@fastify/csrf';
 import { createError } from '@fastify/error';
 import formBody from '@fastify/formbody';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import type { FastifySchema } from 'fastify';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime, Duration } from 'luxon';
 
@@ -24,7 +24,7 @@ import redis from '@app/lib/redis.ts';
 import * as res from '@app/lib/types/res.ts';
 import { randomBase62String, randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
-import type { App } from '@app/routes/type.ts';
+import type { App, Reply, Request } from '@app/routes/type.ts';
 
 // valid in 2 weeks
 const ACCESS_TOKEN_TTL_SECONDS = 1209600;
@@ -128,13 +128,40 @@ export async function setup(app: App) {
   await app.register(userOauthRoutes);
 }
 
+class CSRF {
+  async newToken(req: Request<FastifySchema>, reply: Reply<FastifySchema>): Promise<string> {
+    const currentSignedCsrfSecretCookie = req.cookies['csrf-secret'];
+    if (currentSignedCsrfSecretCookie) {
+      const r = req.unsignCookie(currentSignedCsrfSecretCookie);
+      if (r.valid) {
+        return currentSignedCsrfSecretCookie;
+      }
+    }
+
+    const token = req.auth.userID.toString() + ':' + (await randomBase64url(30));
+    const v = reply.signCookie(token);
+    reply.cookie('csrf-secret', v, { httpOnly: true, secure: true });
+    return v;
+  }
+
+  verifyToken(token: string, req: Request<FastifySchema>): boolean {
+    if (token !== req.cookies['csrf-secret']) {
+      return false;
+    }
+
+    const r = req.unsignCookie(token);
+    if (!r.valid) {
+      return false;
+    }
+
+    return r.value.startsWith(req.auth.userID.toString() + ':');
+  }
+}
+
 // export for testing
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function userOauthRoutes(app: App) {
-  const csrf = new CSRF({
-    userInfo: true,
-    hmacKey: Buffer.from(config.csrf_secret_token, 'hex'),
-  });
+  const csrf = new CSRF();
 
   app.get(
     '/authorize',
@@ -197,21 +224,7 @@ export async function userOauthRoutes(app: App) {
         });
       }
 
-      let csrfSecret;
-      const currentSignedCsrfSecretCookie = req.cookies['csrf-secret'];
-      if (currentSignedCsrfSecretCookie) {
-        const r = req.unsignCookie(currentSignedCsrfSecretCookie);
-        if (r.valid) {
-          csrfSecret = r.value;
-        }
-      }
-
-      if (!csrfSecret) {
-        csrfSecret = await csrf.secret();
-        reply.cookie('csrf-secret', reply.signCookie(csrfSecret), { httpOnly: true, secure: true });
-      }
-
-      const csrfToken = csrf.create(csrfSecret, req.auth.userID.toString());
+      const csrfToken = await csrf.newToken(req, reply);
 
       await reply.view('oauth/authorize', {
         app,
@@ -239,17 +252,7 @@ export async function userOauthRoutes(app: App) {
         throw new NeedLoginError('oauth authorize');
       }
 
-      const csrfSecret = req.cookies['csrf-secret'];
-      if (!csrfSecret) {
-        throw new BadRequestError('Invalid CSRF token');
-      }
-
-      const realCsrfSecret = reply.unsignCookie(csrfSecret);
-      if (!realCsrfSecret.valid) {
-        throw new BadRequestError('Invalid CSRF token');
-      }
-
-      if (!csrf.verify(realCsrfSecret.value, req.body.csrf_token, req.auth.userID.toString())) {
+      if (!csrf.verifyToken(req.body.csrf_token, req)) {
         throw new BadRequestError('Invalid CSRF token');
       }
 
