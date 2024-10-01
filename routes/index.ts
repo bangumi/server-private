@@ -13,6 +13,10 @@ import * as privateAPI from '@app/routes/private/index.ts';
 import type { App } from '@app/routes/type.ts';
 
 export async function setup(app: App) {
+  app.get('/login', (req, reply) => {
+    return reply.redirect('/demo' + req.url);
+  });
+
   logger.debug('setup rest routes');
 
   app.decorateRequest('auth');
