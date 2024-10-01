@@ -126,7 +126,6 @@ describe('oauth', () => {
       }).toString(),
     });
 
-    expect(refreshTokenResult.statusCode).toBe(200);
     expect(refreshTokenResult.json()).toMatchObject({
       access_token: expect.any(String),
       expires_in: expect.any(Number),
@@ -134,6 +133,7 @@ describe('oauth', () => {
       token_type: 'Bearer',
       user_id: expect.any(String),
     });
+    expect(refreshTokenResult.statusCode).toBe(200);
 
     await expect(
       db

@@ -233,7 +233,7 @@ export async function userOauthRoutes(app: App) {
       schema: {
         hide: true,
         body: t.Object({
-          grant_type: t.Union([t.Literal('authorization_code'), t.Literal('authorization_code')]),
+          grant_type: t.Union([t.Literal('authorization_code'), t.Literal('refresh_token')]),
           client_id: t.String(),
           client_secret: t.String(),
           code: t.Optional(t.String()),
