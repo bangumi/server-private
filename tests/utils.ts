@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 
-import * as fastifyView from '@fastify/view';
+import fastifyView from '@fastify/view';
 import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import type { FastifyServerOptions } from 'fastify';

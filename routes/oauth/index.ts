@@ -1,6 +1,6 @@
 import Cookie from '@fastify/cookie';
 import { createError } from '@fastify/error';
-import * as formBody from '@fastify/formbody';
+import formBody from '@fastify/formbody';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';

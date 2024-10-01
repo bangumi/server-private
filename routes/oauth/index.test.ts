@@ -1,4 +1,4 @@
-import * as formBody from '@fastify/formbody';
+import formBody from '@fastify/formbody';
 import { describe, expect, test } from 'vitest';
 
 import { db, op } from '@app/drizzle/db';
