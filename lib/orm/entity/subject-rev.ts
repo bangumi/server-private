@@ -42,6 +42,9 @@ export class SubjectRev {
   @Column('mediumtext', { name: 'rev_field_infobox' })
   infobox!: string;
 
+  @Column('mediumtext', { name: 'rev_field_meta_tags' })
+  metaTags!: string;
+
   @Column('mediumtext', { name: 'rev_field_summary' })
   summary!: string;
 

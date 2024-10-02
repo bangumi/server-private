@@ -69,6 +69,9 @@ export class Subject {
   @Column('mediumtext', { name: 'field_infobox', transformer: htmlEscapedString })
   fieldInfobox!: string;
 
+  @Column('mediumtext', { name: 'field_meta_tags', default: () => '' })
+  metaTags!: string;
+
   @Column('mediumtext', {
     name: 'field_summary',
     comment: 'summary',

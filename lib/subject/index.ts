@@ -134,6 +134,7 @@ export async function edit({
       name,
       platform,
       nameCN,
+      metaTags: s.metaTags,
       createdAt: now.toUnixInteger(),
       commitMessage,
     });

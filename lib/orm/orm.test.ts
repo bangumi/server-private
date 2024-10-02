@@ -15,6 +15,6 @@ test('should fetch permission', async () => {
   `);
 });
 
-test('should fallback to empty permission', async () => {
+test('should not fallback to empty permission', async () => {
   await expect(fetchPermission(10)).resolves.toMatchSnapshot();
 });

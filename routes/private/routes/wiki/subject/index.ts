@@ -244,6 +244,7 @@ export async function setup(app: App) {
         fieldSummary: body.summary,
         subjectNsfw: body.nsfw,
         fieldEps: eps,
+        metaTags: '',
         updatedAt: DateTime.now().toUnixInteger(),
       };
 
@@ -296,6 +297,7 @@ export async function setup(app: App) {
             name: newSubject.name,
             nameCN: newSubject.nameCN,
             infobox: newSubject.fieldInfobox,
+            metaTags: newSubject.metaTags,
             summary: newSubject.fieldSummary,
             createdAt: newSubject.updatedAt,
             typeID: newSubject.typeID,
