@@ -42,7 +42,7 @@ export default createRule({
             messageId: 'import',
             data: { should },
             fix: (fixer) => {
-              return fixer.replaceTextRange(node.source.range, "'" + should + "'");
+              return fixer.replaceTextRange(node.source.range, JSON.stringify(should));
             },
           });
         }
