@@ -28,7 +28,7 @@ export default createRule({
   defaultOptions: [],
 
   create: (context) => {
-    const filename = context.getFilename();
+    const filename = context.filename;
     return {
       ImportDeclaration: (node) => {
         if (node.source.value.startsWith('..')) {

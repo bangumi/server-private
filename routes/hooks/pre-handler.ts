@@ -118,7 +118,7 @@ export async function accessTokenAuth(req: FastifyRequest): Promise<boolean> {
 
 export async function redirectIfNotLogin(req: FastifyRequest, reply: FastifyReply) {
   if (!req.auth.login) {
-    const qs = new URLSearchParams({ to: req.url });
+    const qs = new URLSearchParams({ backTo: req.url });
     return reply.redirect(`/demo/login?${qs.toString()}`);
   }
 }
