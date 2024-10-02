@@ -49,19 +49,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          if ! docker pull "${IMAGE}:${BASE_TAG}"; then
-            echo "build base docker image"
-            docker build -t "${IMAGE}:${BASE_TAG}" -f etc/base.dockerfile .
-          fi
-
-          docker tag "${IMAGE}:${BASE_TAG}" base-image
-
-        env:
-          BASE_TAG: "base-${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
-          IMAGE: 'ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}'
-
-        name: base docker image
-
-      - run: docker build -t tmp -f etc/final.dockerfile .
+      - run: docker build -t tmp -f Dockerfile .
       - run: docker run tmp --help

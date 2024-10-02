@@ -26,30 +26,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
 
-      - name: Try to find existing base docker image
-        run: |
-          echo "BASE_TAG=${BASE_TAG}" >>$GITHUB_ENV
-
-          if ! docker pull "${IMAGE}:${BASE_TAG}"; then
-            echo "NEED_BUILD_BASE=true" >>$GITHUB_ENV
-          else
-            echo "NEED_BUILD_BASE=false" >>$GITHUB_ENV
-          fi
-        env:
-          BASE_TAG: "base-${{ hashFiles('pnpm-lock.yaml', 'etc/base.dockerfile') }}"
-
-      - name: Build Base Docker Image (if needed)
-        uses: docker/build-push-action@v6
-        if: ${{ env.NEED_BUILD_BASE == 'true' }}
-        with:
-          context: ./
-          file: ./etc/base.dockerfile
-          provenance: false
-          push: true
-          tags: ${{ env.IMAGE }}:${{ env.BASE_TAG }}
-
-      - run: docker tag "${IMAGE}:${BASE_TAG}" base-image
-
       - run: echo "SHA=$(git show --no-patch --no-notes --date=short-local --pretty='%as-%h')" >> $GITHUB_ENV
         env:
           TZ: UTC
@@ -68,13 +44,18 @@ jobs:
 
             type=raw,value=${{ env.SHA }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Final Docker Image
         uses: docker/build-push-action@v6
         with:
           context: ./
           provenance: false
-          file: ./etc/final.dockerfile
+          file: ./Dockerfile
           build-args: ARG_REF=${{ env.SHA }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
