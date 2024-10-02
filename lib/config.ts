@@ -30,6 +30,7 @@ import { randomBytes } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as process from 'node:process';
+import * as url from 'node:url';
 
 import type { Static, TObject, TProperties, TSchema } from '@sinclair/typebox';
 import { Kind, Type as t } from '@sinclair/typebox';
@@ -49,7 +50,7 @@ export const stage = NODE_ENV === 'stage';
 export const developing = NODE_ENV === 'development';
 export const testing = NODE_ENV === 'test';
 
-export const projectRoot = path.dirname(import.meta.dirname);
+export const projectRoot = path.dirname(url.fileURLToPath(new URL('.', import.meta.url)));
 export const pkg = JSON.parse(
   fs.readFileSync(path.resolve(projectRoot, 'package.json'), 'utf8'),
 ) as { version: string };

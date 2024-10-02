@@ -850,6 +850,7 @@ export const chiiSubjectFields = mysqlTable(
   {
     fieldSid: mediumint('field_sid').autoincrement().notNull(),
     fieldTid: smallint('field_tid').notNull(),
+    fieldMetaTags: mediumtext('field_meta_tags').default('').notNull(),
     fieldTags: mediumtext('field_tags').notNull(),
     fieldRate1: mediumint('field_rate_1').notNull(),
     fieldRate2: mediumint('field_rate_2').notNull(),
@@ -1080,6 +1081,7 @@ export const chiiSubjectRevisions = mysqlTable(
     revName: varchar('rev_name', { length: 80 }).notNull(),
     revNameCn: varchar('rev_name_cn', { length: 80 }).notNull(),
     revFieldInfobox: mediumtext('rev_field_infobox').notNull(),
+    revFieldMetaTags: mediumtext('rev_field_meta_tags').notNull(),
     revFieldSummary: mediumtext('rev_field_summary').notNull(),
     revVoteField: mediumtext('rev_vote_field').notNull(),
     revFieldEps: mediumint('rev_field_eps').notNull(),
