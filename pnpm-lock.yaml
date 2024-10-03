@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.658.1
-        version: 3.662.0
+        specifier: ^3.663.0
+        version: 3.663.0
       '@bgm38/wiki':
         specifier: ^0.2.8
         version: 0.2.8
@@ -31,7 +31,7 @@ importers:
         version: 9.1.0
       '@fastify/type-provider-typebox':
         specifier: ^5.0.0
-        version: 5.0.0(@sinclair/typebox@0.33.12)
+        version: 5.0.0(@sinclair/typebox@0.33.13)
       '@fastify/view':
         specifier: ^10.0.1
         version: 10.0.1
@@ -39,8 +39,8 @@ importers:
         specifier: ^1.10.4
         version: 1.10.4
       '@sinclair/typebox':
-        specifier: ~0.33.12
-        version: 0.33.12
+        specifier: ~0.33.13
+        version: 0.33.13
       '@trim21/php-serialize':
         specifier: ^0.1.1
         version: 0.1.1
@@ -328,8 +328,8 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-sdk/client-s3@3.662.0':
-    resolution: {integrity: sha512-zZ38Bjrtjn/KlYSxfkh6rcHX77nOXVZThIOc/RMnsMAC5qS+LT0ruhbYXG2q1Q7BaQ2QWQMz/0n/czWHRbOkNA==}
+  '@aws-sdk/client-s3@3.663.0':
+    resolution: {integrity: sha512-XWoy6wglrxFngdswGbccR7cwmafe3ycx2/vIRDuVnIeSYdj/PgYACBt5JEM5NEzW26kFtlJpeN9hUH1i6tyfuQ==}
     engines: {node: '>=16.0.0'}
 
   '@aws-sdk/client-sso-oidc@3.662.0':
@@ -2031,8 +2031,8 @@ packages:
     peerDependencies:
       prettier: ^2.0.0 || ^3.0.0
 
-  '@sinclair/typebox@0.33.12':
-    resolution: {integrity: sha512-d5KrXIdPolLp8VpGpZAQvEz8ioVtFlUQSyCIS2sEBi7FKhceIB7nj9BlNfqqvp5wmOfg8v8bP1rAvYYkjz21/Q==}
+  '@sinclair/typebox@0.33.13':
+    resolution: {integrity: sha512-J568EQw9JohJ/pjRV9No6OLQa2px93CnqYoLNLJs60bCHaN2dNXiHVqBIX4YeMYSHmgswFZMMYcfxUg89bu/Bw==}
 
   '@sindresorhus/is@7.0.1':
     resolution: {integrity: sha512-QWLl2P+rsCJeofkDNIT3WFmb6NrRud1SUYW8dIhXK/46XFV8Q/g7Bsvib0Askb0reRLe+WYPeeE+l5cH7SlkuQ==}
@@ -5540,7 +5540,7 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.7.0
 
-  '@aws-sdk/client-s3@3.662.0':
+  '@aws-sdk/client-s3@3.663.0':
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
@@ -6799,9 +6799,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fastify/type-provider-typebox@5.0.0(@sinclair/typebox@0.33.12)':
+  '@fastify/type-provider-typebox@5.0.0(@sinclair/typebox@0.33.13)':
     dependencies:
-      '@sinclair/typebox': 0.33.12
+      '@sinclair/typebox': 0.33.13
 
   '@fastify/view@10.0.1':
     dependencies:
@@ -7486,7 +7486,7 @@ snapshots:
       html-styles: 1.0.0
       prettier: 3.3.3
 
-  '@sinclair/typebox@0.33.12': {}
+  '@sinclair/typebox@0.33.13': {}
 
   '@sindresorhus/is@7.0.1': {}
 
