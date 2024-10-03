@@ -31,5 +31,6 @@
       // 测试环境需要设置 vitest.config.ts 的 resolve.alias
       "@app/*": ["./*"]
     }
-  }
+  },
+  "exclude": ["drizzle/new/"]
 }

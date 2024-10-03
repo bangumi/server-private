@@ -10,7 +10,16 @@ import tsEslint from 'typescript-eslint';
 import firstPartEslintPlugin from './eslint/index.mjs';
 
 export default tsEslint.config(
-  { ignores: ['dist/**', 'coverage/**', '**/*.test.ts', '**/__generated__/**', '**/generated/**'] },
+  {
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      '**/*.test.ts',
+      '**/__generated__/**',
+      '**/generated/**',
+      'drizzle/new/**/*',
+    ],
+  },
   eslint.configs.recommended,
   pluginPromise.configs['flat/recommended'],
   ...tsEslint.configs.recommendedTypeChecked,

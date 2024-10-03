@@ -442,6 +442,7 @@ export async function setup(app: App) {
         summary: body.summary,
         nsfw: body.nsfw,
         userID: auth.userID,
+        now: DateTime.now(),
         commitMessage,
         expectedRevision,
       });
@@ -535,6 +536,7 @@ export async function setup(app: App) {
         nsfw,
         date,
         userID: auth.userID,
+        now: DateTime.now(),
         expectedRevision,
       });
     },
