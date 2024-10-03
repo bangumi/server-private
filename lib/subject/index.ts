@@ -5,18 +5,20 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import { chiiLikes } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle/db.ts';
+import { chiiLikes, chiiTagIndex, chiiTagList } from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
-import { BadRequestError } from '@app/lib/error.ts';
+import { TagCat } from '@app/lib/const.ts';
+import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { LikeType } from '@app/lib/like.ts';
 import { logger } from '@app/lib/logger.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { AppDataSource, fetchUsers, SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
+import { fetchUsers, SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { extractDate } from '@app/lib/subject/date.ts';
 import { DATE } from '@app/lib/utils/date.ts';
+import { matchExpected } from '@app/lib/wiki.ts';
 
 import type { Platform } from './platform.ts';
 import platform from './platform.ts';
@@ -37,20 +39,16 @@ interface Create {
   commitMessage: string;
   userID: number;
   date?: string;
-  now?: DateTime;
+  now: DateTime;
   nsfw?: boolean;
+  tags?: string[];
   expectedRevision?: Partial<{
     name: string;
     infobox: string;
+    tags: string[];
     summary: string;
   }>;
 }
-
-export const SubjectChangedError = createError<[]>(
-  'SUBJECT_CHANGED',
-  "expected data doesn't match",
-  StatusCodes.BAD_REQUEST,
-);
 
 export async function edit({
   subjectID,
@@ -59,6 +57,7 @@ export async function edit({
   platform,
   summary,
   commitMessage,
+  tags,
   date,
   nsfw,
   userID,
@@ -88,12 +87,18 @@ export async function edit({
     throw error;
   }
 
-  await AppDataSource.transaction(async (t) => {
-    const SubjectRevRepo = t.getRepository(entity.SubjectRev);
-    const SubjectFieldRepo = t.getRepository(entity.SubjectFields);
-    const SubjectRepo = t.getRepository(entity.Subject);
+  tags?.sort();
 
-    const s = await SubjectRepo.findOneByOrFail({ id: subjectID });
+  await db.transaction(async (t: typeof db) => {
+    const [s]: schema.ISubject[] = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.eq(schema.chiiSubjects.id, subjectID))
+      .limit(1);
+
+    if (!s) {
+      throw UnexpectedNotFoundError(`subject ${subjectID}`);
+    }
 
     // only validate platform when it changed.
     // sometimes main website will add new platform, and our config maybe out-dated.
@@ -111,20 +116,54 @@ export async function edit({
     logger.info('user %d edit subject %d', userID, subjectID);
 
     if (expectedRevision) {
-      if (expectedRevision.name && expectedRevision.name !== s.name) {
-        throw new SubjectChangedError();
-      }
+      expectedRevision.tags?.sort();
 
-      if (expectedRevision.summary && expectedRevision.summary !== s.fieldSummary) {
-        throw new SubjectChangedError();
-      }
-
-      if (expectedRevision.infobox && expectedRevision.infobox !== s.fieldInfobox) {
-        throw new SubjectChangedError();
-      }
+      matchExpected(s, {
+        ...expectedRevision,
+        metaTags: expectedRevision.tags ? expectedRevision.tags.join(' ') : undefined,
+      });
     }
 
-    await SubjectRevRepo.insert({
+    if (tags) {
+      const allowedTags = await getAllowedTagList(t, s.typeID);
+
+      const newTags: number[] = [];
+      for (const tag of tags) {
+        const id = allowedTags.get(tag);
+        if (!id) {
+          throw BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
+        }
+
+        newTags.push(id);
+      }
+
+      await db
+        .delete(schema.chiiTagList)
+        .where(
+          op.and(
+            op.eq(schema.chiiTagList.cat, TagCat.meta),
+            op.eq(schema.chiiTagList.type, s.typeID),
+            op.eq(schema.chiiTagList.mainID, subjectID),
+          ),
+        );
+
+      await db.insert(schema.chiiTagList).values(
+        newTags.map((tag) => {
+          return {
+            tagID: tag,
+            mainID: subjectID,
+            cat: TagCat.meta,
+            userID: 0,
+            type: s.typeID,
+            createdAt: now.toUnixInteger(),
+          } satisfies typeof schema.chiiTagList.$inferInsert;
+        }),
+      );
+    }
+
+    const newMetaTags = tags ? tags.join(' ') : s.metaTags;
+
+    await t.insert(schema.chiiSubjectRev).values({
       subjectID,
       summary,
       infobox,
@@ -134,38 +173,37 @@ export async function edit({
       name,
       platform,
       nameCN,
-      metaTags: s.metaTags,
+      metaTags: newMetaTags,
       createdAt: now.toUnixInteger(),
       commitMessage,
-    });
+    } satisfies typeof schema.chiiSubjectRev.$inferInsert);
 
-    await SubjectRepo.update(
-      {
-        id: subjectID,
-      },
-      {
+    await t
+      .update(schema.chiiSubjects)
+      .set({
         platform,
         name: name,
-        fieldEps: episodes,
+        eps: episodes,
         nameCN: nameCN,
-        fieldSummary: summary,
-        subjectNsfw: nsfw,
-        fieldInfobox: infobox,
-      },
-    );
+        metaTags: newMetaTags,
+        summary,
+        nsfw,
+        infobox,
+      })
+      .where(op.eq(schema.chiiSubjects.id, subjectID))
+      .execute();
 
     const d: DATE = date ? DATE.parse(date) : extractDate(w, s.typeID, platform);
 
-    await SubjectFieldRepo.update(
-      {
-        subjectID: subjectID,
-      },
-      {
+    await t
+      .update(schema.chiiSubjectFields)
+      .set({
         date: d.toString(),
         year: d.year,
         month: d.month,
-      },
-    );
+      })
+      .where(op.eq(schema.chiiSubjectFields.id, subjectID))
+      .execute();
   });
 }
 
@@ -187,6 +225,35 @@ export function extractEpisode(w: Wiki): number {
   }
 
   return Number.parseInt(v) || 0;
+}
+
+async function getAllowedTagList(t: typeof db, typeID: number): Promise<Map<string, number>> {
+  const metaRows = await t
+    .select({ id: chiiTagIndex.id })
+    .from(schema.chiiTagIndex)
+    .where(
+      op.and(op.eq(schema.chiiTagIndex.cat, TagCat.meta), op.eq(schema.chiiTagIndex.type, typeID)),
+    );
+
+  const rows = await db
+    .select({
+      name: chiiTagIndex.name,
+      id: chiiTagIndex.id,
+    })
+    .from(chiiTagIndex)
+    .innerJoin(chiiTagList, op.eq(chiiTagList.tagID, chiiTagIndex.id))
+    .where(
+      op.and(
+        op.eq(chiiTagList.userID, 0),
+        op.eq(chiiTagList.cat, TagCat.meta),
+        op.inArray(
+          chiiTagList.mainID,
+          metaRows.map((item) => item.id),
+        ),
+      ),
+    );
+
+  return new Map<string, number>(rows.map((item) => [item.name, item.id]));
 }
 
 export function platforms(typeID: SubjectType): Platform[] {

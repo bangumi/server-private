@@ -1,7 +1,5 @@
-import { createError } from '@fastify/error';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
-import { StatusCodes } from 'http-status-codes';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
@@ -12,14 +10,9 @@ import { AppDataSource, entity, PersonRepo } from '@app/lib/orm/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
-
-export const WikiChangedError = createError<[]>(
-  'WIKI_CHANGED',
-  "expected data doesn't match",
-  StatusCodes.BAD_REQUEST,
-);
 
 export const PersonWikiInfo = t.Object(
   {
@@ -168,19 +161,4 @@ export async function setup(app: App) {
       return {};
     },
   );
-}
-
-function matchExpected<A extends object, B extends Record<keyof A, string>>(
-  w: A,
-  expected: Partial<B>,
-) {
-  for (const [key, value] of Object.entries(expected)) {
-    if (value === undefined) {
-      continue;
-    }
-
-    if (w[key as keyof A] !== value) {
-      throw new WikiChangedError();
-    }
-  }
 }

@@ -15,6 +15,7 @@ import { SubjectType } from '@app/lib/subject/index.ts';
 import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
+import { DateTime } from 'luxon';
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -222,6 +223,7 @@ describe('edit subject ', () => {
       name: 'n',
       platform: 0,
       subjectID: 1,
+      now: expect.any(DateTime),
       date: '0000-00-00',
       nsfw: false,
       summary: 's',
