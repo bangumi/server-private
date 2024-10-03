@@ -85,6 +85,7 @@ export const SubjectEdit = t.Object(
         examples: ['0000-00-00', '2007-01-30'],
       }),
     ),
+    metaTags: t.Array(t.String()),
     summary: t.String(),
   },
   {
@@ -100,6 +101,7 @@ const SubjectExpected = t.Optional(
         name: t.String({ minLength: 1 }),
         infobox: t.String({ minLength: 1 }),
         platform: t.Integer(),
+        metaTags: t.String(),
       },
       {
         description:

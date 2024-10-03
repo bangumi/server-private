@@ -156,6 +156,7 @@ describe('edit subject ', () => {
         summary: 's',
         date: '0000-00-00',
         nsfw: false,
+        metaTags: [],
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
@@ -196,6 +197,7 @@ describe('edit subject ', () => {
         summary: 's',
         date: '0000-00-00',
         nsfw: false,
+        metaTags: [],
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
