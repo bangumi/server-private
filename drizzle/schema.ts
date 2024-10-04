@@ -20,6 +20,7 @@ import {
   varchar,
   year,
 } from 'drizzle-orm/mysql-core';
+import * as lo from 'lodash-es';
 
 const createTable = (dbName: string) => mysqlTableCreator(() => dbName);
 
@@ -791,18 +792,32 @@ const customBoolean = customType<{ data: boolean }>({
   },
 });
 
+const htmlEscapedString = (t: string) =>
+  customType<{ data: string; driverData: string }>({
+    dataType() {
+      return t;
+    },
+    fromDriver(value) {
+      return lo.unescape(value);
+    },
+
+    toDriver(value) {
+      return lo.escape(value);
+    },
+  });
+
 export const chiiSubjects = createTable('chii_subjects')('subject', {
   id: mediumint('subject_id').autoincrement().notNull(),
   typeID: smallint('subject_type_id').notNull(),
-  name: varchar('subject_name', { length: 80 }).notNull(),
-  nameCN: varchar('subject_name_cn', { length: 80 }).notNull(),
+  name: htmlEscapedString('varchar')('subject_name', { length: 80 }).notNull(),
+  nameCN: htmlEscapedString('varchar')('subject_name_cn', { length: 80 }).notNull(),
   Uid: varchar('subject_uid', { length: 20 }).notNull(),
   creatorID: mediumint('subject_creator').notNull(),
   createdAt: int('subject_dateline').default(0).notNull(),
   image: varchar('subject_image', { length: 255 }).notNull(),
   platform: smallint('subject_platform').notNull(),
   metaTags: mediumtext('field_meta_tags').notNull(),
-  infobox: mediumtext('field_infobox').notNull(),
+  infobox: htmlEscapedString('mediumtext')('field_infobox').notNull(),
   summary: mediumtext('field_summary').notNull(),
   field5: mediumtext('field_5').notNull(),
   fieldVolumes: mediumint('field_volumes').notNull(),
@@ -1052,8 +1067,8 @@ export const chiiSubjectRev = mysqlTable('chii_subject_revisions', {
   typeID: smallint('rev_type_id').notNull(),
   creatorID: mediumint('rev_creator').notNull(),
   createdAt: int('rev_dateline').default(0).notNull(),
-  name: varchar('rev_name', { length: 80 }).notNull(),
-  nameCN: varchar('rev_name_cn', { length: 80 }).notNull(),
+  name: htmlEscapedString('varchar')('rev_name', { length: 80 }).notNull(),
+  nameCN: htmlEscapedString('varchar')('rev_name_cn', { length: 80 }).notNull(),
   infobox: mediumtext('rev_field_infobox').notNull(),
   metaTags: mediumtext('rev_field_meta_tags').notNull(),
   summary: mediumtext('rev_field_summary').notNull(),
