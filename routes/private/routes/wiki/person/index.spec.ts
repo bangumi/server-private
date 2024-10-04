@@ -190,7 +190,7 @@ describe('edit person ', () => {
       Object {
         "code": "WIKI_CHANGED",
         "error": "Bad Request",
-        "message": "expected data doesn't match",
+        "message": "expected data doesn't match, name changed, expecting "1234", currently "水樹奈々"",
         "statusCode": 400,
       }
     `);
