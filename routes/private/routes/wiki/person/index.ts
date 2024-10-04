@@ -106,7 +106,7 @@ export async function setup(app: App) {
         response: {
           200: t.Object({}),
           400: t.Ref(res.Error, {
-            'x-examples': formatErrors(new WikiChangedError()),
+            'x-examples': formatErrors(new WikiChangedError('infobox')),
           }),
           401: t.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),

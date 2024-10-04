@@ -1,9 +1,9 @@
 import { createError } from '@fastify/error';
 import { StatusCodes } from 'http-status-codes';
 
-export const WikiChangedError = createError<[]>(
+export const WikiChangedError = createError<[string]>(
   'WIKI_CHANGED',
-  "expected data doesn't match",
+  "expected data doesn't match, %s changed",
   StatusCodes.BAD_REQUEST,
 );
 
@@ -17,7 +17,7 @@ export function matchExpected<A extends object, B extends Record<keyof A, string
     }
 
     if (w[key as keyof A] !== value) {
-      throw new WikiChangedError();
+      throw new WikiChangedError(key);
     }
   }
 }
