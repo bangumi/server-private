@@ -1130,6 +1130,14 @@ export const chiiTagList = createTable('chii_tag_neue_list')(
   },
 );
 
+export const chiiTagFields = mysqlTable('chii_tag_neue_fields', {
+  tagID: int('field_tid').notNull(),
+  summary: mediumtext('field_summary').notNull(),
+  order: mediumint('field_order').notNull(),
+  nsfw: tinyint('field_nsfw').default(0).notNull(),
+  lock: int('field_lock').default(0).notNull(),
+});
+
 export const chiiTimeline = mysqlTable(
   'chii_timeline',
   {

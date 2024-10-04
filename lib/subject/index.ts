@@ -231,8 +231,14 @@ async function getAllowedTagList(t: typeof db, typeID: number): Promise<Map<stri
   const metaRows = await t
     .select({ id: chiiTagIndex.id })
     .from(schema.chiiTagIndex)
+    .innerJoin(schema.chiiTagFields, op.eq(schema.chiiTagFields.tagID, schema.chiiTagIndex.id))
     .where(
-      op.and(op.eq(schema.chiiTagIndex.cat, TagCat.meta), op.eq(schema.chiiTagIndex.type, typeID)),
+      op.and(
+        op.eq(schema.chiiTagIndex.cat, TagCat.meta),
+        op.eq(schema.chiiTagIndex.type, typeID),
+        // 1 for public meta tags
+        op.eq(schema.chiiTagFields.lock, 1),
+      ),
     );
 
   const rows = await db
