@@ -6,18 +6,6 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './post.ts';
 
-const expectedEpComment = {
-  id: 1569792,
-  epID: 1075440,
-  creatorID: 448570,
-  relatedID: 0,
-  createdAt: 1719389390,
-  content: '这是一条测试内容',
-  state: 0,
-  user: null,
-  replies: [],
-};
-
 beforeEach(async () => {
   await orm.EpisodeCommentRepo.update(
     {
@@ -50,8 +38,12 @@ describe('get ep comment', () => {
   test('ok', async () => {
     const app = createTestServer();
     await app.register(setup);
-    const res = await app.inject({ method: 'get', url: '/subjects/-/episode/1075440/comments' });
-    expect(res.json()).toContainEqual(expectedEpComment);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/-/episode/1075440/comments',
+    });
+    const comments = res.json();
+    expect(comments.slice(0, 2)).toMatchSnapshot();
   });
 });
 
@@ -93,7 +85,7 @@ describe('edit ep comment', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 448570,
+        userID: 382951,
       },
     });
 
@@ -119,7 +111,7 @@ describe('edit ep comment', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 448570 + 1,
+        userID: 382951 + 1,
       },
     });
 
@@ -181,7 +173,7 @@ describe('delete ep comment', () => {
   });
 
   test('ok', async () => {
-    const app = await testServer({ auth: { login: true, userID: 448570 } });
+    const app = await testServer({ auth: { login: true, userID: 382951 } });
 
     const res = await app.inject({
       method: 'delete',
