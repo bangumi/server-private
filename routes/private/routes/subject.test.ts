@@ -6,29 +6,6 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './post.ts';
 
-const expectedEpComment = {
-  id: 1569792,
-  epID: 1075440,
-  creatorID: 448570,
-  relatedID: 0,
-  createdAt: 1719389390,
-  content: '这是一条测试内容',
-  state: 0,
-  user: {
-    avatar: {
-      large: 'https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246',
-      medium: 'https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246',
-      small: 'https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246',
-    },
-    id: 382951,
-    nickname: '树洞酱',
-    sign: 'treeholechan@gmail.com 密码:lovemeplease',
-    user_group: 0,
-    username: '382951',
-  },
-  replies: [],
-};
-
 beforeEach(async () => {
   await orm.EpisodeCommentRepo.update(
     {
@@ -61,8 +38,12 @@ describe('get ep comment', () => {
   test('ok', async () => {
     const app = createTestServer();
     await app.register(setup);
-    const res = await app.inject({ method: 'get', url: '/subjects/-/episode/1075440/comments' });
-    expect(res.json()).toContainEqual(expectedEpComment);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/-/episode/1075440/comments',
+    });
+    const comments = res.json();
+    expect(comments.slice(0, 2)).toMatchSnapshot();
   });
 });
 
@@ -192,7 +173,7 @@ describe('delete ep comment', () => {
   });
 
   test('ok', async () => {
-    const app = await testServer({ auth: { login: true, userID: 448570 } });
+    const app = await testServer({ auth: { login: true, userID: 382951 } });
 
     const res = await app.inject({
       method: 'delete',
