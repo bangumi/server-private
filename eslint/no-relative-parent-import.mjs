@@ -5,7 +5,7 @@ import * as posix from 'node:path/posix';
 
 import { ESLintUtils } from '@typescript-eslint/utils';
 
-const projectRoot = posix.normalize(path.dirname(import.meta.dirname));
+const projectRoot = posix.normalize(path.dirname(import.meta.dirname || '.'));
 
 const createRule = ESLintUtils.RuleCreator((name) => name);
 
