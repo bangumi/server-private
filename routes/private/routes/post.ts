@@ -9,9 +9,8 @@ import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { entity } from '@app/lib/orm/index.ts';
-import { EpisodeCommentRepo, EpisodeRepo, fetchUser, fetchUserX } from '@app/lib/orm/index.ts';
+import { EpisodeCommentRepo, EpisodeRepo, fetchUserX } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { avatar } from '@app/lib/response';
 import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import {
   CommentState,
@@ -36,18 +35,7 @@ const BaseEpisodeComment = t.Object(
     createdAt: t.Integer(),
     content: t.String(),
     state: t.Integer(),
-    user: t.Union([
-      t.Object({
-        id: t.Integer(),
-        nickname: t.String(),
-        avatar: t.Object({
-          small: t.String(),
-          medium: t.String(),
-          large: t.String(),
-        }),
-      }),
-      t.Null(),
-    ]),
+    user: t.Ref(res.User),
   },
   {
     $id: 'BaseEpisodeComment',
@@ -159,7 +147,7 @@ export async function setup(app: App) {
       const repliesMap = new Map<number, IEpisodeComment[]>();
 
       for (const comment of comments) {
-        const u = await fetchUser(comment.creatorID);
+        const u = await fetchUserX(comment.creatorID);
         const baseComment = comments
           .map((v) => ({
             id: v.id,
@@ -169,13 +157,7 @@ export async function setup(app: App) {
             createdAt: v.createdAt,
             content: v.content,
             state: v.state,
-            user: u
-              ? {
-                  id: u.id,
-                  nickname: u.nickname,
-                  avatar: avatar(u.img),
-                }
-              : null,
+            user: toResUser(u),
             replies: [],
           }))
           .find((p) => p.id === comment.id);
@@ -899,15 +881,9 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       });
 
       const commentPromises = comments.map(async (v) => {
-        const u = await fetchUser(v.uid);
+        const u = await fetchUserX(v.uid);
         return {
-          user: u
-            ? {
-                id: u.id,
-                nickname: u.nickname,
-                avatar: avatar(u.img),
-              }
-            : null,
+          user: toResUser(u),
           rate: v.rate,
           comment: v.comment,
           updatedAt: v.lastTouch,
