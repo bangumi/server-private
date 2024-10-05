@@ -14,7 +14,18 @@ const expectedEpComment = {
   createdAt: 1719389390,
   content: '这是一条测试内容',
   state: 0,
-  user: null,
+  user: {
+    avatar: {
+      large: 'https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246',
+      medium: 'https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246',
+      small: 'https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246',
+    },
+    id: 382951,
+    nickname: '树洞酱',
+    sign: 'treeholechan@gmail.com 密码:lovemeplease',
+    user_group: 0,
+    username: '382951',
+  },
   replies: [],
 };
 
