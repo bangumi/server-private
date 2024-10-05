@@ -104,7 +104,7 @@ describe('edit ep comment', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 448570,
+        userID: 382951,
       },
     });
 
@@ -130,7 +130,7 @@ describe('edit ep comment', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 448570 + 1,
+        userID: 382951 + 1,
       },
     });
 
