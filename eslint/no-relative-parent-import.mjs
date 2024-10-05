@@ -2,11 +2,10 @@
 
 import * as path from 'node:path';
 import * as posix from 'node:path/posix';
-import { fileURLToPath } from 'node:url';
 
 import { ESLintUtils } from '@typescript-eslint/utils';
 
-const projectRoot = posix.normalize(path.dirname(fileURLToPath(import.meta.url)));
+const projectRoot = posix.normalize(path.dirname(import.meta.dirname));
 
 const createRule = ESLintUtils.RuleCreator((name) => name);
 
