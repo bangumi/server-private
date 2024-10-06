@@ -865,6 +865,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       const count = await orm.SubjectInterestRepo.count({ where });
       const comments = await orm.SubjectInterestRepo.find({
         where: where,
+        order: { lastTouch: 'desc' },
         skip: query.offset,
         take: query.limit,
       });
