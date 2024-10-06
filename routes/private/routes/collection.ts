@@ -4,7 +4,6 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op } from '@app/drizzle/db.ts';
 import { chiiSubjectInterests } from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
-import { logger } from '@app/lib/logger';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import { CollectionType } from '@app/lib/subject/collection';
@@ -189,7 +188,6 @@ export async function setup(app: App) {
         .where(op.eq(chiiSubjectInterests.interestUid, user.id))
         .groupBy(chiiSubjectInterests.interestSubjectType, chiiSubjectInterests.interestType)
         .execute();
-      logger.debug(data);
       for (const d of data) {
         switch (d.interest_subject_type) {
           case SubjectType.Book: {
