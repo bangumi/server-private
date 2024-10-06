@@ -7,3 +7,11 @@ export enum SubjectType {
 }
 
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
+
+export const SubjectTypeLabels = new Map<SubjectType, string>([
+  [SubjectType.Book, 'book'],
+  [SubjectType.Anime, 'anime'],
+  [SubjectType.Music, 'music'],
+  [SubjectType.Game, 'game'],
+  [SubjectType.Real, 'real'],
+]);
