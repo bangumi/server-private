@@ -468,7 +468,7 @@ export class SubjectPost {
 
 @Index('interest_collect_dateline', ['collectDateline'], {})
 @Index('interest_id', ['uid', 'private'], {})
-@Index('interest_lasttouch', ['lastTouch'], {})
+@Index('interest_lasttouch', ['updatedAt'], {})
 @Index('interest_private', ['private'], {})
 @Index('interest_rate', ['rate'], {})
 @Index('interest_subject_id', ['subjectID', 'type'], {})
@@ -477,10 +477,10 @@ export class SubjectPost {
 @Index('interest_type', ['type'], {})
 @Index('interest_type_2', ['type', 'uid'], {})
 @Index('interest_uid', ['uid'], {})
-@Index('interest_uid_2', ['uid', 'private', 'lastTouch'], {})
+@Index('interest_uid_2', ['uid', 'private', 'updatedAt'], {})
 @Index('subject_collect', ['subjectID', 'type', 'private', 'collectDateline'], {})
-@Index('subject_comment', ['subjectID', 'hasComment', 'private', 'lastTouch'], {})
-@Index('subject_lasttouch', ['subjectID', 'private', 'lastTouch'], {})
+@Index('subject_comment', ['subjectID', 'hasComment', 'private', 'updatedAt'], {})
+@Index('subject_lasttouch', ['subjectID', 'private', 'updatedAt'], {})
 @Index('subject_rate', ['type', 'rate', 'private'], {})
 @Index('tag_subject_id', ['subjectType', 'type', 'uid'], {})
 @Index('top_subject', ['subjectID', 'subjectType', 'doingDateline'], {})
@@ -568,7 +568,7 @@ export class SubjectInterest {
     unsigned: true,
     default: () => "'0'",
   })
-  lastTouch!: number;
+  updatedAt!: number;
 
   @Column('tinyint', { name: 'interest_private', unsigned: true })
   private!: number;
