@@ -828,18 +828,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       total: t.Integer(),
       list: t.Array(
         t.Object({
-          user: t.Union([
-            t.Object({
-              id: t.Integer(),
-              nickname: t.String(),
-              avatar: t.Object({
-                small: t.String(),
-                medium: t.String(),
-                large: t.String(),
-              }),
-            }),
-            t.Null(),
-          ]),
+          user: t.Ref(res.User),
           rate: t.Integer(),
           comment: t.String(),
           updatedAt: t.Integer(),
