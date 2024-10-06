@@ -26,6 +26,69 @@ export enum EpisodeType {
   Other = 6,
 }
 
+export type IInfoboxValue = Static<typeof InfoboxValue>;
+export const InfoboxValue = t.Object(
+  {
+    k: t.String(),
+    v: t.String(),
+  },
+  { $id: 'InfoboxValue', title: 'InfoboxValue' },
+);
+
+export type IInfobox = Static<typeof Infobox>;
+export const Infobox = t.Object(
+  {
+    key: t.String(),
+    values: t.Array(InfoboxValue),
+  },
+  { $id: 'Infobox', title: 'Infobox' },
+);
+
+export type ISubjectAirtime = Static<typeof SubjectAirtime>;
+export const SubjectAirtime = t.Object(
+  {
+    date: t.String(),
+    month: t.Integer(),
+    weekday: t.Integer(),
+    year: t.Integer(),
+  },
+  { $id: 'SubjectAirtime', title: 'SubjectAirtime' },
+);
+
+export type ISubjectCollection = Static<typeof SubjectCollection>;
+export const SubjectCollection = t.Object(
+  {
+    collect: t.Integer(),
+    doing: t.Integer(),
+    dropped: t.Integer(),
+    on_hold: t.Integer(),
+    wish: t.Integer(),
+  },
+  { $id: 'SubjectCollection', title: 'SubjectCollection' },
+);
+
+export type ISubjectPlatform = Static<typeof SubjectPlatform>;
+export const SubjectPlatform = t.Object(
+  {
+    alias: t.String(),
+    id: t.Integer(),
+    type: t.String(),
+    type_cn: t.String(),
+  },
+  { $id: 'SubjectPlatform', title: 'SubjectPlatform' },
+);
+
+export type ISubjectRating = Static<typeof SubjectRating>;
+export const SubjectRating = t.Object(
+  {
+    count: t.Array(t.Integer()),
+    rank: t.Integer(),
+    score: t.Number(),
+    total: t.Integer(),
+  },
+  { $id: 'SubjectRating', title: 'SubjectRating' },
+);
+
 export type ISubjectImages = Static<typeof SubjectImages>;
 export const SubjectImages = t.Object(
   {

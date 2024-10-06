@@ -6,6 +6,7 @@ import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import * as swagger from '@app/routes/swagger.ts';
 import type { App } from '@app/routes/type.ts';
 
+import * as collection from './routes/collection.ts';
 import * as login from './routes/login.ts';
 import * as post from './routes/post.ts';
 import * as group from './routes/topic.ts';
@@ -39,6 +40,7 @@ export async function setup(app: App) {
 async function API(app: App) {
   await swagger.privateAPI(app);
 
+  await app.register(collection.setup);
   await app.register(login.setup);
   await app.register(group.setup);
   await app.register(post.setup);
