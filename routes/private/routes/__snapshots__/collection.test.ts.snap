@@ -1,0 +1,353 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`user collection > should summary 1`] = `
+Object {
+  "subject": Object {
+    "anime": Object {
+      "collect": Array [
+        Object {
+          "comment": "test comment",
+          "ep_status": 23,
+          "private": false,
+          "rate": 0,
+          "subject": Object {
+            "airtime": Object {
+              "date": "2008-04-06",
+              "month": 4,
+              "weekday": 7,
+              "year": 2008,
+            },
+            "eps": 25,
+            "id": 8,
+            "images": Object {
+              "common": "https://lain.bgm.tv/pic/cover/c/c9/f0/8_wK0z3.jpg",
+              "grid": "https://lain.bgm.tv/pic/cover/g/c9/f0/8_wK0z3.jpg",
+              "large": "https://lain.bgm.tv/pic/cover/l/c9/f0/8_wK0z3.jpg",
+              "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
+              "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
+            },
+            "infobox": Array [
+              Object {
+                "key": "中文名",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "Code Geass 反叛的鲁路修R2",
+                  },
+                ],
+              },
+              Object {
+                "key": "别名",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "叛逆的鲁路修R2",
+                  },
+                  Object {
+                    "k": "",
+                    "v": "Code Geass: Hangyaku no Lelouch R2",
+                  },
+                  Object {
+                    "k": "",
+                    "v": "叛逆的勒鲁什R2",
+                  },
+                  Object {
+                    "k": "",
+                    "v": "叛逆的鲁鲁修R2",
+                  },
+                  Object {
+                    "k": "",
+                    "v": "コードギアス 反逆のルルーシュR2",
+                  },
+                  Object {
+                    "k": "",
+                    "v": "Code Geass: Lelouch of the Rebellion R2",
+                  },
+                  Object {
+                    "k": "",
+                    "v": "叛逆的勒路什R2",
+                  },
+                ],
+              },
+              Object {
+                "key": "话数",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "25",
+                  },
+                ],
+              },
+              Object {
+                "key": "放送开始",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "2008年4月6日",
+                  },
+                ],
+              },
+              Object {
+                "key": "放送星期",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "",
+                  },
+                ],
+              },
+              Object {
+                "key": "官方网站",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "http://www.geass.jp/r2/",
+                  },
+                ],
+              },
+              Object {
+                "key": "播放电视台",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "每日放送",
+                  },
+                ],
+              },
+              Object {
+                "key": "其他电视台",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "",
+                  },
+                ],
+              },
+              Object {
+                "key": "播放结束",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "2008年9月28日",
+                  },
+                ],
+              },
+              Object {
+                "key": "其他",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "",
+                  },
+                ],
+              },
+              Object {
+                "key": "Copyright",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "（C）2006 SUNRISE inc./MBS",
+                  },
+                ],
+              },
+              Object {
+                "key": "导演",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "谷口悟朗",
+                  },
+                ],
+              },
+              Object {
+                "key": "系列构成",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "大河内一楼",
+                  },
+                ],
+              },
+              Object {
+                "key": "人物原案",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "CLAMP",
+                  },
+                ],
+              },
+              Object {
+                "key": "人物设定",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "木村貴宏",
+                  },
+                ],
+              },
+              Object {
+                "key": "美术监督",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "菱沼由典",
+                  },
+                ],
+              },
+              Object {
+                "key": "色彩设计",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "岩沢れい子",
+                  },
+                ],
+              },
+              Object {
+                "key": "摄影监督",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "大矢創太",
+                  },
+                ],
+              },
+              Object {
+                "key": "音响监督",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "浦上靖夫、井澤基",
+                  },
+                ],
+              },
+              Object {
+                "key": "音乐",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "中川幸太郎、黒石ひとみ",
+                  },
+                ],
+              },
+              Object {
+                "key": "音乐制作",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "AUDIO PLANNING U",
+                  },
+                ],
+              },
+              Object {
+                "key": "动画制作",
+                "values": Array [
+                  Object {
+                    "k": "",
+                    "v": "サンライズ",
+                  },
+                ],
+              },
+            ],
+            "locked": false,
+            "meta_tags": Array [],
+            "name": "コードギアス 反逆のルルーシュR2",
+            "name_cn": "Code Geass 反叛的鲁路修R2",
+            "nsfw": false,
+            "platform": Object {
+              "alias": "tv",
+              "id": 1,
+              "type": "TV",
+              "type_cn": "TV",
+            },
+            "rating": Object {
+              "count": Array [
+                44,
+                15,
+                32,
+                66,
+                145,
+                457,
+                1472,
+                3190,
+                2640,
+                1377,
+              ],
+              "rank": 121,
+              "score": 8.19,
+              "total": 9438,
+            },
+            "redirect": 0,
+            "series": false,
+            "series_entry": 0,
+            "summary": "　　“东京决战”一年后，布里塔尼亚少年鲁路修在11区（原日本国）过着平凡的学生生活。但是，鲁路修与弟弟罗洛的一次出行，遇到了黑色骑士团的余党。在与少女C.C再次结成契约之后，尘封的记忆摆在了鲁路修的面前。
+　　身为帝国王子的鲁路修，为了建立人人平等的世界、让妹妹娜娜丽幸福的世界，而使用GEASS，令人绝对服从的力量，带领黑色骑士团向帝国宣战。带上假面化名ZERO的他，却在一年前的“东京决战”中被好友朱雀击败，被帝国皇帝抹去了记忆。
+　　现在，恢复记忆的鲁路修不仅要面对帝国的强大军事力量，更要面对虚假的弟弟罗洛、失踪的妹妹娜娜丽、不知敌友的中华联盟、内部出现分歧的黑色骑士团。面对内忧外患，鲁路修走上了GEASS之力的诅咒——孤独的王之路。 ",
+            "type": 2,
+            "volumes": 0,
+          },
+          "tags": Array [
+            "SUNRISE",
+          ],
+          "type": 2,
+          "updated_at": 1639569371,
+          "vol_status": 0,
+        },
+      ],
+      "counts": Object {
+        "collect": 1,
+        "doing": 0,
+        "dropped": 0,
+        "on_hold": 0,
+        "wish": 0,
+      },
+      "doing": Array [],
+    },
+    "book": Object {
+      "collect": Array [],
+      "counts": Object {
+        "collect": 0,
+        "doing": 0,
+        "dropped": 0,
+        "on_hold": 1,
+        "wish": 0,
+      },
+      "doing": Array [],
+    },
+    "game": Object {
+      "collect": Array [],
+      "counts": Object {
+        "collect": 0,
+        "doing": 0,
+        "dropped": 1,
+        "on_hold": 0,
+        "wish": 21,
+      },
+      "doing": Array [],
+    },
+    "music": Object {
+      "collect": Array [],
+      "counts": Object {
+        "collect": 0,
+        "doing": 1,
+        "dropped": 0,
+        "on_hold": 0,
+        "wish": 0,
+      },
+      "doing": Array [],
+    },
+    "real": Object {
+      "collect": Array [],
+      "counts": Object {
+        "collect": 0,
+        "doing": 0,
+        "dropped": 0,
+        "on_hold": 0,
+        "wish": 0,
+      },
+      "doing": Array [],
+    },
+  },
+}
+`;
