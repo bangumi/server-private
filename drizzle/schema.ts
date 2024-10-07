@@ -820,7 +820,7 @@ export const chiiSubjects = createTable('chii_subjects')('subject', {
   infobox: htmlEscapedString('mediumtext')('field_infobox').notNull(),
   summary: mediumtext('field_summary').notNull(),
   field5: mediumtext('field_5').notNull(),
-  fieldVolumes: mediumint('field_volumes').notNull(),
+  volumes: mediumint('field_volumes').notNull(),
   eps: mediumint('field_eps').notNull(),
   wish: mediumint('subject_wish').notNull(),
   done: mediumint('subject_collect').notNull(),
