@@ -775,6 +775,8 @@ export const chiiRevText = mysqlTable('chii_rev_text', {
 });
 
 export type ISubject = typeof chiiSubjects.$inferSelect;
+export type ISubjectFields = typeof chiiSubjectFields.$inferSelect;
+export type ISubjectInterests = typeof chiiSubjectInterests.$inferSelect;
 
 const customBoolean = customType<{ data: boolean }>({
   dataType() {

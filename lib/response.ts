@@ -22,9 +22,15 @@ export function groupIcon(s: string): string {
   return `https://${imageDomain}/pic/icon/s/${s}`;
 }
 
-export function subjectCover(s: string): res.ISubjectImages | null {
+export function subjectCover(s: string): res.ISubjectImages {
   if (!s) {
-    return null;
+    return {
+      large: '',
+      common: '',
+      medium: '',
+      small: '',
+      grid: '',
+    };
   }
   return {
     large: `${baseSubjectImageUrl}/l/${s}`,
@@ -35,9 +41,14 @@ export function subjectCover(s: string): res.ISubjectImages | null {
   };
 }
 
-export function personImages(s: string): res.IPersonImages | null {
+export function personImages(s: string): res.IPersonImages {
   if (!s) {
-    return null;
+    return {
+      large: '',
+      medium: '',
+      small: '',
+      grid: '',
+    };
   }
   return {
     large: `${basePersonImageUrl}/l/${s}`,
