@@ -205,7 +205,10 @@ function convertSubject(subject: ISubject, fields: ISubjectFields): ISlimSubject
     id: subject.id,
     images: subjectCover(subject.image),
     infobox: convertInfobox(subject.infobox),
-    meta_tags: subject.metaTags.split(',').map((x) => x.trim()),
+    meta_tags: subject.metaTags
+      .split(',')
+      .map((x) => x.trim())
+      .filter((x) => x !== ''),
     locked: subject.ban === 2,
     name: subject.name,
     name_cn: subject.nameCN,
@@ -231,7 +234,10 @@ function convertUserSubjectCollection(
     rate: interest.interestRate,
     type: interest.interestType,
     comment: interest.interestComment,
-    tags: interest.interestTag.split(',').map((x) => x.trim()),
+    tags: interest.interestTag
+      .split(',')
+      .map((x) => x.trim())
+      .filter((x) => x !== ''),
     ep_status: interest.interestEpStatus,
     vol_status: interest.interestVolStatus,
     private: Boolean(interest.interestPrivate),
