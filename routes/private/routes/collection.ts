@@ -27,6 +27,7 @@ export type ISlimSubject = Static<typeof SlimSubject>;
 const SlimSubject = t.Object(
   {
     airtime: t.Ref(res.SubjectAirtime),
+    collection: t.Ref(res.SubjectCollection),
     eps: t.Integer(),
     id: t.Integer(),
     images: t.Ref(res.SubjectImages),
@@ -92,6 +93,16 @@ function convertSubjectAirtime(fields: ISubjectFields): res.ISubjectAirtime {
     month: fields.month,
     weekday: fields.weekDay,
     year: fields.year,
+  };
+}
+
+function convertSubjectCollection(subject: ISubject): res.ISubjectCollection {
+  return {
+    [String(CollectionType.Wish)]: subject.wish,
+    [String(CollectionType.Collect)]: subject.done,
+    [String(CollectionType.Doing)]: subject.doing,
+    [String(CollectionType.OnHold)]: subject.onHold,
+    [String(CollectionType.Dropped)]: subject.dropped,
   };
 }
 
@@ -175,6 +186,7 @@ function convertSubjectRating(fields: ISubjectFields): res.ISubjectRating {
 function convertSubject(subject: ISubject, fields: ISubjectFields): ISlimSubject {
   return {
     airtime: convertSubjectAirtime(fields),
+    collection: convertSubjectCollection(subject),
     eps: subject.eps,
     id: subject.id,
     images: subjectCover(subject.image),
@@ -223,6 +235,7 @@ function convertUserSubjectCollection(
 export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(res.SubjectAirtime);
+  app.addSchema(res.SubjectCollection);
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectRating);

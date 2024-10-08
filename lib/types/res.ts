@@ -53,16 +53,10 @@ export const SubjectAirtime = t.Object(
 );
 
 export type ISubjectCollection = Static<typeof SubjectCollection>;
-export const SubjectCollection = t.Object(
-  {
-    collect: t.Integer(),
-    doing: t.Integer(),
-    dropped: t.Integer(),
-    on_hold: t.Integer(),
-    wish: t.Integer(),
-  },
-  { $id: 'SubjectCollection', title: 'SubjectCollection' },
-);
+export const SubjectCollection = t.Record(t.String(), t.Integer(), {
+  $id: 'SubjectCollection',
+  title: 'SubjectCollection',
+});
 
 export type ISubjectPlatform = Static<typeof SubjectPlatform>;
 export const SubjectPlatform = t.Object(
