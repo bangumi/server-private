@@ -5,11 +5,15 @@ WORKDIR /app
 # build dist/index.mjs
 FROM base AS builder
 
-COPY . ./
+COPY package.json pnpm-lock.yaml ./
+COPY patches ./patches/
 
 RUN corepack enable && corepack prepare --activate \
-  && pnpm install --frozen-lockfile \
-  && pnpm run build
+  && pnpm install --frozen-lockfile
+
+COPY . ./
+
+RUN pnpm run build
 
 FROM base AS prod-deps
 
