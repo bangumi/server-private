@@ -68,13 +68,15 @@ const UserSubjectCollection = t.Object(
 export type IUserCollectionsSubjectSummary = Static<typeof UserCollectionsSubjectSummary>;
 const UserCollectionsSubjectSummary = t.Object(
   {
-    counts: t.Record(
-      t.String({ description: 'collection type id', examples: ['1', '2', '3', '4', '5'] }),
-      t.Integer(),
-    ),
+    counts: t.Record(t.String({ description: 'collection type id' }), t.Integer(), {
+      examples: [{ '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }],
+    }),
     details: t.Record(
-      t.String({ description: 'collection type id', examples: ['1', '2', '3', '4', '5'] }),
+      t.String({ description: 'collection type id' }),
       t.Array(t.Ref(UserSubjectCollection)),
+      {
+        examples: [{ '1': [], '2': [], '3': [], '4': [], '5': [] }],
+      },
     ),
   },
   { $id: 'UserCollectionsSubjectSummary' },
@@ -84,8 +86,18 @@ export type IUserCollectionsSummary = Static<typeof UserCollectionsSummary>;
 const UserCollectionsSummary = t.Object(
   {
     subject: t.Record(
-      t.String({ description: 'subject type id', examples: ['1', '2', '3', '4', '6'] }),
+      t.String({ description: 'subject type id' }),
       t.Ref(UserCollectionsSubjectSummary),
+      {
+        examples: [
+          {
+            '1': {
+              counts: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+              details: { '1': [], '2': [], '3': [], '4': [], '5': [] },
+            },
+          },
+        ],
+      },
     ),
     // character: t.Ref(UserCollectionsCharacterSummary),
     // person: t.Ref(UserCollectionsPersonSummary),
