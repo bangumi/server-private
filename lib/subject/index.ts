@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op, schema } from '@app/drizzle/db.ts';
+import { db, op, schema, type Txn } from '@app/drizzle/db.ts';
 import { chiiLikes, chiiTagIndex, chiiTagList } from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { TagCat } from '@app/lib/const.ts';
@@ -89,7 +89,7 @@ export async function edit({
 
   tags?.sort();
 
-  await db.transaction(async (t: typeof db) => {
+  await db.transaction(async (t: Txn) => {
     const [s]: schema.ISubject[] = await db
       .select()
       .from(schema.chiiSubjects)
@@ -246,7 +246,7 @@ export function extractBookProgress(w: Wiki): [number, number] {
   return [chap ? Number.parseInt(chap) || 0 : 0, vol ? Number.parseInt(vol) || 0 : 0];
 }
 
-async function getAllowedTagList(t: typeof db, typeID: number): Promise<Map<string, number>> {
+async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, number>> {
   const metaRows = await t
     .select({ id: chiiTagIndex.id })
     .from(schema.chiiTagIndex)
