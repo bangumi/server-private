@@ -1,5 +1,5 @@
 import type { Wiki } from '@bgm38/wiki';
-import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
+import { parse as parseWikiMap, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
@@ -112,7 +112,7 @@ function convertInfobox(content: string): res.IInfobox {
     data: [],
   };
   try {
-    wiki = parseWiki(content);
+    wiki = parseWikiMap(content);
   } catch (error) {
     if (!(error instanceof WikiSyntaxError)) {
       throw error;
