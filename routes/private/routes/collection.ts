@@ -1,5 +1,5 @@
-import type { Wiki } from '@bgm38/wiki';
-import { parse as parseWikiMap, WikiSyntaxError } from '@bgm38/wiki';
+import type { WikiMap } from '@bgm38/wiki';
+import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
@@ -107,31 +107,30 @@ function convertSubjectCollection(subject: ISubject): res.ISubjectCollection {
 }
 
 function convertInfobox(content: string): res.IInfobox {
-  let wiki: Wiki = {
+  let wiki: WikiMap = {
     type: '',
-    data: [],
+    data: new Map(),
   };
   try {
-    wiki = parseWikiMap(content);
+    wiki = parseWiki(content);
   } catch (error) {
     if (!(error instanceof WikiSyntaxError)) {
       throw error;
     }
   }
   const infobox: res.IInfobox = {};
-  for (const item of wiki.data) {
+  for (const [_, item] of wiki.data) {
     if (item.array) {
       infobox[item.key] =
         item.values?.map((v) => {
           return {
-            k: v.k || '',
+            k: v.k,
             v: v.v || '',
           };
         }) || [];
     } else {
       infobox[item.key] = [
         {
-          k: '',
           v: item.value || '',
         },
       ];

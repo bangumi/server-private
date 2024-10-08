@@ -29,7 +29,7 @@ export enum EpisodeType {
 export type IInfoboxValue = Static<typeof InfoboxValue>;
 export const InfoboxValue = t.Object(
   {
-    k: t.String(),
+    k: t.Optional(t.String()),
     v: t.String(),
   },
   { $id: 'InfoboxValue', title: 'InfoboxValue' },
