@@ -105,11 +105,11 @@ function convertSubjectAirtime(fields: ISubjectFields): res.ISubjectAirtime {
 
 function convertSubjectCollection(subject: ISubject): res.ISubjectCollection {
   return {
-    [String(CollectionType.Wish)]: subject.wish,
-    [String(CollectionType.Collect)]: subject.done,
-    [String(CollectionType.Doing)]: subject.doing,
-    [String(CollectionType.OnHold)]: subject.onHold,
-    [String(CollectionType.Dropped)]: subject.dropped,
+    [CollectionType.Wish]: subject.wish,
+    [CollectionType.Collect]: subject.done,
+    [CollectionType.Doing]: subject.doing,
+    [CollectionType.OnHold]: subject.onHold,
+    [CollectionType.Dropped]: subject.dropped,
   };
 }
 
@@ -229,34 +229,34 @@ export async function setup(app: App) {
         throw new NotFoundError('user');
       }
       const defaultCounts: Record<string, number> = {
-        [String(CollectionType.Wish)]: 0,
-        [String(CollectionType.Collect)]: 0,
-        [String(CollectionType.Doing)]: 0,
-        [String(CollectionType.OnHold)]: 0,
-        [String(CollectionType.Dropped)]: 0,
+        [CollectionType.Wish]: 0,
+        [CollectionType.Collect]: 0,
+        [CollectionType.Doing]: 0,
+        [CollectionType.OnHold]: 0,
+        [CollectionType.Dropped]: 0,
       };
       const defaultDetails: Record<string, IUserSubjectCollection[]> = {
-        [String(CollectionType.Wish)]: [],
-        [String(CollectionType.Collect)]: [],
+        [CollectionType.Wish]: [],
+        [CollectionType.Collect]: [],
       };
       const subjectSummary: Record<string, IUserCollectionsSubjectSummary> = {
-        [String(SubjectType.Book)]: {
+        [SubjectType.Book]: {
           counts: structuredClone(defaultCounts),
           details: structuredClone(defaultDetails),
         },
-        [String(SubjectType.Anime)]: {
+        [SubjectType.Anime]: {
           counts: structuredClone(defaultCounts),
           details: structuredClone(defaultDetails),
         },
-        [String(SubjectType.Music)]: {
+        [SubjectType.Music]: {
           counts: structuredClone(defaultCounts),
           details: structuredClone(defaultDetails),
         },
-        [String(SubjectType.Game)]: {
+        [SubjectType.Game]: {
           counts: structuredClone(defaultCounts),
           details: structuredClone(defaultDetails),
         },
-        [String(SubjectType.Real)]: {
+        [SubjectType.Real]: {
           counts: structuredClone(defaultCounts),
           details: structuredClone(defaultDetails),
         },
@@ -272,11 +272,11 @@ export async function setup(app: App) {
         .groupBy(chiiSubjectInterests.interestSubjectType, chiiSubjectInterests.interestType)
         .execute();
       for (const d of data) {
-        const summary = subjectSummary[String(d.interest_subject_type)];
+        const summary = subjectSummary[d.interest_subject_type];
         if (!summary) {
           continue;
         }
-        summary.counts[String(d.interest_type)] = d.count;
+        summary.counts[d.interest_type] = d.count;
       }
       const jobs = [];
       async function appendDetails(stype: number, ctype: number, userID: number) {
@@ -297,11 +297,11 @@ export async function setup(app: App) {
           .limit(7)
           .execute();
         for (const d of data) {
-          const summary = subjectSummary[String(stype)];
+          const summary = subjectSummary[stype];
           if (!summary) {
             continue;
           }
-          const details = summary.details[String(ctype)];
+          const details = summary.details[ctype];
           if (!details) {
             continue;
           }
