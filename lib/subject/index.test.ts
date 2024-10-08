@@ -52,7 +52,6 @@ describe('should update subject', () => {
           "dropped": 0,
           "eps": 0,
           "field5": "",
-          "fieldVolumes": 0,
           "id": 363612,
           "idxCn": "s",
           "image": "82/15/363612_6uauA.jpg",
@@ -67,6 +66,7 @@ describe('should update subject', () => {
           "seriesEntry": 0,
           "summary": "summary summary 2",
           "typeID": 2,
+          "volumes": 0,
           "wish": 0,
         },
         "subject_field": Object {

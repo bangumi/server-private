@@ -22,7 +22,7 @@ import { matchExpected } from '@app/lib/wiki.ts';
 
 import type { Platform } from './platform.ts';
 import platform from './platform.ts';
-import type { SubjectType } from './type.ts';
+import { SubjectType } from './type.ts';
 
 export const InvalidWikiSyntaxError = createError(
   'INVALID_SYNTAX_ERROR',
@@ -110,11 +110,6 @@ export async function edit({
       }
     }
 
-    const nameCN: string = extractNameCN(w);
-    const episodes: number = extractEpisode(w);
-
-    logger.info('user %d edit subject %d', userID, subjectID);
-
     if (expectedRevision) {
       expectedRevision.tags?.sort();
 
@@ -122,6 +117,17 @@ export async function edit({
         ...expectedRevision,
         metaTags: expectedRevision.tags ? expectedRevision.tags.join(' ') : undefined,
       });
+    }
+
+    const nameCN: string = extractNameCN(w);
+
+    logger.info('user %d edit subject %d', userID, subjectID);
+
+    let vol, episodes;
+    if (s.typeID === SubjectType.Book) {
+      [episodes, vol] = extractBookProgress(w);
+    } else {
+      episodes = extractEpisode(w);
     }
 
     if (tags) {
@@ -186,6 +192,7 @@ export async function edit({
         eps: episodes,
         nameCN: nameCN,
         metaTags: newMetaTags,
+        volumes: vol,
         summary,
         nsfw,
         infobox,
@@ -225,6 +232,18 @@ export function extractEpisode(w: Wiki): number {
   }
 
   return Number.parseInt(v) || 0;
+}
+
+export function extractBookProgress(w: Wiki): [number, number] {
+  const chap = w.data.find((v) => {
+    return v.key === '话数';
+  })?.value;
+
+  const vol = w.data.find((v) => {
+    return v.key === '册数';
+  })?.value;
+
+  return [chap ? Number.parseInt(chap) || 0 : 0, vol ? Number.parseInt(vol) || 0 : 0];
 }
 
 async function getAllowedTagList(t: typeof db, typeID: number): Promise<Map<string, number>> {
