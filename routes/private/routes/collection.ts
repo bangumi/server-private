@@ -16,12 +16,12 @@ import { NotFoundError } from '@app/lib/error.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response';
-import { platforms } from '@app/lib/subject';
 import { CollectionType, CollectionTypeProfileValues } from '@app/lib/subject/collection';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
+import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
 export type ISlimSubject = Static<typeof SlimSubject>;
 const SlimSubject = t.Object(
@@ -141,22 +141,9 @@ function convertInfobox(content: string): res.IInfobox {
 }
 
 function convertSubjectPlatform(subject: ISubject): res.ISubjectPlatform {
-  const found = platforms(subject.typeID).find((x) => x.id === subject.platform);
-  if (found) {
-    return {
-      id: found.id,
-      alias: found.alias || '',
-      type: found.type,
-      type_cn: found.type_cn,
-    };
-  } else {
-    return {
-      id: 0,
-      alias: '',
-      type: '',
-      type_cn: '',
-    };
-  }
+  const plats = platforms as Record<string, Record<string, res.ISubjectPlatform>>;
+  const found = plats[subject.typeID]?.[subject.platform];
+  return found || { id: 0, type: '', type_cn: '', alias: '' };
 }
 
 function convertSubjectRating(fields: ISubjectFields): res.ISubjectRating {

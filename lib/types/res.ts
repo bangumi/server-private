@@ -61,10 +61,13 @@ export const SubjectCollection = t.Record(t.String(), t.Integer(), {
 export type ISubjectPlatform = Static<typeof SubjectPlatform>;
 export const SubjectPlatform = t.Object(
   {
-    alias: t.String(),
     id: t.Integer(),
     type: t.String(),
     type_cn: t.String(),
+    alias: t.String(),
+    // enable_header: t.Boolean(),
+    // wiki_tpl: t.String(),
+    // order: t.Integer(),
   },
   { $id: 'SubjectPlatform', title: 'SubjectPlatform' },
 );
