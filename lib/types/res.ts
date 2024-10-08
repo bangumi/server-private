@@ -181,7 +181,7 @@ export function formatErrors(
   );
 }
 
-export function convertInfobox(content: string): IInfobox {
+export function toInfobox(content: string): IInfobox {
   let wiki: WikiMap = {
     type: '',
     data: new Map(),

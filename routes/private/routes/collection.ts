@@ -141,7 +141,7 @@ function convertSubject(subject: ISubject, fields: ISubjectFields): ISlimSubject
     eps: subject.eps,
     id: subject.id,
     images: subjectCover(subject.image) || undefined,
-    infobox: res.convertInfobox(subject.infobox),
+    infobox: res.toInfobox(subject.infobox),
     meta_tags: subject.metaTags
       .split(',')
       .map((x) => x.trim())
