@@ -80,7 +80,6 @@ export type ISubjectRating = Static<typeof SubjectRating>;
 export const SubjectRating = t.Object(
   {
     count: t.Array(t.Integer()),
-    rank: t.Integer(),
     score: t.Number(),
     total: t.Integer(),
   },

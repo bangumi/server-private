@@ -191,7 +191,6 @@ const exampleSlimSubject = {
   },
   rating: {
     count: [44, 15, 32, 66, 145, 457, 1472, 3190, 2640, 1377],
-    rank: 121,
     score: 8.19,
     total: 9438,
   },
@@ -344,7 +343,6 @@ function convertSubjectRating(fields: ISubjectFields): res.ISubjectRating {
   const total = ratingCount.reduce((a, b) => a + b, 0);
   const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
   const rating = {
-    rank: fields.fieldRank,
     total: total,
     score: Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
