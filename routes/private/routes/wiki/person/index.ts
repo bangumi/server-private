@@ -7,7 +7,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { PersonRev } from '@app/lib/orm/entity/index.ts';
 import { createRevision, RevType } from '@app/lib/orm/entity/index.ts';
 import { AppDataSource, entity, PersonRepo } from '@app/lib/orm/index.ts';
-import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError, SubjectType } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
@@ -18,7 +18,7 @@ export const PersonWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Ref(res.SubjectType),
+    typeID: t.Enum(SubjectType),
     infobox: t.String(),
     summary: t.String(),
   },
@@ -40,7 +40,6 @@ export const PersonEdit = t.Object(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
-  app.addSchema(res.SubjectType);
   app.addSchema(PersonWikiInfo);
 
   app.get(
