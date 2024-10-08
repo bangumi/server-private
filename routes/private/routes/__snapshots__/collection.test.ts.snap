@@ -190,6 +190,15 @@ Object {
               "name": "コードギアス 反逆のルルーシュR2",
               "nameCN": "Code Geass 反叛的鲁路修R2",
               "nsfw": false,
+              "platform": Object {
+                "alias": "tv",
+                "enableHeader": true,
+                "id": 1,
+                "order": 0,
+                "type": "TV",
+                "typeCN": "TV",
+                "wikiTpl": "TVAnime",
+              },
               "rating": Object {
                 "count": Array [
                   44,
@@ -399,6 +408,15 @@ Object {
               "name": "风起陇西",
               "nameCN": "风起陇西",
               "nsfw": false,
+              "platform": Object {
+                "alias": "cn",
+                "enableHeader": true,
+                "id": 3,
+                "order": 2,
+                "type": "cn",
+                "typeCN": "华语剧",
+                "wikiTpl": "TV",
+              },
               "rating": Object {
                 "count": Array [
                   0,
@@ -577,6 +595,15 @@ Object {
               "name": "Severance",
               "nameCN": "人生切割术",
               "nsfw": false,
+              "platform": Object {
+                "alias": "en",
+                "enableHeader": true,
+                "id": 2,
+                "order": 1,
+                "type": "en",
+                "typeCN": "欧美剧",
+                "wikiTpl": "TV",
+              },
               "rating": Object {
                 "count": Array [
                   0,
@@ -755,6 +782,15 @@ Object {
               "name": "The Guardians of Justice Season 1",
               "nameCN": "正义守护者 第一季",
               "nsfw": false,
+              "platform": Object {
+                "alias": "en",
+                "enableHeader": true,
+                "id": 2,
+                "order": 1,
+                "type": "en",
+                "typeCN": "欧美剧",
+                "wikiTpl": "TV",
+              },
               "rating": Object {
                 "count": Array [
                   0,
@@ -958,6 +994,15 @@ Object {
               "name": "エスタブライフ グレイトエスケープ",
               "nameCN": "Estab Life Great Escape",
               "nsfw": false,
+              "platform": Object {
+                "alias": "tv",
+                "enableHeader": true,
+                "id": 1,
+                "order": 0,
+                "type": "TV",
+                "typeCN": "TV",
+                "wikiTpl": "TVAnime",
+              },
               "rating": Object {
                 "count": Array [
                   3,
@@ -1100,6 +1145,15 @@ Object {
               "name": "The Boys: Diabolical",
               "nameCN": "黑袍纠察队：劣迹",
               "nsfw": false,
+              "platform": Object {
+                "alias": "web",
+                "enableHeader": true,
+                "id": 5,
+                "order": 1,
+                "type": "web",
+                "typeCN": "WEB",
+                "wikiTpl": "TVAnime",
+              },
               "rating": Object {
                 "count": Array [
                   0,
@@ -1313,6 +1367,15 @@ Object {
               "name": "元彼の遺言状",
               "nameCN": "前男友的遗书",
               "nsfw": false,
+              "platform": Object {
+                "alias": "jp",
+                "enableHeader": true,
+                "id": 1,
+                "order": 0,
+                "type": "jp",
+                "typeCN": "日剧",
+                "wikiTpl": "TV",
+              },
               "rating": Object {
                 "count": Array [
                   0,
@@ -1517,6 +1580,15 @@ Object {
               "name": "Obi-Wan Kenobi",
               "nameCN": "星球大战外传：欧比旺",
               "nsfw": false,
+              "platform": Object {
+                "alias": "en",
+                "enableHeader": true,
+                "id": 2,
+                "order": 1,
+                "type": "en",
+                "typeCN": "欧美剧",
+                "wikiTpl": "TV",
+              },
               "rating": Object {
                 "count": Array [
                   1,
