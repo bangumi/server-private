@@ -1,6 +1,7 @@
 import type { Static } from '@sinclair/typebox';
 import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
+import { DrizzleError } from 'drizzle-orm';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 import type { FastifySchemaValidationError } from 'fastify/types/schema.d.ts';
@@ -70,6 +71,13 @@ export async function createServer(
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message
     if (error instanceof TypeORMError) {
+      this.log.error(error);
+      void reply.status(500).send({
+        error: 'Internal Server Error',
+        message: 'internal database error, please contact admin',
+        statusCode: 500,
+      });
+    } else if (error instanceof DrizzleError) {
       this.log.error(error);
       void reply.status(500).send({
         error: 'Internal Server Error',
