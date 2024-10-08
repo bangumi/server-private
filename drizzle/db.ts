@@ -1,4 +1,10 @@
-import { drizzle } from 'drizzle-orm/mysql2';
+import type { ExtractTablesWithRelations } from 'drizzle-orm';
+import type { MySqlTransaction } from 'drizzle-orm/mysql-core';
+import {
+  drizzle,
+  type MySql2PreparedQueryHKT,
+  type MySql2QueryResultHKT,
+} from 'drizzle-orm/mysql2';
 import * as mysql from 'mysql2/promise';
 
 import config, { developing, testing } from '@app/lib/config.ts';
@@ -29,3 +35,10 @@ export const db = drizzle(poolConnection, {
 
 export * as schema from './schema.ts';
 export * as op from 'drizzle-orm';
+
+export type Txn = MySqlTransaction<
+  MySql2QueryResultHKT,
+  MySql2PreparedQueryHKT,
+  typeof schema,
+  ExtractTablesWithRelations<Record<string, unknown>>
+>;
