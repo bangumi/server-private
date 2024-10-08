@@ -68,8 +68,14 @@ const UserSubjectCollection = t.Object(
 export type IUserCollectionsSubjectSummary = Static<typeof UserCollectionsSubjectSummary>;
 const UserCollectionsSubjectSummary = t.Object(
   {
-    counts: t.Record(t.String(), t.Integer()),
-    details: t.Record(t.String(), t.Array(t.Ref(UserSubjectCollection))),
+    counts: t.Record(
+      t.String({ description: 'collection type id', examples: ['1', '2', '3', '4', '5'] }),
+      t.Integer(),
+    ),
+    details: t.Record(
+      t.String({ description: 'collection type id', examples: ['1', '2', '3', '4', '5'] }),
+      t.Array(t.Ref(UserSubjectCollection)),
+    ),
   },
   { $id: 'UserCollectionsSubjectSummary' },
 );
@@ -77,7 +83,10 @@ const UserCollectionsSubjectSummary = t.Object(
 export type IUserCollectionsSummary = Static<typeof UserCollectionsSummary>;
 const UserCollectionsSummary = t.Object(
   {
-    subject: t.Record(t.String(), t.Ref(UserCollectionsSubjectSummary)),
+    subject: t.Record(
+      t.String({ description: 'subject type id', examples: ['1', '2', '3', '4', '6'] }),
+      t.Ref(UserCollectionsSubjectSummary),
+    ),
     // character: t.Ref(UserCollectionsCharacterSummary),
     // person: t.Ref(UserCollectionsPersonSummary),
     // index: t.Ref(UserCollectionsIndexSummary),
