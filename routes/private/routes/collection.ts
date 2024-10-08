@@ -497,7 +497,10 @@ export async function setup(app: App) {
               op.eq(chiiSubjectInterests.interestUid, userID),
               op.eq(chiiSubjectInterests.interestSubjectType, stype),
               op.eq(chiiSubjectInterests.interestType, ctype),
+              op.eq(chiiSubjects.ban, 0),
+              op.eq(chiiSubjectFields.fieldRedirect, 0),
               auth.userID === userID ? undefined : op.eq(chiiSubjectInterests.interestPrivate, 0),
+              auth.allowNsfw ? undefined : op.eq(chiiSubjects.nsfw, false),
             ),
           )
           .orderBy(op.desc(chiiSubjectInterests.updatedAt))
