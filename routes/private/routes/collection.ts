@@ -43,7 +43,7 @@ const SlimSubject = t.Object(
     series: t.Boolean(),
     series_entry: t.Integer(),
     summary: t.String(),
-    type: t.Integer(),
+    type: t.Enum(SubjectType),
     volumes: t.Integer(),
   },
   {
@@ -56,7 +56,7 @@ const UserSubjectCollection = t.Object(
   {
     subject: t.Ref(SlimSubject),
     rate: t.Integer(),
-    type: t.Integer(),
+    type: t.Enum(CollectionType),
     comment: t.String(),
     tags: t.Array(t.String()),
     ep_status: t.Integer(),
