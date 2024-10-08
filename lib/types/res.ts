@@ -65,12 +65,13 @@ export const SubjectPlatform = t.Object(
   {
     id: t.Integer(),
     type: t.String(),
-    type_cn: t.String(),
+    typeCN: t.String(),
     alias: t.String(),
-    enable_header: t.Optional(t.Boolean()),
-    wiki_tpl: t.Optional(t.String()),
-    search_string: t.Optional(t.String()),
     order: t.Optional(t.Integer()),
+    enableHeader: t.Optional(t.Boolean()),
+    wikiTpl: t.Optional(t.String()),
+    searchString: t.Optional(t.String()),
+    sortKeys: t.Optional(t.Array(t.String())),
   },
   { $id: 'SubjectPlatform', title: 'SubjectPlatform' },
 );

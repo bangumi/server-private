@@ -5,6 +5,7 @@ export interface Platform {
   type: string;
   type_cn: string;
   alias?: string;
+  order?: number;
   wiki_tpl?: string;
   search_string?: string;
   enable_header?: boolean;

@@ -15,6 +15,7 @@ import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response';
 import { CollectionType, CollectionTypeProfileValues } from '@app/lib/subject/collection';
+import { type Platform } from '@app/lib/subject/platform.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -309,9 +310,22 @@ function convertSubjectCollection(subject: ISubject): res.ISubjectCollection {
 }
 
 function convertSubjectPlatform(subject: ISubject): res.ISubjectPlatform {
-  const plats = platforms as Record<string, Record<string, res.ISubjectPlatform>>;
+  const plats = platforms as Record<string, Record<string, Platform>>;
   const found = plats[subject.typeID]?.[subject.platform];
-  return found || { id: 0, type: '', type_cn: '', alias: '' };
+  if (found) {
+    return {
+      id: found.id,
+      type: found.type,
+      typeCN: found.type_cn,
+      alias: found.alias || '',
+      order: found.order,
+      wikiTpl: found.wiki_tpl,
+      searchString: found.search_string,
+      enableHeader: found.enable_header,
+    };
+  } else {
+    return { id: 0, type: '', typeCN: '', alias: '' };
+  }
 }
 
 function convertSubjectRating(fields: ISubjectFields): res.ISubjectRating {

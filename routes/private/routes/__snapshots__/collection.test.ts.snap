@@ -192,12 +192,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "tv",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 1,
                 "order": 0,
                 "type": "TV",
-                "type_cn": "TV",
-                "wiki_tpl": "TVAnime",
+                "typeCN": "TV",
+                "wikiTpl": "TVAnime",
               },
               "rating": Object {
                 "count": Array [
@@ -411,12 +411,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "cn",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 3,
                 "order": 2,
                 "type": "cn",
-                "type_cn": "华语剧",
-                "wiki_tpl": "TV",
+                "typeCN": "华语剧",
+                "wikiTpl": "TV",
               },
               "rating": Object {
                 "count": Array [
@@ -599,12 +599,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "en",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 2,
                 "order": 1,
                 "type": "en",
-                "type_cn": "欧美剧",
-                "wiki_tpl": "TV",
+                "typeCN": "欧美剧",
+                "wikiTpl": "TV",
               },
               "rating": Object {
                 "count": Array [
@@ -787,12 +787,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "en",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 2,
                 "order": 1,
                 "type": "en",
-                "type_cn": "欧美剧",
-                "wiki_tpl": "TV",
+                "typeCN": "欧美剧",
+                "wikiTpl": "TV",
               },
               "rating": Object {
                 "count": Array [
@@ -1000,12 +1000,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "tv",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 1,
                 "order": 0,
                 "type": "TV",
-                "type_cn": "TV",
-                "wiki_tpl": "TVAnime",
+                "typeCN": "TV",
+                "wikiTpl": "TVAnime",
               },
               "rating": Object {
                 "count": Array [
@@ -1152,12 +1152,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "web",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 5,
                 "order": 1,
                 "type": "web",
-                "type_cn": "WEB",
-                "wiki_tpl": "TVAnime",
+                "typeCN": "WEB",
+                "wikiTpl": "TVAnime",
               },
               "rating": Object {
                 "count": Array [
@@ -1375,12 +1375,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "jp",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 1,
                 "order": 0,
                 "type": "jp",
-                "type_cn": "日剧",
-                "wiki_tpl": "TV",
+                "typeCN": "日剧",
+                "wikiTpl": "TV",
               },
               "rating": Object {
                 "count": Array [
@@ -1589,12 +1589,12 @@ Object {
               "nsfw": false,
               "platform": Object {
                 "alias": "en",
-                "enable_header": true,
+                "enableHeader": true,
                 "id": 2,
                 "order": 1,
                 "type": "en",
-                "type_cn": "欧美剧",
-                "wiki_tpl": "TV",
+                "typeCN": "欧美剧",
+                "wikiTpl": "TV",
               },
               "rating": Object {
                 "count": Array [
