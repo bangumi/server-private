@@ -396,7 +396,7 @@ function convertUserSubjectCollection(
     epStatus: interest.interestEpStatus,
     volStatus: interest.interestVolStatus,
     private: Boolean(interest.interestPrivate),
-    updatedAt: interest.interestUpdatedAt,
+    updatedAt: interest.updatedAt,
   };
 }
 
@@ -502,7 +502,7 @@ export async function setup(app: App) {
               auth.userID === userID ? undefined : op.eq(chiiSubjectInterests.interestPrivate, 0),
             ),
           )
-          .orderBy(op.desc(chiiSubjectInterests.interestUpdatedAt))
+          .orderBy(op.desc(chiiSubjectInterests.updatedAt))
           .limit(7)
           .execute();
         for (const d of data) {

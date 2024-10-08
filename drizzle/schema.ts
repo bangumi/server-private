@@ -919,14 +919,14 @@ export const chiiSubjectInterests = mysqlTable(
     interestDroppedDateline: int('interest_dropped_dateline').notNull(),
     interestCreateIp: char('interest_create_ip', { length: 15 }).notNull(),
     interestLasttouchIp: char('interest_lasttouch_ip', { length: 15 }).notNull(),
-    interestUpdatedAt: int('interest_lasttouch').default(0).notNull(),
+    updatedAt: int('interest_lasttouch').default(0).notNull(),
     interestPrivate: tinyint('interest_private').notNull(),
   },
   (table) => {
     return {
       interestCollectDateline: index('interest_collect_dateline').on(table.interestCollectDateline),
       interestId: index('interest_id').on(table.interestUid, table.interestPrivate),
-      interestUpdatedAt: index('interest_lasttouch').on(table.interestUpdatedAt),
+      interestUpdatedAt: index('interest_lasttouch').on(table.updatedAt),
       interestPrivate: index('interest_private').on(table.interestPrivate),
       interestRate: index('interest_rate').on(table.interestRate),
       interestSubjectId: index('interest_subject_id').on(
@@ -941,7 +941,7 @@ export const chiiSubjectInterests = mysqlTable(
       interestUid2: index('interest_uid_2').on(
         table.interestUid,
         table.interestPrivate,
-        table.interestUpdatedAt,
+        table.updatedAt,
       ),
       subjectCollect: index('subject_collect').on(
         table.interestSubjectId,
@@ -953,12 +953,12 @@ export const chiiSubjectInterests = mysqlTable(
         table.interestSubjectId,
         table.interestHasComment,
         table.interestPrivate,
-        table.interestUpdatedAt,
+        table.updatedAt,
       ),
       subjectUpdatedAt: index('subject_lasttouch').on(
         table.interestSubjectId,
         table.interestPrivate,
-        table.interestUpdatedAt,
+        table.updatedAt,
       ),
       subjectRate: index('subject_rate').on(
         table.interestSubjectId,
