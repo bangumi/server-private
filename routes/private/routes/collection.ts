@@ -344,7 +344,7 @@ function convertSubjectRating(fields: ISubjectFields): res.ISubjectRating {
   const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
   const rating = {
     total: total,
-    score: Math.round((totalScore * 100) / total) / 100,
+    score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
   };
   return rating;
@@ -486,6 +486,7 @@ export async function setup(app: App) {
         summary.counts[d.interest_type] = d.count;
       }
       const jobs = [];
+
       async function appendDetails(stype: number, ctype: number, userID: number) {
         const data = await db
           .select()
@@ -523,6 +524,7 @@ export async function setup(app: App) {
           details.push(collection);
         }
       }
+
       for (const stype of SubjectTypeValues) {
         for (const ctype of CollectionTypeProfileValues) {
           jobs.push(appendDetails(stype, ctype, user.id));
