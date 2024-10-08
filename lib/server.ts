@@ -85,6 +85,9 @@ export async function createServer(
         statusCode: 500,
       });
     } else {
+      if (typeof error.statusCode !== 'number' || error.statusCode === 500) {
+        this.log.error(error);
+      }
       void reply.send(error);
     }
   });
