@@ -290,7 +290,7 @@ export async function setup(app: App) {
               op.eq(chiiSubjectInterests.interestUid, userID),
               op.eq(chiiSubjectInterests.interestSubjectType, stype),
               op.eq(chiiSubjectInterests.interestType, ctype),
-              auth.userID === userID ? op.eq(chiiSubjectInterests.interestPrivate, 0) : undefined,
+              auth.userID === userID ? undefined : op.eq(chiiSubjectInterests.interestPrivate, 0),
             ),
           )
           .orderBy(op.desc(chiiSubjectInterests.interestLasttouch))
