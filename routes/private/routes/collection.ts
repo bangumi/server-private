@@ -198,7 +198,7 @@ function convertSubject(subject: ISubject, fields: ISubjectFields): ISlimSubject
     series_entry: subject.seriesEntry,
     summary: subject.summary,
     type: subject.typeID,
-    volumes: subject.fieldVolumes,
+    volumes: subject.volumes,
   };
 }
 
