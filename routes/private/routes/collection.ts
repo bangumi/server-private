@@ -30,7 +30,7 @@ const SlimSubject = t.Object(
     eps: t.Integer(),
     id: t.Integer(),
     images: t.Ref(res.SubjectImages),
-    infobox: t.Array(t.Ref(res.Infobox)),
+    infobox: t.Ref(res.Infobox),
     meta_tags: t.Array(t.String()),
     locked: t.Boolean(),
     name: t.String(),
@@ -95,7 +95,7 @@ function convertSubjectAirtime(fields: ISubjectFields): res.ISubjectAirtime {
   };
 }
 
-function convertInfobox(content: string): res.IInfobox[] {
+function convertInfobox(content: string): res.IInfobox {
   let wiki: Wiki = {
     type: '',
     data: [],
@@ -107,29 +107,25 @@ function convertInfobox(content: string): res.IInfobox[] {
       throw error;
     }
   }
-  const infobox = wiki.data.map((item) => {
+  const infobox: res.IInfobox = {};
+  for (const item of wiki.data) {
     if (item.array) {
-      return {
-        key: item.key,
-        values:
-          item.values?.map((v) => {
-            return {
-              k: v.k || '',
-              v: v.v || '',
-            };
-          }) || [],
-      };
-    }
-    return {
-      key: item.key,
-      values: [
+      infobox[item.key] =
+        item.values?.map((v) => {
+          return {
+            k: v.k || '',
+            v: v.v || '',
+          };
+        }) || [];
+    } else {
+      infobox[item.key] = [
         {
           k: '',
           v: item.value || '',
         },
-      ],
-    };
-  });
+      ];
+    }
+  }
   return infobox;
 }
 

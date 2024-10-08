@@ -36,13 +36,10 @@ export const InfoboxValue = t.Object(
 );
 
 export type IInfobox = Static<typeof Infobox>;
-export const Infobox = t.Object(
-  {
-    key: t.String(),
-    values: t.Array(InfoboxValue),
-  },
-  { $id: 'Infobox', title: 'Infobox' },
-);
+export const Infobox = t.Record(t.String(), t.Array(InfoboxValue), {
+  $id: 'Infobox',
+  title: 'Infobox',
+});
 
 export type ISubjectAirtime = Static<typeof SubjectAirtime>;
 export const SubjectAirtime = t.Object(
