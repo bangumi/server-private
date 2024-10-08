@@ -223,7 +223,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { username } }): Promise<Static<typeof UserCollectionsSummary>> => {
+    async ({ auth, params: { username } }): Promise<Static<typeof UserCollectionsSummary>> => {
       const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
@@ -290,7 +290,9 @@ export async function setup(app: App) {
                 op.eq(chiiSubjectInterests.interestUid, user.id),
                 op.eq(chiiSubjectInterests.interestSubjectType, stype),
                 op.eq(chiiSubjectInterests.interestType, ctype),
-                op.eq(chiiSubjectInterests.interestPrivate, 0),
+                auth.userID === user.id
+                  ? op.eq(chiiSubjectInterests.interestPrivate, 0)
+                  : undefined,
               ),
             )
             .orderBy(op.desc(chiiSubjectInterests.interestLasttouch))
