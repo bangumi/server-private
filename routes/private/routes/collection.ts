@@ -281,6 +281,7 @@ export async function setup(app: App) {
                 op.eq(chiiSubjectInterests.interestUid, user.id),
                 op.eq(chiiSubjectInterests.interestSubjectType, stype),
                 op.eq(chiiSubjectInterests.interestType, ctype),
+                op.eq(chiiSubjectInterests.interestPrivate, 0),
               ),
             )
             .orderBy(op.desc(chiiSubjectInterests.interestLasttouch))
