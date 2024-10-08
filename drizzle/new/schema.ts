@@ -6,6 +6,8 @@ import {
   tinyint,
   varchar,
   mediumtext,
+  bigint,
+  mediumint,
   int,
   smallint,
   char,

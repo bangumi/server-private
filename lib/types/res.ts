@@ -1,3 +1,5 @@
+import type { WikiMap } from '@bgm38/wiki';
+import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import type { FastifyError } from '@fastify/error';
 import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
@@ -25,6 +27,64 @@ export enum EpisodeType {
   MAD = 5,
   Other = 6,
 }
+
+export type IInfoboxValue = Static<typeof InfoboxValue>;
+export const InfoboxValue = t.Object(
+  {
+    k: t.Optional(t.String()),
+    v: t.String(),
+  },
+  { $id: 'InfoboxValue', title: 'InfoboxValue' },
+);
+
+export type IInfobox = Static<typeof Infobox>;
+export const Infobox = t.Record(t.String(), t.Array(InfoboxValue), {
+  $id: 'Infobox',
+  title: 'Infobox',
+});
+
+export type ISubjectAirtime = Static<typeof SubjectAirtime>;
+export const SubjectAirtime = t.Object(
+  {
+    date: t.String(),
+    month: t.Integer(),
+    weekday: t.Integer(),
+    year: t.Integer(),
+  },
+  { $id: 'SubjectAirtime', title: 'SubjectAirtime' },
+);
+
+export type ISubjectCollection = Static<typeof SubjectCollection>;
+export const SubjectCollection = t.Record(t.String(), t.Integer(), {
+  $id: 'SubjectCollection',
+  title: 'SubjectCollection',
+});
+
+export type ISubjectPlatform = Static<typeof SubjectPlatform>;
+export const SubjectPlatform = t.Object(
+  {
+    id: t.Integer(),
+    type: t.String(),
+    typeCN: t.String(),
+    alias: t.String(),
+    order: t.Optional(t.Integer()),
+    enableHeader: t.Optional(t.Boolean()),
+    wikiTpl: t.Optional(t.String()),
+    searchString: t.Optional(t.String()),
+    sortKeys: t.Optional(t.Array(t.String())),
+  },
+  { $id: 'SubjectPlatform', title: 'SubjectPlatform' },
+);
+
+export type ISubjectRating = Static<typeof SubjectRating>;
+export const SubjectRating = t.Object(
+  {
+    count: t.Array(t.Integer()),
+    score: t.Number(),
+    total: t.Integer(),
+  },
+  { $id: 'SubjectRating', title: 'SubjectRating' },
+);
 
 export type ISubjectImages = Static<typeof SubjectImages>;
 export const SubjectImages = t.Object(
@@ -119,6 +179,43 @@ export function formatErrors(
       return [e.code, { value: formatError(e) }];
     }),
   );
+}
+
+export function toInfobox(content: string): IInfobox {
+  let wiki: WikiMap = {
+    type: '',
+    data: new Map(),
+  };
+  try {
+    wiki = parseWiki(content);
+  } catch (error) {
+    if (!(error instanceof WikiSyntaxError)) {
+      throw error;
+    }
+  }
+  const infobox: IInfobox = {};
+  for (const [key, item] of wiki.data) {
+    switch (typeof item) {
+      case 'string': {
+        infobox[key] = [
+          {
+            v: item,
+          },
+        ];
+        break;
+      }
+      case 'object': {
+        infobox[key] = item.map((v) => {
+          return {
+            k: v.k,
+            v: v.v || '',
+          };
+        });
+        break;
+      }
+    }
+  }
+  return infobox;
 }
 
 export function toResUser(user: orm.IUser): IUser {

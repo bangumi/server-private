@@ -5,6 +5,7 @@ export const Tag = {
   Group: 'group',
   Subject: 'subject',
   Episode: 'episode',
+  Collection: 'collection',
 } as const;
 
 export const Security = {
