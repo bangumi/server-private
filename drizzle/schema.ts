@@ -215,7 +215,7 @@ export const chiiEpStatus = mysqlTable(
     epSttSid: mediumint('ep_stt_sid').notNull(),
     epSttOnPrg: tinyint('ep_stt_on_prg').default(0).notNull(),
     epSttStatus: mediumtext('ep_stt_status').notNull(),
-    epSttUpdatedAt: int('ep_stt_lasttouch').notNull(),
+    updatedAt: int('ep_stt_lasttouch').notNull(),
   },
   (table) => {
     return {
@@ -320,7 +320,7 @@ export const chiiIndex = mysqlTable(
     idxCollects: mediumint('idx_collects').notNull(),
     idxStats: mediumtext('idx_stats').notNull(),
     idxDateline: int('idx_dateline').notNull(),
-    idxUpdatedAt: int('idx_lasttouch').notNull(),
+    updatedAt: int('idx_lasttouch').notNull(),
     idxUid: mediumint('idx_uid').notNull(),
     idxBan: tinyint('idx_ban').default(0).notNull(),
   },
