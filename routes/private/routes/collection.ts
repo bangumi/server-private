@@ -1,5 +1,3 @@
-import type { WikiMap } from '@bgm38/wiki';
-import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
@@ -106,39 +104,6 @@ function convertSubjectCollection(subject: ISubject): res.ISubjectCollection {
   };
 }
 
-function convertInfobox(content: string): res.IInfobox {
-  let wiki: WikiMap = {
-    type: '',
-    data: new Map(),
-  };
-  try {
-    wiki = parseWiki(content);
-  } catch (error) {
-    if (!(error instanceof WikiSyntaxError)) {
-      throw error;
-    }
-  }
-  const infobox: res.IInfobox = {};
-  for (const [_, item] of wiki.data) {
-    if (item.array) {
-      infobox[item.key] =
-        item.values?.map((v) => {
-          return {
-            k: v.k,
-            v: v.v || '',
-          };
-        }) || [];
-    } else {
-      infobox[item.key] = [
-        {
-          v: item.value || '',
-        },
-      ];
-    }
-  }
-  return infobox;
-}
-
 function convertSubjectPlatform(subject: ISubject): res.ISubjectPlatform {
   const plats = platforms as Record<string, Record<string, res.ISubjectPlatform>>;
   const found = plats[subject.typeID]?.[subject.platform];
@@ -176,7 +141,7 @@ function convertSubject(subject: ISubject, fields: ISubjectFields): ISlimSubject
     eps: subject.eps,
     id: subject.id,
     images: subjectCover(subject.image) || undefined,
-    infobox: convertInfobox(subject.infobox),
+    infobox: res.convertInfobox(subject.infobox),
     meta_tags: subject.metaTags
       .split(',')
       .map((x) => x.trim())

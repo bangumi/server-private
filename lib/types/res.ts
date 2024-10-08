@@ -1,3 +1,5 @@
+import type { WikiMap } from '@bgm38/wiki';
+import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import type { FastifyError } from '@fastify/error';
 import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
@@ -177,6 +179,39 @@ export function formatErrors(
       return [e.code, { value: formatError(e) }];
     }),
   );
+}
+
+export function convertInfobox(content: string): IInfobox {
+  let wiki: WikiMap = {
+    type: '',
+    data: new Map(),
+  };
+  try {
+    wiki = parseWiki(content);
+  } catch (error) {
+    if (!(error instanceof WikiSyntaxError)) {
+      throw error;
+    }
+  }
+  const infobox: IInfobox = {};
+  for (const [_, item] of wiki.data) {
+    if (item.array) {
+      infobox[item.key] =
+        item.values?.map((v) => {
+          return {
+            k: v.k,
+            v: v.v || '',
+          };
+        }) || [];
+    } else {
+      infobox[item.key] = [
+        {
+          v: item.value || '',
+        },
+      ];
+    }
+  }
+  return infobox;
 }
 
 export function toResUser(user: orm.IUser): IUser {
