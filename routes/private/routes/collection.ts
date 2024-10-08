@@ -278,44 +278,47 @@ export async function setup(app: App) {
         }
         summary.counts[String(d.interest_type)] = d.count;
       }
-      for (const stype of SubjectTypeValues) {
-        for (const ctype of CollectionTypeProfileValues) {
-          const data = await db
-            .select()
-            .from(chiiSubjectInterests)
-            .innerJoin(chiiSubjects, op.eq(chiiSubjectInterests.interestSubjectId, chiiSubjects.id))
-            .innerJoin(chiiSubjectFields, op.eq(chiiSubjects.id, chiiSubjectFields.id))
-            .where(
-              op.and(
-                op.eq(chiiSubjectInterests.interestUid, user.id),
-                op.eq(chiiSubjectInterests.interestSubjectType, stype),
-                op.eq(chiiSubjectInterests.interestType, ctype),
-                auth.userID === user.id
-                  ? op.eq(chiiSubjectInterests.interestPrivate, 0)
-                  : undefined,
-              ),
-            )
-            .orderBy(op.desc(chiiSubjectInterests.interestLasttouch))
-            .limit(7)
-            .execute();
-          for (const d of data) {
-            const summary = subjectSummary[String(stype)];
-            if (!summary) {
-              continue;
-            }
-            const details = summary.details[String(ctype)];
-            if (!details) {
-              continue;
-            }
-            const collection = convertUserSubjectCollection(
-              d.chii_subject_interests,
-              d.subject,
-              d.subject_field,
-            );
-            details.push(collection);
+      const jobs = [];
+      async function appendDetails(stype: number, ctype: number, userID: number) {
+        const data = await db
+          .select()
+          .from(chiiSubjectInterests)
+          .innerJoin(chiiSubjects, op.eq(chiiSubjectInterests.interestSubjectId, chiiSubjects.id))
+          .innerJoin(chiiSubjectFields, op.eq(chiiSubjects.id, chiiSubjectFields.id))
+          .where(
+            op.and(
+              op.eq(chiiSubjectInterests.interestUid, userID),
+              op.eq(chiiSubjectInterests.interestSubjectType, stype),
+              op.eq(chiiSubjectInterests.interestType, ctype),
+              auth.userID === userID ? op.eq(chiiSubjectInterests.interestPrivate, 0) : undefined,
+            ),
+          )
+          .orderBy(op.desc(chiiSubjectInterests.interestLasttouch))
+          .limit(7)
+          .execute();
+        for (const d of data) {
+          const summary = subjectSummary[String(stype)];
+          if (!summary) {
+            continue;
           }
+          const details = summary.details[String(ctype)];
+          if (!details) {
+            continue;
+          }
+          const collection = convertUserSubjectCollection(
+            d.chii_subject_interests,
+            d.subject,
+            d.subject_field,
+          );
+          details.push(collection);
         }
       }
+      for (const stype of SubjectTypeValues) {
+        for (const ctype of CollectionTypeProfileValues) {
+          jobs.push(appendDetails(stype, ctype, user.id));
+        }
+      }
+      await Promise.all(jobs);
       return {
         subject: subjectSummary,
       };
