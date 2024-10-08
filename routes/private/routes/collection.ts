@@ -13,12 +13,11 @@ import {
   type ISubjectInterests,
 } from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
-import { logger } from '@app/lib/logger';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response';
+import { platforms } from '@app/lib/subject';
 import { CollectionType, CollectionTypeProfileValues } from '@app/lib/subject/collection';
-import { platforms } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -67,40 +66,19 @@ const UserSubjectCollection = t.Object(
   { $id: 'UserSubjectCollection' },
 );
 
-const UserCollectionsSubjectCounts = t.Object(
-  {
-    wish: t.Integer(),
-    collect: t.Integer(),
-    doing: t.Integer(),
-    on_hold: t.Integer(),
-    dropped: t.Integer(),
-  },
-  { $id: 'UserCollectionsSubjectCounts' },
-);
-
+export type IUserCollectionsSubjectSummary = Static<typeof UserCollectionsSubjectSummary>;
 const UserCollectionsSubjectSummary = t.Object(
   {
-    counts: t.Ref(UserCollectionsSubjectCounts),
-    doing: t.Array(t.Ref(UserSubjectCollection)),
-    collect: t.Array(t.Ref(UserSubjectCollection)),
+    counts: t.Record(t.String(), t.Integer()),
+    details: t.Record(t.String(), t.Array(t.Ref(UserSubjectCollection))),
   },
   { $id: 'UserCollectionsSubjectSummary' },
 );
 
-const UserCollectionSubjectTypes = t.Object(
-  {
-    book: t.Ref(UserCollectionsSubjectSummary),
-    anime: t.Ref(UserCollectionsSubjectSummary),
-    music: t.Ref(UserCollectionsSubjectSummary),
-    game: t.Ref(UserCollectionsSubjectSummary),
-    real: t.Ref(UserCollectionsSubjectSummary),
-  },
-  { $id: 'UserCollectionSubjectTypes' },
-);
-
+export type IUserCollectionsSummary = Static<typeof UserCollectionsSummary>;
 const UserCollectionsSummary = t.Object(
   {
-    subject: t.Ref(UserCollectionSubjectTypes),
+    subject: t.Record(t.String(), t.Ref(UserCollectionsSubjectSummary)),
     // character: t.Ref(UserCollectionsCharacterSummary),
     // person: t.Ref(UserCollectionsPersonSummary),
     // index: t.Ref(UserCollectionsIndexSummary),
@@ -245,52 +223,6 @@ function convertUserSubjectCollection(
   };
 }
 
-function setCollectionCounts(
-  summary: Static<typeof UserCollectionsSubjectSummary>,
-  collectionType: number,
-  counts: number,
-) {
-  switch (collectionType) {
-    case CollectionType.Wish: {
-      summary.counts.wish = counts;
-      break;
-    }
-    case CollectionType.Collect: {
-      summary.counts.collect = counts;
-      break;
-    }
-    case CollectionType.Doing: {
-      summary.counts.doing = counts;
-      break;
-    }
-    case CollectionType.OnHold: {
-      summary.counts.on_hold = counts;
-      break;
-    }
-    case CollectionType.Dropped: {
-      summary.counts.dropped = counts;
-      break;
-    }
-  }
-}
-
-function appendCollection(
-  summary: Static<typeof UserCollectionsSubjectSummary>,
-  collectionType: number,
-  collection: IUserSubjectCollection,
-) {
-  switch (collectionType) {
-    case CollectionType.Collect: {
-      summary.collect.push(collection);
-      break;
-    }
-    case CollectionType.Doing: {
-      summary.doing.push(collection);
-      break;
-    }
-  }
-}
-
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.Error);
@@ -301,9 +233,7 @@ export async function setup(app: App) {
   app.addSchema(res.Infobox);
   app.addSchema(SlimSubject);
   app.addSchema(UserSubjectCollection);
-  app.addSchema(UserCollectionsSubjectCounts);
   app.addSchema(UserCollectionsSubjectSummary);
-  app.addSchema(UserCollectionSubjectTypes);
   app.addSchema(UserCollectionsSummary);
 
   app.get(
@@ -329,38 +259,37 @@ export async function setup(app: App) {
       if (!user) {
         throw new NotFoundError('user');
       }
-      const defaultCounts = {
-        wish: 0,
-        collect: 0,
-        doing: 0,
-        on_hold: 0,
-        dropped: 0,
+      const defaultCounts: Record<string, number> = {
+        [String(CollectionType.Wish)]: 0,
+        [String(CollectionType.Collect)]: 0,
+        [String(CollectionType.Doing)]: 0,
+        [String(CollectionType.OnHold)]: 0,
+        [String(CollectionType.Dropped)]: 0,
       };
-      const subjectSummary = {
-        book: {
+      const defaultDetails: Record<string, IUserSubjectCollection[]> = {
+        [String(CollectionType.Wish)]: [],
+        [String(CollectionType.Collect)]: [],
+      };
+      const subjectSummary: Record<string, IUserCollectionsSubjectSummary> = {
+        [String(SubjectType.Book)]: {
           counts: Object.assign({}, defaultCounts),
-          doing: [],
-          collect: [],
+          details: Object.assign({}, defaultDetails),
         },
-        anime: {
+        [String(SubjectType.Anime)]: {
           counts: Object.assign({}, defaultCounts),
-          doing: [],
-          collect: [],
+          details: Object.assign({}, defaultDetails),
         },
-        music: {
+        [String(SubjectType.Music)]: {
           counts: Object.assign({}, defaultCounts),
-          doing: [],
-          collect: [],
+          details: Object.assign({}, defaultDetails),
         },
-        game: {
+        [String(SubjectType.Game)]: {
           counts: Object.assign({}, defaultCounts),
-          doing: [],
-          collect: [],
+          details: Object.assign({}, defaultDetails),
         },
-        real: {
+        [String(SubjectType.Real)]: {
           counts: Object.assign({}, defaultCounts),
-          doing: [],
-          collect: [],
+          details: Object.assign({}, defaultDetails),
         },
       };
       const data = await db
@@ -374,28 +303,11 @@ export async function setup(app: App) {
         .groupBy(chiiSubjectInterests.interestSubjectType, chiiSubjectInterests.interestType)
         .execute();
       for (const d of data) {
-        switch (d.interest_subject_type) {
-          case SubjectType.Book: {
-            setCollectionCounts(subjectSummary.book, d.interest_type, d.count);
-            break;
-          }
-          case SubjectType.Anime: {
-            setCollectionCounts(subjectSummary.anime, d.interest_type, d.count);
-            break;
-          }
-          case SubjectType.Music: {
-            setCollectionCounts(subjectSummary.music, d.interest_type, d.count);
-            break;
-          }
-          case SubjectType.Game: {
-            setCollectionCounts(subjectSummary.game, d.interest_type, d.count);
-            break;
-          }
-          case SubjectType.Real: {
-            setCollectionCounts(subjectSummary.real, d.interest_type, d.count);
-            break;
-          }
+        const summary = subjectSummary[String(d.interest_subject_type)];
+        if (!summary) {
+          continue;
         }
+        summary.counts[String(d.interest_type)] = d.count;
       }
       for (const stype of SubjectTypeValues) {
         for (const ctype of CollectionTypeProfileValues) {
@@ -419,29 +331,15 @@ export async function setup(app: App) {
               d.subject,
               d.subject_field,
             );
-            switch (stype) {
-              case SubjectType.Book: {
-                appendCollection(subjectSummary.book, ctype, collection);
-                break;
-              }
-              case SubjectType.Anime: {
-                appendCollection(subjectSummary.anime, ctype, collection);
-                break;
-              }
-              case SubjectType.Music: {
-                appendCollection(subjectSummary.music, ctype, collection);
-                break;
-              }
-              case SubjectType.Game: {
-                appendCollection(subjectSummary.game, ctype, collection);
-                break;
-              }
-              case SubjectType.Real: {
-                appendCollection(subjectSummary.real, ctype, collection);
-                break;
-              }
+            const summary = subjectSummary[String(stype)];
+            if (!summary) {
+              continue;
             }
-            logger.info(`collection: ${JSON.stringify(collection)}`);
+            const details = summary.details[String(ctype)];
+            if (!details) {
+              continue;
+            }
+            details.push(collection);
           }
         }
       }
