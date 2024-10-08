@@ -15,12 +15,10 @@ import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response';
 import { CollectionType, CollectionTypeProfileValues } from '@app/lib/subject/collection';
-import { type Platform } from '@app/lib/subject/platform.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
-import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
 const exampleSlimSubject = {
   airtime: {
@@ -180,15 +178,6 @@ const exampleSlimSubject = {
   name: 'コードギアス 反逆のルルーシュR2',
   nameCN: 'Code Geass 反叛的鲁路修R2',
   nsfw: false,
-  platform: {
-    alias: 'tv',
-    enableHeader: true,
-    id: 1,
-    order: 0,
-    type: 'TV',
-    typeCN: 'TV',
-    wikiTpl: 'TVAnime',
-  },
   rating: {
     count: [44, 15, 32, 66, 145, 457, 1472, 3190, 2640, 1377],
     score: 8.19,
@@ -217,7 +206,6 @@ const SlimSubject = t.Object(
     name: t.String(),
     nameCN: t.String(),
     nsfw: t.Boolean(),
-    platform: t.Ref(res.SubjectPlatform),
     rating: t.Ref(res.SubjectRating),
     redirect: t.Integer(),
     series: t.Boolean(),
@@ -308,25 +296,6 @@ function convertSubjectCollection(subject: ISubject): res.ISubjectCollection {
   };
 }
 
-function convertSubjectPlatform(subject: ISubject): res.ISubjectPlatform {
-  const plats = platforms as Record<string, Record<string, Platform>>;
-  const found = plats[subject.typeID]?.[subject.platform];
-  if (found) {
-    return {
-      id: found.id,
-      type: found.type,
-      typeCN: found.type_cn,
-      alias: found.alias || '',
-      order: found.order,
-      wikiTpl: found.wiki_tpl,
-      searchString: found.search_string,
-      enableHeader: found.enable_header,
-    };
-  } else {
-    return { id: 0, type: '', typeCN: '', alias: '' };
-  }
-}
-
 function convertSubjectRating(fields: ISubjectFields): res.ISubjectRating {
   const ratingCount = [
     fields.fieldRate1,
@@ -366,7 +335,6 @@ function convertSubject(subject: ISubject, fields: ISubjectFields): ISlimSubject
     name: subject.name,
     nameCN: subject.nameCN,
     nsfw: subject.nsfw,
-    platform: convertSubjectPlatform(subject),
     rating: convertSubjectRating(fields),
     redirect: fields.fieldRedirect,
     series: Boolean(subject.series),
@@ -404,7 +372,6 @@ export async function setup(app: App) {
   app.addSchema(res.SubjectAirtime);
   app.addSchema(res.SubjectCollection);
   app.addSchema(res.SubjectImages);
-  app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectRating);
   app.addSchema(res.Infobox);
   app.addSchema(SlimSubject);
