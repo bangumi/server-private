@@ -67,6 +67,7 @@ export const SubjectPlatform = t.Object(
     alias: t.String(),
     enable_header: t.Optional(t.Boolean()),
     wiki_tpl: t.Optional(t.String()),
+    search_string: t.Optional(t.String()),
     order: t.Optional(t.Integer()),
   },
   { $id: 'SubjectPlatform', title: 'SubjectPlatform' },
