@@ -30,7 +30,7 @@ const SlimSubject = t.Object(
     collection: t.Ref(res.SubjectCollection),
     eps: t.Integer(),
     id: t.Integer(),
-    images: t.Ref(res.SubjectImages),
+    images: t.Optional(t.Ref(res.SubjectImages)),
     infobox: t.Ref(res.Infobox),
     meta_tags: t.Array(t.String()),
     locked: t.Boolean(),
@@ -176,7 +176,7 @@ function convertSubject(subject: ISubject, fields: ISubjectFields): ISlimSubject
     collection: convertSubjectCollection(subject),
     eps: subject.eps,
     id: subject.id,
-    images: subjectCover(subject.image),
+    images: subjectCover(subject.image) || undefined,
     infobox: convertInfobox(subject.infobox),
     meta_tags: subject.metaTags
       .split(',')
