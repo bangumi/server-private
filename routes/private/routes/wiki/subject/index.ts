@@ -232,14 +232,14 @@ export async function setup(app: App) {
 
       let eps = 0;
       if (body.type === SubjectType.Anime) {
-        eps = Number.parseInt(w.data.get('话数')?.value ?? '0') || 0;
+        eps = Number.parseInt((w.data.get('话数') as string) ?? '0') || 0;
       } else if (body.type === SubjectType.Real) {
-        eps = Number.parseInt(w.data.get('集数')?.value ?? '0') || 0;
+        eps = Number.parseInt((w.data.get('集数') as string) ?? '0') || 0;
       }
 
       const newSubject: Partial<entity.Subject> = {
         name: body.name,
-        nameCN: w.data.get('中文名')?.value ?? '',
+        nameCN: (w.data.get('中文名') as string) ?? '',
         platform: body.platform,
         fieldInfobox: body.infobox,
         typeID: body.type,

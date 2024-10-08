@@ -194,21 +194,25 @@ export function toInfobox(content: string): IInfobox {
     }
   }
   const infobox: IInfobox = {};
-  for (const [_, item] of wiki.data) {
-    if (item.array) {
-      infobox[item.key] =
-        item.values?.map((v) => {
+  for (const [key, item] of wiki.data) {
+    switch (typeof item) {
+      case 'string': {
+        infobox[key] = [
+          {
+            v: item,
+          },
+        ];
+        break;
+      }
+      case 'object': {
+        infobox[key] = item.map((v) => {
           return {
             k: v.k,
             v: v.v || '',
           };
-        }) || [];
-    } else {
-      infobox[item.key] = [
-        {
-          v: item.value || '',
-        },
-      ];
+        });
+        break;
+      }
     }
   }
   return infobox;
