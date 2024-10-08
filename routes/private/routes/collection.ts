@@ -272,24 +272,24 @@ export async function setup(app: App) {
       };
       const subjectSummary: Record<string, IUserCollectionsSubjectSummary> = {
         [String(SubjectType.Book)]: {
-          counts: Object.assign({}, defaultCounts),
-          details: Object.assign({}, defaultDetails),
+          counts: structuredClone(defaultCounts),
+          details: structuredClone(defaultDetails),
         },
         [String(SubjectType.Anime)]: {
-          counts: Object.assign({}, defaultCounts),
-          details: Object.assign({}, defaultDetails),
+          counts: structuredClone(defaultCounts),
+          details: structuredClone(defaultDetails),
         },
         [String(SubjectType.Music)]: {
-          counts: Object.assign({}, defaultCounts),
-          details: Object.assign({}, defaultDetails),
+          counts: structuredClone(defaultCounts),
+          details: structuredClone(defaultDetails),
         },
         [String(SubjectType.Game)]: {
-          counts: Object.assign({}, defaultCounts),
-          details: Object.assign({}, defaultDetails),
+          counts: structuredClone(defaultCounts),
+          details: structuredClone(defaultDetails),
         },
         [String(SubjectType.Real)]: {
-          counts: Object.assign({}, defaultCounts),
-          details: Object.assign({}, defaultDetails),
+          counts: structuredClone(defaultCounts),
+          details: structuredClone(defaultDetails),
         },
       };
       const data = await db
