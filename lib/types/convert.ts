@@ -3,7 +3,7 @@ import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
-import { avatar, subjectCover } from '@app/lib/response.ts';
+import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
 import { CollectionType } from '@app/lib/subject/collection';
 import { type Platform } from '@app/lib/subject/platform.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -154,5 +154,27 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     summary: subject.summary,
     type: subject.typeID,
     volumes: subject.volumes,
+  };
+}
+
+export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
+  return {
+    id: character.id,
+    name: character.name,
+    role: character.role,
+    images: personImages(character.img) || undefined,
+    nsfw: Boolean(character.nsfw),
+    lock: Boolean(character.lock),
+  };
+}
+
+export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
+  return {
+    id: person.id,
+    name: person.name,
+    type: person.type,
+    images: personImages(person.img) || undefined,
+    nsfw: Boolean(person.nsfw),
+    lock: Boolean(person.lock),
   };
 }

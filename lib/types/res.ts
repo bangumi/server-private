@@ -145,6 +145,74 @@ export const PersonImages = t.Object(
   { $id: 'PersonImages', title: 'PersonImages' },
 );
 
+export type ICharacter = Static<typeof Character>;
+export const Character = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    role: t.Integer(),
+    infobox: t.Ref(Infobox),
+    summary: t.String(),
+    images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
+    collects: t.Integer(),
+    lock: t.Boolean(),
+    redirect: t.Integer(),
+    nsfw: t.Boolean(),
+  },
+  {
+    $id: 'Character',
+    title: 'Character',
+    // examples: [examples.character],
+  },
+);
+
+export type ISlimCharacter = Static<typeof SlimCharacter>;
+export const SlimCharacter = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    role: t.Integer(),
+    images: t.Optional(t.Ref(PersonImages)),
+    lock: t.Boolean(),
+    nsfw: t.Boolean(),
+  },
+  {
+    $id: 'SlimCharacter',
+    title: 'SlimCharacter',
+    // examples: [examples.slimCharacter],
+  },
+);
+
+export type IPerson = Static<typeof Person>;
+export const Person = t.Object(
+  {
+    // TODO:
+  },
+  {
+    $id: 'Person',
+    title: 'Person',
+    // examples: [examples.person],
+  },
+);
+
+export type ISlimPerson = Static<typeof SlimPerson>;
+export const SlimPerson = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    type: t.Integer(),
+    images: t.Optional(t.Ref(PersonImages)),
+    lock: t.Boolean(),
+    nsfw: t.Boolean(),
+  },
+  {
+    $id: 'SlimPerson',
+    title: 'SlimPerson',
+    // examples: [examples.slimPerson],
+  },
+);
+
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
   {

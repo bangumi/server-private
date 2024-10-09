@@ -31,6 +31,24 @@ const UserSubjectCollection = t.Object(
   { $id: 'UserSubjectCollection' },
 );
 
+// export type IUserCharacterCollection = Static<typeof UserCharacterCollection>;
+// const UserCharacterCollection = t.Object(
+//   {
+//     character: t.Ref(res.Character),
+//     dateline: t.Integer(),
+//   },
+//   { $id: 'UserCharacterCollection' },
+// );
+
+// export type IUserPersonCollection = Static<typeof UserPersonCollection>;
+// const UserPersonCollection = t.Object(
+//   {
+//     person: t.Ref(res.Person),
+//     dateline: t.Integer(),
+//   },
+//   { $id: 'UserPersonCollection' },
+// );
+
 export type IUserCollectionsSubjectSummary = Static<typeof UserCollectionsSubjectSummary>;
 const UserCollectionsSubjectSummary = t.Object(
   {
@@ -46,6 +64,24 @@ const UserCollectionsSubjectSummary = t.Object(
     ),
   },
   { $id: 'UserCollectionsSubjectSummary' },
+);
+
+export type IUserCollectionsCharacterSummary = Static<typeof UserCollectionsCharacterSummary>;
+const UserCollectionsCharacterSummary = t.Object(
+  {
+    count: t.Integer(),
+    detail: t.Array(t.Ref(res.SlimCharacter)),
+  },
+  { $id: 'UserCollectionsCharacterSummary' },
+);
+
+export type IUserCollectionsPersonSummary = Static<typeof UserCollectionsPersonSummary>;
+const UserCollectionsPersonSummary = t.Object(
+  {
+    count: t.Integer(),
+    detail: t.Array(t.Ref(res.SlimPerson)),
+  },
+  { $id: 'UserCollectionsPersonSummary' },
 );
 
 export type IUserCollectionsSummary = Static<typeof UserCollectionsSummary>;
@@ -65,8 +101,8 @@ const UserCollectionsSummary = t.Object(
         ],
       },
     ),
-    // character: t.Ref(UserCollectionsCharacterSummary),
-    // person: t.Ref(UserCollectionsPersonSummary),
+    character: t.Ref(UserCollectionsCharacterSummary),
+    person: t.Ref(UserCollectionsPersonSummary),
     // index: t.Ref(UserCollectionsIndexSummary),
   },
   { $id: 'UserCollectionsSummary' },
@@ -101,11 +137,16 @@ export async function setup(app: App) {
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectRating);
+  app.addSchema(res.PersonImages);
   app.addSchema(res.Infobox);
   app.addSchema(res.Subject);
   app.addSchema(res.SlimSubject);
   app.addSchema(UserSubjectCollection);
+  app.addSchema(res.SlimCharacter);
+  app.addSchema(res.SlimPerson);
   app.addSchema(UserCollectionsSubjectSummary);
+  app.addSchema(UserCollectionsCharacterSummary);
+  app.addSchema(UserCollectionsPersonSummary);
   app.addSchema(UserCollectionsSummary);
 
   app.get(
@@ -164,29 +205,78 @@ export async function setup(app: App) {
           details: structuredClone(defaultDetails),
         },
       };
-      const data = await db
-        .select({
-          count: op.count(),
-          interest_subject_type: schema.chiiSubjectInterests.interestSubjectType,
-          interest_type: schema.chiiSubjectInterests.interestType,
-        })
-        .from(schema.chiiSubjectInterests)
-        .where(op.eq(schema.chiiSubjectInterests.interestUid, user.id))
-        .groupBy(
-          schema.chiiSubjectInterests.interestSubjectType,
-          schema.chiiSubjectInterests.interestType,
-        )
-        .execute();
-      for (const d of data) {
-        const summary = subjectSummary[d.interest_subject_type];
-        if (!summary) {
-          continue;
-        }
-        summary.counts[d.interest_type] = d.count;
-      }
-      const jobs = [];
+      const characterSummary: IUserCollectionsCharacterSummary = {
+        count: 0,
+        detail: [],
+      };
+      const personSummary: IUserCollectionsPersonSummary = {
+        count: 0,
+        detail: [],
+      };
 
-      async function appendDetails(stype: number, ctype: number, userID: number) {
+      async function fillSubjectCounts(userID: number) {
+        const data = await db
+          .select({
+            count: op.count(),
+            interest_subject_type: schema.chiiSubjectInterests.interestSubjectType,
+            interest_type: schema.chiiSubjectInterests.interestType,
+          })
+          .from(schema.chiiSubjectInterests)
+          .where(op.eq(schema.chiiSubjectInterests.interestUid, userID))
+          .groupBy(
+            schema.chiiSubjectInterests.interestSubjectType,
+            schema.chiiSubjectInterests.interestType,
+          )
+          .execute();
+        for (const d of data) {
+          const summary = subjectSummary[d.interest_subject_type];
+          if (!summary) {
+            continue;
+          }
+          summary.counts[d.interest_type] = d.count;
+        }
+      }
+
+      async function fillCharacterCount(userID: number) {
+        const data = await db
+          .select({
+            count: op.count(),
+          })
+          .from(schema.chiiPersonCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.uid, userID),
+              op.eq(schema.chiiPersonCollects.cat, 'crt'),
+            ),
+          )
+          .execute();
+        characterSummary.count = data[0]?.count ?? 0;
+      }
+
+      async function fillPersonCount(userID: number) {
+        const data = await db
+          .select({
+            count: op.count(),
+          })
+          .from(schema.chiiPersonCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.uid, userID),
+              op.eq(schema.chiiPersonCollects.cat, 'prsn'),
+            ),
+          )
+          .execute();
+        personSummary.count = data[0]?.count ?? 0;
+      }
+
+      const countJobs = [
+        fillSubjectCounts(user.id),
+        fillCharacterCount(user.id),
+        fillPersonCount(user.id),
+      ];
+      await Promise.all(countJobs);
+
+      async function appendSubjectDetails(stype: number, ctype: number, userID: number) {
         const data = await db
           .select()
           .from(schema.chiiSubjectInterests)
@@ -228,14 +318,78 @@ export async function setup(app: App) {
         }
       }
 
-      for (const stype of SubjectTypeValues) {
-        for (const ctype of CollectionTypeProfileValues) {
-          jobs.push(appendDetails(stype, ctype, user.id));
+      async function appendCharacterDetail(userID: number) {
+        const data = await db
+          .select()
+          .from(schema.chiiPersonCollects)
+          .innerJoin(
+            schema.chiiCharacters,
+            op.eq(schema.chiiPersonCollects.mid, schema.chiiCharacters.id),
+          )
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.uid, userID),
+              op.eq(schema.chiiPersonCollects.cat, 'crt'),
+              op.eq(schema.chiiCharacters.ban, 0),
+              op.eq(schema.chiiCharacters.lock, 0),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+            ),
+          )
+          .orderBy(op.desc(schema.chiiPersonCollects.dateline))
+          .limit(7)
+          .execute();
+        for (const d of data) {
+          const summary = characterSummary.detail;
+          if (!summary) {
+            continue;
+          }
+          const slim = convert.toSlimCharacter(d.chii_characters);
+          summary.push(slim);
         }
       }
-      await Promise.all(jobs);
+
+      async function appendPersonDetail(userID: number) {
+        const data = await db
+          .select()
+          .from(schema.chiiPersonCollects)
+          .innerJoin(
+            schema.chiiPersons,
+            op.eq(schema.chiiPersonCollects.mid, schema.chiiPersons.id),
+          )
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.uid, userID),
+              op.eq(schema.chiiPersonCollects.cat, 'prsn'),
+              op.eq(schema.chiiPersons.ban, 0),
+              op.eq(schema.chiiPersons.lock, 0),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+            ),
+          )
+          .orderBy(op.desc(schema.chiiPersonCollects.dateline))
+          .limit(7)
+          .execute();
+        for (const d of data) {
+          const summary = personSummary.detail;
+          if (!summary) {
+            continue;
+          }
+          const slim = convert.toSlimPerson(d.chii_persons);
+          summary.push(slim);
+        }
+      }
+
+      const detailJobs = [appendCharacterDetail(user.id), appendPersonDetail(user.id)];
+      for (const stype of SubjectTypeValues) {
+        for (const ctype of CollectionTypeProfileValues) {
+          detailJobs.push(appendSubjectDetails(stype, ctype, user.id));
+        }
+      }
+      await Promise.all(detailJobs);
+
       return {
         subject: subjectSummary,
+        character: characterSummary,
+        person: personSummary,
       };
     },
   );
@@ -244,7 +398,7 @@ export async function setup(app: App) {
     '/users/:username/collections/subjects',
     {
       schema: {
-        description: '获取用户收藏',
+        description: '获取用户条目收藏',
         operationId: 'getUserSubjectCollections',
         tags: [Tag.Collection],
         params: t.Object({

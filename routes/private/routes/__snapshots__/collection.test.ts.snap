@@ -214,6 +214,14 @@ Object {
 
 exports[`user collection > should get summary 1`] = `
 Object {
+  "character": Object {
+    "count": 0,
+    "detail": Array [],
+  },
+  "person": Object {
+    "count": 0,
+    "detail": Array [],
+  },
   "subject": Object {
     "1": Object {
       "counts": Object {
