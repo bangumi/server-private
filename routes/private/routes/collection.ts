@@ -245,7 +245,7 @@ export async function setup(app: App) {
     {
       schema: {
         description: '获取用户收藏',
-        operationId: 'getUserCollections',
+        operationId: 'getUserSubjectCollections',
         tags: [Tag.Collection],
         params: t.Object({
           username: t.String({ minLength: 1 }),
