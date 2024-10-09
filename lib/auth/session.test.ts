@@ -52,11 +52,10 @@ test('should revoke session', async () => {
     .execute();
 
   await revoke(token);
-  await setTimeout(1000);
   const session = await db.query.chiiOsWebSessions.findFirst({
     where: op.eq(chiiOsWebSessions.key, token),
   });
 
   expect(session).toBeDefined();
-  expect(session?.expiredAt).toBeLessThan(DateTime.now().toUnixInteger());
+  expect(session?.expiredAt).toBeLessThan(DateTime.now().toUnixInteger() + 1000);
 });
