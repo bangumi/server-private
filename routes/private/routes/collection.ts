@@ -263,7 +263,7 @@ export async function setup(app: App) {
       }
 
       async function fillCharacterCount(userID: number) {
-        const [data] = await db
+        const [{ count = 0 } = {}] = await db
           .select({
             count: op.count(),
           })
@@ -275,11 +275,11 @@ export async function setup(app: App) {
             ),
           )
           .execute();
-        characterSummary.count = data?.count ?? 0;
+        characterSummary.count = count;
       }
 
       async function fillPersonCount(userID: number) {
-        const [data] = await db
+        const [{ count = 0 } = {}] = await db
           .select({
             count: op.count(),
           })
@@ -291,7 +291,7 @@ export async function setup(app: App) {
             ),
           )
           .execute();
-        personSummary.count = data?.count ?? 0;
+        personSummary.count = count;
       }
 
       const countJobs = [
@@ -465,7 +465,7 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 
-      const [count] = await db
+      const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiSubjectInterests)
         .innerJoin(
@@ -478,7 +478,6 @@ export async function setup(app: App) {
         )
         .where(conditions)
         .execute();
-      const total = count?.count ?? 0;
 
       const data = await db
         .select()
@@ -503,7 +502,7 @@ export async function setup(app: App) {
 
       return {
         data: collections,
-        total: total,
+        total: count,
       };
     },
   );
@@ -543,7 +542,7 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
       );
 
-      const [count] = await db
+      const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiPersonCollects)
         .innerJoin(
@@ -552,7 +551,6 @@ export async function setup(app: App) {
         )
         .where(conditions)
         .execute();
-      const total = count?.count ?? 0;
 
       const data = await db
         .select()
@@ -572,7 +570,7 @@ export async function setup(app: App) {
 
       return {
         data: collection,
-        total: total,
+        total: count,
       };
     },
   );
@@ -612,13 +610,12 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
       );
 
-      const [count] = await db
+      const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiPersonCollects)
         .innerJoin(schema.chiiPersons, op.eq(schema.chiiPersonCollects.mid, schema.chiiPersons.id))
         .where(conditions)
         .execute();
-      const total = count?.count ?? 0;
 
       const data = await db
         .select()
@@ -635,7 +632,7 @@ export async function setup(app: App) {
 
       return {
         data: collection,
-        total: total,
+        total: count,
       };
     },
   );
