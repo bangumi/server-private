@@ -178,7 +178,7 @@ export async function setup(app: App) {
     '/users/:username/collections/summary',
     {
       schema: {
-        description: '获取用户收藏概览',
+        summary: '获取用户收藏概览',
         operationId: 'getUserCollectionsSummary',
         tags: [Tag.Collection],
         params: t.Object({
@@ -423,7 +423,7 @@ export async function setup(app: App) {
     '/users/:username/collections/subjects',
     {
       schema: {
-        description: '获取用户条目收藏',
+        summary: '获取用户条目收藏',
         operationId: 'getUserSubjectCollections',
         tags: [Tag.Collection],
         params: t.Object({
@@ -511,7 +511,7 @@ export async function setup(app: App) {
     '/users/:username/collections/characters',
     {
       schema: {
-        description: '获取用户角色收藏',
+        summary: '获取用户角色收藏',
         operationId: 'getUserCharacterCollections',
         tags: [Tag.Collection],
         params: t.Object({
@@ -579,7 +579,7 @@ export async function setup(app: App) {
     '/users/:username/collections/persons',
     {
       schema: {
-        description: '获取用户人物收藏',
+        summary: '获取用户人物收藏',
         operationId: 'getUserPersonCollections',
         tags: [Tag.Collection],
         params: t.Object({
