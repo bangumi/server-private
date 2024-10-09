@@ -635,7 +635,7 @@ export const chiiPersonCollects = mysqlTable(
     cat: mysqlEnum('prsn_clt_cat', ['prsn', 'crt']).notNull(),
     mid: mediumint('prsn_clt_mid').notNull(),
     uid: mediumint('prsn_clt_uid').notNull(),
-    dateline: int('prsn_clt_dateline').notNull(),
+    createdAt: int('prsn_clt_dateline').notNull(),
   },
   (table) => {
     return {

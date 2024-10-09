@@ -35,7 +35,7 @@ const UserSubjectCollection = t.Object(
 // const UserCharacterCollection = t.Object(
 //   {
 //     character: t.Ref(res.Character),
-//     dateline: t.Integer(),
+//     createdAt: t.Integer(),
 //   },
 //   { $id: 'UserCharacterCollection' },
 // );
@@ -44,7 +44,7 @@ const UserSubjectCollection = t.Object(
 // const UserPersonCollection = t.Object(
 //   {
 //     person: t.Ref(res.Person),
-//     dateline: t.Integer(),
+//     createdAt: t.Integer(),
 //   },
 //   { $id: 'UserPersonCollection' },
 // );
@@ -335,7 +335,7 @@ export async function setup(app: App) {
               auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
             ),
           )
-          .orderBy(op.desc(schema.chiiPersonCollects.dateline))
+          .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
           .limit(7)
           .execute();
         for (const d of data) {
@@ -365,7 +365,7 @@ export async function setup(app: App) {
               auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
             ),
           )
-          .orderBy(op.desc(schema.chiiPersonCollects.dateline))
+          .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
           .limit(7)
           .execute();
         for (const d of data) {
