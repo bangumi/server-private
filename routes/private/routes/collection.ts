@@ -273,6 +273,7 @@ export async function setup(app: App) {
       if (!user) {
         throw new NotFoundError('user');
       }
+
       const conditions = op.and(
         op.eq(schema.chiiSubjectInterests.interestUid, user.id),
         subjectType
