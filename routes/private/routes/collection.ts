@@ -243,7 +243,7 @@ export async function setup(app: App) {
       }
 
       async function fillCharacterCount(userID: number) {
-        const data = await db
+        const [data] = await db
           .select({
             count: op.count(),
           })
@@ -255,11 +255,11 @@ export async function setup(app: App) {
             ),
           )
           .execute();
-        characterSummary.count = data[0]?.count ?? 0;
+        characterSummary.count = data?.count ?? 0;
       }
 
       async function fillPersonCount(userID: number) {
-        const data = await db
+        const [data] = await db
           .select({
             count: op.count(),
           })
@@ -271,7 +271,7 @@ export async function setup(app: App) {
             ),
           )
           .execute();
-        personSummary.count = data[0]?.count ?? 0;
+        personSummary.count = data?.count ?? 0;
       }
 
       const countJobs = [
