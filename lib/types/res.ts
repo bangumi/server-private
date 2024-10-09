@@ -280,3 +280,5 @@ export function errorResponses(...errors: FastifyError[]): Record<number, unknow
 }
 
 export type UnknownObject = Record<string, unknown>;
+
+export type EmptyObject = Record<string, number>;

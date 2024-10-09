@@ -8,7 +8,6 @@ import { AppDataSource, EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import * as res from '@app/lib/types/res.ts';
 import { EpisodeType, formatErrors } from '@app/lib/types/res.ts';
-import type { EmptyObject } from '@app/lib/types/util.ts';
 import { parseDuration } from '@app/lib/utils/index.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -146,7 +145,7 @@ export async function setup(app: App) {
       auth,
       params: { episodeID },
       body: { episode: body, commitMessage },
-    }): Promise<EmptyObject> => {
+    }): Promise<res.EmptyObject> => {
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
