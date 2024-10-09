@@ -31,7 +31,7 @@ describe('user collection', () => {
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/users/14459/collections/characters',
+      url: '/users/1/collections/characters',
       query: { limit: '1', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
@@ -42,7 +42,7 @@ describe('user collection', () => {
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/users/14459/collections/persons',
+      url: '/users/1/collections/persons',
       query: { limit: '1', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
