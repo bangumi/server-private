@@ -168,6 +168,22 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
   };
 }
 
+export function toCharacter(character: orm.ICharacter): res.ICharacter {
+  return {
+    id: character.id,
+    name: character.name,
+    role: character.role,
+    infobox: toInfobox(character.infobox),
+    summary: character.summary,
+    images: personImages(character.img) || undefined,
+    comment: character.comment,
+    collects: character.collects,
+    lock: Boolean(character.lock),
+    redirect: character.redirect,
+    nsfw: Boolean(character.nsfw),
+  };
+}
+
 export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
   return {
     id: person.id,
@@ -176,5 +192,47 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     images: personImages(person.img) || undefined,
     nsfw: Boolean(person.nsfw),
     lock: Boolean(person.lock),
+  };
+}
+
+export function toPerson(person: orm.IPerson): res.IPerson {
+  const career = [];
+  if (person.producer) {
+    career.push('producer');
+  }
+  if (person.mangaka) {
+    career.push('mangaka');
+  }
+  if (person.mangaka) {
+    career.push('mangaka');
+  }
+  if (person.artist) {
+    career.push('artist');
+  }
+  if (person.seiyu) {
+    career.push('seiyu');
+  }
+  if (person.writer) {
+    career.push('writer');
+  }
+  if (person.illustrator) {
+    career.push('illustrator');
+  }
+  if (person.actor) {
+    career.push('actor');
+  }
+  return {
+    id: person.id,
+    name: person.name,
+    type: person.type,
+    infobox: toInfobox(person.infobox),
+    career,
+    summary: person.summary,
+    images: personImages(person.img) || undefined,
+    comment: person.comment,
+    collects: person.collects,
+    lock: Boolean(person.lock),
+    redirect: person.redirect,
+    nsfw: Boolean(person.nsfw),
   };
 }

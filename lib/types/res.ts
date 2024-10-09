@@ -187,7 +187,21 @@ export const SlimCharacter = t.Object(
 export type IPerson = Static<typeof Person>;
 export const Person = t.Object(
   {
-    // TODO:
+    id: t.Integer(),
+    name: t.String(),
+    type: t.Integer(),
+    infobox: t.Ref(Infobox),
+    career: t.Array(t.String(), {
+      description: '职业',
+      examples: ['producer', 'mangaka', 'artist', 'seiyu', 'writer', 'illustrator', 'actor'],
+    }),
+    summary: t.String(),
+    images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
+    collects: t.Integer(),
+    lock: t.Boolean(),
+    redirect: t.Integer(),
+    nsfw: t.Boolean(),
   },
   {
     $id: 'Person',
