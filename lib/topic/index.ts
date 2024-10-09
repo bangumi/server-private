@@ -25,7 +25,7 @@ import {
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
-import { toResUser } from '@app/lib/types/res.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import type { IBasicReply } from '@app/routes/private/routes/post.ts';
 
 import { NotAllowedError } from './../auth/index';
@@ -444,6 +444,6 @@ export async function handleTopicReply(
     state: t.state,
     createdAt: t.createdAt,
     text: t.content,
-    creator: toResUser(t.user),
+    creator: convert.toUser(t.user),
   };
 }

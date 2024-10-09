@@ -18,6 +18,7 @@ import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
 import { errorResponses } from '@app/lib/types/res.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
@@ -133,7 +134,7 @@ export function setup(app: App) {
             id: x.id,
             thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${x.target}`,
             raw: `https://${imageDomain}/pic/cover/l/${x.target}`,
-            creator: res.toResUser(u),
+            creator: convert.toUser(u),
             voted: x.id in likes,
           };
         }),
@@ -179,8 +180,8 @@ export function setup(app: App) {
       }
 
       // validate image
-      const res = await imaginary.info(raw);
-      const format = res.type;
+      const resp = await imaginary.info(raw);
+      const format = resp.type;
 
       if (!format) {
         throw new UnsupportedImageFormat();

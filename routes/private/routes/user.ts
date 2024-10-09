@@ -10,7 +10,7 @@ import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
-import { Paged, toResUser } from '@app/lib/types/res.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
 import { intval } from '@app/lib/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
@@ -52,7 +52,7 @@ export async function setup(app: App) {
           unread: t.Optional(t.Boolean()),
         }),
         response: {
-          200: Paged(t.Ref(NoticeRes)),
+          200: res.Paged(t.Ref(NoticeRes)),
           401: t.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
@@ -82,7 +82,7 @@ export async function setup(app: App) {
 
           return {
             ...x,
-            sender: toResUser(u),
+            sender: convert.toUser(u),
           };
         }),
       };

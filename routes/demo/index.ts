@@ -7,7 +7,8 @@ import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { projectRoot } from '@app/lib/config.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
-import * as res from '@app/lib/types/res.ts';
+import * as convert from '@app/lib/types/convert.ts';
+import type * as res from '@app/lib/types/res.ts';
 import * as admin from '@app/routes/admin/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -34,7 +35,7 @@ export async function setup(app: App) {
 
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {
-      const user = res.toResUser(await fetchUserX(req.auth.userID));
+      const user = convert.toUser(await fetchUserX(req.auth.userID));
       reply.locals = { user };
     }
   });

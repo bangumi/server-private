@@ -13,9 +13,9 @@ import { RevType } from '@app/lib/orm/entity';
 import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import { InvalidWikiSyntaxError, platforms, SubjectType } from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError, platforms } from '@app/lib/subject/index.ts';
 import PlatformConfig from '@app/lib/subject/platform.ts';
-import { SubjectTypeValues } from '@app/lib/subject/type.ts';
+import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -124,7 +124,7 @@ export const SubjectWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Ref(res.SubjectType),
+    typeID: t.Enum(SubjectType),
     infobox: t.String(),
     platform: t.Integer(),
     availablePlatform: t.Array(t.Ref(Platform)),
@@ -141,7 +141,6 @@ export async function setup(app: App) {
   app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
-  app.addSchema(res.SubjectType);
   app.addSchema(SubjectWikiInfo);
 
   app.get(

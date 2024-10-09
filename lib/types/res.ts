@@ -1,19 +1,11 @@
-import type { WikiMap } from '@bgm38/wiki';
-import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import type { FastifyError } from '@fastify/error';
 import type { Static, TSchema } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import type * as orm from '@app/lib/orm/index.ts';
-import { avatar } from '@app/lib/response.ts';
-import * as Subject from '@app/lib/subject/index.ts';
-
-export const SubjectType = t.Enum(Subject.SubjectType, {
-  $id: 'SubjectType',
-  title: 'SubjectType',
-});
+import { SubjectType } from '@app/lib/subject/type.ts';
+import * as examples from '@app/lib/types/examples.ts';
 
 export enum EpisodeType {
   /** 本篇 */
@@ -96,6 +88,50 @@ export const SubjectImages = t.Object(
     grid: t.String(),
   },
   { $id: 'SubjectImages', title: 'SubjectImages' },
+);
+
+export type ISubject = Static<typeof Subject>;
+export const Subject = t.Object(
+  {
+    airtime: t.Ref(SubjectAirtime),
+    collection: t.Ref(SubjectCollection),
+    eps: t.Integer(),
+    id: t.Integer(),
+    images: t.Optional(t.Ref(SubjectImages)),
+    infobox: t.Ref(Infobox),
+    metaTags: t.Array(t.String()),
+    locked: t.Boolean(),
+    name: t.String(),
+    nameCN: t.String(),
+    nsfw: t.Boolean(),
+    platform: t.Ref(SubjectPlatform),
+    rating: t.Ref(SubjectRating),
+    redirect: t.Integer(),
+    series: t.Boolean(),
+    seriesEntry: t.Integer(),
+    summary: t.String(),
+    type: t.Enum(SubjectType),
+    volumes: t.Integer(),
+  },
+  {
+    $id: 'Subject',
+    title: 'Subject',
+    examples: [examples.subject],
+  },
+);
+
+export type ISlimSubject = Static<typeof SlimSubject>;
+export const SlimSubject = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
+    type: t.Enum(SubjectType),
+    images: t.Optional(t.Ref(SubjectImages)),
+    locked: t.Boolean(),
+    nsfw: t.Boolean(),
+  },
+  { $id: 'SlimSubject', title: 'SlimSubject', examples: [examples.slimSubject] },
 );
 
 export type IPersonImages = Static<typeof PersonImages>;
@@ -181,54 +217,6 @@ export function formatErrors(
   );
 }
 
-export function toInfobox(content: string): IInfobox {
-  let wiki: WikiMap = {
-    type: '',
-    data: new Map(),
-  };
-  try {
-    wiki = parseWiki(content);
-  } catch (error) {
-    if (!(error instanceof WikiSyntaxError)) {
-      throw error;
-    }
-  }
-  const infobox: IInfobox = {};
-  for (const [key, item] of wiki.data) {
-    switch (typeof item) {
-      case 'string': {
-        infobox[key] = [
-          {
-            v: item,
-          },
-        ];
-        break;
-      }
-      case 'object': {
-        infobox[key] = item.map((v) => {
-          return {
-            k: v.k,
-            v: v.v || '',
-          };
-        });
-        break;
-      }
-    }
-  }
-  return infobox;
-}
-
-export function toResUser(user: orm.IUser): IUser {
-  return {
-    avatar: avatar(user.img),
-    username: user.username,
-    nickname: user.nickname,
-    id: user.id,
-    sign: user.sign,
-    user_group: user.groupID,
-  };
-}
-
 export function errorResponses(...errors: FastifyError[]): Record<number, unknown> {
   const status: Record<number, FastifyError[]> = lo.groupBy(errors, (x) => x.statusCode ?? 500);
 
@@ -240,3 +228,5 @@ export function errorResponses(...errors: FastifyError[]): Record<number, unknow
 }
 
 export type UnknownObject = Record<string, unknown>;
+
+export type EmptyObject = Record<string, number>;

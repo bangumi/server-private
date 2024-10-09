@@ -6,6 +6,7 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
 import { db, op, schema, type Txn } from '@app/drizzle/db.ts';
+import type * as orm from '@app/drizzle/orm.ts';
 import { chiiLikes, chiiTagIndex, chiiTagList } from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { TagCat } from '@app/lib/const.ts';
@@ -14,7 +15,7 @@ import { LikeType } from '@app/lib/like.ts';
 import { logger } from '@app/lib/logger.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
+import * as ormold from '@app/lib/orm/index.ts';
 import { fetchUsers, SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { extractDate } from '@app/lib/subject/date.ts';
 import { DATE } from '@app/lib/utils/date.ts';
@@ -90,7 +91,7 @@ export async function edit({
   tags?.sort();
 
   await db.transaction(async (t: Txn) => {
-    const [s]: schema.ISubject[] = await db
+    const [s]: orm.ISubject[] = await db
       .select()
       .from(schema.chiiSubjects)
       .where(op.eq(schema.chiiSubjects.id, subjectID))
@@ -299,7 +300,7 @@ export async function uploadCover({
   uid: number;
   filename: string;
 }): Promise<void> {
-  await orm.AppDataSource.transaction(async (t) => {
+  await ormold.AppDataSource.transaction(async (t) => {
     const Image = t.getRepository(entity.SubjectImage);
     const Subject = t.getRepository(entity.Subject);
 
