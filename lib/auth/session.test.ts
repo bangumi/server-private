@@ -57,5 +57,5 @@ test('should revoke session', async () => {
   });
 
   expect(session).toBeDefined();
-  expect(session?.expiredAt).toBeLessThan(DateTime.now().toUnixInteger() + 1000);
+  expect(session?.expiredAt).toBeLessThan(DateTime.now().toUnixInteger() + 1);
 });
