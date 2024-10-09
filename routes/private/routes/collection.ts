@@ -39,7 +39,7 @@ const UserCollectionsSubjectSummary = t.Object(
     }),
     details: t.Record(
       t.String({ description: 'collection type id' }),
-      t.Array(t.Ref(UserSubjectCollection)),
+      t.Array(t.Ref(res.SlimSubject)),
       {
         examples: [{ '1': [], '2': [examples.slimSubject], '3': [], '4': [], '5': [] }],
       },
@@ -72,7 +72,7 @@ const UserCollectionsSummary = t.Object(
   { $id: 'UserCollectionsSummary' },
 );
 
-function convertUserSubjectCollection(
+function toUserSubjectCollection(
   interest: orm.ISubjectInterests,
   subject: orm.ISubject,
   fields: orm.ISubjectFields,
@@ -108,33 +108,6 @@ export async function setup(app: App) {
   app.addSchema(UserCollectionsSubjectSummary);
   app.addSchema(UserCollectionsSummary);
 
-  // app.get(
-  //   '/users/:username/collections',
-  //   {
-  //     schema: {
-  //       description: '获取用户收藏',
-  //       operationId: 'getUserCollections',
-  //       tags: [Tag.Collection],
-  //       params: t.Object({
-  //         username: t.String({ minLength: 1 }),
-  //       }),
-  //       response: {
-  //         200: t.Ref(UserCollectionsSubjectSummary),
-  //         404: t.Ref(res.Error, {
-  //           'x-examples': formatErrors(new NotFoundError('user')),
-  //         }),
-  //       },
-  //     },
-  //   },
-  //   async ({ auth, params: { username } }): IUserSubjectCollection[] => {
-  //     const user = await fetchUserByUsername(username);
-  //     if (!user) {
-  //       throw new NotFoundError('user');
-  //     }
-  //     return await fetchUserSubjectCollections(user.id);
-  //   },
-  // );
-
   app.get(
     '/users/:username/collections/summary',
     {
@@ -165,7 +138,7 @@ export async function setup(app: App) {
         [CollectionType.OnHold]: 0,
         [CollectionType.Dropped]: 0,
       };
-      const defaultDetails: Record<string, IUserSubjectCollection[]> = {
+      const defaultDetails: Record<string, res.ISlimSubject[]> = {
         [CollectionType.Wish]: [],
         [CollectionType.Collect]: [],
       };
@@ -250,12 +223,8 @@ export async function setup(app: App) {
           if (!details) {
             continue;
           }
-          const collection = convertUserSubjectCollection(
-            d.chii_subject_interests,
-            d.subject,
-            d.subject_field,
-          );
-          details.push(collection);
+          const slim = convert.toSlimSubject(d.subject);
+          details.push(slim);
         }
       }
 
@@ -267,6 +236,94 @@ export async function setup(app: App) {
       await Promise.all(jobs);
       return {
         subject: subjectSummary,
+      };
+    },
+  );
+
+  app.get(
+    '/users/:username/collections/subjects',
+    {
+      schema: {
+        description: '获取用户收藏',
+        operationId: 'getUserCollections',
+        tags: [Tag.Collection],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
+          type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
+          limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
+          offset: t.Optional(t.Integer({ default: 0 })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(UserSubjectCollection)),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({
+      auth,
+      params: { username },
+      query: { subjectType, type, limit = 20, offset = 0 },
+    }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+      const conditions = op.and(
+        op.eq(schema.chiiSubjectInterests.interestUid, user.id),
+        subjectType
+          ? op.eq(schema.chiiSubjectInterests.interestSubjectType, subjectType)
+          : undefined,
+        type ? op.eq(schema.chiiSubjectInterests.interestType, type) : undefined,
+        op.eq(schema.chiiSubjects.ban, 0),
+        op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
+        auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      );
+
+      const count = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectInterests.interestSubjectId, schema.chiiSubjects.id),
+        )
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
+        .where(conditions)
+        .execute();
+      const total = count[0]?.count ?? 0;
+
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectInterests.interestSubjectId, schema.chiiSubjects.id),
+        )
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+
+      const collections = data.map((d) =>
+        toUserSubjectCollection(d.chii_subject_interests, d.subject, d.subject_field),
+      );
+
+      return {
+        data: collections,
+        total: total,
       };
     },
   );
