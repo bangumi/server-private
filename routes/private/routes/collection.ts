@@ -7,8 +7,13 @@ import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
-import { CollectionType, CollectionTypeProfileValues } from '@app/lib/subject/collection';
-import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
+import {
+  CollectionType,
+  CollectionTypeProfileValues,
+  PersonType,
+  SubjectType,
+  SubjectTypeValues,
+} from '@app/lib/subject/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -246,7 +251,7 @@ export async function setup(app: App) {
           .where(
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, 'crt'),
+              op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
             ),
           )
           .execute();
@@ -262,7 +267,7 @@ export async function setup(app: App) {
           .where(
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, 'prsn'),
+              op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
             ),
           )
           .execute();
@@ -329,7 +334,7 @@ export async function setup(app: App) {
           .where(
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, 'crt'),
+              op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
               op.eq(schema.chiiCharacters.ban, 0),
               op.eq(schema.chiiCharacters.lock, 0),
               auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
@@ -359,7 +364,7 @@ export async function setup(app: App) {
           .where(
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, 'prsn'),
+              op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
               op.eq(schema.chiiPersons.ban, 0),
               op.eq(schema.chiiPersons.lock, 0),
               auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),

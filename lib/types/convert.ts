@@ -4,8 +4,8 @@ import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
-import { CollectionType } from '@app/lib/subject/collection';
 import { type Platform } from '@app/lib/subject/platform.ts';
+import { CollectionType } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
