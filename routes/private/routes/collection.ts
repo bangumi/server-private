@@ -36,23 +36,23 @@ const UserSubjectCollection = t.Object(
   { $id: 'UserSubjectCollection' },
 );
 
-// export type IUserCharacterCollection = Static<typeof UserCharacterCollection>;
-// const UserCharacterCollection = t.Object(
-//   {
-//     character: t.Ref(res.Character),
-//     createdAt: t.Integer(),
-//   },
-//   { $id: 'UserCharacterCollection' },
-// );
+export type IUserCharacterCollection = Static<typeof UserCharacterCollection>;
+const UserCharacterCollection = t.Object(
+  {
+    character: t.Ref(res.Character),
+    createdAt: t.Integer(),
+  },
+  { $id: 'UserCharacterCollection' },
+);
 
-// export type IUserPersonCollection = Static<typeof UserPersonCollection>;
-// const UserPersonCollection = t.Object(
-//   {
-//     person: t.Ref(res.Person),
-//     createdAt: t.Integer(),
-//   },
-//   { $id: 'UserPersonCollection' },
-// );
+export type IUserPersonCollection = Static<typeof UserPersonCollection>;
+const UserPersonCollection = t.Object(
+  {
+    person: t.Ref(res.Person),
+    createdAt: t.Integer(),
+  },
+  { $id: 'UserPersonCollection' },
+);
 
 export type IUserCollectionsSubjectSummary = Static<typeof UserCollectionsSubjectSummary>;
 const UserCollectionsSubjectSummary = t.Object(
@@ -131,6 +131,26 @@ function toUserSubjectCollection(
     volStatus: interest.interestVolStatus,
     private: Boolean(interest.interestPrivate),
     updatedAt: interest.updatedAt,
+  };
+}
+
+function toUserCharacterCollection(
+  collect: orm.IPersonCollect,
+  character: orm.ICharacter,
+): IUserCharacterCollection {
+  return {
+    character: convert.toCharacter(character),
+    createdAt: collect.createdAt,
+  };
+}
+
+function toUserPersonCollection(
+  collect: orm.IPersonCollect,
+  person: orm.IPerson,
+): IUserPersonCollection {
+  return {
+    person: convert.toPerson(person),
+    createdAt: collect.createdAt,
   };
 }
 
@@ -445,7 +465,7 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 
-      const count = await db
+      const [count] = await db
         .select({ count: op.count() })
         .from(schema.chiiSubjectInterests)
         .innerJoin(
@@ -458,7 +478,7 @@ export async function setup(app: App) {
         )
         .where(conditions)
         .execute();
-      const total = count[0]?.count ?? 0;
+      const total = count?.count ?? 0;
 
       const data = await db
         .select()
@@ -483,6 +503,138 @@ export async function setup(app: App) {
 
       return {
         data: collections,
+        total: total,
+      };
+    },
+  );
+
+  app.get(
+    '/users/:username/collections/characters',
+    {
+      schema: {
+        description: '获取用户角色收藏',
+        operationId: 'getUserCharacterCollections',
+        tags: [Tag.Collection],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
+          offset: t.Optional(t.Integer({ default: 0 })),
+        }),
+        responses: {
+          200: res.Paged(t.Ref(UserCharacterCollection)),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const conditions = op.and(
+        op.eq(schema.chiiPersonCollects.uid, user.id),
+        op.eq(schema.chiiCharacters.ban, 0),
+        op.eq(schema.chiiCharacters.redirect, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+      );
+
+      const [count] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiPersonCollects)
+        .innerJoin(
+          schema.chiiCharacters,
+          op.eq(schema.chiiPersonCollects.mid, schema.chiiCharacters.id),
+        )
+        .where(conditions)
+        .execute();
+      const total = count?.count ?? 0;
+
+      const data = await db
+        .select()
+        .from(schema.chiiPersonCollects)
+        .innerJoin(
+          schema.chiiCharacters,
+          op.eq(schema.chiiPersonCollects.mid, schema.chiiCharacters.id),
+        )
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const collection = data.map((d) =>
+        toUserCharacterCollection(d.chii_person_collects, d.chii_characters),
+      );
+
+      return {
+        data: collection,
+        total: total,
+      };
+    },
+  );
+
+  app.get(
+    '/users/:username/collections/persons',
+    {
+      schema: {
+        description: '获取用户人物收藏',
+        operationId: 'getUserPersonCollections',
+        tags: [Tag.Collection],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
+          offset: t.Optional(t.Integer({ default: 0 })),
+        }),
+        responses: {
+          200: res.Paged(t.Ref(UserPersonCollection)),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const conditions = op.and(
+        op.eq(schema.chiiPersonCollects.uid, user.id),
+        op.eq(schema.chiiPersons.ban, 0),
+        op.eq(schema.chiiPersons.redirect, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+      );
+
+      const [count] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiPersonCollects)
+        .innerJoin(schema.chiiPersons, op.eq(schema.chiiPersonCollects.mid, schema.chiiPersons.id))
+        .where(conditions)
+        .execute();
+      const total = count?.count ?? 0;
+
+      const data = await db
+        .select()
+        .from(schema.chiiPersonCollects)
+        .innerJoin(schema.chiiPersons, op.eq(schema.chiiPersonCollects.mid, schema.chiiPersons.id))
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const collection = data.map((d) =>
+        toUserPersonCollection(d.chii_person_collects, d.chii_persons),
+      );
+
+      return {
+        data: collection,
         total: total,
       };
     },

@@ -25,4 +25,26 @@ describe('user collection', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get characters', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/14459/collections/characters',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get persons', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/14459/collections/persons',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
 });

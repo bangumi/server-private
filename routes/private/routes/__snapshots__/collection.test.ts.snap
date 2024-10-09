@@ -1,5 +1,23 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`user collection > should get characters 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "user not found",
+  "statusCode": 404,
+}
+`;
+
+exports[`user collection > should get persons 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "user not found",
+  "statusCode": 404,
+}
+`;
+
 exports[`user collection > should get subjects 1`] = `
 Object {
   "data": Array [
