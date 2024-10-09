@@ -7,16 +7,13 @@ import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
-import { subjectCover } from '@app/lib/response';
 import { CollectionType, CollectionTypeProfileValues } from '@app/lib/subject/collection';
-import { type Platform } from '@app/lib/subject/platform.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
-import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
 export type IUserSubjectCollection = Static<typeof UserSubjectCollection>;
 const UserSubjectCollection = t.Object(
@@ -75,101 +72,13 @@ const UserCollectionsSummary = t.Object(
   { $id: 'UserCollectionsSummary' },
 );
 
-function convertSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
-  return {
-    date: fields.date,
-    month: fields.month,
-    weekday: fields.weekDay,
-    year: fields.year,
-  };
-}
-
-function convertSubjectCollection(subject: orm.ISubject): res.ISubjectCollection {
-  return {
-    [CollectionType.Wish]: subject.wish,
-    [CollectionType.Collect]: subject.done,
-    [CollectionType.Doing]: subject.doing,
-    [CollectionType.OnHold]: subject.onHold,
-    [CollectionType.Dropped]: subject.dropped,
-  };
-}
-
-function convertSubjectPlatform(subject: orm.ISubject): res.ISubjectPlatform {
-  const plats = platforms as Record<string, Record<string, Platform>>;
-  const found = plats[subject.typeID]?.[subject.platform];
-  if (found) {
-    return {
-      id: found.id,
-      type: found.type,
-      typeCN: found.type_cn,
-      alias: found.alias || '',
-      order: found.order,
-      wikiTpl: found.wiki_tpl,
-      searchString: found.search_string,
-      enableHeader: found.enable_header,
-    };
-  } else {
-    return { id: 0, type: '', typeCN: '', alias: '' };
-  }
-}
-
-function convertSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
-  const ratingCount = [
-    fields.fieldRate1,
-    fields.fieldRate2,
-    fields.fieldRate3,
-    fields.fieldRate4,
-    fields.fieldRate5,
-    fields.fieldRate6,
-    fields.fieldRate7,
-    fields.fieldRate8,
-    fields.fieldRate9,
-    fields.fieldRate10,
-  ];
-  const total = ratingCount.reduce((a, b) => a + b, 0);
-  const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
-  const rating = {
-    total: total,
-    score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
-    count: ratingCount,
-  };
-  return rating;
-}
-
-function convertSubject(subject: orm.ISubject, fields: orm.ISubjectFields): res.ISubject {
-  return {
-    airtime: convertSubjectAirtime(fields),
-    collection: convertSubjectCollection(subject),
-    eps: subject.eps,
-    id: subject.id,
-    images: subjectCover(subject.image) || undefined,
-    infobox: convert.toInfobox(subject.infobox),
-    metaTags: subject.metaTags
-      .split(',')
-      .map((x) => x.trim())
-      .filter((x) => x !== ''),
-    locked: subject.ban === 2,
-    name: subject.name,
-    nameCN: subject.nameCN,
-    nsfw: subject.nsfw,
-    platform: convertSubjectPlatform(subject),
-    rating: convertSubjectRating(fields),
-    redirect: fields.fieldRedirect,
-    series: Boolean(subject.series),
-    seriesEntry: subject.seriesEntry,
-    summary: subject.summary,
-    type: subject.typeID,
-    volumes: subject.volumes,
-  };
-}
-
 function convertUserSubjectCollection(
   interest: orm.ISubjectInterests,
   subject: orm.ISubject,
   fields: orm.ISubjectFields,
 ): IUserSubjectCollection {
   return {
-    subject: convertSubject(subject, fields),
+    subject: convert.toSubject(subject, fields),
     rate: interest.interestRate,
     type: interest.interestType,
     comment: interest.interestComment,
