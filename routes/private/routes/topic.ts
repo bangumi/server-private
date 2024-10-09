@@ -26,8 +26,9 @@ import {
   TopicDisplay,
   Type,
 } from '@app/lib/topic/index.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
-import { formatErrors, toResUser } from '@app/lib/types/res.ts';
+import { formatErrors } from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimiter } from '@app/routes/hooks/rate-limit';
@@ -682,7 +683,7 @@ async function addCreators(
   return withCreator.map((x) => {
     return {
       ...x,
-      creator: toResUser(x.creator),
+      creator: convert.toUser(x.creator),
       updatedAt: x.updatedAt,
       parentID,
     };
@@ -780,7 +781,7 @@ export async function handleTopicDetail(
 
   return {
     ...topic,
-    creator: toResUser(creator),
+    creator: convert.toUser(creator),
     text: topic.text,
     parent: {
       ...parent,
@@ -805,12 +806,12 @@ export async function handleTopicDetail(
             reactions: reactions[x.id] ?? [],
             isFriend: friends[x.creatorID] ?? false,
             ...x,
-            creator: toResUser(user),
+            creator: convert.toUser(user),
           };
         }),
         creator: {
           isFriend: friends[x.creatorID] ?? false,
-          ...toResUser(user),
+          ...convert.toUser(user),
         },
       };
     }),

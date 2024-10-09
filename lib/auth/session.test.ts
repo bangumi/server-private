@@ -38,13 +38,16 @@ test('should create and get session', async () => {
 
 test('should revoke session', async () => {
   const token = 'fake-random-session-token';
-  await db.insert(chiiOsWebSessions).values({
-    key: token,
-    value: Buffer.from(''),
-    userID: 0,
-    createdAt: DateTime.now().toUnixInteger(),
-    expiredAt: DateTime.now().toUnixInteger() + 60 * 60 * 242 * 30,
-  });
+  await db
+    .insert(chiiOsWebSessions)
+    .values({
+      key: token,
+      value: Buffer.from(''),
+      userID: 0,
+      createdAt: DateTime.now().toUnixInteger(),
+      expiredAt: DateTime.now().toUnixInteger() + 60 * 60 * 242 * 30,
+    })
+    .execute();
 
   await revoke(token);
 
@@ -53,4 +56,5 @@ test('should revoke session', async () => {
   });
 
   expect(session).toBeDefined();
+  expect(session?.expiredAt).toBeLessThanOrEqual(DateTime.now().toUnixInteger());
 });

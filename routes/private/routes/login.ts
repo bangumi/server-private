@@ -12,8 +12,8 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUser, UserRepo } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
-import { toResUser } from '@app/lib/types/res.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -78,7 +78,7 @@ export async function setup(app: App) {
       }
 
       return {
-        ...toResUser(u),
+        ...convert.toUser(u),
         permission: {
           subjectWikiEdit: auth.permission.subject_edit ?? false,
         },

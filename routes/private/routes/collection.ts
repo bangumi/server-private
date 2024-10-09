@@ -11,6 +11,7 @@ import { subjectCover } from '@app/lib/response';
 import { CollectionType, CollectionTypeProfileValues } from '@app/lib/subject/collection';
 import { type Platform } from '@app/lib/subject/platform.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -142,7 +143,7 @@ function convertSubject(subject: orm.ISubject, fields: orm.ISubjectFields): res.
     eps: subject.eps,
     id: subject.id,
     images: subjectCover(subject.image) || undefined,
-    infobox: res.toInfobox(subject.infobox),
+    infobox: convert.toInfobox(subject.infobox),
     metaTags: subject.metaTags
       .split(',')
       .map((x) => x.trim())

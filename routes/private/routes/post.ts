@@ -19,7 +19,8 @@ import {
   Type,
 } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
-import { formatErrors, toResUser } from '@app/lib/types/res.ts';
+import * as convert from '@app/lib/types/convert.ts';
+import { formatErrors } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -157,7 +158,7 @@ export async function setup(app: App) {
             createdAt: v.createdAt,
             content: v.content,
             state: v.state,
-            user: toResUser(u),
+            user: convert.toUser(u),
             replies: [],
           }))
           .find((p) => p.id === comment.id);
@@ -289,7 +290,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         state: c.state,
         createdAt: c.createdAt,
         text: c.content,
-        creator: toResUser(await fetchUserX(auth.userID)),
+        creator: convert.toUser(await fetchUserX(auth.userID)),
       };
     },
   );
@@ -411,7 +412,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
       const { topic, post } = await getPost(auth, postID, Type.group);
 
-      const creator = res.toResUser(await fetchUserX(post.uid));
+      const creator = convert.toUser(await fetchUserX(post.uid));
 
       return {
         id: postID,
@@ -732,7 +733,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
       const { topic, post } = await getPost(auth, postID, Type.subject);
 
-      const creator = res.toResUser(await fetchUserX(post.uid));
+      const creator = convert.toUser(await fetchUserX(post.uid));
 
       return {
         id: postID,
@@ -873,7 +874,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       const commentPromises = comments.map(async (v) => {
         const u = await fetchUserX(v.uid);
         return {
-          user: toResUser(u),
+          user: convert.toUser(u),
           rate: v.rate,
           comment: v.comment,
           updatedAt: v.updatedAt,
