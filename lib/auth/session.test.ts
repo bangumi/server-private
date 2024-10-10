@@ -1,3 +1,5 @@
+import { setTimeout } from 'timers/promises';
+
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
@@ -50,11 +52,10 @@ test('should revoke session', async () => {
     .execute();
 
   await revoke(token);
-
   const session = await db.query.chiiOsWebSessions.findFirst({
     where: op.eq(chiiOsWebSessions.key, token),
   });
 
   expect(session).toBeDefined();
-  expect(session?.expiredAt).toBeLessThanOrEqual(DateTime.now().toUnixInteger());
+  expect(session?.expiredAt).toBeLessThan(DateTime.now().toUnixInteger() + 1);
 });

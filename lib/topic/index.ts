@@ -444,6 +444,6 @@ export async function handleTopicReply(
     state: t.state,
     createdAt: t.createdAt,
     text: t.content,
-    creator: convert.toUser(t.user),
+    creator: convert.oldToUser(t.user),
   };
 }

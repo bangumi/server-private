@@ -19,9 +19,7 @@ export default defineConfig({
     snapshotFormat: {
       printBasicPrototype: true,
     },
-    poolOptions: {
-      singleThread: true,
-    },
+    fileParallelism: false,
     coverage: {
       provider: 'v8',
       reporter: ['lcov', 'text-summary'],

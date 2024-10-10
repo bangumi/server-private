@@ -158,7 +158,7 @@ export async function setup(app: App) {
             createdAt: v.createdAt,
             content: v.content,
             state: v.state,
-            user: convert.toUser(u),
+            user: convert.oldToUser(u),
             replies: [],
           }))
           .find((p) => p.id === comment.id);
@@ -290,7 +290,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         state: c.state,
         createdAt: c.createdAt,
         text: c.content,
-        creator: convert.toUser(await fetchUserX(auth.userID)),
+        creator: convert.oldToUser(await fetchUserX(auth.userID)),
       };
     },
   );
@@ -412,7 +412,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
       const { topic, post } = await getPost(auth, postID, Type.group);
 
-      const creator = convert.toUser(await fetchUserX(post.uid));
+      const creator = convert.oldToUser(await fetchUserX(post.uid));
 
       return {
         id: postID,
@@ -733,7 +733,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
       const { topic, post } = await getPost(auth, postID, Type.subject);
 
-      const creator = convert.toUser(await fetchUserX(post.uid));
+      const creator = convert.oldToUser(await fetchUserX(post.uid));
 
       return {
         id: postID,
@@ -874,7 +874,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       const commentPromises = comments.map(async (v) => {
         const u = await fetchUserX(v.uid);
         return {
-          user: convert.toUser(u),
+          user: convert.oldToUser(u),
           rate: v.rate,
           comment: v.comment,
           updatedAt: v.updatedAt,
