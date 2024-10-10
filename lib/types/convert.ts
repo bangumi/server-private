@@ -9,7 +9,7 @@ import { CollectionType } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
-export function toUser(user: ormold.IUser): res.IUser {
+export function oldToUser(user: ormold.IUser): res.IUser {
   return {
     avatar: avatar(user.img),
     username: user.username,
@@ -17,6 +17,17 @@ export function toUser(user: ormold.IUser): res.IUser {
     id: user.id,
     sign: user.sign,
     user_group: user.groupID,
+  };
+}
+
+export function toUser(user: orm.IUser): res.IUser {
+  return {
+    avatar: avatar(user.avatar),
+    username: user.username,
+    nickname: user.nickname,
+    id: user.id,
+    sign: user.sign,
+    user_group: user.groupid,
   };
 }
 
@@ -234,5 +245,30 @@ export function toPerson(person: orm.IPerson): res.IPerson {
     lock: Boolean(person.lock),
     redirect: person.redirect,
     nsfw: Boolean(person.nsfw),
+  };
+}
+
+export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
+  return {
+    id: index.id,
+    type: index.type,
+    title: index.title,
+    total: index.total,
+    createdAt: index.createdAt,
+  };
+}
+
+export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
+  return {
+    id: index.id,
+    type: index.type,
+    title: index.title,
+    desc: index.desc,
+    replies: index.replies,
+    total: index.total,
+    collects: index.collects,
+    createdAt: index.createdAt,
+    updatedAt: index.updatedAt,
+    creator: toUser(user),
   };
 }

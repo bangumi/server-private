@@ -16,7 +16,7 @@ const createApp = async () => {
   });
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {
-      const user = convert.toUser(await fetchUserX(req.auth.userID));
+      const user = convert.oldToUser(await fetchUserX(req.auth.userID));
       reply.locals = { user };
     }
   });

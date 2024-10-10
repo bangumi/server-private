@@ -134,7 +134,7 @@ export function setup(app: App) {
             id: x.id,
             thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${x.target}`,
             raw: `https://${imageDomain}/pic/cover/l/${x.target}`,
-            creator: convert.toUser(u),
+            creator: convert.oldToUser(u),
             voted: x.id in likes,
           };
         }),

@@ -311,26 +311,26 @@ export const chiiGroupTopics = mysqlTable(
 export const chiiIndex = mysqlTable(
   'chii_index',
   {
-    idxId: mediumint('idx_id').autoincrement().notNull(),
-    idxType: tinyint('idx_type').default(0).notNull(),
-    idxTitle: varchar('idx_title', { length: 80 }).notNull(),
-    idxDesc: mediumtext('idx_desc').notNull(),
-    idxReplies: mediumint('idx_replies').notNull(),
-    idxSubjectTotal: mediumint('idx_subject_total').notNull(),
-    idxCollects: mediumint('idx_collects').notNull(),
-    idxStats: mediumtext('idx_stats').notNull(),
-    idxDateline: int('idx_dateline').notNull(),
+    id: mediumint('idx_id').autoincrement().notNull(),
+    type: tinyint('idx_type').default(0).notNull(),
+    title: varchar('idx_title', { length: 80 }).notNull(),
+    desc: mediumtext('idx_desc').notNull(),
+    replies: mediumint('idx_replies').notNull(),
+    total: mediumint('idx_subject_total').notNull(),
+    collects: mediumint('idx_collects').notNull(),
+    stats: mediumtext('idx_stats').notNull(),
+    createdAt: int('idx_dateline').notNull(),
     updatedAt: int('idx_lasttouch').notNull(),
-    idxUid: mediumint('idx_uid').notNull(),
-    idxBan: tinyint('idx_ban').default(0).notNull(),
+    uid: mediumint('idx_uid').notNull(),
+    ban: tinyint('idx_ban').default(0).notNull(),
   },
   (table) => {
     return {
-      idxBan: index('idx_ban').on(table.idxBan),
-      idxType: index('idx_type').on(table.idxType),
-      idxUid: index('idx_uid').on(table.idxUid),
-      idxCollects: index('idx_collects').on(table.idxCollects),
-      mid: unique('mid').on(table.idxId),
+      idxBan: index('idx_ban').on(table.ban),
+      idxType: index('idx_type').on(table.type),
+      idxUid: index('idx_uid').on(table.uid),
+      idxCollects: index('idx_collects').on(table.collects),
+      mid: unique('mid').on(table.id),
     };
   },
 );
@@ -338,14 +338,14 @@ export const chiiIndex = mysqlTable(
 export const chiiIndexCollects = mysqlTable(
   'chii_index_collects',
   {
-    idxCltId: mediumint('idx_clt_id').autoincrement().notNull(),
-    idxCltMid: mediumint('idx_clt_mid').notNull(),
-    idxCltUid: mediumint('idx_clt_uid').notNull(),
-    idxCltDateline: int('idx_clt_dateline').notNull(),
+    id: mediumint('idx_clt_id').autoincrement().notNull(),
+    mid: mediumint('idx_clt_mid').notNull(),
+    uid: mediumint('idx_clt_uid').notNull(),
+    createdAt: int('idx_clt_dateline').notNull(),
   },
   (table) => {
     return {
-      idxCltMid: index('idx_clt_mid').on(table.idxCltMid, table.idxCltUid),
+      idxCltMid: index('idx_clt_mid').on(table.mid, table.uid),
     };
   },
 );
@@ -353,18 +353,18 @@ export const chiiIndexCollects = mysqlTable(
 export const chiiIndexComments = mysqlTable(
   'chii_index_comments',
   {
-    idxPstId: mediumint('idx_pst_id').autoincrement().notNull(),
-    idxPstMid: mediumint('idx_pst_mid').notNull(),
-    idxPstUid: mediumint('idx_pst_uid').notNull(),
-    idxPstRelated: mediumint('idx_pst_related').notNull(),
-    idxPstDateline: int('idx_pst_dateline').notNull(),
-    idxPstContent: mediumtext('idx_pst_content').notNull(),
+    id: mediumint('idx_pst_id').autoincrement().notNull(),
+    mid: mediumint('idx_pst_mid').notNull(),
+    uid: mediumint('idx_pst_uid').notNull(),
+    related: mediumint('idx_pst_related').notNull(),
+    createdAt: int('idx_pst_dateline').notNull(),
+    content: mediumtext('idx_pst_content').notNull(),
   },
   (table) => {
     return {
-      idxPstMid: index('idx_pst_mid').on(table.idxPstMid),
-      idxPstRelated: index('idx_pst_related').on(table.idxPstRelated),
-      idxPstUid: index('idx_pst_uid').on(table.idxPstUid),
+      idxPstMid: index('idx_pst_mid').on(table.mid),
+      idxPstRelated: index('idx_pst_related').on(table.related),
+      idxPstUid: index('idx_pst_uid').on(table.uid),
     };
   },
 );
@@ -420,7 +420,7 @@ export const chiiLikes = mysqlTable(
   },
 );
 
-export const chiiMemberfields = mysqlTable('chii_memberfields', {
+export const chiiUserFields = mysqlTable('chii_memberfields', {
   uid: mediumint('uid').notNull(),
   site: varchar('site', { length: 75 }).default('').notNull(),
   location: varchar('location', { length: 30 }).default('').notNull(),

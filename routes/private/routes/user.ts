@@ -82,7 +82,7 @@ export async function setup(app: App) {
 
           return {
             ...x,
-            sender: convert.toUser(u),
+            sender: convert.oldToUser(u),
           };
         }),
       };

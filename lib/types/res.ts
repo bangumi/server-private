@@ -250,6 +250,37 @@ export const User = t.Object(
   { $id: 'User', title: 'User' },
 );
 
+export type IIndex = Static<typeof Index>;
+export const Index = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer(),
+    title: t.String(),
+    desc: t.String(),
+    replies: t.Integer(),
+    total: t.Integer(),
+    collects: t.Integer(),
+    // TODO: parse stats
+    // stats: t.String(),
+    createdAt: t.Integer(),
+    updatedAt: t.Integer(),
+    creator: t.Ref(User),
+  },
+  { $id: 'Index', title: 'Index' },
+);
+
+export type ISlimIndex = Static<typeof SlimIndex>;
+export const SlimIndex = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer(),
+    title: t.String(),
+    total: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'SlimIndex', title: 'SlimIndex' },
+);
+
 export const Topic = t.Object(
   {
     id: t.Integer({ description: 'topic id' }),

@@ -78,7 +78,7 @@ export async function setup(app: App) {
       }
 
       return {
-        ...convert.toUser(u),
+        ...convert.oldToUser(u),
         permission: {
           subjectWikiEdit: auth.permission.subject_edit ?? false,
         },

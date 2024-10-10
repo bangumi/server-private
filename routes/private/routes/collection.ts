@@ -89,6 +89,15 @@ const UserCollectionsPersonSummary = t.Object(
   { $id: 'UserCollectionsPersonSummary' },
 );
 
+export type IUserIndexesSummary = Static<typeof UserIndexesSummary>;
+const UserIndexesSummary = t.Object(
+  {
+    count: t.Integer(),
+    detail: t.Array(t.Ref(res.SlimIndex)),
+  },
+  { $id: 'UserIndexesSummary' },
+);
+
 export type IUserCollectionsSummary = Static<typeof UserCollectionsSummary>;
 const UserCollectionsSummary = t.Object(
   {
@@ -108,7 +117,7 @@ const UserCollectionsSummary = t.Object(
     ),
     character: t.Ref(UserCollectionsCharacterSummary),
     person: t.Ref(UserCollectionsPersonSummary),
-    // index: t.Ref(UserCollectionsIndexSummary),
+    index: t.Ref(UserIndexesSummary),
   },
   { $id: 'UserCollectionsSummary' },
 );
@@ -156,6 +165,7 @@ function toUserPersonCollection(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  app.addSchema(res.User);
   app.addSchema(res.Error);
   app.addSchema(res.SubjectAirtime);
   app.addSchema(res.SubjectCollection);
@@ -167,11 +177,16 @@ export async function setup(app: App) {
   app.addSchema(res.Subject);
   app.addSchema(res.SlimSubject);
   app.addSchema(UserSubjectCollection);
+  app.addSchema(res.Character);
   app.addSchema(res.SlimCharacter);
+  app.addSchema(res.Person);
   app.addSchema(res.SlimPerson);
+  app.addSchema(res.Index);
+  app.addSchema(res.SlimIndex);
   app.addSchema(UserCollectionsSubjectSummary);
   app.addSchema(UserCollectionsCharacterSummary);
   app.addSchema(UserCollectionsPersonSummary);
+  app.addSchema(UserIndexesSummary);
   app.addSchema(UserCollectionsSummary);
 
   app.get(
@@ -238,6 +253,10 @@ export async function setup(app: App) {
         count: 0,
         detail: [],
       };
+      const indexSummary: IUserIndexesSummary = {
+        count: 0,
+        detail: [],
+      };
 
       async function fillSubjectCounts(userID: number) {
         const data = await db
@@ -261,7 +280,6 @@ export async function setup(app: App) {
           summary.counts[d.interest_type] = d.count;
         }
       }
-
       async function fillCharacterCount(userID: number) {
         const [{ count = 0 } = {}] = await db
           .select({
@@ -277,7 +295,6 @@ export async function setup(app: App) {
           .execute();
         characterSummary.count = count;
       }
-
       async function fillPersonCount(userID: number) {
         const [{ count = 0 } = {}] = await db
           .select({
@@ -293,11 +310,22 @@ export async function setup(app: App) {
           .execute();
         personSummary.count = count;
       }
+      async function fillIndexCount(userID: number) {
+        const [{ count = 0 } = {}] = await db
+          .select({
+            count: op.count(),
+          })
+          .from(schema.chiiIndex)
+          .where(op.and(op.eq(schema.chiiIndex.uid, userID)))
+          .execute();
+        indexSummary.count = count;
+      }
 
       const countJobs = [
         fillSubjectCounts(user.id),
         fillCharacterCount(user.id),
         fillPersonCount(user.id),
+        fillIndexCount(user.id),
       ];
       await Promise.all(countJobs);
 
@@ -342,7 +370,6 @@ export async function setup(app: App) {
           details.push(slim);
         }
       }
-
       async function appendCharacterDetail(userID: number) {
         const data = await db
           .select()
@@ -372,7 +399,6 @@ export async function setup(app: App) {
           summary.push(slim);
         }
       }
-
       async function appendPersonDetail(userID: number) {
         const data = await db
           .select()
@@ -402,8 +428,29 @@ export async function setup(app: App) {
           summary.push(slim);
         }
       }
+      async function appendIndexDetail(userID: number) {
+        const data = await db
+          .select()
+          .from(schema.chiiIndex)
+          .where(op.eq(schema.chiiIndex.uid, userID))
+          .orderBy(op.desc(schema.chiiIndex.createdAt))
+          .limit(7)
+          .execute();
+        for (const d of data) {
+          const summary = indexSummary.detail;
+          if (!summary) {
+            continue;
+          }
+          const slim = convert.toSlimIndex(d);
+          summary.push(slim);
+        }
+      }
 
-      const detailJobs = [appendCharacterDetail(user.id), appendPersonDetail(user.id)];
+      const detailJobs = [
+        appendCharacterDetail(user.id),
+        appendPersonDetail(user.id),
+        appendIndexDetail(user.id),
+      ];
       for (const stype of SubjectTypeValues) {
         for (const ctype of CollectionTypeProfileValues) {
           detailJobs.push(appendSubjectDetails(stype, ctype, user.id));
@@ -415,6 +462,7 @@ export async function setup(app: App) {
         subject: subjectSummary,
         character: characterSummary,
         person: personSummary,
+        index: indexSummary,
       };
     },
   );
