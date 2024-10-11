@@ -2,6 +2,7 @@ import * as path from 'node:path';
 
 import Cookie from '@fastify/cookie';
 import { fastifyStatic } from '@fastify/static';
+import { Type as t } from '@sinclair/typebox';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { projectRoot } from '@app/lib/config.ts';
@@ -73,6 +74,30 @@ async function userDemoRoutes(app: App) {
   app.get('/login', { schema: { hide: true } }, async (req, res) => {
     await res.view('login', { TURNSTILE_SITE_KEY: config.turnstile.siteKey });
   });
+
+  app.get(
+    '/turnstile',
+    {
+      schema: {
+        hide: true,
+        querystring: t.Object({
+          theme: t.Optional(
+            t.Enum({
+              dark: 'dark',
+              light: 'light',
+              auto: 'auto',
+            }),
+          ),
+        }),
+      },
+    },
+    async (req, res) => {
+      await res.view('turnstile', {
+        TURNSTILE_SITE_KEY: config.turnstile.siteKey,
+        turnstile_theme: req.query.theme || 'auto',
+      });
+    },
+  );
 
   editor.setup(app);
   token.setup(app);

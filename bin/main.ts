@@ -34,6 +34,7 @@ async function main() {
   logger.info(`private API http://127.0.0.1:${port}/p1/`);
   logger.info(`demo        http://127.0.0.1:${port}/demo/`);
   logger.info(`admin       http://127.0.0.1:${port}/demo/admin/`);
+  logger.info(`turnstile   http://127.0.0.1:${port}/demo/turnstile`);
   logger.info(`oauth       http://127.0.0.1:${port}/oauth/authorize`);
   logger.flush();
 }
