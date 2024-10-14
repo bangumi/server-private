@@ -3,6 +3,7 @@ import * as crypto from 'node:crypto';
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
 import * as op from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { DateTime } from 'luxon';
 
 import { db } from '@app/drizzle/db.ts';
@@ -90,7 +91,7 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
 
   const token = await db.query.chiiAccessToken.findFirst({
     where: op.and(
-      op.eq(chiiAccessToken.accessToken, accessToken),
+      sql`access_token = ${accessToken} collate utf8mb4_bin`,
       op.gt(chiiAccessToken.expiredAt, new Date()),
     ),
   });

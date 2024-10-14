@@ -5,6 +5,7 @@ import { db, op } from '@app/drizzle/db.ts';
 import { chiiOsWebSessions } from '@app/drizzle/schema.ts';
 
 import { create, get, revoke } from './session.ts';
+import { sql } from 'drizzle-orm';
 
 beforeEach(async () => {
   await db.delete(chiiOsWebSessions).execute();
@@ -21,7 +22,7 @@ test('should create and get session', async () => {
   });
 
   const session = await db.query.chiiOsWebSessions.findFirst({
-    where: op.eq(chiiOsWebSessions.key, token),
+    where: sql`\`key\` = ${token} collate utf8mb4_bin`,
   });
 
   expect(session).toBeDefined();
