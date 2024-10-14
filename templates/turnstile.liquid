@@ -25,10 +25,8 @@
   };
 
   function turnstileCallback(token) {
-    const resp = {
-      'cf-turnstile-response': token,
-    };
-    console.log(JSON.stringify(resp));
+    const redirectUri = `{{ redirect_uri }}?token=${token}`;
+    window.location.href = redirectUri;
   }
 </script>
 {% endblock %}

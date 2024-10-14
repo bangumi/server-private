@@ -6,6 +6,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { projectRoot } from '@app/lib/config.ts';
+import { BadRequestError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -88,13 +89,18 @@ async function userDemoRoutes(app: App) {
               auto: 'auto',
             }),
           ),
+          redirect_uri: t.String(),
         }),
       },
     },
     async (req, res) => {
+      if (!/^https?:\/\//i.test(req.query.redirect_uri)) {
+        throw BadRequestError('Invalid redirect_uri. It must start with http:// or https://');
+      }
       await res.view('turnstile', {
         TURNSTILE_SITE_KEY: config.turnstile.siteKey,
         turnstile_theme: req.query.theme || 'auto',
+        redirect_uri: req.query.redirect_uri,
       });
     },
   );
