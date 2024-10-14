@@ -6,6 +6,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { projectRoot } from '@app/lib/config.ts';
+import { BadRequestError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -93,6 +94,11 @@ async function userDemoRoutes(app: App) {
       },
     },
     async (req, res) => {
+      try {
+        new URL(req.query.redirect_uri);
+      } catch {
+        throw BadRequestError('Invalid redirect_uri.');
+      }
       await res.view('turnstile', {
         TURNSTILE_SITE_KEY: config.turnstile.siteKey,
         turnstile_theme: req.query.theme || 'auto',
