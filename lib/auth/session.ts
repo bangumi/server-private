@@ -1,4 +1,5 @@
 import type { CookieSerializeOptions } from '@fastify/cookie';
+import { sql } from 'drizzle-orm';
 import { DateTime } from 'luxon';
 
 import { db, op } from '@app/drizzle/db.ts';
@@ -56,7 +57,7 @@ export async function get(sessionID: string): Promise<IAuth | null> {
 
   const session = await db.query.chiiOsWebSessions.findFirst({
     where: op.and(
-      op.eq(chiiOsWebSessions.key, sessionID),
+      sql`\`key\` = ${sessionID} collate utf8mb4_bin`,
       op.gt(chiiOsWebSessions.expiredAt, DateTime.now().toUnixInteger()),
     ),
   });
