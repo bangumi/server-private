@@ -3,13 +3,13 @@ import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
-import { avatar, subjectCover } from '@app/lib/response.ts';
-import { CollectionType } from '@app/lib/subject/collection';
+import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
 import { type Platform } from '@app/lib/subject/platform.ts';
+import { CollectionType } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
-export function toUser(user: ormold.IUser): res.IUser {
+export function oldToUser(user: ormold.IUser): res.IUser {
   return {
     avatar: avatar(user.img),
     username: user.username,
@@ -17,6 +17,17 @@ export function toUser(user: ormold.IUser): res.IUser {
     id: user.id,
     sign: user.sign,
     user_group: user.groupID,
+  };
+}
+
+export function toUser(user: orm.IUser): res.IUser {
+  return {
+    avatar: avatar(user.avatar),
+    username: user.username,
+    nickname: user.nickname,
+    id: user.id,
+    sign: user.sign,
+    user_group: user.groupid,
   };
 }
 
@@ -154,5 +165,110 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     summary: subject.summary,
     type: subject.typeID,
     volumes: subject.volumes,
+  };
+}
+
+export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
+  return {
+    id: character.id,
+    name: character.name,
+    role: character.role,
+    images: personImages(character.img) || undefined,
+    nsfw: Boolean(character.nsfw),
+    lock: Boolean(character.lock),
+  };
+}
+
+export function toCharacter(character: orm.ICharacter): res.ICharacter {
+  return {
+    id: character.id,
+    name: character.name,
+    role: character.role,
+    infobox: toInfobox(character.infobox),
+    summary: character.summary,
+    images: personImages(character.img) || undefined,
+    comment: character.comment,
+    collects: character.collects,
+    lock: Boolean(character.lock),
+    redirect: character.redirect,
+    nsfw: Boolean(character.nsfw),
+  };
+}
+
+export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
+  return {
+    id: person.id,
+    name: person.name,
+    type: person.type,
+    images: personImages(person.img) || undefined,
+    nsfw: Boolean(person.nsfw),
+    lock: Boolean(person.lock),
+  };
+}
+
+export function toPerson(person: orm.IPerson): res.IPerson {
+  const career = [];
+  if (person.producer) {
+    career.push('producer');
+  }
+  if (person.mangaka) {
+    career.push('mangaka');
+  }
+  if (person.mangaka) {
+    career.push('mangaka');
+  }
+  if (person.artist) {
+    career.push('artist');
+  }
+  if (person.seiyu) {
+    career.push('seiyu');
+  }
+  if (person.writer) {
+    career.push('writer');
+  }
+  if (person.illustrator) {
+    career.push('illustrator');
+  }
+  if (person.actor) {
+    career.push('actor');
+  }
+  return {
+    id: person.id,
+    name: person.name,
+    type: person.type,
+    infobox: toInfobox(person.infobox),
+    career,
+    summary: person.summary,
+    images: personImages(person.img) || undefined,
+    comment: person.comment,
+    collects: person.collects,
+    lock: Boolean(person.lock),
+    redirect: person.redirect,
+    nsfw: Boolean(person.nsfw),
+  };
+}
+
+export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
+  return {
+    id: index.id,
+    type: index.type,
+    title: index.title,
+    total: index.total,
+    createdAt: index.createdAt,
+  };
+}
+
+export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
+  return {
+    id: index.id,
+    type: index.type,
+    title: index.title,
+    desc: index.desc,
+    replies: index.replies,
+    total: index.total,
+    collects: index.collects,
+    createdAt: index.createdAt,
+    updatedAt: index.updatedAt,
+    creator: toUser(user),
   };
 }

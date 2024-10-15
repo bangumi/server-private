@@ -145,6 +145,88 @@ export const PersonImages = t.Object(
   { $id: 'PersonImages', title: 'PersonImages' },
 );
 
+export type ICharacter = Static<typeof Character>;
+export const Character = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    role: t.Integer(),
+    infobox: t.Ref(Infobox),
+    summary: t.String(),
+    images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
+    collects: t.Integer(),
+    lock: t.Boolean(),
+    redirect: t.Integer(),
+    nsfw: t.Boolean(),
+  },
+  {
+    $id: 'Character',
+    title: 'Character',
+    // examples: [examples.character],
+  },
+);
+
+export type ISlimCharacter = Static<typeof SlimCharacter>;
+export const SlimCharacter = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    role: t.Integer(),
+    images: t.Optional(t.Ref(PersonImages)),
+    lock: t.Boolean(),
+    nsfw: t.Boolean(),
+  },
+  {
+    $id: 'SlimCharacter',
+    title: 'SlimCharacter',
+    // examples: [examples.slimCharacter],
+  },
+);
+
+export type IPerson = Static<typeof Person>;
+export const Person = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    type: t.Integer(),
+    infobox: t.Ref(Infobox),
+    career: t.Array(t.String(), {
+      description: '职业',
+      examples: ['producer', 'mangaka', 'artist', 'seiyu', 'writer', 'illustrator', 'actor'],
+    }),
+    summary: t.String(),
+    images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
+    collects: t.Integer(),
+    lock: t.Boolean(),
+    redirect: t.Integer(),
+    nsfw: t.Boolean(),
+  },
+  {
+    $id: 'Person',
+    title: 'Person',
+    // examples: [examples.person],
+  },
+);
+
+export type ISlimPerson = Static<typeof SlimPerson>;
+export const SlimPerson = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    type: t.Integer(),
+    images: t.Optional(t.Ref(PersonImages)),
+    lock: t.Boolean(),
+    nsfw: t.Boolean(),
+  },
+  {
+    $id: 'SlimPerson',
+    title: 'SlimPerson',
+    // examples: [examples.slimPerson],
+  },
+);
+
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
   {
@@ -166,6 +248,37 @@ export const User = t.Object(
     user_group: t.Integer(),
   },
   { $id: 'User', title: 'User' },
+);
+
+export type IIndex = Static<typeof Index>;
+export const Index = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer(),
+    title: t.String(),
+    desc: t.String(),
+    replies: t.Integer(),
+    total: t.Integer(),
+    collects: t.Integer(),
+    // TODO: parse stats
+    // stats: t.String(),
+    createdAt: t.Integer(),
+    updatedAt: t.Integer(),
+    creator: t.Ref(User),
+  },
+  { $id: 'Index', title: 'Index' },
+);
+
+export type ISlimIndex = Static<typeof SlimIndex>;
+export const SlimIndex = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer(),
+    title: t.String(),
+    total: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'SlimIndex', title: 'SlimIndex' },
 );
 
 export const Topic = t.Object(

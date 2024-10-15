@@ -683,7 +683,7 @@ async function addCreators(
   return withCreator.map((x) => {
     return {
       ...x,
-      creator: convert.toUser(x.creator),
+      creator: convert.oldToUser(x.creator),
       updatedAt: x.updatedAt,
       parentID,
     };
@@ -781,7 +781,7 @@ export async function handleTopicDetail(
 
   return {
     ...topic,
-    creator: convert.toUser(creator),
+    creator: convert.oldToUser(creator),
     text: topic.text,
     parent: {
       ...parent,
@@ -806,12 +806,12 @@ export async function handleTopicDetail(
             reactions: reactions[x.id] ?? [],
             isFriend: friends[x.creatorID] ?? false,
             ...x,
-            creator: convert.toUser(user),
+            creator: convert.oldToUser(user),
           };
         }),
         creator: {
           isFriend: friends[x.creatorID] ?? false,
-          ...convert.toUser(user),
+          ...convert.oldToUser(user),
         },
       };
     }),

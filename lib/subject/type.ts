@@ -7,3 +7,19 @@ export enum SubjectType {
 }
 
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
+
+export enum CollectionType {
+  Wish = 1,
+  Collect = 2,
+  Doing = 3,
+  OnHold = 4,
+  Dropped = 5,
+}
+
+export const CollectionTypeValues = new Set([1, 2, 3, 4, 5]);
+export const CollectionTypeProfileValues = new Set([1, 2]);
+
+export enum PersonType {
+  Character = 'crt',
+  Person = 'prsn',
+}
