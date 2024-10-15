@@ -243,10 +243,15 @@ export async function setup(app: App) {
     },
     async (req, res) => {
       const redirectUri = req.query.redirect_uri;
+      let parsedUrl;
       try {
-        new URL(redirectUri);
+        parsedUrl = new URL(redirectUri);
       } catch {
         throw BadRequestError('Invalid redirect URI.');
+      }
+      const { protocol, hostname } = parsedUrl;
+      if (!protocol || !hostname) {
+        throw BadRequestError('Redirect URI must contain a valid domain.');
       }
       if (!allowedRedirectUris.some((allowedUri) => redirectUri.startsWith(allowedUri))) {
         throw BadRequestError(
