@@ -70,14 +70,7 @@ export async function createServer(
 
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message
-    if (error instanceof TypeORMError) {
-      this.log.error(error);
-      void reply.status(500).send({
-        error: 'Internal Server Error',
-        message: 'internal database error, please contact admin',
-        statusCode: 500,
-      });
-    } else if (error instanceof DrizzleError) {
+    if (error instanceof TypeORMError || error instanceof DrizzleError) {
       this.log.error(error);
       void reply.status(500).send({
         error: 'Internal Server Error',
@@ -87,8 +80,14 @@ export async function createServer(
     } else {
       if (typeof error.statusCode !== 'number' || error.statusCode === 500) {
         this.log.error(error);
+        void reply.status(500).send({
+          error: 'Internal Server Error',
+          message: 'internal error, please contact admin',
+          statusCode: 500,
+        });
+      } else {
+        void reply.send(error);
       }
-      void reply.send(error);
     }
   });
 
