@@ -242,7 +242,7 @@ export async function setup(app: App) {
       },
     },
     async (req, res) => {
-      const redirectUri = decodeURIComponent(req.query.redirect_uri);
+      const redirectUri = req.query.redirect_uri;
       try {
         new URL(redirectUri);
       } catch {
@@ -256,7 +256,7 @@ export async function setup(app: App) {
       await res.view('turnstile', {
         TURNSTILE_SITE_KEY: config.turnstile.siteKey,
         turnstile_theme: req.query.theme || 'auto',
-        redirect_uri: redirectUri,
+        redirect_uri: Buffer.from(redirectUri).toString('base64'),
       });
     },
   );
