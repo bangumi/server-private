@@ -3,6 +3,7 @@ import { createError } from '@fastify/error';
 import formBody from '@fastify/formbody';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
+import { sql } from 'drizzle-orm';
 import type { FastifySchema } from 'fastify';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime, Duration } from 'luxon';
@@ -410,7 +411,7 @@ async function tokenFromRefresh(req: {
 
   const refresh = await db.query.chiiOAuthRefreshToken.findFirst({
     where: op.and(
-      op.eq(chiiOAuthRefreshToken.refreshToken, req.refreshToken),
+      sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`,
       op.gt(chiiOAuthRefreshToken.expiredAt, now.toJSDate()),
     ),
   });
@@ -463,7 +464,7 @@ async function tokenFromRefresh(req: {
     await t
       .update(chiiOAuthRefreshToken)
       .set({ expiredAt: now.toJSDate() })
-      .where(op.eq(chiiOAuthRefreshToken.refreshToken, req.refreshToken))
+      .where(sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`)
       .execute();
   });
 
