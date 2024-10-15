@@ -25,9 +25,9 @@
   };
 
   function turnstileCallback(token) {
-    const redirectUri = '{{ redirect_uri }}';
-    const separator = redirectUri.includes('?') ? '&' : '?';
-    window.location.href = `${redirectUri}${separator}token=${encodeURIComponent(token)}`;
+    const u = new URL('{{ redirect_uri }}');
+    u.searchParams.set('token', token);
+    window.location.href = u.toString();
   }
 </script>
 {% endblock %}
