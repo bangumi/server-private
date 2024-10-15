@@ -5,7 +5,8 @@ import type { Server } from 'socket.io';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
-import { UnexpectedNotFoundError } from '@app/lib/error.ts';
+import config from '@app/lib/config.ts';
+import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
@@ -215,6 +216,39 @@ export async function setup(app: App) {
       f.blocklist = blocklist.join(',');
       await UserFieldRepo.save(f);
       return { blocklist: blocklist };
+    },
+  );
+
+  app.get(
+    '/turnstile',
+    {
+      schema: {
+        summary: '获取 Turnstile 令牌',
+        operationId: 'getTurnstileToken',
+        tags: [Tag.User],
+        querystring: t.Object({
+          theme: t.Optional(
+            t.Enum({
+              dark: 'dark',
+              light: 'light',
+              auto: 'auto',
+            }),
+          ),
+          redirect_uri: t.String(),
+        }),
+      },
+    },
+    async (req, res) => {
+      try {
+        new URL(req.query.redirect_uri);
+      } catch {
+        throw BadRequestError('Invalid redirect_uri.');
+      }
+      await res.view('turnstile', {
+        TURNSTILE_SITE_KEY: config.turnstile.siteKey,
+        turnstile_theme: req.query.theme || 'auto',
+        redirect_uri: req.query.redirect_uri,
+      });
     },
   );
 
