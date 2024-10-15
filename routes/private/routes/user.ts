@@ -219,11 +219,14 @@ export async function setup(app: App) {
     },
   );
 
+  const allowedRedirectUris: string[] = ['https://example.com'];
+
   app.get(
     '/turnstile',
     {
       schema: {
         summary: '获取 Turnstile 令牌',
+        description: '为防止滥用，Redirect URI 为白名单机制，如需添加请提交 PR。',
         operationId: 'getTurnstileToken',
         tags: [Tag.User],
         querystring: t.Object({
@@ -239,15 +242,21 @@ export async function setup(app: App) {
       },
     },
     async (req, res) => {
+      const redirectUri = decodeURIComponent(req.query.redirect_uri);
       try {
-        new URL(req.query.redirect_uri);
+        new URL(redirectUri);
       } catch {
-        throw BadRequestError('Invalid redirect_uri.');
+        throw BadRequestError('Invalid redirect URI.');
+      }
+      if (!allowedRedirectUris.some((allowedUri) => redirectUri.startsWith(allowedUri))) {
+        throw BadRequestError(
+          `Redirect URI is not in the whitelist, you can PR your redirect URI.`,
+        );
       }
       await res.view('turnstile', {
         TURNSTILE_SITE_KEY: config.turnstile.siteKey,
         turnstile_theme: req.query.theme || 'auto',
-        redirect_uri: req.query.redirect_uri,
+        redirect_uri: redirectUri,
       });
     },
   );
