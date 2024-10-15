@@ -1,0 +1,33 @@
+{% assign title = 'turnstile' %}
+
+{% block head %}
+<script
+  src='https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback'
+  async
+  defer
+></script>
+{% endblock %}
+
+{% block content %}
+<div id='turnstile-container'></div>
+
+<script>
+  window.onload = function () {
+    if (typeof turnstile !== 'undefined') {
+      turnstile.render('#turnstile-container', {
+        sitekey: '{{ TURNSTILE_SITE_KEY }}',
+        theme: '{{ turnstile_theme }}',
+        callback: turnstileCallback,
+      });
+    } else {
+      console.error('Turnstile API not loaded.');
+    }
+  };
+
+  function turnstileCallback(token) {
+    const u = new URL(atob('{{ redirect_uri }}'));
+    u.searchParams.set('token', token);
+    window.location.href = u.toString();
+  }
+</script>
+{% endblock %}
