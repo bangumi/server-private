@@ -31,7 +31,7 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
-import { rateLimite } from '@app/routes/hooks/rate-limit';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const Group = t.Object(
@@ -582,7 +582,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         display = TopicDisplay.Review;
       }
 
-      await rateLimite(LimitAction.Subject, auth.userID);
+      await rateLimit(LimitAction.Subject, auth.userID);
 
       return await orm.createPost({
         title,

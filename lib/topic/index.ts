@@ -27,7 +27,7 @@ import {
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
-import { rateLimite } from '@app/routes/hooks/rate-limit.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit.ts';
 import type { IBasicReply } from '@app/routes/private/routes/post.ts';
 
 import { NotAllowedError } from './../auth/index';
@@ -408,7 +408,7 @@ export async function handleTopicReply(
     }
   }
 
-  await rateLimite(LimitAction.Subject, auth.userID);
+  await rateLimit(LimitAction.Subject, auth.userID);
 
   const t = await createTopicReply({
     topicType,
