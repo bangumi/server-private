@@ -47,4 +47,26 @@ describe('user collection', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get indexes', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/1/collections/indexes',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get created indexes', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/14127/indexes',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
 });

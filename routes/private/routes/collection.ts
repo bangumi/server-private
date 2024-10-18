@@ -54,6 +54,15 @@ const UserPersonCollection = t.Object(
   { $id: 'UserPersonCollection' },
 );
 
+export type IUserIndexCollection = Static<typeof UserIndexCollection>;
+const UserIndexCollection = t.Object(
+  {
+    index: t.Ref(res.Index),
+    createdAt: t.Integer(),
+  },
+  { $id: 'UserIndexCollection' },
+);
+
 export type IUserCollectionsSubjectSummary = Static<typeof UserCollectionsSubjectSummary>;
 const UserCollectionsSubjectSummary = t.Object(
   {
@@ -159,6 +168,17 @@ function toUserPersonCollection(
 ): IUserPersonCollection {
   return {
     person: convert.toPerson(person),
+    createdAt: collect.createdAt,
+  };
+}
+
+function toUserIndexCollection(
+  collect: orm.IIndexCollect,
+  index: orm.IIndex,
+  user: orm.IUser,
+): IUserIndexCollection {
+  return {
+    index: convert.toIndex(index, user),
     createdAt: collect.createdAt,
   };
 }
@@ -480,8 +500,10 @@ export async function setup(app: App) {
         querystring: t.Object({
           subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
           type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
-          limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
           200: res.Paged(t.Ref(UserSubjectCollection)),
@@ -566,8 +588,10 @@ export async function setup(app: App) {
           username: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
           200: res.Paged(t.Ref(UserCharacterCollection)),
@@ -634,8 +658,10 @@ export async function setup(app: App) {
           username: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
           200: res.Paged(t.Ref(UserPersonCollection)),
@@ -680,6 +706,127 @@ export async function setup(app: App) {
 
       return {
         data: collection,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/users/:username/collections/indexes',
+    {
+      schema: {
+        summary: '获取用户目录收藏',
+        operationId: 'getUserIndexCollections',
+        tags: [Tag.Collection],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        responses: {
+          200: res.Paged(t.Ref(UserIndexCollection)),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const conditions = op.and(
+        op.eq(schema.chiiIndexCollects.uid, user.id),
+        op.eq(schema.chiiIndex.ban, 0),
+      );
+
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiIndexCollects)
+        .innerJoin(schema.chiiIndex, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndex.id))
+        .where(conditions)
+        .execute();
+
+      const data = await db
+        .select()
+        .from(schema.chiiIndexCollects)
+        .innerJoin(schema.chiiIndex, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndex.id))
+        .innerJoin(schema.chiiUser, op.eq(schema.chiiIndex.uid, schema.chiiUser.id))
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiIndexCollects.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const collection = data.map((d) =>
+        toUserIndexCollection(d.chii_index_collects, d.chii_index, d.chii_members),
+      );
+
+      return {
+        data: collection,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/users/:username/indexes',
+    {
+      schema: {
+        summary: '获取用户创建的目录',
+        operationId: 'getUserIndexes',
+        tags: [Tag.Collection],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        responses: {
+          200: res.Paged(t.Ref(res.Index)),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const conditions = op.and(
+        op.eq(schema.chiiIndex.uid, user.id),
+        op.eq(schema.chiiIndex.ban, 0),
+      );
+
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiIndex)
+        .where(conditions)
+        .execute();
+
+      const data = await db
+        .select()
+        .from(schema.chiiIndex)
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiIndex.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const indexes = data.map((d) => convert.toSlimIndex(d));
+
+      return {
+        data: indexes,
         total: count,
       };
     },
