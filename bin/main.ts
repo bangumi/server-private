@@ -21,7 +21,7 @@ async function main() {
     genReqId:
       production || stage
         ? (req) => {
-            return (req.headers['cf-ray'] as string) ?? `dummy-${crypto.randomUUID()}`;
+            return (req.headers['x-request-id'] as string) ?? `dummy-prod-${crypto.randomUUID()}`;
           }
         : (): string => {
             return `dummy-${crypto.randomUUID()}`;
