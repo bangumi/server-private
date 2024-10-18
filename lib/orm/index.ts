@@ -5,7 +5,7 @@ import { DataSource, In } from 'typeorm';
 
 import { db, op } from '@app/drizzle/db.ts';
 import { chiiFriends, chiiUsergroup } from '@app/drizzle/schema.ts';
-import config from '@app/lib/config.ts';
+import config, { production, stage } from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
 import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
@@ -70,9 +70,13 @@ export const AppDataSource = new DataSource({
       logger.error({ error, query, parameters }, 'query error');
     },
 
-    logQuery(query, params) {
-      logger.trace({ query, params });
-    },
+    logQuery:
+      production || stage
+        ? // eslint-disable-next-line @typescript-eslint/no-empty-function
+          () => {}
+        : (query, params) => {
+            logger.trace({ query, params });
+          },
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     logSchemaBuild() {},

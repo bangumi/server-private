@@ -8,6 +8,7 @@ import {
 import * as mysql from 'mysql2/promise';
 
 import config, { developing, testing } from '@app/lib/config.ts';
+import { logger } from '@app/lib/logger.ts';
 
 import * as schema from './schema.ts';
 
@@ -26,8 +27,7 @@ export const db = drizzle(poolConnection, {
     testing || developing
       ? {
           logQuery(query: string, params: unknown[]) {
-            // eslint-disable-next-line no-console
-            console.log('query:', query, params);
+            logger.trace('query', { query, params });
           },
         }
       : undefined,
