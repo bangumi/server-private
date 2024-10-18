@@ -501,7 +501,7 @@ export async function setup(app: App) {
           subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
           type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
           limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
           200: res.Paged(t.Ref(UserSubjectCollection)),
@@ -587,7 +587,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
           200: res.Paged(t.Ref(UserCharacterCollection)),
@@ -655,7 +655,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
           200: res.Paged(t.Ref(UserPersonCollection)),
@@ -717,7 +717,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
           200: res.Paged(t.Ref(UserIndexCollection)),
@@ -778,7 +778,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 100, description: 'max 100' })),
-          offset: t.Optional(t.Integer({ default: 0 })),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
           200: res.Paged(t.Ref(res.Index)),
