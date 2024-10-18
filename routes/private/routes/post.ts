@@ -24,7 +24,7 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
-import { rateLimiter } from '@app/routes/hooks/rate-limit';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const BaseEpisodeComment = t.Object(
@@ -233,7 +233,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           },
         ),
       },
-      preHandler: [requireLogin('creating a comment'), rateLimiter(LimitAction.Subject)],
+      preHandler: [requireLogin('creating a comment')],
     },
     /**
      * @param auth -
@@ -275,6 +275,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           throw new NotAllowedError(`reply to a abnormal state comment`);
         }
       }
+
+      await rateLimit(LimitAction.Subject, auth.userID);
 
       const c = await EpisodeCommentRepo.save({
         content: content,
@@ -651,7 +653,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           },
         ),
       },
-      preHandler: [requireLogin('creating a reply'), rateLimiter(LimitAction.Subject)],
+      preHandler: [requireLogin('creating a reply')],
     },
     /**
      * @param auth -
