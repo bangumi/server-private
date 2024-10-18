@@ -316,7 +316,7 @@ export async function setup(app: App) {
             count: op.count(),
           })
           .from(schema.chiiIndex)
-          .where(op.and(op.eq(schema.chiiIndex.uid, userID)))
+          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.eq(schema.chiiIndex.ban, 0)))
           .execute();
         indexSummary.count = count;
       }
@@ -432,7 +432,7 @@ export async function setup(app: App) {
         const data = await db
           .select()
           .from(schema.chiiIndex)
-          .where(op.eq(schema.chiiIndex.uid, userID))
+          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.eq(schema.chiiIndex.ban, 0)))
           .orderBy(op.desc(schema.chiiIndex.createdAt))
           .limit(7)
           .execute();
