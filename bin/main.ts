@@ -2,7 +2,7 @@ import * as console from 'node:console';
 import * as crypto from 'node:crypto';
 import * as process from 'node:process';
 
-import config, { production } from '@app/lib/config.ts';
+import config, { production, stage } from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger.ts';
 import { AppDataSource } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
@@ -18,9 +18,14 @@ async function main() {
   const server = await createServer({
     loggerInstance: logger.child({ name: 'fastify' }, { level: production ? 'warn' : 'info' }),
     disableRequestLogging: process.env.ENABLE_REQUEST_LOGGING !== 'true',
-    genReqId: (): string => {
-      return `dummy-${crypto.randomUUID()}`;
-    },
+    genReqId:
+      production || stage
+        ? (req) => {
+            return (req.headers['cf-ray'] as string) ?? `dummy-${crypto.randomUUID()}`;
+          }
+        : (): string => {
+            return `dummy-${crypto.randomUUID()}`;
+          },
   });
 
   server.addHook('onReady', async () => {
