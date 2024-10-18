@@ -276,7 +276,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }
       }
 
-      rateLimiter(LimitAction.Subject);
+      await rateLimiter(LimitAction.Subject, auth.userID);
 
       const c = await EpisodeCommentRepo.save({
         content: content,

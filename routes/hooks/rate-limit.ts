@@ -1,6 +1,5 @@
 import { createError } from '@fastify/error';
 
-import type { IAuth } from '@app/lib/auth';
 import type { LimitAction } from '@app/lib/utils/rate-limit';
 import { createLimiter } from '@app/lib/utils/rate-limit';
 
@@ -41,20 +40,13 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
 
 const limiter = createLimiter();
 
-export const rateLimiter = (action: LimitAction) => {
+export const rateLimiter = async (action: LimitAction, userID: number) => {
   const rule = LIMIT_RULES[action];
   if (!rule) {
     throw new InvalidRateLimitType(action);
   }
-  return async (req: { auth: IAuth }) => {
-    const result = await limiter.userAction(
-      req.auth.userID,
-      action,
-      rule.durationMinutes * 60,
-      rule.limit,
-    );
-    if (result.limited) {
-      throw new RateLimitExceeded();
-    }
-  };
+  const result = await limiter.userAction(userID, action, rule.durationMinutes * 60, rule.limit);
+  if (result.limited) {
+    throw new RateLimitExceeded();
+  }
 };

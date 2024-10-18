@@ -582,7 +582,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         display = TopicDisplay.Review;
       }
 
-      rateLimiter(LimitAction.Subject);
+      await rateLimiter(LimitAction.Subject, auth.userID);
 
       return await orm.createPost({
         title,

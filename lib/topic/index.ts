@@ -408,7 +408,7 @@ export async function handleTopicReply(
     }
   }
 
-  rateLimiter(LimitAction.Subject);
+  await rateLimiter(LimitAction.Subject, auth.userID);
 
   const t = await createTopicReply({
     topicType,
