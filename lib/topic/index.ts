@@ -26,6 +26,8 @@ import {
 } from '@app/lib/orm/index.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
 import * as convert from '@app/lib/types/convert.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit.ts';
 import type { IBasicReply } from '@app/routes/private/routes/post.ts';
 
 import { NotAllowedError } from './../auth/index';
@@ -405,6 +407,8 @@ export async function handleTopicReply(
       throw new NotJoinPrivateGroupError(group.name);
     }
   }
+
+  await rateLimit(LimitAction.Subject, auth.userID);
 
   const t = await createTopicReply({
     topicType,
