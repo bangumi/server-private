@@ -6,11 +6,18 @@ import { pino } from 'pino';
 import { production, stage, testing, VERSION } from './config.ts';
 
 function requestMixin() {
+  const ctx: Record<string, unknown> = {};
   const req = requestContext.get('req');
   if (req) {
-    return { request: req };
+    ctx.request = req;
   }
-  return {};
+
+  const user = requestContext.get('user');
+  if (user) {
+    ctx.userID = user;
+  }
+
+  return ctx;
 }
 
 function createLogger() {

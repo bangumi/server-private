@@ -48,6 +48,7 @@ class ValidationError extends Error {
 declare module '@fastify/request-context' {
   interface RequestContextData {
     req: unknown;
+    user?: number;
   }
 }
 
