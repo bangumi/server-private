@@ -54,8 +54,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(ajv@8.17.1)
       altair-static:
-        specifier: ^7.3.6
-        version: 7.3.6
+        specifier: ^8.0.0
+        version: 8.0.0
       drizzle-orm:
         specifier: ^0.34.1
         version: 0.34.1(@opentelemetry/api@1.9.0)(mysql2@3.11.3)
@@ -2483,8 +2483,8 @@ packages:
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
 
-  altair-static@7.3.6:
-    resolution: {integrity: sha512-zI/6lBe7Qy+ib4s5mz5KhiwkiM3oJFnvbfgLucRbf5trIK70vT/EQ3odMDCEn3igg8hE85teNU8BZffvuEfm9g==}
+  altair-static@8.0.0:
+    resolution: {integrity: sha512-5CxsCPqGHXrSJpMzJtbBydMp8taOOak7bPBP5xTlNhNQSYJKJm+Lrd45N3fH8Nkx3elEi0odr9th/5HMhSnpBQ==}
     engines: {node: '>= 6.9.1'}
 
   ansi-escapes@4.3.2:
@@ -8085,7 +8085,7 @@ snapshots:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
-  altair-static@7.3.6: {}
+  altair-static@8.0.0: {}
 
   ansi-escapes@4.3.2:
     dependencies:
