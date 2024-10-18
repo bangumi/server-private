@@ -12,4 +12,4 @@ export type IPerson = typeof schema.chiiPersons.$inferSelect;
 export type IPersonCollect = typeof schema.chiiPersonCollects.$inferSelect;
 
 export type IIndex = typeof schema.chiiIndex.$inferSelect;
-export type IndexCollect = typeof schema.chiiIndexCollects.$inferSelect;
+export type IIndexCollect = typeof schema.chiiIndexCollects.$inferSelect;

@@ -94,6 +94,28 @@ Object {
 }
 `;
 
+exports[`user collection > should get created indexes 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1352366596,
+      "id": 15045,
+      "title": "日本动画最高收视率TOP100",
+      "total": 101,
+      "type": 0,
+    },
+  ],
+  "total": 1,
+}
+`;
+
+exports[`user collection > should get indexes 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`user collection > should get persons 1`] = `
 Object {
   "data": Array [
