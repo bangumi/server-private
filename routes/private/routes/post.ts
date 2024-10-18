@@ -233,7 +233,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           },
         ),
       },
-      preHandler: [requireLogin('creating a comment'), rateLimiter(LimitAction.Subject)],
+      preHandler: [requireLogin('creating a comment')],
     },
     /**
      * @param auth -
@@ -275,6 +275,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           throw new NotAllowedError(`reply to a abnormal state comment`);
         }
       }
+
+      rateLimiter(LimitAction.Subject);
 
       const c = await EpisodeCommentRepo.save({
         content: content,
@@ -651,7 +653,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
           },
         ),
       },
-      preHandler: [requireLogin('creating a reply'), rateLimiter(LimitAction.Subject)],
+      preHandler: [requireLogin('creating a reply')],
     },
     /**
      * @param auth -

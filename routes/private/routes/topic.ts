@@ -552,7 +552,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Ref(TopicBasic),
       },
-      preHandler: [requireLogin('creating a topic'), rateLimiter(LimitAction.Subject)],
+      preHandler: [requireLogin('creating a topic')],
     },
     async ({
       auth,
@@ -581,6 +581,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       if (dam.needReview(title) || dam.needReview(text)) {
         display = TopicDisplay.Review;
       }
+
+      rateLimiter(LimitAction.Subject);
 
       return await orm.createPost({
         title,
