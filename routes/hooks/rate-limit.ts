@@ -40,7 +40,7 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
 
 const limiter = createLimiter();
 
-export const rateLimiter = async (action: LimitAction, userID: number) => {
+export const rateLimite = async (action: LimitAction, userID: number) => {
   const rule = LIMIT_RULES[action];
   if (!rule) {
     throw new InvalidRateLimitType(action);
