@@ -29,7 +29,6 @@ export async function setupRecentChangeList(app: App) {
   );
 
   app.addSchema(RecentWikiChange);
-  app.addSchema(res.Error);
 
   app.get(
     '/recent',

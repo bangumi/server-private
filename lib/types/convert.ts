@@ -31,6 +31,15 @@ export function toUser(user: orm.IUser): res.IUser {
   };
 }
 
+export function toFriend(user: orm.IUser, friend: orm.IFriends): res.IFriend {
+  return {
+    user: toUser(user),
+    grade: friend.grade,
+    createdAt: friend.createdAt,
+    description: friend.description,
+  };
+}
+
 export function toInfobox(content: string): res.IInfobox {
   let wiki: WikiMap = {
     type: '',

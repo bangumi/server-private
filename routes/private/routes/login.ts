@@ -46,8 +46,6 @@ export async function setup(app: App) {
   // 10 calls per 600s
   const limiter = createLimiter();
 
-  app.addSchema(res.User);
-  app.addSchema(res.Error);
   app.addSchema(clientPermission);
   app.addSchema(currentUser);
 

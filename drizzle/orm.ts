@@ -3,6 +3,8 @@ import type * as schema from './schema.ts';
 export type IUser = typeof schema.chiiUser.$inferSelect;
 export type IUserFields = typeof schema.chiiUserFields.$inferSelect;
 
+export type IFriends = typeof schema.chiiFriends.$inferSelect;
+
 export type ISubject = typeof schema.chiiSubjects.$inferSelect;
 export type ISubjectFields = typeof schema.chiiSubjectFields.$inferSelect;
 export type ISubjectInterests = typeof schema.chiiSubjectInterests.$inferSelect;

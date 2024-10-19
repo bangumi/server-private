@@ -250,6 +250,17 @@ export const User = t.Object(
   { $id: 'User', title: 'User' },
 );
 
+export type IFriend = Static<typeof Friend>;
+export const Friend = t.Object(
+  {
+    user: t.Ref(User),
+    grade: t.Integer(),
+    createdAt: t.Integer(),
+    description: t.String(),
+  },
+  { $id: 'Friend', title: 'Friend' },
+);
+
 export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
