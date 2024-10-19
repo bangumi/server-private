@@ -5,7 +5,7 @@ import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
-import { Tag } from '@app/lib/openapi/index.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import {
   CollectionType,
@@ -199,6 +199,7 @@ export async function setup(app: App) {
         summary: '获取用户收藏概览',
         operationId: 'getUserCollectionsSummary',
         tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           username: t.String({ minLength: 1 }),
         }),
@@ -477,6 +478,7 @@ export async function setup(app: App) {
         summary: '获取用户条目收藏',
         operationId: 'getUserSubjectCollections',
         tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           username: t.String({ minLength: 1 }),
         }),
@@ -567,6 +569,7 @@ export async function setup(app: App) {
         summary: '获取用户角色收藏',
         operationId: 'getUserCharacterCollections',
         tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           username: t.String({ minLength: 1 }),
         }),
@@ -637,6 +640,7 @@ export async function setup(app: App) {
         summary: '获取用户人物收藏',
         operationId: 'getUserPersonCollections',
         tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           username: t.String({ minLength: 1 }),
         }),
@@ -701,6 +705,7 @@ export async function setup(app: App) {
         summary: '获取用户目录收藏',
         operationId: 'getUserIndexCollections',
         tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           username: t.String({ minLength: 1 }),
         }),
@@ -764,6 +769,7 @@ export async function setup(app: App) {
         summary: '获取用户创建的目录',
         operationId: 'getUserIndexes',
         tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           username: t.String({ minLength: 1 }),
         }),

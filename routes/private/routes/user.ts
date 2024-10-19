@@ -49,7 +49,7 @@ export async function setup(app: App) {
         summary: '获取未读通知',
         operationId: 'listNotice',
         tags: [Tag.User],
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 40, description: 'max 40' })),
           unread: t.Optional(t.Boolean()),
@@ -100,7 +100,7 @@ export async function setup(app: App) {
         description: ['标记通知为已读', '不传id时会清空所有未读通知'].join('\n\n'),
         operationId: 'clearNotice',
         tags: [Tag.User],
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             id: t.Optional(t.Array(t.Integer())),
