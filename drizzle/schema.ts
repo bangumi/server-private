@@ -227,16 +227,16 @@ export const chiiEpStatus = mysqlTable(
 export const chiiFriends = mysqlTable(
   'chii_friends',
   {
-    frdUid: mediumint('frd_uid').notNull(),
-    frdFid: mediumint('frd_fid').notNull(),
-    frdGrade: tinyint('frd_grade').default(1).notNull(),
-    frdDateline: int('frd_dateline').default(0).notNull(),
-    frdDescription: char('frd_description', { length: 255 }).notNull(),
+    uid: mediumint('frd_uid').notNull(),
+    fid: mediumint('frd_fid').notNull(),
+    grade: tinyint('frd_grade').default(1).notNull(),
+    createdAt: int('frd_dateline').default(0).notNull(),
+    description: char('frd_description', { length: 255 }).notNull(),
   },
   (table) => {
     return {
-      uid: index('uid').on(table.frdUid),
-      frdFid: index('frd_fid').on(table.frdFid),
+      uid: index('uid').on(table.uid),
+      frdFid: index('frd_fid').on(table.fid),
     };
   },
 );

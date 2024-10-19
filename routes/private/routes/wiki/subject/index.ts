@@ -138,7 +138,6 @@ export const SubjectWikiInfo = t.Object(
 export async function setup(app: App) {
   imageRoutes.setup(app);
   manageRoutes.setup(app);
-  app.addSchema(res.Error);
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
   app.addSchema(SubjectWikiInfo);

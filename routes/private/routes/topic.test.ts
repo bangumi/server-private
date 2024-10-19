@@ -1,10 +1,8 @@
-import { fastify } from 'fastify';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { createServer } from '@app/lib/server.ts';
 import { fetchTopicDetail, Type } from '@app/lib/topic/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -58,10 +56,11 @@ beforeEach(async () => {
 
 describe('group topics', () => {
   test('should failed on not found group', async () => {
-    const app = await createServer();
+    const app = await createTestServer();
+    await app.register(setup);
 
     const res = await app.inject({
-      url: '/p1/groups/non-existing/topics',
+      url: '/groups/non-existing/topics',
     });
 
     expect(res.statusCode).toBe(404);
@@ -69,10 +68,11 @@ describe('group topics', () => {
   });
 
   test('should return data', async () => {
-    const app = await createServer();
+    const app = await createTestServer();
+    await app.register(setup);
 
     const res = await app.inject({
-      url: '/p1/groups/sandbox/topics',
+      url: '/groups/sandbox/topics',
     });
     const data = res.json();
 
@@ -81,9 +81,10 @@ describe('group topics', () => {
   });
 
   test('should fetch group profile', async () => {
-    const app = await createServer();
+    const app = await createTestServer();
+    await app.register(setup);
 
-    const res = await app.inject('/p1/groups/sandbox/profile');
+    const res = await app.inject('/groups/sandbox/profile');
     const data = res.json();
 
     expect(res.statusCode).toBe(200);
@@ -101,9 +102,10 @@ describe('group topics', () => {
   });
 
   test('should fetch topic details', async () => {
-    const app = await createServer();
+    const app = await createTestServer();
+    await app.register(setup);
 
-    const res = await app.inject('/p1/groups/-/topics/379821');
+    const res = await app.inject('/groups/-/topics/379821');
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
@@ -166,7 +168,7 @@ describe('create group post', () => {
   vi.spyOn(orm, 'createPost').mockImplementation(createPostInGroup);
 
   test('should create group topic', async () => {
-    const app = fastify();
+    const app = createTestServer();
 
     app.addHook('preHandler', (req, res, done) => {
       req.auth = {
@@ -197,7 +199,7 @@ describe('create group post', () => {
   });
 
   test('should not create with banned user', async () => {
-    const app = fastify();
+    const app = createTestServer();
 
     app.addHook('preHandler', (req, res, done) => {
       req.auth = {

@@ -185,24 +185,7 @@ function toUserIndexCollection(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(res.User);
-  app.addSchema(res.Error);
-  app.addSchema(res.SubjectAirtime);
-  app.addSchema(res.SubjectCollection);
-  app.addSchema(res.SubjectImages);
-  app.addSchema(res.SubjectPlatform);
-  app.addSchema(res.SubjectRating);
-  app.addSchema(res.PersonImages);
-  app.addSchema(res.Infobox);
-  app.addSchema(res.Subject);
-  app.addSchema(res.SlimSubject);
   app.addSchema(UserSubjectCollection);
-  app.addSchema(res.Character);
-  app.addSchema(res.SlimCharacter);
-  app.addSchema(res.Person);
-  app.addSchema(res.SlimPerson);
-  app.addSchema(res.Index);
-  app.addSchema(res.SlimIndex);
   app.addSchema(UserCollectionsSubjectSummary);
   app.addSchema(UserCollectionsCharacterSummary);
   app.addSchema(UserCollectionsPersonSummary);

@@ -2,14 +2,16 @@ import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
 
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import config from '@app/lib/config.ts';
-import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
+import { fetchUserByUsername, fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -30,6 +32,7 @@ const NoticeRes = t.Object(
   },
   { $id: 'Notice' },
 );
+
 declare module 'fastify' {
   interface FastifyInstance {
     io: Server;
@@ -37,7 +40,6 @@ declare module 'fastify' {
 }
 
 export async function setup(app: App) {
-  app.addSchema(res.Error);
   app.addSchema(NoticeRes);
 
   app.get(
@@ -216,6 +218,65 @@ export async function setup(app: App) {
       f.blocklist = blocklist.join(',');
       await UserFieldRepo.save(f);
       return { blocklist: blocklist };
+    },
+  );
+
+  app.get(
+    '/users/:username/friends',
+    {
+      schema: {
+        summary: '获取用户的好友列表',
+        operationId: 'getFriends',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          username: t.String(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.Friend)),
+          404: t.Ref(res.Error, {
+            'x-examples': res.formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const conditions = op.and(op.eq(schema.chiiFriends.uid, user.id));
+
+      const [{ count = 0 } = {}] = await db
+        .select({
+          count: op.count(),
+        })
+        .from(schema.chiiFriends)
+        .where(conditions)
+        .execute();
+
+      const data = await db
+        .select()
+        .from(schema.chiiFriends)
+        .innerJoin(schema.chiiUser, op.eq(schema.chiiFriends.fid, schema.chiiUser.id))
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiFriends.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const friends = data.map((d) => convert.toFriend(d.chii_members, d.chii_friends));
+
+      return {
+        data: friends,
+        total: count,
+      };
     },
   );
 

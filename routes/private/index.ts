@@ -3,6 +3,7 @@ import Cookie from '@fastify/cookie';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { production } from '@app/lib/config.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
+import { addSchemas } from '@app/routes/res.ts';
 import * as swagger from '@app/routes/swagger.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -39,6 +40,7 @@ export async function setup(app: App) {
 
 async function API(app: App) {
   await swagger.privateAPI(app);
+  addSchemas(app);
 
   await app.register(collection.setup);
   await app.register(login.setup);

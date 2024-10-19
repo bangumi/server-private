@@ -226,32 +226,119 @@ Object {
   },
   "id": 3,
   "parent": Object {
-    "date": "2008-07-17",
+    "airtime": Object {
+      "date": "2008-07-17",
+      "month": 7,
+      "weekday": 4,
+      "year": 2008,
+    },
+    "collection": Object {
+      "1": 21,
+      "2": 197,
+      "3": 6,
+      "4": 5,
+      "5": 4,
+    },
+    "eps": 0,
     "id": 4,
-    "image": "a8/7f/4_cMMK5.jpg",
-    "infobox": "{{Infobox Game
-|中文名= 合金弹头7
-|别名={
-[Metal Slug 7]
-}
-|平台= NDS
-|游戏类型= ACT
-|游戏引擎=
-|游玩人数= 1人
-|发行日期= 2008-07-17
-|售价= 5040円
-|website=
-|开发= SNKプレイモア
-|发行= SNKプレイモア
-}}",
+    "images": Object {
+      "common": "https://lain.bgm.tv/pic/cover/c/a8/7f/4_cMMK5.jpg",
+      "grid": "https://lain.bgm.tv/pic/cover/g/a8/7f/4_cMMK5.jpg",
+      "large": "https://lain.bgm.tv/pic/cover/l/a8/7f/4_cMMK5.jpg",
+      "medium": "https://lain.bgm.tv/pic/cover/m/a8/7f/4_cMMK5.jpg",
+      "small": "https://lain.bgm.tv/pic/cover/s/a8/7f/4_cMMK5.jpg",
+    },
+    "infobox": Object {
+      "website": Array [
+        Object {
+          "v": "",
+        },
+      ],
+      "中文名": Array [
+        Object {
+          "v": "合金弹头7",
+        },
+      ],
+      "别名": Array [
+        Object {
+          "v": "Metal Slug 7",
+        },
+      ],
+      "发行": Array [
+        Object {
+          "v": "SNKプレイモア",
+        },
+      ],
+      "发行日期": Array [
+        Object {
+          "v": "2008-07-17",
+        },
+      ],
+      "售价": Array [
+        Object {
+          "v": "5040円",
+        },
+      ],
+      "平台": Array [
+        Object {
+          "v": "NDS",
+        },
+      ],
+      "开发": Array [
+        Object {
+          "v": "SNKプレイモア",
+        },
+      ],
+      "游戏引擎": Array [
+        Object {
+          "v": "",
+        },
+      ],
+      "游戏类型": Array [
+        Object {
+          "v": "ACT",
+        },
+      ],
+      "游玩人数": Array [
+        Object {
+          "v": "1人",
+        },
+      ],
+    },
     "locked": false,
+    "metaTags": Array [],
     "name": "メタルスラッグ7",
+    "nameCN": "合金弹头7",
     "nsfw": false,
-    "platform": 5,
+    "platform": Object {
+      "alias": "",
+      "id": 0,
+      "type": "",
+      "typeCN": "",
+    },
+    "rating": Object {
+      "count": Array [
+        0,
+        0,
+        0,
+        1,
+        8,
+        47,
+        43,
+        39,
+        3,
+        2,
+      ],
+      "score": 6.9,
+      "total": 143,
+    },
     "redirect": 0,
+    "series": false,
+    "seriesEntry": 0,
     "summary": "　　以细腻的画风、搞笑的动作和刺激的战斗被人们所熟知的“合金弹头系列”在NDS 平台推出正统续作！虽然本系列的前几部作品最早都是作为街机游戏而推出的，不过这一次的“7”不但先推出NDS版，而且是独占！日前SNK playmore宣布了这款游戏，目前发售日定为2008年3月。据称，本作中将搭载任务模式，在关卡中不断完成教官所下达的任务，提升军衔。
 　　游戏依然保持了系列一贯的风格，战斗的场面也没有因为是掌机游戏而进行削减，游戏依然是射击、跳跃和手雷三个按键，虽然是NDS游戏，不过本作却并不对应触摸屏，游戏的画面显示在上屏幕，而下屏幕则用来显示地图。在TGS 2007（Tokyo Game Show）大会上SNK放出了《合金弹头7》的试玩版。这代产品沿袭了前代风格，战斗的对象似乎也没有多大变化，没有分支路线，不过游戏性和关卡设计却不比前几代差，关卡数也有7关，另外还增加了一种武器。",
-    "typeID": 4,
+    "type": 4,
+    "volumes": 0,
   },
   "reactions": Array [],
   "replies": Array [

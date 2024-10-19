@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { DataSource, In } from 'typeorm';
 
 import { db, op } from '@app/drizzle/db.ts';
-import { chiiFriends, chiiUsergroup } from '@app/drizzle/schema.ts';
+import * as schema from '@app/drizzle/schema.ts';
 import config from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
@@ -264,7 +264,7 @@ const defaultPermission: Permission = {
 
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
   const permission = await db.query.chiiUsergroup.findFirst({
-    where: op.eq(chiiUsergroup.id, userGroup),
+    where: op.eq(schema.chiiUsergroup.id, userGroup),
   });
   if (!permission) {
     logger.warn("can't find permission for userGroup %d", userGroup);
@@ -462,7 +462,6 @@ export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
   if (!f) {
     throw new UnexpectedNotFoundError(`subject fields ${id}`);
   }
-
   return {
     id: subject.id,
     name: subject.name,
@@ -489,17 +488,20 @@ export async function fetchFriends(id?: number): Promise<Record<number, boolean>
     return {};
   }
 
-  const friends = await db.select().from(chiiFriends).where(op.eq(chiiFriends.frdUid, id));
+  const friends = await db
+    .select()
+    .from(schema.chiiFriends)
+    .where(op.eq(schema.chiiFriends.uid, id));
 
-  return Object.fromEntries(friends.map((x) => [x.frdFid, true]));
+  return Object.fromEntries(friends.map((x) => [x.fid, true]));
 }
 
 /** Is user(another) is friend of user(userID) */
 export async function isFriends(userID: number, another: number): Promise<boolean> {
   const [friends = 0] = await db
     .select({ count: op.count() })
-    .from(chiiFriends)
-    .where(op.and(op.eq(chiiFriends.frdUid, userID), op.eq(chiiFriends.frdFid, another)));
+    .from(schema.chiiFriends)
+    .where(op.and(op.eq(schema.chiiFriends.uid, userID), op.eq(schema.chiiFriends.uid, another)));
 
   return friends !== 0;
 }

@@ -27,6 +27,7 @@ import {
   Type,
 } from '@app/lib/topic/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
@@ -46,23 +47,6 @@ const Group = t.Object(
     createdAt: t.Integer(),
   },
   { $id: 'Group' },
-);
-
-const Subject = t.Object(
-  {
-    id: t.Integer(),
-    name: t.String(),
-    typeID: t.Integer(),
-    infobox: t.String(),
-    platform: t.Integer(),
-    summary: t.String(),
-    nsfw: t.Boolean(),
-    date: t.String(),
-    redirect: t.Integer(),
-    locked: t.Boolean(),
-    image: t.String(),
-  },
-  { $id: 'Subject' },
 );
 
 type IGroupMember = Static<typeof GroupMember>;
@@ -116,7 +100,7 @@ const Reply = t.Object(
 const TopicDetail = t.Object(
   {
     id: t.Integer(),
-    parent: t.Union([t.Ref(Group), t.Ref(Subject)]),
+    parent: t.Union([t.Ref(Group), t.Ref(res.Subject)]),
     creator: t.Ref(res.User),
     title: t.String(),
     text: t.String(),
@@ -148,10 +132,8 @@ const TopicBasic = t.Object(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(res.Error);
   app.addSchema(res.Topic);
   app.addSchema(Group);
-  app.addSchema(Subject);
   app.addSchema(TopicBasic);
 
   const GroupProfile = t.Object(
@@ -748,14 +730,14 @@ export async function handleTopicDetail(
     throw new NotFoundError(`topic ${id}`);
   }
 
-  let parent: orm.IGroup | orm.ISubject | null;
+  let parent: orm.IGroup | res.ISubject | null;
   switch (type) {
     case Type.group: {
       parent = await orm.fetchGroupByID(topic.parentID);
       break;
     }
     case Type.subject: {
-      parent = await orm.fetchSubjectByID(topic.parentID);
+      parent = await fetcher.fetchSubjectByID(topic.parentID);
       break;
     }
     default: {
