@@ -68,6 +68,7 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
 
   if (user.password === passwordCrypt) {
     req.auth = await auth.byUserID(userID);
+    req.requestContext.set('user', req.auth.userID);
     return true;
   }
 
@@ -94,6 +95,7 @@ export async function sessionAuth(req: FastifyRequest, res: FastifyReply) {
   }
 
   req.auth = a;
+  req.requestContext.set('user', a.userID);
 }
 
 export async function Auth(req: FastifyRequest, res: FastifyReply) {
@@ -111,6 +113,7 @@ export async function accessTokenAuth(req: FastifyRequest): Promise<boolean> {
   const a = await auth.byHeader(token);
   if (a) {
     req.auth = a;
+    req.requestContext.set('user', a.userID);
     return true;
   }
   return false;

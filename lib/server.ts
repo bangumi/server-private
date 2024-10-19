@@ -1,3 +1,4 @@
+import fastifyRequestContextPlugin from '@fastify/request-context';
 import type { Static } from '@sinclair/typebox';
 import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
@@ -41,6 +42,13 @@ class ValidationError extends Error {
   constructor(msg: string) {
     super(msg);
     this.message = msg;
+  }
+}
+
+declare module '@fastify/request-context' {
+  interface RequestContextData {
+    req: unknown;
+    user?: number;
   }
 }
 
@@ -121,6 +129,15 @@ export async function createServer(
       },
     });
   }
+
+  await server.register(fastifyRequestContextPlugin, {
+    defaultStoreValues: (req) => ({
+      req: {
+        id: req.id,
+        url: req.url,
+      },
+    }),
+  });
 
   await server.register(mercurius, {
     schema,
