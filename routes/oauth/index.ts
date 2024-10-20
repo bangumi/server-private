@@ -23,7 +23,7 @@ import { BadRequestError } from '@app/lib/error.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import * as convert from '@app/lib/types/convert.ts';
-import { randomBase62String, randomBase64url } from '@app/lib/utils/index.ts';
+import { randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App, Reply, Request } from '@app/routes/type.ts';
 
@@ -371,7 +371,7 @@ async function tokenFromCode(req: {
     type: TokenType.AccessToken,
     userID: userID,
     clientID: client.clientID,
-    accessToken: await randomBase62String(40),
+    accessToken: await randomBase64url(30),
     expiredAt: DateTime.fromJSDate(now)
       .plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS }))
       .toJSDate(),
@@ -381,7 +381,7 @@ async function tokenFromCode(req: {
   const refresh: typeof chiiOAuthRefreshToken.$inferInsert = {
     userID: userID,
     clientID: client.clientID,
-    refreshToken: await randomBase62String(40),
+    refreshToken: await randomBase64url(30),
     expiredAt: DateTime.fromJSDate(now)
       .plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS }))
       .toJSDate(),
@@ -440,7 +440,7 @@ async function tokenFromRefresh(req: {
     type: TokenType.AccessToken,
     userID: refresh.userID,
     clientID: client.clientID,
-    accessToken: await randomBase62String(40),
+    accessToken: await randomBase64url(30),
     expiredAt: now.plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS })).toJSDate(),
     scope: refresh.scope,
     info: JSON.stringify({
@@ -452,7 +452,7 @@ async function tokenFromRefresh(req: {
   const newRefresh: typeof chiiOAuthRefreshToken.$inferInsert = {
     userID: refresh.userID,
     clientID: client.clientID,
-    refreshToken: await randomBase62String(40),
+    refreshToken: await randomBase64url(30),
     expiredAt: now.plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS })).toJSDate(),
     scope: refresh.scope,
   };
