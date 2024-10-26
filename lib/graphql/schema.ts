@@ -107,7 +107,12 @@ export const resolvers = {
           .where('t.subjectID = :s', { s: parent.id })
           .getCount();
 
-        offset = count + offset;
+        if (count === 0) {
+          return [];
+        }
+
+        // if count == 1, offset == -2, offset should be 0
+        offset = Math.max(count + offset, 0);
       }
 
       let s = repo.Episode.createQueryBuilder('t')
