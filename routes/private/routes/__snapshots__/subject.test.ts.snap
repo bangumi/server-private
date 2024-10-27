@@ -204,6 +204,90 @@ Object {
 }
 `;
 
+exports[`subject > should get subject characters 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "character": Object {
+        "id": 32,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+          "large": "https://lain.bgm.tv/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+          "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+          "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+        },
+        "lock": false,
+        "name": "ちぃ",
+        "nsfw": false,
+        "role": 1,
+      },
+      "order": 0,
+      "type": 1,
+    },
+    Object {
+      "character": Object {
+        "id": 33,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+          "large": "https://lain.bgm.tv/pic/crt/l/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+          "medium": "https://lain.bgm.tv/pic/crt/m/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+          "small": "https://lain.bgm.tv/pic/crt/s/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+        },
+        "lock": false,
+        "name": "本須和秀樹",
+        "nsfw": false,
+        "role": 1,
+      },
+      "order": 0,
+      "type": 1,
+    },
+  ],
+  "total": 15,
+}
+`;
+
+exports[`subject > should get subject persons 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "person": Object {
+        "id": 39,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/d6/7d/39_prsn_anidb.jpg",
+          "large": "https://lain.bgm.tv/pic/crt/l/d6/7d/39_prsn_anidb.jpg",
+          "medium": "https://lain.bgm.tv/pic/crt/m/d6/7d/39_prsn_anidb.jpg",
+          "small": "https://lain.bgm.tv/pic/crt/s/d6/7d/39_prsn_anidb.jpg",
+        },
+        "lock": false,
+        "name": "CLAMP",
+        "nsfw": false,
+        "type": 3,
+      },
+      "position": 1,
+      "summary": "",
+    },
+    Object {
+      "person": Object {
+        "id": 40,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+          "large": "https://lain.bgm.tv/pic/crt/l/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+          "medium": "https://lain.bgm.tv/pic/crt/m/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+          "small": "https://lain.bgm.tv/pic/crt/s/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+        },
+        "lock": false,
+        "name": "浅香守生",
+        "nsfw": false,
+        "type": 1,
+      },
+      "position": 2,
+      "summary": "",
+    },
+  ],
+  "total": 101,
+}
+`;
+
 exports[`subject > should get subject relations 1`] = `
 Object {
   "data": Array [

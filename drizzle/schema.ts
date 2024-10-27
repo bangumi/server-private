@@ -114,21 +114,21 @@ export const chiiCrtComments = mysqlTable(
   },
 );
 
-export const chiiCrtSubjectIndex = mysqlTable(
+export const chiiSubjectCharacters = mysqlTable(
   'chii_crt_subject_index',
   {
-    crtId: mediumint('crt_id').notNull(),
-    subjectId: mediumint('subject_id').notNull(),
-    subjectTypeId: tinyint('subject_type_id').notNull(),
-    crtType: tinyint('crt_type').notNull(),
-    ctrAppearEps: mediumtext('ctr_appear_eps').notNull(),
-    crtOrder: smallint('crt_order').notNull(),
+    characterID: mediumint('crt_id').notNull(),
+    subjectID: mediumint('subject_id').notNull(),
+    subjectType: tinyint('subject_type_id').notNull(),
+    type: tinyint('crt_type').notNull(),
+    appearEps: mediumtext('ctr_appear_eps').notNull(),
+    order: smallint('crt_order').notNull(),
   },
   (table) => {
     return {
-      subjectId: index('subject_id').on(table.subjectId),
-      crtType: index('crt_type').on(table.crtType),
-      subjectTypeId: index('subject_type_id').on(table.subjectTypeId),
+      subjectId: index('subject_id').on(table.subjectID),
+      crtType: index('crt_type').on(table.type),
+      subjectTypeId: index('subject_type_id').on(table.subjectType),
     };
   },
 );
@@ -646,23 +646,23 @@ export const chiiPersonCollects = mysqlTable(
   },
 );
 
-export const chiiPersonCsIndex = mysqlTable(
+export const chiiSubjectPersons = mysqlTable(
   'chii_person_cs_index',
   {
-    prsnType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
-    prsnId: mediumint('prsn_id').notNull(),
-    prsnPosition: smallint('prsn_position').notNull(),
-    subjectId: mediumint('subject_id').notNull(),
-    subjectTypeId: tinyint('subject_type_id').notNull(),
+    personType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
+    personID: mediumint('prsn_id').notNull(),
+    position: smallint('prsn_position').notNull(),
+    subjectID: mediumint('subject_id').notNull(),
+    subjectType: tinyint('subject_type_id').notNull(),
     summary: mediumtext('summary').notNull(),
-    prsnAppearEps: mediumtext('prsn_appear_eps').notNull(),
+    appearEps: mediumtext('prsn_appear_eps').notNull(),
   },
   (table) => {
     return {
-      subjectId: index('subject_id').on(table.subjectId),
-      prsnPosition: index('prsn_position').on(table.prsnPosition),
-      prsnId: index('prsn_id').on(table.prsnId),
-      subjectTypeId: index('subject_type_id').on(table.subjectTypeId),
+      subjectId: index('subject_id').on(table.subjectID),
+      prsnPosition: index('prsn_position').on(table.position),
+      prsnId: index('prsn_id').on(table.personID),
+      subjectTypeId: index('subject_type_id').on(table.subjectType),
     };
   },
 );

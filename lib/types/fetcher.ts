@@ -4,6 +4,27 @@ import * as schema from '@app/drizzle/schema';
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
 
+export async function fetchSlimSubjectByID(
+  id: number,
+  allowNsfw = false,
+): Promise<res.ISlimSubject | null> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjects)
+    .where(
+      op.and(
+        op.eq(schema.chiiSubjects.id, id),
+        op.eq(schema.chiiSubjects.ban, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      ),
+    )
+    .execute();
+  for (const d of data) {
+    return convert.toSlimSubject(d);
+  }
+  return null;
+}
+
 export async function fetchSubjectByID(
   id: number,
   allowNsfw = false,
