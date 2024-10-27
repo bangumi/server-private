@@ -237,6 +237,18 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type ISlimUser = Static<typeof SlimUser>;
+export const SlimUser = t.Object(
+  {
+    id: t.Integer({ examples: [1] }),
+    username: t.String({ examples: ['sai'] }),
+    nickname: t.String({ examples: ['Sai🖖'] }),
+    avatar: Avatar,
+    joinedAt: t.Integer(),
+  },
+  { $id: 'SlimUser', title: 'SlimUser' },
+);
+
 export type IUser = Static<typeof User>;
 export const User = t.Object(
   {
@@ -253,7 +265,7 @@ export const User = t.Object(
 export type IFriend = Static<typeof Friend>;
 export const Friend = t.Object(
   {
-    user: t.Ref(User),
+    user: t.Ref(SlimUser),
     grade: t.Integer(),
     createdAt: t.Integer(),
     description: t.String(),
@@ -275,7 +287,7 @@ export const Index = t.Object(
     // stats: t.String(),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
-    creator: t.Ref(User),
+    creator: t.Ref(SlimUser),
   },
   { $id: 'Index', title: 'Index' },
 );
