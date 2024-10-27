@@ -31,9 +31,19 @@ export function toUser(user: orm.IUser): res.IUser {
   };
 }
 
+export function toSlimUser(user: orm.IUser): res.ISlimUser {
+  return {
+    avatar: avatar(user.avatar),
+    username: user.username,
+    nickname: user.nickname,
+    id: user.id,
+    joinedAt: user.regdate,
+  };
+}
+
 export function toFriend(user: orm.IUser, friend: orm.IFriend): res.IFriend {
   return {
-    user: toUser(user),
+    user: toSlimUser(user),
     grade: friend.grade,
     createdAt: friend.createdAt,
     description: friend.description,
@@ -278,6 +288,6 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     collects: index.collects,
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
-    creator: toUser(user),
+    creator: toSlimUser(user),
   };
 }
