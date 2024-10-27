@@ -4,12 +4,21 @@ import * as schema from '@app/drizzle/schema';
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
 
-export async function fetchSubjectByID(id: number): Promise<res.ISubject | null> {
+export async function fetchSubjectByID(
+  id: number,
+  allowNsfw = false,
+): Promise<res.ISubject | null> {
   const data = await db
     .select()
     .from(schema.chiiSubjects)
     .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(op.and(op.eq(schema.chiiSubjects.id, id), op.eq(schema.chiiSubjects.ban, 0)))
+    .where(
+      op.and(
+        op.eq(schema.chiiSubjects.id, id),
+        op.eq(schema.chiiSubjects.ban, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      ),
+    )
     .execute();
   for (const d of data) {
     return convert.toSubject(d.subject, d.subject_field);

@@ -1,70 +1,205 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`delete ep comment > not allowed not login 1`] = `
+exports[`subject > should get subject 1`] = `
 Object {
-  "code": "NEED_LOGIN",
-  "error": "Unauthorized",
-  "message": "you need to login before delete a comment",
-  "statusCode": 401,
-}
-`;
-
-exports[`delete ep comment > not allowed wrong user 1`] = `
-Object {
-  "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
-  "message": "you don't have permission to delete a comment which is not yours",
-  "statusCode": 401,
-}
-`;
-
-exports[`delete ep comment > ok 1`] = `Object {}`;
-
-exports[`get ep comment > ok 1`] = `
-Array [
-  Object {
-    "content": "sandbox",
-    "createdAt": 1640462712,
-    "creatorID": 382951,
-    "epID": 1075440,
-    "id": 1034989,
-    "relatedID": 0,
-    "replies": Array [],
-    "state": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
-        "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
-        "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
-      },
-      "id": 382951,
-      "nickname": "树洞酱",
-      "sign": "treeholechan@gmail.com 密码:lovemeplease",
-      "user_group": 10,
-      "username": "382951",
-    },
+  "airtime": Object {
+    "date": "2002-04-02",
+    "month": 4,
+    "weekday": 2,
+    "year": 2002,
   },
-  Object {
-    "content": "这是一条测试内容",
-    "createdAt": 1719389390,
-    "creatorID": 382951,
-    "epID": 1075440,
-    "id": 1569792,
-    "relatedID": 0,
-    "replies": Array [],
-    "state": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
-        "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
-        "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
-      },
-      "id": 382951,
-      "nickname": "树洞酱",
-      "sign": "treeholechan@gmail.com 密码:lovemeplease",
-      "user_group": 10,
-      "username": "382951",
-    },
+  "collection": Object {
+    "1": 1159,
+    "2": 4534,
+    "3": 215,
+    "4": 463,
+    "5": 136,
   },
-]
+  "eps": 27,
+  "id": 12,
+  "images": Object {
+    "common": "https://lain.bgm.tv/pic/cover/c/c2/0a/12_aDoa8.jpg",
+    "grid": "https://lain.bgm.tv/pic/cover/g/c2/0a/12_aDoa8.jpg",
+    "large": "https://lain.bgm.tv/pic/cover/l/c2/0a/12_aDoa8.jpg",
+    "medium": "https://lain.bgm.tv/pic/cover/m/c2/0a/12_aDoa8.jpg",
+    "small": "https://lain.bgm.tv/pic/cover/s/c2/0a/12_aDoa8.jpg",
+  },
+  "infobox": Object {
+    "Copyright": Array [
+      Object {
+        "v": "",
+      },
+    ],
+    "中文名": Array [
+      Object {
+        "v": "人形电脑天使心",
+      },
+    ],
+    "人物设定": Array [
+      Object {
+        "v": "阿部恒",
+      },
+    ],
+    "其他": Array [
+      Object {
+        "v": "",
+      },
+    ],
+    "其他电视台": Array [
+      Object {
+        "v": "",
+      },
+    ],
+    "别名": Array [
+      Object {
+        "k": "en",
+        "v": "Chobits",
+      },
+    ],
+    "制片人": Array [
+      Object {
+        "v": "源生哲雄、関戸雄一、小野達矢",
+      },
+    ],
+    "制片协力": Array [
+      Object {
+        "v": "パイオニアLDC、ムービック",
+      },
+    ],
+    "副导演": Array [
+      Object {
+        "v": "田中洋之（除13）、井上英紀（仅13）",
+      },
+    ],
+    "动画制作": Array [
+      Object {
+        "v": "MADHOUSE",
+      },
+    ],
+    "原作": Array [
+      Object {
+        "v": "CLAMP",
+      },
+    ],
+    "官方网站": Array [
+      Object {
+        "v": "http://www.tbs.co.jp/chobits",
+      },
+    ],
+    "导演": Array [
+      Object {
+        "v": "浅香守生",
+      },
+    ],
+    "录音助手": Array [
+      Object {
+        "v": "鳥羽瀬縁",
+      },
+    ],
+    "录音调整": Array [
+      Object {
+        "v": "内田誠",
+      },
+    ],
+    "播放电视台": Array [
+      Object {
+        "v": "日本TBS",
+      },
+    ],
+    "播放结束": Array [
+      Object {
+        "v": "2002年9月24日",
+      },
+    ],
+    "放送开始": Array [
+      Object {
+        "v": "2002年4月2日",
+      },
+    ],
+    "放送星期": Array [
+      Object {
+        "v": "星期二",
+      },
+    ],
+    "文艺": Array [
+      Object {
+        "v": "浦畑達彦",
+      },
+    ],
+    "製作": Array [
+      Object {
+        "v": "TBS、ちょびっツ製作委員会",
+      },
+    ],
+    "设定制作": Array [
+      Object {
+        "v": "加茂靖子",
+      },
+    ],
+    "话数": Array [
+      Object {
+        "v": "27",
+      },
+    ],
+    "音乐": Array [
+      Object {
+        "v": "高浪敬太郎",
+      },
+    ],
+    "音响助手": Array [
+      Object {
+        "v": "三井友和",
+      },
+    ],
+    "音响监督": Array [
+      Object {
+        "v": "三間雅文",
+      },
+    ],
+    "音效": Array [
+      Object {
+        "v": "小山健二",
+      },
+    ],
+  },
+  "locked": false,
+  "metaTags": Array [],
+  "name": "ちょびっツ",
+  "nameCN": "人形电脑天使心",
+  "nsfw": false,
+  "platform": Object {
+    "alias": "tv",
+    "enableHeader": true,
+    "id": 1,
+    "order": 0,
+    "type": "TV",
+    "typeCN": "TV",
+    "wikiTpl": "TVAnime",
+  },
+  "rating": Object {
+    "count": Array [
+      4,
+      4,
+      5,
+      13,
+      60,
+      395,
+      987,
+      1226,
+      369,
+      168,
+    ],
+    "score": 7.57,
+    "total": 3231,
+  },
+  "redirect": 0,
+  "series": false,
+  "seriesEntry": 0,
+  "summary": "在不久的将来,电子技术飞速发展,电脑成为人们生活中不可缺少的一部分.主角的名字是本须和秀树,是个19岁的少年,由于考试失败,来到东京上补习班,过着贫穷潦倒的生活……
+到达东京的第一天,他很幸运的在垃圾堆捡到一个人型电脑,一直以来秀树都非常渴望拥有个人电脑.当他抱着她带返公寓后,却不知如何开机,在意想不到的地方找到开关并开启后,故事就此展开
+本须和秀树捡到了人型计算机〔唧〕。虽然不晓得她到底是不是〔Chobits〕，但她的身上似乎藏有极大的秘密。看到秀树为了钱而烦恼，唧出去找打工，没想到却找到了危险的工作！为了让秀树开心，唧开始到色情小屋打工。但她在遭到过度激烈的强迫要求之后失控。让周遭计算机因此而强制停摆。
+另一方面，秀树发现好友新保与补习班的清水老师有着不可告人的关系……",
+  "type": 2,
+  "volumes": 0,
+}
 `;
