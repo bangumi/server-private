@@ -156,7 +156,7 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
-        // TODO: bangumi common add relation.json
+        // TODO: feat: bangumi/common 添加 relation.json 以及 staff.json
         singles ? undefined : op.ne(schema.chiiSubjectRelations.relatedType, 1003),
         op.eq(schema.chiiSubjects.ban, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
