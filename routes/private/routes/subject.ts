@@ -121,7 +121,6 @@ export async function setup(app: App) {
         )
         .where(condition)
         .execute();
-
       const data = await db
         .select()
         .from(schema.chiiSubjectRelations)
@@ -137,7 +136,6 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-
       const relations = data.map((d) => toSubjectRelation(d.subject, d.chii_subject_relations));
       return {
         data: relations,
