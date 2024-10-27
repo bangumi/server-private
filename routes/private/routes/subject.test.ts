@@ -15,4 +15,15 @@ describe('subject', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get subject relations', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/12/relations',
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
 });

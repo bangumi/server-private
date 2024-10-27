@@ -203,3 +203,49 @@ Object {
   "volumes": 0,
 }
 `;
+
+exports[`subject > should get subject relations 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "order": 0,
+      "relation": 1,
+      "subject": Object {
+        "id": 497,
+        "images": Object {
+          "common": "https://lain.bgm.tv/pic/cover/c/73/80/497_7mGTv.jpg",
+          "grid": "https://lain.bgm.tv/pic/cover/g/73/80/497_7mGTv.jpg",
+          "large": "https://lain.bgm.tv/pic/cover/l/73/80/497_7mGTv.jpg",
+          "medium": "https://lain.bgm.tv/pic/cover/m/73/80/497_7mGTv.jpg",
+          "small": "https://lain.bgm.tv/pic/cover/s/73/80/497_7mGTv.jpg",
+        },
+        "locked": false,
+        "name": "ちょびっツ",
+        "nameCN": "人形电脑天使心",
+        "nsfw": false,
+        "type": 1,
+      },
+    },
+    Object {
+      "order": 0,
+      "relation": 1004,
+      "subject": Object {
+        "id": 11,
+        "images": Object {
+          "common": "https://lain.bgm.tv/pic/cover/c/65/12/11_bsxG3.jpg",
+          "grid": "https://lain.bgm.tv/pic/cover/g/65/12/11_bsxG3.jpg",
+          "large": "https://lain.bgm.tv/pic/cover/l/65/12/11_bsxG3.jpg",
+          "medium": "https://lain.bgm.tv/pic/cover/m/65/12/11_bsxG3.jpg",
+          "small": "https://lain.bgm.tv/pic/cover/s/65/12/11_bsxG3.jpg",
+        },
+        "locked": false,
+        "name": "ちょびっツの「ツ」の字 - Chobits Fan Book",
+        "nameCN": "",
+        "nsfw": false,
+        "type": 1,
+      },
+    },
+  ],
+  "total": 2,
+}
+`;

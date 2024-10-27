@@ -7,7 +7,9 @@ export type IFriends = typeof schema.chiiFriends.$inferSelect;
 
 export type ISubject = typeof schema.chiiSubjects.$inferSelect;
 export type ISubjectFields = typeof schema.chiiSubjectFields.$inferSelect;
-export type ISubjectInterests = typeof schema.chiiSubjectInterests.$inferSelect;
+export type ISubjectInterest = typeof schema.chiiSubjectInterests.$inferSelect;
+
+export type ISubjectRelation = typeof schema.chiiSubjectRelations.$inferSelect;
 
 export type ICharacter = typeof schema.chiiCharacters.$inferSelect;
 export type IPerson = typeof schema.chiiPersons.$inferSelect;
