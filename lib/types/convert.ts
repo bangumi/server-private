@@ -31,7 +31,7 @@ export function toUser(user: orm.IUser): res.IUser {
   };
 }
 
-export function toFriend(user: orm.IUser, friend: orm.IFriends): res.IFriend {
+export function toFriend(user: orm.IUser, friend: orm.IFriend): res.IFriend {
   return {
     user: toUser(user),
     grade: friend.grade,

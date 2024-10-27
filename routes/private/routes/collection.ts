@@ -132,7 +132,7 @@ const UserCollectionsSummary = t.Object(
 );
 
 function toUserSubjectCollection(
-  interest: orm.ISubjectInterests,
+  interest: orm.ISubjectInterest,
   subject: orm.ISubject,
   fields: orm.ISubjectFields,
 ): IUserSubjectCollection {

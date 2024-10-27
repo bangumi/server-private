@@ -1,0 +1,70 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`delete ep comment > not allowed not login 1`] = `
+Object {
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before delete a comment",
+  "statusCode": 401,
+}
+`;
+
+exports[`delete ep comment > not allowed wrong user 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to delete a comment which is not yours",
+  "statusCode": 401,
+}
+`;
+
+exports[`delete ep comment > ok 1`] = `Object {}`;
+
+exports[`get ep comment > ok 1`] = `
+Array [
+  Object {
+    "content": "sandbox",
+    "createdAt": 1640462712,
+    "creatorID": 382951,
+    "epID": 1075440,
+    "id": 1034989,
+    "relatedID": 0,
+    "replies": Array [],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+        "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+        "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+      },
+      "id": 382951,
+      "nickname": "树洞酱",
+      "sign": "treeholechan@gmail.com 密码:lovemeplease",
+      "user_group": 10,
+      "username": "382951",
+    },
+  },
+  Object {
+    "content": "这是一条测试内容",
+    "createdAt": 1719389390,
+    "creatorID": 382951,
+    "epID": 1075440,
+    "id": 1569792,
+    "relatedID": 0,
+    "replies": Array [],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+        "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+        "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+      },
+      "id": 382951,
+      "nickname": "树洞酱",
+      "sign": "treeholechan@gmail.com 密码:lovemeplease",
+      "user_group": 10,
+      "username": "382951",
+    },
+  },
+]
+`;
