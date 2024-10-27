@@ -83,7 +83,7 @@ export async function setup(app: App) {
     '/subjects/:subjectID/relations',
     {
       schema: {
-        summary: '获取条目关联的条目',
+        summary: '获取条目的关联条目',
         operationId: 'getSubjectRelations',
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
