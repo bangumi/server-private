@@ -134,6 +134,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           type: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
+          singles: t.Boolean({ default: false, description: '包括单行本' }),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -147,7 +148,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { subjectID }, query: { type, limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { subjectID }, query: { type, singles, limit = 20, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -155,6 +156,8 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
+        // TODO: bangumi common add relation.json
+        singles ? undefined : op.ne(schema.chiiSubjectRelations.relatedType, 1003),
         op.eq(schema.chiiSubjects.ban, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
