@@ -1029,31 +1029,23 @@ export const chiiSubjectRec = mysqlTable(
 export const chiiSubjectRelations = mysqlTable(
   'chii_subject_relations',
   {
-    rltSubjectId: mediumint('rlt_subject_id').notNull(),
-    rltSubjectTypeId: tinyint('rlt_subject_type_id').notNull(),
-    rltRelationType: smallint('rlt_relation_type').notNull(),
-    rltRelatedSubjectId: mediumint('rlt_related_subject_id').notNull(),
-    rltRelatedSubjectTypeId: tinyint('rlt_related_subject_type_id').notNull(),
-    rltViceVersa: tinyint('rlt_vice_versa').notNull(),
-    rltOrder: tinyint('rlt_order').notNull(),
+    id: mediumint('rlt_subject_id').notNull(),
+    type: tinyint('rlt_subject_type_id').notNull(),
+    relation: smallint('rlt_relation_type').notNull(),
+    relatedID: mediumint('rlt_related_subject_id').notNull(),
+    relatedType: tinyint('rlt_related_subject_type_id').notNull(),
+    viceVersa: tinyint('rlt_vice_versa').notNull(),
+    order: tinyint('rlt_order').notNull(),
   },
   (table) => {
     return {
       rltRelatedSubjectTypeId: index('rlt_related_subject_type_id').on(
-        table.rltRelatedSubjectTypeId,
-        table.rltOrder,
+        table.relatedID,
+        table.order,
       ),
-      rltSubjectTypeId: index('rlt_subject_type_id').on(table.rltSubjectTypeId),
-      rltRelationType: index('rlt_relation_type').on(
-        table.rltRelationType,
-        table.rltSubjectId,
-        table.rltRelatedSubjectId,
-      ),
-      rltSubjectId: unique('rlt_subject_id').on(
-        table.rltSubjectId,
-        table.rltRelatedSubjectId,
-        table.rltViceVersa,
-      ),
+      rltSubjectTypeId: index('rlt_subject_type_id').on(table.type),
+      rltRelationType: index('rlt_relation_type').on(table.relatedType, table.id, table.relatedID),
+      rltSubjectId: unique('rlt_subject_id').on(table.id, table.relatedID, table.viceVersa),
     };
   },
 );

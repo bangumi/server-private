@@ -4,6 +4,7 @@ import type { App } from '@app/routes/type.ts';
 export function addSchemas(app: App) {
   app.addSchema(res.Error);
   app.addSchema(res.User);
+  app.addSchema(res.SlimUser);
   app.addSchema(res.Friend);
   app.addSchema(res.SubjectAirtime);
   app.addSchema(res.SubjectCollection);
