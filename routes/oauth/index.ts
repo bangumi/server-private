@@ -409,6 +409,8 @@ async function tokenFromCode(req: {
     created_at: now.toISOString(),
   } satisfies TokenInfo);
 
+  const rawScope = JSON.stringify(scope);
+
   const token: typeof chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
     userID: userID,
@@ -417,7 +419,7 @@ async function tokenFromCode(req: {
     expiredAt: DateTime.fromJSDate(now)
       .plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS }))
       .toJSDate(),
-    scope: JSON.stringify(scope),
+    scope: rawScope,
     info: tokenInfo,
   };
 
@@ -425,7 +427,7 @@ async function tokenFromCode(req: {
     userID: userID,
     clientID: client.clientID,
     refreshToken: await randomBase64url(30),
-    scope: JSON.stringify(scope),
+    scope: rawScope,
     expiredAt: DateTime.fromJSDate(now)
       .plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS }))
       .toJSDate(),
