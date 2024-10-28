@@ -15,7 +15,7 @@
           <li class='list-group-item d-flex align-items-start border-0'>
             <a href='https://bgm.tv/user/{{ creator.username }}'>
               <img
-                with='64px'
+                width='64px'
                 height='64px'
                 class='rounded'
                 src='https://lain.bgm.tv/pic/user/l/{{ creator.avatar | default: 'icon.jpg' }}'
@@ -39,7 +39,7 @@
           </li>
           <li class='list-group-item d-flex align-items-start border-0'>
             <img
-              with='48px'
+              width='48px'
               height='48px'
               class='mx-2 rounded'
               src='https://bgm.tv/img/no_icon_app.png'
@@ -54,24 +54,30 @@
               <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
             </div>
           </li>
-          <li class='list-group-item d-flex align-items-start border-0'>
-            <img
-              with='48px'
-              height='48px'
-              class='mx-2 rounded'
-              src='https://bgm.tv/img/no_icon_app.png'
-            >
-            <div class='px-2' style='width: 100%;'>
-              <span>
-                <b>读写你的收藏信息</b>
-              </span>
-              <div class='small text-secondary'>
-                <span class='badge border border-secondary text-secondary'>读写</span>
-                <span>允许应用读写你收藏、收视进度等信息</span>
+          {% for scope in scopes %}
+            <li class='list-group-item d-flex align-items-start border-0'>
+              <img
+                width='48px'
+                height='48px'
+                class='mx-2 rounded'
+                src='https://bgm.tv/img/no_icon_app.png'
+              >
+              <div class='px-2' style='width: 100%;'>
+                <span>
+                  <b>{{ scope[1] }}</b>
+                </span>
+
+                <div class='small text-secondary'>
+                  {% if scope[0] == 'read' %}
+                    <span class='badge border border-secondary text-secondary'>只读</span>
+                  {% else %}
+                    <span class='badge border border-secondary text-secondary'>读写</span>
+                  {% endif %}
+                </div>
+                <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
               </div>
-              <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
-            </div>
-          </li>
+            </li>
+          {% endfor %}
         </ul>
 
         <div class='row mt-2'>
@@ -84,6 +90,7 @@
               name='redirect_uri'
               value='{{ client.redirectUri }}'
             >
+            <input type='hidden' name='scope' value='{{ scope }}'>
             <button
               style='width: 100%; background: #F09199;'
               type='submit'
@@ -112,6 +119,7 @@
           <p>{{ error.message }}</p>
         </div>
       </div>
+    </div>
     </div>
   {% endif %}
 </div>
