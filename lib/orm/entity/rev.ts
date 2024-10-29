@@ -209,7 +209,7 @@ export async function createRevision(
     revType: type,
     revCreator: creator,
     revTextId: revText.revTextId,
-    revDateline: now.getTime() / 1000,
+    createdAt: now.getTime() / 1000,
     revMid: mid,
     revEditSummary: comment,
   });
