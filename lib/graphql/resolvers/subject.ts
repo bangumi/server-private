@@ -70,7 +70,7 @@ export function convertSubject(subject: entity.Subject) {
   const rating = {
     rank: fields.fieldRank,
     total: total,
-    score: Math.round((totalScore * 100) / total) / 100,
+    score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
   };
   return {
