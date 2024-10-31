@@ -196,11 +196,9 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
     disc: episode.disc,
     name: episode.name,
     nameCN: episode.nameCN,
-    rate: episode.rate,
     duration: episode.duration,
     airdate: episode.airdate,
     comment: episode.comment,
-    resources: episode.resources,
     desc: episode.desc,
     lock: Boolean(episode.lock),
   };
