@@ -263,6 +263,7 @@ export const SlimUser = t.Object(
     username: t.String({ examples: ['sai'] }),
     nickname: t.String({ examples: ['Sai🖖'] }),
     avatar: Avatar,
+    sign: t.String(),
     joinedAt: t.Integer(),
   },
   { $id: 'SlimUser', title: 'SlimUser' },

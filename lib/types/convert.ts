@@ -16,6 +16,7 @@ export function oldToUser(user: ormold.IUser): res.ISlimUser {
     username: user.username,
     nickname: user.nickname,
     id: user.id,
+    sign: user.sign,
     joinedAt: 0,
   };
 }
@@ -38,10 +39,11 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
 
 export function toSlimUser(user: orm.IUser): res.ISlimUser {
   return {
-    avatar: avatar(user.avatar),
+    id: user.id,
     username: user.username,
     nickname: user.nickname,
-    id: user.id,
+    avatar: avatar(user.avatar),
+    sign: user.sign,
     joinedAt: user.regdate,
   };
 }
