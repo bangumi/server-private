@@ -187,6 +187,26 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
   };
 }
 
+export function toEpisode(episode: orm.IEpisode): res.IEpisode {
+  return {
+    id: episode.id,
+    subjectID: episode.subjectID,
+    sort: episode.sort,
+    type: episode.type,
+    disc: episode.disc,
+    name: episode.name,
+    nameCN: episode.nameCN,
+    rate: episode.rate,
+    duration: episode.duration,
+    airdate: episode.airdate,
+    online: episode.online,
+    comment: episode.comment,
+    resources: episode.resources,
+    desc: episode.desc,
+    lock: Boolean(episode.lock),
+  };
+}
+
 export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
   return {
     id: character.id,

@@ -134,6 +134,28 @@ export const SlimSubject = t.Object(
   { $id: 'SlimSubject', title: 'SlimSubject', examples: [examples.slimSubject] },
 );
 
+export type IEpisode = Static<typeof Episode>;
+export const Episode = t.Object(
+  {
+    id: t.Integer(),
+    subjectID: t.Integer(),
+    sort: t.Number(),
+    type: t.Enum(EpisodeType),
+    disc: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
+    rate: t.Integer(),
+    duration: t.String(),
+    airdate: t.String(),
+    online: t.String(),
+    comment: t.Integer(),
+    resources: t.Integer(),
+    desc: t.String(),
+    lock: t.Boolean(),
+  },
+  { $id: 'Episode', title: 'Episode' },
+);
+
 export type IPersonImages = Static<typeof PersonImages>;
 export const PersonImages = t.Object(
   {
