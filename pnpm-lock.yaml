@@ -12,8 +12,8 @@ importers:
         specifier: ^3.679.0
         version: 3.679.0
       '@bgm38/wiki':
-        specifier: ^0.3.0
-        version: 0.3.0
+        specifier: ^0.3.3
+        version: 0.3.3
       '@fastify/cookie':
         specifier: ^11.0.1
         version: 11.0.1
@@ -743,8 +743,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@bgm38/wiki@0.3.0':
-    resolution: {integrity: sha512-0xnhNy1Li5BuFJPh0HZoM2LnFU7rsOTlHNBkCzGHhyrWy0fC6TEVMhtgLgOnEbCcrb8P5DJIDTEp4HKWWDF87Q==}
+  '@bgm38/wiki@0.3.3':
+    resolution: {integrity: sha512-Extj5fsFmH8pqh+XYYjRDUm5Ar1c2KX6Jup4p198sm2Xmjsc/XK83wP71If2wStd3rf7stSgK7ADE/daX/lglA==}
     engines: {node: '>=18'}
 
   '@drizzle-team/brocli@0.10.1':
@@ -6326,7 +6326,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@bgm38/wiki@0.3.0': {}
+  '@bgm38/wiki@0.3.3': {}
 
   '@drizzle-team/brocli@0.10.1': {}
 
