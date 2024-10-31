@@ -15,6 +15,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Infobox);
   app.addSchema(res.Subject);
   app.addSchema(res.SlimSubject);
+  app.addSchema(res.Episode);
   app.addSchema(res.Character);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.Person);
