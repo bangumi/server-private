@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.678.0
+        specifier: ^3.679.0
         version: 3.679.0
       '@bgm38/wiki':
         specifier: ^0.3.0
@@ -70,7 +70,7 @@ importers:
         version: 12.1.0(fastify@5.0.0)
       fastify-socket.io:
         specifier: ^5.1.0
-        version: 5.1.0(fastify@5.0.0)(socket.io@4.8.0)
+        version: 5.1.0(fastify@5.0.0)(socket.io@4.8.1)
       got:
         specifier: ^14.4.3
         version: 14.4.3
@@ -135,8 +135,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.2
       socket.io:
-        specifier: ^4.8.0
-        version: 4.8.0
+        specifier: ^4.8.1
+        version: 4.8.1
       socks-proxy-agent:
         specifier: ^8.0.4
         version: 8.0.4
@@ -4829,8 +4829,8 @@ packages:
     resolution: {integrity: sha512-/GbIKmo8ioc+NIWIhwdecY0ge+qVBSMdgxGygevmdHj24bsfgtCmcUUcQ5ZzcylGFHsN3k4HB4Cgkl96KVnuew==}
     engines: {node: '>=10.0.0'}
 
-  socket.io@4.8.0:
-    resolution: {integrity: sha512-8U6BEgGjQOfGz3HHTYaC/L1GaxDCJ/KM0XTkJly0EhZ5U/du9uNEZy4ZgYzEzIqlx2CMm25CrCqr1ck899eLNA==}
+  socket.io@4.8.1:
+    resolution: {integrity: sha512-oZ7iUCxph8WYRHHcjBEc9unw3adt5CmSNlppj/5Q4k2RIrhl8Z5yY2Xr4j9zj0+wzVZ0bxmYoGSzKJnRl6A4yg==}
     engines: {node: '>=10.2.0'}
 
   socks-proxy-agent@8.0.4:
@@ -9090,11 +9090,11 @@ snapshots:
 
   fastify-plugin@5.0.1: {}
 
-  fastify-socket.io@5.1.0(fastify@5.0.0)(socket.io@4.8.0):
+  fastify-socket.io@5.1.0(fastify@5.0.0)(socket.io@4.8.1):
     dependencies:
       fastify: 5.0.0
       fastify-plugin: 4.5.1
-      socket.io: 4.8.0
+      socket.io: 4.8.1
       tslib: 2.7.0
 
   fastify@5.0.0:
@@ -10677,7 +10677,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.0:
+  socket.io@4.8.1:
     dependencies:
       accepts: 1.3.8
       base64id: 2.0.0
