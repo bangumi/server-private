@@ -301,7 +301,10 @@ export async function setup(app: App) {
           op.eq(schema.chiiSubjectCharacters.characterID, schema.chiiCharacters.id),
         )
         .where(condition)
-        .orderBy(op.asc(schema.chiiSubjectCharacters.order))
+        .orderBy(
+          op.asc(schema.chiiSubjectCharacters.type),
+          op.asc(schema.chiiSubjectCharacters.order),
+        )
         .limit(limit)
         .offset(offset)
         .execute();
