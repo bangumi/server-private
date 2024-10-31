@@ -146,8 +146,6 @@ export const Episode = t.Object(
     nameCN: t.String(),
     duration: t.String(),
     airdate: t.String(),
-    // TODO: parse online links for episode
-    // online: t.String(),
     comment: t.Integer(),
     desc: t.String(),
     lock: t.Boolean(),
