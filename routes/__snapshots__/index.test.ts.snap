@@ -131,6 +131,8 @@ exports[`should build private api spec 1`] = `
               examples:
                 - Sai🖖
               type: string
+            sign:
+              type: string
             username:
               examples:
                 - sai
@@ -140,6 +142,7 @@ exports[`should build private api spec 1`] = `
             - username
             - nickname
             - avatar
+            - sign
             - joinedAt
           title: SlimUser
           type: object
@@ -590,6 +593,8 @@ exports[`should build private api spec 1`] = `
             nickname:
               example: Sai🖖
               type: string
+            sign:
+              type: string
             username:
               example: sai
               type: string
@@ -598,6 +603,7 @@ exports[`should build private api spec 1`] = `
             - username
             - nickname
             - avatar
+            - sign
             - joinedAt
           title: SlimUser
           type: object
@@ -905,6 +911,8 @@ exports[`should build private api spec 1`] = `
         nickname:
           example: Sai🖖
           type: string
+        sign:
+          type: string
         username:
           example: sai
           type: string
@@ -913,6 +921,7 @@ exports[`should build private api spec 1`] = `
         - username
         - nickname
         - avatar
+        - sign
         - joinedAt
       title: SlimUser
       type: object
@@ -1444,6 +1453,8 @@ exports[`should build private api spec 1`] = `
             nickname:
               example: Sai🖖
               type: string
+            sign:
+              type: string
             username:
               example: sai
               type: string
@@ -1452,6 +1463,7 @@ exports[`should build private api spec 1`] = `
             - username
             - nickname
             - avatar
+            - sign
             - joinedAt
           title: SlimUser
           type: object
@@ -5134,6 +5146,8 @@ paths:
                             nickname:
                               example: Sai🖖
                               type: string
+                            sign:
+                              type: string
                             username:
                               example: sai
                               type: string
@@ -5142,6 +5156,7 @@ paths:
                             - username
                             - nickname
                             - avatar
+                            - sign
                             - joinedAt
                           title: SlimUser
                           type: object

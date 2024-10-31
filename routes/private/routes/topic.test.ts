@@ -20,6 +20,7 @@ const expectedGroupTopic = {
     id: 287622,
     joinedAt: 0,
     nickname: 'nickname 287622',
+    sign: 'sing 287622',
     username: '287622',
   },
   id: 371602,
@@ -33,6 +34,7 @@ const expectedSubjectTopic = {
     id: 2,
     joinedAt: 0,
     username: '2',
+    sign: 'sing 2',
     nickname: 'nickname 2',
     avatar: {
       small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
