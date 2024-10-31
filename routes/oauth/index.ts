@@ -22,6 +22,7 @@ import config, { redisOauthPrefix } from '@app/lib/config.ts';
 import { BadRequestError } from '@app/lib/error.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
+import { EpochDefaultScope, type IScope, Scope, scopeMessage } from '@app/lib/scope.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import { randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
@@ -159,6 +160,28 @@ class CSRF {
   }
 }
 
+function parseScope(scope: string): Required<keyof IScope>[] {
+  if (!scope) {
+    return Object.keys(EpochDefaultScope()) as (keyof IScope)[];
+  }
+
+  return scope
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .map((s) => {
+      if (!(s in Scope.properties)) {
+        throw new Error(`invalid scope: ${JSON.stringify(s)}`);
+      }
+      return s;
+    }) as (keyof IScope)[];
+}
+
+interface ReqInfo {
+  userID: string;
+  scope: string[];
+}
+
 // export for testing
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function userOauthRoutes(app: App) {
@@ -173,7 +196,10 @@ export async function userOauthRoutes(app: App) {
           client_id: t.String(),
           response_type: t.String(),
           redirect_uri: t.Optional(t.String()),
-          scope: t.Optional(t.String()),
+          scope: t.String({
+            default: '',
+            description: "only works with new oauth authorization, won't work in refresh request",
+          }),
           state: t.Optional(t.String()),
         }),
       },
@@ -225,6 +251,8 @@ export async function userOauthRoutes(app: App) {
         });
       }
 
+      const scope = parseScope(req.query.scope);
+
       const csrfToken = await csrf.newToken(req, reply);
 
       await reply.view('oauth/authorize', {
@@ -232,6 +260,8 @@ export async function userOauthRoutes(app: App) {
         csrfToken,
         client,
         creator,
+        scope: req.query.scope,
+        scopes: scopeMessage(scope),
       });
     },
   );
@@ -245,6 +275,7 @@ export async function userOauthRoutes(app: App) {
           csrf_token: t.String(),
           client_id: t.String(),
           redirect_uri: t.String(),
+          scope: t.String({ default: '' }),
         }),
       },
     },
@@ -267,12 +298,21 @@ export async function userOauthRoutes(app: App) {
         throw new AppNonexistenceError();
       }
 
+      const scope = parseScope(req.body.scope);
+
       if (client.redirectUri !== req.body.redirect_uri) {
         throw new RedirectUriMismatchError();
       }
 
       const code = await randomBase64url(30);
-      await redis.setex(`${redisOauthPrefix}:code:${code}`, 60, req.auth.userID);
+      await redis.setex(
+        `${redisOauthPrefix}:code:${code}`,
+        60,
+        JSON.stringify({
+          scope,
+          userID: req.auth.userID.toString(),
+        } satisfies ReqInfo),
+      );
       const u = new URL(client.redirectUri);
       u.searchParams.set('code', code);
       return reply.redirect(u.toString());
@@ -354,10 +394,12 @@ async function tokenFromCode(req: {
   if (client.clientSecret !== req.clientSecret) {
     throw new InvalidClientSecretError();
   }
-  const userID = await redis.get(`${redisOauthPrefix}:code:${req.code}`);
-  if (!userID) {
+  const authInfo = await redis.get(`${redisOauthPrefix}:code:${req.code}`);
+  if (!authInfo) {
     throw new InvalidAuthorizationCodeError();
   }
+
+  const { userID, scope } = JSON.parse(authInfo) as ReqInfo;
 
   const now = new Date();
 
@@ -367,6 +409,8 @@ async function tokenFromCode(req: {
     created_at: now.toISOString(),
   } satisfies TokenInfo);
 
+  const rawScope = JSON.stringify(scope);
+
   const token: typeof chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
     userID: userID,
@@ -375,6 +419,7 @@ async function tokenFromCode(req: {
     expiredAt: DateTime.fromJSDate(now)
       .plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS }))
       .toJSDate(),
+    scope: rawScope,
     info: tokenInfo,
   };
 
@@ -382,6 +427,7 @@ async function tokenFromCode(req: {
     userID: userID,
     clientID: client.clientID,
     refreshToken: await randomBase64url(30),
+    scope: rawScope,
     expiredAt: DateTime.fromJSDate(now)
       .plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS }))
       .toJSDate(),
