@@ -7,6 +7,7 @@ import { fetchTopicDetail, Type } from '@app/lib/topic/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './topic.ts';
+import { join } from 'path';
 
 const expectedGroupTopic = {
   createdAt: 1657885648,
@@ -17,9 +18,9 @@ const expectedGroupTopic = {
       small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
     },
     id: 287622,
+    joinedAt: 0,
     nickname: 'nickname 287622',
     sign: 'sing 287622',
-    user_group: 0,
     username: '287622',
   },
   id: 371602,
@@ -31,15 +32,15 @@ const expectedSubjectTopic = {
   id: 1,
   creator: {
     id: 2,
+    joinedAt: 0,
     username: '2',
+    sign: 'sing 2',
     nickname: 'nickname 2',
     avatar: {
       small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
       medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
       large: 'https://lain.bgm.tv/pic/user/l/icon.jpg',
     },
-    sign: 'sing 2',
-    user_group: 11,
   },
   title: '拿这个来测试',
   parentID: 1,

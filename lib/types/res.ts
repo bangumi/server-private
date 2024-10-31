@@ -263,6 +263,7 @@ export const SlimUser = t.Object(
     username: t.String({ examples: ['sai'] }),
     nickname: t.String({ examples: ['Sai🖖'] }),
     avatar: Avatar,
+    sign: t.String(),
     joinedAt: t.Integer(),
   },
   { $id: 'SlimUser', title: 'SlimUser' },
@@ -275,8 +276,13 @@ export const User = t.Object(
     username: t.String({ examples: ['sai'] }),
     nickname: t.String({ examples: ['Sai🖖'] }),
     avatar: Avatar,
+    group: t.Integer(),
+    user_group: t.Integer({ description: 'deprecated, use group instead' }),
+    joinedAt: t.Integer(),
     sign: t.String(),
-    user_group: t.Integer(),
+    site: t.String(),
+    location: t.String(),
+    bio: t.String(),
   },
   { $id: 'User', title: 'User' },
 );
@@ -326,7 +332,7 @@ export const SlimIndex = t.Object(
 export const Topic = t.Object(
   {
     id: t.Integer({ description: 'topic id' }),
-    creator: User,
+    creator: SlimUser,
     title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),

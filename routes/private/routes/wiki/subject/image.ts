@@ -61,7 +61,7 @@ export function setup(app: App) {
                 id: t.Integer(),
                 thumbnail: t.String(),
                 raw: t.String(),
-                creator: res.User,
+                creator: res.SlimUser,
                 voted: t.Boolean(),
               }),
             ),

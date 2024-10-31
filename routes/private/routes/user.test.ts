@@ -1,58 +1,95 @@
-import { DateTime } from 'luxon';
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
-import { emptyAuth } from '@app/lib/auth/index.ts';
-import * as Notify from '@app/lib/notify.ts';
-import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './user.ts';
 
-describe('notify', () => {
-  beforeEach(async () => {
-    await NotifyRepo.delete({});
-    await NotifyFieldRepo.delete({});
-  });
-
-  afterEach(async () => {
-    await NotifyRepo.delete({});
-    await NotifyFieldRepo.delete({});
-  });
-
-  test('should list notify', async () => {
-    await Notify.create({
-      destUserID: 287622,
-      sourceUserID: 382951,
-      topicID: 2,
-      now: DateTime.now(),
-      type: Notify.Type.GroupTopicReply,
-      title: 'tt',
-      postID: 1,
-    });
-
-    const app = await createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-
+describe('user', () => {
+  test('should get user', async () => {
+    const app = createTestServer();
     await app.register(setup);
-    const res = await app.inject({ url: '/notify' });
-
-    expect(res.statusCode).toBe(200);
-    expect(Object.keys(res.json())).toContain('data');
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/382951',
+    });
+    expect(res.json()).toMatchSnapshot();
   });
 });
 
-describe('user', () => {
+describe('user friends', () => {
   test('should get friends', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/users/287622/friends',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+});
+
+describe('user collection', () => {
+  test('should get summary', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/382951/collections/summary',
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subjects', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/382951/collections/subjects',
+      query: { subjectType: '2', type: '2', limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get characters', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/1/collections/characters',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get persons', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/1/collections/persons',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get indexes', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/1/collections/indexes',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get created indexes', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/14127/indexes',
       query: { limit: '1', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
