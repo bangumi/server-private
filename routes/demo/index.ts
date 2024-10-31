@@ -19,7 +19,7 @@ import * as token from './token/index.ts';
 declare module 'fastify' {
   interface FastifyReply {
     locals?: {
-      user?: res.IUser;
+      user?: res.ISlimUser;
     };
   }
 }

@@ -17,9 +17,8 @@ Object {
     "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
   },
   "id": 382951,
+  "joinedAt": 1512262276,
   "nickname": "树洞酱",
-  "sign": "treeholechan@gmail.com 密码:lovemeplease",
-  "user_group": 10,
   "username": "382951",
 }
 `;

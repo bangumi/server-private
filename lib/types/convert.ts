@@ -9,25 +9,33 @@ import { CollectionType } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
-export function oldToUser(user: ormold.IUser): res.IUser {
+// for backward compatibility
+export function oldToUser(user: ormold.IUser): res.ISlimUser {
   return {
     avatar: avatar(user.img),
     username: user.username,
     nickname: user.nickname,
     id: user.id,
-    sign: user.sign,
-    user_group: user.groupID,
+    joinedAt: 0,
   };
 }
 
-export function toUser(user: orm.IUser): res.IUser {
+export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
   return {
-    avatar: avatar(user.avatar),
+    id: user.id,
     username: user.username,
     nickname: user.nickname,
-    id: user.id,
-    sign: user.sign,
+    avatar: avatar(user.avatar),
+    group: user.groupid,
     user_group: user.groupid,
+    joinedAt: user.regdate,
+    lastVisit: user.lastvisit,
+    lastActivity: user.lastactivity,
+    lastPost: user.lastpost,
+    sign: user.sign,
+    site: fields.site,
+    location: fields.location,
+    bio: fields.bio,
   };
 }
 

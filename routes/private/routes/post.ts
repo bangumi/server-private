@@ -36,7 +36,7 @@ const BaseEpisodeComment = t.Object(
     createdAt: t.Integer(),
     content: t.String(),
     state: t.Integer(),
-    user: t.Ref(res.User),
+    user: t.Ref(res.SlimUser),
   },
   {
     $id: 'BaseEpisodeComment',
@@ -58,7 +58,7 @@ export type IBasicReply = Static<typeof BasicReply>;
 const BasicReply = t.Object(
   {
     id: t.Integer(),
-    creator: t.Ref(res.User),
+    creator: t.Ref(res.SlimUser),
     createdAt: t.Integer(),
     text: t.String(),
     state: t.Integer(),
@@ -829,7 +829,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       total: t.Integer(),
       list: t.Array(
         t.Object({
-          user: t.Ref(res.User),
+          user: t.Ref(res.SlimUser),
           rate: t.Integer(),
           comment: t.String(),
           updatedAt: t.Integer(),

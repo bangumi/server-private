@@ -7,8 +7,8 @@ import { addSchemas } from '@app/routes/res.ts';
 import * as swagger from '@app/routes/swagger.ts';
 import type { App } from '@app/routes/type.ts';
 
-import * as collection from './routes/collection.ts';
 import * as login from './routes/login.ts';
+import * as misc from './routes/misc.ts';
 import * as post from './routes/post.ts';
 import * as subject from './routes/subject.ts';
 import * as group from './routes/topic.ts';
@@ -43,7 +43,7 @@ async function API(app: App) {
   await swagger.privateAPI(app);
   addSchemas(app);
 
-  await app.register(collection.setup);
+  await app.register(misc.setup);
   await app.register(login.setup);
   await app.register(group.setup);
   await app.register(post.setup);

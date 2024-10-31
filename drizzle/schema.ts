@@ -419,15 +419,6 @@ export const chiiLikes = mysqlTable(
   },
 );
 
-export const chiiUserFields = mysqlTable('chii_memberfields', {
-  uid: mediumint('uid').notNull(),
-  site: varchar('site', { length: 75 }).default('').notNull(),
-  location: varchar('location', { length: 30 }).default('').notNull(),
-  bio: text('bio').notNull(),
-  privacy: mediumtext('privacy').notNull(),
-  blocklist: mediumtext('blocklist').notNull(),
-});
-
 export const chiiUser = mysqlTable(
   'chii_members',
   {
@@ -456,6 +447,15 @@ export const chiiUser = mysqlTable(
     };
   },
 );
+
+export const chiiUserFields = mysqlTable('chii_memberfields', {
+  uid: mediumint('uid').notNull(),
+  site: varchar('site', { length: 75 }).default('').notNull(),
+  location: varchar('location', { length: 30 }).default('').notNull(),
+  bio: text('bio').notNull(),
+  privacy: mediumtext('privacy').notNull(),
+  blocklist: mediumtext('blocklist').notNull(),
+});
 
 export const chiiNotify = mysqlTable(
   'chii_notify',
