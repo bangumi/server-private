@@ -138,7 +138,6 @@ export const chiiEpisodes = mysqlTable(
   {
     id: mediumint('ep_id').autoincrement().notNull(),
     subjectID: mediumint('ep_subject_id').notNull(),
-    // Warning: Can't parse float unsigned from database
     sort: float('ep_sort').notNull(),
     type: tinyint('ep_type').notNull(),
     disc: tinyint('ep_disc').default(0).notNull(),
