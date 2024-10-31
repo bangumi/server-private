@@ -35,7 +35,7 @@ exports[`should build private api spec 1`] = `
         state:
           type: integer
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - epID
@@ -51,7 +51,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         state:
@@ -125,14 +125,12 @@ exports[`should build private api spec 1`] = `
               examples:
                 - 1
               type: integer
+            joinedAt:
+              type: integer
             nickname:
               examples:
                 - Sai🖖
               type: string
-            sign:
-              type: string
-            user_group:
-              type: integer
             username:
               examples:
                 - sai
@@ -142,9 +140,8 @@ exports[`should build private api spec 1`] = `
             - username
             - nickname
             - avatar
-            - sign
-            - user_group
-          title: User
+            - joinedAt
+          title: SlimUser
           type: object
         - properties:
             permission:
@@ -238,7 +235,7 @@ exports[`should build private api spec 1`] = `
             state:
               type: integer
             user:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/SlimUser'
           required:
             - id
             - epID
@@ -436,7 +433,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         state:
@@ -588,13 +585,11 @@ exports[`should build private api spec 1`] = `
             id:
               example: 1
               type: integer
+            joinedAt:
+              type: integer
             nickname:
               example: Sai🖖
               type: string
-            sign:
-              type: string
-            user_group:
-              type: integer
             username:
               example: sai
               type: string
@@ -603,9 +598,8 @@ exports[`should build private api spec 1`] = `
             - username
             - nickname
             - avatar
-            - sign
-            - user_group
-          title: User
+            - joinedAt
+          title: SlimUser
           type: object
         title:
           type: string
@@ -742,7 +736,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         isFriend:
@@ -927,7 +921,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         isFriend:
@@ -1262,7 +1256,7 @@ exports[`should build private api spec 1`] = `
               updatedAt:
                 type: integer
               user:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/SlimUser'
             required:
               - user
               - rate
@@ -1445,13 +1439,11 @@ exports[`should build private api spec 1`] = `
             id:
               example: 1
               type: integer
+            joinedAt:
+              type: integer
             nickname:
               example: Sai🖖
               type: string
-            sign:
-              type: string
-            user_group:
-              type: integer
             username:
               example: sai
               type: string
@@ -1460,9 +1452,8 @@ exports[`should build private api spec 1`] = `
             - username
             - nickname
             - avatar
-            - sign
-            - user_group
-          title: User
+            - joinedAt
+          title: SlimUser
           type: object
         id:
           description: topic id
@@ -1513,7 +1504,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         parent:
@@ -1562,15 +1553,26 @@ exports[`should build private api spec 1`] = `
             - large
           title: Avatar
           type: object
+        bio:
+          type: string
+        group:
+          type: integer
         id:
           example: 1
           type: integer
+        joinedAt:
+          type: integer
+        location:
+          type: string
         nickname:
           example: Sai🖖
           type: string
         sign:
           type: string
+        site:
+          type: string
         user_group:
+          description: deprecated, use group instead
           type: integer
         username:
           example: sai
@@ -1580,8 +1582,13 @@ exports[`should build private api spec 1`] = `
         - username
         - nickname
         - avatar
-        - sign
+        - group
         - user_group
+        - joinedAt
+        - sign
+        - site
+        - location
+        - bio
       title: User
       type: object
     UserCollectionsCharacterSummary:
@@ -2520,7 +2527,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/SlimUser'
           description: Default Response
           headers:
             Set-Cookie:
@@ -2868,7 +2875,7 @@ paths:
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/User'
+                          $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - epID
@@ -3873,6 +3880,48 @@ paths:
       summary: 获取 Turnstile 令牌
       tags:
         - user
+  /p1/users/{username}:
+    get:
+      operationId: getUser
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: user not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户信息
+      tags:
+        - user
   /p1/users/{username}/collections/characters:
     get:
       operationId: getUserCharacterCollections
@@ -3913,7 +3962,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户角色收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/indexes:
     get:
       operationId: getUserIndexCollections
@@ -3954,7 +4003,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户目录收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/persons:
     get:
       operationId: getUserPersonCollections
@@ -3995,7 +4044,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户人物收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/subjects:
     get:
       operationId: getUserSubjectCollections
@@ -4107,7 +4156,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户条目收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/summary:
     get:
       operationId: getUserCollectionsSummary
@@ -4150,10 +4199,10 @@ paths:
           HTTPBearer: []
       summary: 获取用户收藏概览
       tags:
-        - collection
+        - user
   /p1/users/{username}/friends:
     get:
-      operationId: getFriends
+      operationId: getUserFriends
       parameters:
         - description: max 100
           in: query
@@ -4260,7 +4309,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户创建的目录
       tags:
-        - collection
+        - user
   /p1/wiki/ep/{episodeID}:
     get:
       operationId: getEpisodeWikiInfo
@@ -5080,13 +5129,11 @@ paths:
                             id:
                               example: 1
                               type: integer
+                            joinedAt:
+                              type: integer
                             nickname:
                               example: Sai🖖
                               type: string
-                            sign:
-                              type: string
-                            user_group:
-                              type: integer
                             username:
                               example: sai
                               type: string
@@ -5095,9 +5142,8 @@ paths:
                             - username
                             - nickname
                             - avatar
-                            - sign
-                            - user_group
-                          title: User
+                            - joinedAt
+                          title: SlimUser
                           type: object
                         id:
                           type: integer
