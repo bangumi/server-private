@@ -199,7 +199,6 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
     rate: episode.rate,
     duration: episode.duration,
     airdate: episode.airdate,
-    online: episode.online,
     comment: episode.comment,
     resources: episode.resources,
     desc: episode.desc,
