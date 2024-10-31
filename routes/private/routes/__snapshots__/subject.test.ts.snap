@@ -246,6 +246,42 @@ Object {
 }
 `;
 
+exports[`subject > should get subject episodes 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "airdate": "2002-04-03",
+      "comment": 16,
+      "desc": "",
+      "disc": 0,
+      "duration": "24m",
+      "id": 1027,
+      "lock": true,
+      "name": "ちぃ 目覚める",
+      "nameCN": "叽，觉醒了",
+      "sort": 1,
+      "subjectID": 12,
+      "type": 0,
+    },
+    Object {
+      "airdate": "2002-04-10",
+      "comment": 8,
+      "desc": "",
+      "disc": 0,
+      "duration": "24m",
+      "id": 1028,
+      "lock": true,
+      "name": "ちぃ でかける",
+      "nameCN": "叽，出门",
+      "sort": 2,
+      "subjectID": 12,
+      "type": 0,
+    },
+  ],
+  "total": 27,
+}
+`;
+
 exports[`subject > should get subject persons 1`] = `
 Object {
   "data": Array [

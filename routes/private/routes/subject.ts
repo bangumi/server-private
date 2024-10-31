@@ -122,6 +122,62 @@ export async function setup(app: App) {
   );
 
   app.get(
+    '/subjects/:subjectID/episodes',
+    {
+      schema: {
+        summary: '获取条目的剧集',
+        operationId: 'getSubjectEpisodes',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          type: t.Optional(t.Enum(res.EpisodeType, { description: '剧集类型' })),
+          limit: t.Optional(
+            t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.Episode)),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 100, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiEpisodes.subjectID, subjectID),
+        op.eq(schema.chiiEpisodes.ban, 0),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiEpisodes)
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiEpisodes)
+        .where(condition)
+        .orderBy(op.asc(schema.chiiEpisodes.type), op.asc(schema.chiiEpisodes.sort))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const episodes = data.map((d) => convert.toEpisode(d));
+      return {
+        data: episodes,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
     '/subjects/:subjectID/relations',
     {
       schema: {
@@ -245,7 +301,10 @@ export async function setup(app: App) {
           op.eq(schema.chiiSubjectCharacters.characterID, schema.chiiCharacters.id),
         )
         .where(condition)
-        .orderBy(op.asc(schema.chiiSubjectCharacters.order))
+        .orderBy(
+          op.asc(schema.chiiSubjectCharacters.type),
+          op.asc(schema.chiiSubjectCharacters.order),
+        )
         .limit(limit)
         .offset(offset)
         .execute();
