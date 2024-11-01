@@ -803,7 +803,7 @@ const htmlEscapedString = (t: string) =>
     },
   });
 
-export const chiiSubjects = createTable('chii_subjects')('subject', {
+export const chiiSubjects = createTable('chii_subjects')('chii_subjects', {
   id: mediumint('subject_id').autoincrement().notNull(),
   typeID: smallint('subject_type_id').notNull(),
   name: htmlEscapedString('varchar')('subject_name', { length: 80 }).notNull(),
@@ -832,7 +832,7 @@ export const chiiSubjects = createTable('chii_subjects')('subject', {
   ban: tinyint('subject_ban').default(0).notNull(),
 });
 
-export const chiiSubjectFields = createTable('chii_subject_fields')('subject_field', {
+export const chiiSubjectFields = createTable('chii_subject_fields')('chii_subject_fields', {
   id: mediumint('field_sid').autoincrement().notNull(),
   fieldTid: smallint('field_tid').notNull(),
   fieldTags: mediumtext('field_tags').notNull(),
@@ -1163,6 +1163,25 @@ export const chiiTimeline = mysqlTable(
       tmlCat: index('tml_cat').on(table.tmlCat),
       tmlBatch: index('tml_batch').on(table.tmlBatch),
       queryTmlCat: index('query_tml_cat').on(table.tmlUid, table.tmlCat),
+    };
+  },
+);
+
+export const chiiTimelineComments = mysqlTable(
+  'chii_timeline_comments',
+  {
+    tmlPstId: mediumint('tml_pst_id').autoincrement().notNull(),
+    tmlPstMid: int('tml_pst_mid').notNull(),
+    tmlPstUid: mediumint('tml_pst_uid').notNull(),
+    tmlPstRelated: mediumint('tml_pst_related').notNull(),
+    tmlPstDateline: int('tml_pst_dateline').notNull(),
+    tmlPstContent: mediumtext('tml_pst_content').notNull(),
+  },
+  (table) => {
+    return {
+      cmtTmlId: index('cmt_tml_id').on(table.tmlPstMid),
+      tmlPstRelated: index('tml_pst_related').on(table.tmlPstRelated),
+      tmlPstUid: index('tml_pst_uid').on(table.tmlPstUid),
     };
   },
 );

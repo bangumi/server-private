@@ -462,7 +462,7 @@ export async function setup(app: App) {
           if (!details) {
             continue;
           }
-          const slim = convert.toSlimSubject(d.subject);
+          const slim = convert.toSlimSubject(d.chii_subjects);
           details.push(slim);
         }
       }
@@ -644,7 +644,7 @@ export async function setup(app: App) {
         .execute();
 
       const collections = data.map((d) =>
-        toUserSubjectCollection(d.chii_subject_interests, d.subject, d.subject_field),
+        toUserSubjectCollection(d.chii_subject_interests, d.chii_subjects, d.chii_subject_fields),
       );
 
       return {

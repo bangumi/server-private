@@ -54,7 +54,7 @@ export async function fetchSubjectByID(
     )
     .execute();
   for (const d of data) {
-    return convert.toSubject(d.subject, d.subject_field);
+    return convert.toSubject(d.chii_subjects, d.chii_subject_fields);
   }
   return null;
 }

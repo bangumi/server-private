@@ -115,7 +115,7 @@ export async function setup(app: App) {
         )
         .execute();
       for (const d of data) {
-        return convert.toSubject(d.subject, d.subject_field);
+        return convert.toSubject(d.chii_subjects, d.chii_subject_fields);
       }
       throw new NotFoundError(`subject ${subjectID}`);
     },
@@ -241,7 +241,9 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-      const relations = data.map((d) => toSubjectRelation(d.subject, d.chii_subject_relations));
+      const relations = data.map((d) =>
+        toSubjectRelation(d.chii_subjects, d.chii_subject_relations),
+      );
       return {
         data: relations,
         total: count,
