@@ -479,7 +479,6 @@ export async function setup(app: App) {
               op.eq(schema.chiiPersonCollects.uid, userID),
               op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
               op.eq(schema.chiiCharacters.ban, 0),
-              op.eq(schema.chiiCharacters.lock, 0),
               auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
             ),
           )
@@ -508,7 +507,6 @@ export async function setup(app: App) {
               op.eq(schema.chiiPersonCollects.uid, userID),
               op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
               op.eq(schema.chiiPersons.ban, 0),
-              op.eq(schema.chiiPersons.lock, 0),
               auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
             ),
           )
