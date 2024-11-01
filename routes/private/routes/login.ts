@@ -9,7 +9,7 @@ import { CookieKey } from '@app/lib/auth/session.ts';
 import config, { redisPrefix } from '@app/lib/config.ts';
 import { CaptchaError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUser, UserRepo } from '@app/lib/orm/index.ts';
+import { fetchPermission, fetchUser, UserRepo } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -29,6 +29,8 @@ const EmailOrPasswordError = createError(
   'email does not exists or email and password not match',
   httpCodes.UNAUTHORIZED,
 );
+
+const UserBannedError = createError('USER_BANNED', 'user is banned', httpCodes.UNAUTHORIZED);
 
 const clientPermission = t.Object(
   {
@@ -207,6 +209,11 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       }
       if (!(await comparePassword(user.passwordCrypt, password))) {
         throw new EmailOrPasswordError();
+      }
+
+      const perms = await fetchPermission(user.groupid);
+      if (perms.user_ban) {
+        throw new UserBannedError();
       }
 
       const token = await session.create({
