@@ -8,7 +8,7 @@ describe('should update subject', () => {
   beforeEach(async () => {
     await db
       .update(schema.chiiSubjects)
-      .set({ nsfw: false })
+      .set({ nsfw: true })
       .where(op.eq(schema.chiiSubjects.id, 363612));
     await db.delete(schema.chiiSubjectRev).where(op.eq(schema.chiiSubjectRev.subjectID, 363612));
   });
@@ -81,7 +81,7 @@ describe('should update subject', () => {
           "metaTags": "热血 短片",
           "name": "q",
           "nameCN": "",
-          "nsfw": false,
+          "nsfw": true,
           "onHold": 1,
           "platform": 3,
           "series": 0,
