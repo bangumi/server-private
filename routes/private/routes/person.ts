@@ -1,4 +1,3 @@
-import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { db, op } from '@app/drizzle/db.ts';
@@ -13,67 +12,31 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
-export type IPersonRelation = Static<typeof PersonRelation>;
-const PersonRelation = t.Object(
-  {
-    person: t.Ref(res.SlimPerson),
-    relation: t.Integer({ description: '人物关系: 任职于,从属,聘用,嫁给...' }),
-  },
-  { $id: 'PersonRelation' },
-);
-
-function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): IPersonRelation {
+function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): res.IPersonRelation {
   return {
     person: convert.toSlimPerson(person),
     relation: relation.relation,
   };
 }
 
-export type IPersonSubject = Static<typeof PersonSubject>;
-const PersonSubject = t.Object(
-  {
-    subject: t.Ref(res.SlimSubject),
-    position: t.Integer(),
-  },
-  { $id: 'PersonSubject' },
-);
-
-function toPersonSubject(subject: orm.ISubject, relation: orm.IPersonSubject): IPersonSubject {
+function toPersonSubject(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonSubject {
   return {
     subject: convert.toSlimSubject(subject),
     position: relation.position,
   };
 }
 
-export type IPersonCharacter = Static<typeof PersonCharacter>;
-const PersonCharacter = t.Object(
-  {
-    character: t.Ref(res.SlimCharacter),
-    subjects: t.Array(t.Ref(res.SlimSubject)),
-  },
-  { $id: 'PersonCharacter' },
-);
-
 function toPersonCharacter(
   character: orm.ICharacter,
-  subjects: res.ISlimSubject[],
-): IPersonCharacter {
+  relations: res.ICharacterSubjectRelation[],
+): res.IPersonCharacter {
   return {
     character: convert.toSlimCharacter(character),
-    subjects: subjects,
+    relations: relations,
   };
 }
 
-export type IPersonCollect = Static<typeof PersonCollect>;
-const PersonCollect = t.Object(
-  {
-    user: t.Ref(res.SlimUser),
-    createdAt: t.Integer(),
-  },
-  { $id: 'PersonCollect' },
-);
-
-function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): IPersonCollect {
+function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
   return {
     user: convert.toSlimUser(user),
     createdAt: collect.createdAt,
@@ -82,11 +45,6 @@ function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): IPersonC
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(PersonRelation);
-  app.addSchema(PersonSubject);
-  app.addSchema(PersonCharacter);
-  app.addSchema(PersonCollect);
-
   app.get(
     '/persons/:personID',
     {
@@ -143,7 +101,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(PersonRelation)),
+          200: res.Paged(t.Ref(res.PersonRelation)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('person')),
           }),
@@ -212,7 +170,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(PersonSubject)),
+          200: res.Paged(t.Ref(res.PersonSubject)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('person')),
           }),
@@ -284,7 +242,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(PersonCharacter)),
+          200: res.Paged(t.Ref(res.PersonCharacter)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('person')),
           }),
@@ -378,7 +336,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(PersonCollect)),
+          200: res.Paged(t.Ref(res.PersonCollect)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('person')),
           }),

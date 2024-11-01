@@ -102,6 +102,42 @@ exports[`should build private api spec 1`] = `
         - nsfw
       title: Character
       type: object
+    CharacterRelation:
+      properties:
+        character:
+          $ref: '#/components/schemas/SlimCharacter'
+        relation:
+          description: '角色关系: 任职于,从属,聘用,嫁给...'
+          type: integer
+      required:
+        - character
+        - relation
+      type: object
+    CharacterSubject:
+      properties:
+        actors:
+          items:
+            $ref: '#/components/schemas/SlimPerson'
+          type: array
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+        type:
+          type: integer
+      required:
+        - subject
+        - actors
+        - type
+      type: object
+    CharacterSubjectRelation:
+      properties:
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+        type:
+          type: integer
+      required:
+        - subject
+        - type
+      type: object
     CurrentUser:
       allOf:
         - properties:
@@ -681,13 +717,13 @@ exports[`should build private api spec 1`] = `
       properties:
         character:
           $ref: '#/components/schemas/SlimCharacter'
-        subjects:
+        relations:
           items:
-            $ref: '#/components/schemas/SlimSubject'
+            $ref: '#/components/schemas/CharacterSubjectRelation'
           type: array
       required:
         - character
-        - subjects
+        - relations
       type: object
     PersonCollect:
       properties:

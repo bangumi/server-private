@@ -1,4 +1,3 @@
-import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { db, op } from '@app/drizzle/db.ts';
@@ -13,20 +12,10 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
-export type ISubjectRelation = Static<typeof SubjectRelation>;
-const SubjectRelation = t.Object(
-  {
-    subject: t.Ref(res.SlimSubject),
-    relation: t.Integer(),
-    order: t.Integer(),
-  },
-  { $id: 'SubjectRelation' },
-);
-
 function toSubjectRelation(
   subject: orm.ISubject,
   relation: orm.ISubjectRelation,
-): ISubjectRelation {
+): res.ISubjectRelation {
   return {
     subject: convert.toSlimSubject(subject),
     relation: relation.relation,
@@ -34,22 +23,11 @@ function toSubjectRelation(
   };
 }
 
-export type ISubjectCharacter = Static<typeof SubjectCharacter>;
-const SubjectCharacter = t.Object(
-  {
-    character: t.Ref(res.SlimCharacter),
-    actors: t.Array(t.Ref(res.SlimPerson)),
-    type: t.Integer(),
-    order: t.Integer(),
-  },
-  { $id: 'SubjectCharacter' },
-);
-
 function toSubjectCharacter(
   character: orm.ICharacter,
   relation: orm.ICharacterSubject,
   actors: res.ISlimPerson[],
-): ISubjectCharacter {
+): res.ISubjectCharacter {
   return {
     character: convert.toSlimCharacter(character),
     actors: actors,
@@ -58,16 +36,7 @@ function toSubjectCharacter(
   };
 }
 
-export type ISubjectStaff = Static<typeof SubjectStaff>;
-const SubjectStaff = t.Object(
-  {
-    person: t.Ref(res.SlimPerson),
-    position: t.Integer(),
-  },
-  { $id: 'SubjectPerson' },
-);
-
-function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): ISubjectStaff {
+function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): res.ISubjectStaff {
   return {
     person: convert.toSlimPerson(person),
     position: relation.position,
@@ -76,10 +45,6 @@ function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): ISu
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(SubjectRelation);
-  app.addSchema(SubjectCharacter);
-  app.addSchema(SubjectStaff);
-
   app.get(
     '/subjects/:subjectID',
     {
@@ -198,7 +163,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(SubjectRelation)),
+          200: res.Paged(t.Ref(res.SubjectRelation)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('subject')),
           }),
@@ -271,7 +236,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(SubjectCharacter)),
+          200: res.Paged(t.Ref(res.SubjectCharacter)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('subject')),
           }),
@@ -352,7 +317,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(SubjectStaff)),
+          200: res.Paged(t.Ref(res.SubjectStaff)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('subject')),
           }),

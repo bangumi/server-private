@@ -138,7 +138,7 @@ export async function fetchCastsByPersonAndCharacterIDs(
   subjectType: number | undefined,
   type: number | undefined,
   allowNsfw: boolean,
-): Promise<Map<number, res.ISlimSubject[]>> {
+): Promise<Map<number, res.ICharacterSubjectRelation[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -164,11 +164,11 @@ export async function fetchCastsByPersonAndCharacterIDs(
       ),
     )
     .execute();
-  const map = new Map<number, res.ISlimSubject[]>();
+  const map = new Map<number, res.ICharacterSubjectRelation[]>();
   for (const d of data) {
-    const subject = convert.toSlimSubject(d.chii_subjects);
+    const relation = convert.toCharacterSubjectRelation(d.chii_subjects, d.chii_crt_subject_index);
     const list = map.get(d.chii_crt_cast_index.characterID) || [];
-    list.push(subject);
+    list.push(relation);
     map.set(d.chii_crt_cast_index.characterID, list);
   }
   return map;

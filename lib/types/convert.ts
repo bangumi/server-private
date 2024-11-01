@@ -315,3 +315,13 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     creator: toSlimUser(user),
   };
 }
+
+export function toCharacterSubjectRelation(
+  subject: orm.ISubject,
+  relation: orm.ICharacterSubject,
+): res.ICharacterSubjectRelation {
+  return {
+    subject: toSlimSubject(subject),
+    type: relation.type,
+  };
+}
