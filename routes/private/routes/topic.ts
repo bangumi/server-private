@@ -364,7 +364,6 @@ export async function setup(app: App) {
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
-      preHandler: [requireLogin('get a topics')],
     },
     async ({ params: { subjectID }, query, auth }) => {
       const subject = await orm.fetchSubjectByID(subjectID);
