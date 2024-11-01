@@ -176,7 +176,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     images: subjectCover(subject.image) || undefined,
     infobox: toInfobox(subject.infobox),
     metaTags: subject.metaTags
-      .split(',')
+      .split(' ')
       .map((x) => x.trim())
       .filter((x) => x !== ''),
     locked: subject.ban === 2,
