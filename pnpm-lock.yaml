@@ -181,16 +181,16 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4
       '@types/node':
-        specifier: ^20.17.2
+        specifier: ^20.17.3
         version: 20.17.5
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.12.1
+        specifier: ^8.12.2
         version: 8.12.2(@typescript-eslint/parser@8.12.2(eslint@9.13.0(jiti@1.21.6))(typescript@5.6.3))(eslint@9.13.0(jiti@1.21.6))(typescript@5.6.3)
       '@typescript-eslint/parser':
-        specifier: ^8.12.1
+        specifier: ^8.12.2
         version: 8.12.2(eslint@9.13.0(jiti@1.21.6))(typescript@5.6.3)
       '@typescript-eslint/utils':
-        specifier: ^8.12.1
+        specifier: ^8.12.2
         version: 8.12.2(eslint@9.13.0(jiti@1.21.6))(typescript@5.6.3)
       '@vitest/coverage-v8':
         specifier: ^2.1.4
@@ -274,7 +274,7 @@ importers:
         specifier: ~5.6.3
         version: 5.6.3
       typescript-eslint:
-        specifier: ^8.12.1
+        specifier: ^8.12.2
         version: 8.12.2(eslint@9.13.0(jiti@1.21.6))(typescript@5.6.3)
       vite:
         specifier: ^5.4.10
