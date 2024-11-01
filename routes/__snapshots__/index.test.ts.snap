@@ -2932,7 +2932,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取人物出演角色
+      summary: 获取人物的出演角色
       tags:
         - person
   /p1/persons/{personID}/collects:
@@ -3070,7 +3070,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取人物关联人物
+      summary: 获取人物的关联人物
       tags:
         - person
   /p1/persons/{personID}/works:
@@ -3166,7 +3166,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取人物参与作品
+      summary: 获取人物的参与作品
       tags:
         - person
   /p1/subjects/-/episode/-/comments/{commentID}:

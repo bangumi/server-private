@@ -129,7 +129,7 @@ export async function setup(app: App) {
     '/persons/:personID/relations',
     {
       schema: {
-        summary: '获取人物关联人物',
+        summary: '获取人物的关联人物',
         operationId: 'getPersonRelations',
         tags: [Tag.Person],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -196,7 +196,7 @@ export async function setup(app: App) {
     '/persons/:personID/works',
     {
       schema: {
-        summary: '获取人物参与作品',
+        summary: '获取人物的参与作品',
         operationId: 'getPersonWorks',
         tags: [Tag.Person],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -268,7 +268,7 @@ export async function setup(app: App) {
     '/persons/:personID/casts',
     {
       schema: {
-        summary: '获取人物出演角色',
+        summary: '获取人物的出演角色',
         operationId: 'getPersonCasts',
         tags: [Tag.Person],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
