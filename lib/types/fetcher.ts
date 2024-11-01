@@ -27,7 +27,7 @@ export async function fetchSlimSubjectByID(
       op.and(
         op.eq(schema.chiiSubjects.id, id),
         op.eq(schema.chiiSubjects.ban, 0),
-        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       ),
     )
     .execute();
@@ -49,7 +49,7 @@ export async function fetchSubjectByID(
       op.and(
         op.eq(schema.chiiSubjects.id, id),
         op.eq(schema.chiiSubjects.ban, 0),
-        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       ),
     )
     .execute();
@@ -70,7 +70,7 @@ export async function fetchSlimCharacterByID(
       op.and(
         op.eq(schema.chiiCharacters.id, id),
         op.eq(schema.chiiCharacters.ban, 0),
-        allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       ),
     )
     .execute();
@@ -91,7 +91,7 @@ export async function fetchSlimPersonByID(
       op.and(
         op.eq(schema.chiiPersons.id, id),
         op.eq(schema.chiiPersons.ban, 0),
-        allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
     )
     .execute();
@@ -118,7 +118,7 @@ export async function fetchCastsBySubjectAndCharacterIDs(
         op.eq(schema.chiiCharacterCasts.subjectID, subjectID),
         op.inArray(schema.chiiCharacterCasts.characterID, characterIDs),
         op.eq(schema.chiiPersons.ban, 0),
-        allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
     )
     .execute();
@@ -160,7 +160,7 @@ export async function fetchCastsByPersonAndCharacterIDs(
         subjectType ? op.eq(schema.chiiCharacterCasts.subjectType, subjectType) : undefined,
         type ? op.eq(schema.chiiCharacterSubjects.type, type) : undefined,
         op.eq(schema.chiiSubjects.ban, 0),
-        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
+        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       ),
     )
     .execute();

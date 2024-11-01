@@ -24,6 +24,22 @@ import * as lo from 'lodash-es';
 
 const createTable = (dbName: string) => mysqlTableCreator(() => dbName);
 
+const customBoolean = customType<{ data: boolean }>({
+  dataType() {
+    return 'tinyint';
+  },
+  fromDriver(value) {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    return value === 1;
+  },
+
+  toDriver(value) {
+    return value ? 1 : 0;
+  },
+});
+
 export const chiiApp = mysqlTable(
   'chii_apps',
   {
@@ -66,7 +82,7 @@ export const chiiCharacters = mysqlTable(
     anidbId: mediumint('crt_anidb_id').notNull(),
     ban: tinyint('crt_ban').default(0).notNull(),
     redirect: int('crt_redirect').default(0).notNull(),
-    nsfw: tinyint('crt_nsfw').notNull(),
+    nsfw: customBoolean('crt_nsfw').notNull(),
   },
   (table) => {
     return {
@@ -254,7 +270,7 @@ export const chiiGroups = mysqlTable('chii_groups', {
   grpLastpost: int('grp_lastpost').notNull(),
   grpBuilddate: int('grp_builddate').notNull(),
   grpAccessible: tinyint('grp_accessible').default(1).notNull(),
-  grpNsfw: tinyint('grp_nsfw').notNull(),
+  nsfw: customBoolean('grp_nsfw').notNull(),
 });
 
 export const chiiGroupMembers = mysqlTable('chii_group_members', {
@@ -592,7 +608,7 @@ export const chiiPersons = mysqlTable(
     anidbImg: varchar('prsn_img_anidb', { length: 255 }).notNull(),
     ban: tinyint('prsn_ban').default(0).notNull(),
     redirect: int('prsn_redirect').default(0).notNull(),
-    nsfw: tinyint('prsn_nsfw').notNull(),
+    nsfw: customBoolean('prsn_nsfw').notNull(),
   },
   (table) => {
     return {
@@ -773,22 +789,6 @@ export const chiiRevText = mysqlTable('chii_rev_text', {
   // mediumblobType: mediumblob("rev_text").notNull(),
 });
 
-// const customBoolean = customType<{ data: boolean }>({
-//   dataType() {
-//     return 'tinyint';
-//   },
-//   fromDriver(value) {
-//     if (typeof value === 'boolean') {
-//       return value;
-//     }
-//     return value === 1;
-//   },
-
-//   toDriver(value) {
-//     return value ? 1 : 0;
-//   },
-// });
-
 const htmlEscapedString = (t: string) =>
   customType<{ data: string; driverData: string }>({
     dataType() {
@@ -828,7 +828,7 @@ export const chiiSubjects = createTable('chii_subjects')('chii_subjects', {
   seriesEntry: mediumint('subject_series_entry').notNull(),
   idxCn: varchar('subject_idx_cn', { length: 1 }).notNull(),
   airtime: tinyint('subject_airtime').notNull(),
-  nsfw: tinyint('subject_nsfw').default(0).notNull(),
+  nsfw: customBoolean('subject_nsfw').notNull(),
   ban: tinyint('subject_ban').default(0).notNull(),
 });
 
@@ -881,7 +881,7 @@ export const chiiSubjectImgs = mysqlTable(
     imgUid: mediumint('img_uid').notNull(),
     imgTarget: varchar('img_target', { length: 255 }).notNull(),
     imgVote: mediumint('img_vote').notNull(),
-    imgNsfw: tinyint('img_nsfw').notNull(),
+    imgNsfw: customBoolean('img_nsfw').notNull(),
     imgBan: tinyint('img_ban').notNull(),
     imgDateline: int('img_dateline').notNull(),
   },
@@ -1138,7 +1138,7 @@ export const chiiTagFields = mysqlTable('chii_tag_neue_fields', {
   tagID: int('field_tid').notNull(),
   summary: mediumtext('field_summary').notNull(),
   order: mediumint('field_order').notNull(),
-  nsfw: tinyint('field_nsfw').default(0).notNull(),
+  nsfw: customBoolean('field_nsfw').notNull(),
   lock: int('field_lock').default(0).notNull(),
 });
 

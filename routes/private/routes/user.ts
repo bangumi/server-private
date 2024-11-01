@@ -447,7 +447,7 @@ export async function setup(app: App) {
               auth.userID === userID
                 ? undefined
                 : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
             ),
           )
           .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
@@ -480,7 +480,7 @@ export async function setup(app: App) {
               op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
               op.eq(schema.chiiCharacters.ban, 0),
               op.eq(schema.chiiCharacters.lock, 0),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
             ),
           )
           .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
@@ -509,7 +509,7 @@ export async function setup(app: App) {
               op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
               op.eq(schema.chiiPersons.ban, 0),
               op.eq(schema.chiiPersons.lock, 0),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
             ),
           )
           .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
@@ -609,7 +609,7 @@ export async function setup(app: App) {
         op.eq(schema.chiiSubjects.ban, 0),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
         auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -689,7 +689,7 @@ export async function setup(app: App) {
         op.eq(schema.chiiPersonCollects.uid, user.id),
         op.eq(schema.chiiCharacters.ban, 0),
         op.eq(schema.chiiCharacters.redirect, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -760,7 +760,7 @@ export async function setup(app: App) {
         op.eq(schema.chiiPersonCollects.uid, user.id),
         op.eq(schema.chiiPersons.ban, 0),
         op.eq(schema.chiiPersons.redirect, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
 
       const [{ count = 0 } = {}] = await db

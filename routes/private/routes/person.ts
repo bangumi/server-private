@@ -114,7 +114,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiPersons.id, personID),
             op.eq(schema.chiiPersons.ban, 0),
-            auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+            auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
           ),
         )
         .execute();
@@ -158,7 +158,7 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiPersonRelations.id, personID),
         op.eq(schema.chiiPersons.ban, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
@@ -233,7 +233,7 @@ export async function setup(app: App) {
         subjectType ? op.eq(schema.chiiPersonSubjects.subjectType, subjectType) : undefined,
         position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
         op.eq(schema.chiiSubjects.ban, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
@@ -305,7 +305,7 @@ export async function setup(app: App) {
         subjectType ? op.eq(schema.chiiCharacterCasts.subjectType, subjectType) : undefined,
         type ? op.eq(schema.chiiCharacterSubjects.type, type) : undefined,
         op.eq(schema.chiiCharacters.ban, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
