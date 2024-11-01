@@ -11,7 +11,6 @@ import {
   mediumtext,
   mysqlEnum,
   mysqlTable,
-  mysqlTableCreator,
   smallint,
   text,
   timestamp,
@@ -21,8 +20,6 @@ import {
   year,
 } from 'drizzle-orm/mysql-core';
 import * as lo from 'lodash-es';
-
-const createTable = (dbName: string) => mysqlTableCreator(() => dbName);
 
 const customBoolean = customType<{ data: boolean }>({
   dataType() {
@@ -803,7 +800,7 @@ const htmlEscapedString = (t: string) =>
     },
   });
 
-export const chiiSubjects = createTable('chii_subjects')('chii_subjects', {
+export const chiiSubjects = mysqlTable('chii_subjects', {
   id: mediumint('subject_id').autoincrement().notNull(),
   typeID: smallint('subject_type_id').notNull(),
   name: htmlEscapedString('varchar')('subject_name', { length: 80 }).notNull(),
@@ -832,7 +829,7 @@ export const chiiSubjects = createTable('chii_subjects')('chii_subjects', {
   ban: tinyint('subject_ban').default(0).notNull(),
 });
 
-export const chiiSubjectFields = createTable('chii_subject_fields')('chii_subject_fields', {
+export const chiiSubjectFields = mysqlTable('chii_subject_fields', {
   id: mediumint('field_sid').autoincrement().notNull(),
   fieldTid: smallint('field_tid').notNull(),
   fieldTags: mediumtext('field_tags').notNull(),
@@ -1094,8 +1091,8 @@ export const chiiSubjectTopics = mysqlTable(
   },
 );
 
-export const chiiTagIndex = createTable('chii_tag_neue_index')(
-  'tag_index',
+export const chiiTagIndex = mysqlTable(
+  'chii_tag_neue_index',
   {
     id: mediumint('tag_id').autoincrement().notNull(),
     name: varchar('tag_name', { length: 30 }).notNull(),
@@ -1114,8 +1111,8 @@ export const chiiTagIndex = createTable('chii_tag_neue_index')(
   },
 );
 
-export const chiiTagList = createTable('chii_tag_neue_list')(
-  'tag_list',
+export const chiiTagList = mysqlTable(
+  'chii_tag_neue_list',
   {
     tagID: mediumint('tlt_tid').notNull(),
     userID: mediumint('tlt_uid').notNull(),
