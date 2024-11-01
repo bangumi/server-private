@@ -412,7 +412,7 @@ export async function setup(app: App) {
             count: op.count(),
           })
           .from(schema.chiiIndex)
-          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.eq(schema.chiiIndex.ban, 0)))
+          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.ne(schema.chiiIndex.ban, 1)))
           .execute();
         indexSummary.count = count;
       }
@@ -442,7 +442,7 @@ export async function setup(app: App) {
               op.eq(schema.chiiSubjectInterests.interestUid, userID),
               op.eq(schema.chiiSubjectInterests.interestSubjectType, stype),
               op.eq(schema.chiiSubjectInterests.interestType, ctype),
-              op.eq(schema.chiiSubjects.ban, 0),
+              op.ne(schema.chiiSubjects.ban, 1),
               op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
               auth.userID === userID
                 ? undefined
@@ -478,7 +478,7 @@ export async function setup(app: App) {
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
               op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
-              op.eq(schema.chiiCharacters.ban, 0),
+              op.ne(schema.chiiCharacters.ban, 1),
               auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
             ),
           )
@@ -506,7 +506,7 @@ export async function setup(app: App) {
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
               op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
-              op.eq(schema.chiiPersons.ban, 0),
+              op.ne(schema.chiiPersons.ban, 1),
               auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
             ),
           )
@@ -526,7 +526,7 @@ export async function setup(app: App) {
         const data = await db
           .select()
           .from(schema.chiiIndex)
-          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.eq(schema.chiiIndex.ban, 0)))
+          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.ne(schema.chiiIndex.ban, 1)))
           .orderBy(op.desc(schema.chiiIndex.createdAt))
           .limit(7)
           .execute();
@@ -604,7 +604,7 @@ export async function setup(app: App) {
           ? op.eq(schema.chiiSubjectInterests.interestSubjectType, subjectType)
           : undefined,
         type ? op.eq(schema.chiiSubjectInterests.interestType, type) : undefined,
-        op.eq(schema.chiiSubjects.ban, 0),
+        op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
         auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
@@ -685,7 +685,7 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiPersonCollects.uid, user.id),
-        op.eq(schema.chiiCharacters.ban, 0),
+        op.ne(schema.chiiCharacters.ban, 1),
         op.eq(schema.chiiCharacters.redirect, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       );
@@ -756,7 +756,7 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiPersonCollects.uid, user.id),
-        op.eq(schema.chiiPersons.ban, 0),
+        op.ne(schema.chiiPersons.ban, 1),
         op.eq(schema.chiiPersons.redirect, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
@@ -821,7 +821,7 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiIndexCollects.uid, user.id),
-        op.eq(schema.chiiIndex.ban, 0),
+        op.ne(schema.chiiIndex.ban, 1),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -885,7 +885,7 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiIndex.uid, user.id),
-        op.eq(schema.chiiIndex.ban, 0),
+        op.ne(schema.chiiIndex.ban, 1),
       );
 
       const [{ count = 0 } = {}] = await db

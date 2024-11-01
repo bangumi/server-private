@@ -110,7 +110,7 @@ export async function setup(app: App) {
         .where(
           op.and(
             op.eq(schema.chiiSubjects.id, subjectID),
-            op.eq(schema.chiiSubjects.ban, 0),
+            op.ne(schema.chiiSubjects.ban, 1),
             auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
           ),
         )
@@ -155,7 +155,7 @@ export async function setup(app: App) {
       }
       const condition = op.and(
         op.eq(schema.chiiEpisodes.subjectID, subjectID),
-        op.eq(schema.chiiEpisodes.ban, 0),
+        op.ne(schema.chiiEpisodes.ban, 1),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
@@ -215,7 +215,7 @@ export async function setup(app: App) {
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
         // TODO: feat: bangumi/common 添加 relation.json 以及 staff.json
         singles ? undefined : op.ne(schema.chiiSubjectRelations.relatedType, 1003),
-        op.eq(schema.chiiSubjects.ban, 0),
+        op.ne(schema.chiiSubjects.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
@@ -286,7 +286,7 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiCharacterSubjects.subjectID, subjectID),
         type ? op.eq(schema.chiiCharacterSubjects.type, type) : undefined,
-        op.eq(schema.chiiCharacters.ban, 0),
+        op.ne(schema.chiiCharacters.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
@@ -366,7 +366,7 @@ export async function setup(app: App) {
       }
       const condition = op.and(
         op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
-        op.eq(schema.chiiPersons.ban, 0),
+        op.ne(schema.chiiPersons.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
