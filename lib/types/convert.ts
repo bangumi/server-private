@@ -163,7 +163,7 @@ export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
     type: subject.typeID,
     images: subjectCover(subject.image) || undefined,
     locked: subject.ban === 2,
-    nsfw: subject.nsfw,
+    nsfw: Boolean(subject.nsfw),
   };
 }
 
@@ -182,7 +182,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     locked: subject.ban === 2,
     name: subject.name,
     nameCN: subject.nameCN,
-    nsfw: subject.nsfw,
+    nsfw: Boolean(subject.nsfw),
     platform: toSubjectPlatform(subject),
     rating: toSubjectRating(fields),
     redirect: fields.fieldRedirect,

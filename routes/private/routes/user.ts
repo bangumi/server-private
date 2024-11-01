@@ -214,9 +214,9 @@ export async function setup(app: App) {
     async ({ params: { username } }) => {
       const data = await db
         .select()
-        .from(schema.chiiUser)
-        .innerJoin(schema.chiiUserFields, op.eq(schema.chiiUser.id, schema.chiiUserFields.uid))
-        .where(op.eq(schema.chiiUser.username, username))
+        .from(schema.chiiUsers)
+        .innerJoin(schema.chiiUserFields, op.eq(schema.chiiUsers.id, schema.chiiUserFields.uid))
+        .where(op.eq(schema.chiiUsers.username, username))
         .execute();
       for (const d of data) {
         return convert.toUser(d.chii_members, d.chii_memberfields);
@@ -269,7 +269,7 @@ export async function setup(app: App) {
       const data = await db
         .select()
         .from(schema.chiiFriends)
-        .innerJoin(schema.chiiUser, op.eq(schema.chiiFriends.fid, schema.chiiUser.id))
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiFriends.fid, schema.chiiUsers.id))
         .where(conditions)
         .orderBy(op.desc(schema.chiiFriends.createdAt))
         .limit(limit)
@@ -447,7 +447,7 @@ export async function setup(app: App) {
               auth.userID === userID
                 ? undefined
                 : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
             ),
           )
           .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
@@ -609,7 +609,7 @@ export async function setup(app: App) {
         op.eq(schema.chiiSubjects.ban, 0),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
         auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, 0),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -837,7 +837,7 @@ export async function setup(app: App) {
         .select()
         .from(schema.chiiIndexCollects)
         .innerJoin(schema.chiiIndex, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndex.id))
-        .innerJoin(schema.chiiUser, op.eq(schema.chiiIndex.uid, schema.chiiUser.id))
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiIndex.uid, schema.chiiUsers.id))
         .where(conditions)
         .orderBy(op.desc(schema.chiiIndexCollects.createdAt))
         .limit(limit)

@@ -195,7 +195,7 @@ export async function edit({
         metaTags: newMetaTags,
         volumes: vol,
         summary,
-        nsfw,
+        nsfw: nsfw ? 1 : 0,
         infobox,
       })
       .where(op.eq(schema.chiiSubjects.id, subjectID))

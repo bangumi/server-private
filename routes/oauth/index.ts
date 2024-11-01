@@ -14,7 +14,7 @@ import {
   chiiApp,
   chiiOauthClients,
   chiiOAuthRefreshToken,
-  chiiUser,
+  chiiUsers,
 } from '@app/drizzle/schema.ts';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
@@ -224,7 +224,7 @@ export async function userOauthRoutes(app: App) {
         .select()
         .from(chiiOauthClients)
         .innerJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
-        .innerJoin(chiiUser, op.eq(chiiApp.creator, chiiUser.id))
+        .innerJoin(chiiUsers, op.eq(chiiApp.creator, chiiUsers.id))
         .where(op.eq(chiiOauthClients.clientID, req.query.client_id))
         .limit(1);
 

@@ -9,6 +9,7 @@ import type { App } from '@app/routes/type.ts';
 
 import * as login from './routes/login.ts';
 import * as misc from './routes/misc.ts';
+import * as person from './routes/person.ts';
 import * as post from './routes/post.ts';
 import * as subject from './routes/subject.ts';
 import * as group from './routes/topic.ts';
@@ -43,9 +44,10 @@ async function API(app: App) {
   await swagger.privateAPI(app);
   addSchemas(app);
 
-  await app.register(misc.setup);
-  await app.register(login.setup);
   await app.register(group.setup);
+  await app.register(login.setup);
+  await app.register(misc.setup);
+  await app.register(person.setup);
   await app.register(post.setup);
   await app.register(subject.setup);
   await app.register(user.setup);

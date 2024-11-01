@@ -77,20 +77,20 @@ export const chiiCharacters = mysqlTable(
   },
 );
 
-export const chiiCrtCastIndex = mysqlTable(
+export const chiiCharacterCasts = mysqlTable(
   'chii_crt_cast_index',
   {
-    crtId: mediumint('crt_id').notNull(),
-    prsnId: mediumint('prsn_id').notNull(),
-    subjectId: mediumint('subject_id').notNull(),
-    subjectTypeId: tinyint('subject_type_id').notNull(),
+    characterID: mediumint('crt_id').notNull(),
+    personID: mediumint('prsn_id').notNull(),
+    subjectID: mediumint('subject_id').notNull(),
+    subjectType: tinyint('subject_type_id').notNull(),
     summary: varchar('summary', { length: 255 }).notNull(),
   },
   (table) => {
     return {
-      prsnId: index('prsn_id').on(table.prsnId),
-      subjectId: index('subject_id').on(table.subjectId),
-      subjectTypeId: index('subject_type_id').on(table.subjectTypeId),
+      prsnId: index('prsn_id').on(table.personID),
+      subjectId: index('subject_id').on(table.subjectID),
+      subjectTypeId: index('subject_type_id').on(table.subjectType),
     };
   },
 );
@@ -114,7 +114,7 @@ export const chiiCrtComments = mysqlTable(
   },
 );
 
-export const chiiSubjectCharacters = mysqlTable(
+export const chiiCharacterSubjects = mysqlTable(
   'chii_crt_subject_index',
   {
     characterID: mediumint('crt_id').notNull(),
@@ -419,7 +419,7 @@ export const chiiLikes = mysqlTable(
   },
 );
 
-export const chiiUser = mysqlTable(
+export const chiiUsers = mysqlTable(
   'chii_members',
   {
     id: mediumint('uid').autoincrement().notNull(),
@@ -645,7 +645,7 @@ export const chiiPersonCollects = mysqlTable(
   },
 );
 
-export const chiiSubjectPersons = mysqlTable(
+export const chiiPersonSubjects = mysqlTable(
   'chii_person_cs_index',
   {
     personType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
@@ -685,19 +685,19 @@ export const chiiPersonFields = mysqlTable(
   },
 );
 
-export const chiiPersonRelationship = mysqlTable(
+export const chiiPersonRelations = mysqlTable(
   'chii_person_relationship',
   {
-    prsnType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
-    prsnId: mediumint('prsn_id').notNull(),
-    relatPrsnType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
-    relatPrsnId: mediumint('relat_prsn_id').notNull(),
-    relatType: smallint('relat_type').notNull(),
+    type: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
+    id: mediumint('prsn_id').notNull(),
+    relatedType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
+    relatedID: mediumint('relat_prsn_id').notNull(),
+    relation: smallint('relat_type').notNull(),
   },
   (table) => {
     return {
-      prsnType: index('prsn_type').on(table.prsnType, table.prsnId),
-      relatPrsnType: index('relat_prsn_type').on(table.relatPrsnType, table.relatPrsnId),
+      prsnType: index('prsn_type').on(table.type, table.id),
+      relatPrsnType: index('relat_prsn_type').on(table.relatedType, table.relatedID),
     };
   },
 );
@@ -773,21 +773,21 @@ export const chiiRevText = mysqlTable('chii_rev_text', {
   // mediumblobType: mediumblob("rev_text").notNull(),
 });
 
-const customBoolean = customType<{ data: boolean }>({
-  dataType() {
-    return 'tinyint';
-  },
-  fromDriver(value) {
-    if (typeof value === 'boolean') {
-      return value;
-    }
-    return value === 1;
-  },
+// const customBoolean = customType<{ data: boolean }>({
+//   dataType() {
+//     return 'tinyint';
+//   },
+//   fromDriver(value) {
+//     if (typeof value === 'boolean') {
+//       return value;
+//     }
+//     return value === 1;
+//   },
 
-  toDriver(value) {
-    return value ? 1 : 0;
-  },
-});
+//   toDriver(value) {
+//     return value ? 1 : 0;
+//   },
+// });
 
 const htmlEscapedString = (t: string) =>
   customType<{ data: string; driverData: string }>({
@@ -828,7 +828,7 @@ export const chiiSubjects = createTable('chii_subjects')('chii_subjects', {
   seriesEntry: mediumint('subject_series_entry').notNull(),
   idxCn: varchar('subject_idx_cn', { length: 1 }).notNull(),
   airtime: tinyint('subject_airtime').notNull(),
-  nsfw: customBoolean('subject_nsfw').notNull(),
+  nsfw: tinyint('subject_nsfw').default(0).notNull(),
   ban: tinyint('subject_ban').default(0).notNull(),
 });
 
