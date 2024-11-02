@@ -114,13 +114,7 @@ describe('group topics', () => {
 
 describe('subject topics', () => {
   test('should failed on not found subject', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 2,
-      },
-    });
+    const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       url: '/subjects/114514/topics',
@@ -131,13 +125,7 @@ describe('subject topics', () => {
   });
 
   test('should return data', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 2,
-      },
-    });
+    const app = createTestServer();
     await app.register(setup);
 
     const res = await app.inject({
@@ -150,13 +138,7 @@ describe('subject topics', () => {
   });
 
   test('should fetch topic details', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 2,
-      },
-    });
+    const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({ url: '/subjects/-/topics/3', method: 'get' });
     expect(res.statusCode).toBe(200);
