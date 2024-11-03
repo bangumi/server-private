@@ -157,11 +157,15 @@ export function emptyAuth(): IAuth {
 }
 
 async function userToAuth(user: IUser): Promise<IAuth> {
+  const perms = await getPermission(user.groupID);
   return {
     userID: user.id,
     login: true,
-    permission: await getPermission(user.groupID),
-    allowNsfw: user.regTime - DateTime.now().toUnixInteger() <= 60 * 60 * 24 * 90,
+    permission: perms,
+    allowNsfw:
+      !perms.ban_visit &&
+      !perms.user_ban &&
+      DateTime.now().toUnixInteger() - user.regTime >= 60 * 60 * 24 * 90,
     regTime: user.regTime,
     groupID: user.groupID,
   };

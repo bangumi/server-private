@@ -22,4 +22,14 @@ export function addSchemas(app: App) {
   app.addSchema(res.SlimPerson);
   app.addSchema(res.Index);
   app.addSchema(res.SlimIndex);
+  app.addSchema(res.SubjectRelation);
+  app.addSchema(res.SubjectCharacter);
+  app.addSchema(res.SubjectStaff);
+  app.addSchema(res.CharacterRelation);
+  app.addSchema(res.CharacterSubject);
+  app.addSchema(res.CharacterSubjectRelation);
+  app.addSchema(res.PersonRelation);
+  app.addSchema(res.PersonSubject);
+  app.addSchema(res.PersonCharacter);
+  app.addSchema(res.PersonCollect);
 }

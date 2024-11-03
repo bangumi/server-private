@@ -20,6 +20,58 @@ export enum EpisodeType {
   Other = 6,
 }
 
+export type IAvatar = Static<typeof Avatar>;
+export const Avatar = t.Object(
+  {
+    small: t.String(),
+    medium: t.String({ examples: ['sai'] }),
+    large: t.String(),
+  },
+  { $id: 'Avatar', title: 'Avatar' },
+);
+
+export type ISlimUser = Static<typeof SlimUser>;
+export const SlimUser = t.Object(
+  {
+    id: t.Integer({ examples: [1] }),
+    username: t.String({ examples: ['sai'] }),
+    nickname: t.String({ examples: ['Sai🖖'] }),
+    avatar: Avatar,
+    sign: t.String(),
+    joinedAt: t.Integer(),
+  },
+  { $id: 'SlimUser', title: 'SlimUser' },
+);
+
+export type IUser = Static<typeof User>;
+export const User = t.Object(
+  {
+    id: t.Integer({ examples: [1] }),
+    username: t.String({ examples: ['sai'] }),
+    nickname: t.String({ examples: ['Sai🖖'] }),
+    avatar: Avatar,
+    group: t.Integer(),
+    user_group: t.Integer({ description: 'deprecated, use group instead' }),
+    joinedAt: t.Integer(),
+    sign: t.String(),
+    site: t.String(),
+    location: t.String(),
+    bio: t.String(),
+  },
+  { $id: 'User', title: 'User' },
+);
+
+export type IFriend = Static<typeof Friend>;
+export const Friend = t.Object(
+  {
+    user: t.Ref(SlimUser),
+    grade: t.Integer(),
+    createdAt: t.Integer(),
+    description: t.String(),
+  },
+  { $id: 'Friend', title: 'Friend' },
+);
+
 export type IInfoboxValue = Static<typeof InfoboxValue>;
 export const InfoboxValue = t.Object(
   {
@@ -246,56 +298,98 @@ export const SlimPerson = t.Object(
   },
 );
 
-export type IAvatar = Static<typeof Avatar>;
-export const Avatar = t.Object(
+export type ISubjectRelation = Static<typeof SubjectRelation>;
+export const SubjectRelation = t.Object(
   {
-    small: t.String(),
-    medium: t.String({ examples: ['sai'] }),
-    large: t.String(),
+    subject: t.Ref(SlimSubject),
+    relation: t.Integer(),
+    order: t.Integer(),
   },
-  { $id: 'Avatar', title: 'Avatar' },
+  { $id: 'SubjectRelation' },
 );
 
-export type ISlimUser = Static<typeof SlimUser>;
-export const SlimUser = t.Object(
+export type ISubjectCharacter = Static<typeof SubjectCharacter>;
+export const SubjectCharacter = t.Object(
   {
-    id: t.Integer({ examples: [1] }),
-    username: t.String({ examples: ['sai'] }),
-    nickname: t.String({ examples: ['Sai🖖'] }),
-    avatar: Avatar,
-    sign: t.String(),
-    joinedAt: t.Integer(),
+    character: t.Ref(SlimCharacter),
+    actors: t.Array(t.Ref(SlimPerson)),
+    type: t.Integer(),
+    order: t.Integer(),
   },
-  { $id: 'SlimUser', title: 'SlimUser' },
+  { $id: 'SubjectCharacter' },
 );
 
-export type IUser = Static<typeof User>;
-export const User = t.Object(
+export type ISubjectStaff = Static<typeof SubjectStaff>;
+export const SubjectStaff = t.Object(
   {
-    id: t.Integer({ examples: [1] }),
-    username: t.String({ examples: ['sai'] }),
-    nickname: t.String({ examples: ['Sai🖖'] }),
-    avatar: Avatar,
-    group: t.Integer(),
-    user_group: t.Integer({ description: 'deprecated, use group instead' }),
-    joinedAt: t.Integer(),
-    sign: t.String(),
-    site: t.String(),
-    location: t.String(),
-    bio: t.String(),
+    person: t.Ref(SlimPerson),
+    position: t.Integer(),
   },
-  { $id: 'User', title: 'User' },
+  { $id: 'SubjectPerson' },
 );
 
-export type IFriend = Static<typeof Friend>;
-export const Friend = t.Object(
+export type ICharacterRelation = Static<typeof CharacterRelation>;
+export const CharacterRelation = t.Object(
+  {
+    character: t.Ref(SlimCharacter),
+    relation: t.Integer({ description: '角色关系: 任职于,从属,聘用,嫁给...' }),
+  },
+  { $id: 'CharacterRelation' },
+);
+
+export type ICharacterSubject = Static<typeof CharacterSubject>;
+export const CharacterSubject = t.Object(
+  {
+    subject: t.Ref(SlimSubject),
+    actors: t.Array(t.Ref(SlimPerson)),
+    type: t.Integer(),
+  },
+  { $id: 'CharacterSubject' },
+);
+
+export type ICharacterSubjectRelation = Static<typeof CharacterSubjectRelation>;
+export const CharacterSubjectRelation = t.Object(
+  {
+    subject: t.Ref(SlimSubject),
+    type: t.Integer(),
+  },
+  { $id: 'CharacterSubjectRelation' },
+);
+
+export type IPersonRelation = Static<typeof PersonRelation>;
+export const PersonRelation = t.Object(
+  {
+    person: t.Ref(SlimPerson),
+    relation: t.Integer({ description: '人物关系: 任职于,从属,聘用,嫁给...' }),
+  },
+  { $id: 'PersonRelation' },
+);
+
+export type IPersonSubject = Static<typeof PersonSubject>;
+export const PersonSubject = t.Object(
+  {
+    subject: t.Ref(SlimSubject),
+    position: t.Integer(),
+  },
+  { $id: 'PersonSubject' },
+);
+
+export type IPersonCharacter = Static<typeof PersonCharacter>;
+export const PersonCharacter = t.Object(
+  {
+    character: t.Ref(SlimCharacter),
+    relations: t.Array(t.Ref(CharacterSubjectRelation)),
+  },
+  { $id: 'PersonCharacter' },
+);
+
+export type IPersonCollect = Static<typeof PersonCollect>;
+export const PersonCollect = t.Object(
   {
     user: t.Ref(SlimUser),
-    grade: t.Integer(),
     createdAt: t.Integer(),
-    description: t.String(),
   },
-  { $id: 'Friend', title: 'Friend' },
+  { $id: 'PersonCollect' },
 );
 
 export type IIndex = Static<typeof Index>;

@@ -214,9 +214,9 @@ export async function setup(app: App) {
     async ({ params: { username } }) => {
       const data = await db
         .select()
-        .from(schema.chiiUser)
-        .innerJoin(schema.chiiUserFields, op.eq(schema.chiiUser.id, schema.chiiUserFields.uid))
-        .where(op.eq(schema.chiiUser.username, username))
+        .from(schema.chiiUsers)
+        .innerJoin(schema.chiiUserFields, op.eq(schema.chiiUsers.id, schema.chiiUserFields.uid))
+        .where(op.eq(schema.chiiUsers.username, username))
         .execute();
       for (const d of data) {
         return convert.toUser(d.chii_members, d.chii_memberfields);
@@ -269,7 +269,7 @@ export async function setup(app: App) {
       const data = await db
         .select()
         .from(schema.chiiFriends)
-        .innerJoin(schema.chiiUser, op.eq(schema.chiiFriends.fid, schema.chiiUser.id))
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiFriends.fid, schema.chiiUsers.id))
         .where(conditions)
         .orderBy(op.desc(schema.chiiFriends.createdAt))
         .limit(limit)
@@ -412,7 +412,7 @@ export async function setup(app: App) {
             count: op.count(),
           })
           .from(schema.chiiIndex)
-          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.eq(schema.chiiIndex.ban, 0)))
+          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.ne(schema.chiiIndex.ban, 1)))
           .execute();
         indexSummary.count = count;
       }
@@ -442,7 +442,7 @@ export async function setup(app: App) {
               op.eq(schema.chiiSubjectInterests.interestUid, userID),
               op.eq(schema.chiiSubjectInterests.interestSubjectType, stype),
               op.eq(schema.chiiSubjectInterests.interestType, ctype),
-              op.eq(schema.chiiSubjects.ban, 0),
+              op.ne(schema.chiiSubjects.ban, 1),
               op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
               auth.userID === userID
                 ? undefined
@@ -462,7 +462,7 @@ export async function setup(app: App) {
           if (!details) {
             continue;
           }
-          const slim = convert.toSlimSubject(d.subject);
+          const slim = convert.toSlimSubject(d.chii_subjects);
           details.push(slim);
         }
       }
@@ -478,9 +478,8 @@ export async function setup(app: App) {
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
               op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
-              op.eq(schema.chiiCharacters.ban, 0),
-              op.eq(schema.chiiCharacters.lock, 0),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+              op.ne(schema.chiiCharacters.ban, 1),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
             ),
           )
           .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
@@ -507,9 +506,8 @@ export async function setup(app: App) {
             op.and(
               op.eq(schema.chiiPersonCollects.uid, userID),
               op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
-              op.eq(schema.chiiPersons.ban, 0),
-              op.eq(schema.chiiPersons.lock, 0),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+              op.ne(schema.chiiPersons.ban, 1),
+              auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
             ),
           )
           .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
@@ -528,7 +526,7 @@ export async function setup(app: App) {
         const data = await db
           .select()
           .from(schema.chiiIndex)
-          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.eq(schema.chiiIndex.ban, 0)))
+          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.ne(schema.chiiIndex.ban, 1)))
           .orderBy(op.desc(schema.chiiIndex.createdAt))
           .limit(7)
           .execute();
@@ -606,7 +604,7 @@ export async function setup(app: App) {
           ? op.eq(schema.chiiSubjectInterests.interestSubjectType, subjectType)
           : undefined,
         type ? op.eq(schema.chiiSubjectInterests.interestType, type) : undefined,
-        op.eq(schema.chiiSubjects.ban, 0),
+        op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
         auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
@@ -644,7 +642,7 @@ export async function setup(app: App) {
         .execute();
 
       const collections = data.map((d) =>
-        toUserSubjectCollection(d.chii_subject_interests, d.subject, d.subject_field),
+        toUserSubjectCollection(d.chii_subject_interests, d.chii_subjects, d.chii_subject_fields),
       );
 
       return {
@@ -687,9 +685,9 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiPersonCollects.uid, user.id),
-        op.eq(schema.chiiCharacters.ban, 0),
+        op.ne(schema.chiiCharacters.ban, 1),
         op.eq(schema.chiiCharacters.redirect, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -758,9 +756,9 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiPersonCollects.uid, user.id),
-        op.eq(schema.chiiPersons.ban, 0),
+        op.ne(schema.chiiPersons.ban, 1),
         op.eq(schema.chiiPersons.redirect, 0),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, 0),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -823,7 +821,7 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiIndexCollects.uid, user.id),
-        op.eq(schema.chiiIndex.ban, 0),
+        op.ne(schema.chiiIndex.ban, 1),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -837,7 +835,7 @@ export async function setup(app: App) {
         .select()
         .from(schema.chiiIndexCollects)
         .innerJoin(schema.chiiIndex, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndex.id))
-        .innerJoin(schema.chiiUser, op.eq(schema.chiiIndex.uid, schema.chiiUser.id))
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiIndex.uid, schema.chiiUsers.id))
         .where(conditions)
         .orderBy(op.desc(schema.chiiIndexCollects.createdAt))
         .limit(limit)
@@ -887,7 +885,7 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiIndex.uid, user.id),
-        op.eq(schema.chiiIndex.ban, 0),
+        op.ne(schema.chiiIndex.ban, 1),
       );
 
       const [{ count = 0 } = {}] = await db

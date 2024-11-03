@@ -217,7 +217,7 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
     name: character.name,
     role: character.role,
     images: personImages(character.img) || undefined,
-    nsfw: Boolean(character.nsfw),
+    nsfw: character.nsfw,
     lock: Boolean(character.lock),
   };
 }
@@ -234,7 +234,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
     collects: character.collects,
     lock: Boolean(character.lock),
     redirect: character.redirect,
-    nsfw: Boolean(character.nsfw),
+    nsfw: character.nsfw,
   };
 }
 
@@ -244,7 +244,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     name: person.name,
     type: person.type,
     images: personImages(person.img) || undefined,
-    nsfw: Boolean(person.nsfw),
+    nsfw: person.nsfw,
     lock: Boolean(person.lock),
   };
 }
@@ -287,7 +287,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
     collects: person.collects,
     lock: Boolean(person.lock),
     redirect: person.redirect,
-    nsfw: Boolean(person.nsfw),
+    nsfw: person.nsfw,
   };
 }
 
@@ -313,5 +313,15 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
     creator: toSlimUser(user),
+  };
+}
+
+export function toCharacterSubjectRelation(
+  subject: orm.ISubject,
+  relation: orm.ICharacterSubject,
+): res.ICharacterSubjectRelation {
+  return {
+    subject: toSlimSubject(subject),
+    type: relation.type,
   };
 }

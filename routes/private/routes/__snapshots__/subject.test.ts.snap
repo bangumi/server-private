@@ -208,6 +208,7 @@ exports[`subject > should get subject characters 1`] = `
 Object {
   "data": Array [
     Object {
+      "actors": Array [],
       "character": Object {
         "id": 32,
         "images": Object {
@@ -225,6 +226,7 @@ Object {
       "type": 1,
     },
     Object {
+      "actors": Array [],
       "character": Object {
         "id": 33,
         "images": Object {
@@ -282,48 +284,6 @@ Object {
 }
 `;
 
-exports[`subject > should get subject persons 1`] = `
-Object {
-  "data": Array [
-    Object {
-      "person": Object {
-        "id": 39,
-        "images": Object {
-          "grid": "https://lain.bgm.tv/pic/crt/g/d6/7d/39_prsn_anidb.jpg",
-          "large": "https://lain.bgm.tv/pic/crt/l/d6/7d/39_prsn_anidb.jpg",
-          "medium": "https://lain.bgm.tv/pic/crt/m/d6/7d/39_prsn_anidb.jpg",
-          "small": "https://lain.bgm.tv/pic/crt/s/d6/7d/39_prsn_anidb.jpg",
-        },
-        "lock": false,
-        "name": "CLAMP",
-        "nsfw": false,
-        "type": 3,
-      },
-      "position": 1,
-      "summary": "",
-    },
-    Object {
-      "person": Object {
-        "id": 40,
-        "images": Object {
-          "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
-          "large": "https://lain.bgm.tv/pic/crt/l/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
-          "medium": "https://lain.bgm.tv/pic/crt/m/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
-          "small": "https://lain.bgm.tv/pic/crt/s/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
-        },
-        "lock": false,
-        "name": "浅香守生",
-        "nsfw": false,
-        "type": 1,
-      },
-      "position": 2,
-      "summary": "",
-    },
-  ],
-  "total": 101,
-}
-`;
-
 exports[`subject > should get subject relations 1`] = `
 Object {
   "data": Array [
@@ -367,5 +327,45 @@ Object {
     },
   ],
   "total": 2,
+}
+`;
+
+exports[`subject > should get subject staffs 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "person": Object {
+        "id": 39,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/d6/7d/39_prsn_anidb.jpg",
+          "large": "https://lain.bgm.tv/pic/crt/l/d6/7d/39_prsn_anidb.jpg",
+          "medium": "https://lain.bgm.tv/pic/crt/m/d6/7d/39_prsn_anidb.jpg",
+          "small": "https://lain.bgm.tv/pic/crt/s/d6/7d/39_prsn_anidb.jpg",
+        },
+        "lock": false,
+        "name": "CLAMP",
+        "nsfw": false,
+        "type": 3,
+      },
+      "position": 1,
+    },
+    Object {
+      "person": Object {
+        "id": 40,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+          "large": "https://lain.bgm.tv/pic/crt/l/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+          "medium": "https://lain.bgm.tv/pic/crt/m/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+          "small": "https://lain.bgm.tv/pic/crt/s/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+        },
+        "lock": false,
+        "name": "浅香守生",
+        "nsfw": false,
+        "type": 1,
+      },
+      "position": 2,
+    },
+  ],
+  "total": 101,
 }
 `;

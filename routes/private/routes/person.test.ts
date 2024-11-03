@@ -2,58 +2,58 @@ import { describe, expect, test } from 'vitest';
 
 import { createTestServer } from '@app/tests/utils.ts';
 
-import { setup } from './subject.ts';
+import { setup } from './person.ts';
 
-describe('subject', () => {
-  test('should get subject', async () => {
+describe('person', () => {
+  test('should get person', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/12',
+      url: '/persons/1',
     });
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get subject episodes', async () => {
+  test('should get person relations', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/12/episodes',
+      url: '/persons/1/relations',
       query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get subject relations', async () => {
+  test('should get person works', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/12/relations',
+      url: '/persons/1/works',
       query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get subject characters', async () => {
+  test('should get person casts', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/12/characters',
+      url: '/persons/1/casts',
       query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get subject staffs', async () => {
+  test('should get person collects', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/12/staffs',
+      url: '/persons/1/collects',
       query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
