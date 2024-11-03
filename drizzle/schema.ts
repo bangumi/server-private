@@ -471,7 +471,7 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   blocklist: mediumtext('blocklist').notNull(),
 });
 
-export const chiiNetworkServices = mysqlTable(
+export const chiiUserNetworkServices = mysqlTable(
   'chii_network_services',
   {
     uid: mediumint('ns_uid').notNull(),

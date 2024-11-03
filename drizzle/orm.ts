@@ -2,6 +2,7 @@ import type * as schema from './schema.ts';
 
 export type IUser = typeof schema.chiiUsers.$inferSelect;
 export type IUserFields = typeof schema.chiiUserFields.$inferSelect;
+export type IUserNetworkServices = typeof schema.chiiUserNetworkServices.$inferSelect;
 
 export type IFriend = typeof schema.chiiFriends.$inferSelect;
 
