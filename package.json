@@ -26,7 +26,7 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.679.0",
+    "@aws-sdk/client-s3": "^3.682.0",
     "@bgm38/wiki": "^0.3.3",
     "@fastify/cookie": "^11.0.1",
     "@fastify/error": "^4.0.0",
@@ -43,7 +43,7 @@
     "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
     "altair-static": "^8.0.0",
-    "drizzle-orm": "^0.35.3",
+    "drizzle-orm": "^0.36.0",
     "fastify": "^5.0.0",
     "fastify-metrics": "^12.1.0",
     "fastify-socket.io": "^5.1.0",
@@ -93,7 +93,7 @@
     "@vitest/ui": "^2.1.4",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.5",
-    "drizzle-kit": "^0.26.2",
+    "drizzle-kit": "^0.27.0",
     "esbuild": "^0.24.0",
     "esbuild-node-externals": "^1.15.0",
     "eslint": "9.13.0",
