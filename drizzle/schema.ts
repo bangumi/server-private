@@ -466,9 +466,26 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   site: varchar('site', { length: 75 }).default('').notNull(),
   location: varchar('location', { length: 30 }).default('').notNull(),
   bio: text('bio').notNull(),
+  homepage: mediumtext('homepage').notNull(),
   privacy: mediumtext('privacy').notNull(),
   blocklist: mediumtext('blocklist').notNull(),
 });
+
+export const chiiNetworkServices = mysqlTable(
+  'chii_network_services',
+  {
+    uid: mediumint('ns_uid').notNull(),
+    serviceID: tinyint('ns_service_id').notNull(),
+    account: varchar('ns_account', { length: 255 }).notNull(),
+    createdAt: int('ns_dateline').notNull(),
+  },
+  (table) => {
+    return {
+      nsUid2: index('ns_uid_2').on(table.uid),
+      nsUid: unique('ns_uid').on(table.uid, table.serviceID),
+    };
+  },
+);
 
 export const chiiNotify = mysqlTable(
   'chii_notify',
