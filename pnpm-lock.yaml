@@ -181,7 +181,7 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4
       '@types/node':
-        specifier: ^20.17.3
+        specifier: ^20.17.4
         version: 20.17.5
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.12.2
