@@ -222,6 +222,14 @@ export async function setup(app: App) {
         throw new NotFoundError(`user ${username}`);
       }
       const user = convert.toUser(data.chii_members, data.chii_memberfields);
+      const svcs = await db
+        .select()
+        .from(schema.chiiUserNetworkServices)
+        .where(op.eq(schema.chiiUserNetworkServices.uid, user.id))
+        .execute();
+      for (const svc of svcs) {
+        user.networkServices.push(convert.toUserNetworkService(svc));
+      }
       return user;
     },
   );
