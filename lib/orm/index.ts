@@ -442,6 +442,7 @@ export interface ISubject {
   typeID: number;
   infobox: string;
   platform: number;
+  metaTags: string;
   summary: string;
   nsfw: boolean;
   date: string;
@@ -472,6 +473,7 @@ export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
     typeID: subject.typeID,
     infobox: subject.fieldInfobox,
     platform: subject.platform,
+    metaTags: subject.metaTags,
     summary: subject.fieldSummary,
     nsfw: subject.subjectNsfw,
     date: f.date,
