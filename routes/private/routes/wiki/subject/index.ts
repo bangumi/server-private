@@ -177,7 +177,7 @@ export async function setup(app: App) {
         id: s.id,
         name: s.name,
         infobox: s.infobox,
-        metaTags: s.metaTags.split(' '),
+        metaTags: s.metaTags ? s.metaTags.split(' ') : [],
         summary: s.summary,
         platform: s.platform,
         availablePlatform: platforms(s.typeID).map((x) => ({
@@ -513,7 +513,7 @@ export async function setup(app: App) {
         infobox = s.infobox,
         name = s.name,
         platform = s.platform,
-        metaTags = s.metaTags.split(' '),
+        metaTags = s.metaTags ? s.metaTags.split(' ') : [],
         summary = s.summary,
         nsfw = s.nsfw,
         date,
