@@ -73,7 +73,7 @@ const Reaction = t.Object(
 const SubReply = t.Object(
   {
     id: t.Integer(),
-    creator: t.Ref(res.User),
+    creator: t.Ref(res.SlimUser),
     createdAt: t.Integer(),
     isFriend: t.Boolean(),
     text: t.String(),
@@ -88,7 +88,7 @@ const Reply = t.Object(
     id: t.Integer(),
     isFriend: t.Boolean(),
     replies: t.Array(t.Ref(SubReply)),
-    creator: t.Ref(res.User),
+    creator: t.Ref(res.SlimUser),
     createdAt: t.Integer(),
     text: t.String(),
     state: t.Integer(),
@@ -101,7 +101,7 @@ const TopicDetail = t.Object(
   {
     id: t.Integer(),
     parent: t.Union([t.Ref(Group), t.Ref(res.Subject)]),
-    creator: t.Ref(res.User),
+    creator: t.Ref(res.SlimUser),
     title: t.String(),
     text: t.String(),
     state: t.Integer(),
@@ -364,7 +364,6 @@ export async function setup(app: App) {
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
       },
-      preHandler: [requireLogin('get a topics')],
     },
     async ({ params: { subjectID }, query, auth }) => {
       const subject = await orm.fetchSubjectByID(subjectID);

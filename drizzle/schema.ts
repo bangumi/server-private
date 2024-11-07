@@ -11,7 +11,6 @@ import {
   mediumtext,
   mysqlEnum,
   mysqlTable,
-  mysqlTableCreator,
   smallint,
   text,
   timestamp,
@@ -22,7 +21,21 @@ import {
 } from 'drizzle-orm/mysql-core';
 import * as lo from 'lodash-es';
 
-const createTable = (dbName: string) => mysqlTableCreator(() => dbName);
+const customBoolean = customType<{ data: boolean }>({
+  dataType() {
+    return 'tinyint';
+  },
+  fromDriver(value) {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    return value === 1;
+  },
+
+  toDriver(value) {
+    return value ? 1 : 0;
+  },
+});
 
 export const chiiApp = mysqlTable(
   'chii_apps',
@@ -66,7 +79,7 @@ export const chiiCharacters = mysqlTable(
     anidbId: mediumint('crt_anidb_id').notNull(),
     ban: tinyint('crt_ban').default(0).notNull(),
     redirect: int('crt_redirect').default(0).notNull(),
-    nsfw: tinyint('crt_nsfw').notNull(),
+    nsfw: customBoolean('crt_nsfw').notNull(),
   },
   (table) => {
     return {
@@ -77,20 +90,20 @@ export const chiiCharacters = mysqlTable(
   },
 );
 
-export const chiiCrtCastIndex = mysqlTable(
+export const chiiCharacterCasts = mysqlTable(
   'chii_crt_cast_index',
   {
-    crtId: mediumint('crt_id').notNull(),
-    prsnId: mediumint('prsn_id').notNull(),
-    subjectId: mediumint('subject_id').notNull(),
-    subjectTypeId: tinyint('subject_type_id').notNull(),
+    characterID: mediumint('crt_id').notNull(),
+    personID: mediumint('prsn_id').notNull(),
+    subjectID: mediumint('subject_id').notNull(),
+    subjectType: tinyint('subject_type_id').notNull(),
     summary: varchar('summary', { length: 255 }).notNull(),
   },
   (table) => {
     return {
-      prsnId: index('prsn_id').on(table.prsnId),
-      subjectId: index('subject_id').on(table.subjectId),
-      subjectTypeId: index('subject_type_id').on(table.subjectTypeId),
+      prsnId: index('prsn_id').on(table.personID),
+      subjectId: index('subject_id').on(table.subjectID),
+      subjectTypeId: index('subject_type_id').on(table.subjectType),
     };
   },
 );
@@ -114,7 +127,7 @@ export const chiiCrtComments = mysqlTable(
   },
 );
 
-export const chiiSubjectCharacters = mysqlTable(
+export const chiiCharacterSubjects = mysqlTable(
   'chii_crt_subject_index',
   {
     characterID: mediumint('crt_id').notNull(),
@@ -254,7 +267,7 @@ export const chiiGroups = mysqlTable('chii_groups', {
   grpLastpost: int('grp_lastpost').notNull(),
   grpBuilddate: int('grp_builddate').notNull(),
   grpAccessible: tinyint('grp_accessible').default(1).notNull(),
-  grpNsfw: tinyint('grp_nsfw').notNull(),
+  nsfw: customBoolean('grp_nsfw').notNull(),
 });
 
 export const chiiGroupMembers = mysqlTable('chii_group_members', {
@@ -419,16 +432,7 @@ export const chiiLikes = mysqlTable(
   },
 );
 
-export const chiiUserFields = mysqlTable('chii_memberfields', {
-  uid: mediumint('uid').notNull(),
-  site: varchar('site', { length: 75 }).default('').notNull(),
-  location: varchar('location', { length: 30 }).default('').notNull(),
-  bio: text('bio').notNull(),
-  privacy: mediumtext('privacy').notNull(),
-  blocklist: mediumtext('blocklist').notNull(),
-});
-
-export const chiiUser = mysqlTable(
+export const chiiUsers = mysqlTable(
   'chii_members',
   {
     id: mediumint('uid').autoincrement().notNull(),
@@ -456,6 +460,15 @@ export const chiiUser = mysqlTable(
     };
   },
 );
+
+export const chiiUserFields = mysqlTable('chii_memberfields', {
+  uid: mediumint('uid').notNull(),
+  site: varchar('site', { length: 75 }).default('').notNull(),
+  location: varchar('location', { length: 30 }).default('').notNull(),
+  bio: text('bio').notNull(),
+  privacy: mediumtext('privacy').notNull(),
+  blocklist: mediumtext('blocklist').notNull(),
+});
 
 export const chiiNotify = mysqlTable(
   'chii_notify',
@@ -592,7 +605,7 @@ export const chiiPersons = mysqlTable(
     anidbImg: varchar('prsn_img_anidb', { length: 255 }).notNull(),
     ban: tinyint('prsn_ban').default(0).notNull(),
     redirect: int('prsn_redirect').default(0).notNull(),
-    nsfw: tinyint('prsn_nsfw').notNull(),
+    nsfw: customBoolean('prsn_nsfw').notNull(),
   },
   (table) => {
     return {
@@ -645,7 +658,7 @@ export const chiiPersonCollects = mysqlTable(
   },
 );
 
-export const chiiSubjectPersons = mysqlTable(
+export const chiiPersonSubjects = mysqlTable(
   'chii_person_cs_index',
   {
     personType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
@@ -685,19 +698,19 @@ export const chiiPersonFields = mysqlTable(
   },
 );
 
-export const chiiPersonRelationship = mysqlTable(
+export const chiiPersonRelations = mysqlTable(
   'chii_person_relationship',
   {
-    prsnType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
-    prsnId: mediumint('prsn_id').notNull(),
-    relatPrsnType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
-    relatPrsnId: mediumint('relat_prsn_id').notNull(),
-    relatType: smallint('relat_type').notNull(),
+    type: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
+    id: mediumint('prsn_id').notNull(),
+    relatedType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
+    relatedID: mediumint('relat_prsn_id').notNull(),
+    relation: smallint('relat_type').notNull(),
   },
   (table) => {
     return {
-      prsnType: index('prsn_type').on(table.prsnType, table.prsnId),
-      relatPrsnType: index('relat_prsn_type').on(table.relatPrsnType, table.relatPrsnId),
+      prsnType: index('prsn_type').on(table.type, table.id),
+      relatPrsnType: index('relat_prsn_type').on(table.relatedType, table.relatedID),
     };
   },
 );
@@ -773,22 +786,6 @@ export const chiiRevText = mysqlTable('chii_rev_text', {
   // mediumblobType: mediumblob("rev_text").notNull(),
 });
 
-const customBoolean = customType<{ data: boolean }>({
-  dataType() {
-    return 'tinyint';
-  },
-  fromDriver(value) {
-    if (typeof value === 'boolean') {
-      return value;
-    }
-    return value === 1;
-  },
-
-  toDriver(value) {
-    return value ? 1 : 0;
-  },
-});
-
 const htmlEscapedString = (t: string) =>
   customType<{ data: string; driverData: string }>({
     dataType() {
@@ -803,7 +800,7 @@ const htmlEscapedString = (t: string) =>
     },
   });
 
-export const chiiSubjects = createTable('chii_subjects')('subject', {
+export const chiiSubjects = mysqlTable('chii_subjects', {
   id: mediumint('subject_id').autoincrement().notNull(),
   typeID: smallint('subject_type_id').notNull(),
   name: htmlEscapedString('varchar')('subject_name', { length: 80 }).notNull(),
@@ -832,7 +829,7 @@ export const chiiSubjects = createTable('chii_subjects')('subject', {
   ban: tinyint('subject_ban').default(0).notNull(),
 });
 
-export const chiiSubjectFields = createTable('chii_subject_fields')('subject_field', {
+export const chiiSubjectFields = mysqlTable('chii_subject_fields', {
   id: mediumint('field_sid').autoincrement().notNull(),
   fieldTid: smallint('field_tid').notNull(),
   fieldTags: mediumtext('field_tags').notNull(),
@@ -881,7 +878,7 @@ export const chiiSubjectImgs = mysqlTable(
     imgUid: mediumint('img_uid').notNull(),
     imgTarget: varchar('img_target', { length: 255 }).notNull(),
     imgVote: mediumint('img_vote').notNull(),
-    imgNsfw: tinyint('img_nsfw').notNull(),
+    imgNsfw: customBoolean('img_nsfw').notNull(),
     imgBan: tinyint('img_ban').notNull(),
     imgDateline: int('img_dateline').notNull(),
   },
@@ -1094,8 +1091,8 @@ export const chiiSubjectTopics = mysqlTable(
   },
 );
 
-export const chiiTagIndex = createTable('chii_tag_neue_index')(
-  'tag_index',
+export const chiiTagIndex = mysqlTable(
+  'chii_tag_neue_index',
   {
     id: mediumint('tag_id').autoincrement().notNull(),
     name: varchar('tag_name', { length: 30 }).notNull(),
@@ -1114,8 +1111,8 @@ export const chiiTagIndex = createTable('chii_tag_neue_index')(
   },
 );
 
-export const chiiTagList = createTable('chii_tag_neue_list')(
-  'tag_list',
+export const chiiTagList = mysqlTable(
+  'chii_tag_neue_list',
   {
     tagID: mediumint('tlt_tid').notNull(),
     userID: mediumint('tlt_uid').notNull(),
@@ -1138,7 +1135,7 @@ export const chiiTagFields = mysqlTable('chii_tag_neue_fields', {
   tagID: int('field_tid').notNull(),
   summary: mediumtext('field_summary').notNull(),
   order: mediumint('field_order').notNull(),
-  nsfw: tinyint('field_nsfw').default(0).notNull(),
+  nsfw: customBoolean('field_nsfw').notNull(),
   lock: int('field_lock').default(0).notNull(),
 });
 
@@ -1163,6 +1160,25 @@ export const chiiTimeline = mysqlTable(
       tmlCat: index('tml_cat').on(table.tmlCat),
       tmlBatch: index('tml_batch').on(table.tmlBatch),
       queryTmlCat: index('query_tml_cat').on(table.tmlUid, table.tmlCat),
+    };
+  },
+);
+
+export const chiiTimelineComments = mysqlTable(
+  'chii_timeline_comments',
+  {
+    tmlPstId: mediumint('tml_pst_id').autoincrement().notNull(),
+    tmlPstMid: int('tml_pst_mid').notNull(),
+    tmlPstUid: mediumint('tml_pst_uid').notNull(),
+    tmlPstRelated: mediumint('tml_pst_related').notNull(),
+    tmlPstDateline: int('tml_pst_dateline').notNull(),
+    tmlPstContent: mediumtext('tml_pst_content').notNull(),
+  },
+  (table) => {
+    return {
+      cmtTmlId: index('cmt_tml_id').on(table.tmlPstMid),
+      tmlPstRelated: index('tml_pst_related').on(table.tmlPstRelated),
+      tmlPstUid: index('tml_pst_uid').on(table.tmlPstUid),
     };
   },
 );

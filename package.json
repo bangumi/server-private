@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "main": "bin/main.ts",
-  "packageManager": "pnpm@9.12.2",
+  "packageManager": "pnpm@9.12.3",
   "engines": {
     "node": "^22.11"
   },
@@ -26,8 +26,8 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.679.0",
-    "@bgm38/wiki": "^0.3.0",
+    "@aws-sdk/client-s3": "^3.682.0",
+    "@bgm38/wiki": "^0.3.3",
     "@fastify/cookie": "^11.0.1",
     "@fastify/error": "^4.0.0",
     "@fastify/formbody": "^8.0.1",
@@ -43,7 +43,7 @@
     "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
     "altair-static": "^8.0.0",
-    "drizzle-orm": "^0.35.3",
+    "drizzle-orm": "^0.36.0",
     "fastify": "^5.0.0",
     "fastify-metrics": "^12.1.0",
     "fastify-socket.io": "^5.1.0",
@@ -77,8 +77,8 @@
     "@eslint/js": "^9.13.0",
     "@graphql-codegen/cli": "5.0.3",
     "@graphql-codegen/introspection": "4.0.3",
-    "@graphql-codegen/typescript": "4.1.0",
-    "@graphql-codegen/typescript-resolvers": "4.3.0",
+    "@graphql-codegen/typescript": "4.1.1",
+    "@graphql-codegen/typescript-resolvers": "4.4.0",
     "@shopify/prettier-plugin-liquid": "^1.5.2",
     "@types/ioredis-mock": "^8.2.5",
     "@types/js-yaml": "^4.0.9",
@@ -93,7 +93,7 @@
     "@vitest/ui": "^2.1.3",
     "cheerio": "^1.0.0",
     "dotenv": "^16.4.5",
-    "drizzle-kit": "^0.26.2",
+    "drizzle-kit": "^0.27.0",
     "esbuild": "^0.24.0",
     "esbuild-node-externals": "^1.15.0",
     "eslint": "9.13.0",
@@ -116,9 +116,9 @@
     "std-env": "^3.7.0",
     "tsx": "^4.19.2",
     "typescript": "~5.6.3",
-    "typescript-eslint": "^8.11.0",
+    "typescript-eslint": "^8.12.2",
     "vite": "^5.4.10",
-    "vitest": "^2.1.3",
+    "vitest": "^2.1.4",
     "vitest-github-actions-reporter": "^0.11.1"
   },
   "nodemonConfig": {

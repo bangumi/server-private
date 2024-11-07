@@ -35,7 +35,7 @@ exports[`should build private api spec 1`] = `
         state:
           type: integer
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - epID
@@ -51,7 +51,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         state:
@@ -102,6 +102,42 @@ exports[`should build private api spec 1`] = `
         - nsfw
       title: Character
       type: object
+    CharacterRelation:
+      properties:
+        character:
+          $ref: '#/components/schemas/SlimCharacter'
+        relation:
+          description: '角色关系: 任职于,从属,聘用,嫁给...'
+          type: integer
+      required:
+        - character
+        - relation
+      type: object
+    CharacterSubject:
+      properties:
+        actors:
+          items:
+            $ref: '#/components/schemas/SlimPerson'
+          type: array
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+        type:
+          type: integer
+      required:
+        - subject
+        - actors
+        - type
+      type: object
+    CharacterSubjectRelation:
+      properties:
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+        type:
+          type: integer
+      required:
+        - subject
+        - type
+      type: object
     CurrentUser:
       allOf:
         - properties:
@@ -125,14 +161,14 @@ exports[`should build private api spec 1`] = `
               examples:
                 - 1
               type: integer
+            joinedAt:
+              type: integer
             nickname:
               examples:
                 - Sai🖖
               type: string
             sign:
               type: string
-            user_group:
-              type: integer
             username:
               examples:
                 - sai
@@ -143,8 +179,8 @@ exports[`should build private api spec 1`] = `
             - nickname
             - avatar
             - sign
-            - user_group
-          title: User
+            - joinedAt
+          title: SlimUser
           type: object
         - properties:
             permission:
@@ -238,7 +274,7 @@ exports[`should build private api spec 1`] = `
             state:
               type: integer
             user:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/SlimUser'
           required:
             - id
             - epID
@@ -436,7 +472,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         state:
@@ -588,13 +624,13 @@ exports[`should build private api spec 1`] = `
             id:
               example: 1
               type: integer
+            joinedAt:
+              type: integer
             nickname:
               example: Sai🖖
               type: string
             sign:
               type: string
-            user_group:
-              type: integer
             username:
               example: sai
               type: string
@@ -604,8 +640,8 @@ exports[`should build private api spec 1`] = `
             - nickname
             - avatar
             - sign
-            - user_group
-          title: User
+            - joinedAt
+          title: SlimUser
           type: object
         title:
           type: string
@@ -677,6 +713,28 @@ exports[`should build private api spec 1`] = `
         - nsfw
       title: Person
       type: object
+    PersonCharacter:
+      properties:
+        character:
+          $ref: '#/components/schemas/SlimCharacter'
+        relations:
+          items:
+            $ref: '#/components/schemas/CharacterSubjectRelation'
+          type: array
+      required:
+        - character
+        - relations
+      type: object
+    PersonCollect:
+      properties:
+        createdAt:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - user
+        - createdAt
+      type: object
     PersonImages:
       properties:
         grid:
@@ -693,6 +751,27 @@ exports[`should build private api spec 1`] = `
         - small
         - grid
       title: PersonImages
+      type: object
+    PersonRelation:
+      properties:
+        person:
+          $ref: '#/components/schemas/SlimPerson'
+        relation:
+          description: '人物关系: 任职于,从属,聘用,嫁给...'
+          type: integer
+      required:
+        - person
+        - relation
+      type: object
+    PersonSubject:
+      properties:
+        position:
+          type: integer
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+      required:
+        - subject
+        - position
       type: object
     Reaction:
       properties:
@@ -742,7 +821,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         isFriend:
@@ -911,6 +990,8 @@ exports[`should build private api spec 1`] = `
         nickname:
           example: Sai🖖
           type: string
+        sign:
+          type: string
         username:
           example: sai
           type: string
@@ -919,6 +1000,7 @@ exports[`should build private api spec 1`] = `
         - username
         - nickname
         - avatar
+        - sign
         - joinedAt
       title: SlimUser
       type: object
@@ -927,7 +1009,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         isFriend:
@@ -1151,6 +1233,10 @@ exports[`should build private api spec 1`] = `
       type: object
     SubjectCharacter:
       properties:
+        actors:
+          items:
+            $ref: '#/components/schemas/SlimPerson'
+          type: array
         character:
           $ref: '#/components/schemas/SlimCharacter'
         order:
@@ -1159,6 +1245,7 @@ exports[`should build private api spec 1`] = `
           type: integer
       required:
         - character
+        - actors
         - type
         - order
       type: object
@@ -1262,7 +1349,7 @@ exports[`should build private api spec 1`] = `
               updatedAt:
                 type: integer
               user:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/SlimUser'
             required:
               - user
               - rate
@@ -1281,6 +1368,10 @@ exports[`should build private api spec 1`] = `
         infobox:
           minLength: 1
           type: string
+        metaTags:
+          items:
+            type: string
+          type: array
         name:
           minLength: 1
           type: string
@@ -1313,6 +1404,7 @@ exports[`should build private api spec 1`] = `
         - platform
         - infobox
         - nsfw
+        - metaTags
         - summary
       type: object
     SubjectPerson:
@@ -1321,12 +1413,9 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/SlimPerson'
         position:
           type: integer
-        summary:
-          type: string
       required:
         - person
         - position
-        - summary
       type: object
     SubjectPlatform:
       properties:
@@ -1445,13 +1534,13 @@ exports[`should build private api spec 1`] = `
             id:
               example: 1
               type: integer
+            joinedAt:
+              type: integer
             nickname:
               example: Sai🖖
               type: string
             sign:
               type: string
-            user_group:
-              type: integer
             username:
               example: sai
               type: string
@@ -1461,8 +1550,8 @@ exports[`should build private api spec 1`] = `
             - nickname
             - avatar
             - sign
-            - user_group
-          title: User
+            - joinedAt
+          title: SlimUser
           type: object
         id:
           description: topic id
@@ -1513,7 +1602,7 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/SlimUser'
         id:
           type: integer
         parent:
@@ -1562,15 +1651,26 @@ exports[`should build private api spec 1`] = `
             - large
           title: Avatar
           type: object
+        bio:
+          type: string
+        group:
+          type: integer
         id:
           example: 1
           type: integer
+        joinedAt:
+          type: integer
+        location:
+          type: string
         nickname:
           example: Sai🖖
           type: string
         sign:
           type: string
+        site:
+          type: string
         user_group:
+          description: deprecated, use group instead
           type: integer
         username:
           example: sai
@@ -1580,8 +1680,13 @@ exports[`should build private api spec 1`] = `
         - username
         - nickname
         - avatar
-        - sign
+        - group
         - user_group
+        - joinedAt
+        - sign
+        - site
+        - location
+        - bio
       title: User
       type: object
     UserCollectionsCharacterSummary:
@@ -2520,7 +2625,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/SlimUser'
           description: Default Response
           headers:
             Set-Cookie:
@@ -2733,6 +2838,378 @@ paths:
       summary: 获取未读通知
       tags:
         - user
+  /p1/persons/{personID}:
+    get:
+      operationId: getPerson
+      parameters:
+        - in: path
+          name: personID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物
+      tags:
+        - person
+  /p1/persons/{personID}/casts:
+    get:
+      operationId: getPersonCasts
+      parameters:
+        - description: 条目类型
+          in: query
+          name: subjectType
+          required: false
+          schema:
+            anyOf:
+              - enum:
+                  - 1
+                type: number
+              - enum:
+                  - 2
+                type: number
+              - enum:
+                  - 3
+                type: number
+              - enum:
+                  - 4
+                type: number
+              - enum:
+                  - 6
+                type: number
+        - description: '角色出场类型: 主角，配角，客串'
+          in: query
+          name: type
+          required: false
+          schema:
+            type: integer
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/PersonCharacter'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物的出演角色
+      tags:
+        - person
+  /p1/persons/{personID}/collects:
+    get:
+      operationId: getPersonCollects
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/PersonCollect'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物的收藏用户
+      tags:
+        - person
+  /p1/persons/{personID}/relations:
+    get:
+      operationId: getPersonRelations
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/PersonRelation'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物的关联人物
+      tags:
+        - person
+  /p1/persons/{personID}/works:
+    get:
+      operationId: getPersonWorks
+      parameters:
+        - description: 条目类型
+          in: query
+          name: subjectType
+          required: false
+          schema:
+            anyOf:
+              - enum:
+                  - 1
+                type: number
+              - enum:
+                  - 2
+                type: number
+              - enum:
+                  - 3
+                type: number
+              - enum:
+                  - 4
+                type: number
+              - enum:
+                  - 6
+                type: number
+        - description: 职位
+          in: query
+          name: position
+          required: false
+          schema:
+            type: integer
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/PersonSubject'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物的参与作品
+      tags:
+        - person
   /p1/subjects/-/episode/-/comments/{commentID}:
     delete:
       operationId: deleteSubjectEpComment
@@ -2868,7 +3345,7 @@ paths:
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/User'
+                          $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - epID
@@ -3409,7 +3886,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取条目的关联角色
+      summary: 获取条目的角色
       tags:
         - subject
   /p1/subjects/{subjectID}/comments:
@@ -3549,81 +4026,6 @@ paths:
       summary: 获取条目的剧集
       tags:
         - subject
-  /p1/subjects/{subjectID}/persons:
-    get:
-      operationId: getSubjectPersons
-      parameters:
-        - description: '人物职位: 监督，原案，脚本,..'
-          in: query
-          name: position
-          required: false
-          schema:
-            type: integer
-        - description: max 100
-          in: query
-          name: limit
-          required: false
-          schema:
-            default: 20
-            maximum: 100
-            minimum: 1
-            type: integer
-        - description: min 0
-          in: query
-          name: offset
-          required: false
-          schema:
-            default: 0
-            minimum: 0
-            type: integer
-        - in: path
-          name: subjectID
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  data:
-                    items:
-                      $ref: '#/components/schemas/SubjectPerson'
-                    type: array
-                  total:
-                    type: integer
-                required:
-                  - data
-                  - total
-                type: object
-          description: Default Response
-        '404':
-          content:
-            application/json:
-              examples:
-                NOT_FOUND:
-                  value:
-                    code: NOT_FOUND
-                    error: Not Found
-                    message: subject not found
-                    statusCode: 404
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 获取条目的关联人物
-      tags:
-        - subject
   /p1/subjects/{subjectID}/relations:
     get:
       operationId: getSubjectRelations
@@ -3719,6 +4121,81 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取条目的关联条目
+      tags:
+        - subject
+  /p1/subjects/{subjectID}/staffs:
+    get:
+      operationId: getSubjectStaffs
+      parameters:
+        - description: '人物职位: 监督，原案，脚本,..'
+          in: query
+          name: position
+          required: false
+          schema:
+            type: integer
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/SubjectPerson'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: subject not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目的制作人员
       tags:
         - subject
   /p1/subjects/{subjectID}/topics:
@@ -3873,6 +4350,48 @@ paths:
       summary: 获取 Turnstile 令牌
       tags:
         - user
+  /p1/users/{username}:
+    get:
+      operationId: getUser
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: user not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户信息
+      tags:
+        - user
   /p1/users/{username}/collections/characters:
     get:
       operationId: getUserCharacterCollections
@@ -3913,7 +4432,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户角色收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/indexes:
     get:
       operationId: getUserIndexCollections
@@ -3954,7 +4473,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户目录收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/persons:
     get:
       operationId: getUserPersonCollections
@@ -3995,7 +4514,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户人物收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/subjects:
     get:
       operationId: getUserSubjectCollections
@@ -4107,7 +4626,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户条目收藏
       tags:
-        - collection
+        - user
   /p1/users/{username}/collections/summary:
     get:
       operationId: getUserCollectionsSummary
@@ -4150,10 +4669,10 @@ paths:
           HTTPBearer: []
       summary: 获取用户收藏概览
       tags:
-        - collection
+        - user
   /p1/users/{username}/friends:
     get:
-      operationId: getFriends
+      operationId: getUserFriends
       parameters:
         - description: max 100
           in: query
@@ -4260,7 +4779,7 @@ paths:
           HTTPBearer: []
       summary: 获取用户创建的目录
       tags:
-        - collection
+        - user
   /p1/wiki/ep/{episodeID}:
     get:
       operationId: getEpisodeWikiInfo
@@ -4662,6 +5181,10 @@ paths:
                 infobox:
                   minLength: 1
                   type: string
+                metaTags:
+                  items:
+                    type: string
+                  type: array
                 name:
                   minLength: 1
                   type: string
@@ -4694,6 +5217,7 @@ paths:
                 - platform
                 - infobox
                 - nsfw
+                - metaTags
                 - summary
               type: object
         required: true
@@ -4838,7 +5362,9 @@ paths:
                       minLength: 1
                       type: string
                     metaTags:
-                      type: string
+                      items:
+                        type: string
+                      type: array
                     name:
                       minLength: 1
                       type: string
@@ -5000,7 +5526,9 @@ paths:
                       minLength: 1
                       type: string
                     metaTags:
-                      type: string
+                      items:
+                        type: string
+                      type: array
                     name:
                       minLength: 1
                       type: string
@@ -5080,13 +5608,13 @@ paths:
                             id:
                               example: 1
                               type: integer
+                            joinedAt:
+                              type: integer
                             nickname:
                               example: Sai🖖
                               type: string
                             sign:
                               type: string
-                            user_group:
-                              type: integer
                             username:
                               example: sai
                               type: string
@@ -5096,8 +5624,8 @@ paths:
                             - nickname
                             - avatar
                             - sign
-                            - user_group
-                          title: User
+                            - joinedAt
+                          title: SlimUser
                           type: object
                         id:
                           type: integer

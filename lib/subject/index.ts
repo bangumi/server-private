@@ -42,11 +42,11 @@ interface Create {
   date?: string;
   now: DateTime;
   nsfw?: boolean;
-  tags?: string[];
+  metaTags?: string[];
   expectedRevision?: Partial<{
     name: string;
     infobox: string;
-    tags: string[];
+    metaTags: string[];
     summary: string;
   }>;
 }
@@ -58,7 +58,7 @@ export async function edit({
   platform,
   summary,
   commitMessage,
-  tags,
+  metaTags,
   date,
   nsfw,
   userID,
@@ -88,7 +88,7 @@ export async function edit({
     throw error;
   }
 
-  tags?.sort();
+  metaTags?.sort();
 
   await db.transaction(async (t: Txn) => {
     const [s]: orm.ISubject[] = await db
@@ -112,11 +112,11 @@ export async function edit({
     }
 
     if (expectedRevision) {
-      expectedRevision.tags?.sort();
+      expectedRevision.metaTags?.sort();
 
       matchExpected(s, {
         ...expectedRevision,
-        metaTags: expectedRevision.tags ? expectedRevision.tags.join(' ') : undefined,
+        metaTags: expectedRevision.metaTags?.join(' '),
       });
     }
 
@@ -131,11 +131,11 @@ export async function edit({
       episodes = extractEpisode(w);
     }
 
-    if (tags) {
+    if (metaTags) {
       const allowedTags = await getAllowedTagList(t, s.typeID);
 
       const newTags: number[] = [];
-      for (const tag of tags) {
+      for (const tag of metaTags) {
         const id = allowedTags.get(tag);
         if (!id) {
           throw BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
@@ -168,7 +168,7 @@ export async function edit({
       );
     }
 
-    const newMetaTags = tags ? tags.join(' ') : s.metaTags;
+    const newMetaTags = metaTags ? metaTags.join(' ') : s.metaTags;
 
     await t.insert(schema.chiiSubjectRev).values({
       subjectID,

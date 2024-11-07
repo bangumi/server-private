@@ -9,7 +9,7 @@ import { CookieKey } from '@app/lib/auth/session.ts';
 import config, { redisPrefix } from '@app/lib/config.ts';
 import { CaptchaError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUser, UserRepo } from '@app/lib/orm/index.ts';
+import { fetchPermission, fetchUser, UserRepo } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -30,6 +30,8 @@ const EmailOrPasswordError = createError(
   httpCodes.UNAUTHORIZED,
 );
 
+const UserBannedError = createError('USER_BANNED', 'user is banned', httpCodes.UNAUTHORIZED);
+
 const clientPermission = t.Object(
   {
     subjectWikiEdit: t.Boolean(),
@@ -37,7 +39,7 @@ const clientPermission = t.Object(
   { $id: 'Permission' },
 );
 
-const currentUser = t.Intersect([res.User, t.Object({ permission: clientPermission })], {
+const currentUser = t.Intersect([res.SlimUser, t.Object({ permission: clientPermission })], {
   $id: 'CurrentUser',
 });
 
@@ -154,7 +156,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         operationId: 'login',
         tags: [Tag.User],
         response: {
-          200: t.Ref(res.User, {
+          200: t.Ref(res.SlimUser, {
             headers: {
               'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
             },
@@ -185,7 +187,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
     async function loginHandler(
       { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, ip },
       reply,
-    ): Promise<res.IUser> {
+    ): Promise<res.ISlimUser> {
       const limitKey = `${redisPrefix}-login-rate-limit-${ip}`;
       const { remain, reset, limit, limited } = await limiter.get(limitKey, 600, 10);
       void reply.headers({
@@ -209,6 +211,11 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new EmailOrPasswordError();
       }
 
+      const perms = await fetchPermission(user.groupid);
+      if (perms.user_ban) {
+        throw new UserBannedError();
+      }
+
       const token = await session.create({
         id: user.id,
         regTime: user.regdate,
@@ -220,8 +227,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
 
       return {
         ...user,
-        user_group: user.groupid,
         avatar: avatar(user.avatar),
+        joinedAt: user.regdate,
       };
     },
   );

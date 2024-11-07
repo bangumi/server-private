@@ -9,34 +9,41 @@ import { CollectionType } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import { platforms } from '@app/vendor/common-json/subject_platforms.json';
 
-export function oldToUser(user: ormold.IUser): res.IUser {
+// for backward compatibility
+export function oldToUser(user: ormold.IUser): res.ISlimUser {
   return {
     avatar: avatar(user.img),
     username: user.username,
     nickname: user.nickname,
     id: user.id,
     sign: user.sign,
-    user_group: user.groupID,
+    joinedAt: 0,
   };
 }
 
-export function toUser(user: orm.IUser): res.IUser {
+export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
   return {
-    avatar: avatar(user.avatar),
+    id: user.id,
     username: user.username,
     nickname: user.nickname,
-    id: user.id,
-    sign: user.sign,
+    avatar: avatar(user.avatar),
+    group: user.groupid,
     user_group: user.groupid,
+    joinedAt: user.regdate,
+    sign: user.sign,
+    site: fields.site,
+    location: fields.location,
+    bio: fields.bio,
   };
 }
 
 export function toSlimUser(user: orm.IUser): res.ISlimUser {
   return {
-    avatar: avatar(user.avatar),
+    id: user.id,
     username: user.username,
     nickname: user.nickname,
-    id: user.id,
+    avatar: avatar(user.avatar),
+    sign: user.sign,
     joinedAt: user.regdate,
   };
 }
@@ -169,7 +176,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     images: subjectCover(subject.image) || undefined,
     infobox: toInfobox(subject.infobox),
     metaTags: subject.metaTags
-      .split(',')
+      .split(' ')
       .map((x) => x.trim())
       .filter((x) => x !== ''),
     locked: subject.ban === 2,
@@ -210,7 +217,7 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
     name: character.name,
     role: character.role,
     images: personImages(character.img) || undefined,
-    nsfw: Boolean(character.nsfw),
+    nsfw: character.nsfw,
     lock: Boolean(character.lock),
   };
 }
@@ -227,7 +234,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
     collects: character.collects,
     lock: Boolean(character.lock),
     redirect: character.redirect,
-    nsfw: Boolean(character.nsfw),
+    nsfw: character.nsfw,
   };
 }
 
@@ -237,7 +244,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     name: person.name,
     type: person.type,
     images: personImages(person.img) || undefined,
-    nsfw: Boolean(person.nsfw),
+    nsfw: person.nsfw,
     lock: Boolean(person.lock),
   };
 }
@@ -280,7 +287,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
     collects: person.collects,
     lock: Boolean(person.lock),
     redirect: person.redirect,
-    nsfw: Boolean(person.nsfw),
+    nsfw: person.nsfw,
   };
 }
 
@@ -306,5 +313,15 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
     creator: toSlimUser(user),
+  };
+}
+
+export function toCharacterSubjectRelation(
+  subject: orm.ISubject,
+  relation: orm.ICharacterSubject,
+): res.ICharacterSubjectRelation {
+  return {
+    subject: toSlimSubject(subject),
+    type: relation.type,
   };
 }
