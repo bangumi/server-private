@@ -34,6 +34,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     site: fields.site,
     location: fields.location,
     bio: fields.bio,
+    networkServices: [],
   };
 }
 
@@ -45,6 +46,17 @@ export function toSlimUser(user: orm.IUser): res.ISlimUser {
     avatar: avatar(user.avatar),
     sign: user.sign,
     joinedAt: user.regdate,
+  };
+}
+
+export function toUserNetworkService(service: orm.IUserNetworkServices): res.IUserNetworkService {
+  return {
+    // TODO:
+    title: '',
+    name: '',
+    url: '',
+    color: '',
+    account: service.account,
   };
 }
 
