@@ -1368,6 +1368,10 @@ exports[`should build private api spec 1`] = `
         infobox:
           minLength: 1
           type: string
+        metaTags:
+          items:
+            type: string
+          type: array
         name:
           minLength: 1
           type: string
@@ -1400,6 +1404,7 @@ exports[`should build private api spec 1`] = `
         - platform
         - infobox
         - nsfw
+        - metaTags
         - summary
       type: object
     SubjectPerson:
@@ -5176,6 +5181,10 @@ paths:
                 infobox:
                   minLength: 1
                   type: string
+                metaTags:
+                  items:
+                    type: string
+                  type: array
                 name:
                   minLength: 1
                   type: string
@@ -5208,6 +5217,7 @@ paths:
                 - platform
                 - infobox
                 - nsfw
+                - metaTags
                 - summary
               type: object
         required: true
@@ -5352,7 +5362,9 @@ paths:
                       minLength: 1
                       type: string
                     metaTags:
-                      type: string
+                      items:
+                        type: string
+                      type: array
                     name:
                       minLength: 1
                       type: string
@@ -5514,7 +5526,9 @@ paths:
                       minLength: 1
                       type: string
                     metaTags:
-                      type: string
+                      items:
+                        type: string
+                      type: array
                     name:
                       minLength: 1
                       type: string

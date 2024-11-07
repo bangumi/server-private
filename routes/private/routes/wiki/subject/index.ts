@@ -65,6 +65,7 @@ export const SubjectNew = t.Object(
     platform: t.Integer(),
     infobox: t.String({ minLength: 1 }),
     nsfw: t.Boolean(),
+    metaTags: t.Array(t.String()),
     summary: t.String(),
   },
   {
@@ -101,7 +102,7 @@ const SubjectExpected = t.Optional(
         name: t.String({ minLength: 1 }),
         infobox: t.String({ minLength: 1 }),
         platform: t.Integer(),
-        metaTags: t.String(),
+        metaTags: t.Array(t.String()),
       },
       {
         description:
@@ -128,6 +129,7 @@ export const SubjectWikiInfo = t.Object(
     infobox: t.String(),
     platform: t.Integer(),
     availablePlatform: t.Array(t.Ref(Platform)),
+    metaTags: t.Array(t.String()),
     summary: t.String(),
     nsfw: t.Boolean(),
   },
@@ -175,6 +177,7 @@ export async function setup(app: App) {
         id: s.id,
         name: s.name,
         infobox: s.infobox,
+        metaTags: s.metaTags ? s.metaTags.split(' ') : [],
         summary: s.summary,
         platform: s.platform,
         availablePlatform: platforms(s.typeID).map((x) => ({
@@ -241,10 +244,10 @@ export async function setup(app: App) {
         platform: body.platform,
         fieldInfobox: body.infobox,
         typeID: body.type,
+        metaTags: body.metaTags.sort().join(' '),
         fieldSummary: body.summary,
         subjectNsfw: body.nsfw,
         fieldEps: eps,
-        metaTags: '',
         updatedAt: DateTime.now().toUnixInteger(),
       };
 
@@ -439,6 +442,7 @@ export async function setup(app: App) {
         infobox: body.infobox,
         platform: body.platform,
         date: body.date,
+        metaTags: body.metaTags,
         summary: body.summary,
         nsfw: body.nsfw,
         userID: auth.userID,
@@ -509,6 +513,7 @@ export async function setup(app: App) {
         infobox = s.infobox,
         name = s.name,
         platform = s.platform,
+        metaTags = s.metaTags ? s.metaTags.split(' ') : [],
         summary = s.summary,
         nsfw = s.nsfw,
         date,
@@ -518,6 +523,7 @@ export async function setup(app: App) {
         infobox === s.infobox &&
         name === s.name &&
         platform === s.platform &&
+        metaTags.sort().join(' ') === s.metaTags &&
         summary === s.summary &&
         nsfw === s.nsfw &&
         date === undefined
@@ -532,6 +538,7 @@ export async function setup(app: App) {
         infobox: infobox,
         commitMessage: commitMessage,
         platform: platform,
+        metaTags: metaTags,
         summary: summary,
         nsfw,
         date,
