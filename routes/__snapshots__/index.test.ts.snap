@@ -773,6 +773,40 @@ exports[`should build private api spec 1`] = `
         - subject
         - position
       type: object
+    PersonWikiInfo:
+      properties:
+        id:
+          type: integer
+        infobox:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+        typeID:
+          anyOf:
+            - enum:
+                - 1
+              type: number
+            - enum:
+                - 2
+              type: number
+            - enum:
+                - 3
+              type: number
+            - enum:
+                - 4
+              type: number
+            - enum:
+                - 6
+              type: number
+      required:
+        - id
+        - name
+        - typeID
+        - infobox
+        - summary
+      type: object
     Reaction:
       properties:
         selected:
@@ -1477,12 +1511,24 @@ exports[`should build private api spec 1`] = `
       type: object
     SubjectWikiInfo:
       properties:
+        availablePlatform:
+          items:
+            $ref: '#/components/schemas/WikiPlatform'
+          type: array
         id:
           type: integer
         infobox:
           type: string
+        metaTags:
+          items:
+            type: string
+          type: array
         name:
           type: string
+        nsfw:
+          type: boolean
+        platform:
+          type: integer
         summary:
           type: string
         typeID:
@@ -1507,7 +1553,11 @@ exports[`should build private api spec 1`] = `
         - name
         - typeID
         - infobox
+        - platform
+        - availablePlatform
+        - metaTags
         - summary
+        - nsfw
       type: object
     Topic:
       properties:
@@ -5000,7 +5050,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubjectWikiInfo'
+                $ref: '#/components/schemas/PersonWikiInfo'
           description: Default Response
         '401':
           content:
