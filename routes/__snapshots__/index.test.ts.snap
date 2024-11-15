@@ -1662,6 +1662,28 @@ exports[`should build private api spec 1`] = `
           type: integer
         location:
           type: string
+        networkServices:
+          items:
+            properties:
+              account:
+                type: string
+              color:
+                type: string
+              name:
+                type: string
+              title:
+                type: string
+              url:
+                type: string
+            required:
+              - name
+              - title
+              - url
+              - color
+              - account
+            title: UserNetworkService
+            type: object
+          type: array
         nickname:
           example: Sai🖖
           type: string
@@ -1687,6 +1709,7 @@ exports[`should build private api spec 1`] = `
         - site
         - location
         - bio
+        - networkServices
       title: User
       type: object
     UserCollectionsCharacterSummary:
@@ -1808,6 +1831,26 @@ exports[`should build private api spec 1`] = `
       required:
         - count
         - detail
+      type: object
+    UserNetworkService:
+      properties:
+        account:
+          type: string
+        color:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        url:
+          type: string
+      required:
+        - name
+        - title
+        - url
+        - color
+        - account
+      title: UserNetworkService
       type: object
     UserSubjectCollection:
       properties:
