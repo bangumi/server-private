@@ -10,7 +10,7 @@ await esbuild.build({
   entryPoints: ['bin/main.ts'],
   bundle: true,
   platform: 'node',
-  target: 'node20',
+  target: 'node22',
   format: 'esm',
   sourcemap: 'linked',
   outfile: 'dist/index.mjs',

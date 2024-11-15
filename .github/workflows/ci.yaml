@@ -16,6 +16,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-js-env
 
+      - run: pnpm run build-common
+      - run: pnpm run format
+      - run: git diff --quiet HEAD
+
       - run: pnpm exec prettier --check .
       - run: pnpm exec tsc
       - run: pnpm run lint
