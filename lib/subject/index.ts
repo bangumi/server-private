@@ -154,18 +154,20 @@ export async function edit({
           ),
         );
 
-      await db.insert(schema.chiiTagList).values(
-        newTags.map((tag) => {
-          return {
-            tagID: tag,
-            mainID: subjectID,
-            cat: TagCat.meta,
-            userID: 0,
-            type: s.typeID,
-            createdAt: now.toUnixInteger(),
-          } satisfies typeof schema.chiiTagList.$inferInsert;
-        }),
-      );
+      if (newTags.length > 0) {
+        await db.insert(schema.chiiTagList).values(
+          newTags.map((tag) => {
+            return {
+              tagID: tag,
+              mainID: subjectID,
+              cat: TagCat.meta,
+              userID: 0,
+              type: s.typeID,
+              createdAt: now.toUnixInteger(),
+            } satisfies typeof schema.chiiTagList.$inferInsert;
+          }),
+        );
+      }
     }
 
     const newMetaTags = metaTags ? metaTags.join(' ') : s.metaTags;
