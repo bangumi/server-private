@@ -7,7 +7,6 @@ import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
 import { CollectionType } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import {
-  findNetworkService,
   findSubjectPlatform,
   findSubjectRelationType,
   findSubjectStaffPosition,
@@ -38,7 +37,6 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     site: fields.site,
     location: fields.location,
     bio: fields.bio,
-    networkServices: [],
   };
 }
 
@@ -50,26 +48,6 @@ export function toSlimUser(user: orm.IUser): res.ISlimUser {
     avatar: avatar(user.avatar),
     sign: user.sign,
     joinedAt: user.regdate,
-  };
-}
-
-export function toUserNetworkService(service: orm.IUserNetworkServices): res.IUserNetworkService {
-  const svc = findNetworkService(service.serviceID);
-  if (!svc) {
-    return {
-      title: '',
-      name: '',
-      url: '',
-      color: '',
-      account: service.account,
-    };
-  }
-  return {
-    title: svc.title,
-    name: svc.name,
-    url: svc.url || '',
-    color: svc.bg_color,
-    account: service.account,
   };
 }
 
