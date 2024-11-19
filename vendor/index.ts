@@ -1,5 +1,5 @@
 import { services } from './common-json/network_services.json';
-import { platforms } from './common-json/subject_platforms.json';
+import * as platforms from './common-json/subject_platforms.json';
 import { relations } from './common-json/subject_relations.json';
 import { staffs } from './common-json/subject_staffs.json';
 
@@ -25,15 +25,32 @@ export interface SubjectPlatform {
   wiki_tpl?: string;
   search_string?: string;
   enable_header?: boolean;
-  sortKeys?: readonly string[];
+  sort_keys?: readonly string[];
+}
+
+export interface SubjectPlatformDefault {
+  sort_keys: readonly string[];
+  wiki_tpl: string;
 }
 
 export function findSubjectPlatform(
   subjectType: number,
   plat: number,
 ): SubjectPlatform | undefined {
-  const plats = platforms as Record<string, Record<string, SubjectPlatform>>;
+  const plats = platforms.platforms as Record<string, Record<string, SubjectPlatform>>;
   return plats[subjectType]?.[plat];
+}
+
+export function getSubjectPlatforms(subjectType: number): SubjectPlatform[] {
+  const plats = platforms.platforms as Record<string, Record<string, SubjectPlatform>>;
+  return Object.values(plats[subjectType] ?? {}).sort((a, b) => a.id - b.id);
+}
+
+export function getSubjectPlatformSortKeys(subjectType: number, plat: number): readonly string[] {
+  const platform = findSubjectPlatform(subjectType, plat);
+  const defaults = platforms.defaults as Record<string, SubjectPlatformDefault>;
+  const keys = platform?.sort_keys ?? defaults[subjectType]?.sort_keys;
+  return keys ?? Object.freeze(['放送开始', '发行日期', '开始']);
 }
 
 export interface SubjectRelationType {

@@ -28,6 +28,11 @@ Object {
       "text": "WEB",
       "wiki_tpl": "TVAnime",
     },
+    Object {
+      "id": 2006,
+      "text": "动态漫画",
+      "wiki_tpl": "TVAnime",
+    },
   ],
   "id": 8,
   "infobox": "{{Infobox animanga/TVAnime
