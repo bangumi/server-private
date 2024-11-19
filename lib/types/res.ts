@@ -401,13 +401,13 @@ export const PersonRelation = t.Object(
   { $id: 'PersonRelation' },
 );
 
-export type IPersonSubject = Static<typeof PersonSubject>;
-export const PersonSubject = t.Object(
+export type IPersonWork = Static<typeof PersonWork>;
+export const PersonWork = t.Object(
   {
     subject: t.Ref(SlimSubject),
     position: t.Ref(SubjectStaffPosition),
   },
-  { $id: 'PersonSubject' },
+  { $id: 'PersonWork' },
 );
 
 export type IPersonCharacter = Static<typeof PersonCharacter>;
