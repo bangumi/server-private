@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.682.0
+        specifier: ^3.693.0
         version: 3.693.0
       '@bgm38/wiki':
         specifier: ^0.3.3
@@ -30,11 +30,11 @@ importers:
         specifier: ^8.0.2
         version: 8.0.2
       '@fastify/swagger':
-        specifier: ^9.2.0
+        specifier: ^9.3.0
         version: 9.3.0
       '@fastify/type-provider-typebox':
-        specifier: ^5.0.0
-        version: 5.0.1(@sinclair/typebox@0.33.22)
+        specifier: ^5.0.1
+        version: 5.0.1(@sinclair/typebox@0.34.4)
       '@fastify/view':
         specifier: ^10.0.1
         version: 10.0.1
@@ -42,8 +42,8 @@ importers:
         specifier: ^1.10.5
         version: 1.10.5
       '@sinclair/typebox':
-        specifier: ~0.33.17
-        version: 0.33.22
+        specifier: ~0.34.1
+        version: 0.34.4
       '@trim21/php-serialize':
         specifier: ^0.1.1
         version: 0.1.1
@@ -57,13 +57,13 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(ajv@8.17.1)
       altair-static:
-        specifier: ^8.0.0
+        specifier: ^8.0.3
         version: 8.0.3
       drizzle-orm:
-        specifier: ^0.36.0
+        specifier: ^0.36.3
         version: 0.36.3(@opentelemetry/api@1.9.0)(mysql2@3.11.4)
       fastify:
-        specifier: ^5.0.0
+        specifier: ^5.1.0
         version: 5.1.0
       fastify-metrics:
         specifier: ^12.1.0
@@ -72,7 +72,7 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0(fastify@5.1.0)(socket.io@4.8.1)
       got:
-        specifier: ^14.4.3
+        specifier: ^14.4.4
         version: 14.4.4
       graphql:
         specifier: ^16.9.0
@@ -111,7 +111,7 @@ importers:
         specifier: ^2.1.35
         version: 2.1.35
       mysql2:
-        specifier: ^3.11.3
+        specifier: ^3.11.4
         version: 3.11.4
       node-cache:
         specifier: ^5.1.2
@@ -2061,8 +2061,8 @@ packages:
     peerDependencies:
       prettier: ^2.0.0 || ^3.0.0
 
-  '@sinclair/typebox@0.33.22':
-    resolution: {integrity: sha512-auUj4k+f4pyrIVf4GW5UKquSZFHJWri06QgARy9C0t9ZTjJLIuNIrr1yl9bWcJWJ1Gz1vOvYN1D+QPaIlNMVkQ==}
+  '@sinclair/typebox@0.34.4':
+    resolution: {integrity: sha512-ZUV1+nYQHjkDy/L5YMy5BxUjSFX8PElhBzNjI4gyeN23XJa7PZbmj5eDWzLAK3oxVs99EQWc/h1qFYkxpM+AwQ==}
 
   '@sindresorhus/is@7.0.1':
     resolution: {integrity: sha512-QWLl2P+rsCJeofkDNIT3WFmb6NrRud1SUYW8dIhXK/46XFV8Q/g7Bsvib0Askb0reRLe+WYPeeE+l5cH7SlkuQ==}
@@ -6792,9 +6792,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fastify/type-provider-typebox@5.0.1(@sinclair/typebox@0.33.22)':
+  '@fastify/type-provider-typebox@5.0.1(@sinclair/typebox@0.34.4)':
     dependencies:
-      '@sinclair/typebox': 0.33.22
+      '@sinclair/typebox': 0.34.4
 
   '@fastify/view@10.0.1':
     dependencies:
@@ -7474,7 +7474,7 @@ snapshots:
       html-styles: 1.0.0
       prettier: 3.3.3
 
-  '@sinclair/typebox@0.33.22': {}
+  '@sinclair/typebox@0.34.4': {}
 
   '@sindresorhus/is@7.0.1': {}
 
