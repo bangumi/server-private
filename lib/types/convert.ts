@@ -6,7 +6,12 @@ import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
 import { CollectionType } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
-import { findNetworkService, findSubjectPlatform } from '@app/vendor';
+import {
+  findNetworkService,
+  findSubjectPlatform,
+  findSubjectRelationType,
+  findSubjectStaffPosition,
+} from '@app/vendor';
 
 // for backward compatibility
 export function oldToUser(user: ormold.IUser): res.ISlimUser {
@@ -136,7 +141,7 @@ function toSubjectCollection(subject: orm.ISubject): res.ISubjectCollection {
 function toSubjectPlatform(subject: orm.ISubject): res.ISubjectPlatform {
   const plat = findSubjectPlatform(subject.typeID, subject.platform);
   if (!plat) {
-    return { id: 0, type: '', typeCN: '', alias: '' };
+    return { id: subject.platform, type: '', typeCN: '', alias: '' };
   }
   return {
     id: plat.id,
@@ -209,6 +214,33 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     summary: subject.summary,
     type: subject.typeID,
     volumes: subject.volumes,
+  };
+}
+
+export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubjectRelationType {
+  const rtype = findSubjectRelationType(relation.type, relation.relation);
+  if (!rtype) {
+    return { id: relation.type, en: '', cn: '', jp: '', desc: '' };
+  }
+  return {
+    id: relation.type,
+    en: rtype.en,
+    cn: rtype.cn,
+    jp: rtype.jp,
+    desc: rtype.desc,
+  };
+}
+
+export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
+  const position = findSubjectStaffPosition(relation.subjectType, relation.position);
+  if (!position) {
+    return { id: relation.position, en: '', cn: '', jp: '' };
+  }
+  return {
+    id: relation.position,
+    en: position.en,
+    cn: position.cn,
+    jp: position.jp,
   };
 }
 

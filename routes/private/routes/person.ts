@@ -22,7 +22,7 @@ function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): r
 function toPersonSubject(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonSubject {
   return {
     subject: convert.toSlimSubject(subject),
-    position: relation.position,
+    position: convert.toSubjectStaffPosition(relation),
   };
 }
 

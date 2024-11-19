@@ -199,6 +199,29 @@ export const SlimSubject = t.Object(
   { $id: 'SlimSubject', title: 'SlimSubject', examples: [examples.slimSubject] },
 );
 
+export type ISubjectRelationType = Static<typeof SubjectRelationType>;
+export const SubjectRelationType = t.Object(
+  {
+    id: t.Integer(),
+    en: t.String(),
+    cn: t.String(),
+    jp: t.String(),
+    desc: t.String(),
+  },
+  { $id: 'SubjectRelationType' },
+);
+
+export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
+export const SubjectStaffPosition = t.Object(
+  {
+    id: t.Integer(),
+    en: t.String(),
+    cn: t.String(),
+    jp: t.String(),
+  },
+  { $id: 'SubjectStaffPosition' },
+);
+
 export type IEpisode = Static<typeof Episode>;
 export const Episode = t.Object(
   {
@@ -315,7 +338,7 @@ export type ISubjectRelation = Static<typeof SubjectRelation>;
 export const SubjectRelation = t.Object(
   {
     subject: t.Ref(SlimSubject),
-    relation: t.Integer(),
+    relation: t.Ref(SubjectRelationType),
     order: t.Integer(),
   },
   { $id: 'SubjectRelation' },
@@ -336,9 +359,9 @@ export type ISubjectStaff = Static<typeof SubjectStaff>;
 export const SubjectStaff = t.Object(
   {
     person: t.Ref(SlimPerson),
-    position: t.Integer(),
+    position: t.Ref(SubjectStaffPosition),
   },
-  { $id: 'SubjectPerson' },
+  { $id: 'SubjectStaff' },
 );
 
 export type ICharacterRelation = Static<typeof CharacterRelation>;
@@ -382,7 +405,7 @@ export type IPersonSubject = Static<typeof PersonSubject>;
 export const PersonSubject = t.Object(
   {
     subject: t.Ref(SlimSubject),
-    position: t.Integer(),
+    position: t.Ref(SubjectStaffPosition),
   },
   { $id: 'PersonSubject' },
 );

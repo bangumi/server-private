@@ -18,7 +18,7 @@ function toSubjectRelation(
 ): res.ISubjectRelation {
   return {
     subject: convert.toSlimSubject(subject),
-    relation: relation.relation,
+    relation: convert.toSubjectRelationType(relation),
     order: relation.order,
   };
 }
@@ -39,7 +39,7 @@ function toSubjectCharacter(
 function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): res.ISubjectStaff {
   return {
     person: convert.toSlimPerson(person),
-    position: relation.position,
+    position: convert.toSubjectStaffPosition(relation),
   };
 }
 
@@ -156,7 +156,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           type: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
-          singles: t.Boolean({ default: false, description: '包括单行本' }),
+          offprint: t.Boolean({ default: false, description: '是否单行本' }),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -170,16 +170,18 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { subjectID }, query: { type, singles, limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { subjectID }, query: { type, offprint, limit = 20, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+      const relationTypeOffprint = 1003;
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
-        // TODO: feat: bangumi/common 添加 relation.json 以及 staff.json
-        singles ? undefined : op.ne(schema.chiiSubjectRelations.relatedType, 1003),
+        offprint
+          ? op.eq(schema.chiiSubjectRelations.relatedType, relationTypeOffprint)
+          : op.ne(schema.chiiSubjectRelations.relatedType, relationTypeOffprint),
         op.ne(schema.chiiSubjects.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
