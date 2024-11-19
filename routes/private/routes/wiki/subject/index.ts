@@ -13,13 +13,13 @@ import { RevType } from '@app/lib/orm/entity';
 import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import { InvalidWikiSyntaxError, platforms } from '@app/lib/subject/index.ts';
-import PlatformConfig from '@app/lib/subject/platform.ts';
+import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+import { getSubjectPlatforms } from '@app/vendor/index.ts';
 
 import * as imageRoutes from './image.ts';
 import * as manageRoutes from './mgr.ts';
@@ -173,6 +173,8 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
+      const availablePlatforms = getSubjectPlatforms(s.typeID);
+
       return {
         id: s.id,
         name: s.name,
@@ -180,7 +182,7 @@ export async function setup(app: App) {
         metaTags: s.metaTags ? s.metaTags.split(' ') : [],
         summary: s.summary,
         platform: s.platform,
-        availablePlatform: platforms(s.typeID).map((x) => ({
+        availablePlatform: availablePlatforms.map((x) => ({
           id: x.id,
           text: x.type_cn,
           wiki_tpl: x.wiki_tpl,
@@ -220,7 +222,8 @@ export async function setup(app: App) {
         throw new BadRequestError(`条目类型错误`);
       }
 
-      if (!(body.platform in PlatformConfig[body.type])) {
+      const platforms = getSubjectPlatforms(body.type);
+      if (!(body.platform in platforms)) {
         throw new BadRequestError(`条目分类错误`);
       }
 

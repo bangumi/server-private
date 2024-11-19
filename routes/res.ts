@@ -11,6 +11,8 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectRating);
+  app.addSchema(res.SubjectRelationType);
+  app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.PersonImages);
   app.addSchema(res.Infobox);
   app.addSchema(res.Subject);
@@ -29,7 +31,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.PersonRelation);
-  app.addSchema(res.PersonSubject);
+  app.addSchema(res.PersonWork);
   app.addSchema(res.PersonCharacter);
   app.addSchema(res.PersonCollect);
 }

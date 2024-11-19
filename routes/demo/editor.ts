@@ -1,8 +1,8 @@
 import { NotFoundError } from '@app/lib/error.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { platforms } from '@app/lib/subject/index.ts';
 import { redirectIfNotLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+import { getSubjectPlatforms } from '@app/vendor';
 
 export function setup(app: App) {
   app.get(
@@ -24,7 +24,7 @@ export function setup(app: App) {
         subjectID,
         name: s.name,
         platformID: s.platform,
-        platforms: platforms(s.typeID),
+        platforms: getSubjectPlatforms(s.typeID),
         infobox: s.infobox,
         summary: s.summary,
         date: s.date,

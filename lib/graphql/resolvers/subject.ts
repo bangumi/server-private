@@ -7,11 +7,11 @@ import { convertUser } from '@app/lib/graphql/schema.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import { SubjectRepo } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
-import { platforms } from '@app/lib/subject/index.ts';
+import { findSubjectPlatform } from '@app/vendor';
 
 export function convertSubject(subject: entity.Subject) {
   const fields = subject.fields;
-  const platform = platforms(subject.typeID).find((x) => x.id === subject.platform) ?? {
+  const platform = findSubjectPlatform(subject.typeID, subject.platform) ?? {
     id: 0,
     type: '',
     type_cn: '',

@@ -19,10 +19,10 @@ function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): r
   };
 }
 
-function toPersonSubject(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonSubject {
+function toPersonWork(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonWork {
   return {
     subject: convert.toSlimSubject(subject),
-    position: relation.position,
+    position: convert.toSubjectStaffPosition(relation),
   };
 }
 
@@ -170,7 +170,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.PersonSubject)),
+          200: res.Paged(t.Ref(res.PersonWork)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('person')),
           }),
@@ -214,7 +214,7 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-      const subjects = data.map((d) => toPersonSubject(d.chii_subjects, d.chii_person_cs_index));
+      const subjects = data.map((d) => toPersonWork(d.chii_subjects, d.chii_person_cs_index));
       return {
         total: count,
         data: subjects,

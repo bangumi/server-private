@@ -1,18 +1,12 @@
 import type { Wiki } from '@bgm38/wiki';
 
-import PlatformConfig, { DefaultSortKeys, PlatformSortKeys } from '@app/lib/subject/platform.ts';
 import { DATE } from '@app/lib/utils/date.ts';
+import { getSubjectPlatformSortKeys } from '@app/vendor';
 
 import type { SubjectType } from './type';
 
-function getSortKeys(typeID: SubjectType, platform: number): readonly string[] {
-  return (
-    PlatformConfig[typeID]?.[platform]?.sortKeys ?? PlatformSortKeys[typeID] ?? DefaultSortKeys
-  );
-}
-
 export function extractDate(w: Wiki, typeID: SubjectType, platform: number): DATE {
-  const keys = getSortKeys(typeID, platform);
+  const keys = getSubjectPlatformSortKeys(typeID, platform);
 
   const values = keys
     .map((key) => {

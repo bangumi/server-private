@@ -659,8 +659,7 @@ export const chiiEpisodes = mysqlTable(
   {
     epId: mediumint('ep_id').autoincrement().notNull(),
     epSubjectId: mediumint('ep_subject_id').notNull(),
-    // Warning: Can't parse float unsigned from database
-    // float unsignedType: float unsigned("ep_sort").notNull(),
+    epSort: float('ep_sort').notNull(),
     epType: tinyint('ep_type').notNull(),
     epDisc: tinyint('ep_disc').default(0).notNull(),
     epName: varchar('ep_name', { length: 80 }).notNull(),
@@ -1507,8 +1506,7 @@ export const chiiPersonFields = mysqlTable(
     prsnId: int('prsn_id').notNull(),
     gender: tinyint('gender').notNull(),
     bloodtype: tinyint('bloodtype').notNull(),
-    // Warning: Can't parse year(4) from database
-    // year(4)Type: year(4)("birth_year").notNull(),
+    birthYear: smallint('birth_year').notNull(),
     birthMon: tinyint('birth_mon').notNull(),
     birthDay: tinyint('birth_day').notNull(),
   },
@@ -1918,8 +1916,7 @@ export const chiiSubjectFields = mysqlTable(
     fieldRate10: mediumint('field_rate_10').notNull(),
     fieldAirtime: tinyint('field_airtime').notNull(),
     fieldRank: int('field_rank').default(0).notNull(),
-    // Warning: Can't parse year(4) from database
-    // year(4)Type: year(4)("field_year").notNull(),
+    fieldYear: smallint('field_year').notNull(),
     fieldMon: tinyint('field_mon').notNull(),
     fieldWeekDay: tinyint('field_week_day').notNull(),
     // you can use { mode: 'date' }, if you want to have Date as type for this column

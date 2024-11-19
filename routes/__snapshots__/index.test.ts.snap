@@ -763,16 +763,6 @@ exports[`should build private api spec 1`] = `
         - person
         - relation
       type: object
-    PersonSubject:
-      properties:
-        position:
-          type: integer
-        subject:
-          $ref: '#/components/schemas/SlimSubject'
-      required:
-        - subject
-        - position
-      type: object
     PersonWikiInfo:
       properties:
         id:
@@ -806,6 +796,16 @@ exports[`should build private api spec 1`] = `
         - typeID
         - infobox
         - summary
+      type: object
+    PersonWork:
+      properties:
+        position:
+          $ref: '#/components/schemas/SubjectStaffPosition'
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+      required:
+        - subject
+        - position
       type: object
     Reaction:
       properties:
@@ -1441,16 +1441,6 @@ exports[`should build private api spec 1`] = `
         - metaTags
         - summary
       type: object
-    SubjectPerson:
-      properties:
-        person:
-          $ref: '#/components/schemas/SlimPerson'
-        position:
-          type: integer
-      required:
-        - person
-        - position
-      type: object
     SubjectPlatform:
       properties:
         alias:
@@ -1501,13 +1491,58 @@ exports[`should build private api spec 1`] = `
         order:
           type: integer
         relation:
-          type: integer
+          $ref: '#/components/schemas/SubjectRelationType'
         subject:
           $ref: '#/components/schemas/SlimSubject'
       required:
         - subject
         - relation
         - order
+      type: object
+    SubjectRelationType:
+      properties:
+        cn:
+          type: string
+        desc:
+          type: string
+        en:
+          type: string
+        id:
+          type: integer
+        jp:
+          type: string
+      required:
+        - id
+        - en
+        - cn
+        - jp
+        - desc
+      type: object
+    SubjectStaff:
+      properties:
+        person:
+          $ref: '#/components/schemas/SlimPerson'
+        position:
+          $ref: '#/components/schemas/SubjectStaffPosition'
+      required:
+        - person
+        - position
+      type: object
+    SubjectStaffPosition:
+      properties:
+        cn:
+          type: string
+        en:
+          type: string
+        id:
+          type: integer
+        jp:
+          type: string
+      required:
+        - id
+        - en
+        - cn
+        - jp
       type: object
     SubjectWikiInfo:
       properties:
@@ -3225,7 +3260,7 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/PersonSubject'
+                      $ref: '#/components/schemas/PersonWork'
                     type: array
                   total:
                     type: integer
@@ -4101,9 +4136,9 @@ paths:
               - enum:
                   - 6
                 type: number
-        - description: 包括单行本
+        - description: 是否单行本
           in: query
-          name: singles
+          name: offprint
           required: true
           schema:
             default: false
@@ -4213,7 +4248,7 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectPerson'
+                      $ref: '#/components/schemas/SubjectStaff'
                     type: array
                   total:
                     type: integer

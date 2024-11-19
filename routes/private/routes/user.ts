@@ -212,16 +212,17 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { username } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiUsers)
         .innerJoin(schema.chiiUserFields, op.eq(schema.chiiUsers.id, schema.chiiUserFields.uid))
         .where(op.eq(schema.chiiUsers.username, username))
         .execute();
-      for (const d of data) {
-        return convert.toUser(d.chii_members, d.chii_memberfields);
+      if (!data) {
+        throw new NotFoundError(`user ${username}`);
       }
-      throw new NotFoundError(`user ${username}`);
+      const user = convert.toUser(data.chii_members, data.chii_memberfields);
+      return user;
     },
   );
 

@@ -289,7 +289,13 @@ Object {
   "data": Array [
     Object {
       "order": 0,
-      "relation": 1,
+      "relation": Object {
+        "cn": "改编",
+        "desc": "同系列不同平台作品（如柯南漫画与动画版）",
+        "en": "Adaptation",
+        "id": 1,
+        "jp": "",
+      },
       "subject": Object {
         "id": 497,
         "images": Object {
@@ -308,7 +314,13 @@ Object {
     },
     Object {
       "order": 0,
-      "relation": 1004,
+      "relation": Object {
+        "cn": "画集",
+        "desc": "",
+        "en": "Album",
+        "id": 1004,
+        "jp": "",
+      },
       "subject": Object {
         "id": 11,
         "images": Object {
@@ -347,7 +359,12 @@ Object {
         "nsfw": false,
         "type": 3,
       },
-      "position": 1,
+      "position": Object {
+        "cn": "原作",
+        "en": "Original Creator/Original Work",
+        "id": 1,
+        "jp": "",
+      },
     },
     Object {
       "person": Object {
@@ -363,7 +380,12 @@ Object {
         "nsfw": false,
         "type": 1,
       },
-      "position": 2,
+      "position": Object {
+        "cn": "导演",
+        "en": "Director/Direction",
+        "id": 2,
+        "jp": "監督 シリーズ監督",
+      },
     },
   ],
   "total": 101,
