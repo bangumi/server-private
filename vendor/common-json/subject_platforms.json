@@ -34,7 +34,7 @@
       }
     }
   },
-  "default": {
+  "defaults": {
     "1": { "sort_keys": ["发售日"], "wiki_tpl": "Book" },
     "2": { "sort_keys": ["放送开始"], "wiki_tpl": "Anime" },
     "3": { "sort_keys": ["发售日期"], "wiki_tpl": "Album" },
