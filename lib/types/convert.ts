@@ -220,10 +220,10 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
 export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubjectRelationType {
   const rtype = findSubjectRelationType(relation.type, relation.relation);
   if (!rtype) {
-    return { id: relation.type, en: '', cn: '', jp: '', desc: '' };
+    return { id: relation.relation, en: '', cn: '', jp: '', desc: '' };
   }
   return {
-    id: relation.type,
+    id: relation.relation,
     en: rtype.en,
     cn: rtype.cn,
     jp: rtype.jp,
