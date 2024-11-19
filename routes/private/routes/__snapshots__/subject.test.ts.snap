@@ -315,9 +315,9 @@ Object {
     Object {
       "order": 0,
       "relation": Object {
-        "cn": "",
+        "cn": "画集",
         "desc": "",
-        "en": "",
+        "en": "Album",
         "id": 1004,
         "jp": "",
       },

@@ -218,7 +218,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
 }
 
 export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubjectRelationType {
-  const rtype = findSubjectRelationType(relation.type, relation.relation);
+  const rtype = findSubjectRelationType(relation.relatedType, relation.relation);
   if (!rtype) {
     return { id: relation.relation, en: '', cn: '', jp: '', desc: '' };
   }
