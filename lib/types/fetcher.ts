@@ -132,6 +132,37 @@ export async function fetchCastsBySubjectAndCharacterIDs(
   return map;
 }
 
+export async function fetchCastsByCharacterAndSubjectIDs(
+  characterID: number,
+  subjectIDs: number[],
+  allowNsfw: boolean,
+): Promise<Map<number, res.ISlimPerson[]>> {
+  const data = await db
+    .select()
+    .from(schema.chiiCharacterCasts)
+    .innerJoin(
+      schema.chiiPersons,
+      op.and(op.eq(schema.chiiCharacterCasts.personID, schema.chiiPersons.id)),
+    )
+    .where(
+      op.and(
+        op.eq(schema.chiiCharacterCasts.characterID, characterID),
+        op.inArray(schema.chiiCharacterCasts.subjectID, subjectIDs),
+        op.ne(schema.chiiPersons.ban, 1),
+        allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
+      ),
+    )
+    .execute();
+  const map = new Map<number, res.ISlimPerson[]>();
+  for (const d of data) {
+    const person = convert.toSlimPerson(d.chii_persons);
+    const list = map.get(d.chii_crt_cast_index.subjectID) || [];
+    list.push(person);
+    map.set(d.chii_crt_cast_index.subjectID, list);
+  }
+  return map;
+}
+
 export async function fetchCastsByPersonAndCharacterIDs(
   personID: number,
   characterIDs: number[],
