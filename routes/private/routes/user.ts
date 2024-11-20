@@ -576,6 +576,7 @@ export async function setup(app: App) {
         querystring: t.Object({
           subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
           type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
+          since: t.Optional(t.Integer({ maximum: 0, description: '起始时间戳' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -592,7 +593,7 @@ export async function setup(app: App) {
     async ({
       auth,
       params: { username },
-      query: { subjectType, type, limit = 20, offset = 0 },
+      query: { subjectType, type, since, limit = 20, offset = 0 },
     }) => {
       const user = await fetchUserByUsername(username);
       if (!user) {
@@ -605,6 +606,7 @@ export async function setup(app: App) {
           ? op.eq(schema.chiiSubjectInterests.interestSubjectType, subjectType)
           : undefined,
         type ? op.eq(schema.chiiSubjectInterests.interestType, type) : undefined,
+        since ? op.gte(schema.chiiSubjectInterests.updatedAt, since) : undefined,
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
         auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
