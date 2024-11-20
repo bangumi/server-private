@@ -4646,6 +4646,13 @@ paths:
               - enum:
                   - 5
                 type: number
+        - description: 起始时间戳
+          in: query
+          name: from
+          required: false
+          schema:
+            maximum: 0
+            type: integer
         - description: max 100
           in: query
           name: limit
