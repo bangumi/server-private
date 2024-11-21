@@ -67,7 +67,7 @@ async function updateTrendingSubjects(subjectType: SubjectType, period = 'month'
   await redis.del(lockKey);
 }
 
-export async function trending() {
+export async function trendingSubjects() {
   for (const subjectType of SubjectTypeValues) {
     await updateTrendingSubjects(subjectType, 'month');
   }
