@@ -138,16 +138,16 @@ function toUserSubjectCollection(
 ): IUserSubjectCollection {
   return {
     subject: convert.toSubject(subject, fields),
-    rate: interest.interestRate,
-    type: interest.interestType,
-    comment: interest.interestComment,
-    tags: interest.interestTag
-      .split(',')
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: interest.tag
+      .split(' ')
       .map((x) => x.trim())
       .filter((x) => x !== ''),
-    epStatus: interest.interestEpStatus,
-    volStatus: interest.interestVolStatus,
-    private: Boolean(interest.interestPrivate),
+    epStatus: interest.epStatus,
+    volStatus: interest.volStatus,
+    private: Boolean(interest.private),
     updatedAt: interest.updatedAt,
   };
 }
@@ -359,15 +359,12 @@ export async function setup(app: App) {
         const data = await db
           .select({
             count: op.count(),
-            interest_subject_type: schema.chiiSubjectInterests.interestSubjectType,
-            interest_type: schema.chiiSubjectInterests.interestType,
+            interest_subject_type: schema.chiiSubjectInterests.subjectType,
+            interest_type: schema.chiiSubjectInterests.type,
           })
           .from(schema.chiiSubjectInterests)
-          .where(op.eq(schema.chiiSubjectInterests.interestUid, userID))
-          .groupBy(
-            schema.chiiSubjectInterests.interestSubjectType,
-            schema.chiiSubjectInterests.interestType,
-          )
+          .where(op.eq(schema.chiiSubjectInterests.uid, userID))
+          .groupBy(schema.chiiSubjectInterests.subjectType, schema.chiiSubjectInterests.type)
           .execute();
         for (const d of data) {
           const summary = subjectSummary[d.interest_subject_type];
@@ -432,7 +429,7 @@ export async function setup(app: App) {
           .from(schema.chiiSubjectInterests)
           .innerJoin(
             schema.chiiSubjects,
-            op.eq(schema.chiiSubjectInterests.interestSubjectId, schema.chiiSubjects.id),
+            op.eq(schema.chiiSubjectInterests.subjectID, schema.chiiSubjects.id),
           )
           .innerJoin(
             schema.chiiSubjectFields,
@@ -440,14 +437,12 @@ export async function setup(app: App) {
           )
           .where(
             op.and(
-              op.eq(schema.chiiSubjectInterests.interestUid, userID),
-              op.eq(schema.chiiSubjectInterests.interestSubjectType, stype),
-              op.eq(schema.chiiSubjectInterests.interestType, ctype),
+              op.eq(schema.chiiSubjectInterests.uid, userID),
+              op.eq(schema.chiiSubjectInterests.subjectType, stype),
+              op.eq(schema.chiiSubjectInterests.type, ctype),
               op.ne(schema.chiiSubjects.ban, 1),
               op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
-              auth.userID === userID
-                ? undefined
-                : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
+              auth.userID === userID ? undefined : op.eq(schema.chiiSubjectInterests.private, 0),
               auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
             ),
           )
@@ -601,15 +596,13 @@ export async function setup(app: App) {
       }
 
       const conditions = op.and(
-        op.eq(schema.chiiSubjectInterests.interestUid, user.id),
-        subjectType
-          ? op.eq(schema.chiiSubjectInterests.interestSubjectType, subjectType)
-          : undefined,
-        type ? op.eq(schema.chiiSubjectInterests.interestType, type) : undefined,
+        op.eq(schema.chiiSubjectInterests.uid, user.id),
+        subjectType ? op.eq(schema.chiiSubjectInterests.subjectType, subjectType) : undefined,
+        type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
         since ? op.gte(schema.chiiSubjectInterests.updatedAt, since) : undefined,
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
-        auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.interestPrivate, 0),
+        auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.private, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 
@@ -618,7 +611,7 @@ export async function setup(app: App) {
         .from(schema.chiiSubjectInterests)
         .innerJoin(
           schema.chiiSubjects,
-          op.eq(schema.chiiSubjectInterests.interestSubjectId, schema.chiiSubjects.id),
+          op.eq(schema.chiiSubjectInterests.subjectID, schema.chiiSubjects.id),
         )
         .innerJoin(
           schema.chiiSubjectFields,
@@ -632,7 +625,7 @@ export async function setup(app: App) {
         .from(schema.chiiSubjectInterests)
         .innerJoin(
           schema.chiiSubjects,
-          op.eq(schema.chiiSubjectInterests.interestSubjectId, schema.chiiSubjects.id),
+          op.eq(schema.chiiSubjectInterests.subjectID, schema.chiiSubjects.id),
         )
         .innerJoin(
           schema.chiiSubjectFields,
