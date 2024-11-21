@@ -13,7 +13,7 @@ RUN corepack enable && corepack prepare --activate \
 
 COPY . ./
 
-RUN pnpm run build
+RUN pnpm run build && pnpm run build-cron
 
 FROM base AS prod-deps
 
