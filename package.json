@@ -15,7 +15,6 @@
     "tsc": "tsc",
     "lint": "eslint -c eslint.config.mjs ./",
     "build": "node build.mjs",
-    "build-cron": "node build-cron.mjs",
     "build-common": "node scripts/build-common.mjs",
     "start": "nodemon ./bin/main.ts",
     "start-cron": "nodemon ./bin/cron.ts",
