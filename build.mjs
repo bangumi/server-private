@@ -16,7 +16,6 @@ const buildConfigs = {
     nodeExternalsPlugin(),
     {
       name: 'import.meta.url',
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       setup({ onLoad }) {
         onLoad({ filter: /.*\.ts/g, namespace: 'file' }, (args) => {
           let code = fs.readFileSync(args.path, 'utf8');
