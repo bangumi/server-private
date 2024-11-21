@@ -37,6 +37,6 @@ await esbuild.build({
 
 await esbuild.build({
   entryPoints: ['bin/cron.ts'],
-  outfile: 'dist/cron.js',
+  outfile: 'dist/cron.mjs',
   ...buildConfigs,
 });
