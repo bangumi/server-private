@@ -1,6 +1,7 @@
 import { CronJob } from 'cron';
 
 import { heartbeat } from '@app/tasks/heartbeat';
+import { trending } from '@app/tasks/trending';
 
 // field          allowed values
 // -----          --------------
@@ -13,8 +14,7 @@ import { heartbeat } from '@app/tasks/heartbeat';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function main() {
-  const jobs = [];
-  jobs.push(new CronJob('*/10 * * * * *', heartbeat));
+  const jobs = [new CronJob('*/10 * * * * *', heartbeat), new CronJob('*/10 * * * * *', trending)];
 
   for (const job of jobs) {
     job.start();
