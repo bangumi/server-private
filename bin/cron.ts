@@ -16,7 +16,7 @@ import { trendingSubjects } from '@app/tasks/trending';
 async function main() {
   const jobs = [
     new CronJob('*/10 * * * * *', heartbeat),
-    new CronJob('0 0 0 * * *', trendingSubjects),
+    new CronJob('0 0 19 * * *', trendingSubjects),
   ];
 
   for (const job of jobs) {
