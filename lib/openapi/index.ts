@@ -8,6 +8,7 @@ export const Tag = {
   Topic: 'topic',
   User: 'user',
   Wiki: 'wiki',
+  Trending: 'trending',
 } as const;
 
 export const Security = {
