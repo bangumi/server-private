@@ -17,6 +17,7 @@ import { NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
 import { CommentState, TopicDisplay, TopicParentType } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -99,28 +100,9 @@ const TopicDetail = t.Object(
   { $id: 'TopicDetail' },
 );
 
-const TopicBasic = t.Object(
-  {
-    title: t.String({ minLength: 1 }),
-    text: t.String({ minLength: 1, description: 'bbcode' }),
-    'cf-turnstile-response': t.String({ minLength: 1 }),
-  },
-  {
-    $id: 'TopicCreation',
-    examples: [
-      {
-        title: 'topic title',
-        content: 'topic content',
-        'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
-      },
-    ],
-  },
-);
-
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(Group);
-  app.addSchema(TopicBasic);
 
   const GroupProfile = t.Object(
     {
@@ -350,7 +332,7 @@ export async function setup(app: App) {
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Ref(TopicBasic),
+        body: t.Ref(req.TopicCreation),
       },
       preHandler: [requireLogin('creating a post')],
     },
@@ -403,7 +385,7 @@ export async function setup(app: App) {
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Ref(TopicBasic),
+        body: t.Ref(req.TopicCreation),
       },
       preHandler: [requireLogin('edit a topic')],
     },
@@ -482,7 +464,7 @@ export async function setup(app: App) {
           }),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: t.Ref(TopicBasic),
+        body: t.Ref(req.TopicCreation),
       },
       preHandler: [requireLogin('edit a topic')],
     },

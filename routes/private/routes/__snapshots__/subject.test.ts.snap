@@ -391,3 +391,31 @@ Object {
   "total": 101,
 }
 `;
+
+exports[`subject > should get subject topics 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1216020847,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 2,
+        "joinedAt": 0,
+        "nickname": "nickname 2",
+        "sign": "sing 2",
+        "username": "2",
+      },
+      "id": 1,
+      "parentID": 1,
+      "repliesCount": 76,
+      "title": "拿这个来测试",
+      "updatedAt": 1639999129,
+    },
+  ],
+  "total": 1,
+}
+`;
