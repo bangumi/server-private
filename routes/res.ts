@@ -37,4 +37,5 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectStaff);
   app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.User);
+  app.addSchema(res.Topic);
 }

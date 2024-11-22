@@ -128,7 +128,6 @@ const TopicBasic = t.Object(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(res.Topic);
   app.addSchema(Group);
   app.addSchema(TopicBasic);
 
