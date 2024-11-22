@@ -20,12 +20,8 @@ import { avatar, groupIcon } from '@app/lib/response.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import type { ITopic } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
-import {
-  CommentState,
-  NotJoinPrivateGroupError,
-  TopicDisplay,
-  Type,
-} from '@app/lib/topic/index.ts';
+import { NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
+import { CommentState, TopicDisplay, TopicParentType } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -181,7 +177,12 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
-      const [total, topicList] = await Topic.fetchTopicList(auth, Type.group, group.id, query);
+      const [total, topicList] = await Topic.fetchTopicList(
+        auth,
+        TopicParentType.Group,
+        group.id,
+        query,
+      );
 
       const topics = await addCreators(topicList, group.id);
 
@@ -217,7 +218,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { topicID } }) => {
-      return await handleTopicDetail(auth, Type.subject, topicID);
+      return await handleTopicDetail(auth, TopicParentType.Subject, topicID);
     },
   );
 
@@ -243,7 +244,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { id } }) => {
-      return await handleTopicDetail(auth, Type.group, id);
+      return await handleTopicDetail(auth, TopicParentType.Group, id);
     },
   );
 
@@ -333,49 +334,14 @@ export async function setup(app: App) {
         throw new NotJoinPrivateGroupError(group.name);
       }
 
-      const [total, topics] = await Topic.fetchTopicList(auth, Type.group, group.id, query);
+      const [total, topics] = await Topic.fetchTopicList(
+        auth,
+        TopicParentType.Group,
+        group.id,
+        query,
+      );
 
       return { total, data: await addCreators(topics, group.id) };
-    },
-  );
-
-  app.get(
-    '/subjects/:subjectID/topics',
-    {
-      schema: {
-        summary: '获取条目讨论版列表',
-        operationId: 'getSubjectTopicsBySubjectId',
-        tags: [Tag.Subject],
-        params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
-        }),
-        querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 30, maximum: 40 })),
-          offset: t.Optional(t.Integer({ default: 0 })),
-        }),
-        response: {
-          200: res.Paged(t.Ref(res.Topic)),
-          404: t.Ref(res.Error, {
-            description: '条目不存在',
-            'x-examples': {
-              NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
-            },
-          }),
-        },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-      },
-    },
-    async ({ params: { subjectID }, query, auth }) => {
-      const subject = await orm.fetchSubjectByID(subjectID);
-      if (!subject) {
-        throw new NotFoundError(`subject ${subjectID}`);
-      }
-      if (subject.nsfw && !auth.allowNsfw) {
-        throw new NotFoundError(`subject ${subjectID}`);
-      }
-
-      const [total, topics] = await Topic.fetchTopicList(auth, Type.subject, subjectID, query);
-      return { total, data: await addCreators(topics, subjectID) };
     },
   );
 
@@ -424,7 +390,7 @@ export async function setup(app: App) {
         display,
         userID: auth.userID,
         parentID: group.id,
-        state: Topic.CommentState.Normal,
+        state: CommentState.Normal,
         topicType: 'group',
       });
     },
@@ -470,7 +436,7 @@ export async function setup(app: App) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await Topic.fetchTopicDetail(auth, Type.group, topicID);
+      const topic = await Topic.fetchTopicDetail(auth, TopicParentType.Group, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -571,7 +537,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         display,
         userID: auth.userID,
         parentID: subject.id,
-        state: Topic.CommentState.Normal,
+        state: CommentState.Normal,
         topicType: 'subject',
       });
     },
@@ -618,7 +584,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await Topic.fetchTopicDetail(auth, Type.subject, topicID);
+      const topic = await Topic.fetchTopicDetail(auth, TopicParentType.Subject, topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -721,7 +687,7 @@ async function fetchRecentMember(groupID: number): Promise<IGroupMember[]> {
 
 export async function handleTopicDetail(
   auth: IAuth,
-  type: Type,
+  type: TopicParentType,
   id: number,
 ): Promise<Static<typeof TopicDetail>> {
   const topic = await Topic.fetchTopicDetail(auth, type, id);
@@ -731,11 +697,11 @@ export async function handleTopicDetail(
 
   let parent: orm.IGroup | res.ISubject | null;
   switch (type) {
-    case Type.group: {
+    case TopicParentType.Group: {
       parent = await orm.fetchGroupByID(topic.parentID);
       break;
     }
-    case Type.subject: {
+    case TopicParentType.Subject: {
       parent = await fetcher.fetchSubjectByID(topic.parentID);
       break;
     }
@@ -768,7 +734,7 @@ export async function handleTopicDetail(
     text: topic.text,
     parent: {
       ...parent,
-      icon: type === Type.group ? groupIcon((parent as orm.IGroup).icon) : '',
+      icon: type === TopicParentType.Group ? groupIcon((parent as orm.IGroup).icon) : '',
     },
     reactions: reactions[topic.contentPost.id] ?? [],
     replies: topic.replies.map((x) => {

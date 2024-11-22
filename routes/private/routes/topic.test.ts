@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { fetchTopicDetail, Type } from '@app/lib/topic/index.ts';
+import { fetchTopicDetail } from '@app/lib/topic/index.ts';
+import { TopicParentType } from '@app/lib/topic/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './topic.ts';
@@ -240,7 +241,7 @@ describe('edit group topic', () => {
 
       expect(res.statusCode).toBe(200);
 
-      const topic = await fetchTopicDetail(emptyAuth(), Type.group, 375793);
+      const topic = await fetchTopicDetail(emptyAuth(), TopicParentType.Group, 375793);
 
       expect(topic?.title).toBe('new topic title');
       expect(topic?.text).toBe('new contents');
@@ -259,7 +260,7 @@ describe('edit group topic', () => {
 
       expect(res.statusCode).toBe(200);
 
-      const topic = await fetchTopicDetail(emptyAuth(), Type.group, 375793);
+      const topic = await fetchTopicDetail(emptyAuth(), TopicParentType.Group, 375793);
 
       expect(topic?.title).toBe('new topic title 2');
       expect(topic?.text).toBe('new contents 2');
@@ -324,7 +325,7 @@ describe('edit subjec topic', () => {
 
       expect(res.statusCode).toBe(200);
 
-      const topic = await fetchTopicDetail(emptyAuth(), Type.subject, 3);
+      const topic = await fetchTopicDetail(emptyAuth(), TopicParentType.Subject, 3);
 
       expect(topic?.title).toBe('new topic title');
       expect(topic?.text).toBe('new contents');
@@ -343,7 +344,7 @@ describe('edit subjec topic', () => {
 
       expect(res.statusCode).toBe(200);
 
-      const topic = await fetchTopicDetail(emptyAuth(), Type.subject, 3);
+      const topic = await fetchTopicDetail(emptyAuth(), TopicParentType.Subject, 3);
 
       expect(topic?.title).toBe('new topic title 2');
       expect(topic?.text).toBe('new contents 2');

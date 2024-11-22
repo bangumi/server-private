@@ -12,13 +12,9 @@ import type { entity } from '@app/lib/orm/index.ts';
 import { EpisodeCommentRepo, EpisodeRepo, fetchUserX } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile';
-import {
-  CommentState,
-  handleTopicReply,
-  NotJoinPrivateGroupError,
-  Type,
-} from '@app/lib/topic/index.ts';
+import { handleTopicReply, NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
+import { CommentState, TopicParentType } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -80,14 +76,14 @@ export async function setup(app: App) {
   app.addSchema(BasicReply);
   app.addSchema(Reply);
 
-  async function getPost(auth: IAuth, postID: number, type: Type) {
+  async function getPost(auth: IAuth, postID: number, type: TopicParentType) {
     let post: entity.GroupPost | entity.SubjectPost | null;
     switch (type) {
-      case Type.group: {
+      case TopicParentType.Group: {
         post = await orm.GroupPostRepo.findOneBy({ id: postID });
         break;
       }
-      case Type.subject: {
+      case TopicParentType.Subject: {
         post = await orm.SubjectPostRepo.findOneBy({ id: postID });
         break;
       }
@@ -100,7 +96,7 @@ export async function setup(app: App) {
       throw new NotFoundError(`${type} post ${postID}`);
     }
 
-    if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(post.state)) {
+    if ([CommentState.UserDelete, CommentState.AdminDelete].includes(post.state)) {
       throw new NotFoundError(`${type} post ${postID}`);
     }
 
@@ -113,7 +109,7 @@ export async function setup(app: App) {
       throw new NotFoundError(`${type} post ${postID}`);
     }
 
-    if ([Topic.CommentState.UserDelete, Topic.CommentState.AdminDelete].includes(topic.state)) {
+    if ([CommentState.UserDelete, CommentState.AdminDelete].includes(topic.state)) {
       throw new NotFoundError(`${type} topic ${post.topicID}`);
     }
 
@@ -410,7 +406,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       },
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const { topic, post } = await getPost(auth, postID, Type.group);
+      const { topic, post } = await getPost(auth, postID, TopicParentType.Group);
 
       const creator = convert.oldToUser(await fetchUserX(post.uid));
 
@@ -476,7 +472,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new NotAllowedError('edit reply not created by you');
       }
 
-      const topic = await Topic.fetchTopicDetail(auth, Type.group, post.topicID);
+      const topic = await Topic.fetchTopicDetail(auth, TopicParentType.Group, post.topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${post.topicID}`);
       }
@@ -524,17 +520,17 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       preHandler: [requireLogin('delete a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const { post } = await getPost(auth, postID, Type.group);
+      const { post } = await getPost(auth, postID, TopicParentType.Group);
 
       if (auth.userID !== post.uid) {
         throw new NotAllowedError('delete this post');
       }
 
-      if (post.state !== Topic.CommentState.Normal) {
+      if (post.state !== CommentState.Normal) {
         return {};
       }
 
-      await orm.GroupPostRepo.update({ id: postID }, { state: Topic.CommentState.UserDelete });
+      await orm.GroupPostRepo.update({ id: postID }, { state: CommentState.UserDelete });
       return {};
     },
   );
@@ -598,7 +594,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       if (!(await turnstile.verify(cfCaptchaResponse))) {
         throw new CaptchaError();
       }
-      return await handleTopicReply(auth, Topic.Type.group, topicID, content, replyTo);
+      return await handleTopicReply(auth, TopicParentType.Group, topicID, content, replyTo);
     },
   );
 
@@ -667,7 +663,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       if (!(await turnstile.verify(cfCaptchaResponse))) {
         throw new CaptchaError();
       }
-      return await handleTopicReply(auth, Topic.Type.subject, topicID, content, replyTo);
+      return await handleTopicReply(auth, TopicParentType.Subject, topicID, content, replyTo);
     },
   );
 
@@ -695,17 +691,17 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       preHandler: [requireLogin('delete a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const { post } = await getPost(auth, postID, Type.subject);
+      const { post } = await getPost(auth, postID, TopicParentType.Subject);
 
       if (auth.userID !== post.uid) {
         throw new NotAllowedError('delete this post');
       }
 
-      if (post.state !== Topic.CommentState.Normal) {
+      if (post.state !== CommentState.Normal) {
         return {};
       }
 
-      await orm.SubjectPostRepo.update({ id: postID }, { state: Topic.CommentState.UserDelete });
+      await orm.SubjectPostRepo.update({ id: postID }, { state: CommentState.UserDelete });
       return {};
     },
   );
@@ -731,7 +727,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       preHandler: [requireLogin('get a posts')],
     },
     async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const { topic, post } = await getPost(auth, postID, Type.subject);
+      const { topic, post } = await getPost(auth, postID, TopicParentType.Subject);
 
       const creator = convert.oldToUser(await fetchUserX(post.uid));
 
@@ -798,7 +794,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new NotAllowedError('edit reply not created by you');
       }
 
-      const topic = await Topic.fetchTopicDetail(auth, Type.subject, post.topicID);
+      const topic = await Topic.fetchTopicDetail(auth, TopicParentType.Subject, post.topicID);
       if (!topic) {
         throw new NotFoundError(`topic ${post.topicID}`);
       }
@@ -820,71 +816,6 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       await orm.SubjectPostRepo.update({ id: postID }, { content: text });
 
       return {};
-    },
-  );
-
-  type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
-  const SubjectInterestComment = t.Object(
-    {
-      total: t.Integer(),
-      list: t.Array(
-        t.Object({
-          user: t.Ref(res.SlimUser),
-          rate: t.Integer(),
-          comment: t.String(),
-          updatedAt: t.Integer(),
-        }),
-      ),
-    },
-    { $id: 'SubjectInterestComment' },
-  );
-
-  app.addSchema(SubjectInterestComment);
-
-  app.get(
-    '/subjects/:subjectID/comments',
-    {
-      schema: {
-        summary: '获取条目的吐槽箱',
-        tags: [Tag.Subject],
-        operationId: 'subjectComments',
-        params: t.Object({
-          subjectID: t.Integer({ examples: [8], minimum: 0 }),
-        }),
-        querystring: t.Object({
-          limit: t.Optional(t.Integer({ default: 20 })),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
-        }),
-        response: {
-          200: t.Ref(SubjectInterestComment),
-        },
-      },
-    },
-    async ({ params: { subjectID }, query }): Promise<ISubjectInterestComment> => {
-      const where = { subjectID: subjectID, private: 0, hasComment: 1 };
-
-      const count = await orm.SubjectInterestRepo.count({ where });
-      const comments = await orm.SubjectInterestRepo.find({
-        where: where,
-        order: { updatedAt: 'desc' },
-        skip: query.offset,
-        take: query.limit,
-      });
-
-      const commentPromises = comments.map(async (v) => {
-        const u = await fetchUserX(v.uid);
-        return {
-          user: convert.oldToUser(u),
-          rate: v.rate,
-          comment: v.comment,
-          updatedAt: v.updatedAt,
-        };
-      });
-
-      return {
-        total: count,
-        list: await Promise.all(commentPromises),
-      };
     },
   );
 }

@@ -13,6 +13,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectRating);
   app.addSchema(res.SubjectRelationType);
   app.addSchema(res.SubjectStaffPosition);
+  app.addSchema(res.SubjectComment);
   app.addSchema(res.PersonImages);
   app.addSchema(res.Infobox);
   app.addSchema(res.Subject);

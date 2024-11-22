@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import type { IReply } from '@app/lib/topic/index.ts';
-import { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
+import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 
 export const CanViewStateClosedTopic = 24 * 60 * 60 * 180;
 export const CanViewStateDeleteTopic = 24 * 60 * 60 * 365;

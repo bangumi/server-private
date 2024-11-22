@@ -12,6 +12,13 @@ import {
   findSubjectStaffPosition,
 } from '@app/vendor';
 
+export function splitTags(tags: string): string[] {
+  return tags
+    .split(' ')
+    .map((x) => x.trim())
+    .filter((x) => x !== '');
+}
+
 // for backward compatibility
 export function oldToUser(user: ormold.IUser): res.ISlimUser {
   return {
@@ -176,10 +183,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     id: subject.id,
     images: subjectCover(subject.image) || undefined,
     infobox: toInfobox(subject.infobox),
-    metaTags: subject.metaTags
-      .split(' ')
-      .map((x) => x.trim())
-      .filter((x) => x !== ''),
+    metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     name: subject.name,
     nameCN: subject.nameCN,
@@ -219,6 +223,65 @@ export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubje
     en: position.en,
     cn: position.cn,
     jp: position.jp,
+  };
+}
+
+export function toBlotEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEntry {
+  return {
+    id: entry.id,
+    type: entry.type,
+    user: toSlimUser(user),
+    title: entry.title,
+    icon: entry.icon,
+    content: entry.content,
+    tags: splitTags(entry.tags),
+    views: entry.views,
+    replies: entry.replies,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+    like: entry.like,
+    dislike: entry.dislike,
+    noreply: entry.noreply,
+    related: entry.related,
+    public: entry.public,
+  };
+}
+
+export function toSlimBlogEntry(entry: orm.IBlogEntry): res.ISlimBlogEntry {
+  return {
+    id: entry.id,
+    type: entry.type,
+    title: entry.title,
+    summary: entry.content.slice(0, 120),
+    replies: entry.replies,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+    like: entry.like,
+    dislike: entry.dislike,
+  };
+}
+
+export function toSubjectComment(
+  interest: orm.ISubjectInterest,
+  user: orm.IUser,
+): res.ISubjectComment {
+  return {
+    user: toSlimUser(user),
+    rate: interest.rate,
+    comment: interest.comment,
+    updatedAt: interest.updatedAt,
+  };
+}
+
+export function toSubjectReview(
+  review: orm.ISubjectRelatedBlog,
+  blog: orm.IBlogEntry,
+  user: orm.IUser,
+): res.ISubjectReview {
+  return {
+    id: review.id,
+    user: toSlimUser(user),
+    entry: toSlimBlogEntry(blog),
   };
 }
 
@@ -351,5 +414,17 @@ export function toCharacterSubjectRelation(
   return {
     subject: toSlimSubject(subject),
     type: relation.type,
+  };
+}
+
+export function toSubjectTopic(topic: orm.ISubjectTopics, user: orm.IUser): res.ITopic {
+  return {
+    id: topic.id,
+    creator: toSlimUser(user),
+    title: topic.title,
+    parentID: topic.subjectID,
+    createdAt: topic.createdAt,
+    updatedAt: topic.updatedAt,
+    repliesCount: topic.replies,
   };
 }

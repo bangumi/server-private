@@ -5,7 +5,8 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { SubjectType } from '@app/lib/subject/type.ts';
+import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import { ListTopicDisplays } from '@app/lib/topic/display.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -99,7 +100,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(res.EpisodeType, { description: '剧集类型' })),
+          type: t.Optional(t.Enum(EpisodeType, { description: '剧集类型' })),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
@@ -360,6 +361,193 @@ export async function setup(app: App) {
       const persons = data.map((d) => toSubjectPerson(d.chii_persons, d.chii_person_cs_index));
       return {
         data: persons,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/comments',
+    {
+      schema: {
+        summary: '获取条目的吐槽箱',
+        operationId: 'getSubjectComments',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.SubjectComment),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { type, limit = 20, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+        op.eq(schema.chiiSubjectInterests.private, 0),
+        op.eq(schema.chiiSubjectInterests.hasComment, 1),
+        type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectInterests.uid, schema.chiiUsers.id))
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectInterests.uid, schema.chiiUsers.id))
+        .where(condition)
+        .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const comments = data.map((d) =>
+        convert.toSubjectComment(d.chii_subject_interests, d.chii_members),
+      );
+      return {
+        data: comments,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/reviews',
+    {
+      schema: {
+        summary: '获取条目的评论',
+        operationId: 'getSubjectReviews',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 5, minimum: 1, maximum: 20, description: 'max 20' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.SubjectReview),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 5, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectRelatedBlogs.subjectID, subjectID),
+        op.eq(schema.chiiBlogEntries.public, true),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectRelatedBlogs)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectRelatedBlogs.uid, schema.chiiUsers.id))
+        .innerJoin(
+          schema.chiiBlogEntries,
+          op.eq(schema.chiiSubjectRelatedBlogs.entryID, schema.chiiBlogEntries.id),
+        )
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectRelatedBlogs)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectRelatedBlogs.uid, schema.chiiUsers.id))
+        .innerJoin(
+          schema.chiiBlogEntries,
+          op.eq(schema.chiiSubjectRelatedBlogs.entryID, schema.chiiBlogEntries.id),
+        )
+        .where(condition)
+        .orderBy(op.desc(schema.chiiBlogEntries.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const reviews = data.map((d) =>
+        convert.toSubjectReview(d.chii_subject_related_blog, d.chii_blog_entry, d.chii_members),
+      );
+      return {
+        data: reviews,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '获取条目讨论版',
+        operationId: 'getSubjectTopics',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.Topic)),
+          404: t.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const display = ListTopicDisplays(auth);
+      const condition = op.and(
+        op.eq(schema.chiiSubjectTopics.subjectID, subjectID),
+        op.inArray(schema.chiiSubjectTopics.display, display),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectTopics)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
+        .where(condition)
+        .orderBy(op.desc(schema.chiiSubjectTopics.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const topics = data.map((d) => convert.toSubjectTopic(d.chii_subject_topics, d.chii_members));
+      return {
+        data: topics,
         total: count,
       };
     },

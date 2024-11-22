@@ -409,8 +409,8 @@ export async function setup(app: App) {
           .select({
             count: op.count(),
           })
-          .from(schema.chiiIndex)
-          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.ne(schema.chiiIndex.ban, 1)))
+          .from(schema.chiiIndexes)
+          .where(op.and(op.eq(schema.chiiIndexes.uid, userID), op.ne(schema.chiiIndexes.ban, 1)))
           .execute();
         indexSummary.count = count;
       }
@@ -521,9 +521,9 @@ export async function setup(app: App) {
       async function appendIndexDetail(userID: number) {
         const data = await db
           .select()
-          .from(schema.chiiIndex)
-          .where(op.and(op.eq(schema.chiiIndex.uid, userID), op.ne(schema.chiiIndex.ban, 1)))
-          .orderBy(op.desc(schema.chiiIndex.createdAt))
+          .from(schema.chiiIndexes)
+          .where(op.and(op.eq(schema.chiiIndexes.uid, userID), op.ne(schema.chiiIndexes.ban, 1)))
+          .orderBy(op.desc(schema.chiiIndexes.createdAt))
           .limit(7)
           .execute();
         for (const d of data) {
@@ -817,21 +817,21 @@ export async function setup(app: App) {
 
       const conditions = op.and(
         op.eq(schema.chiiIndexCollects.uid, user.id),
-        op.ne(schema.chiiIndex.ban, 1),
+        op.ne(schema.chiiIndexes.ban, 1),
       );
 
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiIndexCollects)
-        .innerJoin(schema.chiiIndex, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndex.id))
+        .innerJoin(schema.chiiIndexes, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndexes.id))
         .where(conditions)
         .execute();
 
       const data = await db
         .select()
         .from(schema.chiiIndexCollects)
-        .innerJoin(schema.chiiIndex, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndex.id))
-        .innerJoin(schema.chiiUsers, op.eq(schema.chiiIndex.uid, schema.chiiUsers.id))
+        .innerJoin(schema.chiiIndexes, op.eq(schema.chiiIndexCollects.mid, schema.chiiIndexes.id))
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiIndexes.uid, schema.chiiUsers.id))
         .where(conditions)
         .orderBy(op.desc(schema.chiiIndexCollects.createdAt))
         .limit(limit)
@@ -880,21 +880,21 @@ export async function setup(app: App) {
       }
 
       const conditions = op.and(
-        op.eq(schema.chiiIndex.uid, user.id),
-        op.ne(schema.chiiIndex.ban, 1),
+        op.eq(schema.chiiIndexes.uid, user.id),
+        op.ne(schema.chiiIndexes.ban, 1),
       );
 
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
-        .from(schema.chiiIndex)
+        .from(schema.chiiIndexes)
         .where(conditions)
         .execute();
 
       const data = await db
         .select()
-        .from(schema.chiiIndex)
+        .from(schema.chiiIndexes)
         .where(conditions)
-        .orderBy(op.desc(schema.chiiIndex.createdAt))
+        .orderBy(op.desc(schema.chiiIndexes.createdAt))
         .limit(limit)
         .offset(offset)
         .execute();
