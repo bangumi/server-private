@@ -1,3 +1,4 @@
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -38,4 +39,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.User);
   app.addSchema(res.Topic);
+
+  app.addSchema(req.TopicCreation);
 }
