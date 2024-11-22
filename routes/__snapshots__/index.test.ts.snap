@@ -65,6 +65,61 @@ exports[`should build private api spec 1`] = `
         - text
         - state
       type: object
+    BlogEntry:
+      properties:
+        content:
+          type: string
+        createdAt:
+          type: integer
+        dislike:
+          type: integer
+        icon:
+          type: string
+        id:
+          type: integer
+        like:
+          type: integer
+        noreply:
+          type: integer
+        public:
+          type: boolean
+        related:
+          type: integer
+        replies:
+          type: integer
+        tags:
+          items:
+            type: string
+          type: array
+        title:
+          type: string
+        type:
+          type: integer
+        updatedAt:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+        views:
+          type: integer
+      required:
+        - id
+        - type
+        - user
+        - title
+        - icon
+        - content
+        - tags
+        - views
+        - replies
+        - createdAt
+        - updatedAt
+        - like
+        - dislike
+        - noreply
+        - related
+        - public
+      title: BlogEntry
+      type: object
     Character:
       properties:
         collects:
@@ -882,6 +937,38 @@ exports[`should build private api spec 1`] = `
         - state
         - reactions
       type: object
+    SlimBlogEntry:
+      properties:
+        createdAt:
+          type: integer
+        dislike:
+          type: integer
+        id:
+          type: integer
+        like:
+          type: integer
+        replies:
+          type: integer
+        summary:
+          type: string
+        title:
+          type: string
+        type:
+          type: integer
+        updatedAt:
+          type: integer
+      required:
+        - id
+        - type
+        - title
+        - summary
+        - replies
+        - createdAt
+        - updatedAt
+        - like
+        - dislike
+      title: SlimBlogEntry
+      type: object
     SlimCharacter:
       properties:
         id:
@@ -1288,6 +1375,23 @@ exports[`should build private api spec 1`] = `
         type: integer
       title: SubjectCollection
       type: object
+    SubjectComment:
+      properties:
+        comment:
+          type: string
+        rate:
+          type: integer
+        updatedAt:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - user
+        - rate
+        - comment
+        - updatedAt
+      title: SubjectComment
+      type: object
     SubjectEdit:
       example:
         infobox: |-
@@ -1370,32 +1474,6 @@ exports[`should build private api spec 1`] = `
         - small
         - grid
       title: SubjectImages
-      type: object
-    SubjectInterestComment:
-      properties:
-        list:
-          items:
-            properties:
-              comment:
-                type: string
-              rate:
-                type: integer
-              updatedAt:
-                type: integer
-              user:
-                $ref: '#/components/schemas/SlimUser'
-            required:
-              - user
-              - rate
-              - comment
-              - updatedAt
-            type: object
-          type: array
-        total:
-          type: integer
-      required:
-        - total
-        - list
       type: object
     SubjectNew:
       properties:
@@ -1600,46 +1678,8 @@ exports[`should build private api spec 1`] = `
           description: 发帖时间，unix time stamp in seconds
           type: integer
         creator:
-          properties:
-            avatar:
-              properties:
-                large:
-                  type: string
-                medium:
-                  example: sai
-                  type: string
-                small:
-                  type: string
-              required:
-                - small
-                - medium
-                - large
-              title: Avatar
-              type: object
-            id:
-              example: 1
-              type: integer
-            joinedAt:
-              type: integer
-            nickname:
-              example: Sai🖖
-              type: string
-            sign:
-              type: string
-            username:
-              example: sai
-              type: string
-          required:
-            - id
-            - username
-            - nickname
-            - avatar
-            - sign
-            - joinedAt
-          title: SlimUser
-          type: object
+          $ref: '#/components/schemas/SlimUser'
         id:
-          description: topic id
           type: integer
         parentID:
           description: 小组/条目ID
@@ -1668,7 +1708,15 @@ exports[`should build private api spec 1`] = `
         title: topic title
       properties:
         cf-turnstile-response:
-          minLength: 1
+          description: >-
+            需要
+            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+
+            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+
+            dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           type: string
         text:
           description: bbcode
@@ -3986,35 +4034,96 @@ paths:
         - subject
   /p1/subjects/{subjectID}/comments:
     get:
-      operationId: subjectComments
+      operationId: getSubjectComments
       parameters:
-        - in: query
+        - description: 收藏类型
+          in: query
+          name: type
+          required: false
+          schema:
+            anyOf:
+              - enum:
+                  - 1
+                type: number
+              - enum:
+                  - 2
+                type: number
+              - enum:
+                  - 3
+                type: number
+              - enum:
+                  - 4
+                type: number
+              - enum:
+                  - 5
+                type: number
+        - description: max 100
+          in: query
           name: limit
           required: false
           schema:
             default: 20
+            maximum: 100
+            minimum: 1
             type: integer
-        - in: query
+        - description: min 0
+          in: query
           name: offset
           required: false
           schema:
             default: 0
             minimum: 0
             type: integer
-        - example: 8
-          in: path
+        - in: path
           name: subjectID
           required: true
           schema:
-            minimum: 0
             type: integer
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubjectInterestComment'
+                properties:
+                  data:
+                    items:
+                      properties:
+                        comment:
+                          type: string
+                        rate:
+                          type: integer
+                        updatedAt:
+                          type: integer
+                        user:
+                          $ref: '#/components/schemas/SlimUser'
+                      required:
+                        - user
+                        - rate
+                        - comment
+                        - updatedAt
+                      title: SubjectComment
+                      type: object
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
           description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: subject not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
         '500':
           content:
             application/json:
@@ -4022,6 +4131,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
       summary: 获取条目的吐槽箱
       tags:
         - subject
@@ -4218,6 +4330,87 @@ paths:
       summary: 获取条目的关联条目
       tags:
         - subject
+  /p1/subjects/{subjectID}/reviews:
+    get:
+      operationId: getSubjectReviews
+      parameters:
+        - description: max 20
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 5
+            maximum: 20
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      properties:
+                        entry:
+                          $ref: '#/components/schemas/SlimBlogEntry'
+                        id:
+                          type: integer
+                        user:
+                          $ref: '#/components/schemas/SlimUser'
+                      required:
+                        - id
+                        - user
+                        - entry
+                      title: SubjectReview
+                      type: object
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: subject not found
+                    statusCode: 404
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目的评论
+      tags:
+        - subject
   /p1/subjects/{subjectID}/staffs:
     get:
       operationId: getSubjectStaffs
@@ -4295,26 +4488,29 @@ paths:
         - subject
   /p1/subjects/{subjectID}/topics:
     get:
-      operationId: getSubjectTopicsBySubjectId
+      operationId: getSubjectTopics
       parameters:
-        - in: query
+        - description: max 100
+          in: query
           name: limit
           required: false
           schema:
-            default: 30
-            maximum: 40
+            default: 20
+            maximum: 100
+            minimum: 1
             type: integer
-        - in: query
+        - description: min 0
+          in: query
           name: offset
           required: false
           schema:
             default: 0
+            minimum: 0
             type: integer
         - in: path
           name: subjectID
           required: true
           schema:
-            exclusiveMinimum: 0
             type: integer
       responses:
         '200':
@@ -4337,16 +4533,15 @@ paths:
           content:
             application/json:
               examples:
-                NotFoundError:
+                NOT_FOUND:
                   value:
                     code: NOT_FOUND
                     error: Not Found
-                    message: topic not found
+                    message: subject not found
                     statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-                description: 条目不存在
-          description: 条目不存在
+          description: default error response type
         '500':
           content:
             application/json:
@@ -4357,20 +4552,11 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取条目讨论版列表
+      summary: 获取条目讨论版
       tags:
         - subject
     post:
-      description: >-
-        需要
-        [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-
-        next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-
-        dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
-      operationId: createNewSubjectTopic
+      operationId: createSubjectTopic
       parameters:
         - example: 114514
           in: path
@@ -4407,7 +4593,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 创建条目讨论版
+      summary: 创建条目讨论
       tags:
         - subject
   /p1/trending/subjects:
