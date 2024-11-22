@@ -248,6 +248,13 @@ Object {
 }
 `;
 
+exports[`subject > should get subject comments 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`subject > should get subject episodes 1`] = `
 Object {
   "data": Array [
@@ -342,6 +349,13 @@ Object {
 }
 `;
 
+exports[`subject > should get subject reviews 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`subject > should get subject staffs 1`] = `
 Object {
   "data": Array [
@@ -396,24 +410,24 @@ exports[`subject > should get subject topics 1`] = `
 Object {
   "data": Array [
     Object {
-      "createdAt": 1216020847,
+      "createdAt": 1462335911,
       "creator": Object {
         "avatar": Object {
           "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
         },
-        "id": 2,
+        "id": 142527,
         "joinedAt": 0,
-        "nickname": "nickname 2",
-        "sign": "sing 2",
-        "username": "2",
+        "nickname": "nickname 142527",
+        "sign": "sing 142527",
+        "username": "142527",
       },
-      "id": 1,
-      "parentID": 1,
-      "repliesCount": 76,
-      "title": "拿这个来测试",
-      "updatedAt": 1639999129,
+      "id": 6873,
+      "parentID": 12,
+      "repliesCount": 8,
+      "title": "这条目简介也太剧透了吧",
+      "updatedAt": 1481098545,
     },
   ],
   "total": 1,

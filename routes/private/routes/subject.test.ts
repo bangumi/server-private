@@ -59,12 +59,34 @@ describe('subject', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get subject comments', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/12/comments',
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject reviews', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/12/reviews',
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get subject topics', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/1/topics',
+      url: '/subjects/12/topics',
       query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
