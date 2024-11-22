@@ -1007,19 +1007,19 @@ export const chiiSubjectRelatedBlogs = mysqlTable(
 export const chiiSubjectPosts = mysqlTable(
   'chii_subject_posts',
   {
-    sbjPstId: mediumint('sbj_pst_id').autoincrement().notNull(),
-    sbjPstMid: mediumint('sbj_pst_mid').notNull(),
-    sbjPstUid: mediumint('sbj_pst_uid').notNull(),
-    sbjPstRelated: mediumint('sbj_pst_related').notNull(),
-    sbjPstContent: mediumtext('sbj_pst_content').notNull(),
-    sbjPstState: tinyint('sbj_pst_state').notNull(),
-    sbjPstDateline: int('sbj_pst_dateline').default(0).notNull(),
+    id: mediumint('sbj_pst_id').primaryKey().autoincrement().notNull(),
+    mid: mediumint('sbj_pst_mid').notNull(),
+    uid: mediumint('sbj_pst_uid').notNull(),
+    related: mediumint('sbj_pst_related').notNull(),
+    content: mediumtext('sbj_pst_content').notNull(),
+    state: tinyint('sbj_pst_state').notNull(),
+    createdAt: int('sbj_pst_dateline').default(0).notNull(),
   },
   (table) => {
     return {
-      pssTopicId: index('pss_topic_id').on(table.sbjPstMid),
-      sbjPstRelated: index('sbj_pst_related').on(table.sbjPstRelated),
-      sbjPstUid: index('sbj_pst_uid').on(table.sbjPstUid),
+      pssTopicId: index('pss_topic_id').on(table.mid),
+      sbjPstRelated: index('sbj_pst_related').on(table.related),
+      sbjPstUid: index('sbj_pst_uid').on(table.uid),
     };
   },
 );

@@ -3,21 +3,14 @@ import { Type as t } from '@sinclair/typebox';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import config from '@app/lib/config';
 import { Dam, dam } from '@app/lib/dam.ts';
-import {
-  BadRequestError,
-  CaptchaError,
-  NotFoundError,
-  UnexpectedNotFoundError,
-} from '@app/lib/error.ts';
+import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as Like from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { Page } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { GroupMemberRepo, isMemberInGroup } from '@app/lib/orm/index.ts';
 import { avatar, groupIcon } from '@app/lib/response.ts';
-import { createTurnstileDriver } from '@app/lib/services/turnstile';
 import type { ITopic } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
@@ -26,9 +19,7 @@ import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
-import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const Group = t.Object(
@@ -470,75 +461,6 @@ export async function setup(app: App) {
       }
 
       return {};
-    },
-  );
-
-  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
-
-  app.post(
-    '/subjects/:subjectID/topics',
-    {
-      schema: {
-        summary: '创建条目讨论版',
-        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
-        tags: [Tag.Subject],
-        operationId: 'createNewSubjectTopic',
-        params: t.Object({
-          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
-        }),
-        response: {
-          200: t.Object({
-            id: t.Integer({ description: 'new topic id' }),
-          }),
-        },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: t.Ref(TopicBasic),
-      },
-      preHandler: [requireLogin('creating a topic')],
-    },
-    async ({
-      auth,
-      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
-      params: { subjectID },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
-        throw new CaptchaError();
-      }
-
-      if (!Dam.allCharacterPrintable(text)) {
-        throw new BadRequestError('text contains invalid invisible character');
-      }
-
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create topic');
-      }
-
-      const subject = await orm.fetchSubjectByID(subjectID);
-      if (!subject) {
-        throw new NotFoundError(`subject ${subjectID}`);
-      }
-
-      let display = TopicDisplay.Normal;
-
-      if (dam.needReview(title) || dam.needReview(text)) {
-        display = TopicDisplay.Review;
-      }
-
-      await rateLimit(LimitAction.Subject, auth.userID);
-
-      return await orm.createPost({
-        title,
-        content: text,
-        display,
-        userID: auth.userID,
-        parentID: subject.id,
-        state: CommentState.Normal,
-        topicType: 'subject',
-      });
     },
   );
 

@@ -11,7 +11,8 @@ export type ISubjectFields = typeof schema.chiiSubjectFields.$inferSelect;
 export type ISubjectInterest = typeof schema.chiiSubjectInterests.$inferSelect;
 export type ISubjectRelation = typeof schema.chiiSubjectRelations.$inferSelect;
 export type ISubjectRelatedBlog = typeof schema.chiiSubjectRelatedBlogs.$inferSelect;
-export type ISubjectTopics = typeof schema.chiiSubjectTopics.$inferSelect;
+export type ISubjectTopic = typeof schema.chiiSubjectTopics.$inferSelect;
+export type ISubjectPost = typeof schema.chiiSubjectPosts.$inferSelect;
 
 export type IEpisode = typeof schema.chiiEpisodes.$inferSelect;
 

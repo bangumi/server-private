@@ -1,4 +1,5 @@
 import { stage } from '@app/lib/config.ts';
+import config from '@app/lib/config.ts';
 
 import { BaseExternalHttpSrv } from './base.ts';
 
@@ -46,3 +47,5 @@ export class Turnstile extends BaseExternalHttpSrv {
     return data.success;
   }
 }
+
+export const turnstile = createTurnstileDriver(config.turnstile.siteKey);

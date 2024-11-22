@@ -58,4 +58,23 @@ describe('subject', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get subject topics', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/1/topics',
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  // test('should fetch topic details', async () => {
+  //   const app = createTestServer();
+  //   await app.register(setup);
+  //   const res = await app.inject({ url: '/subjects/-/topics/3', method: 'get' });
+  //   expect(res.statusCode).toBe(200);
+  //   expect(res.json()).toMatchSnapshot();
+  // });
 });

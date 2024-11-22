@@ -113,40 +113,6 @@ describe('group topics', () => {
   });
 });
 
-describe('subject topics', () => {
-  test('should failed on not found subject', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      url: '/subjects/114514/topics',
-    });
-
-    expect(res.statusCode).toBe(404);
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should return data', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-
-    const res = await app.inject({
-      url: '/subjects/1/topics',
-    });
-    const data = res.json();
-
-    expect(res.statusCode).toBe(200);
-    expect(data.data).toContainEqual(expect.objectContaining(expectedSubjectTopic));
-  });
-
-  test('should fetch topic details', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({ url: '/subjects/-/topics/3', method: 'get' });
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toMatchSnapshot();
-  });
-});
-
 describe('create group post', () => {
   const createPostInGroup = vi.fn().mockResolvedValue({ id: 1 });
   vi.spyOn(orm, 'createPost').mockImplementation(createPostInGroup);

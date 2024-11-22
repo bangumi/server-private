@@ -417,7 +417,7 @@ export function toCharacterSubjectRelation(
   };
 }
 
-export function toSubjectTopic(topic: orm.ISubjectTopics, user: orm.IUser): res.ITopic {
+export function toSubjectTopic(topic: orm.ISubjectTopic, user: orm.IUser): res.ITopic {
   return {
     id: topic.id,
     creator: toSlimUser(user),

@@ -3,14 +3,22 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
-import { NotFoundError } from '@app/lib/error.ts';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { Dam, dam } from '@app/lib/dam.ts';
+import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { turnstile } from '@app/lib/services/turnstile.ts';
 import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
 import { ListTopicDisplays } from '@app/lib/topic/display.ts';
+import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 function toSubjectRelation(
@@ -550,6 +558,84 @@ export async function setup(app: App) {
         data: topics,
         total: count,
       };
+    },
+  );
+
+  app.post(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '创建条目讨论',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        operationId: 'createSubjectTopic',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+        }),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new topic id' }),
+          }),
+        },
+        body: t.Ref(req.TopicCreation),
+      },
+      preHandler: [requireLogin('creating a topic')],
+    },
+    async ({
+      auth,
+      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      params: { subjectID },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create topic');
+      }
+
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      const state = CommentState.Normal;
+      let display = TopicDisplay.Normal;
+      if (dam.needReview(title) || dam.needReview(text)) {
+        display = TopicDisplay.Review;
+      }
+      await rateLimit(LimitAction.Subject, auth.userID);
+
+      const now = Math.round(Date.now() / 1000);
+
+      const topic: typeof schema.chiiSubjectTopics.$inferInsert = {
+        createdAt: now,
+        updatedAt: now,
+        subjectID: subjectID,
+        uid: auth.userID,
+        title,
+        replies: 0,
+        state,
+        display,
+      };
+      const post: typeof schema.chiiSubjectPosts.$inferInsert = {
+        content: text,
+        uid: auth.userID,
+        createdAt: now,
+        state,
+        mid: 0,
+        related: 0,
+      };
+
+      await db.transaction(async (t) => {
+        const [result] = await t.insert(schema.chiiSubjectTopics).values(topic).execute();
+        post.mid = result.insertId;
+        await t.insert(schema.chiiSubjectPosts).values(post).execute();
+      });
+
+      return { id: post.mid };
     },
   );
 }
