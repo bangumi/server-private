@@ -59,6 +59,30 @@ export async function fetchSubjectByID(
   return null;
 }
 
+export async function fetchSubjectsByIDs(
+  ids: number[],
+  allowNsfw = false,
+): Promise<Map<number, res.ISubject>> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjects)
+    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
+    .where(
+      op.and(
+        op.inArray(schema.chiiSubjects.id, ids),
+        op.ne(schema.chiiSubjects.ban, 1),
+        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      ),
+    )
+    .execute();
+  const map = new Map<number, res.ISubject>();
+  for (const d of data) {
+    const subject = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
+    map.set(subject.id, subject);
+  }
+  return map;
+}
+
 export async function fetchSlimCharacterByID(
   id: number,
   allowNsfw = false,
