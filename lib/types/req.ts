@@ -4,9 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import * as examples from '@app/lib/types/examples.ts';
 
 const turnstileDescription = `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
 next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
 dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``;
 
 export type ICreateTopic = Static<typeof CreateTopic>;

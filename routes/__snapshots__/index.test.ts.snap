@@ -204,9 +204,7 @@ exports[`should build private api spec 1`] = `
             需要
             [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
 
-
             next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
 
             dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           type: string
@@ -505,34 +503,7 @@ exports[`should build private api spec 1`] = `
     GroupProfile:
       properties:
         group:
-          properties:
-            createdAt:
-              type: integer
-            description:
-              type: string
-            icon:
-              type: string
-            id:
-              type: integer
-            name:
-              type: string
-            nsfw:
-              type: boolean
-            title:
-              type: string
-            totalMembers:
-              type: integer
-          required:
-            - id
-            - name
-            - nsfw
-            - title
-            - icon
-            - description
-            - totalMembers
-            - createdAt
-          title: Group
-          type: object
+          $ref: '#/components/schemas/Group'
         inGroup:
           description: 是否已经加入小组
           type: boolean
@@ -560,40 +531,7 @@ exports[`should build private api spec 1`] = `
           type: array
         topics:
           items:
-            properties:
-              createdAt:
-                description: 发帖时间，unix time stamp in seconds
-                type: integer
-              creator:
-                $ref: '#/components/schemas/SlimUser'
-              display:
-                type: integer
-              id:
-                type: integer
-              parentID:
-                description: 小组/条目ID
-                type: integer
-              repliesCount:
-                type: integer
-              state:
-                type: integer
-              title:
-                type: string
-              updatedAt:
-                description: 最后回复时间，unix time stamp in seconds
-                type: integer
-            required:
-              - id
-              - creator
-              - title
-              - parentID
-              - createdAt
-              - updatedAt
-              - repliesCount
-              - state
-              - display
-            title: Topic
-            type: object
+            $ref: '#/components/schemas/Topic'
           type: array
         totalTopics:
           type: integer
@@ -690,15 +628,7 @@ exports[`should build private api spec 1`] = `
     Infobox:
       additionalProperties:
         items:
-          properties:
-            k:
-              type: string
-            v:
-              type: string
-          required:
-            - v
-          title: InfoboxValue
-          type: object
+          $ref: '#/components/schemas/InfoboxValue'
         type: array
       title: Infobox
       type: object
@@ -1655,6 +1585,20 @@ exports[`should build private api spec 1`] = `
         - jp
         - desc
       type: object
+    SubjectReview:
+      properties:
+        entry:
+          $ref: '#/components/schemas/SlimBlogEntry'
+        id:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - id
+        - user
+        - entry
+      title: SubjectReview
+      type: object
     SubjectStaff:
       properties:
         person:
@@ -2394,65 +2338,8 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  createdAt:
-                    type: integer
-                  creator:
-                    $ref: '#/components/schemas/SlimUser'
-                  id:
-                    type: integer
-                  parent:
-                    anyOf:
-                      - $ref: '#/components/schemas/Group'
-                      - $ref: '#/components/schemas/SlimSubject'
-                  reactions:
-                    items:
-                      $ref: '#/components/schemas/Reaction'
-                    type: array
-                  replies:
-                    items:
-                      $ref: '#/components/schemas/Reply'
-                    type: array
-                  state:
-                    type: integer
-                  text:
-                    type: string
-                  title:
-                    type: string
-                required:
-                  - id
-                  - parent
-                  - creator
-                  - title
-                  - text
-                  - state
-                  - createdAt
-                  - replies
-                  - reactions
-                title: TopicDetail
-                type: object
+                $ref: '#/components/schemas/TopicDetail'
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -2636,25 +2523,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        avatar:
-                          $ref: '#/components/schemas/Avatar'
-                        id:
-                          type: integer
-                        joinedAt:
-                          type: integer
-                        nickname:
-                          type: string
-                        username:
-                          type: string
-                      required:
-                        - id
-                        - nickname
-                        - username
-                        - avatar
-                        - joinedAt
-                      title: GroupMember
-                      type: object
+                      $ref: '#/components/schemas/GroupMember'
                     type: array
                   total:
                     type: integer
@@ -2663,27 +2532,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -2723,129 +2571,8 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  group:
-                    properties:
-                      createdAt:
-                        type: integer
-                      description:
-                        type: string
-                      icon:
-                        type: string
-                      id:
-                        type: integer
-                      name:
-                        type: string
-                      nsfw:
-                        type: boolean
-                      title:
-                        type: string
-                      totalMembers:
-                        type: integer
-                    required:
-                      - id
-                      - name
-                      - nsfw
-                      - title
-                      - icon
-                      - description
-                      - totalMembers
-                      - createdAt
-                    title: Group
-                    type: object
-                  inGroup:
-                    description: 是否已经加入小组
-                    type: boolean
-                  recentAddedMembers:
-                    items:
-                      properties:
-                        avatar:
-                          $ref: '#/components/schemas/Avatar'
-                        id:
-                          type: integer
-                        joinedAt:
-                          type: integer
-                        nickname:
-                          type: string
-                        username:
-                          type: string
-                      required:
-                        - id
-                        - nickname
-                        - username
-                        - avatar
-                        - joinedAt
-                      title: GroupMember
-                      type: object
-                    type: array
-                  topics:
-                    items:
-                      properties:
-                        createdAt:
-                          description: 发帖时间，unix time stamp in seconds
-                          type: integer
-                        creator:
-                          $ref: '#/components/schemas/SlimUser'
-                        display:
-                          type: integer
-                        id:
-                          type: integer
-                        parentID:
-                          description: 小组/条目ID
-                          type: integer
-                        repliesCount:
-                          type: integer
-                        state:
-                          type: integer
-                        title:
-                          type: string
-                        updatedAt:
-                          description: 最后回复时间，unix time stamp in seconds
-                          type: integer
-                      required:
-                        - id
-                        - creator
-                        - title
-                        - parentID
-                        - createdAt
-                        - updatedAt
-                        - repliesCount
-                        - state
-                        - display
-                      title: Topic
-                      type: object
-                    type: array
-                  totalTopics:
-                    type: integer
-                required:
-                  - recentAddedMembers
-                  - topics
-                  - inGroup
-                  - group
-                  - totalTopics
-                type: object
+                $ref: '#/components/schemas/GroupProfile'
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -3973,65 +3700,8 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  createdAt:
-                    type: integer
-                  creator:
-                    $ref: '#/components/schemas/SlimUser'
-                  id:
-                    type: integer
-                  parent:
-                    anyOf:
-                      - $ref: '#/components/schemas/Group'
-                      - $ref: '#/components/schemas/SlimSubject'
-                  reactions:
-                    items:
-                      $ref: '#/components/schemas/Reaction'
-                    type: array
-                  replies:
-                    items:
-                      $ref: '#/components/schemas/Reply'
-                    type: array
-                  state:
-                    type: integer
-                  text:
-                    type: string
-                  title:
-                    type: string
-                required:
-                  - id
-                  - parent
-                  - creator
-                  - title
-                  - text
-                  - state
-                  - createdAt
-                  - replies
-                  - reactions
-                title: TopicDetail
-                type: object
+                $ref: '#/components/schemas/TopicDetail'
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4184,211 +3854,9 @@ paths:
         '200':
           content:
             application/json:
-              example:
-                airtime:
-                  date: '2008-04-06'
-                  month: 4
-                  weekday: 7
-                  year: 2008
-                collection:
-                  '1': 622
-                  '2': 13216
-                  '3': 147
-                  '4': 224
-                  '5': 115
-                eps: 25
-                id: 8
-                images:
-                  common: https://lain.bgm.tv/pic/cover/c/c9/f0/8_wK0z3.jpg
-                  grid: https://lain.bgm.tv/pic/cover/g/c9/f0/8_wK0z3.jpg
-                  large: https://lain.bgm.tv/pic/cover/l/c9/f0/8_wK0z3.jpg
-                  medium: https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg
-                  small: https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg
-                infobox:
-                  Copyright:
-                    - v: （C）2006 SUNRISE inc./MBS
-                  中文名:
-                    - v: Code Geass 反叛的鲁路修R2
-                  人物原案:
-                    - v: CLAMP
-                  人物设定:
-                    - v: 木村貴宏
-                  其他:
-                    - v: ''
-                  其他电视台:
-                    - v: ''
-                  别名:
-                    - v: 叛逆的鲁路修R2
-                    - v: 'Code Geass: Hangyaku no Lelouch R2'
-                    - v: 叛逆的勒鲁什R2
-                    - v: 叛逆的鲁鲁修R2
-                    - v: コードギアス 反逆のルルーシュR2
-                    - v: 'Code Geass: Lelouch of the Rebellion R2'
-                    - v: 叛逆的勒路什R2
-                  动画制作:
-                    - v: サンライズ
-                  官方网站:
-                    - v: http://www.geass.jp/r2/
-                  导演:
-                    - v: 谷口悟朗
-                  摄影监督:
-                    - v: 大矢創太
-                  播放电视台:
-                    - v: 每日放送
-                  播放结束:
-                    - v: 2008年9月28日
-                  放送开始:
-                    - v: 2008年4月6日
-                  放送星期:
-                    - v: ''
-                  系列构成:
-                    - v: 大河内一楼
-                  美术监督:
-                    - v: 菱沼由典
-                  色彩设计:
-                    - v: 岩沢れい子
-                  话数:
-                    - v: '25'
-                  音乐:
-                    - v: 中川幸太郎、黒石ひとみ
-                  音乐制作:
-                    - v: AUDIO PLANNING U
-                  音响监督:
-                    - v: 浦上靖夫、井澤基
-                locked: false
-                metaTags: []
-                name: コードギアス 反逆のルルーシュR2
-                nameCN: Code Geass 反叛的鲁路修R2
-                nsfw: false
-                platform:
-                  alias: tv
-                  enableHeader: true
-                  id: 1
-                  order: 0
-                  type: TV
-                  typeCN: TV
-                  wikiTpl: TVAnime
-                rating:
-                  count:
-                    - 44
-                    - 15
-                    - 32
-                    - 66
-                    - 145
-                    - 457
-                    - 1472
-                    - 3190
-                    - 2640
-                    - 1377
-                  score: 8.19
-                  total: 9438
-                redirect: 0
-                series: false
-                seriesEntry: 0
-                summary: >-
-                  　　“东京决战”一年后，布里塔尼亚少年鲁路修在11区（原日本国）过着平凡的学生生活。但是，鲁路修与弟弟罗洛的一次出行，遇到了黑色骑士团的余党。在与少女C.C再次结成契约之后，尘封的记忆摆在了鲁路修的面前。
-                type: 2
-                volumes: 0
               schema:
-                properties:
-                  airtime:
-                    $ref: '#/components/schemas/SubjectAirtime'
-                  collection:
-                    $ref: '#/components/schemas/SubjectCollection'
-                  eps:
-                    type: integer
-                  id:
-                    type: integer
-                  images:
-                    $ref: '#/components/schemas/SubjectImages'
-                  infobox:
-                    $ref: '#/components/schemas/Infobox'
-                  locked:
-                    type: boolean
-                  metaTags:
-                    items:
-                      type: string
-                    type: array
-                  name:
-                    type: string
-                  nameCN:
-                    type: string
-                  nsfw:
-                    type: boolean
-                  platform:
-                    $ref: '#/components/schemas/SubjectPlatform'
-                  rating:
-                    $ref: '#/components/schemas/SubjectRating'
-                  redirect:
-                    type: integer
-                  series:
-                    type: boolean
-                  seriesEntry:
-                    type: integer
-                  summary:
-                    type: string
-                  type:
-                    anyOf:
-                      - enum:
-                          - 1
-                        type: number
-                      - enum:
-                          - 2
-                        type: number
-                      - enum:
-                          - 3
-                        type: number
-                      - enum:
-                          - 4
-                        type: number
-                      - enum:
-                          - 6
-                        type: number
-                  volumes:
-                    type: integer
-                required:
-                  - airtime
-                  - collection
-                  - eps
-                  - id
-                  - infobox
-                  - metaTags
-                  - locked
-                  - name
-                  - nameCN
-                  - nsfw
-                  - platform
-                  - rating
-                  - redirect
-                  - series
-                  - seriesEntry
-                  - summary
-                  - type
-                  - volumes
-                title: Subject
-                type: object
+                $ref: '#/components/schemas/Subject'
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4442,23 +3910,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        actors:
-                          items:
-                            $ref: '#/components/schemas/SlimPerson'
-                          type: array
-                        character:
-                          $ref: '#/components/schemas/SlimCharacter'
-                        order:
-                          type: integer
-                        type:
-                          type: integer
-                      required:
-                        - character
-                        - actors
-                        - type
-                        - order
-                      type: object
+                      $ref: '#/components/schemas/SubjectCharacter'
                     type: array
                   total:
                     type: integer
@@ -4467,27 +3919,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4556,22 +3987,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        comment:
-                          type: string
-                        rate:
-                          type: integer
-                        updatedAt:
-                          type: integer
-                        user:
-                          $ref: '#/components/schemas/SlimUser'
-                      required:
-                        - user
-                        - rate
-                        - comment
-                        - updatedAt
-                      title: SubjectComment
-                      type: object
+                      $ref: '#/components/schemas/SubjectComment'
                     type: array
                   total:
                     type: integer
@@ -4580,27 +3996,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4675,67 +4070,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        airdate:
-                          type: string
-                        comment:
-                          type: integer
-                        desc:
-                          type: string
-                        disc:
-                          type: integer
-                        duration:
-                          type: string
-                        id:
-                          type: integer
-                        lock:
-                          type: boolean
-                        name:
-                          type: string
-                        nameCN:
-                          type: string
-                        sort:
-                          type: number
-                        subjectID:
-                          type: integer
-                        type:
-                          anyOf:
-                            - enum:
-                                - 0
-                              type: number
-                            - enum:
-                                - 1
-                              type: number
-                            - enum:
-                                - 2
-                              type: number
-                            - enum:
-                                - 3
-                              type: number
-                            - enum:
-                                - 4
-                              type: number
-                            - enum:
-                                - 5
-                              type: number
-                            - enum:
-                                - 6
-                              type: number
-                      required:
-                        - id
-                        - subjectID
-                        - sort
-                        - type
-                        - disc
-                        - name
-                        - nameCN
-                        - duration
-                        - airdate
-                        - comment
-                        - desc
-                        - lock
-                      title: Episode
-                      type: object
+                      $ref: '#/components/schemas/Episode'
                     type: array
                   total:
                     type: integer
@@ -4744,27 +4079,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4840,18 +4154,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        order:
-                          type: integer
-                        relation:
-                          $ref: '#/components/schemas/SubjectRelationType'
-                        subject:
-                          $ref: '#/components/schemas/SlimSubject'
-                      required:
-                        - subject
-                        - relation
-                        - order
-                      type: object
+                      $ref: '#/components/schemas/SubjectRelation'
                     type: array
                   total:
                     type: integer
@@ -4860,27 +4163,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4928,19 +4210,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        entry:
-                          $ref: '#/components/schemas/SlimBlogEntry'
-                        id:
-                          type: integer
-                        user:
-                          $ref: '#/components/schemas/SlimUser'
-                      required:
-                        - id
-                        - user
-                        - entry
-                      title: SubjectReview
-                      type: object
+                      $ref: '#/components/schemas/SubjectReview'
                     type: array
                   total:
                     type: integer
@@ -4949,27 +4219,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -5023,15 +4272,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        person:
-                          $ref: '#/components/schemas/SlimPerson'
-                        position:
-                          $ref: '#/components/schemas/SubjectStaffPosition'
-                      required:
-                        - person
-                        - position
-                      type: object
+                      $ref: '#/components/schemas/SubjectStaff'
                     type: array
                   total:
                     type: integer
@@ -5040,27 +4281,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -5108,40 +4328,7 @@ paths:
                 properties:
                   data:
                     items:
-                      properties:
-                        createdAt:
-                          description: 发帖时间，unix time stamp in seconds
-                          type: integer
-                        creator:
-                          $ref: '#/components/schemas/SlimUser'
-                        display:
-                          type: integer
-                        id:
-                          type: integer
-                        parentID:
-                          description: 小组/条目ID
-                          type: integer
-                        repliesCount:
-                          type: integer
-                        state:
-                          type: integer
-                        title:
-                          type: string
-                        updatedAt:
-                          description: 最后回复时间，unix time stamp in seconds
-                          type: integer
-                      required:
-                        - id
-                        - creator
-                        - title
-                        - parentID
-                        - createdAt
-                        - updatedAt
-                        - repliesCount
-                        - state
-                        - display
-                      title: Topic
-                      type: object
+                      $ref: '#/components/schemas/Topic'
                     type: array
                   total:
                     type: integer
@@ -5150,27 +4337,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              schema:
-                description: default error response type
-                properties:
-                  code:
-                    type: string
-                  error:
-                    type: string
-                  message:
-                    type: string
-                  statusCode:
-                    type: integer
-                required:
-                  - code
-                  - error
-                  - message
-                  - statusCode
-                type: object
-          description: default error response type
         '500':
           content:
             application/json:
@@ -5208,9 +4374,7 @@ paths:
                     需要
                     [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
 
-
                     next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
 
                     dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
                   type: string

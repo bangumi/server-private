@@ -119,7 +119,7 @@ export const InfoboxValue = t.Object(
 );
 
 export type IInfobox = Static<typeof Infobox>;
-export const Infobox = t.Record(t.String(), t.Array(InfoboxValue), {
+export const Infobox = t.Record(t.String(), t.Array(t.Ref(InfoboxValue)), {
   $id: 'Infobox',
   title: 'Infobox',
 });

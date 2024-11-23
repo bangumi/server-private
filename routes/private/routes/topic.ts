@@ -26,9 +26,9 @@ import type { App } from '@app/routes/type.ts';
 const GroupProfile = t.Object(
   {
     recentAddedMembers: t.Array(res.GroupMember),
-    topics: t.Array(res.Topic),
+    topics: t.Array(t.Ref(res.Topic)),
     inGroup: t.Boolean({ description: '是否已经加入小组' }),
-    group: res.Group,
+    group: t.Ref(res.Group),
     totalTopics: t.Integer(),
   },
   { $id: 'GroupProfile' },
@@ -53,8 +53,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
         }),
         response: {
-          200: GroupProfile,
-          404: res.Error,
+          200: t.Ref(GroupProfile),
         },
       },
     },
@@ -95,8 +94,7 @@ export async function setup(app: App) {
           id: t.Integer({ examples: [371602] }),
         }),
         response: {
-          200: res.TopicDetail,
-          404: res.Error,
+          200: t.Ref(res.TopicDetail),
         },
       },
     },
@@ -130,8 +128,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: res.Paged(res.GroupMember),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.GroupMember)),
         },
       },
     },

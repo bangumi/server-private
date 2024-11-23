@@ -70,8 +70,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         response: {
-          200: res.Subject,
-          404: res.Error,
+          200: t.Ref(res.Subject),
         },
       },
     },
@@ -117,8 +116,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Episode),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.Episode)),
         },
       },
     },
@@ -172,8 +170,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.SubjectRelation),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.SubjectRelation)),
         },
       },
     },
@@ -245,8 +242,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.SubjectCharacter),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.SubjectCharacter)),
         },
       },
     },
@@ -324,8 +320,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.SubjectStaff),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.SubjectStaff)),
         },
       },
     },
@@ -387,8 +382,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.SubjectComment),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.SubjectComment)),
         },
       },
     },
@@ -446,8 +440,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.SubjectReview),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.SubjectReview)),
         },
       },
     },
@@ -511,8 +504,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Topic),
-          404: res.Error,
+          200: res.Paged(t.Ref(res.Topic)),
         },
       },
     },
@@ -638,8 +630,7 @@ export async function setup(app: App) {
           topicID: t.Integer({ examples: [371602], minimum: 0 }),
         }),
         response: {
-          200: res.TopicDetail,
-          404: res.Error,
+          200: t.Ref(res.TopicDetail),
         },
       },
     },
