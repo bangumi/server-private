@@ -509,25 +509,7 @@ exports[`should build private api spec 1`] = `
           type: boolean
         recentAddedMembers:
           items:
-            properties:
-              avatar:
-                $ref: '#/components/schemas/Avatar'
-              id:
-                type: integer
-              joinedAt:
-                type: integer
-              nickname:
-                type: string
-              username:
-                type: string
-            required:
-              - id
-              - nickname
-              - username
-              - avatar
-              - joinedAt
-            title: GroupMember
-            type: object
+            $ref: '#/components/schemas/GroupMember'
           type: array
         topics:
           items:

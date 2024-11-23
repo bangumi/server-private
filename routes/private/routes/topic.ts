@@ -25,7 +25,7 @@ import type { App } from '@app/routes/type.ts';
 
 const GroupProfile = t.Object(
   {
-    recentAddedMembers: t.Array(res.GroupMember),
+    recentAddedMembers: t.Array(t.Ref(res.GroupMember)),
     topics: t.Array(t.Ref(res.Topic)),
     inGroup: t.Boolean({ description: '是否已经加入小组' }),
     group: t.Ref(res.Group),
