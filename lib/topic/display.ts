@@ -22,13 +22,15 @@ export function ListTopicDisplays(u: IAuth): TopicDisplay[] {
 
 export function CanViewTopicContent(
   u: IAuth,
-  topic: { state: number; display: number; creatorID: number },
+  state: number,
+  display: number,
+  creatorID: number,
 ): boolean {
   if (!u.login) {
     // 未登录用户只能看到正常帖子
     return (
-      topic.display === TopicDisplay.Normal &&
-      (topic.state === CommentState.Normal || topic.state == CommentState.AdminReopen)
+      display === TopicDisplay.Normal &&
+      (state === CommentState.Normal || state == CommentState.AdminReopen)
     );
   }
 
@@ -39,34 +41,34 @@ export function CanViewTopicContent(
     return true;
   }
 
-  if (u.userID == topic.creatorID && topic.display == TopicDisplay.Review) {
+  if (u.userID == creatorID && display == TopicDisplay.Review) {
     return true;
   }
 
   // 非管理员看不到删除和review的帖子
-  if (topic.display != TopicDisplay.Normal) {
+  if (display != TopicDisplay.Normal) {
     return false;
   }
 
   // 注册时间决定
-  if (topic.state === CommentState.AdminCloseTopic) {
+  if (state === CommentState.AdminCloseTopic) {
     return CanViewClosedTopic(u);
   }
 
-  if (topic.state === CommentState.AdminDelete) {
+  if (state === CommentState.AdminDelete) {
     return false;
   }
 
-  if (topic.state === CommentState.UserDelete) {
+  if (state === CommentState.UserDelete) {
     return CanViewDeleteTopic(u);
   }
 
   return (
-    topic.state === CommentState.Normal ||
-    topic.state === CommentState.AdminReopen ||
-    topic.state === CommentState.AdminMerge ||
-    topic.state === CommentState.AdminPin ||
-    topic.state === CommentState.AdminSilentTopic
+    state === CommentState.Normal ||
+    state === CommentState.AdminReopen ||
+    state === CommentState.AdminMerge ||
+    state === CommentState.AdminPin ||
+    state === CommentState.AdminSilentTopic
   );
 }
 
@@ -76,6 +78,22 @@ function CanViewDeleteTopic(a: IAuth): boolean {
 
 function CanViewClosedTopic(a: IAuth): boolean {
   return DateTime.now().toUnixInteger() - a.regTime > CanViewStateClosedTopic;
+}
+
+export function CanViewTopicReply(state: number): boolean {
+  switch (state) {
+    case CommentState.AdminDelete:
+    case CommentState.UserDelete:
+    case CommentState.AdminReopen:
+    case CommentState.AdminCloseTopic:
+    case CommentState.AdminSilentTopic: {
+      return false;
+    }
+
+    default: {
+      return true;
+    }
+  }
 }
 
 export function filterReply(x: IReply): IReply {

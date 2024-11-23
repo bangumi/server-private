@@ -29,33 +29,6 @@ const expectedGroupTopic = {
   title: 'tes',
 };
 
-const expectedSubjectTopic = {
-  id: 1,
-  creator: {
-    id: 2,
-    joinedAt: 0,
-    username: '2',
-    sign: 'sing 2',
-    nickname: 'nickname 2',
-    avatar: {
-      small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
-      medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
-      large: 'https://lain.bgm.tv/pic/user/l/icon.jpg',
-    },
-  },
-  title: '拿这个来测试',
-  parentID: 1,
-  createdAt: 1216020847,
-};
-
-beforeEach(async () => {
-  await orm.SubjectTopicRepo.update({ id: 3 }, { title: 'new topic title 2' });
-  const topicPost = await orm.SubjectPostRepo.findOneBy({ topicID: 3 });
-  if (topicPost) {
-    await orm.SubjectPostRepo.update({ id: topicPost.id }, { content: 'new contents 2' });
-  }
-});
-
 describe('group topics', () => {
   test('should failed on not found group', async () => {
     const app = await createTestServer();
@@ -246,90 +219,6 @@ describe('edit group topic', () => {
 
     const res = await app.inject({
       url: '/groups/-/topics/371602',
-      method: 'put',
-      payload: {
-        title: 'new topic title',
-        text: 'new contents',
-        'cf-turnstile-response': 'fake-response',
-      },
-    });
-
-    expect(res.json()).toMatchInlineSnapshot(`
-      Object {
-        "code": "NOT_ALLOWED",
-        "error": "Unauthorized",
-        "message": "you don't have permission to edit this topic",
-        "statusCode": 401,
-      }
-    `);
-    expect(res.statusCode).toBe(401);
-  });
-});
-
-describe('edit subjec topic', () => {
-  test('should edit topic', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 2,
-      },
-    });
-
-    await app.register(setup);
-
-    {
-      const res = await app.inject({
-        url: '/subjects/-/topics/3',
-        method: 'put',
-        payload: {
-          title: 'new topic title',
-          text: 'new contents',
-          'cf-turnstile-response': 'fake-response',
-        },
-      });
-
-      expect(res.statusCode).toBe(200);
-
-      const topic = await fetchTopicDetail(emptyAuth(), TopicParentType.Subject, 3);
-
-      expect(topic?.title).toBe('new topic title');
-      expect(topic?.text).toBe('new contents');
-    }
-
-    {
-      const res = await app.inject({
-        url: '/subjects/-/topics/3',
-        method: 'put',
-        payload: {
-          title: 'new topic title 2',
-          text: 'new contents 2',
-          'cf-turnstile-response': 'fake-response',
-        },
-      });
-
-      expect(res.statusCode).toBe(200);
-
-      const topic = await fetchTopicDetail(emptyAuth(), TopicParentType.Subject, 3);
-
-      expect(topic?.title).toBe('new topic title 2');
-      expect(topic?.text).toBe('new contents 2');
-    }
-  });
-
-  test('should not edited topic by non-owner', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 1,
-      },
-    });
-
-    await app.register(setup);
-
-    const res = await app.inject({
-      url: '/subjects/-/topics/3',
       method: 'put',
       payload: {
         title: 'new topic title',

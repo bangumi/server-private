@@ -426,5 +426,32 @@ export function toSubjectTopic(topic: orm.ISubjectTopic, user: orm.IUser): res.I
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
     repliesCount: topic.replies,
+    state: topic.state,
+    display: topic.display,
+  };
+}
+
+export function toSubjectTopicReply(reply: orm.ISubjectPost, user: orm.IUser): res.IReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creator: toSlimUser(user),
+    replies: [],
+    reactions: [],
+    isFriend: false,
+  };
+}
+
+export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser): res.ISubReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creator: toSlimUser(user),
+    reactions: [],
+    isFriend: false,
   };
 }

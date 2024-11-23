@@ -423,13 +423,24 @@ Object {
         "sign": "sing 142527",
         "username": "142527",
       },
+      "display": 1,
       "id": 6873,
       "parentID": 12,
       "repliesCount": 8,
+      "state": 0,
       "title": "这条目简介也太剧透了吧",
       "updatedAt": 1481098545,
     },
   ],
   "total": 1,
+}
+`;
+
+exports[`subject > should not edited topic by non-owner 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to update topic",
+  "statusCode": 401,
 }
 `;

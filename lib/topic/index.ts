@@ -88,7 +88,7 @@ export async function fetchTopicDetail(
     return null;
   }
 
-  if (!CanViewTopicContent(auth, topic)) {
+  if (!CanViewTopicContent(auth, topic.state, topic.display, topic.creatorID)) {
     return null;
   }
 
@@ -166,6 +166,8 @@ export interface ITopic {
   createdAt: number;
   title: string;
   repliesCount: number;
+  state: number;
+  display: number;
 }
 
 export async function fetchTopicList(
@@ -218,6 +220,8 @@ export async function fetchTopicList(
         createdAt: x.createdAt,
         updatedAt: x.updatedAt,
         repliesCount: x.replies,
+        state: x.state,
+        display: x.display,
       };
     }),
   ];

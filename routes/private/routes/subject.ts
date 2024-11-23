@@ -6,16 +6,20 @@ import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
+import { fetchTopicReactions } from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
-import { ListTopicDisplays } from '@app/lib/topic/display.ts';
+import {
+  CanViewTopicContent,
+  CanViewTopicReply,
+  ListTopicDisplays,
+} from '@app/lib/topic/display.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { formatErrors } from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -66,10 +70,8 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         response: {
-          200: t.Ref(res.Subject),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          200: res.Subject,
+          404: res.Error,
         },
       },
     },
@@ -115,10 +117,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.Episode)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          200: res.Paged(res.Episode),
+          404: res.Error,
         },
       },
     },
@@ -172,10 +172,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.SubjectRelation)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          200: res.Paged(res.SubjectRelation),
+          404: res.Error,
         },
       },
     },
@@ -247,10 +245,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.SubjectCharacter)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          200: res.Paged(res.SubjectCharacter),
+          404: res.Error,
         },
       },
     },
@@ -328,10 +324,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.SubjectStaff)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          200: res.Paged(res.SubjectStaff),
+          404: res.Error,
         },
       },
     },
@@ -394,9 +388,7 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(res.SubjectComment),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          404: res.Error,
         },
       },
     },
@@ -455,9 +447,7 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(res.SubjectReview),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          404: res.Error,
         },
       },
     },
@@ -521,10 +511,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.Topic)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
+          200: res.Paged(res.Topic),
+          404: res.Error,
         },
       },
     },
@@ -577,7 +565,7 @@ export async function setup(app: App) {
             id: t.Integer({ description: 'new topic id' }),
           }),
         },
-        body: t.Ref(req.TopicCreation),
+        body: req.CreateTopic,
       },
       preHandler: [requireLogin('creating a topic')],
     },
@@ -586,7 +574,7 @@ export async function setup(app: App) {
       body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
       params: { subjectID },
     }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+      if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
         throw new CaptchaError();
       }
       if (!Dam.allCharacterPrintable(text)) {
@@ -628,7 +616,6 @@ export async function setup(app: App) {
         mid: 0,
         related: 0,
       };
-
       await db.transaction(async (t) => {
         const [result] = await t.insert(schema.chiiSubjectTopics).values(topic).execute();
         post.mid = result.insertId;
@@ -636,6 +623,138 @@ export async function setup(app: App) {
       });
 
       return { id: post.mid };
+    },
+  );
+
+  app.get(
+    '/subjects/-/topics/:topicID',
+    {
+      schema: {
+        summary: '获取条目讨论',
+        operationId: 'getSubjectTopic',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602], minimum: 0 }),
+        }),
+        response: {
+          200: res.TopicDetail,
+          404: res.Error,
+        },
+      },
+    },
+    async ({ auth, params: { topicID } }) => {
+      const topic = await fetcher.fetchSubjectTopicByID(topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      const subject = await fetcher.fetchSlimSubjectByID(topic.parentID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${topic.parentID}`);
+      }
+      if (!CanViewTopicContent(auth, topic.state, topic.display, topic.creator.id)) {
+        throw new NotAllowedError('view topic');
+      }
+
+      const replies = await fetcher.fetchSubjectTopicRepliesByTopicID(topicID);
+      const top = replies.shift();
+      if (!top) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      const friends = await fetcher.fetchFriendsByUserID(auth.userID);
+      const friendIDs = new Set(friends.map((f) => f.user.id));
+      const reactions = await fetchTopicReactions(auth.userID, auth.userID);
+
+      for (const reply of replies) {
+        if (!CanViewTopicReply(reply.state)) {
+          reply.text = '';
+        }
+        if (reply.creator.id in friendIDs) {
+          reply.isFriend = true;
+        }
+        reply.reactions = reactions[reply.creator.id] ?? [];
+        for (const subReply of reply.replies) {
+          if (!CanViewTopicReply(subReply.state)) {
+            subReply.text = '';
+          }
+          if (subReply.creator.id in friendIDs) {
+            subReply.isFriend = true;
+          }
+          subReply.reactions = reactions[subReply.creator.id] ?? [];
+        }
+      }
+      return {
+        ...topic,
+        parent: subject,
+        text: top.text,
+        replies,
+        reactions: reactions[top.id] ?? [],
+      };
+    },
+  );
+
+  app.put(
+    '/subjects/-/topics/:topicID',
+    {
+      schema: {
+        summary: '编辑自己创建的条目讨论',
+        operationId: 'updateSubjectTopic',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602], minimum: 0 }),
+        }),
+        body: req.UpdateTopic,
+      },
+      preHandler: [requireLogin('updating a topic')],
+    },
+    async ({ auth, body: { text, title }, params: { topicID } }) => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const topic = await fetcher.fetchSubjectTopicByID(topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+
+      if (
+        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
+          topic.state,
+        )
+      ) {
+        throw new NotAllowedError('edit this topic');
+      }
+      if (topic.creator.id !== auth.userID) {
+        throw new NotAllowedError('update topic');
+      }
+
+      let display = topic.display;
+      if (dam.needReview(title) || dam.needReview(text)) {
+        if (display === TopicDisplay.Normal) {
+          display = TopicDisplay.Review;
+        } else {
+          return {};
+        }
+      }
+
+      await db.transaction(async (t) => {
+        await t
+          .update(schema.chiiSubjectTopics)
+          .set({ title, display })
+          .where(op.eq(schema.chiiSubjectTopics.id, topicID))
+          .execute();
+        await t
+          .update(schema.chiiSubjectPosts)
+          .set({ content: text })
+          .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
+          .execute();
+      });
+
+      return {};
     },
   );
 }

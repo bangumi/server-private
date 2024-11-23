@@ -1,4 +1,4 @@
-import { stage } from '@app/lib/config.ts';
+import { stage, testing } from '@app/lib/config.ts';
 import config from '@app/lib/config.ts';
 
 import { BaseExternalHttpSrv } from './base.ts';
@@ -11,7 +11,7 @@ const VerifyURL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
  * @see https://developers.cloudflare.com/turnstile/frequently-asked-questions/#are-there-sitekeys-and-secret-keys-that-can-be-used-for-testing
  */
 export function createTurnstileDriver(secretKey: string) {
-  if (stage) {
+  if (stage || testing) {
     return {
       verify(): Promise<boolean> {
         return Promise.resolve(true);

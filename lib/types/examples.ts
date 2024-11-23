@@ -195,7 +195,7 @@ export const subject = {
   volumes: 0,
 };
 
-export const topicCreation = {
+export const createTopic = {
   title: 'topic title',
   content: 'topic content',
   'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
