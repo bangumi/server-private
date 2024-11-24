@@ -230,13 +230,6 @@ Object {
 }
 `;
 
-exports[`person > should get person relations 1`] = `
-Object {
-  "data": Array [],
-  "total": 0,
-}
-`;
-
 exports[`person > should get person works 1`] = `
 Object {
   "data": Array [

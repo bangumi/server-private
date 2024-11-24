@@ -455,3 +455,10 @@ export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser)
     isFriend: false,
   };
 }
+
+export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
+  return {
+    user: toSlimUser(user),
+    createdAt: collect.createdAt,
+  };
+}
