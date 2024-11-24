@@ -353,3 +353,10 @@ export function toCharacterSubjectRelation(
     type: relation.type,
   };
 }
+
+export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
+  return {
+    user: toSlimUser(user),
+    createdAt: collect.createdAt,
+  };
+}
