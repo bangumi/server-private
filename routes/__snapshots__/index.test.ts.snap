@@ -1795,6 +1795,16 @@ exports[`should build private api spec 1`] = `
         - bio
       title: User
       type: object
+    UserCharacterCollection:
+      properties:
+        character:
+          $ref: '#/components/schemas/Character'
+        createdAt:
+          type: integer
+      required:
+        - character
+        - createdAt
+      type: object
     UserCollectionsCharacterSummary:
       properties:
         count:
@@ -1903,6 +1913,16 @@ exports[`should build private api spec 1`] = `
         - person
         - index
       type: object
+    UserIndexCollection:
+      properties:
+        createdAt:
+          type: integer
+        index:
+          $ref: '#/components/schemas/Index'
+      required:
+        - index
+        - createdAt
+      type: object
     UserIndexesSummary:
       properties:
         count:
@@ -1914,6 +1934,16 @@ exports[`should build private api spec 1`] = `
       required:
         - count
         - detail
+      type: object
+    UserPersonCollection:
+      properties:
+        createdAt:
+          type: integer
+        person:
+          $ref: '#/components/schemas/Person'
+      required:
+        - person
+        - createdAt
       type: object
     UserSubjectCollection:
       properties:
@@ -4657,19 +4687,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
           description: Default Response
-        '404':
-          content:
-            application/json:
-              examples:
-                NOT_FOUND:
-                  value:
-                    code: NOT_FOUND
-                    error: Not Found
-                    message: user not found
-                    statusCode: 404
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4724,6 +4741,42 @@ paths:
       summary: 获取用户角色收藏
       tags:
         - user
+  /p1/users/{username}/collections/characters/{characterID}:
+    get:
+      operationId: getUserCharacterCollectionByCharacterID
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCharacterCollection'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户单个角色收藏
+      tags:
+        - user
   /p1/users/{username}/collections/indexes:
     get:
       operationId: getUserIndexCollections
@@ -4765,6 +4818,42 @@ paths:
       summary: 获取用户目录收藏
       tags:
         - user
+  /p1/users/{username}/collections/indexes/{indexID}:
+    get:
+      operationId: getUserIndexCollectionByIndexID
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+        - in: path
+          name: indexID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserIndexCollection'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户单个目录收藏
+      tags:
+        - user
   /p1/users/{username}/collections/persons:
     get:
       operationId: getUserPersonCollections
@@ -4804,6 +4893,42 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取用户人物收藏
+      tags:
+        - user
+  /p1/users/{username}/collections/persons/{personID}:
+    get:
+      operationId: getUserPersonCollectionByPersonID
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+        - in: path
+          name: personID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPersonCollection'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户单个人物收藏
       tags:
         - user
   /p1/users/{username}/collections/subjects:
@@ -4899,19 +5024,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              examples:
-                NOT_FOUND:
-                  value:
-                    code: NOT_FOUND
-                    error: Not Found
-                    message: user not found
-                    statusCode: 404
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4923,6 +5035,42 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取用户条目收藏
+      tags:
+        - user
+  /p1/users/{username}/collections/subjects/{subjectID}:
+    get:
+      operationId: getUserSubjectCollectionBySubjectID
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSubjectCollection'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户单个条目收藏
       tags:
         - user
   /p1/users/{username}/collections/summary:
@@ -4942,19 +5090,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserCollectionsSummary'
           description: Default Response
-        '404':
-          content:
-            application/json:
-              examples:
-                NOT_FOUND:
-                  value:
-                    code: NOT_FOUND
-                    error: Not Found
-                    message: user not found
-                    statusCode: 404
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
         '500':
           content:
             application/json:
@@ -5011,19 +5146,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '404':
-          content:
-            application/json:
-              examples:
-                NOT_FOUND:
-                  value:
-                    code: NOT_FOUND
-                    error: Not Found
-                    message: user not found
-                    statusCode: 404
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
         '500':
           content:
             application/json:
