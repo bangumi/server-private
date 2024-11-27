@@ -40,6 +40,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectReview);
   app.addSchema(res.SubjectStaff);
   app.addSchema(res.SubjectStaffPosition);
+  app.addSchema(res.SubjectTag);
   app.addSchema(res.User);
   app.addSchema(res.Topic);
   app.addSchema(res.SubReply);
