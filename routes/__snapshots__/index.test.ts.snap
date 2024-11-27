@@ -1208,6 +1208,10 @@ exports[`should build private api spec 1`] = `
           type: integer
         summary:
           type: string
+        tags:
+          items:
+            $ref: '#/components/schemas/SubjectTag'
+          type: array
         type:
           anyOf:
             - enum:
@@ -1246,6 +1250,7 @@ exports[`should build private api spec 1`] = `
         - summary
         - type
         - volumes
+        - tags
       title: Subject
       type: object
     SubjectAirtime:
@@ -1543,6 +1548,17 @@ exports[`should build private api spec 1`] = `
         - en
         - cn
         - jp
+      type: object
+    SubjectTag:
+      properties:
+        count:
+          type: integer
+        name:
+          type: string
+      required:
+        - name
+        - count
+      title: SubjectTag
       type: object
     SubjectWikiInfo:
       properties:
