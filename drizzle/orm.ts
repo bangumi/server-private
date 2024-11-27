@@ -22,5 +22,5 @@ export type IPersonSubject = typeof schema.chiiPersonSubjects.$inferSelect;
 export type IPersonCollect = typeof schema.chiiPersonCollects.$inferSelect;
 //export type IPersonRelation = typeof schema.chiiPersonRelations.$inferSelect;
 
-export type IIndex = typeof schema.chiiIndex.$inferSelect;
+export type IIndex = typeof schema.chiiIndexes.$inferSelect;
 export type IIndexCollect = typeof schema.chiiIndexCollects.$inferSelect;

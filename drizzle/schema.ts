@@ -320,7 +320,7 @@ export const chiiGroupTopics = mysqlTable(
   },
 );
 
-export const chiiIndex = mysqlTable(
+export const chiiIndexes = mysqlTable(
   'chii_index',
   {
     id: mediumint('idx_id').autoincrement().notNull(),
