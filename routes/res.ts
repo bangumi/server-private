@@ -6,6 +6,15 @@ export function addSchemas(app: App) {
   app.addSchema(res.Avatar);
   app.addSchema(res.BlogEntry);
   app.addSchema(res.Character);
+  app.addSchema(res.SlimCharacter);
+  app.addSchema(res.Person);
+  app.addSchema(res.SlimPerson);
+  app.addSchema(res.Index);
+  app.addSchema(res.SlimIndex);
+  app.addSchema(res.SubjectRelation);
+  app.addSchema(res.SubjectCharacter);
+  app.addSchema(res.SubjectStaff);
+  app.addSchema(res.SubjectTag);
   app.addSchema(res.CharacterRelation);
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);
