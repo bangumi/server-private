@@ -27,6 +27,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectRelation);
   app.addSchema(res.SubjectCharacter);
   app.addSchema(res.SubjectStaff);
+  app.addSchema(res.SubjectTag);
   app.addSchema(res.CharacterRelation);
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);

@@ -1,5 +1,6 @@
 import type { WikiMap } from '@bgm38/wiki';
 import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
+import * as php from '@trim21/php-serialize';
 
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
@@ -11,6 +12,24 @@ import {
   findSubjectRelationType,
   findSubjectStaffPosition,
 } from '@app/vendor';
+
+export function splitTags(tags: string): string[] {
+  return tags
+    .split(' ')
+    .map((x) => x.trim())
+    .filter((x) => x !== '');
+}
+
+export function toSubjectTags(tags: string): res.ISubjectTag[] {
+  if (!tags) {
+    return [];
+  }
+  const tagList = php.parse(tags) as { tag_name: string; result: string }[];
+  return tagList
+    .filter((x) => x.tag_name !== undefined)
+    .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
+    .filter((x) => !Number.isNaN(x.count));
+}
 
 // for backward compatibility
 export function oldToUser(user: ormold.IUser): res.ISlimUser {
@@ -192,6 +211,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     summary: subject.summary,
     type: subject.typeID,
     volumes: subject.volumes,
+    tags: toSubjectTags(fields.fieldTags),
   };
 }
 

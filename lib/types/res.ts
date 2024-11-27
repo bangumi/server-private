@@ -98,6 +98,15 @@ export const SubjectAirtime = t.Object(
   { $id: 'SubjectAirtime', title: 'SubjectAirtime' },
 );
 
+export type ISubjectTag = Static<typeof SubjectTag>;
+export const SubjectTag = t.Object(
+  {
+    name: t.String(),
+    count: t.Integer(),
+  },
+  { $id: 'SubjectTag', title: 'SubjectTag' },
+);
+
 export type ISubjectCollection = Static<typeof SubjectCollection>;
 export const SubjectCollection = t.Record(t.String(), t.Integer(), {
   $id: 'SubjectCollection',
@@ -164,6 +173,7 @@ export const Subject = t.Object(
     summary: t.String(),
     type: t.Enum(SubjectType),
     volumes: t.Integer(),
+    tags: t.Array(t.Ref(SubjectTag)),
   },
   {
     $id: 'Subject',
