@@ -337,6 +337,88 @@ Object {
     "seriesEntry": 0,
     "summary": "　　以细腻的画风、搞笑的动作和刺激的战斗被人们所熟知的“合金弹头系列”在NDS 平台推出正统续作！虽然本系列的前几部作品最早都是作为街机游戏而推出的，不过这一次的“7”不但先推出NDS版，而且是独占！日前SNK playmore宣布了这款游戏，目前发售日定为2008年3月。据称，本作中将搭载任务模式，在关卡中不断完成教官所下达的任务，提升军衔。
 　　游戏依然保持了系列一贯的风格，战斗的场面也没有因为是掌机游戏而进行削减，游戏依然是射击、跳跃和手雷三个按键，虽然是NDS游戏，不过本作却并不对应触摸屏，游戏的画面显示在上屏幕，而下屏幕则用来显示地图。在TGS 2007（Tokyo Game Show）大会上SNK放出了《合金弹头7》的试玩版。这代产品沿袭了前代风格，战斗的对象似乎也没有多大变化，没有分支路线，不过游戏性和关卡设计却不比前几代差，关卡数也有7关，另外还增加了一种武器。",
+    "tags": Array [
+      Object {
+        "count": 52,
+        "name": "NDS",
+      },
+      Object {
+        "count": 31,
+        "name": "合金弹头",
+      },
+      Object {
+        "count": 15,
+        "name": "ACT",
+      },
+      Object {
+        "count": 15,
+        "name": "SNK",
+      },
+      Object {
+        "count": 6,
+        "name": "Metal_Slug_7",
+      },
+      Object {
+        "count": 4,
+        "name": "STG",
+      },
+      Object {
+        "count": 2,
+        "name": "移植",
+      },
+      Object {
+        "count": 2,
+        "name": "诚意不足",
+      },
+      Object {
+        "count": 2,
+        "name": "RNG",
+      },
+      Object {
+        "count": 2,
+        "name": "2008",
+      },
+      Object {
+        "count": 1,
+        "name": "普通游戏",
+      },
+      Object {
+        "count": 1,
+        "name": "PC",
+      },
+      Object {
+        "count": 1,
+        "name": "未评分",
+      },
+      Object {
+        "count": 1,
+        "name": "中型",
+      },
+      Object {
+        "count": 1,
+        "name": "六星",
+      },
+      Object {
+        "count": 1,
+        "name": "动作",
+      },
+      Object {
+        "count": 1,
+        "name": "童年",
+      },
+      Object {
+        "count": 1,
+        "name": "汉化",
+      },
+      Object {
+        "count": 1,
+        "name": "横版射击",
+      },
+      Object {
+        "count": 1,
+        "name": "暴力",
+      },
+    ],
     "type": 4,
     "volumes": 0,
   },
