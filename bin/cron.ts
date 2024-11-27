@@ -1,5 +1,6 @@
 import { CronJob } from 'cron';
 
+import { logger } from '@app/lib/logger';
 import { heartbeat } from '@app/tasks/heartbeat';
 import { trendingSubjects } from '@app/tasks/trending';
 
@@ -14,12 +15,13 @@ import { trendingSubjects } from '@app/tasks/trending';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 async function main() {
-  const jobs = [
-    new CronJob('*/10 * * * * *', heartbeat),
-    new CronJob('0 0 19 * * *', trendingSubjects),
-  ];
+  const jobs: Record<string, CronJob> = {
+    heartbeat: new CronJob('*/10 * * * * *', heartbeat),
+    trendingSubjects: new CronJob('0 0 19 * * *', trendingSubjects),
+  };
 
-  for (const job of jobs) {
+  for (const [name, job] of Object.entries(jobs)) {
+    logger.info(`Cronjob: ${name} @ ${job.cronTime.source}`);
     job.start();
   }
 }
