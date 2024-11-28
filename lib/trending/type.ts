@@ -10,13 +10,16 @@ export enum TrendingPeriod {
   Month = 'month',
 }
 
-export function getTrendingPeriodDuration(period: TrendingPeriod): number {
-  const now = Date.now();
+export function getTrendingDateline(period: TrendingPeriod): number {
+  const now = Math.round(Date.now() / 1000);
   const duration = {
     all: now,
     day: 86400,
     week: 86400 * 7,
     month: 86400 * 30,
   }[period];
-  return duration;
+  if (duration === undefined) {
+    return 0;
+  }
+  return now - duration;
 }
