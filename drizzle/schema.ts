@@ -366,7 +366,7 @@ export const chiiIndexComments = mysqlTable(
   'chii_index_comments',
   {
     id: mediumint('idx_pst_id').autoincrement().notNull(),
-    mid: mediumint('idx_pst_mid').notNull(),
+    mid: mediumint('idx_pst_mid').notNull(), // index id
     uid: mediumint('idx_pst_uid').notNull(),
     related: mediumint('idx_pst_related').notNull(),
     createdAt: int('idx_pst_dateline').notNull(),
@@ -662,7 +662,7 @@ export const chiiPersonCollects = mysqlTable(
   {
     id: mediumint('prsn_clt_id').autoincrement().notNull(),
     cat: mysqlEnum('prsn_clt_cat', ['prsn', 'crt']).notNull(),
-    mid: mediumint('prsn_clt_mid').notNull(),
+    mid: mediumint('prsn_clt_mid').notNull(), // person id or character id
     uid: mediumint('prsn_clt_uid').notNull(),
     createdAt: int('prsn_clt_dateline').notNull(),
   },
@@ -990,7 +990,7 @@ export const chiiSubjectRelatedBlogs = mysqlTable(
     id: mediumint('srb_id').autoincrement().notNull(),
     uid: mediumint('srb_uid').notNull(),
     subjectID: mediumint('srb_subject_id').notNull(),
-    entryID: mediumint('srb_entry_id').notNull(),
+    entryID: mediumint('srb_entry_id').notNull(), // blog etry id
     spoiler: mediumint('srb_spoiler').notNull(),
     like: mediumint('srb_like').notNull(),
     dislike: mediumint('srb_dislike').notNull(),
@@ -1008,7 +1008,7 @@ export const chiiSubjectPosts = mysqlTable(
   'chii_subject_posts',
   {
     id: mediumint('sbj_pst_id').primaryKey().autoincrement().notNull(),
-    mid: mediumint('sbj_pst_mid').notNull(),
+    mid: mediumint('sbj_pst_mid').notNull(), // subject id
     uid: mediumint('sbj_pst_uid').notNull(),
     related: mediumint('sbj_pst_related').notNull(),
     content: mediumtext('sbj_pst_content').notNull(),
@@ -1208,7 +1208,7 @@ export const chiiBlogComments = mysqlTable(
   'chii_blog_comments',
   {
     id: mediumint('blg_pst_id').autoincrement().notNull(),
-    mid: mediumint('blg_pst_mid').notNull(),
+    mid: mediumint('blg_pst_mid').notNull(), // blog entry id
     uid: mediumint('blg_pst_uid').notNull(),
     related: mediumint('blg_pst_related').notNull(),
     updatedAt: int('blg_pst_dateline').notNull(),
@@ -1237,8 +1237,8 @@ export const chiiBlogEntries = mysqlTable(
     replies: mediumint('entry_replies').notNull(),
     createdAt: int('entry_dateline').notNull(),
     updatedAt: int('entry_lastpost').notNull(),
-    like: int('entry_like').notNull(),
-    dislike: int('entry_dislike').notNull(),
+    like: int('entry_like').notNull(), // 未使用
+    dislike: int('entry_dislike').notNull(), // 未使用
     noreply: smallint('entry_noreply').notNull(),
     related: tinyint('entry_related').default(0).notNull(),
     public: customBoolean('entry_public').default(true).notNull(),

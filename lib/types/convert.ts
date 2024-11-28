@@ -252,8 +252,6 @@ export function toBlotEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEn
     replies: entry.replies,
     createdAt: entry.createdAt,
     updatedAt: entry.updatedAt,
-    like: entry.like,
-    dislike: entry.dislike,
     noreply: entry.noreply,
     related: entry.related,
     public: entry.public,
@@ -269,8 +267,6 @@ export function toSlimBlogEntry(entry: orm.IBlogEntry): res.ISlimBlogEntry {
     replies: entry.replies,
     createdAt: entry.createdAt,
     updatedAt: entry.updatedAt,
-    like: entry.like,
-    dislike: entry.dislike,
   };
 }
 

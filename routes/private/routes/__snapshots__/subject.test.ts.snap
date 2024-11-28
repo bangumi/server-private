@@ -471,13 +471,6 @@ Object {
 }
 `;
 
-exports[`subject > should get subject reviews 1`] = `
-Object {
-  "data": Array [],
-  "total": 0,
-}
-`;
-
 exports[`subject > should get subject staffs 1`] = `
 Object {
   "data": Array [

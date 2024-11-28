@@ -382,8 +382,6 @@ export const BlogEntry = t.Object(
     replies: t.Integer(),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
-    like: t.Integer(),
-    dislike: t.Integer(),
     noreply: t.Integer(),
     related: t.Integer(),
     public: t.Boolean(),
@@ -401,8 +399,6 @@ export const SlimBlogEntry = t.Object(
     replies: t.Integer(),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
-    like: t.Integer(),
-    dislike: t.Integer(),
   },
   { $id: 'SlimBlogEntry', title: 'SlimBlogEntry' },
 );
