@@ -239,7 +239,7 @@ export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubje
   };
 }
 
-export function toBlotEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEntry {
+export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEntry {
   return {
     id: entry.id,
     type: entry.type,
