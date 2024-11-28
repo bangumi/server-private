@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 export interface TrendingItem {
   id: number;
   total: number;
@@ -11,7 +13,7 @@ export enum TrendingPeriod {
 }
 
 export function getTrendingDateline(period: TrendingPeriod): number {
-  const now = Math.round(Date.now() / 1000);
+  const now = DateTime.now().toUnixInteger();
   const duration = {
     all: now,
     day: 86400,
