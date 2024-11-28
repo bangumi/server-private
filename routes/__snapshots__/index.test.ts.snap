@@ -71,13 +71,9 @@ exports[`should build private api spec 1`] = `
           type: string
         createdAt:
           type: integer
-        dislike:
-          type: integer
         icon:
           type: string
         id:
-          type: integer
-        like:
           type: integer
         noreply:
           type: integer
@@ -113,8 +109,6 @@ exports[`should build private api spec 1`] = `
         - replies
         - createdAt
         - updatedAt
-        - like
-        - dislike
         - noreply
         - related
         - public
@@ -924,11 +918,7 @@ exports[`should build private api spec 1`] = `
       properties:
         createdAt:
           type: integer
-        dislike:
-          type: integer
         id:
-          type: integer
-        like:
           type: integer
         replies:
           type: integer
@@ -948,8 +938,6 @@ exports[`should build private api spec 1`] = `
         - replies
         - createdAt
         - updatedAt
-        - like
-        - dislike
       title: SlimBlogEntry
       type: object
     SlimCharacter:
