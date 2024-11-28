@@ -4,7 +4,7 @@ import { logger } from '@app/lib/logger';
 import redis from '@app/lib/redis.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
 import type { TrendingItem } from '@app/lib/trending/type.ts';
-import { getTrendingPeriodDuration, TrendingPeriod } from '@app/lib/trending/type.ts';
+import { getTrendingDateline, TrendingPeriod } from '@app/lib/trending/type.ts';
 
 function getSubjectTrendingKey(type: SubjectType, period: TrendingPeriod) {
   return `trending:subjects:${type}:${period}`;
@@ -25,19 +25,19 @@ export async function updateTrendingSubjects(
     return;
   }
   await redis.set(lockKey, 1, 'EX', 3600);
-  logger.info('Calculating trending subjects for %s(%s)...', subjectType, period);
 
-  const now = Date.now();
-  const duration = getTrendingPeriodDuration(period);
-  if (!duration) {
-    logger.error('Invalid period: %s', period);
-    return;
-  }
-  const minDateline = now - duration;
+  const minDateline = getTrendingDateline(period);
   let doingDateline = true;
   if (subjectType === SubjectType.Book || subjectType === SubjectType.Music) {
     doingDateline = false;
   }
+
+  logger.info(
+    'Calculating trending subjects for %s(%s) from %d ...',
+    subjectType,
+    period,
+    minDateline,
+  );
 
   const data = await db
     .select({ subjectID: schema.chiiSubjects.id, total: op.count(schema.chiiSubjects.id) })
@@ -65,6 +65,7 @@ export async function updateTrendingSubjects(
   for (const item of data) {
     ids.push({ id: item.subjectID, total: item.total } as TrendingItem);
   }
+  logger.info('Trending subjects for %s(%s) calculated: %d.', subjectType, period, ids.length);
   await redis.set(trendingKey, JSON.stringify(ids));
   await redis.del(lockKey);
 }
