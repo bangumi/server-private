@@ -1,5 +1,6 @@
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
+import type { UserEpisodeCollection } from '@app/lib/subject/type.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -81,6 +82,23 @@ export async function fetchSubjectsByIDs(
     map.set(subject.id, subject);
   }
   return map;
+}
+
+export async function fetchSubjectEpStatus(
+  userID: number,
+  subjectID: number,
+): Promise<Record<number, UserEpisodeCollection> | null> {
+  const data = await db
+    .select()
+    .from(schema.chiiEpStatus)
+    .where(
+      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
+    )
+    .execute();
+  for (const d of data) {
+    return convert.toSubjectEpStatus(d);
+  }
+  return null;
 }
 
 export async function fetchSlimCharacterByID(

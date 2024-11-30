@@ -1998,6 +1998,28 @@ exports[`should build private api spec 1`] = `
         - private
         - updatedAt
       type: object
+    UserSubjectEpisodeCollection:
+      properties:
+        episode:
+          $ref: '#/components/schemas/Episode'
+        type:
+          anyOf:
+            - enum:
+                - 0
+              type: number
+            - enum:
+                - 1
+              type: number
+            - enum:
+                - 2
+              type: number
+            - enum:
+                - 3
+              type: number
+      required:
+        - episode
+        - type
+      type: object
     WikiPlatform:
       properties:
         id:
@@ -4696,6 +4718,76 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取 Turnstile 令牌
+      tags:
+        - user
+  /p1/users/-/collections/subjects/-/episodes/{episodeID}:
+    get:
+      operationId: getUserSubjectCollectionEpisodeByEpisodeID
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSubjectEpisodeCollection'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户单个条目的单个章节收藏
+      tags:
+        - user
+  /p1/users/-/collections/subjects/{subjectID}/episodes:
+    get:
+      operationId: getUserSubjectCollectionEpisodesBySubjectID
+      parameters:
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UserSubjectEpisodeCollection'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户单个条目的章节收藏
       tags:
         - user
   /p1/users/{username}:
