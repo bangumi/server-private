@@ -769,7 +769,11 @@ export async function setup(app: App) {
         .select()
         .from(schema.chiiEpisodes)
         .where(conditions)
-        .orderBy(op.asc(schema.chiiEpisodes.sort))
+        .orderBy(
+          op.asc(schema.chiiEpisodes.disc),
+          op.asc(schema.chiiEpisodes.type),
+          op.asc(schema.chiiEpisodes.sort),
+        )
         .limit(limit)
         .offset(offset)
         .execute();
