@@ -1481,11 +1481,14 @@ exports[`should build private api spec 1`] = `
           items:
             type: integer
           type: array
+        rank:
+          type: integer
         score:
           type: number
         total:
           type: integer
       required:
+        - rank
         - count
         - score
         - total

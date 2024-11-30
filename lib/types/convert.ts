@@ -168,6 +168,7 @@ function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
   const total = ratingCount.reduce((a, b) => a + b, 0);
   const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
   const rating = {
+    rank: fields.fieldRank,
     total: total,
     score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
