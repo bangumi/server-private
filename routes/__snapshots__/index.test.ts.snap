@@ -4754,6 +4754,50 @@ paths:
     get:
       operationId: getUserSubjectCollectionEpisodesBySubjectID
       parameters:
+        - description: 剧集类型
+          in: query
+          name: type
+          required: false
+          schema:
+            anyOf:
+              - enum:
+                  - 0
+                type: number
+              - enum:
+                  - 1
+                type: number
+              - enum:
+                  - 2
+                type: number
+              - enum:
+                  - 3
+                type: number
+              - enum:
+                  - 4
+                type: number
+              - enum:
+                  - 5
+                type: number
+              - enum:
+                  - 6
+                type: number
+        - description: max 1000
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 100
+            maximum: 1000
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
         - in: path
           name: subjectID
           required: true

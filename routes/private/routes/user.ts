@@ -732,13 +732,20 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
+        querystring: t.Object({
+          type: t.Optional(t.Enum(res.EpisodeType, { description: '剧集类型' })),
+          limit: t.Optional(
+            t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
         response: {
           200: res.Paged(t.Ref(UserSubjectEpisodeCollection)),
         },
       },
       preHandler: [requireLogin('get subject episode collections')],
     },
-    async ({ auth, params: { subjectID } }) => {
+    async ({ auth, params: { subjectID }, query: { type, limit = 100, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -750,6 +757,7 @@ export async function setup(app: App) {
       const conditions = op.and(
         op.eq(schema.chiiEpisodes.subjectID, subjectID),
         op.ne(schema.chiiEpisodes.ban, 1),
+        type ? op.eq(schema.chiiEpisodes.type, type) : undefined,
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
@@ -762,6 +770,8 @@ export async function setup(app: App) {
         .from(schema.chiiEpisodes)
         .where(conditions)
         .orderBy(op.asc(schema.chiiEpisodes.sort))
+        .limit(limit)
+        .offset(offset)
         .execute();
       const collections = data.map((d) => toUserSubjectEpisodeCollection(d, epStatus[d.id]));
 
