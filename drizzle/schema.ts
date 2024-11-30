@@ -222,16 +222,17 @@ export const chiiEpRevisions = mysqlTable(
 export const chiiEpStatus = mysqlTable(
   'chii_ep_status',
   {
-    epSttId: mediumint('ep_stt_id').autoincrement().notNull(),
-    epSttUid: mediumint('ep_stt_uid').notNull(),
-    epSttSid: mediumint('ep_stt_sid').notNull(),
-    epSttOnPrg: tinyint('ep_stt_on_prg').default(0).notNull(),
-    epSttStatus: mediumtext('ep_stt_status').notNull(),
+    id: mediumint('ep_stt_id').autoincrement().notNull(),
+    uid: mediumint('ep_stt_uid').notNull(),
+    sid: mediumint('ep_stt_sid').notNull(),
+    // 未使用
+    // onProgress: tinyint('ep_stt_on_prg').default(0).notNull(),
+    status: mediumtext('ep_stt_status').notNull(),
     updatedAt: int('ep_stt_lasttouch').notNull(),
   },
   (table) => {
     return {
-      epSttUniq: unique('ep_stt_uniq').on(table.epSttUid, table.epSttSid),
+      epSttUniq: unique('ep_stt_uniq').on(table.uid, table.sid),
     };
   },
 );

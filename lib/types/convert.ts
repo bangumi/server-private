@@ -5,7 +5,7 @@ import * as php from '@trim21/php-serialize';
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
-import { CollectionType } from '@app/lib/subject/type';
+import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findSubjectPlatform,
@@ -168,6 +168,7 @@ function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
   const total = ratingCount.reduce((a, b) => a + b, 0);
   const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
   const rating = {
+    rank: fields.fieldRank,
     total: total,
     score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
@@ -257,6 +258,24 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
     desc: episode.desc,
     lock: Boolean(episode.lock),
   };
+}
+
+export function toSubjectEpStatus(
+  status: orm.ISubjectEpStatus,
+): Record<number, UserEpisodeCollection> {
+  const result: Record<number, UserEpisodeCollection> = {};
+  if (!status.status) {
+    return result;
+  }
+  const epStatusList = php.parse(status.status) as Record<number, { eid: string; type: number }>;
+  for (const [eid, x] of Object.entries(epStatusList)) {
+    const episodeId = Number.parseInt(eid);
+    if (Number.isNaN(episodeId)) {
+      continue;
+    }
+    result[episodeId] = { id: episodeId, type: x.type };
+  }
+  return result;
 }
 
 export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {

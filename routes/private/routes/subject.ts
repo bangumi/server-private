@@ -113,7 +113,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { subjectID }, query: { limit = 100, offset = 0 } }) => {
+    async ({ auth, params: { subjectID }, query: { type, limit = 100, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -121,6 +121,7 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiEpisodes.subjectID, subjectID),
         op.ne(schema.chiiEpisodes.ban, 1),
+        type ? op.eq(schema.chiiEpisodes.type, type) : undefined,
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
@@ -131,7 +132,11 @@ export async function setup(app: App) {
         .select()
         .from(schema.chiiEpisodes)
         .where(condition)
-        .orderBy(op.asc(schema.chiiEpisodes.type), op.asc(schema.chiiEpisodes.sort))
+        .orderBy(
+          op.asc(schema.chiiEpisodes.disc),
+          op.asc(schema.chiiEpisodes.type),
+          op.asc(schema.chiiEpisodes.sort),
+        )
         .limit(limit)
         .offset(offset)
         .execute();
