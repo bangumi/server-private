@@ -589,7 +589,7 @@ export async function setup(app: App) {
         querystring: t.Object({
           subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
           type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
-          since: t.Optional(t.Integer({ maximum: 0, description: '起始时间戳' })),
+          since: t.Optional(t.Integer({ minimum: 0, description: '起始时间戳' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),

@@ -5148,7 +5148,7 @@ paths:
           name: since
           required: false
           schema:
-            maximum: 0
+            minimum: 0
             type: integer
         - description: max 100
           in: query
