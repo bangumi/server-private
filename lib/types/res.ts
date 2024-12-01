@@ -4,21 +4,8 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { SubjectType } from '@app/lib/subject/type.ts';
+import { EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
 import * as examples from '@app/lib/types/examples.ts';
-
-export enum EpisodeType {
-  /** 本篇 */
-  Normal = 0,
-  /** 特别篇 */
-  Special = 1,
-  Op = 2,
-  ED = 3,
-  /** 预告/宣传/广告 */
-  Pre = 4,
-  MAD = 5,
-  Other = 6,
-}
 
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
