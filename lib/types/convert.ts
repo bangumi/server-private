@@ -327,6 +327,7 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
     nameCN: extractNameCN(infobox),
     role: character.role,
     images: personImages(character.img) || undefined,
+    comment: character.comment,
     nsfw: character.nsfw,
     lock: Boolean(character.lock),
   };
@@ -358,6 +359,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     nameCN: extractNameCN(infobox),
     type: person.type,
     images: personImages(person.img) || undefined,
+    comment: person.comment,
     nsfw: person.nsfw,
     lock: Boolean(person.lock),
   };

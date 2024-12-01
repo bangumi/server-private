@@ -414,6 +414,7 @@ Object {
     Object {
       "actors": Array [],
       "character": Object {
+        "comment": 56,
         "id": 32,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
@@ -433,6 +434,7 @@ Object {
     Object {
       "actors": Array [],
       "character": Object {
+        "comment": 10,
         "id": 33,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
@@ -568,6 +570,7 @@ Object {
   "data": Array [
     Object {
       "person": Object {
+        "comment": 59,
         "id": 39,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/d6/7d/39_prsn_anidb.jpg",
@@ -590,6 +593,7 @@ Object {
     },
     Object {
       "person": Object {
+        "comment": 100,
         "id": 40,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",

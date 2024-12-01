@@ -911,6 +911,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimCharacter:
       properties:
+        comment:
+          type: integer
         id:
           type: integer
         images:
@@ -930,6 +932,7 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - role
+        - comment
         - lock
         - nsfw
       title: SlimCharacter
@@ -956,6 +959,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimPerson:
       properties:
+        comment:
+          type: integer
         id:
           type: integer
         images:
@@ -975,6 +980,7 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - type
+        - comment
         - lock
         - nsfw
       title: SlimPerson
