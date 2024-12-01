@@ -81,6 +81,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         redirect:
@@ -92,6 +94,7 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - role
         - infobox
         - summary
@@ -710,6 +713,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         redirect:
@@ -721,6 +726,7 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - type
         - infobox
         - career
@@ -913,6 +919,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         role:
@@ -920,6 +928,7 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - role
         - lock
         - nsfw
@@ -955,6 +964,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         type:
@@ -962,6 +973,7 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - type
         - lock
         - nsfw
