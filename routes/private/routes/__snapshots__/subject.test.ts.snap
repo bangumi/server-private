@@ -555,33 +555,9 @@ Object {
 
 exports[`subject > should get subject reviews 1`] = `
 Object {
-  "data": Array [
-    Object {
-      "entry": Object {
-        "createdAt": 1680065731,
-        "id": 319484,
-        "replies": 1,
-        "summary": "试试",
-        "title": "试试",
-        "type": 1,
-        "updatedAt": 1680072373,
-      },
-      "id": 168120,
-      "user": Object {
-        "avatar": Object {
-          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-        },
-        "id": 287622,
-        "joinedAt": 0,
-        "nickname": "nickname 287622",
-        "sign": "sing 287622",
-        "username": "287622",
-      },
-    },
-  ],
-  "total": 1,
+  "error": "Not Found",
+  "message": "Route GET:/subjects/184017/reviews?limit=2&offset=0 not found",
+  "statusCode": 404,
 }
 `;
 

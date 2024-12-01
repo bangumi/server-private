@@ -4,7 +4,6 @@ import type { App } from '@app/routes/type.ts';
 
 export function addSchemas(app: App) {
   app.addSchema(res.Avatar);
-  app.addSchema(res.BlogEntry);
   app.addSchema(res.Character);
   app.addSchema(res.CharacterRelation);
   app.addSchema(res.CharacterSubject);
@@ -24,7 +23,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.PersonWork);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
-  app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.SlimIndex);
   app.addSchema(res.SlimPerson);
@@ -41,7 +39,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectRating);
   app.addSchema(res.SubjectRelation);
   app.addSchema(res.SubjectRelationType);
-  app.addSchema(res.SubjectReview);
   app.addSchema(res.SubjectStaff);
   app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.SubjectTag);

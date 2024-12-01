@@ -10,7 +10,6 @@ export type ISubject = typeof schema.chiiSubjects.$inferSelect;
 export type ISubjectFields = typeof schema.chiiSubjectFields.$inferSelect;
 export type ISubjectInterest = typeof schema.chiiSubjectInterests.$inferSelect;
 export type ISubjectRelation = typeof schema.chiiSubjectRelations.$inferSelect;
-export type ISubjectRelatedBlog = typeof schema.chiiSubjectRelatedBlogs.$inferSelect;
 export type ISubjectTopic = typeof schema.chiiSubjectTopics.$inferSelect;
 export type ISubjectPost = typeof schema.chiiSubjectPosts.$inferSelect;
 export type ISubjectEpStatus = typeof schema.chiiEpStatus.$inferSelect;
@@ -28,6 +27,3 @@ export type IPersonCollect = typeof schema.chiiPersonCollects.$inferSelect;
 
 export type IIndex = typeof schema.chiiIndexes.$inferSelect;
 export type IIndexCollect = typeof schema.chiiIndexCollects.$inferSelect;
-
-export type IBlogEntry = typeof schema.chiiBlogEntries.$inferSelect;
-export type IBlogPhoto = typeof schema.chiiBlogPhotos.$inferSelect;

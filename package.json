@@ -19,6 +19,7 @@
     "start": "nodemon ./bin/main.ts",
     "start-cron": "nodemon ./bin/cron.ts",
     "test": "vitest --run",
+    "test-update": "vitest --update",
     "vitest": "vitest",
     "file": "node --no-warnings --import tsx/esm",
     "e": "node --no-warnings -r dotenv/config --import tsx/esm",

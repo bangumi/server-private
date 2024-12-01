@@ -65,55 +65,6 @@ exports[`should build private api spec 1`] = `
         - text
         - state
       type: object
-    BlogEntry:
-      properties:
-        content:
-          type: string
-        createdAt:
-          type: integer
-        icon:
-          type: string
-        id:
-          type: integer
-        noreply:
-          type: integer
-        public:
-          type: boolean
-        related:
-          type: integer
-        replies:
-          type: integer
-        tags:
-          items:
-            type: string
-          type: array
-        title:
-          type: string
-        type:
-          type: integer
-        updatedAt:
-          type: integer
-        user:
-          $ref: '#/components/schemas/SlimUser'
-        views:
-          type: integer
-      required:
-        - id
-        - type
-        - user
-        - title
-        - icon
-        - content
-        - tags
-        - views
-        - replies
-        - createdAt
-        - updatedAt
-        - noreply
-        - related
-        - public
-      title: BlogEntry
-      type: object
     Character:
       properties:
         collects:
@@ -952,32 +903,6 @@ exports[`should build private api spec 1`] = `
         - reactions
       title: Reply
       type: object
-    SlimBlogEntry:
-      properties:
-        createdAt:
-          type: integer
-        id:
-          type: integer
-        replies:
-          type: integer
-        summary:
-          type: string
-        title:
-          type: string
-        type:
-          type: integer
-        updatedAt:
-          type: integer
-      required:
-        - id
-        - type
-        - title
-        - summary
-        - replies
-        - createdAt
-        - updatedAt
-      title: SlimBlogEntry
-      type: object
     SlimCharacter:
       properties:
         id:
@@ -1600,20 +1525,6 @@ exports[`should build private api spec 1`] = `
         - cn
         - jp
         - desc
-      type: object
-    SubjectReview:
-      properties:
-        entry:
-          $ref: '#/components/schemas/SlimBlogEntry'
-        id:
-          type: integer
-        user:
-          $ref: '#/components/schemas/SlimUser'
-      required:
-        - id
-        - user
-        - entry
-      title: SubjectReview
       type: object
     SubjectStaff:
       properties:
@@ -4391,62 +4302,6 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取条目的关联条目
-      tags:
-        - subject
-  /p1/subjects/{subjectID}/reviews:
-    get:
-      operationId: getSubjectReviews
-      parameters:
-        - description: max 20
-          in: query
-          name: limit
-          required: false
-          schema:
-            default: 5
-            maximum: 20
-            minimum: 1
-            type: integer
-        - description: min 0
-          in: query
-          name: offset
-          required: false
-          schema:
-            default: 0
-            minimum: 0
-            type: integer
-        - in: path
-          name: subjectID
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  data:
-                    items:
-                      $ref: '#/components/schemas/SubjectReview'
-                    type: array
-                  total:
-                    type: integer
-                required:
-                  - data
-                  - total
-                type: object
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 获取条目的评论
       tags:
         - subject
   /p1/subjects/{subjectID}/staffs:
