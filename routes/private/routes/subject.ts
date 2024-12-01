@@ -168,7 +168,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           type: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
-          offprint: t.Boolean({ default: false, description: '是否单行本' }),
+          offprint: t.Optional(t.Boolean({ default: false, description: '是否单行本' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -185,12 +185,25 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       const relationTypeOffprint = 1003;
+      let offprintCondition;
+      switch (offprint) {
+        case true: {
+          offprintCondition = op.eq(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case false: {
+          offprintCondition = op.ne(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case undefined: {
+          offprintCondition = undefined;
+          break;
+        }
+      }
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
-        offprint
-          ? op.eq(schema.chiiSubjectRelations.relatedType, relationTypeOffprint)
-          : op.ne(schema.chiiSubjectRelations.relatedType, relationTypeOffprint),
+        offprintCondition,
         op.ne(schema.chiiSubjects.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );

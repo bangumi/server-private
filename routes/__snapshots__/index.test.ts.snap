@@ -4299,7 +4299,7 @@ paths:
         - description: 是否单行本
           in: query
           name: offprint
-          required: true
+          required: false
           schema:
             default: false
             type: boolean
