@@ -5,7 +5,7 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { SubjectType } from '@app/lib/subject/type.ts';
+import { EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -99,7 +99,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(res.EpisodeType, { description: '剧集类型' })),
+          type: t.Optional(t.Enum(EpisodeType, { description: '剧集类型' })),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
@@ -161,7 +161,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           type: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
-          offprint: t.Boolean({ default: false, description: '是否单行本' }),
+          offprint: t.Optional(t.Boolean({ default: false, description: '是否单行本' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -181,12 +181,25 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       const relationTypeOffprint = 1003;
+      let offprintCondition;
+      switch (offprint) {
+        case true: {
+          offprintCondition = op.eq(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case false: {
+          offprintCondition = op.ne(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case undefined: {
+          offprintCondition = undefined;
+          break;
+        }
+      }
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
-        offprint
-          ? op.eq(schema.chiiSubjectRelations.relatedType, relationTypeOffprint)
-          : op.ne(schema.chiiSubjectRelations.relatedType, relationTypeOffprint),
+        offprintCondition,
         op.ne(schema.chiiSubjects.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );

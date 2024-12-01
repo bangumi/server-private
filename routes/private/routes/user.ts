@@ -11,6 +11,7 @@ import {
   CollectionType,
   CollectionTypeProfileValues,
   EpisodeCollectionStatus,
+  EpisodeType,
   PersonType,
   SubjectType,
   SubjectTypeValues,
@@ -733,7 +734,7 @@ export async function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(res.EpisodeType, { description: '剧集类型' })),
+          type: t.Optional(t.Enum(EpisodeType, { description: '剧集类型' })),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
