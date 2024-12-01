@@ -551,19 +551,49 @@ exports[`should build private api spec 1`] = `
       title: Index
       type: object
     Infobox:
-      additionalProperties:
-        items:
-          properties:
-            k:
-              type: string
-            v:
-              type: string
-          required:
-            - v
-          title: InfoboxValue
-          type: object
-        type: array
+      items:
+        properties:
+          key:
+            type: string
+          values:
+            items:
+              properties:
+                k:
+                  type: string
+                v:
+                  type: string
+              required:
+                - v
+              title: InfoboxValue
+              type: object
+            type: array
+        required:
+          - key
+          - values
+        title: InfoboxItem
+        type: object
       title: Infobox
+      type: array
+    InfoboxItem:
+      properties:
+        key:
+          type: string
+        values:
+          items:
+            properties:
+              k:
+                type: string
+              v:
+                type: string
+            required:
+              - v
+            title: InfoboxValue
+            type: object
+          type: array
+      required:
+        - key
+        - values
+      title: InfoboxItem
       type: object
     InfoboxValue:
       properties:

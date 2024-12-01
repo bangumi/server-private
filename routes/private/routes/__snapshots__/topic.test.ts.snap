@@ -248,63 +248,96 @@ Object {
       "medium": "https://lain.bgm.tv/pic/cover/m/a8/7f/4_cMMK5.jpg",
       "small": "https://lain.bgm.tv/pic/cover/s/a8/7f/4_cMMK5.jpg",
     },
-    "infobox": Object {
-      "website": Array [
-        Object {
-          "v": "",
-        },
-      ],
-      "中文名": Array [
-        Object {
-          "v": "合金弹头7",
-        },
-      ],
-      "别名": Array [
-        Object {
-          "v": "Metal Slug 7",
-        },
-      ],
-      "发行": Array [
-        Object {
-          "v": "SNKプレイモア",
-        },
-      ],
-      "发行日期": Array [
-        Object {
-          "v": "2008-07-17",
-        },
-      ],
-      "售价": Array [
-        Object {
-          "v": "5040円",
-        },
-      ],
-      "平台": Array [
-        Object {
-          "v": "NDS",
-        },
-      ],
-      "开发": Array [
-        Object {
-          "v": "SNKプレイモア",
-        },
-      ],
-      "游戏引擎": Array [
-        Object {
-          "v": "",
-        },
-      ],
-      "游戏类型": Array [
-        Object {
-          "v": "ACT",
-        },
-      ],
-      "游玩人数": Array [
-        Object {
-          "v": "1人",
-        },
-      ],
-    },
+    "infobox": Array [
+      Object {
+        "key": "中文名",
+        "values": Array [
+          Object {
+            "v": "合金弹头7",
+          },
+        ],
+      },
+      Object {
+        "key": "别名",
+        "values": Array [
+          Object {
+            "v": "Metal Slug 7",
+          },
+        ],
+      },
+      Object {
+        "key": "平台",
+        "values": Array [
+          Object {
+            "v": "NDS",
+          },
+        ],
+      },
+      Object {
+        "key": "游戏类型",
+        "values": Array [
+          Object {
+            "v": "ACT",
+          },
+        ],
+      },
+      Object {
+        "key": "游戏引擎",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "游玩人数",
+        "values": Array [
+          Object {
+            "v": "1人",
+          },
+        ],
+      },
+      Object {
+        "key": "发行日期",
+        "values": Array [
+          Object {
+            "v": "2008-07-17",
+          },
+        ],
+      },
+      Object {
+        "key": "售价",
+        "values": Array [
+          Object {
+            "v": "5040円",
+          },
+        ],
+      },
+      Object {
+        "key": "website",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "开发",
+        "values": Array [
+          Object {
+            "v": "SNKプレイモア",
+          },
+        ],
+      },
+      Object {
+        "key": "发行",
+        "values": Array [
+          Object {
+            "v": "SNKプレイモア",
+          },
+        ],
+      },
+    ],
     "locked": false,
     "metaTags": Array [],
     "name": "メタルスラッグ7",

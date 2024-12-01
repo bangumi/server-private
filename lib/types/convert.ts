@@ -91,23 +91,25 @@ export function toInfobox(content: string): res.IInfobox {
       throw error;
     }
   }
-  const infobox: res.IInfobox = {};
+  const infobox: res.IInfobox = [];
   for (const [key, item] of wiki.data) {
     switch (typeof item) {
       case 'string': {
-        infobox[key] = [
-          {
-            v: item,
-          },
-        ];
+        infobox.push({
+          key: key,
+          values: [{ v: item }],
+        });
         break;
       }
       case 'object': {
-        infobox[key] = item.map((v) => {
-          return {
-            k: v.k,
-            v: v.v || '',
-          };
+        infobox.push({
+          key: key,
+          values: item.map((v) => {
+            return {
+              k: v.k,
+              v: v.v || '',
+            };
+          }),
         });
         break;
       }
