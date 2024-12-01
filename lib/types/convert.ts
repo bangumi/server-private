@@ -20,6 +20,10 @@ export function splitTags(tags: string): string[] {
     .filter((x) => x !== '');
 }
 
+export function extractNameCN(infobox: res.IInfobox): string {
+  return infobox.find((x) => ['中文名', '简体中文名'].includes(x.key))?.values[0]?.v ?? '';
+}
+
 export function toSubjectTags(tags: string): res.ISubjectTag[] {
   if (!tags) {
     return [];
@@ -290,9 +294,11 @@ export function toSubjectEpStatus(
 }
 
 export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
+  const infobox = toInfobox(character.infobox);
   return {
     id: character.id,
     name: character.name,
+    nameCN: extractNameCN(infobox),
     role: character.role,
     images: personImages(character.img) || undefined,
     nsfw: character.nsfw,
@@ -301,11 +307,13 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
 }
 
 export function toCharacter(character: orm.ICharacter): res.ICharacter {
+  const infobox = toInfobox(character.infobox);
   return {
     id: character.id,
     name: character.name,
+    nameCN: extractNameCN(infobox),
     role: character.role,
-    infobox: toInfobox(character.infobox),
+    infobox: infobox,
     summary: character.summary,
     images: personImages(character.img) || undefined,
     comment: character.comment,
@@ -317,9 +325,11 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
 }
 
 export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
+  const infobox = toInfobox(person.infobox);
   return {
     id: person.id,
     name: person.name,
+    nameCN: extractNameCN(infobox),
     type: person.type,
     images: personImages(person.img) || undefined,
     nsfw: person.nsfw,
@@ -328,6 +338,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
 }
 
 export function toPerson(person: orm.IPerson): res.IPerson {
+  const infobox = toInfobox(person.infobox);
   const career = [];
   if (person.producer) {
     career.push('producer');
@@ -356,8 +367,9 @@ export function toPerson(person: orm.IPerson): res.IPerson {
   return {
     id: person.id,
     name: person.name,
+    nameCN: extractNameCN(infobox),
     type: person.type,
-    infobox: toInfobox(person.infobox),
+    infobox: infobox,
     career,
     summary: person.summary,
     images: personImages(person.img) || undefined,

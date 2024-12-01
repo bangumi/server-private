@@ -298,6 +298,7 @@ export const Character = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     role: t.Integer(),
     infobox: t.Ref(Infobox),
     summary: t.String(),
@@ -320,6 +321,7 @@ export const SlimCharacter = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     role: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
     lock: t.Boolean(),
@@ -337,6 +339,7 @@ export const Person = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     type: t.Integer(),
     infobox: t.Ref(Infobox),
     career: t.Array(t.String(), {
@@ -363,6 +366,7 @@ export const SlimPerson = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     type: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
     lock: t.Boolean(),
