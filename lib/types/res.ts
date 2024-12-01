@@ -496,6 +496,12 @@ export const PersonCollect = t.Object(
   { $id: 'PersonCollect' },
 );
 
+export type IIndexStats = Static<typeof IndexStats>;
+export const IndexStats = t.Record(t.Integer(), t.Integer(), {
+  $id: 'IndexStats',
+  title: 'IndexStats',
+});
+
 export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
@@ -506,8 +512,7 @@ export const Index = t.Object(
     replies: t.Integer(),
     total: t.Integer(),
     collects: t.Integer(),
-    // TODO: parse stats
-    // stats: t.String(),
+    stats: t.Ref(IndexStats),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
     creator: t.Ref(SlimUser),

@@ -24,6 +24,23 @@ export function extractNameCN(infobox: res.IInfobox): string {
   return infobox.find((x) => ['中文名', '简体中文名'].includes(x.key))?.values[0]?.v ?? '';
 }
 
+export function toIndexStats(stats: string): res.IIndexStats {
+  const result: Record<number, number> = {};
+  if (!stats) {
+    return result;
+  }
+  const statList = php.parse(stats) as Record<number, string>;
+  for (const [key, value] of Object.entries(statList)) {
+    const k = Number.parseInt(key);
+    const v = Number.parseInt(value);
+    if (Number.isNaN(k) || Number.isNaN(v)) {
+      continue;
+    }
+    result[k] = v;
+  }
+  return result;
+}
+
 export function toSubjectTags(tags: string): res.ISubjectTag[] {
   if (!tags) {
     return [];
@@ -428,6 +445,7 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     replies: index.replies,
     total: index.total,
     collects: index.collects,
+    stats: toIndexStats(index.stats),
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
     creator: toSlimUser(user),

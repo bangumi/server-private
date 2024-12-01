@@ -534,6 +534,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         replies:
           type: integer
+        stats:
+          $ref: '#/components/schemas/IndexStats'
         title:
           type: string
         total:
@@ -550,10 +552,16 @@ exports[`should build private api spec 1`] = `
         - replies
         - total
         - collects
+        - stats
         - createdAt
         - updatedAt
         - creator
       title: Index
+      type: object
+    IndexStats:
+      additionalProperties:
+        type: integer
+      title: IndexStats
       type: object
     Infobox:
       items:
