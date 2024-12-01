@@ -181,14 +181,25 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       const relationTypeOffprint = 1003;
+      let offprintCondition;
+      switch (offprint) {
+        case true: {
+          offprintCondition = op.eq(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case false: {
+          offprintCondition = op.ne(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case undefined: {
+          offprintCondition = undefined;
+          break;
+        }
+      }
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
-        offprint === undefined
-          ? undefined
-          : offprint
-            ? op.eq(schema.chiiSubjectRelations.relation, relationTypeOffprint)
-            : op.ne(schema.chiiSubjectRelations.relation, relationTypeOffprint),
+        offprintCondition,
         op.ne(schema.chiiSubjects.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
