@@ -121,7 +121,7 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiEpisodes.subjectID, subjectID),
         op.ne(schema.chiiEpisodes.ban, 1),
-        type ? op.eq(schema.chiiEpisodes.type, type.valueOf()) : undefined,
+        type ? op.eq(schema.chiiEpisodes.type, type) : undefined,
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
