@@ -16,7 +16,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.GroupMember);
   app.addSchema(res.Index);
   app.addSchema(res.Infobox);
-  app.addSchema(res.InfoboxValue);
   app.addSchema(res.Person);
   app.addSchema(res.PersonCharacter);
   app.addSchema(res.PersonCollect);
