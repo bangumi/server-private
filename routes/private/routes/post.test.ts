@@ -6,7 +6,7 @@ import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
 import * as Notify from '@app/lib/notify.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import type { ITopicDetails } from '@app/lib/topic/index.ts';
-import { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
+import { CommentState, TopicDisplay, TopicParentType } from '@app/lib/topic/type.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -284,7 +284,7 @@ describe('create group post reply', () => {
     content: '',
     state: CommentState.Normal,
     createdAt: DateTime.fromISO('2021-10-21').toUnixInteger(),
-    type: Topic.Type.group,
+    type: TopicParentType.Group,
     topicID: 371602,
     user: {
       img: '',

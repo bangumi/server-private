@@ -367,7 +367,7 @@ export const chiiIndexComments = mysqlTable(
   'chii_index_comments',
   {
     id: mediumint('idx_pst_id').autoincrement().notNull(),
-    mid: mediumint('idx_pst_mid').notNull(),
+    mid: mediumint('idx_pst_mid').notNull(), // index id
     uid: mediumint('idx_pst_uid').notNull(),
     related: mediumint('idx_pst_related').notNull(),
     createdAt: int('idx_pst_dateline').notNull(),
@@ -663,7 +663,7 @@ export const chiiPersonCollects = mysqlTable(
   {
     id: mediumint('prsn_clt_id').autoincrement().notNull(),
     cat: mysqlEnum('prsn_clt_cat', ['prsn', 'crt']).notNull(),
-    mid: mediumint('prsn_clt_mid').notNull(),
+    mid: mediumint('prsn_clt_mid').notNull(), // person id or character id
     uid: mediumint('prsn_clt_uid').notNull(),
     createdAt: int('prsn_clt_dateline').notNull(),
   },
@@ -988,19 +988,19 @@ export const chiiSubjectInterests = mysqlTable(
 export const chiiSubjectPosts = mysqlTable(
   'chii_subject_posts',
   {
-    sbjPstId: mediumint('sbj_pst_id').autoincrement().notNull(),
-    sbjPstMid: mediumint('sbj_pst_mid').notNull(),
-    sbjPstUid: mediumint('sbj_pst_uid').notNull(),
-    sbjPstRelated: mediumint('sbj_pst_related').notNull(),
-    sbjPstContent: mediumtext('sbj_pst_content').notNull(),
-    sbjPstState: tinyint('sbj_pst_state').notNull(),
-    sbjPstDateline: int('sbj_pst_dateline').default(0).notNull(),
+    id: mediumint('sbj_pst_id').primaryKey().autoincrement().notNull(),
+    mid: mediumint('sbj_pst_mid').notNull(), // subject id
+    uid: mediumint('sbj_pst_uid').notNull(),
+    related: mediumint('sbj_pst_related').notNull(),
+    content: mediumtext('sbj_pst_content').notNull(),
+    state: tinyint('sbj_pst_state').notNull(),
+    createdAt: int('sbj_pst_dateline').default(0).notNull(),
   },
   (table) => {
     return {
-      pssTopicId: index('pss_topic_id').on(table.sbjPstMid),
-      sbjPstRelated: index('sbj_pst_related').on(table.sbjPstRelated),
-      sbjPstUid: index('sbj_pst_uid').on(table.sbjPstUid),
+      pssTopicId: index('pss_topic_id').on(table.mid),
+      sbjPstRelated: index('sbj_pst_related').on(table.related),
+      sbjPstUid: index('sbj_pst_uid').on(table.uid),
     };
   },
 );
@@ -1066,26 +1066,22 @@ export const chiiSubjectRev = mysqlTable('chii_subject_revisions', {
 export const chiiSubjectTopics = mysqlTable(
   'chii_subject_topics',
   {
-    sbjTpcId: mediumint('sbj_tpc_id').autoincrement().notNull(),
-    sbjTpcSubjectId: mediumint('sbj_tpc_subject_id').notNull(),
-    sbjTpcUid: mediumint('sbj_tpc_uid').notNull(),
-    sbjTpcTitle: varchar('sbj_tpc_title', { length: 80 }).notNull(),
-    sbjTpcDateline: int('sbj_tpc_dateline').default(0).notNull(),
-    sbjTpcLastpost: int('sbj_tpc_lastpost').default(0).notNull(),
-    sbjTpcReplies: mediumint('sbj_tpc_replies').notNull(),
-    sbjTpcState: tinyint('sbj_tpc_state').notNull(),
-    sbjTpcDisplay: tinyint('sbj_tpc_display').default(1).notNull(),
+    id: mediumint('sbj_tpc_id').autoincrement().notNull(),
+    subjectID: mediumint('sbj_tpc_subject_id').notNull(),
+    uid: mediumint('sbj_tpc_uid').notNull(),
+    title: varchar('sbj_tpc_title', { length: 80 }).notNull(),
+    createdAt: int('sbj_tpc_dateline').default(0).notNull(),
+    updatedAt: int('sbj_tpc_lastpost').default(0).notNull(),
+    replies: mediumint('sbj_tpc_replies').notNull(),
+    state: tinyint('sbj_tpc_state').notNull(),
+    display: tinyint('sbj_tpc_display').default(1).notNull(),
   },
   (table) => {
     return {
-      tpcSubjectId: index('tpc_subject_id').on(table.sbjTpcSubjectId),
-      tpcDisplay: index('tpc_display').on(table.sbjTpcDisplay),
-      sbjTpcUid: index('sbj_tpc_uid').on(table.sbjTpcUid),
-      sbjTpcLastpost: index('sbj_tpc_lastpost').on(
-        table.sbjTpcLastpost,
-        table.sbjTpcSubjectId,
-        table.sbjTpcDisplay,
-      ),
+      tpcSubjectId: index('tpc_subject_id').on(table.subjectID),
+      tpcDisplay: index('tpc_display').on(table.display),
+      sbjTpcUid: index('sbj_tpc_uid').on(table.uid),
+      sbjTpcLastpost: index('sbj_tpc_lastpost').on(table.updatedAt, table.subjectID, table.display),
     };
   },
 );

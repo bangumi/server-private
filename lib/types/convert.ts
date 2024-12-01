@@ -198,10 +198,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     id: subject.id,
     images: subjectCover(subject.image) || undefined,
     infobox: toInfobox(subject.infobox),
-    metaTags: subject.metaTags
-      .split(' ')
-      .map((x) => x.trim())
-      .filter((x) => x !== ''),
+    metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     name: subject.name,
     nameCN: subject.nameCN,
@@ -242,6 +239,18 @@ export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubje
     en: position.en,
     cn: position.cn,
     jp: position.jp,
+  };
+}
+
+export function toSubjectComment(
+  interest: orm.ISubjectInterest,
+  user: orm.IUser,
+): res.ISubjectComment {
+  return {
+    user: toSlimUser(user),
+    rate: interest.rate,
+    comment: interest.comment,
+    updatedAt: interest.updatedAt,
   };
 }
 
@@ -392,6 +401,45 @@ export function toCharacterSubjectRelation(
   return {
     subject: toSlimSubject(subject),
     type: relation.type,
+  };
+}
+
+export function toSubjectTopic(topic: orm.ISubjectTopic, user: orm.IUser): res.ITopic {
+  return {
+    id: topic.id,
+    creator: toSlimUser(user),
+    title: topic.title,
+    parentID: topic.subjectID,
+    createdAt: topic.createdAt,
+    updatedAt: topic.updatedAt,
+    repliesCount: topic.replies,
+    state: topic.state,
+    display: topic.display,
+  };
+}
+
+export function toSubjectTopicReply(reply: orm.ISubjectPost, user: orm.IUser): res.IReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creator: toSlimUser(user),
+    replies: [],
+    reactions: [],
+    isFriend: false,
+  };
+}
+
+export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser): res.ISubReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creator: toSlimUser(user),
+    reactions: [],
+    isFriend: false,
   };
 }
 

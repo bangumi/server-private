@@ -8,7 +8,7 @@ import * as schema from '@app/drizzle/schema.ts';
 import config, { production, stage } from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
-import type { CommentState, TopicDisplay } from '@app/lib/topic/index.ts';
+import type { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 
 import * as entity from './entity/index.ts';
 import {
