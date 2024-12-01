@@ -35,6 +35,31 @@ export function toSubjectTags(tags: string): res.ISubjectTag[] {
     .filter((x) => !Number.isNaN(x.count));
 }
 
+export function toUserHomepage(homepage: string): res.IUserHomepage {
+  if (!homepage) {
+    // 默认布局
+    homepage = 'l:anime,game,book,music,real,blog;r:friend,group,index';
+  }
+  const layout: res.IUserHomepage = {
+    left: [],
+    right: [],
+  };
+  for (const item of homepage.split(';')) {
+    const [type, list] = item.split(':');
+    switch (type) {
+      case 'l': {
+        layout.left = list?.split(',') ?? [];
+        break;
+      }
+      case 'r': {
+        layout.right = list?.split(',') ?? [];
+        break;
+      }
+    }
+  }
+  return layout;
+}
+
 // for backward compatibility
 export function oldToUser(user: ormold.IUser): res.ISlimUser {
   return {
@@ -60,6 +85,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     site: fields.site,
     location: fields.location,
     bio: fields.bio,
+    homepage: toUserHomepage(fields.homepage),
   };
 }
 

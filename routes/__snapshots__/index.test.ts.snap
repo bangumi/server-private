@@ -1729,6 +1729,8 @@ exports[`should build private api spec 1`] = `
           type: string
         group:
           type: integer
+        homepage:
+          $ref: '#/components/schemas/UserHomepage'
         id:
           example: 1
           type: integer
@@ -1761,6 +1763,7 @@ exports[`should build private api spec 1`] = `
         - site
         - location
         - bio
+        - homepage
       title: User
       type: object
     UserCharacterCollection:
@@ -1880,6 +1883,21 @@ exports[`should build private api spec 1`] = `
         - character
         - person
         - index
+      type: object
+    UserHomepage:
+      properties:
+        left:
+          items:
+            type: string
+          type: array
+        right:
+          items:
+            type: string
+          type: array
+      required:
+        - left
+        - right
+      title: UserHomepage
       type: object
     UserIndexCollection:
       properties:

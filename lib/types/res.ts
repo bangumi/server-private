@@ -67,6 +67,15 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type IUserHomepage = Static<typeof UserHomepage>;
+export const UserHomepage = t.Object(
+  {
+    left: t.Array(t.String()),
+    right: t.Array(t.String()),
+  },
+  { $id: 'UserHomepage', title: 'UserHomepage' },
+);
+
 export type ISlimUser = Static<typeof SlimUser>;
 export const SlimUser = t.Object(
   {
@@ -94,6 +103,7 @@ export const User = t.Object(
     site: t.String(),
     location: t.String(),
     bio: t.String(),
+    homepage: t.Ref(UserHomepage),
   },
   { $id: 'User', title: 'User' },
 );
