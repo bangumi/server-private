@@ -10,14 +10,19 @@ import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import {
   CollectionType,
   CollectionTypeProfileValues,
+  EpisodeCollectionStatus,
+  EpisodeType,
   PersonType,
   SubjectType,
   SubjectTypeValues,
+  type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 export type IUserSubjectCollection = Static<typeof UserSubjectCollection>;
@@ -34,6 +39,15 @@ const UserSubjectCollection = t.Object(
     updatedAt: t.Integer(),
   },
   { $id: 'UserSubjectCollection' },
+);
+
+export type IUserSubjectEpisodeCollection = Static<typeof UserSubjectEpisodeCollection>;
+const UserSubjectEpisodeCollection = t.Object(
+  {
+    episode: t.Ref(res.Episode),
+    type: t.Enum(EpisodeCollectionStatus),
+  },
+  { $id: 'UserSubjectEpisodeCollection' },
 );
 
 export type IUserCharacterCollection = Static<typeof UserCharacterCollection>;
@@ -152,6 +166,16 @@ function toUserSubjectCollection(
   };
 }
 
+function toUserSubjectEpisodeCollection(
+  episode: orm.IEpisode,
+  epStatus: UserEpisodeCollection | undefined,
+): IUserSubjectEpisodeCollection {
+  return {
+    episode: convert.toEpisode(episode),
+    type: epStatus?.type ?? EpisodeCollectionStatus.None,
+  };
+}
+
 function toUserCharacterCollection(
   collect: orm.IPersonCollect,
   character: orm.ICharacter,
@@ -186,6 +210,7 @@ function toUserIndexCollection(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(UserSubjectCollection);
+  app.addSchema(UserSubjectEpisodeCollection);
   app.addSchema(UserCharacterCollection);
   app.addSchema(UserPersonCollection);
   app.addSchema(UserIndexCollection);
@@ -565,7 +590,7 @@ export async function setup(app: App) {
         querystring: t.Object({
           subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
           type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
-          since: t.Optional(t.Integer({ maximum: 0, description: '起始时间戳' })),
+          since: t.Optional(t.Integer({ minimum: 0, description: '起始时间戳' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -694,6 +719,105 @@ export async function setup(app: App) {
       }
 
       throw new NotFoundError('collection');
+    },
+  );
+
+  app.get(
+    '/users/-/collections/subjects/:subjectID/episodes',
+    {
+      schema: {
+        summary: '获取用户单个条目的章节收藏',
+        operationId: 'getUserSubjectCollectionEpisodesBySubjectID',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          type: t.Optional(t.Enum(EpisodeType, { description: '剧集类型' })),
+          limit: t.Optional(
+            t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(UserSubjectEpisodeCollection)),
+        },
+      },
+      preHandler: [requireLogin('get subject episode collections')],
+    },
+    async ({ auth, params: { subjectID }, query: { type, limit = 100, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, subjectID);
+      if (!epStatus) {
+        return { data: [], total: 0 };
+      }
+      const conditions = op.and(
+        op.eq(schema.chiiEpisodes.subjectID, subjectID),
+        op.ne(schema.chiiEpisodes.ban, 1),
+        type ? op.eq(schema.chiiEpisodes.type, type) : undefined,
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiEpisodes)
+        .where(conditions)
+        .execute();
+
+      const data = await db
+        .select()
+        .from(schema.chiiEpisodes)
+        .where(conditions)
+        .orderBy(
+          op.asc(schema.chiiEpisodes.disc),
+          op.asc(schema.chiiEpisodes.type),
+          op.asc(schema.chiiEpisodes.sort),
+        )
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const collections = data.map((d) => toUserSubjectEpisodeCollection(d, epStatus[d.id]));
+
+      return {
+        data: collections,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/users/-/collections/subjects/-/episodes/:episodeID',
+    {
+      schema: {
+        summary: '获取用户单个条目的单个章节收藏',
+        operationId: 'getUserSubjectCollectionEpisodeByEpisodeID',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          episodeID: t.Integer({ minimum: 1 }),
+        }),
+        response: {
+          200: t.Ref(UserSubjectEpisodeCollection),
+        },
+      },
+      preHandler: [requireLogin('get subject episode collection')],
+    },
+    async ({ auth, params: { episodeID } }) => {
+      const [episode] = await db
+        .select()
+        .from(schema.chiiEpisodes)
+        .where(op.and(op.eq(schema.chiiEpisodes.id, episodeID), op.ne(schema.chiiEpisodes.ban, 1)))
+        .execute();
+      if (!episode) {
+        throw new NotFoundError(`episode ${episodeID}`);
+      }
+      const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, episode.subjectID);
+      if (!epStatus) {
+        throw new NotFoundError(`status of episode ${episodeID}`);
+      }
+      return toUserSubjectEpisodeCollection(episode, epStatus[episodeID]);
     },
   );
 

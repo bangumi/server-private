@@ -139,6 +139,48 @@ Object {
 }
 `;
 
+exports[`user collection > should get episodes 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "episode": Object {
+        "airdate": "2009-09-23",
+        "comment": 0,
+        "desc": "",
+        "disc": 0,
+        "duration": "",
+        "id": 17224,
+        "lock": true,
+        "name": "Nameless, Faceless (Part 3)",
+        "nameCN": "",
+        "sort": 1,
+        "subjectID": 2703,
+        "type": 0,
+      },
+      "type": 2,
+    },
+    Object {
+      "episode": Object {
+        "airdate": "2009-09-30",
+        "comment": 0,
+        "desc": "",
+        "disc": 0,
+        "duration": "",
+        "id": 17225,
+        "lock": true,
+        "name": "Haunted",
+        "nameCN": "",
+        "sort": 2,
+        "subjectID": 2703,
+        "type": 0,
+      },
+      "type": 2,
+    },
+  ],
+  "total": 23,
+}
+`;
+
 exports[`user collection > should get indexes 1`] = `
 Object {
   "data": Array [],
@@ -239,6 +281,26 @@ Object {
     "summary": "传说中性能超强的人型电脑，故事第一话时被人弃置在垃圾场，后被我们的本须和秀树发现，并抱回家。由于开始时唧只会'唧，唧'的这样叫，所以秀树为其取名 '唧'TV版第二话「ちぃでかける」时发现小唧本身并没有安OS，不过因为拥有“学习程式”，所以可以通过对话和教导让她‘成长’起来。",
   },
   "createdAt": 1296496835,
+}
+`;
+
+exports[`user collection > should get single episode 1`] = `
+Object {
+  "episode": Object {
+    "airdate": "2009-10-14",
+    "comment": 0,
+    "desc": "",
+    "disc": 0,
+    "duration": "",
+    "id": 17227,
+    "lock": true,
+    "name": "Hopeless",
+    "nameCN": "",
+    "sort": 4,
+    "subjectID": 2703,
+    "type": 0,
+  },
+  "type": 2,
 }
 `;
 
@@ -446,6 +508,7 @@ Object {
         2640,
         1377,
       ],
+      "rank": 121,
       "score": 8.19,
       "total": 9438,
     },
@@ -777,6 +840,7 @@ Object {
             2640,
             1377,
           ],
+          "rank": 121,
           "score": 8.19,
           "total": 9438,
         },

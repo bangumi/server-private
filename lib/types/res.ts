@@ -169,6 +169,7 @@ export const SubjectPlatform = t.Object(
 export type ISubjectRating = Static<typeof SubjectRating>;
 export const SubjectRating = t.Object(
   {
+    rank: t.Integer(),
     count: t.Array(t.Integer()),
     score: t.Number(),
     total: t.Integer(),

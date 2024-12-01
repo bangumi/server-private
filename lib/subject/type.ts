@@ -19,6 +19,18 @@ export enum CollectionType {
 export const CollectionTypeValues = new Set([1, 2, 3, 4, 5]);
 export const CollectionTypeProfileValues = new Set([1, 2]);
 
+export enum EpisodeCollectionStatus {
+  None = 0, // 撤消/删除
+  Wish = 1, // 想看
+  Done = 2, // 看过
+  Dropped = 3, // 抛弃
+}
+
+export interface UserEpisodeCollection {
+  id: number;
+  type: EpisodeCollectionStatus;
+}
+
 export enum PersonType {
   Character = 'crt',
   Person = 'prsn',
