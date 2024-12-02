@@ -103,7 +103,8 @@ export const User = t.Object(
     site: t.String(),
     location: t.String(),
     bio: t.String(),
-    homepage: t.Ref(UserHomepage),
+    // wait for permission
+    // homepage: t.Ref(UserHomepage),
   },
   { $id: 'User', title: 'User' },
 );
