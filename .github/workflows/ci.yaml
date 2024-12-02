@@ -14,7 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
       - uses: ./.github/actions/setup-js-env
+
+      - run: pnpm run build-common
+      - run: pnpm run format
+      - run: git diff --exit-code
 
       - run: pnpm exec prettier --check .
       - run: pnpm exec tsc
@@ -36,12 +42,12 @@ jobs:
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
 
       - run: pnpm run test --coverage
-        timeout-minutes: 2
+        timeout-minutes: 10
         env:
           REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 

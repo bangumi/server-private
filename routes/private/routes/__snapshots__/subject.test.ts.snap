@@ -24,144 +24,225 @@ Object {
     "medium": "https://lain.bgm.tv/pic/cover/m/c2/0a/12_aDoa8.jpg",
     "small": "https://lain.bgm.tv/pic/cover/s/c2/0a/12_aDoa8.jpg",
   },
-  "infobox": Object {
-    "Copyright": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "中文名": Array [
-      Object {
-        "v": "人形电脑天使心",
-      },
-    ],
-    "人物设定": Array [
-      Object {
-        "v": "阿部恒",
-      },
-    ],
-    "其他": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "其他电视台": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "别名": Array [
-      Object {
-        "k": "en",
-        "v": "Chobits",
-      },
-    ],
-    "制片人": Array [
-      Object {
-        "v": "源生哲雄、関戸雄一、小野達矢",
-      },
-    ],
-    "制片协力": Array [
-      Object {
-        "v": "パイオニアLDC、ムービック",
-      },
-    ],
-    "副导演": Array [
-      Object {
-        "v": "田中洋之（除13）、井上英紀（仅13）",
-      },
-    ],
-    "动画制作": Array [
-      Object {
-        "v": "MADHOUSE",
-      },
-    ],
-    "原作": Array [
-      Object {
-        "v": "CLAMP",
-      },
-    ],
-    "官方网站": Array [
-      Object {
-        "v": "http://www.tbs.co.jp/chobits",
-      },
-    ],
-    "导演": Array [
-      Object {
-        "v": "浅香守生",
-      },
-    ],
-    "录音助手": Array [
-      Object {
-        "v": "鳥羽瀬縁",
-      },
-    ],
-    "录音调整": Array [
-      Object {
-        "v": "内田誠",
-      },
-    ],
-    "播放电视台": Array [
-      Object {
-        "v": "日本TBS",
-      },
-    ],
-    "播放结束": Array [
-      Object {
-        "v": "2002年9月24日",
-      },
-    ],
-    "放送开始": Array [
-      Object {
-        "v": "2002年4月2日",
-      },
-    ],
-    "放送星期": Array [
-      Object {
-        "v": "星期二",
-      },
-    ],
-    "文艺": Array [
-      Object {
-        "v": "浦畑達彦",
-      },
-    ],
-    "製作": Array [
-      Object {
-        "v": "TBS、ちょびっツ製作委員会",
-      },
-    ],
-    "设定制作": Array [
-      Object {
-        "v": "加茂靖子",
-      },
-    ],
-    "话数": Array [
-      Object {
-        "v": "27",
-      },
-    ],
-    "音乐": Array [
-      Object {
-        "v": "高浪敬太郎",
-      },
-    ],
-    "音响助手": Array [
-      Object {
-        "v": "三井友和",
-      },
-    ],
-    "音响监督": Array [
-      Object {
-        "v": "三間雅文",
-      },
-    ],
-    "音效": Array [
-      Object {
-        "v": "小山健二",
-      },
-    ],
-  },
+  "infobox": Array [
+    Object {
+      "key": "中文名",
+      "values": Array [
+        Object {
+          "v": "人形电脑天使心",
+        },
+      ],
+    },
+    Object {
+      "key": "别名",
+      "values": Array [
+        Object {
+          "k": "en",
+          "v": "Chobits",
+        },
+      ],
+    },
+    Object {
+      "key": "话数",
+      "values": Array [
+        Object {
+          "v": "27",
+        },
+      ],
+    },
+    Object {
+      "key": "放送开始",
+      "values": Array [
+        Object {
+          "v": "2002年4月2日",
+        },
+      ],
+    },
+    Object {
+      "key": "放送星期",
+      "values": Array [
+        Object {
+          "v": "星期二",
+        },
+      ],
+    },
+    Object {
+      "key": "官方网站",
+      "values": Array [
+        Object {
+          "v": "http://www.tbs.co.jp/chobits",
+        },
+      ],
+    },
+    Object {
+      "key": "播放电视台",
+      "values": Array [
+        Object {
+          "v": "日本TBS",
+        },
+      ],
+    },
+    Object {
+      "key": "其他电视台",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "播放结束",
+      "values": Array [
+        Object {
+          "v": "2002年9月24日",
+        },
+      ],
+    },
+    Object {
+      "key": "其他",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "Copyright",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "原作",
+      "values": Array [
+        Object {
+          "v": "CLAMP",
+        },
+      ],
+    },
+    Object {
+      "key": "导演",
+      "values": Array [
+        Object {
+          "v": "浅香守生",
+        },
+      ],
+    },
+    Object {
+      "key": "人物设定",
+      "values": Array [
+        Object {
+          "v": "阿部恒",
+        },
+      ],
+    },
+    Object {
+      "key": "音响监督",
+      "values": Array [
+        Object {
+          "v": "三間雅文",
+        },
+      ],
+    },
+    Object {
+      "key": "音乐",
+      "values": Array [
+        Object {
+          "v": "高浪敬太郎",
+        },
+      ],
+    },
+    Object {
+      "key": "动画制作",
+      "values": Array [
+        Object {
+          "v": "MADHOUSE",
+        },
+      ],
+    },
+    Object {
+      "key": "录音调整",
+      "values": Array [
+        Object {
+          "v": "内田誠",
+        },
+      ],
+    },
+    Object {
+      "key": "音效",
+      "values": Array [
+        Object {
+          "v": "小山健二",
+        },
+      ],
+    },
+    Object {
+      "key": "录音助手",
+      "values": Array [
+        Object {
+          "v": "鳥羽瀬縁",
+        },
+      ],
+    },
+    Object {
+      "key": "音响助手",
+      "values": Array [
+        Object {
+          "v": "三井友和",
+        },
+      ],
+    },
+    Object {
+      "key": "文艺",
+      "values": Array [
+        Object {
+          "v": "浦畑達彦",
+        },
+      ],
+    },
+    Object {
+      "key": "设定制作",
+      "values": Array [
+        Object {
+          "v": "加茂靖子",
+        },
+      ],
+    },
+    Object {
+      "key": "制片人",
+      "values": Array [
+        Object {
+          "v": "源生哲雄、関戸雄一、小野達矢",
+        },
+      ],
+    },
+    Object {
+      "key": "制片协力",
+      "values": Array [
+        Object {
+          "v": "パイオニアLDC、ムービック",
+        },
+      ],
+    },
+    Object {
+      "key": "製作",
+      "values": Array [
+        Object {
+          "v": "TBS、ちょびっツ製作委員会",
+        },
+      ],
+    },
+    Object {
+      "key": "副导演",
+      "values": Array [
+        Object {
+          "v": "田中洋之（除13）、井上英紀（仅13）",
+        },
+      ],
+    },
+  ],
   "locked": false,
   "metaTags": Array [],
   "name": "ちょびっツ",
@@ -189,6 +270,7 @@ Object {
       369,
       168,
     ],
+    "rank": 731,
     "score": 7.57,
     "total": 3231,
   },
@@ -199,6 +281,128 @@ Object {
 到达东京的第一天,他很幸运的在垃圾堆捡到一个人型电脑,一直以来秀树都非常渴望拥有个人电脑.当他抱着她带返公寓后,却不知如何开机,在意想不到的地方找到开关并开启后,故事就此展开
 本须和秀树捡到了人型计算机〔唧〕。虽然不晓得她到底是不是〔Chobits〕，但她的身上似乎藏有极大的秘密。看到秀树为了钱而烦恼，唧出去找打工，没想到却找到了危险的工作！为了让秀树开心，唧开始到色情小屋打工。但她在遭到过度激烈的强迫要求之后失控。让周遭计算机因此而强制停摆。
 另一方面，秀树发现好友新保与补习班的清水老师有着不可告人的关系……",
+  "tags": Array [
+    Object {
+      "count": 932,
+      "name": "CLAMP",
+    },
+    Object {
+      "count": 718,
+      "name": "人形电脑天使心",
+    },
+    Object {
+      "count": 397,
+      "name": "叽",
+    },
+    Object {
+      "count": 373,
+      "name": "chobits",
+    },
+    Object {
+      "count": 333,
+      "name": "MADHouse",
+    },
+    Object {
+      "count": 287,
+      "name": "TV",
+    },
+    Object {
+      "count": 274,
+      "name": "田中理惠",
+    },
+    Object {
+      "count": 261,
+      "name": "2002",
+    },
+    Object {
+      "count": 227,
+      "name": "小叽",
+    },
+    Object {
+      "count": 186,
+      "name": "治愈",
+    },
+    Object {
+      "count": 165,
+      "name": "Chobits~初次感动~",
+    },
+    Object {
+      "count": 137,
+      "name": "启动键",
+    },
+    Object {
+      "count": 121,
+      "name": "漫画改",
+    },
+    Object {
+      "count": 107,
+      "name": "萝莉",
+    },
+    Object {
+      "count": 57,
+      "name": "恋爱",
+    },
+    Object {
+      "count": 55,
+      "name": "浅香守生",
+    },
+    Object {
+      "count": 53,
+      "name": "2002年4月",
+    },
+    Object {
+      "count": 51,
+      "name": "漫改",
+    },
+    Object {
+      "count": 40,
+      "name": "ちぃ",
+    },
+    Object {
+      "count": 35,
+      "name": "科幻",
+    },
+    Object {
+      "count": 32,
+      "name": "杉田智和",
+    },
+    Object {
+      "count": 19,
+      "name": "S田",
+    },
+    Object {
+      "count": 18,
+      "name": "2002年",
+    },
+    Object {
+      "count": 13,
+      "name": "搞笑",
+    },
+    Object {
+      "count": 13,
+      "name": "clamp抢钱",
+    },
+    Object {
+      "count": 12,
+      "name": "动画",
+    },
+    Object {
+      "count": 12,
+      "name": "童年",
+    },
+    Object {
+      "count": 11,
+      "name": "半年番",
+    },
+    Object {
+      "count": 10,
+      "name": "萌",
+    },
+    Object {
+      "count": 9,
+      "name": "哥特",
+    },
+  ],
   "type": 2,
   "volumes": 0,
 }
@@ -210,6 +414,7 @@ Object {
     Object {
       "actors": Array [],
       "character": Object {
+        "comment": 56,
         "id": 32,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
@@ -219,6 +424,7 @@ Object {
         },
         "lock": false,
         "name": "ちぃ",
+        "nameCN": "小叽",
         "nsfw": false,
         "role": 1,
       },
@@ -228,6 +434,7 @@ Object {
     Object {
       "actors": Array [],
       "character": Object {
+        "comment": 10,
         "id": 33,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
@@ -237,6 +444,7 @@ Object {
         },
         "lock": false,
         "name": "本須和秀樹",
+        "nameCN": "本须和秀树",
         "nsfw": false,
         "role": 1,
       },
@@ -245,6 +453,13 @@ Object {
     },
   ],
   "total": 15,
+}
+`;
+
+exports[`subject > should get subject comments 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
 }
 `;
 
@@ -284,12 +499,25 @@ Object {
 }
 `;
 
+exports[`subject > should get subject recs 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`subject > should get subject relations 1`] = `
 Object {
   "data": Array [
     Object {
       "order": 0,
-      "relation": 1,
+      "relation": Object {
+        "cn": "改编",
+        "desc": "同系列不同平台作品（如柯南漫画与动画版）",
+        "en": "Adaptation",
+        "id": 1,
+        "jp": "",
+      },
       "subject": Object {
         "id": 497,
         "images": Object {
@@ -308,7 +536,13 @@ Object {
     },
     Object {
       "order": 0,
-      "relation": 1004,
+      "relation": Object {
+        "cn": "画集",
+        "desc": "",
+        "en": "Album",
+        "id": 1004,
+        "jp": "",
+      },
       "subject": Object {
         "id": 11,
         "images": Object {
@@ -330,11 +564,20 @@ Object {
 }
 `;
 
+exports[`subject > should get subject reviews 1`] = `
+Object {
+  "error": "Not Found",
+  "message": "Route GET:/subjects/184017/reviews?limit=2&offset=0 not found",
+  "statusCode": 404,
+}
+`;
+
 exports[`subject > should get subject staffs 1`] = `
 Object {
   "data": Array [
     Object {
       "person": Object {
+        "comment": 59,
         "id": 39,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/d6/7d/39_prsn_anidb.jpg",
@@ -344,13 +587,20 @@ Object {
         },
         "lock": false,
         "name": "CLAMP",
+        "nameCN": "",
         "nsfw": false,
         "type": 3,
       },
-      "position": 1,
+      "position": Object {
+        "cn": "原作",
+        "en": "Original Creator/Original Work",
+        "id": 1,
+        "jp": "",
+      },
     },
     Object {
       "person": Object {
+        "comment": 100,
         "id": 40,
         "images": Object {
           "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
@@ -360,12 +610,57 @@ Object {
         },
         "lock": false,
         "name": "浅香守生",
+        "nameCN": "浅香守生",
         "nsfw": false,
         "type": 1,
       },
-      "position": 2,
+      "position": Object {
+        "cn": "导演",
+        "en": "Director/Direction",
+        "id": 2,
+        "jp": "監督 シリーズ監督",
+      },
     },
   ],
   "total": 101,
+}
+`;
+
+exports[`subject > should get subject topics 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1462335911,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 142527,
+        "joinedAt": 0,
+        "nickname": "nickname 142527",
+        "sign": "sing 142527",
+        "username": "142527",
+      },
+      "display": 1,
+      "id": 6873,
+      "parentID": 12,
+      "repliesCount": 8,
+      "state": 0,
+      "title": "这条目简介也太剧透了吧",
+      "updatedAt": 1481098545,
+    },
+  ],
+  "total": 1,
+}
+`;
+
+exports[`subject > should not edited topic by non-owner 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to update topic",
+  "statusCode": 401,
 }
 `;

@@ -12,17 +12,10 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
-function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): res.IPersonRelation {
-  return {
-    person: convert.toSlimPerson(person),
-    relation: relation.relation,
-  };
-}
-
-function toPersonSubject(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonSubject {
+function toPersonWork(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonWork {
   return {
     subject: convert.toSlimSubject(subject),
-    position: relation.position,
+    position: convert.toSubjectStaffPosition(relation),
   };
 }
 
@@ -33,13 +26,6 @@ function toPersonCharacter(
   return {
     character: convert.toSlimCharacter(character),
     relations: relations,
-  };
-}
-
-function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
-  return {
-    user: convert.toSlimUser(user),
-    createdAt: collect.createdAt,
   };
 }
 
@@ -84,73 +70,6 @@ export async function setup(app: App) {
   );
 
   app.get(
-    '/persons/:personID/relations',
-    {
-      schema: {
-        summary: '获取人物的关联人物',
-        operationId: 'getPersonRelations',
-        tags: [Tag.Person],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        params: t.Object({
-          personID: t.Integer(),
-        }),
-        querystring: t.Object({
-          limit: t.Optional(
-            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
-          ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
-        }),
-        response: {
-          200: res.Paged(t.Ref(res.PersonRelation)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('person')),
-          }),
-        },
-      },
-    },
-    async ({ auth, params: { personID }, query: { limit = 20, offset = 0 } }) => {
-      const person = await fetcher.fetchSlimPersonByID(personID, auth.allowNsfw);
-      if (!person) {
-        throw new NotFoundError(`person ${personID}`);
-      }
-      const condition = op.and(
-        op.eq(schema.chiiPersonRelations.id, personID),
-        op.ne(schema.chiiPersons.ban, 1),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
-      );
-      const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
-        .from(schema.chiiPersonRelations)
-        .innerJoin(
-          schema.chiiPersons,
-          op.eq(schema.chiiPersonRelations.relatedID, schema.chiiPersons.id),
-        )
-        .where(condition)
-        .execute();
-      const data = await db
-        .select()
-        .from(schema.chiiPersonRelations)
-        .innerJoin(
-          schema.chiiPersons,
-          op.eq(schema.chiiPersonRelations.relatedID, schema.chiiPersons.id),
-        )
-        .where(condition)
-        .orderBy(
-          op.asc(schema.chiiPersonRelations.relation),
-          op.desc(schema.chiiPersonRelations.relatedID),
-        )
-        .limit(limit)
-        .offset(offset)
-        .execute();
-      const persons = data.map((d) => toPersonRelation(d.chii_persons, d.chii_person_relationship));
-      return {
-        total: count,
-        data: persons,
-      };
-    },
-  );
-
-  app.get(
     '/persons/:personID/works',
     {
       schema: {
@@ -170,7 +89,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.PersonSubject)),
+          200: res.Paged(t.Ref(res.PersonWork)),
           404: t.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('person')),
           }),
@@ -214,7 +133,7 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-      const subjects = data.map((d) => toPersonSubject(d.chii_subjects, d.chii_person_cs_index));
+      const subjects = data.map((d) => toPersonWork(d.chii_subjects, d.chii_person_cs_index));
       return {
         total: count,
         data: subjects,
@@ -367,7 +286,9 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-      const users = data.map((d) => toPersonCollect(d.chii_members, d.chii_person_collects));
+      const users = data.map((d) =>
+        convert.toPersonCollect(d.chii_members, d.chii_person_collects),
+      );
       return {
         total: count,
         data: users,

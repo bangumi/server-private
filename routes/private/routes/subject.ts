@@ -3,13 +3,26 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
-import { NotFoundError } from '@app/lib/error.ts';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { Dam, dam } from '@app/lib/dam.ts';
+import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
+import { fetchTopicReactions } from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { SubjectType } from '@app/lib/subject/type.ts';
+import { turnstile } from '@app/lib/services/turnstile.ts';
+import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import {
+  CanViewTopicContent,
+  CanViewTopicReply,
+  ListTopicDisplays,
+} from '@app/lib/topic/display.ts';
+import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { formatErrors } from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 function toSubjectRelation(
@@ -18,7 +31,7 @@ function toSubjectRelation(
 ): res.ISubjectRelation {
   return {
     subject: convert.toSlimSubject(subject),
-    relation: relation.relation,
+    relation: convert.toSubjectRelationType(relation),
     order: relation.order,
   };
 }
@@ -39,7 +52,15 @@ function toSubjectCharacter(
 function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): res.ISubjectStaff {
   return {
     person: convert.toSlimPerson(person),
-    position: relation.position,
+    position: convert.toSubjectStaffPosition(relation),
+  };
+}
+
+function toSubjectRec(subject: orm.ISubject, rec: orm.ISubjectRec): res.ISubjectRec {
+  return {
+    subject: convert.toSlimSubject(subject),
+    sim: rec.sim,
+    count: rec.count,
   };
 }
 
@@ -58,9 +79,6 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Ref(res.Subject),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
         },
       },
     },
@@ -99,7 +117,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(res.EpisodeType, { description: '剧集类型' })),
+          type: t.Optional(t.Enum(EpisodeType, { description: '剧集类型' })),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
@@ -107,13 +125,10 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(t.Ref(res.Episode)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
         },
       },
     },
-    async ({ auth, params: { subjectID }, query: { limit = 100, offset = 0 } }) => {
+    async ({ auth, params: { subjectID }, query: { type, limit = 100, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -121,6 +136,7 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiEpisodes.subjectID, subjectID),
         op.ne(schema.chiiEpisodes.ban, 1),
+        type ? op.eq(schema.chiiEpisodes.type, type) : undefined,
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
@@ -131,7 +147,11 @@ export async function setup(app: App) {
         .select()
         .from(schema.chiiEpisodes)
         .where(condition)
-        .orderBy(op.asc(schema.chiiEpisodes.type), op.asc(schema.chiiEpisodes.sort))
+        .orderBy(
+          op.asc(schema.chiiEpisodes.disc),
+          op.asc(schema.chiiEpisodes.type),
+          op.asc(schema.chiiEpisodes.sort),
+        )
         .limit(limit)
         .offset(offset)
         .execute();
@@ -156,7 +176,7 @@ export async function setup(app: App) {
         }),
         querystring: t.Object({
           type: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
-          singles: t.Boolean({ default: false, description: '包括单行本' }),
+          offprint: t.Optional(t.Boolean({ default: false, description: '是否单行本' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -164,22 +184,34 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(t.Ref(res.SubjectRelation)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
         },
       },
     },
-    async ({ auth, params: { subjectID }, query: { type, singles, limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { subjectID }, query: { type, offprint, limit = 20, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+      const relationTypeOffprint = 1003;
+      let offprintCondition;
+      switch (offprint) {
+        case true: {
+          offprintCondition = op.eq(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case false: {
+          offprintCondition = op.ne(schema.chiiSubjectRelations.relation, relationTypeOffprint);
+          break;
+        }
+        case undefined: {
+          offprintCondition = undefined;
+          break;
+        }
+      }
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         type ? op.eq(schema.chiiSubjectRelations.relatedType, type) : undefined,
-        // TODO: feat: bangumi/common 添加 relation.json 以及 staff.json
-        singles ? undefined : op.ne(schema.chiiSubjectRelations.relatedType, 1003),
+        offprintCondition,
         op.ne(schema.chiiSubjects.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
@@ -237,9 +269,6 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(t.Ref(res.SubjectCharacter)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
         },
       },
     },
@@ -318,9 +347,6 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(t.Ref(res.SubjectStaff)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('subject')),
-          }),
         },
       },
     },
@@ -360,6 +386,389 @@ export async function setup(app: App) {
         data: persons,
         total: count,
       };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/recs',
+    {
+      schema: {
+        summary: '获取条目的推荐',
+        operationId: 'getSubjectRecs',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 10, minimum: 1, maximum: 10, description: 'max 10' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.SubjectRec)),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 10, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectRec.subjectID, subjectID),
+        op.ne(schema.chiiSubjects.ban, 1),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectRec)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectRec.recSubjectID, schema.chiiSubjects.id),
+        )
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectRec)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectRec.recSubjectID, schema.chiiSubjects.id),
+        )
+        .where(condition)
+        .orderBy(op.asc(schema.chiiSubjectRec.count))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const recs = data.map((d) => toSubjectRec(d.chii_subjects, d.chii_subject_rec));
+      return {
+        data: recs,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/comments',
+    {
+      schema: {
+        summary: '获取条目的吐槽箱',
+        operationId: 'getSubjectComments',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.SubjectComment)),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { type, limit = 20, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+        op.eq(schema.chiiSubjectInterests.private, 0),
+        op.eq(schema.chiiSubjectInterests.hasComment, 1),
+        type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectInterests.uid, schema.chiiUsers.id))
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectInterests.uid, schema.chiiUsers.id))
+        .where(condition)
+        .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const comments = data.map((d) =>
+        convert.toSubjectComment(d.chii_subject_interests, d.chii_members),
+      );
+      return {
+        data: comments,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '获取条目讨论版',
+        operationId: 'getSubjectTopics',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.Topic)),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const display = ListTopicDisplays(auth);
+      const condition = op.and(
+        op.eq(schema.chiiSubjectTopics.subjectID, subjectID),
+        op.inArray(schema.chiiSubjectTopics.display, display),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectTopics)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
+        .where(condition)
+        .orderBy(op.desc(schema.chiiSubjectTopics.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const topics = data.map((d) => convert.toSubjectTopic(d.chii_subject_topics, d.chii_members));
+      return {
+        data: topics,
+        total: count,
+      };
+    },
+  );
+
+  app.post(
+    '/subjects/:subjectID/topics',
+    {
+      schema: {
+        summary: '创建条目讨论',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        operationId: 'createSubjectTopic',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+        }),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new topic id' }),
+          }),
+        },
+        body: req.CreateTopic,
+      },
+      preHandler: [requireLogin('creating a topic')],
+    },
+    async ({
+      auth,
+      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      params: { subjectID },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
+        throw new CaptchaError();
+      }
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create topic');
+      }
+
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      const state = CommentState.Normal;
+      let display = TopicDisplay.Normal;
+      if (dam.needReview(title) || dam.needReview(text)) {
+        display = TopicDisplay.Review;
+      }
+      await rateLimit(LimitAction.Subject, auth.userID);
+
+      const now = Math.round(Date.now() / 1000);
+
+      const topic: typeof schema.chiiSubjectTopics.$inferInsert = {
+        createdAt: now,
+        updatedAt: now,
+        subjectID: subjectID,
+        uid: auth.userID,
+        title,
+        replies: 0,
+        state,
+        display,
+      };
+      const post: typeof schema.chiiSubjectPosts.$inferInsert = {
+        content: text,
+        uid: auth.userID,
+        createdAt: now,
+        state,
+        mid: 0,
+        related: 0,
+      };
+      await db.transaction(async (t) => {
+        const [result] = await t.insert(schema.chiiSubjectTopics).values(topic).execute();
+        post.mid = result.insertId;
+        await t.insert(schema.chiiSubjectPosts).values(post).execute();
+      });
+
+      return { id: post.mid };
+    },
+  );
+
+  app.get(
+    '/subjects/-/topics/:topicID',
+    {
+      schema: {
+        summary: '获取条目讨论',
+        operationId: 'getSubjectTopic',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602], minimum: 0 }),
+        }),
+        response: {
+          200: t.Ref(res.TopicDetail),
+        },
+      },
+    },
+    async ({ auth, params: { topicID } }) => {
+      const topic = await fetcher.fetchSubjectTopicByID(topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      const subject = await fetcher.fetchSlimSubjectByID(topic.parentID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${topic.parentID}`);
+      }
+      if (!CanViewTopicContent(auth, topic.state, topic.display, topic.creator.id)) {
+        throw new NotAllowedError('view topic');
+      }
+
+      const replies = await fetcher.fetchSubjectTopicRepliesByTopicID(topicID);
+      const top = replies.shift();
+      if (!top) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      const friends = await fetcher.fetchFriendsByUserID(auth.userID);
+      const friendIDs = new Set(friends.map((f) => f.user.id));
+      const reactions = await fetchTopicReactions(auth.userID, auth.userID);
+
+      for (const reply of replies) {
+        if (!CanViewTopicReply(reply.state)) {
+          reply.text = '';
+        }
+        if (reply.creator.id in friendIDs) {
+          reply.isFriend = true;
+        }
+        reply.reactions = reactions[reply.creator.id] ?? [];
+        for (const subReply of reply.replies) {
+          if (!CanViewTopicReply(subReply.state)) {
+            subReply.text = '';
+          }
+          if (subReply.creator.id in friendIDs) {
+            subReply.isFriend = true;
+          }
+          subReply.reactions = reactions[subReply.creator.id] ?? [];
+        }
+      }
+      return {
+        ...topic,
+        parent: subject,
+        text: top.text,
+        replies,
+        reactions: reactions[top.id] ?? [],
+      };
+    },
+  );
+
+  app.put(
+    '/subjects/-/topics/:topicID',
+    {
+      schema: {
+        summary: '编辑自己创建的条目讨论',
+        operationId: 'updateSubjectTopic',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          topicID: t.Integer({ examples: [371602], minimum: 0 }),
+        }),
+        body: req.UpdateTopic,
+      },
+      preHandler: [requireLogin('updating a topic')],
+    },
+    async ({ auth, body: { text, title }, params: { topicID } }) => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const topic = await fetcher.fetchSubjectTopicByID(topicID);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+
+      if (
+        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
+          topic.state,
+        )
+      ) {
+        throw new NotAllowedError('edit this topic');
+      }
+      if (topic.creator.id !== auth.userID) {
+        throw new NotAllowedError('update topic');
+      }
+
+      let display = topic.display;
+      if (dam.needReview(title) || dam.needReview(text)) {
+        if (display === TopicDisplay.Normal) {
+          display = TopicDisplay.Review;
+        } else {
+          return {};
+        }
+      }
+
+      await db.transaction(async (t) => {
+        await t
+          .update(schema.chiiSubjectTopics)
+          .set({ title, display })
+          .where(op.eq(schema.chiiSubjectTopics.id, topicID))
+          .execute();
+        await t
+          .update(schema.chiiSubjectPosts)
+          .set({ content: text })
+          .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
+          .execute();
+      });
+
+      return {};
     },
   );
 }

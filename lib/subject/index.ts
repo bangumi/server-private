@@ -20,9 +20,8 @@ import { fetchUsers, SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts
 import { extractDate } from '@app/lib/subject/date.ts';
 import { DATE } from '@app/lib/utils/date.ts';
 import { matchExpected } from '@app/lib/wiki.ts';
+import { getSubjectPlatforms } from '@app/vendor';
 
-import type { Platform } from './platform.ts';
-import platform from './platform.ts';
 import { SubjectType } from './type.ts';
 
 export const InvalidWikiSyntaxError = createError(
@@ -104,7 +103,7 @@ export async function edit({
     // only validate platform when it changed.
     // sometimes main website will add new platform, and our config maybe out-dated.
     if (platform !== s.platform) {
-      const availablePlatforms = platforms(s.typeID);
+      const availablePlatforms = getSubjectPlatforms(s.typeID);
 
       if (!availablePlatforms.map((x) => x.id).includes(platform)) {
         throw new BadRequestError(`platform ${platform} is not a valid platform for subject`);
@@ -282,15 +281,6 @@ async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, nu
     );
 
   return new Map<string, number>(rows.map((item) => [item.name, item.id]));
-}
-
-export function platforms(typeID: SubjectType): Platform[] {
-  const s = platform[typeID];
-  return Object.values(s).sort((a, b) => a.id - b.id);
-}
-
-export function platformString(typeID: SubjectType, platformID: number): Platform | undefined {
-  return platform[typeID][platformID];
 }
 
 export async function uploadCover({

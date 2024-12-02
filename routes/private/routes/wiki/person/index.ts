@@ -22,7 +22,7 @@ export const PersonWikiInfo = t.Object(
     infobox: t.String(),
     summary: t.String(),
   },
-  { $id: 'SubjectWikiInfo' },
+  { $id: 'PersonWikiInfo' },
 );
 
 export const PersonEdit = t.Object(

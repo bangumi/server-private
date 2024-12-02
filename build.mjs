@@ -6,19 +6,16 @@ import * as url from 'node:url';
 import * as esbuild from 'esbuild';
 import { nodeExternalsPlugin } from 'esbuild-node-externals';
 
-await esbuild.build({
-  entryPoints: ['bin/main.ts'],
+const buildConfigs = {
   bundle: true,
   platform: 'node',
   target: 'node20',
   format: 'esm',
   sourcemap: 'linked',
-  outfile: 'dist/index.mjs',
   plugins: [
     nodeExternalsPlugin(),
     {
       name: 'import.meta.url',
-      // eslint-disable-next-line @typescript-eslint/unbound-method
       setup({ onLoad }) {
         onLoad({ filter: /.*\.ts/g, namespace: 'file' }, (args) => {
           let code = fs.readFileSync(args.path, 'utf8');
@@ -30,4 +27,16 @@ await esbuild.build({
       },
     },
   ],
+};
+
+await esbuild.build({
+  entryPoints: ['bin/main.ts'],
+  outfile: 'dist/index.mjs',
+  ...buildConfigs,
+});
+
+await esbuild.build({
+  entryPoints: ['bin/cron.ts'],
+  outfile: 'dist/cron.mjs',
+  ...buildConfigs,
 });
