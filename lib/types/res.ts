@@ -433,6 +433,16 @@ export const SubjectStaff = t.Object(
   { $id: 'SubjectStaff' },
 );
 
+export type ISubjectRec = Static<typeof SubjectRec>;
+export const SubjectRec = t.Object(
+  {
+    subject: t.Ref(SlimSubject),
+    sim: t.Number(),
+    count: t.Integer(),
+  },
+  { $id: 'SubjectRec', title: 'SubjectRec' },
+);
+
 export type ICharacterRelation = Static<typeof CharacterRelation>;
 export const CharacterRelation = t.Object(
   {
