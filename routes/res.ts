@@ -14,6 +14,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Group);
   app.addSchema(res.GroupMember);
   app.addSchema(res.Index);
+  app.addSchema(res.IndexStats);
   app.addSchema(res.Infobox);
   app.addSchema(res.Person);
   app.addSchema(res.PersonCharacter);
@@ -45,6 +46,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Topic);
   app.addSchema(res.TopicDetail);
   app.addSchema(res.User);
+  app.addSchema(res.UserHomepage);
 
   app.addSchema(req.CreateTopic);
   app.addSchema(req.UpdateTopic);

@@ -534,6 +534,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         replies:
           type: integer
+        stats:
+          $ref: '#/components/schemas/IndexStats'
         title:
           type: string
         total:
@@ -550,10 +552,16 @@ exports[`should build private api spec 1`] = `
         - replies
         - total
         - collects
+        - stats
         - createdAt
         - updatedAt
         - creator
       title: Index
+      type: object
+    IndexStats:
+      additionalProperties:
+        type: integer
+      title: IndexStats
       type: object
     Infobox:
       items:
@@ -911,6 +919,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimCharacter:
       properties:
+        comment:
+          type: integer
         id:
           type: integer
         images:
@@ -930,6 +940,7 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - role
+        - comment
         - lock
         - nsfw
       title: SlimCharacter
@@ -956,6 +967,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimPerson:
       properties:
+        comment:
+          type: integer
         id:
           type: integer
         images:
@@ -975,6 +988,7 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - type
+        - comment
         - lock
         - nsfw
       title: SlimPerson
@@ -1729,6 +1743,8 @@ exports[`should build private api spec 1`] = `
           type: string
         group:
           type: integer
+        homepage:
+          $ref: '#/components/schemas/UserHomepage'
         id:
           example: 1
           type: integer
@@ -1761,6 +1777,7 @@ exports[`should build private api spec 1`] = `
         - site
         - location
         - bio
+        - homepage
       title: User
       type: object
     UserCharacterCollection:
@@ -1880,6 +1897,21 @@ exports[`should build private api spec 1`] = `
         - character
         - person
         - index
+      type: object
+    UserHomepage:
+      properties:
+        left:
+          items:
+            type: string
+          type: array
+        right:
+          items:
+            type: string
+          type: array
+      required:
+        - left
+        - right
+      title: UserHomepage
       type: object
     UserIndexCollection:
       properties:
