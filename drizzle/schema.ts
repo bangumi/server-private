@@ -79,7 +79,7 @@ export const chiiCharacters = mysqlTable(
   'chii_characters',
   {
     id: mediumint('crt_id').autoincrement().notNull(),
-    name: varchar('crt_name', { length: 255 }).notNull(),
+    name: htmlEscapedString('varchar')('crt_name', { length: 255 }).notNull(),
     role: tinyint('crt_role').notNull(),
     infobox: htmlEscapedString('mediumtext')('crt_infobox').notNull(),
     summary: mediumtext('crt_summary').notNull(),
@@ -616,7 +616,7 @@ export const chiiPersons = mysqlTable(
   'chii_persons',
   {
     id: mediumint('prsn_id').autoincrement().notNull(),
-    name: varchar('prsn_name', { length: 255 }).notNull(),
+    name: htmlEscapedString('varchar')('prsn_name', { length: 255 }).notNull(),
     type: tinyint('prsn_type').notNull(),
     infobox: htmlEscapedString('mediumtext')('prsn_infobox').notNull(),
     producer: tinyint('prsn_producer').notNull(),
