@@ -752,9 +752,6 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, subjectID);
-      if (!epStatus) {
-        return { data: [], total: 0 };
-      }
       const conditions = op.and(
         op.eq(schema.chiiEpisodes.subjectID, subjectID),
         op.ne(schema.chiiEpisodes.ban, 1),
