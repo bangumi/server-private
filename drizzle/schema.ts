@@ -1008,15 +1008,15 @@ export const chiiSubjectPosts = mysqlTable(
 export const chiiSubjectRec = mysqlTable(
   'chii_subject_rec',
   {
-    subjectId: mediumint('subject_id').notNull(),
-    recSubjectId: mediumint('rec_subject_id').notNull(),
-    mioSim: float('mio_sim').notNull(),
-    mioCount: mediumint('mio_count').notNull(),
+    subjectID: mediumint('subject_id').notNull(),
+    recSubjectID: mediumint('rec_subject_id').notNull(),
+    sim: float('mio_sim').notNull(),
+    count: mediumint('mio_count').notNull(),
   },
   (table) => {
     return {
-      subjectId: index('subject_id').on(table.subjectId),
-      mioCount: index('mio_count').on(table.mioCount),
+      subjectId: index('subject_id').on(table.subjectID),
+      mioCount: index('mio_count').on(table.count),
     };
   },
 );

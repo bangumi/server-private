@@ -38,6 +38,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectRating);
+  app.addSchema(res.SubjectRec);
   app.addSchema(res.SubjectRelation);
   app.addSchema(res.SubjectRelationType);
   app.addSchema(res.SubjectStaff);

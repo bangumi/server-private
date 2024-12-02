@@ -56,6 +56,14 @@ function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): res
   };
 }
 
+function toSubjectRec(subject: orm.ISubject, rec: orm.ISubjectRec): res.ISubjectRec {
+  return {
+    subject: convert.toSlimSubject(subject),
+    sim: rec.sim,
+    count: rec.count,
+  };
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.get(
@@ -376,6 +384,67 @@ export async function setup(app: App) {
       const persons = data.map((d) => toSubjectPerson(d.chii_persons, d.chii_person_cs_index));
       return {
         data: persons,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/recs',
+    {
+      schema: {
+        summary: '获取条目的推荐',
+        operationId: 'getSubjectRecs',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 10, minimum: 1, maximum: 10, description: 'max 10' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.SubjectRec)),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 10, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectRec.subjectID, subjectID),
+        op.ne(schema.chiiSubjects.ban, 1),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectRec)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectRec.recSubjectID, schema.chiiSubjects.id),
+        )
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectRec)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectRec.recSubjectID, schema.chiiSubjects.id),
+        )
+        .where(condition)
+        .orderBy(op.asc(schema.chiiSubjectRec.count))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const recs = data.map((d) => toSubjectRec(d.chii_subjects, d.chii_subject_rec));
+      return {
+        data: recs,
         total: count,
       };
     },
