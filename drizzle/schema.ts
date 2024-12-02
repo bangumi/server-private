@@ -81,7 +81,7 @@ export const chiiCharacters = mysqlTable(
     id: mediumint('crt_id').autoincrement().notNull(),
     name: varchar('crt_name', { length: 255 }).notNull(),
     role: tinyint('crt_role').notNull(),
-    infobox: mediumtext('crt_infobox').notNull(),
+    infobox: htmlEscapedString('mediumtext')('crt_infobox').notNull(),
     summary: mediumtext('crt_summary').notNull(),
     img: varchar('crt_img', { length: 255 }).notNull(),
     comment: mediumint('crt_comment').notNull(),
