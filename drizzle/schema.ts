@@ -481,7 +481,7 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   site: varchar('site', { length: 75 }).default('').notNull(),
   location: varchar('location', { length: 30 }).default('').notNull(),
   bio: text('bio').notNull(),
-  homepage: mediumtext('homepage').notNull(),
+  // homepage: mediumtext('homepage').notNull(),
   privacy: mediumtext('privacy').notNull(),
   blocklist: mediumtext('blocklist').notNull(),
 });

@@ -19,21 +19,6 @@ Object {
 
 [b][url=https://bgm.tv/blog/3998]2. 爱护我们的树洞酱[/url][/b]",
   "group": 10,
-  "homepage": Object {
-    "left": Array [
-      "anime",
-      "game",
-      "book",
-      "music",
-      "real",
-      "blog",
-    ],
-    "right": Array [
-      "friend",
-      "group",
-      "index",
-    ],
-  },
   "id": 382951,
   "joinedAt": 1512262276,
   "location": "",
