@@ -67,6 +67,15 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type IUserHomepage = Static<typeof UserHomepage>;
+export const UserHomepage = t.Object(
+  {
+    left: t.Array(t.String()),
+    right: t.Array(t.String()),
+  },
+  { $id: 'UserHomepage', title: 'UserHomepage' },
+);
+
 export type ISlimUser = Static<typeof SlimUser>;
 export const SlimUser = t.Object(
   {
@@ -94,6 +103,7 @@ export const User = t.Object(
     site: t.String(),
     location: t.String(),
     bio: t.String(),
+    homepage: t.Ref(UserHomepage),
   },
   { $id: 'User', title: 'User' },
 );
@@ -324,6 +334,7 @@ export const SlimCharacter = t.Object(
     nameCN: t.String(),
     role: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
     lock: t.Boolean(),
     nsfw: t.Boolean(),
   },
@@ -369,6 +380,7 @@ export const SlimPerson = t.Object(
     nameCN: t.String(),
     type: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
     lock: t.Boolean(),
     nsfw: t.Boolean(),
   },
@@ -484,6 +496,12 @@ export const PersonCollect = t.Object(
   { $id: 'PersonCollect' },
 );
 
+export type IIndexStats = Static<typeof IndexStats>;
+export const IndexStats = t.Record(t.Integer(), t.Integer(), {
+  $id: 'IndexStats',
+  title: 'IndexStats',
+});
+
 export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
@@ -494,8 +512,7 @@ export const Index = t.Object(
     replies: t.Integer(),
     total: t.Integer(),
     collects: t.Integer(),
-    // TODO: parse stats
-    // stats: t.String(),
+    stats: t.Ref(IndexStats),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
     creator: t.Ref(SlimUser),

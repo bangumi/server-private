@@ -24,6 +24,23 @@ export function extractNameCN(infobox: res.IInfobox): string {
   return infobox.find((x) => ['中文名', '简体中文名'].includes(x.key))?.values[0]?.v ?? '';
 }
 
+export function toIndexStats(stats: string): res.IIndexStats {
+  const result: Record<number, number> = {};
+  if (!stats) {
+    return result;
+  }
+  const statList = php.parse(stats) as Record<number, string>;
+  for (const [key, value] of Object.entries(statList)) {
+    const k = Number.parseInt(key);
+    const v = Number.parseInt(value);
+    if (Number.isNaN(k) || Number.isNaN(v)) {
+      continue;
+    }
+    result[k] = v;
+  }
+  return result;
+}
+
 export function toSubjectTags(tags: string): res.ISubjectTag[] {
   if (!tags) {
     return [];
@@ -33,6 +50,31 @@ export function toSubjectTags(tags: string): res.ISubjectTag[] {
     .filter((x) => x.tag_name !== undefined)
     .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
     .filter((x) => !Number.isNaN(x.count));
+}
+
+export function toUserHomepage(homepage: string): res.IUserHomepage {
+  if (!homepage) {
+    // 默认布局
+    homepage = 'l:anime,game,book,music,real,blog;r:friend,group,index';
+  }
+  const layout: res.IUserHomepage = {
+    left: [],
+    right: [],
+  };
+  for (const item of homepage.split(';')) {
+    const [type, list] = item.split(':');
+    switch (type) {
+      case 'l': {
+        layout.left = list?.split(',') ?? [];
+        break;
+      }
+      case 'r': {
+        layout.right = list?.split(',') ?? [];
+        break;
+      }
+    }
+  }
+  return layout;
 }
 
 // for backward compatibility
@@ -60,6 +102,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     site: fields.site,
     location: fields.location,
     bio: fields.bio,
+    homepage: toUserHomepage(fields.homepage),
   };
 }
 
@@ -301,6 +344,7 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
     nameCN: extractNameCN(infobox),
     role: character.role,
     images: personImages(character.img) || undefined,
+    comment: character.comment,
     nsfw: character.nsfw,
     lock: Boolean(character.lock),
   };
@@ -332,6 +376,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     nameCN: extractNameCN(infobox),
     type: person.type,
     images: personImages(person.img) || undefined,
+    comment: person.comment,
     nsfw: person.nsfw,
     lock: Boolean(person.lock),
   };
@@ -400,6 +445,7 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     replies: index.replies,
     total: index.total,
     collects: index.collects,
+    stats: toIndexStats(index.stats),
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
     creator: toSlimUser(user),

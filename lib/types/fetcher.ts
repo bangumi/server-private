@@ -101,7 +101,7 @@ export async function fetchSubjectsByIDs(
 export async function fetchSubjectEpStatus(
   userID: number,
   subjectID: number,
-): Promise<Record<number, UserEpisodeCollection> | null> {
+): Promise<Record<number, UserEpisodeCollection>> {
   const data = await db
     .select()
     .from(schema.chiiEpStatus)
@@ -112,7 +112,7 @@ export async function fetchSubjectEpStatus(
   for (const d of data) {
     return convert.toSubjectEpStatus(d);
   }
-  return null;
+  return {};
 }
 
 export async function fetchSlimCharacterByID(
