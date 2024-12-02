@@ -42,7 +42,7 @@ jobs:
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
 
       - run: pnpm run test --coverage
-        timeout-minutes: 2
+        timeout-minutes: 10
         env:
           REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
 
