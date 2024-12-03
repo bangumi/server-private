@@ -4,21 +4,58 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { SubjectType } from '@app/lib/subject/type.ts';
+import { EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
 import * as examples from '@app/lib/types/examples.ts';
 
-export enum EpisodeType {
-  /** 本篇 */
-  Normal = 0,
-  /** 特别篇 */
-  Special = 1,
-  Op = 2,
-  ED = 3,
-  /** 预告/宣传/广告 */
-  Pre = 4,
-  MAD = 5,
-  Other = 6,
+export const Paged = <T extends TSchema>(type: T) =>
+  t.Object({
+    data: t.Array(type),
+    total: t.Integer(),
+  });
+
+export const Error = t.Object(
+  {
+    code: t.String(),
+    error: t.String(),
+    message: t.String(),
+    statusCode: t.Integer(),
+  },
+  { $id: 'ErrorResponse', description: 'default error response type' },
+);
+
+export function formatError(e: FastifyError): Static<typeof Error> {
+  const statusCode = e.statusCode ?? 500;
+  return {
+    code: e.code,
+    error: httpCodes.getStatusText(statusCode),
+    message: e.message,
+    statusCode: statusCode,
+  };
 }
+
+export function formatErrors(
+  ...errors: FastifyError[]
+): Record<string, { value: Static<typeof Error> }> {
+  return Object.fromEntries(
+    errors.map((e) => {
+      return [e.code, { value: formatError(e) }];
+    }),
+  );
+}
+
+export function errorResponses(...errors: FastifyError[]): Record<number, unknown> {
+  const status: Record<number, FastifyError[]> = lo.groupBy(errors, (x) => x.statusCode ?? 500);
+
+  return lo.mapValues(status, (errs) => {
+    return t.Ref(Error, {
+      'x-examples': formatErrors(...errs),
+    });
+  });
+}
+
+export type UnknownObject = Record<string, unknown>;
+
+export type EmptyObject = Record<string, number>;
 
 export type IAvatar = Static<typeof Avatar>;
 export const Avatar = t.Object(
@@ -30,13 +67,22 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type IUserHomepage = Static<typeof UserHomepage>;
+export const UserHomepage = t.Object(
+  {
+    left: t.Array(t.String()),
+    right: t.Array(t.String()),
+  },
+  { $id: 'UserHomepage', title: 'UserHomepage' },
+);
+
 export type ISlimUser = Static<typeof SlimUser>;
 export const SlimUser = t.Object(
   {
     id: t.Integer({ examples: [1] }),
     username: t.String({ examples: ['sai'] }),
     nickname: t.String({ examples: ['Sai🖖'] }),
-    avatar: Avatar,
+    avatar: t.Ref(Avatar),
     sign: t.String(),
     joinedAt: t.Integer(),
   },
@@ -49,7 +95,7 @@ export const User = t.Object(
     id: t.Integer({ examples: [1] }),
     username: t.String({ examples: ['sai'] }),
     nickname: t.String({ examples: ['Sai🖖'] }),
-    avatar: Avatar,
+    avatar: t.Ref(Avatar),
     group: t.Integer(),
     user_group: t.Integer({ description: 'deprecated, use group instead' }),
     joinedAt: t.Integer(),
@@ -57,6 +103,8 @@ export const User = t.Object(
     site: t.String(),
     location: t.String(),
     bio: t.String(),
+    // wait for permission
+    // homepage: t.Ref(UserHomepage),
   },
   { $id: 'User', title: 'User' },
 );
@@ -81,11 +129,17 @@ export const InfoboxValue = t.Object(
   { $id: 'InfoboxValue', title: 'InfoboxValue' },
 );
 
+export type IInfoboxItem = Static<typeof InfoboxItem>;
+export const InfoboxItem = t.Object(
+  {
+    key: t.String(),
+    values: t.Array(InfoboxValue),
+  },
+  { $id: 'InfoboxItem', title: 'InfoboxItem' },
+);
+
 export type IInfobox = Static<typeof Infobox>;
-export const Infobox = t.Record(t.String(), t.Array(InfoboxValue), {
-  $id: 'Infobox',
-  title: 'Infobox',
-});
+export const Infobox = t.Array(InfoboxItem, { $id: 'Infobox', title: 'Infobox' });
 
 export type ISubjectAirtime = Static<typeof SubjectAirtime>;
 export const SubjectAirtime = t.Object(
@@ -255,6 +309,7 @@ export const Character = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     role: t.Integer(),
     infobox: t.Ref(Infobox),
     summary: t.String(),
@@ -277,8 +332,10 @@ export const SlimCharacter = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     role: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
     lock: t.Boolean(),
     nsfw: t.Boolean(),
   },
@@ -294,6 +351,7 @@ export const Person = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     type: t.Integer(),
     infobox: t.Ref(Infobox),
     career: t.Array(t.String(), {
@@ -320,8 +378,10 @@ export const SlimPerson = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     type: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
     lock: t.Boolean(),
     nsfw: t.Boolean(),
   },
@@ -330,6 +390,17 @@ export const SlimPerson = t.Object(
     title: 'SlimPerson',
     // examples: [examples.slimPerson],
   },
+);
+
+export type ISubjectComment = Static<typeof SubjectComment>;
+export const SubjectComment = t.Object(
+  {
+    user: t.Ref(SlimUser),
+    rate: t.Integer(),
+    comment: t.String(),
+    updatedAt: t.Integer(),
+  },
+  { $id: 'SubjectComment', title: 'SubjectComment' },
 );
 
 export type ISubjectRelation = Static<typeof SubjectRelation>;
@@ -360,6 +431,16 @@ export const SubjectStaff = t.Object(
     position: t.Ref(SubjectStaffPosition),
   },
   { $id: 'SubjectStaff' },
+);
+
+export type ISubjectRec = Static<typeof SubjectRec>;
+export const SubjectRec = t.Object(
+  {
+    subject: t.Ref(SlimSubject),
+    sim: t.Number(),
+    count: t.Integer(),
+  },
+  { $id: 'SubjectRec', title: 'SubjectRec' },
 );
 
 export type ICharacterRelation = Static<typeof CharacterRelation>;
@@ -426,6 +507,12 @@ export const PersonCollect = t.Object(
   { $id: 'PersonCollect' },
 );
 
+export type IIndexStats = Static<typeof IndexStats>;
+export const IndexStats = t.Record(t.Integer(), t.Integer(), {
+  $id: 'IndexStats',
+  title: 'IndexStats',
+});
+
 export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
@@ -436,8 +523,7 @@ export const Index = t.Object(
     replies: t.Integer(),
     total: t.Integer(),
     collects: t.Integer(),
-    // TODO: parse stats
-    // stats: t.String(),
+    stats: t.Ref(IndexStats),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
     creator: t.Ref(SlimUser),
@@ -457,65 +543,100 @@ export const SlimIndex = t.Object(
   { $id: 'SlimIndex', title: 'SlimIndex' },
 );
 
+export type IGroup = Static<typeof Group>;
+export const Group = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    nsfw: t.Boolean(),
+    title: t.String(),
+    icon: t.String(),
+    description: t.String(),
+    totalMembers: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'Group', title: 'Group' },
+);
+
+export type IGroupMember = Static<typeof GroupMember>;
+export const GroupMember = t.Object(
+  {
+    id: t.Integer(),
+    nickname: t.String(),
+    username: t.String(),
+    avatar: t.Ref(Avatar),
+    joinedAt: t.Integer(),
+  },
+  { $id: 'GroupMember', title: 'GroupMember' },
+);
+
+export type IReaction = Static<typeof Reaction>;
+export const Reaction = t.Object(
+  {
+    selected: t.Boolean(),
+    total: t.Integer(),
+    value: t.Integer(),
+  },
+  { $id: 'Reaction', title: 'Reaction' },
+);
+
+export type ISubReply = Static<typeof SubReply>;
+export const SubReply = t.Object(
+  {
+    id: t.Integer(),
+    creator: t.Ref(SlimUser),
+    createdAt: t.Integer(),
+    isFriend: t.Boolean(),
+    text: t.String(),
+    state: t.Integer(),
+    reactions: t.Array(t.Ref(Reaction)),
+  },
+  { $id: 'SubReply', title: 'SubReply' },
+);
+
+export type IReply = Static<typeof Reply>;
+export const Reply = t.Object(
+  {
+    id: t.Integer(),
+    isFriend: t.Boolean(),
+    replies: t.Array(t.Ref(SubReply)),
+    creator: t.Ref(SlimUser),
+    createdAt: t.Integer(),
+    text: t.String(),
+    state: t.Integer(),
+    reactions: t.Array(t.Ref(Reaction)),
+  },
+  { $id: 'Reply', title: 'Reply' },
+);
+
+export type ITopic = Static<typeof Topic>;
 export const Topic = t.Object(
   {
-    id: t.Integer({ description: 'topic id' }),
-    creator: SlimUser,
+    id: t.Integer(),
+    creator: t.Ref(SlimUser),
     title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
     updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
     repliesCount: t.Integer(),
+    state: t.Integer(),
+    display: t.Integer(),
   },
   { $id: 'Topic', title: 'Topic' },
 );
 
-export const Paged = <T extends TSchema>(type: T) =>
-  t.Object({
-    data: t.Array(type),
-    total: t.Integer(),
-  });
-
-export const Error = t.Object(
+export type ITopicDetail = Static<typeof TopicDetail>;
+export const TopicDetail = t.Object(
   {
-    code: t.String(),
-    error: t.String(),
-    message: t.String(),
-    statusCode: t.Integer(),
+    id: t.Integer(),
+    parent: t.Union([t.Ref(Group), t.Ref(SlimSubject)]),
+    creator: t.Ref(SlimUser),
+    title: t.String(),
+    text: t.String(),
+    state: t.Integer(),
+    createdAt: t.Integer(),
+    replies: t.Array(t.Ref(Reply)),
+    reactions: t.Array(t.Ref(Reaction)),
   },
-  { $id: 'ErrorResponse', description: 'default error response type' },
+  { $id: 'TopicDetail', title: 'TopicDetail' },
 );
-
-export function formatError(e: FastifyError): Static<typeof Error> {
-  const statusCode = e.statusCode ?? 500;
-  return {
-    code: e.code,
-    error: httpCodes.getStatusText(statusCode),
-    message: e.message,
-    statusCode: statusCode,
-  };
-}
-
-export function formatErrors(
-  ...errors: FastifyError[]
-): Record<string, { value: Static<typeof Error> }> {
-  return Object.fromEntries(
-    errors.map((e) => {
-      return [e.code, { value: formatError(e) }];
-    }),
-  );
-}
-
-export function errorResponses(...errors: FastifyError[]): Record<number, unknown> {
-  const status: Record<number, FastifyError[]> = lo.groupBy(errors, (x) => x.statusCode ?? 500);
-
-  return lo.mapValues(status, (errs) => {
-    return t.Ref(Error, {
-      'x-examples': formatErrors(...errs),
-    });
-  });
-}
-
-export type UnknownObject = Record<string, unknown>;
-
-export type EmptyObject = Record<string, number>;

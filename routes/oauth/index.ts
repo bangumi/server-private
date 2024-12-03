@@ -455,55 +455,61 @@ async function tokenFromRefresh(req: {
 }): Promise<ITokenResponse> {
   const now = DateTime.now();
 
-  const refresh = await db.query.chiiOAuthRefreshToken.findFirst({
-    where: op.and(
-      sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`,
-      op.gt(chiiOAuthRefreshToken.expiredAt, now.toJSDate()),
-    ),
-  });
-  if (!refresh) {
-    throw new InvalidRefreshTokenError();
-  }
+  const [accessToken, refreshToken, userID] = await db.transaction(async (t) => {
+    const [refresh] = await t
+      .select()
+      .from(chiiOAuthRefreshToken)
+      .where(
+        op.and(
+          sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`,
+          op.gt(chiiOAuthRefreshToken.expiredAt, now.toJSDate()),
+        ),
+      )
+      .limit(1)
+      .for('update')
+      .execute();
+    if (!refresh) {
+      throw new InvalidRefreshTokenError();
+    }
 
-  const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await db
-    .select()
-    .from(chiiOauthClients)
-    .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
-    .where(op.eq(chiiOauthClients.clientID, req.clientID))
-    .limit(1)
-    .execute();
-  if (!client || !app) {
-    throw new InvalidClientIDError();
-  }
-  if (client.redirectUri !== req.redirectUri) {
-    throw new RedirectUriMismatchError();
-  }
-  if (client.clientSecret !== req.clientSecret) {
-    throw new InvalidClientSecretError();
-  }
+    const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await t
+      .select()
+      .from(chiiOauthClients)
+      .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
+      .where(op.eq(chiiOauthClients.clientID, req.clientID))
+      .limit(1)
+      .execute();
+    if (!client || !app) {
+      throw new InvalidClientIDError();
+    }
+    if (client.redirectUri !== req.redirectUri) {
+      throw new RedirectUriMismatchError();
+    }
+    if (client.clientSecret !== req.clientSecret) {
+      throw new InvalidClientSecretError();
+    }
 
-  const token: typeof chiiAccessToken.$inferInsert = {
-    type: TokenType.AccessToken,
-    userID: refresh.userID,
-    clientID: client.clientID,
-    accessToken: await randomBase64url(30),
-    expiredAt: now.plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS })).toJSDate(),
-    scope: refresh.scope,
-    info: JSON.stringify({
-      name: app.name,
-      created_at: now.toISO(),
-    } satisfies TokenInfo),
-  };
+    const token: typeof chiiAccessToken.$inferInsert = {
+      type: TokenType.AccessToken,
+      userID: refresh.userID,
+      clientID: client.clientID,
+      accessToken: await randomBase64url(30),
+      expiredAt: now.plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS })).toJSDate(),
+      scope: refresh.scope,
+      info: JSON.stringify({
+        name: app.name,
+        created_at: now.toISO(),
+      } satisfies TokenInfo),
+    };
 
-  const newRefresh: typeof chiiOAuthRefreshToken.$inferInsert = {
-    userID: refresh.userID,
-    clientID: client.clientID,
-    refreshToken: await randomBase64url(30),
-    expiredAt: now.plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS })).toJSDate(),
-    scope: refresh.scope,
-  };
+    const newRefresh: typeof chiiOAuthRefreshToken.$inferInsert = {
+      userID: refresh.userID,
+      clientID: client.clientID,
+      refreshToken: await randomBase64url(30),
+      expiredAt: now.plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS })).toJSDate(),
+      scope: refresh.scope,
+    };
 
-  await db.transaction(async (t) => {
     await t.insert(chiiAccessToken).values(token);
     await t.insert(chiiOAuthRefreshToken).values(newRefresh);
 
@@ -512,13 +518,15 @@ async function tokenFromRefresh(req: {
       .set({ expiredAt: now.toJSDate() })
       .where(sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`)
       .execute();
+
+    return [token.accessToken, newRefresh.refreshToken, refresh.userID];
   });
 
   return {
-    access_token: token.accessToken,
+    access_token: accessToken,
     expires_in: ACCESS_TOKEN_TTL_SECONDS,
     token_type: 'Bearer',
-    refresh_token: newRefresh.refreshToken,
-    user_id: newRefresh.userID,
+    refresh_token: refreshToken,
+    user_id: userID,
   };
 }

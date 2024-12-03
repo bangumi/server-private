@@ -31,33 +31,7 @@ import { rateLimit } from '@app/routes/hooks/rate-limit.ts';
 import type { IBasicReply } from '@app/routes/private/routes/post.ts';
 
 import { NotAllowedError } from './../auth/index';
-
-export { CanViewTopicContent, ListTopicDisplays } from './display.ts';
-
-export const enum Type {
-  group = 'group',
-  subject = 'subject',
-}
-
-export const enum CommentState {
-  Normal = 0, // 正常
-  // CommentStateAdminCloseTopic 管理员关闭主题 https://bgm.tv/subject/topic/12629#post_108127
-  AdminCloseTopic = 1, // 关闭
-  AdminReopen = 2, // 重开
-  AdminPin = 3, // 置顶
-  AdminMerge = 4, // 合并
-  // CommentStateAdminSilentTopic 管理员下沉 https://bgm.tv/subject/topic/18784#post_160402
-  AdminSilentTopic = 5, // 下沉
-  UserDelete = 6, // 自行删除
-  AdminDelete = 7, // 管理员删除
-  AdminOffTopic = 8, // 折叠
-}
-
-export const enum TopicDisplay {
-  Ban = 0, // 软删除
-  Normal = 1,
-  Review = 2,
-}
+import { CommentState, TopicParentType } from './type.ts';
 
 interface IPost {
   id: number;
@@ -66,7 +40,7 @@ interface IPost {
   state: CommentState;
   content: string;
   topicID: number;
-  type: Type;
+  type: TopicParentType;
 }
 
 export type ISubReply = IBaseReply;
@@ -92,16 +66,16 @@ export interface ITopicDetails {
 
 export async function fetchTopicDetail(
   auth: IAuth,
-  type: Type,
+  type: TopicParentType,
   id: number,
 ): Promise<ITopicDetails | null> {
   let topic: orm.entity.GroupTopic | orm.entity.SubjectTopic | null;
   switch (type) {
-    case Type.group: {
+    case TopicParentType.Group: {
       topic = await GroupTopicRepo.findOne({ where: { id: id } });
       break;
     }
-    case Type.subject: {
+    case TopicParentType.Subject: {
       topic = await SubjectTopicRepo.findOne({ where: { id: id } });
       break;
     }
@@ -114,17 +88,17 @@ export async function fetchTopicDetail(
     return null;
   }
 
-  if (!CanViewTopicContent(auth, topic)) {
+  if (!CanViewTopicContent(auth, topic.state, topic.display, topic.creatorID)) {
     return null;
   }
 
   let replies: orm.entity.GroupPost[] | orm.entity.SubjectPost[];
   switch (type) {
-    case Type.group: {
+    case TopicParentType.Group: {
       replies = await GroupPostRepo.find({ where: { topicID: topic.id } });
       break;
     }
-    case Type.subject: {
+    case TopicParentType.Subject: {
       replies = await SubjectPostRepo.find({ where: { topicID: topic.id } });
       break;
     }
@@ -192,11 +166,13 @@ export interface ITopic {
   createdAt: number;
   title: string;
   repliesCount: number;
+  state: number;
+  display: number;
 }
 
 export async function fetchTopicList(
   auth: IAuth,
-  topicType: Type,
+  topicType: TopicParentType,
   id: number,
   { limit = 30, offset = 0 }: Page,
 ): Promise<[number, ITopic[]]> {
@@ -208,7 +184,7 @@ export async function fetchTopicList(
   let total = 0;
   let topics: entity.GroupTopic[] | entity.SubjectTopic[];
   switch (topicType) {
-    case Type.group: {
+    case TopicParentType.Group: {
       total = await GroupTopicRepo.count({ where });
       topics = await GroupTopicRepo.find({
         where,
@@ -218,7 +194,7 @@ export async function fetchTopicList(
       });
       break;
     }
-    case Type.subject: {
+    case TopicParentType.Subject: {
       total = await SubjectTopicRepo.count({ where });
       topics = await SubjectTopicRepo.find({
         where,
@@ -244,6 +220,8 @@ export async function fetchTopicList(
         createdAt: x.createdAt,
         updatedAt: x.updatedAt,
         repliesCount: x.replies,
+        state: x.state,
+        display: x.display,
       };
     }),
   ];
@@ -263,7 +241,7 @@ export async function createTopicReply({
   parentID,
   state = CommentState.Normal,
 }: {
-  topicType: Type;
+  topicType: TopicParentType;
   topicID: number;
   userID: number;
   content: string;
@@ -277,12 +255,12 @@ export async function createTopicReply({
     let topicRepo: Repository<entity.GroupTopic> | Repository<entity.SubjectTopic>;
 
     switch (topicType) {
-      case Type.group: {
+      case TopicParentType.Group: {
         postRepo = t.getRepository(entity.GroupPost);
         topicRepo = t.getRepository(entity.GroupTopic);
         break;
       }
-      case Type.subject: {
+      case TopicParentType.Subject: {
         postRepo = t.getRepository(entity.SubjectPost);
         topicRepo = t.getRepository(entity.SubjectTopic);
         break;
@@ -306,7 +284,7 @@ export async function createTopicReply({
       replies: posts,
     } as QueryDeepPartialEntity<entity.GroupTopic>;
 
-    if (topicType === Type.subject) {
+    if (topicType === TopicParentType.Subject) {
       topicUpdate = {
         replies: posts,
       } as QueryDeepPartialEntity<entity.SubjectTopic>;
@@ -332,8 +310,16 @@ export async function createTopicReply({
   };
 }
 
-function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.GroupTopic): number {
-  if (type === Type.group && [364].includes(main_info.parentID) && main_info.replies > 0) {
+function scoredUpdateTime(
+  timestamp: number,
+  type: TopicParentType,
+  main_info: entity.GroupTopic,
+): number {
+  if (
+    type === TopicParentType.Group &&
+    [364].includes(main_info.parentID) &&
+    main_info.replies > 0
+  ) {
     const $created_at = main_info.createdAt;
     const $created_hours = (timestamp - $created_at) / 3600;
     const $gravity = 1.8;
@@ -347,7 +333,7 @@ function scoredUpdateTime(timestamp: number, type: Type, main_info: entity.Group
 
 export async function handleTopicReply(
   auth: IAuth,
-  topicType: Type,
+  topicType: TopicParentType,
   topicID: number,
   content: string,
   replyTo: number,
@@ -398,7 +384,7 @@ export async function handleTopicReply(
     parentID = replied.repliedTo || replied.id;
   }
 
-  if (topicType === Type.group) {
+  if (topicType === TopicParentType.Group) {
     const group = await GroupRepo.findOneOrFail({
       where: { id: topic.parentID },
     });
@@ -420,11 +406,11 @@ export async function handleTopicReply(
 
   let notifyType;
   switch (topicType) {
-    case Type.group: {
+    case TopicParentType.Group: {
       notifyType = replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply;
       break;
     }
-    case Type.subject: {
+    case TopicParentType.Subject: {
       notifyType = replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply;
       break;
     }

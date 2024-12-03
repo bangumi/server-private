@@ -37,6 +37,20 @@ const customBoolean = customType<{ data: boolean }>({
   },
 });
 
+const htmlEscapedString = (t: string) =>
+  customType<{ data: string; driverData: string }>({
+    dataType() {
+      return t;
+    },
+    fromDriver(value) {
+      return lo.unescape(value);
+    },
+
+    toDriver(value) {
+      return lo.escape(value);
+    },
+  });
+
 export const chiiApp = mysqlTable(
   'chii_apps',
   {
@@ -65,9 +79,9 @@ export const chiiCharacters = mysqlTable(
   'chii_characters',
   {
     id: mediumint('crt_id').autoincrement().notNull(),
-    name: varchar('crt_name', { length: 255 }).notNull(),
+    name: htmlEscapedString('varchar')('crt_name', { length: 255 }).notNull(),
     role: tinyint('crt_role').notNull(),
-    infobox: mediumtext('crt_infobox').notNull(),
+    infobox: htmlEscapedString('mediumtext')('crt_infobox').notNull(),
     summary: mediumtext('crt_summary').notNull(),
     img: varchar('crt_img', { length: 255 }).notNull(),
     comment: mediumint('crt_comment').notNull(),
@@ -116,7 +130,7 @@ export const chiiCrtComments = mysqlTable(
     crtPstUid: mediumint('crt_pst_uid').notNull(),
     crtPstRelated: mediumint('crt_pst_related').notNull(),
     crtPstDateline: int('crt_pst_dateline').notNull(),
-    crtPstContent: mediumtext('crt_pst_content').notNull(),
+    crtPstContent: htmlEscapedString('mediumtext')('crt_pst_content').notNull(),
   },
   (table) => {
     return {
@@ -188,7 +202,7 @@ export const chiiEpComments = mysqlTable(
     epPstUid: mediumint('ep_pst_uid').notNull(),
     epPstRelated: mediumint('ep_pst_related').notNull(),
     epPstDateline: int('ep_pst_dateline').notNull(),
-    epPstContent: mediumtext('ep_pst_content').notNull(),
+    epPstContent: htmlEscapedString('mediumtext')('ep_pst_content').notNull(),
     epPstState: tinyint('ep_pst_state').notNull(),
   },
   (table) => {
@@ -285,7 +299,7 @@ export const chiiGroupPosts = mysqlTable(
     grpPstMid: mediumint('grp_pst_mid').notNull(),
     grpPstUid: mediumint('grp_pst_uid').notNull(),
     grpPstRelated: mediumint('grp_pst_related').notNull(),
-    grpPstContent: mediumtext('grp_pst_content').notNull(),
+    grpPstContent: htmlEscapedString('mediumtext')('grp_pst_content').notNull(),
     grpPstState: tinyint('grp_pst_state').notNull(),
     grpPstDateline: int('grp_pst_dateline').default(0).notNull(),
   },
@@ -367,11 +381,11 @@ export const chiiIndexComments = mysqlTable(
   'chii_index_comments',
   {
     id: mediumint('idx_pst_id').autoincrement().notNull(),
-    mid: mediumint('idx_pst_mid').notNull(),
+    mid: mediumint('idx_pst_mid').notNull(), // index id
     uid: mediumint('idx_pst_uid').notNull(),
     related: mediumint('idx_pst_related').notNull(),
     createdAt: int('idx_pst_dateline').notNull(),
-    content: mediumtext('idx_pst_content').notNull(),
+    content: htmlEscapedString('mediumtext')('idx_pst_content').notNull(),
   },
   (table) => {
     return {
@@ -467,7 +481,7 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   site: varchar('site', { length: 75 }).default('').notNull(),
   location: varchar('location', { length: 30 }).default('').notNull(),
   bio: text('bio').notNull(),
-  homepage: mediumtext('homepage').notNull(),
+  // homepage: mediumtext('homepage').notNull(),
   privacy: mediumtext('privacy').notNull(),
   blocklist: mediumtext('blocklist').notNull(),
 });
@@ -602,9 +616,9 @@ export const chiiPersons = mysqlTable(
   'chii_persons',
   {
     id: mediumint('prsn_id').autoincrement().notNull(),
-    name: varchar('prsn_name', { length: 255 }).notNull(),
+    name: htmlEscapedString('varchar')('prsn_name', { length: 255 }).notNull(),
     type: tinyint('prsn_type').notNull(),
-    infobox: mediumtext('prsn_infobox').notNull(),
+    infobox: htmlEscapedString('mediumtext')('prsn_infobox').notNull(),
     producer: tinyint('prsn_producer').notNull(),
     mangaka: tinyint('prsn_mangaka').notNull(),
     artist: tinyint('prsn_artist').notNull(),
@@ -663,7 +677,7 @@ export const chiiPersonCollects = mysqlTable(
   {
     id: mediumint('prsn_clt_id').autoincrement().notNull(),
     cat: mysqlEnum('prsn_clt_cat', ['prsn', 'crt']).notNull(),
-    mid: mediumint('prsn_clt_mid').notNull(),
+    mid: mediumint('prsn_clt_mid').notNull(), // person id or character id
     uid: mediumint('prsn_clt_uid').notNull(),
     createdAt: int('prsn_clt_dateline').notNull(),
   },
@@ -767,7 +781,7 @@ export const chiiPrsnComments = mysqlTable(
     prsnPstUid: mediumint('prsn_pst_uid').notNull(),
     prsnPstRelated: mediumint('prsn_pst_related').notNull(),
     prsnPstDateline: int('prsn_pst_dateline').notNull(),
-    prsnPstContent: mediumtext('prsn_pst_content').notNull(),
+    prsnPstContent: htmlEscapedString('mediumtext')('prsn_pst_content').notNull(),
   },
   (table) => {
     return {
@@ -803,20 +817,6 @@ export const chiiRevText = mysqlTable('chii_rev_text', {
   // Warning: Can't parse mediumblob from database
   // mediumblobType: mediumblob("rev_text").notNull(),
 });
-
-const htmlEscapedString = (t: string) =>
-  customType<{ data: string; driverData: string }>({
-    dataType() {
-      return t;
-    },
-    fromDriver(value) {
-      return lo.unescape(value);
-    },
-
-    toDriver(value) {
-      return lo.escape(value);
-    },
-  });
 
 export const chiiSubjects = mysqlTable('chii_subjects', {
   id: mediumint('subject_id').autoincrement().notNull(),
@@ -918,7 +918,7 @@ export const chiiSubjectInterests = mysqlTable(
     rate: tinyint('interest_rate').default(0).notNull(),
     type: tinyint('interest_type').default(0).notNull(),
     hasComment: tinyint('interest_has_comment').notNull(),
-    comment: mediumtext('interest_comment').notNull(),
+    comment: htmlEscapedString('mediumtext')('interest_comment').notNull(),
     tag: mediumtext('interest_tag').notNull(),
     epStatus: mediumint('interest_ep_status').notNull(),
     volStatus: mediumint('interest_vol_status').notNull(),
@@ -988,19 +988,19 @@ export const chiiSubjectInterests = mysqlTable(
 export const chiiSubjectPosts = mysqlTable(
   'chii_subject_posts',
   {
-    sbjPstId: mediumint('sbj_pst_id').autoincrement().notNull(),
-    sbjPstMid: mediumint('sbj_pst_mid').notNull(),
-    sbjPstUid: mediumint('sbj_pst_uid').notNull(),
-    sbjPstRelated: mediumint('sbj_pst_related').notNull(),
-    sbjPstContent: mediumtext('sbj_pst_content').notNull(),
-    sbjPstState: tinyint('sbj_pst_state').notNull(),
-    sbjPstDateline: int('sbj_pst_dateline').default(0).notNull(),
+    id: mediumint('sbj_pst_id').primaryKey().autoincrement().notNull(),
+    mid: mediumint('sbj_pst_mid').notNull(), // subject id
+    uid: mediumint('sbj_pst_uid').notNull(),
+    related: mediumint('sbj_pst_related').notNull(),
+    content: htmlEscapedString('mediumtext')('sbj_pst_content').notNull(),
+    state: tinyint('sbj_pst_state').notNull(),
+    createdAt: int('sbj_pst_dateline').default(0).notNull(),
   },
   (table) => {
     return {
-      pssTopicId: index('pss_topic_id').on(table.sbjPstMid),
-      sbjPstRelated: index('sbj_pst_related').on(table.sbjPstRelated),
-      sbjPstUid: index('sbj_pst_uid').on(table.sbjPstUid),
+      pssTopicId: index('pss_topic_id').on(table.mid),
+      sbjPstRelated: index('sbj_pst_related').on(table.related),
+      sbjPstUid: index('sbj_pst_uid').on(table.uid),
     };
   },
 );
@@ -1008,15 +1008,15 @@ export const chiiSubjectPosts = mysqlTable(
 export const chiiSubjectRec = mysqlTable(
   'chii_subject_rec',
   {
-    subjectId: mediumint('subject_id').notNull(),
-    recSubjectId: mediumint('rec_subject_id').notNull(),
-    mioSim: float('mio_sim').notNull(),
-    mioCount: mediumint('mio_count').notNull(),
+    subjectID: mediumint('subject_id').notNull(),
+    recSubjectID: mediumint('rec_subject_id').notNull(),
+    sim: float('mio_sim').notNull(),
+    count: mediumint('mio_count').notNull(),
   },
   (table) => {
     return {
-      subjectId: index('subject_id').on(table.subjectId),
-      mioCount: index('mio_count').on(table.mioCount),
+      subjectId: index('subject_id').on(table.subjectID),
+      mioCount: index('mio_count').on(table.count),
     };
   },
 );
@@ -1066,26 +1066,22 @@ export const chiiSubjectRev = mysqlTable('chii_subject_revisions', {
 export const chiiSubjectTopics = mysqlTable(
   'chii_subject_topics',
   {
-    sbjTpcId: mediumint('sbj_tpc_id').autoincrement().notNull(),
-    sbjTpcSubjectId: mediumint('sbj_tpc_subject_id').notNull(),
-    sbjTpcUid: mediumint('sbj_tpc_uid').notNull(),
-    sbjTpcTitle: varchar('sbj_tpc_title', { length: 80 }).notNull(),
-    sbjTpcDateline: int('sbj_tpc_dateline').default(0).notNull(),
-    sbjTpcLastpost: int('sbj_tpc_lastpost').default(0).notNull(),
-    sbjTpcReplies: mediumint('sbj_tpc_replies').notNull(),
-    sbjTpcState: tinyint('sbj_tpc_state').notNull(),
-    sbjTpcDisplay: tinyint('sbj_tpc_display').default(1).notNull(),
+    id: mediumint('sbj_tpc_id').autoincrement().notNull(),
+    subjectID: mediumint('sbj_tpc_subject_id').notNull(),
+    uid: mediumint('sbj_tpc_uid').notNull(),
+    title: varchar('sbj_tpc_title', { length: 80 }).notNull(),
+    createdAt: int('sbj_tpc_dateline').default(0).notNull(),
+    updatedAt: int('sbj_tpc_lastpost').default(0).notNull(),
+    replies: mediumint('sbj_tpc_replies').notNull(),
+    state: tinyint('sbj_tpc_state').notNull(),
+    display: tinyint('sbj_tpc_display').default(1).notNull(),
   },
   (table) => {
     return {
-      tpcSubjectId: index('tpc_subject_id').on(table.sbjTpcSubjectId),
-      tpcDisplay: index('tpc_display').on(table.sbjTpcDisplay),
-      sbjTpcUid: index('sbj_tpc_uid').on(table.sbjTpcUid),
-      sbjTpcLastpost: index('sbj_tpc_lastpost').on(
-        table.sbjTpcLastpost,
-        table.sbjTpcSubjectId,
-        table.sbjTpcDisplay,
-      ),
+      tpcSubjectId: index('tpc_subject_id').on(table.subjectID),
+      tpcDisplay: index('tpc_display').on(table.display),
+      sbjTpcUid: index('sbj_tpc_uid').on(table.uid),
+      sbjTpcLastpost: index('sbj_tpc_lastpost').on(table.updatedAt, table.subjectID, table.display),
     };
   },
 );

@@ -17,6 +17,20 @@ export async function fetchSlimUserByUsername(username: string): Promise<res.ISl
   return null;
 }
 
+export async function fetchFriendsByUserID(userID: number): Promise<res.IFriend[]> {
+  const data = await db
+    .select()
+    .from(schema.chiiFriends)
+    .innerJoin(schema.chiiUsers, op.eq(schema.chiiFriends.fid, schema.chiiUsers.id))
+    .where(op.eq(schema.chiiFriends.uid, userID))
+    .execute();
+  const list: res.IFriend[] = [];
+  for (const d of data) {
+    list.push(convert.toFriend(d.chii_members, d.chii_friends));
+  }
+  return list;
+}
+
 export async function fetchSlimSubjectByID(
   id: number,
   allowNsfw = false,
@@ -87,7 +101,7 @@ export async function fetchSubjectsByIDs(
 export async function fetchSubjectEpStatus(
   userID: number,
   subjectID: number,
-): Promise<Record<number, UserEpisodeCollection> | null> {
+): Promise<Record<number, UserEpisodeCollection>> {
   const data = await db
     .select()
     .from(schema.chiiEpStatus)
@@ -98,7 +112,7 @@ export async function fetchSubjectEpStatus(
   for (const d of data) {
     return convert.toSubjectEpStatus(d);
   }
-  return null;
+  return {};
 }
 
 export async function fetchSlimCharacterByID(
@@ -245,4 +259,45 @@ export async function fetchCastsByPersonAndCharacterIDs(
     map.set(d.chii_crt_cast_index.characterID, list);
   }
   return map;
+}
+
+export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | null> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectTopics)
+    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
+    .where(op.eq(schema.chiiSubjectTopics.id, topicID))
+    .execute();
+  for (const d of data) {
+    return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
+  }
+  return null;
+}
+
+export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promise<res.IReply[]> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectPosts)
+    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectPosts.uid, schema.chiiUsers.id))
+    .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
+    .execute();
+
+  const subReplies: Record<number, res.ISubReply[]> = {};
+  const topLevelReplies: res.IReply[] = [];
+  for (const d of data) {
+    const related = d.chii_subject_posts.related;
+    if (related == 0) {
+      const reply = convert.toSubjectTopicReply(d.chii_subject_posts, d.chii_members);
+      topLevelReplies.push(reply);
+    } else {
+      const subReply = convert.toSubjectTopicSubReply(d.chii_subject_posts, d.chii_members);
+      const list = subReplies[related] ?? [];
+      list.push(subReply);
+      subReplies[related] = list;
+    }
+  }
+  for (const reply of topLevelReplies) {
+    reply.replies = subReplies[reply.id] ?? [];
+  }
+  return topLevelReplies;
 }

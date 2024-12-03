@@ -15,115 +15,164 @@ Object {
     "medium": "https://lain.bgm.tv/pic/crt/m/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
     "small": "https://lain.bgm.tv/pic/crt/s/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
   },
-  "infobox": Object {
-    "BWH": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "FanClub": Array [
-      Object {
-        "v": "https://fanclub.mizukinana.jp",
-      },
-    ],
-    "Twitter": Array [
-      Object {
-        "v": "https://twitter.com/NM_NANAPARTY",
-      },
-    ],
-    "个人状态": Array [
-      Object {
-        "v": "已婚",
-      },
-    ],
-    "体重": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "出身地区": Array [
-      Object {
-        "v": "爱媛县 新居滨市",
-      },
-    ],
-    "别名": Array [
-      Object {
-        "k": "第二中文名",
-        "v": "",
-      },
-      Object {
-        "k": "英文名",
-        "v": "",
-      },
-      Object {
-        "k": "日文名",
-        "v": "近藤奈々 (こんどう なな)",
-      },
-      Object {
-        "k": "纯假名",
-        "v": "みずき なな",
-      },
-      Object {
-        "k": "罗马字",
-        "v": "Mizuki Nana",
-      },
-      Object {
-        "k": "昵称",
-        "v": "奈々ちゃん、奈々さん、奈々様、お奈々、ヘッド",
-      },
-      Object {
-        "k": "其他名义",
-        "v": "",
-      },
-    ],
-    "官网": Array [
-      Object {
-        "v": "https://www.mizukinana.jp",
-      },
-    ],
-    "引用来源": Array [
-      Object {
-        "v": "zh.moegirl.org.cn",
-      },
-    ],
-    "性别": Array [
-      Object {
-        "v": "女",
-      },
-    ],
-    "所属公司": Array [
-      Object {
-        "v": "StarCrew(事务所) / KING AMUSEMENT CREATIVE(唱片公司)",
-      },
-    ],
-    "星座": Array [
-      Object {
-        "v": "水瓶座",
-      },
-    ],
-    "生日": Array [
-      Object {
-        "v": "1980年1月21日",
-      },
-    ],
-    "简体中文名": Array [
-      Object {
-        "v": "水树奈奈",
-      },
-    ],
-    "血型": Array [
-      Object {
-        "v": "O型",
-      },
-    ],
-    "身高": Array [
-      Object {
-        "v": "153cm",
-      },
-    ],
-  },
+  "infobox": Array [
+    Object {
+      "key": "简体中文名",
+      "values": Array [
+        Object {
+          "v": "水树奈奈",
+        },
+      ],
+    },
+    Object {
+      "key": "别名",
+      "values": Array [
+        Object {
+          "k": "第二中文名",
+          "v": "",
+        },
+        Object {
+          "k": "英文名",
+          "v": "",
+        },
+        Object {
+          "k": "日文名",
+          "v": "近藤奈々 (こんどう なな)",
+        },
+        Object {
+          "k": "纯假名",
+          "v": "みずき なな",
+        },
+        Object {
+          "k": "罗马字",
+          "v": "Mizuki Nana",
+        },
+        Object {
+          "k": "昵称",
+          "v": "奈々ちゃん、奈々さん、奈々様、お奈々、ヘッド",
+        },
+        Object {
+          "k": "其他名义",
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "性别",
+      "values": Array [
+        Object {
+          "v": "女",
+        },
+      ],
+    },
+    Object {
+      "key": "生日",
+      "values": Array [
+        Object {
+          "v": "1980年1月21日",
+        },
+      ],
+    },
+    Object {
+      "key": "血型",
+      "values": Array [
+        Object {
+          "v": "O型",
+        },
+      ],
+    },
+    Object {
+      "key": "身高",
+      "values": Array [
+        Object {
+          "v": "153cm",
+        },
+      ],
+    },
+    Object {
+      "key": "体重",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "BWH",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "引用来源",
+      "values": Array [
+        Object {
+          "v": "zh.moegirl.org.cn",
+        },
+      ],
+    },
+    Object {
+      "key": "星座",
+      "values": Array [
+        Object {
+          "v": "水瓶座",
+        },
+      ],
+    },
+    Object {
+      "key": "出身地区",
+      "values": Array [
+        Object {
+          "v": "爱媛县 新居滨市",
+        },
+      ],
+    },
+    Object {
+      "key": "所属公司",
+      "values": Array [
+        Object {
+          "v": "StarCrew(事务所) / KING AMUSEMENT CREATIVE(唱片公司)",
+        },
+      ],
+    },
+    Object {
+      "key": "个人状态",
+      "values": Array [
+        Object {
+          "v": "已婚",
+        },
+      ],
+    },
+    Object {
+      "key": "官网",
+      "values": Array [
+        Object {
+          "v": "https://www.mizukinana.jp",
+        },
+      ],
+    },
+    Object {
+      "key": "FanClub",
+      "values": Array [
+        Object {
+          "v": "https://fanclub.mizukinana.jp",
+        },
+      ],
+    },
+    Object {
+      "key": "Twitter",
+      "values": Array [
+        Object {
+          "v": "https://twitter.com/NM_NANAPARTY",
+        },
+      ],
+    },
+  ],
   "lock": false,
   "name": "水樹奈々",
+  "nameCN": "水树奈奈",
   "nsfw": false,
   "redirect": 0,
   "summary": "原名 近藤 奈々（こんどう なな），日本女性声优兼歌手。有个妹妹名字是近藤美香，为Daisy×Daisy主唱。

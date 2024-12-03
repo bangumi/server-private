@@ -11,74 +11,108 @@ Object {
     "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
     "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
   },
-  "infobox": Object {
-    "BWH": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "体重": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "别名": Array [
-      Object {
-        "k": "日文名",
-        "v": "ちぃ",
-      },
-      Object {
-        "k": "罗马字",
-        "v": "chii",
-      },
-      Object {
-        "k": "第二中文名",
-        "v": "小唧",
-      },
-    ],
-    "声优": Array [
-      Object {
-        "v": "田中理惠",
-      },
-    ],
-    "引用来源": Array [
-      Object {
-        "v": "anidb.net",
-      },
-    ],
-    "忌日": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "性别": Array [
-      Object {
-        "v": "女",
-      },
-    ],
-    "生日": Array [
-      Object {
-        "v": "4月13日",
-      },
-    ],
-    "简体中文名": Array [
-      Object {
-        "v": "小叽",
-      },
-    ],
-    "血型": Array [
-      Object {
-        "v": "",
-      },
-    ],
-    "身高": Array [
-      Object {
-        "v": "152cm",
-      },
-    ],
-  },
+  "infobox": Array [
+    Object {
+      "key": "生日",
+      "values": Array [
+        Object {
+          "v": "4月13日",
+        },
+      ],
+    },
+    Object {
+      "key": "身高",
+      "values": Array [
+        Object {
+          "v": "152cm",
+        },
+      ],
+    },
+    Object {
+      "key": "性别",
+      "values": Array [
+        Object {
+          "v": "女",
+        },
+      ],
+    },
+    Object {
+      "key": "别名",
+      "values": Array [
+        Object {
+          "k": "日文名",
+          "v": "ちぃ",
+        },
+        Object {
+          "k": "罗马字",
+          "v": "chii",
+        },
+        Object {
+          "k": "第二中文名",
+          "v": "小唧",
+        },
+      ],
+    },
+    Object {
+      "key": "引用来源",
+      "values": Array [
+        Object {
+          "v": "anidb.net",
+        },
+      ],
+    },
+    Object {
+      "key": "简体中文名",
+      "values": Array [
+        Object {
+          "v": "小叽",
+        },
+      ],
+    },
+    Object {
+      "key": "忌日",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "血型",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "体重",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "BWH",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "声优",
+      "values": Array [
+        Object {
+          "v": "田中理惠",
+        },
+      ],
+    },
+  ],
   "lock": false,
   "name": "ちぃ",
+  "nameCN": "小叽",
   "nsfw": false,
   "redirect": 0,
   "role": 1,
