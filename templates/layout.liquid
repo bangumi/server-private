@@ -10,11 +10,18 @@
 
     <link rel='shortcut icon' href='https://bgm.tv/img/favicon.ico' type='image/x-icon'>
 
+    <meta
+      name='viewport'
+      content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
+    >
+
     {% block head %}
     {% endblock %}
   </head>
   <body>
-    {% include 'partial/header' %}
+    {% if header != 'disable' %}
+      {% include 'partial/header' %}
+    {% endif %}
 
     {% block content -%}
     {%- endblock %}
