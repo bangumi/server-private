@@ -276,16 +276,25 @@ export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubj
   };
 }
 
-export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
-  const position = findSubjectStaffPosition(relation.subjectType, relation.position);
-  if (!position) {
+export function toSubjectStaffPositionType(
+  relation: orm.IPersonSubject,
+): res.ISubjectStaffPositionType {
+  const positionType = findSubjectStaffPosition(relation.subjectType, relation.position);
+  if (!positionType) {
     return { id: relation.position, en: '', cn: '', jp: '' };
   }
   return {
     id: relation.position,
-    en: position.en,
-    cn: position.cn,
-    jp: position.jp,
+    en: positionType.en,
+    cn: positionType.cn,
+    jp: positionType.jp,
+  };
+}
+
+export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
+  return {
+    summary: relation.summary,
+    type: toSubjectStaffPositionType(relation),
   };
 }
 

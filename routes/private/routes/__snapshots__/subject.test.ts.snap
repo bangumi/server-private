@@ -591,12 +591,17 @@ Object {
         "nsfw": false,
         "type": 3,
       },
-      "position": Object {
-        "cn": "原作",
-        "en": "Original Creator/Original Work",
-        "id": 1,
-        "jp": "",
-      },
+      "positions": Array [
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "原作",
+            "en": "Original Creator/Original Work",
+            "id": 1,
+            "jp": "",
+          },
+        },
+      ],
     },
     Object {
       "person": Object {
@@ -614,15 +619,38 @@ Object {
         "nsfw": false,
         "type": 1,
       },
-      "position": Object {
-        "cn": "导演",
-        "en": "Director/Direction",
-        "id": 2,
-        "jp": "監督 シリーズ監督",
-      },
+      "positions": Array [
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "导演",
+            "en": "Director/Direction",
+            "id": 2,
+            "jp": "監督 シリーズ監督",
+          },
+        },
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "分镜",
+            "en": "Storyboard",
+            "id": 4,
+            "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
+          },
+        },
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "演出",
+            "en": "Episode Direction",
+            "id": 5,
+            "jp": "",
+          },
+        },
+      ],
     },
   ],
-  "total": 101,
+  "total": 1,
 }
 `;
 
