@@ -221,6 +221,7 @@ export async function setup(app: App) {
           ),
         )
         .where(condition)
+        .groupBy(schema.chiiCharacterCasts.characterID)
         .execute();
       const data = await db
         .select()
@@ -237,6 +238,7 @@ export async function setup(app: App) {
           ),
         )
         .where(condition)
+        .groupBy(schema.chiiCharacterCasts.characterID)
         .orderBy(op.desc(schema.chiiCharacterCasts.characterID))
         .limit(limit)
         .offset(offset)
