@@ -1137,24 +1137,24 @@ export const chiiTagFields = mysqlTable('chii_tag_neue_fields', {
 export const chiiTimeline = mysqlTable(
   'chii_timeline',
   {
-    tmlId: int('tml_id').autoincrement().notNull(),
-    tmlUid: mediumint('tml_uid').notNull(),
-    tmlCat: smallint('tml_cat').notNull(),
-    tmlType: smallint('tml_type').notNull(),
-    tmlRelated: char('tml_related', { length: 255 }).default('0').notNull(),
-    tmlMemo: mediumtext('tml_memo').notNull(),
-    tmlImg: mediumtext('tml_img').notNull(),
-    tmlBatch: tinyint('tml_batch').notNull(),
-    tmlSource: tinyint('tml_source').default(0).notNull(),
-    tmlReplies: mediumint('tml_replies').notNull(),
-    tmlDateline: int('tml_dateline').default(0).notNull(),
+    id: int('tml_id').autoincrement().notNull(),
+    uid: mediumint('tml_uid').notNull(),
+    cat: smallint('tml_cat').notNull(),
+    type: smallint('tml_type').notNull(),
+    related: char('tml_related', { length: 255 }).default('0').notNull(),
+    memo: mediumtext('tml_memo').notNull(),
+    img: mediumtext('tml_img').notNull(),
+    batch: tinyint('tml_batch').notNull(),
+    source: tinyint('tml_source').default(0).notNull(),
+    replies: mediumint('tml_replies').notNull(),
+    createdAt: int('tml_dateline').default(0).notNull(),
   },
   (table) => {
     return {
-      tmlUid: index('tml_uid').on(table.tmlUid),
-      tmlCat: index('tml_cat').on(table.tmlCat),
-      tmlBatch: index('tml_batch').on(table.tmlBatch),
-      queryTmlCat: index('query_tml_cat').on(table.tmlUid, table.tmlCat),
+      tmlUid: index('tml_uid').on(table.uid),
+      tmlCat: index('tml_cat').on(table.cat),
+      tmlBatch: index('tml_batch').on(table.batch),
+      queryTmlCat: index('query_tml_cat').on(table.uid, table.cat),
     };
   },
 );
@@ -1162,18 +1162,18 @@ export const chiiTimeline = mysqlTable(
 export const chiiTimelineComments = mysqlTable(
   'chii_timeline_comments',
   {
-    tmlPstId: mediumint('tml_pst_id').autoincrement().notNull(),
-    tmlPstMid: int('tml_pst_mid').notNull(),
-    tmlPstUid: mediumint('tml_pst_uid').notNull(),
-    tmlPstRelated: mediumint('tml_pst_related').notNull(),
-    tmlPstDateline: int('tml_pst_dateline').notNull(),
-    tmlPstContent: mediumtext('tml_pst_content').notNull(),
+    id: mediumint('tml_pst_id').autoincrement().notNull(),
+    mid: int('tml_pst_mid').notNull(),
+    uid: mediumint('tml_pst_uid').notNull(),
+    related: mediumint('tml_pst_related').notNull(),
+    createdAt: int('tml_pst_dateline').notNull(),
+    content: mediumtext('tml_pst_content').notNull(),
   },
   (table) => {
     return {
-      cmtTmlId: index('cmt_tml_id').on(table.tmlPstMid),
-      tmlPstRelated: index('tml_pst_related').on(table.tmlPstRelated),
-      tmlPstUid: index('tml_pst_uid').on(table.tmlPstUid),
+      cmtTmlId: index('cmt_tml_id').on(table.mid),
+      tmlPstRelated: index('tml_pst_related').on(table.related),
+      tmlPstUid: index('tml_pst_uid').on(table.uid),
     };
   },
 );
