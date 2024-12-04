@@ -12,10 +12,10 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
-function toPersonWork(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonWork {
+function toPersonWork(subject: orm.ISubject, relations: orm.IPersonSubject[]): res.IPersonWork {
   return {
     subject: convert.toSlimSubject(subject),
-    position: convert.toSubjectStaffPosition(relation),
+    positions: relations.map((r) => convert.toSubjectStaffPosition(r)),
   };
 }
 
@@ -120,6 +120,7 @@ export async function setup(app: App) {
           op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
         )
         .where(condition)
+        .groupBy(schema.chiiPersonSubjects.subjectID)
         .execute();
       const data = await db
         .select()
@@ -129,11 +130,32 @@ export async function setup(app: App) {
           op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
         )
         .where(condition)
+        .groupBy(schema.chiiPersonSubjects.subjectID)
         .orderBy(op.desc(schema.chiiPersonSubjects.subjectID))
         .limit(limit)
         .offset(offset)
         .execute();
-      const subjects = data.map((d) => toPersonWork(d.chii_subjects, d.chii_person_cs_index));
+      const subjectIDs = data.map((d) => d.chii_person_cs_index.subjectID);
+      const relations = await db
+        .select()
+        .from(schema.chiiPersonSubjects)
+        .where(
+          op.and(
+            op.inArray(schema.chiiPersonSubjects.subjectID, subjectIDs),
+            op.eq(schema.chiiPersonSubjects.personID, personID),
+            position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
+          ),
+        )
+        .execute();
+      const relationsMap = new Map<number, orm.IPersonSubject[]>();
+      for (const r of relations) {
+        const relations = relationsMap.get(r.subjectID) || [];
+        relations.push(r);
+        relationsMap.set(r.subjectID, relations);
+      }
+      const subjects = data.map((d) =>
+        toPersonWork(d.chii_subjects, relationsMap.get(d.chii_subjects.id) || []),
+      );
       return {
         total: count,
         data: subjects,

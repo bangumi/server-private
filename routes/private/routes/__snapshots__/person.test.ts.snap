@@ -283,12 +283,17 @@ exports[`person > should get person works 1`] = `
 Object {
   "data": Array [
     Object {
-      "position": Object {
-        "cn": "插入歌演出",
-        "en": "Inserted Song Performance",
-        "id": 34,
-        "jp": "",
-      },
+      "positions": Array [
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "插入歌演出",
+            "en": "Inserted Song Performance",
+            "id": 34,
+            "jp": "",
+          },
+        },
+      ],
       "subject": Object {
         "id": 19,
         "images": Object {
@@ -306,12 +311,17 @@ Object {
       },
     },
     Object {
-      "position": Object {
-        "cn": "游戏设计师",
-        "en": "Game Designer",
-        "id": 1003,
-        "jp": "ゲームクリエイター",
-      },
+      "positions": Array [
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "游戏设计师",
+            "en": "Game Designer",
+            "id": 1003,
+            "jp": "ゲームクリエイター",
+          },
+        },
+      ],
       "subject": Object {
         "id": 6,
         "images": Object {
@@ -329,6 +339,6 @@ Object {
       },
     },
   ],
-  "total": 3,
+  "total": 1,
 }
 `;

@@ -832,13 +832,15 @@ exports[`should build private api spec 1`] = `
       type: object
     PersonWork:
       properties:
-        position:
-          $ref: '#/components/schemas/SubjectStaffPosition'
+        positions:
+          items:
+            $ref: '#/components/schemas/SubjectStaffPosition'
+          type: array
         subject:
           $ref: '#/components/schemas/SlimSubject'
       required:
         - subject
-        - position
+        - positions
       type: object
     Reaction:
       properties:
@@ -1570,13 +1572,25 @@ exports[`should build private api spec 1`] = `
       properties:
         person:
           $ref: '#/components/schemas/SlimPerson'
-        position:
-          $ref: '#/components/schemas/SubjectStaffPosition'
+        positions:
+          items:
+            $ref: '#/components/schemas/SubjectStaffPosition'
+          type: array
       required:
         - person
-        - position
+        - positions
       type: object
     SubjectStaffPosition:
+      properties:
+        summary:
+          type: string
+        type:
+          $ref: '#/components/schemas/SubjectStaffPositionType'
+      required:
+        - type
+        - summary
+      type: object
+    SubjectStaffPositionType:
       properties:
         cn:
           type: string

@@ -263,13 +263,22 @@ export const SubjectRelationType = t.Object(
   { $id: 'SubjectRelationType' },
 );
 
-export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
-export const SubjectStaffPosition = t.Object(
+export type ISubjectStaffPositionType = Static<typeof SubjectStaffPositionType>;
+export const SubjectStaffPositionType = t.Object(
   {
     id: t.Integer(),
     en: t.String(),
     cn: t.String(),
     jp: t.String(),
+  },
+  { $id: 'SubjectStaffPositionType' },
+);
+
+export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
+export const SubjectStaffPosition = t.Object(
+  {
+    type: t.Ref(SubjectStaffPositionType),
+    summary: t.String(),
   },
   { $id: 'SubjectStaffPosition' },
 );
@@ -428,7 +437,7 @@ export type ISubjectStaff = Static<typeof SubjectStaff>;
 export const SubjectStaff = t.Object(
   {
     person: t.Ref(SlimPerson),
-    position: t.Ref(SubjectStaffPosition),
+    positions: t.Array(t.Ref(SubjectStaffPosition)),
   },
   { $id: 'SubjectStaff' },
 );
@@ -484,7 +493,7 @@ export type IPersonWork = Static<typeof PersonWork>;
 export const PersonWork = t.Object(
   {
     subject: t.Ref(SlimSubject),
-    position: t.Ref(SubjectStaffPosition),
+    positions: t.Array(t.Ref(SubjectStaffPosition)),
   },
   { $id: 'PersonWork' },
 );

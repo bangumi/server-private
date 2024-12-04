@@ -49,10 +49,10 @@ function toSubjectCharacter(
   };
 }
 
-function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): res.ISubjectStaff {
+function toSubjectStaff(person: orm.IPerson, relations: orm.IPersonSubject[]): res.ISubjectStaff {
   return {
     person: convert.toSlimPerson(person),
-    position: convert.toSubjectStaffPosition(relation),
+    positions: relations.map((r) => convert.toSubjectStaffPosition(r)),
   };
 }
 
@@ -350,13 +350,14 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { subjectID }, query: { position, limit = 20, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       const condition = op.and(
         op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+        position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
         op.ne(schema.chiiPersons.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
@@ -368,6 +369,7 @@ export async function setup(app: App) {
           op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
         )
         .where(condition)
+        .groupBy(schema.chiiPersonSubjects.personID)
         .execute();
       const data = await db
         .select()
@@ -377,11 +379,32 @@ export async function setup(app: App) {
           op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
         )
         .where(condition)
+        .groupBy(schema.chiiPersonSubjects.personID)
         .orderBy(op.asc(schema.chiiPersonSubjects.position))
         .limit(limit)
         .offset(offset)
         .execute();
-      const persons = data.map((d) => toSubjectPerson(d.chii_persons, d.chii_person_cs_index));
+      const personIDs = data.map((d) => d.chii_person_cs_index.personID);
+      const relations = await db
+        .select()
+        .from(schema.chiiPersonSubjects)
+        .where(
+          op.and(
+            op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+            op.inArray(schema.chiiPersonSubjects.personID, personIDs),
+            position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
+          ),
+        )
+        .execute();
+      const relationsMap = new Map<number, orm.IPersonSubject[]>();
+      for (const r of relations) {
+        const relations = relationsMap.get(r.personID) || [];
+        relations.push(r);
+        relationsMap.set(r.personID, relations);
+      }
+      const persons = data.map((d) =>
+        toSubjectStaff(d.chii_persons, relationsMap.get(d.chii_persons.id) || []),
+      );
       return {
         data: persons,
         total: count,
