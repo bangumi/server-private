@@ -1219,6 +1219,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/SubjectImages'
+        info:
+          type: string
         infobox:
           $ref: '#/components/schemas/Infobox'
         locked:
@@ -1274,6 +1276,7 @@ exports[`should build private api spec 1`] = `
         - eps
         - id
         - infobox
+        - info
         - metaTags
         - locked
         - name

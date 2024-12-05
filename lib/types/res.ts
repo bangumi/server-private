@@ -215,6 +215,7 @@ export const Subject = t.Object(
     id: t.Integer(),
     images: t.Optional(t.Ref(SubjectImages)),
     infobox: t.Ref(Infobox),
+    info: t.String(),
     metaTags: t.Array(t.String()),
     locked: t.Boolean(),
     name: t.String(),
