@@ -5,6 +5,7 @@ import * as php from '@trim21/php-serialize';
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
+import { getInfoboxSummary } from '@app/lib/subject/infobox';
 import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type';
 import type * as res from '@app/lib/types/res.ts';
 import {
@@ -226,25 +227,29 @@ function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
 }
 
 export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
+  const infobox = toInfobox(subject.infobox);
   return {
     id: subject.id,
     name: subject.name,
     nameCN: subject.nameCN,
     type: subject.typeID,
     images: subjectCover(subject.image) || undefined,
+    info: getInfoboxSummary(infobox, subject.typeID),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
   };
 }
 
 export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): res.ISubject {
+  const infobox = toInfobox(subject.infobox);
   return {
     airtime: toSubjectAirtime(fields),
     collection: toSubjectCollection(subject),
     eps: subject.eps,
     id: subject.id,
     images: subjectCover(subject.image) || undefined,
-    infobox: toInfobox(subject.infobox),
+    infobox: infobox,
+    info: getInfoboxSummary(infobox, subject.typeID),
     metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     name: subject.name,
