@@ -246,6 +246,8 @@ export const SlimSubject = t.Object(
     nameCN: t.String(),
     type: t.Enum(SubjectType),
     images: t.Optional(t.Ref(SubjectImages)),
+    info: t.String(),
+    metaTags: t.Array(t.String()),
     locked: t.Boolean(),
     nsfw: t.Boolean(),
   },

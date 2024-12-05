@@ -1014,8 +1014,14 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/SubjectImages'
+        info:
+          type: string
         locked:
           type: boolean
+        metaTags:
+          items:
+            type: string
+          type: array
         name:
           type: string
         nameCN:
@@ -1044,6 +1050,8 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - type
+        - info
+        - metaTags
         - locked
         - nsfw
       title: SlimSubject

@@ -22,7 +22,7 @@ function getDisplayFields(type: SubjectType): string[][] {
       return [['发行日期'], ['平台'], ['游戏类型'], ['开发']];
     }
     case SubjectType.Real: {
-      return [['放送开始', '上映日', '上映年度', '发售日'], ['导演'], ['编剧'], ['主演']];
+      return [['放送开始', '开始', '上映日', '上映年度', '发售日'], ['导演'], ['编剧'], ['主演']];
     }
   }
 }

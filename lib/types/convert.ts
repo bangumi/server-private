@@ -227,12 +227,15 @@ function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
 }
 
 export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
+  const infobox = toInfobox(subject.infobox);
   return {
     id: subject.id,
     name: subject.name,
     nameCN: subject.nameCN,
     type: subject.typeID,
     images: subjectCover(subject.image) || undefined,
+    info: getInfoboxSummary(infobox, subject.typeID),
+    metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
   };
