@@ -235,7 +235,6 @@ export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
     type: subject.typeID,
     images: subjectCover(subject.image) || undefined,
     info: getInfoboxSummary(infobox, subject.typeID),
-    metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
   };
