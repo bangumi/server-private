@@ -5,6 +5,7 @@ import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
 import { EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
 
 export const Paged = <T extends TSchema>(type: T) =>
@@ -650,4 +651,72 @@ export const TopicDetail = t.Object(
     reactions: t.Array(t.Ref(Reaction)),
   },
   { $id: 'TopicDetail', title: 'TopicDetail' },
+);
+
+export type ITimelineMemo = Static<typeof TimelineMemo>;
+export const TimelineMemo = t.Object(
+  {
+    progress: t.Optional(
+      t.Object({
+        batch: t.Optional(
+          t.Object({
+            epsTotal: t.Integer(),
+            epsUpdate: t.Integer(),
+            volsTotal: t.Integer(),
+            volsUpdate: t.Integer(),
+            subjectID: t.Integer(),
+            subjectName: t.String(),
+            subjectTypeID: t.Integer(),
+          }),
+        ),
+        single: t.Optional(
+          t.Object({
+            epID: t.Integer(),
+            epName: t.String(),
+            epSort: t.Integer(),
+            subjectID: t.Integer(),
+            subjectName: t.String(),
+          }),
+        ),
+      }),
+    ),
+  },
+  { $id: 'TimelineMemo', title: 'TimelineMemo' },
+);
+
+export type ITimelineImage = Static<typeof TimelineImage>;
+export const TimelineImage = t.Object(
+  {
+    subject: t.Optional(
+      t.Object({
+        subjectID: t.Integer(),
+        images: t.Ref(SubjectImages),
+      }),
+    ),
+    mono: t.Optional(
+      t.Object({
+        cat: t.Integer(),
+        id: t.Integer(),
+        images: t.Ref(PersonImages),
+      }),
+    ),
+  },
+  { $id: 'TimelineImage', title: 'TimelineImage' },
+);
+
+export type ITimeline = Static<typeof Timeline>;
+export const Timeline = t.Object(
+  {
+    id: t.Integer(),
+    user: t.Ref(SlimUser),
+    cat: t.Enum(TimelineCat),
+    type: t.Integer(),
+    memo: t.Ref(TimelineMemo),
+    image: t.Ref(TimelineImage),
+    batch: t.Boolean(),
+    source: t.Enum(TimelineSource),
+    replies: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'Timeline', title: 'Timeline' },
 );

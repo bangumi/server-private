@@ -10,7 +10,7 @@ export enum TimelineSource {
 export enum TimelineCat {
   Daily = 1, // 日常行为: 注册, 添加好友, 加入小组, 创建小组, 加入乐园
   Wiki = 2, // 维基操作
-  Subject = 3, // 收藏
+  Subject = 3, // 收藏条目
   Progress = 4, // 收视进度
   Status = 5, // 吐槽
   Blog = 6, // 日志
@@ -24,5 +24,4 @@ export enum TimelineCat {
 //   'subject_batch' => array(1 => '本书', 2 => '部番组', 3 => '张音乐', 4 => '部游戏', 5 => '本书', 6 => '部番组', 7 => '张音乐', 8 => '部游戏', 9 => '本书', 10 => '部番组', 11 => '张音乐', 12 => '部游戏',),
 //   'subject_batch_i' => array(1 => '本书', 2 => '部番组', 3 => '张音乐', 4 => '部游戏', 6 => '部番组'),
 //   'new_subject' => array(1 => '添加了新书', 2 => '添加了新动画', 3 => '添加了新唱片', 4 => '添加了新游戏', 5 => '添加了新图书系列', 6 => '添加了新影视',),
-//   'event' => array('wish' => '关注了', 'do' => '要参加'),
 // );
