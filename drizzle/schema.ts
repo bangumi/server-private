@@ -1144,7 +1144,7 @@ export const chiiTimeline = mysqlTable(
     related: char('tml_related', { length: 255 }).default('0').notNull(),
     memo: mediumtext('tml_memo').notNull(),
     img: mediumtext('tml_img').notNull(),
-    batch: tinyint('tml_batch').notNull(),
+    batch: customBoolean('tml_batch').notNull(),
     source: tinyint('tml_source').default(0).notNull(),
     replies: mediumint('tml_replies').notNull(),
     createdAt: int('tml_dateline').default(0).notNull(),

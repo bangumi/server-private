@@ -659,27 +659,28 @@ export const TimelineMemo = t.Object(
     // daily: t.Optional(),
     // wiki: t.Optional(),
     subject: t.Optional(
-      t.Object({
-        subjectID: t.Integer(),
-        subjectTypeID: t.Integer(),
-        subjectName: t.String(),
-        subjectNameCN: t.String(),
-        subjectSeries: t.Boolean(),
-        collectComment: t.String(),
-        collectRate: t.Number(),
-      }),
+      t.Array(
+        t.Object({
+          subjectID: t.Integer(),
+          subjectTypeID: t.Integer(),
+          subjectName: t.String(),
+          subjectNameCN: t.String(),
+          subjectSeries: t.Boolean(),
+          collectComment: t.String(),
+          collectRate: t.Number(),
+        }),
+      ),
     ),
     progress: t.Optional(
       t.Object({
         batch: t.Optional(
           t.Object({
             epsTotal: t.String(),
-            epsUpdate: t.Integer(),
+            epsUpdate: t.Optional(t.Integer()),
             volsTotal: t.String(),
-            volsUpdate: t.Integer(),
+            volsUpdate: t.Optional(t.Integer()),
             subjectID: t.Integer(),
             subjectName: t.String(),
-            subjectTypeID: t.Integer(),
           }),
         ),
         single: t.Optional(
@@ -697,11 +698,13 @@ export const TimelineMemo = t.Object(
     // blog: t.Optional(),
     // index: t.Optional(),
     mono: t.Optional(
-      t.Object({
-        cat: t.Integer(),
-        id: t.Integer(),
-        name: t.String(),
-      }),
+      t.Array(
+        t.Object({
+          cat: t.Integer(),
+          id: t.Integer(),
+          name: t.String(),
+        }),
+      ),
     ),
   },
   { $id: 'TimelineMemo', title: 'TimelineMemo' },
@@ -711,17 +714,21 @@ export type ITimelineImage = Static<typeof TimelineImage>;
 export const TimelineImage = t.Object(
   {
     subject: t.Optional(
-      t.Object({
-        subjectID: t.Integer(),
-        images: t.Ref(SubjectImages),
-      }),
+      t.Array(
+        t.Object({
+          subjectID: t.Integer(),
+          images: t.Optional(t.Ref(SubjectImages)),
+        }),
+      ),
     ),
     mono: t.Optional(
-      t.Object({
-        cat: t.Integer(),
-        id: t.Integer(),
-        images: t.Ref(PersonImages),
-      }),
+      t.Array(
+        t.Object({
+          cat: t.Integer(),
+          id: t.Integer(),
+          images: t.Optional(t.Ref(PersonImages)),
+        }),
+      ),
     ),
   },
   { $id: 'TimelineImage', title: 'TimelineImage' },

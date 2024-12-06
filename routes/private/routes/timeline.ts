@@ -1,11 +1,12 @@
 import { Type as t } from '@sinclair/typebox';
 
-// import { db, op } from '@app/drizzle/db.ts';
-// import type * as orm from '@app/drizzle/orm.ts';
-// import * as schema from '@app/drizzle/schema';
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { TimelineCat } from '@app/lib/timeline/type.ts';
-// import * as res from '@app/lib/types/res.ts';
+import { TimelineCat, TimelineMode } from '@app/lib/timeline/type.ts';
+import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -19,6 +20,12 @@ export async function setup(app: App) {
         tags: [Tag.Timeline],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
+          mode: t.Optional(
+            t.Enum(TimelineMode, {
+              description:
+                'all: 全站, friends: 好友; 登录时默认为 friends, 未登录或没有好友时始终为 all',
+            }),
+          ),
           cat: t.Optional(t.Enum(TimelineCat, { description: '时间线类型' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -26,12 +33,31 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: {},
+          200: t.Array(t.Ref(res.Timeline)),
         },
       },
     },
-    () => {
-      return {};
+    async ({ auth, query: { mode = TimelineMode.Friends, cat, limit = 20, offset = 0 } }) => {
+      const conditions = [];
+      if (cat) {
+        conditions.push(op.eq(schema.chiiTimeline.cat, cat));
+      }
+      if (auth.login && mode === TimelineMode.Friends) {
+        const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
+        if (friendIDs.length > 0) {
+          conditions.push(op.inArray(schema.chiiTimeline.uid, friendIDs));
+        }
+      }
+      const data = await db
+        .select()
+        .from(schema.chiiTimeline)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiTimeline.uid, schema.chiiUsers.id))
+        .where(conditions.length > 0 ? op.and(...conditions) : undefined)
+        .orderBy(op.desc(schema.chiiTimeline.id))
+        .limit(limit)
+        .offset(offset);
+      const items = data.map((d) => convert.toTimeline(d.chii_timeline, d.chii_members));
+      return items;
     },
   );
 }

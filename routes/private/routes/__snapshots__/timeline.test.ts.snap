@@ -1,0 +1,202 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`timeline > should get mono 1`] = `Array []`;
+
+exports[`timeline > should get progress 1`] = `
+Array [
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656457954,
+    "id": 29006089,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+          "subjectID": 214114,
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 22,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": 0,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656375812,
+    "id": 28993551,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+          "subjectID": 214114,
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 751421,
+          "epName": "Last Gasp",
+          "epSort": 16,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+]
+`;
+
+exports[`timeline > should get subject collect 1`] = `
+Array [
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656458004,
+    "id": 29006093,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/b2/f8/262922_u1OMP.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/b2/f8/262922_u1OMP.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/b2/f8/262922_u1OMP.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/b2/f8/262922_u1OMP.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/b2/f8/262922_u1OMP.jpg",
+          },
+          "subjectID": 262922,
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "collectComment": "",
+          "collectRate": 0,
+          "subjectID": 262922,
+          "subjectName": "Criminal Minds Season 14",
+          "subjectNameCN": "犯罪心理 第十四季",
+          "subjectSeries": false,
+          "subjectTypeID": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656457954,
+    "id": 29006090,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+          "subjectID": 214114,
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "collectComment": "",
+          "collectRate": 0,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "subjectNameCN": "犯罪心理 第十三季",
+          "subjectSeries": false,
+          "subjectTypeID": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 6,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+]
+`;

@@ -7,6 +7,11 @@ export enum TimelineSource {
   API = 5,
 }
 
+export enum TimelineMode {
+  All = 'all',
+  Friends = 'friends',
+}
+
 export enum TimelineCat {
   Daily = 1, // 日常行为: 注册, 添加好友, 加入小组, 创建小组, 加入乐园
   Wiki = 2, // 维基操作
