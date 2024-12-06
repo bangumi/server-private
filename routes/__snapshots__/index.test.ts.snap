@@ -1817,7 +1817,9 @@ exports[`should build private api spec 1`] = `
                   type: integer
               required:
                 - epsTotal
+                - epsUpdate
                 - volsTotal
+                - volsUpdate
                 - subjectID
                 - subjectName
               type: object
