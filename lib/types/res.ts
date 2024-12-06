@@ -691,6 +691,13 @@ export const TimelineMemo = t.Object(
         ),
       }),
     ),
+    mono: t.Optional(
+      t.Object({
+        cat: t.Integer(),
+        id: t.Integer(),
+        name: t.String(),
+      }),
+    ),
   },
   { $id: 'TimelineMemo', title: 'TimelineMemo' },
 );
