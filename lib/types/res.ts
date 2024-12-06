@@ -656,13 +656,24 @@ export const TopicDetail = t.Object(
 export type ITimelineMemo = Static<typeof TimelineMemo>;
 export const TimelineMemo = t.Object(
   {
+    subject: t.Optional(
+      t.Object({
+        subjectID: t.Integer(),
+        subjectTypeID: t.Integer(),
+        subjectName: t.String(),
+        subjectNameCN: t.String(),
+        subjectSeries: t.Boolean(),
+        collectComment: t.String(),
+        collectRate: t.Number(),
+      }),
+    ),
     progress: t.Optional(
       t.Object({
         batch: t.Optional(
           t.Object({
-            epsTotal: t.Integer(),
+            epsTotal: t.String(),
             epsUpdate: t.Integer(),
-            volsTotal: t.Integer(),
+            volsTotal: t.String(),
             volsUpdate: t.Integer(),
             subjectID: t.Integer(),
             subjectName: t.String(),
