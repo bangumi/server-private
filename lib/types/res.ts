@@ -656,6 +656,8 @@ export const TopicDetail = t.Object(
 export type ITimelineMemo = Static<typeof TimelineMemo>;
 export const TimelineMemo = t.Object(
   {
+    // daily: t.Optional(),
+    // wiki: t.Optional(),
     subject: t.Optional(
       t.Object({
         subjectID: t.Integer(),
@@ -691,6 +693,9 @@ export const TimelineMemo = t.Object(
         ),
       }),
     ),
+    // status: t.Optional(),
+    // blog: t.Optional(),
+    // index: t.Optional(),
     mono: t.Optional(
       t.Object({
         cat: t.Integer(),
