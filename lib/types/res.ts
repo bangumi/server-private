@@ -656,18 +656,48 @@ export const TopicDetail = t.Object(
 export type ITimelineMemo = Static<typeof TimelineMemo>;
 export const TimelineMemo = t.Object(
   {
-    // daily: t.Optional(),
-    // wiki: t.Optional(),
+    daily: t.Optional(
+      t.Object({
+        user: t.Optional(
+          t.Array(
+            t.Object({
+              uid: t.Integer(),
+              username: t.String(),
+              nickname: t.String(),
+            }),
+          ),
+        ),
+        group: t.Optional(
+          t.Array(
+            t.Object({
+              id: t.Integer(),
+              name: t.String(),
+              title: t.String(),
+              desc: t.String(),
+            }),
+          ),
+        ),
+      }),
+    ),
+    wiki: t.Optional(
+      t.Object({
+        subject: t.Object({
+          id: t.Integer(),
+          name: t.String(),
+          nameCN: t.String(),
+        }),
+      }),
+    ),
     subject: t.Optional(
       t.Array(
         t.Object({
-          subjectID: t.Integer(),
-          subjectTypeID: t.Integer(),
-          subjectName: t.String(),
-          subjectNameCN: t.String(),
-          subjectSeries: t.Boolean(),
-          collectComment: t.String(),
-          collectRate: t.Number(),
+          id: t.Integer(),
+          type: t.Integer(),
+          name: t.String(),
+          nameCN: t.String(),
+          series: t.Boolean(),
+          comment: t.String(),
+          rate: t.Number(),
         }),
       ),
     ),
@@ -713,10 +743,26 @@ export const TimelineMemo = t.Object(
 export type ITimelineImage = Static<typeof TimelineImage>;
 export const TimelineImage = t.Object(
   {
+    user: t.Optional(
+      t.Array(
+        t.Object({
+          uid: t.Integer(),
+          images: t.Optional(t.Ref(Avatar)),
+        }),
+      ),
+    ),
+    group: t.Optional(
+      t.Array(
+        t.Object({
+          id: t.Integer(),
+          images: t.Optional(t.Ref(Avatar)),
+        }),
+      ),
+    ),
     subject: t.Optional(
       t.Array(
         t.Object({
-          subjectID: t.Integer(),
+          id: t.Integer(),
           images: t.Optional(t.Ref(SubjectImages)),
         }),
       ),

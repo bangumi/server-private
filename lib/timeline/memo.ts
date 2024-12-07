@@ -2,6 +2,29 @@ import * as php from '@trim21/php-serialize';
 
 import { TimelineCat } from './type';
 
+interface User {
+  uid: string;
+  username: string;
+  nickname: string;
+}
+
+type UserBatch = Record<number, User>;
+
+interface Group {
+  grp_id: string;
+  grp_name: string;
+  grp_title: string;
+  grp_desc: string;
+}
+
+type GroupBatch = Record<number, Group>;
+
+interface NewSubject {
+  subject_id: number;
+  subject_name: string;
+  subject_name_cn: string;
+}
+
 interface Subject {
   subject_id: string;
   subject_type_id: string;
@@ -46,10 +69,66 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
   }
   switch (cat) {
     case TimelineCat.Daily: {
-      return {};
+      switch (type) {
+        case 2: {
+          const users = [];
+          if (batch) {
+            const info = php.parse(data) as UserBatch;
+            for (const [_, value] of Object.entries(info)) {
+              users.push(value);
+            }
+          } else {
+            const info = php.parse(data) as User;
+            users.push(info);
+          }
+          return {
+            daily: {
+              user: users.map((u) => ({
+                uid: Number(u.uid),
+                username: u.username,
+                nickname: u.nickname,
+              })),
+            },
+          };
+        }
+        case 3 | 4: {
+          const groups = [];
+          if (batch) {
+            const info = php.parse(data) as GroupBatch;
+            for (const [_, value] of Object.entries(info)) {
+              groups.push(value);
+            }
+          } else {
+            const info = php.parse(data) as Group;
+            groups.push(info);
+          }
+          return {
+            daily: {
+              group: groups.map((g) => ({
+                id: Number(g.grp_id),
+                name: g.grp_name,
+                title: g.grp_title,
+                desc: g.grp_desc,
+              })),
+            },
+          };
+        }
+        default: {
+          return {};
+        }
+      }
     }
     case TimelineCat.Wiki: {
-      return {};
+      const info = php.parse(data) as NewSubject;
+      return {
+        wiki: {
+          subject: {
+            id: info.subject_id,
+            name: info.subject_name,
+            nameCN: info.subject_name_cn,
+          },
+        },
+      };
     }
     case TimelineCat.Subject: {
       const subjects = [];
@@ -64,13 +143,13 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
       }
       return {
         subject: subjects.map((s) => ({
-          subjectID: Number(s.subject_id),
-          subjectTypeID: Number(s.subject_type_id),
-          subjectName: s.subject_name,
-          subjectNameCN: s.subject_name_cn,
-          subjectSeries: s.subject_series === '1',
-          collectComment: s.collect_comment,
-          collectRate: Number(s.collect_rate),
+          id: Number(s.subject_id),
+          type: Number(s.subject_type_id),
+          name: s.subject_name,
+          nameCN: s.subject_name_cn,
+          series: s.subject_series === '1',
+          comment: s.collect_comment,
+          rate: Number(s.collect_rate),
         })),
       };
     }

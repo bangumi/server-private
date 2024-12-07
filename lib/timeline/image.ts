@@ -1,8 +1,23 @@
 import * as php from '@trim21/php-serialize';
 
-import { personImages, subjectCover } from '@app/lib/response.ts';
+import { avatar, groupIcon, personImages, subjectCover } from '@app/lib/response.ts';
 
 import { TimelineCat } from './type';
+
+interface User {
+  uid: string;
+  images: string;
+}
+
+type UserBatch = Record<number, User>;
+
+interface Group {
+  grp_id: string;
+  grp_name: string;
+  images: string;
+}
+
+type GroupBatch = Record<number, Group>;
 
 interface Subject {
   subject_id: string;
@@ -25,7 +40,47 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
   }
   switch (cat) {
     case TimelineCat.Daily: {
-      return {};
+      switch (type) {
+        case 2: {
+          const users = [];
+          if (batch) {
+            const info = php.parse(data) as UserBatch;
+            for (const [_, value] of Object.entries(info)) {
+              users.push(value);
+            }
+          } else {
+            const info = php.parse(data) as User;
+            users.push(info);
+          }
+          return {
+            user: Object.values(users).map((u) => ({
+              uid: Number(u.uid),
+              images: avatar(u.images),
+            })),
+          };
+        }
+        case 3 | 4: {
+          const groups = [];
+          if (batch) {
+            const info = php.parse(data) as GroupBatch;
+            for (const [_, value] of Object.entries(info)) {
+              groups.push(value);
+            }
+          } else {
+            const info = php.parse(data) as Group;
+            groups.push(info);
+          }
+          return {
+            group: Object.values(groups).map((g) => ({
+              id: Number(g.grp_id),
+              images: groupIcon(g.images),
+            })),
+          };
+        }
+        default: {
+          return {};
+        }
+      }
     }
     case TimelineCat.Wiki: {
       return {};
@@ -43,7 +98,7 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
       }
       return {
         subject: images.map((s) => ({
-          subjectID: Number(s.subject_id),
+          id: Number(s.subject_id),
           images: subjectCover(s.images),
         })),
       };
@@ -53,7 +108,7 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
       return {
         subject: [
           {
-            subjectID: Number(info.subject_id),
+            id: Number(info.subject_id),
             images: subjectCover(info.images),
           },
         ],

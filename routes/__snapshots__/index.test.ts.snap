@@ -1755,6 +1755,17 @@ exports[`should build private api spec 1`] = `
       type: object
     TimelineImage:
       properties:
+        group:
+          items:
+            properties:
+              id:
+                type: integer
+              images:
+                $ref: '#/components/schemas/Avatar'
+            required:
+              - id
+            type: object
+          type: array
         mono:
           items:
             properties:
@@ -1772,18 +1783,65 @@ exports[`should build private api spec 1`] = `
         subject:
           items:
             properties:
+              id:
+                type: integer
               images:
                 $ref: '#/components/schemas/SubjectImages'
-              subjectID:
+            required:
+              - id
+            type: object
+          type: array
+        user:
+          items:
+            properties:
+              images:
+                $ref: '#/components/schemas/Avatar'
+              uid:
                 type: integer
             required:
-              - subjectID
+              - uid
             type: object
           type: array
       title: TimelineImage
       type: object
     TimelineMemo:
       properties:
+        daily:
+          properties:
+            group:
+              items:
+                properties:
+                  desc:
+                    type: string
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  title:
+                    type: string
+                required:
+                  - id
+                  - name
+                  - title
+                  - desc
+                type: object
+              type: array
+            user:
+              items:
+                properties:
+                  nickname:
+                    type: string
+                  uid:
+                    type: integer
+                  username:
+                    type: string
+                required:
+                  - uid
+                  - username
+                  - nickname
+                type: object
+              type: array
+          type: object
         mono:
           items:
             properties:
@@ -1846,30 +1904,48 @@ exports[`should build private api spec 1`] = `
         subject:
           items:
             properties:
-              collectComment:
+              comment:
                 type: string
-              collectRate:
-                type: number
-              subjectID:
+              id:
                 type: integer
-              subjectName:
+              name:
                 type: string
-              subjectNameCN:
+              nameCN:
                 type: string
-              subjectSeries:
+              rate:
+                type: number
+              series:
                 type: boolean
-              subjectTypeID:
+              type:
                 type: integer
             required:
-              - subjectID
-              - subjectTypeID
-              - subjectName
-              - subjectNameCN
-              - subjectSeries
-              - collectComment
-              - collectRate
+              - id
+              - type
+              - name
+              - nameCN
+              - series
+              - comment
+              - rate
             type: object
           type: array
+        wiki:
+          properties:
+            subject:
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                nameCN:
+                  type: string
+              required:
+                - id
+                - name
+                - nameCN
+              type: object
+          required:
+            - subject
+          type: object
       title: TimelineMemo
       type: object
     Topic:

@@ -18,8 +18,15 @@ export function avatar(s: string): res.IAvatar {
   };
 }
 
-export function groupIcon(s: string): string {
-  return `https://${imageDomain}/pic/icon/s/${s}`;
+export function groupIcon(s: string): res.IAvatar {
+  if (!s) {
+    s = 'icon.jpg';
+  }
+  return {
+    large: `https://${imageDomain}/pic/icon/l/${s}`,
+    medium: `https://${imageDomain}/pic/icon/m/${s}`,
+    small: `https://${imageDomain}/pic/icon/s/${s}`,
+  };
 }
 
 export function subjectCover(s: string): res.ISubjectImages | undefined {

@@ -1,5 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`timeline > should get daily 1`] = `Array []`;
+
 exports[`timeline > should get mono 1`] = `Array []`;
 
 exports[`timeline > should get progress 1`] = `
@@ -12,6 +14,7 @@ Array [
     "image": Object {
       "subject": Array [
         Object {
+          "id": 214114,
           "images": Object {
             "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
             "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
@@ -19,7 +22,6 @@ Array [
             "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
             "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
           },
-          "subjectID": 214114,
         },
       ],
     },
@@ -59,6 +61,7 @@ Array [
     "image": Object {
       "subject": Array [
         Object {
+          "id": 214114,
           "images": Object {
             "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
             "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
@@ -66,7 +69,6 @@ Array [
             "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
             "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
           },
-          "subjectID": 214114,
         },
       ],
     },
@@ -110,6 +112,7 @@ Array [
     "image": Object {
       "subject": Array [
         Object {
+          "id": 262922,
           "images": Object {
             "common": "https://lain.bgm.tv/pic/cover/c/b2/f8/262922_u1OMP.jpg",
             "grid": "https://lain.bgm.tv/pic/cover/g/b2/f8/262922_u1OMP.jpg",
@@ -117,20 +120,19 @@ Array [
             "medium": "https://lain.bgm.tv/pic/cover/m/b2/f8/262922_u1OMP.jpg",
             "small": "https://lain.bgm.tv/pic/cover/s/b2/f8/262922_u1OMP.jpg",
           },
-          "subjectID": 262922,
         },
       ],
     },
     "memo": Object {
       "subject": Array [
         Object {
-          "collectComment": "",
-          "collectRate": 0,
-          "subjectID": 262922,
-          "subjectName": "Criminal Minds Season 14",
-          "subjectNameCN": "犯罪心理 第十四季",
-          "subjectSeries": false,
-          "subjectTypeID": 6,
+          "comment": "",
+          "id": 262922,
+          "name": "Criminal Minds Season 14",
+          "nameCN": "犯罪心理 第十四季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
         },
       ],
     },
@@ -158,6 +160,7 @@ Array [
     "image": Object {
       "subject": Array [
         Object {
+          "id": 214114,
           "images": Object {
             "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
             "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
@@ -165,20 +168,19 @@ Array [
             "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
             "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
           },
-          "subjectID": 214114,
         },
       ],
     },
     "memo": Object {
       "subject": Array [
         Object {
-          "collectComment": "",
-          "collectRate": 0,
-          "subjectID": 214114,
-          "subjectName": "Criminal Minds Season 13",
-          "subjectNameCN": "犯罪心理 第十三季",
-          "subjectSeries": false,
-          "subjectTypeID": 6,
+          "comment": "",
+          "id": 214114,
+          "name": "Criminal Minds Season 13",
+          "nameCN": "犯罪心理 第十三季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
         },
       ],
     },
@@ -196,6 +198,73 @@ Array [
       "nickname": "nickname 287622",
       "sign": "sing 287622",
       "username": "287622",
+    },
+  },
+]
+`;
+
+exports[`timeline > should get wiki 1`] = `
+Array [
+  Object {
+    "batch": false,
+    "cat": 2,
+    "createdAt": 1654374720,
+    "id": 28683469,
+    "image": Object {},
+    "memo": Object {
+      "wiki": Object {
+        "subject": Object {
+          "id": 386266,
+          "name": "THE JUNGLE BOOK",
+          "nameCN": "小人猿泰山",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 4,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 267266,
+      "joinedAt": 0,
+      "nickname": "nickname 267266",
+      "sign": "sing 267266",
+      "username": "267266",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 2,
+    "createdAt": 1654368800,
+    "id": 28683021,
+    "image": Object {},
+    "memo": Object {
+      "wiki": Object {
+        "subject": Object {
+          "id": 386263,
+          "name": "2010 ストリートファイター",
+          "nameCN": "街头战士2010",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 4,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 267266,
+      "joinedAt": 0,
+      "nickname": "nickname 267266",
+      "sign": "sing 267266",
+      "username": "267266",
     },
   },
 ]
