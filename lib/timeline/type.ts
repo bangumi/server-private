@@ -41,7 +41,7 @@ export enum TimelineCat {
   /**
    * 收视进度
    *
-   * 0 = batch 1 = single
+   * 0 = batch(完成), 1 = 想看, 2 = 看过, 3 = 抛弃,
    */
   Progress = 4,
 

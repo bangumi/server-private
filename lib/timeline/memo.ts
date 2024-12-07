@@ -154,11 +154,6 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
       };
     }
     case TimelineCat.Progress: {
-      // type:
-      // 0 = batch(完成)
-      // 1 = 想看
-      // 2 = 看过
-      // 3 = 抛弃
       if (type === 0) {
         const info = php.parse(data) as ProgressBatch;
         return {
