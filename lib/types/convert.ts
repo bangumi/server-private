@@ -7,7 +7,8 @@ import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
-import { parseTimelineImage, parseTimelineMemo } from '@app/lib/timeline/index';
+import { parse as parseTimelineImage } from '@app/lib/timeline/image';
+import { parse as parseTimelineMemo } from '@app/lib/timeline/memo';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findSubjectPlatform,
