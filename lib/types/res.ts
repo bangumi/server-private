@@ -724,9 +724,27 @@ export const TimelineMemo = t.Object(
         ),
       }),
     ),
-    // status: t.Optional(),
-    // blog: t.Optional(),
-    // index: t.Optional(),
+    status: t.Optional(
+      t.Object({
+        sign: t.Optional(t.String()),
+        tsukkomi: t.Optional(t.String()),
+        nickname: t.Optional(t.Object({ before: t.String(), after: t.String() })),
+      }),
+    ),
+    blog: t.Optional(
+      t.Object({
+        id: t.Integer(),
+        title: t.String(),
+        desc: t.String(),
+      }),
+    ),
+    index: t.Optional(
+      t.Object({
+        id: t.Integer(),
+        title: t.String(),
+        desc: t.String(),
+      }),
+    ),
     mono: t.Optional(
       t.Array(
         t.Object({

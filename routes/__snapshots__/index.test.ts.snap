@@ -1806,6 +1806,19 @@ exports[`should build private api spec 1`] = `
       type: object
     TimelineMemo:
       properties:
+        blog:
+          properties:
+            desc:
+              type: string
+            id:
+              type: integer
+            title:
+              type: string
+          required:
+            - id
+            - title
+            - desc
+          type: object
         daily:
           properties:
             group:
@@ -1841,6 +1854,19 @@ exports[`should build private api spec 1`] = `
                   - nickname
                 type: object
               type: array
+          type: object
+        index:
+          properties:
+            desc:
+              type: string
+            id:
+              type: integer
+            title:
+              type: string
+          required:
+            - id
+            - title
+            - desc
           type: object
         mono:
           items:
@@ -1900,6 +1926,23 @@ exports[`should build private api spec 1`] = `
                 - subjectID
                 - subjectName
               type: object
+          type: object
+        status:
+          properties:
+            nickname:
+              properties:
+                after:
+                  type: string
+                before:
+                  type: string
+              required:
+                - before
+                - after
+              type: object
+            sign:
+              type: string
+            tsukkomi:
+              type: string
           type: object
         subject:
           items:

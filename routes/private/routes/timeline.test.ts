@@ -50,6 +50,39 @@ describe('timeline', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get status', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/timeline',
+      query: { cat: '5', limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get blog', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/timeline',
+      query: { cat: '6', limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get index', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/timeline',
+      query: { cat: '7', limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get mono', async () => {
     const app = createTestServer();
     await app.register(setup);

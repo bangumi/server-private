@@ -55,6 +55,23 @@ interface ProgressSingle {
   subject_name: string;
 }
 
+interface Nickname {
+  before: string;
+  after: string;
+}
+
+interface Blog {
+  entry_id: string;
+  entry_title: string;
+  entry_desc: string;
+}
+
+interface Index {
+  idx_id: string;
+  idx_title: string;
+  idx_desc: string;
+}
+
 interface MonoSingle {
   cat: number;
   id: number;
@@ -184,13 +201,56 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
       }
     }
     case TimelineCat.Status: {
-      return {};
+      switch (type) {
+        case 0: {
+          return {
+            status: {
+              sign: data,
+            },
+          };
+        }
+        case 1: {
+          return {
+            status: {
+              tsukkomi: data,
+            },
+          };
+        }
+        case 2: {
+          const info = php.parse(data) as Nickname;
+          return {
+            status: {
+              nickname: {
+                before: info.before,
+                after: info.after,
+              },
+            },
+          };
+        }
+        default: {
+          return {};
+        }
+      }
     }
     case TimelineCat.Blog: {
-      return {};
+      const info = php.parse(data) as Blog;
+      return {
+        blog: {
+          id: Number(info.entry_id),
+          title: info.entry_title,
+          desc: info.entry_desc,
+        },
+      };
     }
     case TimelineCat.Index: {
-      return {};
+      const info = php.parse(data) as Index;
+      return {
+        index: {
+          id: Number(info.idx_id),
+          title: info.idx_title,
+          desc: info.idx_desc,
+        },
+      };
     }
     case TimelineCat.Mono: {
       const monos = [];
