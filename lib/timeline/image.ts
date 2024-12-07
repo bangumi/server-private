@@ -4,20 +4,20 @@ import { personImages, subjectCover } from '@app/lib/response.ts';
 
 import { TimelineCat } from './type';
 
-export interface Subject {
+interface Subject {
   subject_id: string;
   images: string;
 }
 
-export type SubjectBatch = Record<number, Subject>;
+type SubjectBatch = Record<number, Subject>;
 
-export interface Mono {
+interface Mono {
   cat: number;
   id: number;
   images: string;
 }
 
-export type MonoBatch = Record<number, Mono>;
+type MonoBatch = Record<number, Mono>;
 
 export function parse(cat: TimelineCat, type: number, batch: boolean, data: string) {
   if (data === '') {

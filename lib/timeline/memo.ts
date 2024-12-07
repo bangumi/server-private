@@ -2,7 +2,7 @@ import * as php from '@trim21/php-serialize';
 
 import { TimelineCat } from './type';
 
-export interface Subject {
+interface Subject {
   subject_id: string;
   subject_type_id: string;
   subject_name: string;
@@ -12,9 +12,9 @@ export interface Subject {
   collect_rate: number;
 }
 
-export type SubjectBatch = Record<number, Subject>;
+type SubjectBatch = Record<number, Subject>;
 
-export interface ProgressBatch {
+interface ProgressBatch {
   eps_total: string;
   eps_update: number;
   vols_total: string;
@@ -24,7 +24,7 @@ export interface ProgressBatch {
   subject_type_id?: number;
 }
 
-export interface ProgressSingle {
+interface ProgressSingle {
   ep_id: string;
   ep_name: string;
   ep_sort: string;
@@ -32,13 +32,13 @@ export interface ProgressSingle {
   subject_name: string;
 }
 
-export interface MonoSingle {
+interface MonoSingle {
   cat: number;
   id: number;
   name: string;
 }
 
-export type MonoBatch = Record<number, MonoSingle>;
+type MonoBatch = Record<number, MonoSingle>;
 
 export function parse(cat: TimelineCat, type: number, batch: boolean, data: string) {
   if (data === '') {
