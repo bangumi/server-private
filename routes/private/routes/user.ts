@@ -382,7 +382,12 @@ export async function setup(app: App) {
             interest_type: schema.chiiSubjectInterests.type,
           })
           .from(schema.chiiSubjectInterests)
-          .where(op.eq(schema.chiiSubjectInterests.uid, userID))
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, userID),
+              op.ne(schema.chiiSubjectInterests.type, 0),
+            ),
+          )
           .groupBy(schema.chiiSubjectInterests.subjectType, schema.chiiSubjectInterests.type)
           .execute();
         for (const d of data) {
@@ -614,7 +619,9 @@ export async function setup(app: App) {
       const conditions = op.and(
         op.eq(schema.chiiSubjectInterests.uid, user.id),
         subjectType ? op.eq(schema.chiiSubjectInterests.subjectType, subjectType) : undefined,
-        type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
+        type
+          ? op.eq(schema.chiiSubjectInterests.type, type)
+          : op.ne(schema.chiiSubjectInterests.type, 0),
         since ? op.gte(schema.chiiSubjectInterests.updatedAt, since) : undefined,
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
@@ -690,6 +697,7 @@ export async function setup(app: App) {
       const conditions = op.and(
         op.eq(schema.chiiSubjectInterests.uid, user.id),
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+        op.ne(schema.chiiSubjectInterests.type, 0),
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
         auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.private, 0),
