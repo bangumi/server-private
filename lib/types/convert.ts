@@ -311,6 +311,7 @@ export function toSubjectComment(
 ): res.ISubjectComment {
   return {
     user: toSlimUser(user),
+    type: interest.type,
     rate: interest.rate,
     comment: interest.comment,
     updatedAt: interest.updatedAt,

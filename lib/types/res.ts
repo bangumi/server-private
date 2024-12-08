@@ -4,7 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
 import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
 
@@ -408,6 +408,7 @@ export type ISubjectComment = Static<typeof SubjectComment>;
 export const SubjectComment = t.Object(
   {
     user: t.Ref(SlimUser),
+    type: t.Enum(CollectionType),
     rate: t.Integer(),
     comment: t.String(),
     updatedAt: t.Integer(),
