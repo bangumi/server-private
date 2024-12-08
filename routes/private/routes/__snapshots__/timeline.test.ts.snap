@@ -1,394 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`timeline > should get blog 1`] = `Array []`;
-
-exports[`timeline > should get daily 1`] = `Array []`;
-
-exports[`timeline > should get index 1`] = `Array []`;
-
-exports[`timeline > should get mono 1`] = `Array []`;
-
-exports[`timeline > should get progress 1`] = `
-Array [
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656457954,
-    "id": 29006089,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 214114,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "batch": Object {
-          "epsTotal": "22",
-          "epsUpdate": 22,
-          "subjectID": 214114,
-          "subjectName": "Criminal Minds Season 13",
-          "volsTotal": "??",
-          "volsUpdate": 0,
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656375812,
-    "id": 28993551,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 214114,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "single": Object {
-          "epID": 751421,
-          "epName": "Last Gasp",
-          "epSort": 16,
-          "subjectID": 214114,
-          "subjectName": "Criminal Minds Season 13",
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 2,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656370302,
-    "id": 28993219,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 214114,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "batch": Object {
-          "epsTotal": "22",
-          "epsUpdate": 15,
-          "subjectID": 214114,
-          "subjectName": "Criminal Minds Season 13",
-          "volsTotal": "??",
-          "volsUpdate": 0,
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656285827,
-    "id": 28979826,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 214114,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "single": Object {
-          "epID": 751409,
-          "epName": "Killer App",
-          "epSort": 4,
-          "subjectID": 214114,
-          "subjectName": "Criminal Minds Season 13",
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 2,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656281750,
-    "id": 28979627,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 0,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "batch": Object {
-          "epsTotal": "22",
-          "epsUpdate": 3,
-          "subjectID": 0,
-          "subjectName": "Criminal Minds Season 13",
-          "volsTotal": "??",
-          "volsUpdate": 0,
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656276185,
-    "id": 28979352,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 194118,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "batch": Object {
-          "epsTotal": "22",
-          "epsUpdate": 22,
-          "subjectID": 194118,
-          "subjectName": "Criminal Minds Season 12",
-          "volsTotal": "??",
-          "volsUpdate": 0,
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656257059,
-    "id": 28976108,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 366527,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_44zQG.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_44zQG.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_44zQG.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_44zQG.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_44zQG.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "single": Object {
-          "epID": 1080550,
-          "epName": "",
-          "epSort": 1,
-          "subjectID": 366527,
-          "subjectName": "South Park Season 25",
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 2,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 4,
-    "createdAt": 1656092626,
-    "id": 28941116,
-    "image": Object {
-      "subject": Array [
-        Object {
-          "id": 347656,
-          "images": Object {
-            "common": "https://lain.bgm.tv/pic/cover/c/6d/d9/347656_5Sk6o.jpg",
-            "grid": "https://lain.bgm.tv/pic/cover/g/6d/d9/347656_5Sk6o.jpg",
-            "large": "https://lain.bgm.tv/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
-            "medium": "https://lain.bgm.tv/pic/cover/m/6d/d9/347656_5Sk6o.jpg",
-            "small": "https://lain.bgm.tv/pic/cover/s/6d/d9/347656_5Sk6o.jpg",
-          },
-        },
-      ],
-    },
-    "memo": Object {
-      "progress": Object {
-        "batch": Object {
-          "epsTotal": "11",
-          "epsUpdate": 4,
-          "subjectID": 347656,
-          "subjectName": "The Orville Season3",
-          "volsTotal": "??",
-          "volsUpdate": 0,
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-]
-`;
-
-exports[`timeline > should get status 1`] = `Array []`;
-
-exports[`timeline > should get subject collect 1`] = `
+exports[`timeline > should get all 1`] = `
 Array [
   Object {
     "batch": false,
@@ -425,6 +37,7 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 10,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -473,6 +86,150 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 6,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656457954,
+    "id": 29006089,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 22,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": 0,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656375812,
+    "id": 28993551,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 751421,
+          "epName": "Last Gasp",
+          "epSort": 16,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656370302,
+    "id": 28993219,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 15,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": 0,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -521,6 +278,54 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 10,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656285827,
+    "id": 28979826,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 751409,
+          "epName": "Killer App",
+          "epSort": 4,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -569,6 +374,55 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 11,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656281750,
+    "id": 28979627,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 0,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 3,
+          "subjectID": 0,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": 0,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -617,6 +471,7 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 10,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -665,6 +520,55 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 6,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656276185,
+    "id": 28979352,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 194118,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 22,
+          "subjectID": 194118,
+          "subjectName": "Criminal Minds Season 12",
+          "volsTotal": "??",
+          "volsUpdate": 0,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -713,6 +617,54 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 8,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656257059,
+    "id": 28976108,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 366527,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_44zQG.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_44zQG.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_44zQG.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_44zQG.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_44zQG.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 1080550,
+          "epName": "",
+          "epSort": 1,
+          "subjectID": 366527,
+          "subjectName": "South Park Season 25",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -761,6 +713,7 @@ Array [
     "replies": 0,
     "source": 0,
     "type": 10,
+    "uid": 287622,
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -774,72 +727,203 @@ Array [
       "username": "287622",
     },
   },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656092626,
+    "id": 28941116,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 347656,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/6d/d9/347656_5Sk6o.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/6d/d9/347656_5Sk6o.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/6d/d9/347656_5Sk6o.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/6d/d9/347656_5Sk6o.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "11",
+          "epsUpdate": 4,
+          "subjectID": 347656,
+          "subjectName": "The Orville Season3",
+          "volsTotal": "??",
+          "volsUpdate": 0,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1654396267,
+    "id": 28685056,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 240346,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/5a/b7/240346_LDL3v.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/5a/b7/240346_LDL3v.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/5a/b7/240346_LDL3v.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/5a/b7/240346_LDL3v.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/5a/b7/240346_LDL3v.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 240346,
+          "name": "寄宿学校のジュリエット",
+          "nameCN": "寄宿学校的朱丽叶",
+          "rate": 0,
+          "series": false,
+          "type": 2,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 579876,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1654396267,
+    "id": 28685055,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 220165,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/ed/67/220165_ZjN8n.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/ed/67/220165_ZjN8n.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/ed/67/220165_ZjN8n.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/ed/67/220165_ZjN8n.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/ed/67/220165_ZjN8n.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "恶心，死肥宅，满脑子就想日我",
+          "id": 220165,
+          "name": "BALDR BRINGER",
+          "nameCN": "",
+          "rate": 0,
+          "series": false,
+          "type": 4,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 1,
+    "type": 4,
+    "uid": 302300,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1654396263,
+    "id": 28685054,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 386195,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/d0/d0/386195_eTd8Z.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/d0/d0/386195_eTd8Z.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/d0/d0/386195_eTd8Z.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/d0/d0/386195_eTd8Z.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/d0/d0/386195_eTd8Z.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 386195,
+          "name": "響け！ユーフォニアム アンサンブルコンテスト編",
+          "nameCN": "吹响！悠风号 合奏比赛篇",
+          "rate": 0,
+          "series": false,
+          "type": 2,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 559989,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1654396237,
+    "id": 28685052,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 1424,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/48/9d/1424_q8FMQ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/48/9d/1424_q8FMQ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/48/9d/1424_q8FMQ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/48/9d/1424_q8FMQ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/48/9d/1424_q8FMQ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 1424,
+          "name": "けいおん！",
+          "nameCN": "轻音少女",
+          "rate": 9,
+          "series": false,
+          "type": 2,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 1,
+    "type": 2,
+    "uid": 681772,
+  },
 ]
 `;
 
-exports[`timeline > should get wiki 1`] = `
-Array [
-  Object {
-    "batch": false,
-    "cat": 2,
-    "createdAt": 1654374720,
-    "id": 28683469,
-    "image": Object {},
-    "memo": Object {
-      "wiki": Object {
-        "subject": Object {
-          "id": 386266,
-          "name": "THE JUNGLE BOOK",
-          "nameCN": "小人猿泰山",
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 4,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 267266,
-      "joinedAt": 0,
-      "nickname": "nickname 267266",
-      "sign": "sing 267266",
-      "username": "267266",
-    },
-  },
-  Object {
-    "batch": false,
-    "cat": 2,
-    "createdAt": 1654368800,
-    "id": 28683021,
-    "image": Object {},
-    "memo": Object {
-      "wiki": Object {
-        "subject": Object {
-          "id": 386263,
-          "name": "2010 ストリートファイター",
-          "nameCN": "街头战士2010",
-        },
-      },
-    },
-    "replies": 0,
-    "source": 0,
-    "type": 4,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "id": 267266,
-      "joinedAt": 0,
-      "nickname": "nickname 267266",
-      "sign": "sing 267266",
-      "username": "267266",
-    },
-  },
-]
-`;
+exports[`timeline > should get friends 1`] = `Array []`;

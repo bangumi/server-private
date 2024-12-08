@@ -1738,11 +1738,13 @@ exports[`should build private api spec 1`] = `
               type: number
         type:
           type: integer
+        uid:
+          type: integer
         user:
           $ref: '#/components/schemas/SlimUser'
       required:
         - id
-        - user
+        - uid
         - cat
         - type
         - memo
@@ -4954,46 +4956,6 @@ paths:
               - enum:
                   - friends
                 type: string
-        - description: 时间线类型
-          in: query
-          name: cat
-          required: false
-          schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 5
-                type: number
-              - enum:
-                  - 6
-                type: number
-              - enum:
-                  - 7
-                type: number
-              - enum:
-                  - 8
-                type: number
-              - enum:
-                  - 9
-                type: number
-        - description: 起始 Timeline ID
-          in: query
-          name: since
-          required: false
-          schema:
-            minimum: 0
-            type: integer
         - description: min 0
           in: query
           name: offset

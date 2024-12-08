@@ -524,10 +524,10 @@ export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): r
   };
 }
 
-export function toTimeline(tml: orm.ITimeline, user: orm.IUser): res.ITimeline {
+export function toTimeline(tml: orm.ITimeline): res.ITimeline {
   return {
     id: tml.id,
-    user: toSlimUser(user),
+    uid: tml.uid,
     cat: tml.cat,
     type: tml.type,
     memo: parseTimelineMemo(tml.cat, tml.type, tml.batch, tml.memo),

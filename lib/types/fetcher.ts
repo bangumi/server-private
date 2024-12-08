@@ -1,5 +1,6 @@
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
+import redis from '@app/lib/redis.ts';
 import type { UserEpisodeCollection } from '@app/lib/subject/type.ts';
 
 import * as convert from './convert.ts';
@@ -15,6 +16,19 @@ export async function fetchSlimUserByUsername(username: string): Promise<res.ISl
     return convert.toSlimUser(d);
   }
   return null;
+}
+
+export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
+  const data = await db
+    .select()
+    .from(schema.chiiUsers)
+    .where(op.inArray(schema.chiiUsers.id, ids))
+    .execute();
+  const result: Record<number, res.ISlimUser> = {};
+  for (const d of data) {
+    result[d.id] = convert.toSlimUser(d);
+  }
+  return result;
 }
 
 export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
@@ -295,4 +309,38 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
     reply.replies = subReplies[reply.id] ?? [];
   }
   return topLevelReplies;
+}
+
+export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, res.ITimeline>> {
+  const cached = await redis.mget(ids.map((id) => `tml:item:${id}`));
+  const result: Record<number, res.ITimeline> = {};
+  const uids = new Set<number>();
+  const missing = [];
+  for (const tid of ids) {
+    if (cached[tid]) {
+      const item = JSON.parse(cached[tid]) as res.ITimeline;
+      uids.add(item.uid);
+      result[tid] = item;
+    } else {
+      missing.push(tid);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiTimeline)
+      .where(op.inArray(schema.chiiTimeline.id, missing))
+      .execute();
+    for (const d of data) {
+      const item = convert.toTimeline(d);
+      uids.add(item.uid);
+      result[d.id] = item;
+      await redis.setex(`tml:item:${d.id}`, 86400, JSON.stringify(item));
+    }
+  }
+  const users = await fetchSlimUsersByIDs([...uids]);
+  for (const item of Object.values(result)) {
+    item.user = users[item.uid];
+  }
+  return result;
 }

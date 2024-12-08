@@ -6,90 +6,31 @@ import { emptyAuth } from '@app/lib/auth/index.ts';
 import { setup } from './timeline.ts';
 
 describe('timeline', () => {
-  test('should get daily', async () => {
+  test('should get all', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '1', limit: '2', offset: '0' },
+      query: { offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get wiki', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/timeline',
-      query: { cat: '2', limit: '2', offset: '0' },
+  test('should get friends', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
     });
-    expect(res.json()).toMatchSnapshot();
-  });
 
-  test('should get subject collect', async () => {
-    const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '3', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should get progress', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/timeline',
-      query: { cat: '4', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should get status', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/timeline',
-      query: { cat: '5', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should get blog', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/timeline',
-      query: { cat: '6', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should get index', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/timeline',
-      query: { cat: '7', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should get mono', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/timeline',
-      query: { cat: '8', offset: '0' },
+      query: { mode: 'friends', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });

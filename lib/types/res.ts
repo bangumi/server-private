@@ -802,7 +802,8 @@ export type ITimeline = Static<typeof Timeline>;
 export const Timeline = t.Object(
   {
     id: t.Integer(),
-    user: t.Ref(SlimUser),
+    uid: t.Integer(),
+    user: t.Optional(t.Ref(SlimUser)),
     cat: t.Enum(TimelineCat),
     type: t.Integer(),
     memo: t.Ref(TimelineMemo),
