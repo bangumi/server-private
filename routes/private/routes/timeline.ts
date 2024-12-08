@@ -53,6 +53,10 @@ export async function setup(app: App) {
           items.push(item);
         }
       }
+      const users = await fetcher.fetchSlimUsersByIDs(items.map((i) => i.uid));
+      for (const item of items) {
+        item.user = users[item.uid];
+      }
       return items;
     },
   );

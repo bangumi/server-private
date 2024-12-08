@@ -5733,6 +5733,35 @@ paths:
       summary: 获取用户创建的目录
       tags:
         - user
+  /p1/users/{username}/timeline:
+    get:
+      operationId: getUserTimeline
+      parameters:
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      summary: 获取用户时间胶囊
+      tags:
+        - user
   /p1/wiki/ep/{episodeID}:
     get:
       operationId: getEpisodeWikiInfo

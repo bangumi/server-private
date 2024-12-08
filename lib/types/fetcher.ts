@@ -338,9 +338,5 @@ export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, 
       await redis.setex(`tml:item:${d.id}`, 86400, JSON.stringify(item));
     }
   }
-  const users = await fetchSlimUsersByIDs([...uids]);
-  for (const item of Object.values(result)) {
-    item.user = users[item.uid];
-  }
   return result;
 }

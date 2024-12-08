@@ -17,6 +17,7 @@ import {
   SubjectTypeValues,
   type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
+import { getTimelineUser } from '@app/lib/timeline/user';
 import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -1208,6 +1209,43 @@ export async function setup(app: App) {
         data: indexes,
         total: count,
       };
+    },
+  );
+
+  app.get(
+    '/users/:username/timeline',
+    {
+      schema: {
+        summary: '获取用户时间胶囊',
+        operationId: 'getUserTimeline',
+        tags: [Tag.User],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        responses: {
+          200: t.Array(t.Ref(res.Timeline)),
+        },
+      },
+    },
+    async ({ params: { username }, query: { offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const ids = await getTimelineUser(user.id, 20, offset);
+      const result = await fetcher.fetchTimelineByIDs(ids);
+      const items = [];
+      for (const tid of ids) {
+        const item = result[tid];
+        if (item) {
+          items.push(item);
+        }
+      }
+      return items;
     },
   );
 }
