@@ -697,8 +697,7 @@ export async function setup(app: App) {
       if (!top) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      const friends = await fetcher.fetchFriendsByUserID(auth.userID);
-      const friendIDs = new Set(friends.map((f) => f.user.id));
+      const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
       const reactions = await fetchTopicReactions(auth.userID, auth.userID);
 
       for (const reply of replies) {
