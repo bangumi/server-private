@@ -45,6 +45,9 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.SubjectStaffPositionType);
   app.addSchema(res.SubjectTag);
+  app.addSchema(res.Timeline);
+  app.addSchema(res.TimelineImage);
+  app.addSchema(res.TimelineMemo);
   app.addSchema(res.Topic);
   app.addSchema(res.TopicDetail);
   app.addSchema(res.User);

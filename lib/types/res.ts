@@ -5,6 +5,7 @@ import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
 import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
 
 export const Paged = <T extends TSchema>(type: T) =>
@@ -651,4 +652,167 @@ export const TopicDetail = t.Object(
     reactions: t.Array(t.Ref(Reaction)),
   },
   { $id: 'TopicDetail', title: 'TopicDetail' },
+);
+
+export type ITimelineMemo = Static<typeof TimelineMemo>;
+export const TimelineMemo = t.Object(
+  {
+    daily: t.Optional(
+      t.Object({
+        user: t.Optional(
+          t.Array(
+            t.Object({
+              uid: t.Integer(),
+              username: t.String(),
+              nickname: t.String(),
+            }),
+          ),
+        ),
+        group: t.Optional(
+          t.Array(
+            t.Object({
+              id: t.Integer(),
+              name: t.String(),
+              title: t.String(),
+              desc: t.String(),
+            }),
+          ),
+        ),
+      }),
+    ),
+    wiki: t.Optional(
+      t.Object({
+        subject: t.Object({
+          id: t.Integer(),
+          name: t.String(),
+          nameCN: t.String(),
+        }),
+      }),
+    ),
+    subject: t.Optional(
+      t.Array(
+        t.Object({
+          id: t.Integer(),
+          type: t.Integer(),
+          name: t.String(),
+          nameCN: t.String(),
+          series: t.Boolean(),
+          comment: t.String(),
+          rate: t.Number(),
+        }),
+      ),
+    ),
+    progress: t.Optional(
+      t.Object({
+        batch: t.Optional(
+          t.Object({
+            epsTotal: t.String(),
+            epsUpdate: t.Integer(),
+            volsTotal: t.String(),
+            volsUpdate: t.Integer(),
+            subjectID: t.Integer(),
+            subjectName: t.String(),
+          }),
+        ),
+        single: t.Optional(
+          t.Object({
+            epID: t.Integer(),
+            epName: t.String(),
+            epSort: t.Integer(),
+            subjectID: t.Integer(),
+            subjectName: t.String(),
+          }),
+        ),
+      }),
+    ),
+    status: t.Optional(
+      t.Object({
+        sign: t.Optional(t.String()),
+        tsukkomi: t.Optional(t.String()),
+        nickname: t.Optional(t.Object({ before: t.String(), after: t.String() })),
+      }),
+    ),
+    blog: t.Optional(
+      t.Object({
+        id: t.Integer(),
+        title: t.String(),
+        desc: t.String(),
+      }),
+    ),
+    index: t.Optional(
+      t.Object({
+        id: t.Integer(),
+        title: t.String(),
+        desc: t.String(),
+      }),
+    ),
+    mono: t.Optional(
+      t.Array(
+        t.Object({
+          cat: t.Integer(),
+          id: t.Integer(),
+          name: t.String(),
+        }),
+      ),
+    ),
+  },
+  { $id: 'TimelineMemo', title: 'TimelineMemo' },
+);
+
+export type ITimelineImage = Static<typeof TimelineImage>;
+export const TimelineImage = t.Object(
+  {
+    user: t.Optional(
+      t.Array(
+        t.Object({
+          uid: t.Integer(),
+          images: t.Optional(t.Ref(Avatar)),
+        }),
+      ),
+    ),
+    group: t.Optional(
+      t.Array(
+        t.Object({
+          id: t.Integer(),
+          images: t.Optional(t.Ref(Avatar)),
+        }),
+      ),
+    ),
+    subject: t.Optional(
+      t.Array(
+        t.Object({
+          id: t.Integer(),
+          images: t.Optional(t.Ref(SubjectImages)),
+        }),
+      ),
+    ),
+    mono: t.Optional(
+      t.Array(
+        t.Object({
+          cat: t.Integer(),
+          id: t.Integer(),
+          images: t.Optional(t.Ref(PersonImages)),
+        }),
+      ),
+    ),
+  },
+  { $id: 'TimelineImage', title: 'TimelineImage' },
+);
+
+export type ITimeline = Static<typeof Timeline>;
+export const Timeline = t.Object(
+  {
+    id: t.Integer(),
+    uid: t.Integer(),
+    user: t.Optional(t.Ref(SlimUser)),
+    cat: t.Enum(TimelineCat),
+    type: t.Integer(),
+    memo: t.Ref(TimelineMemo),
+    image: t.Ref(TimelineImage),
+    batch: t.Boolean(),
+    source: t.Enum(TimelineSource),
+    replies: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'Timeline', title: 'Timeline' },
 );

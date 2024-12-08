@@ -5,6 +5,7 @@ export const Tag = {
   Group: 'group',
   Person: 'person',
   Subject: 'subject',
+  Timeline: 'timeline',
   Topic: 'topic',
   User: 'user',
   Wiki: 'wiki',

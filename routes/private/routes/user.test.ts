@@ -168,4 +168,14 @@ describe('user collection', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get timeline', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/287622/timeline',
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
 });
