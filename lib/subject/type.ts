@@ -22,7 +22,6 @@ export enum EpisodeType {
 }
 
 export enum CollectionType {
-  None = 0,
   Wish = 1,
   Collect = 2,
   Doing = 3,
