@@ -17,18 +17,13 @@ export async function fetchSlimUserByUsername(username: string): Promise<res.ISl
   return null;
 }
 
-export async function fetchFriendsByUserID(userID: number): Promise<res.IFriend[]> {
+export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
   const data = await db
-    .select()
+    .select({ fid: schema.chiiFriends.fid })
     .from(schema.chiiFriends)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiFriends.fid, schema.chiiUsers.id))
     .where(op.eq(schema.chiiFriends.uid, userID))
     .execute();
-  const list: res.IFriend[] = [];
-  for (const d of data) {
-    list.push(convert.toFriend(d.chii_members, d.chii_friends));
-  }
-  return list;
+  return data.map((d) => d.fid);
 }
 
 export async function fetchSlimSubjectByID(

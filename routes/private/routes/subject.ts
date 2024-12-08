@@ -362,14 +362,13 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiPersonSubjects.personID) })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
           schema.chiiPersons,
           op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
         )
         .where(condition)
-        .groupBy(schema.chiiPersonSubjects.personID)
         .execute();
       const data = await db
         .select()
@@ -698,8 +697,7 @@ export async function setup(app: App) {
       if (!top) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      const friends = await fetcher.fetchFriendsByUserID(auth.userID);
-      const friendIDs = new Set(friends.map((f) => f.user.id));
+      const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
       const reactions = await fetchTopicReactions(auth.userID, auth.userID);
 
       for (const reply of replies) {
