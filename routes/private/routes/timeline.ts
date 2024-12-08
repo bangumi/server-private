@@ -61,7 +61,7 @@ export async function setup(app: App) {
           key.uid = 0;
         }
       }
-      if (offset === 0 && !since) {
+      if (offset === 0) {
         const cached = await tmlCache.get(key);
         if (cached) {
           return cached;
@@ -77,7 +77,7 @@ export async function setup(app: App) {
         .limit(20)
         .offset(offset);
       const items = data.map((d) => convert.toTimeline(d.chii_timeline, d.chii_members));
-      if (offset === 0 && !since) {
+      if (offset === 0) {
         await tmlCache.set(key, items);
       }
       return items;
