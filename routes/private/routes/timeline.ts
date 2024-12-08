@@ -35,9 +35,7 @@ export async function setup(app: App) {
             }),
           ),
           cat: t.Optional(t.Enum(TimelineCat, { description: '时间线类型' })),
-          limit: t.Optional(
-            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
-          ),
+          since: t.Optional(t.Integer({ minimum: 0, description: '起始 Timeline ID' })),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
@@ -45,11 +43,15 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { mode = TimelineMode.Friends, cat, limit = 20, offset = 0 } }) => {
+    async ({ auth, query: { mode = TimelineMode.Friends, cat, since, offset = 0 } }) => {
       const key = { uid: auth.userID, cat: cat ?? 0 };
       const conditions = [];
       if (cat) {
         conditions.push(op.eq(schema.chiiTimeline.cat, cat));
+      }
+      if (since) {
+        // 由于 timeline 表没有 createdAt 字段的索引，所以这里使用 id 作为 since
+        conditions.push(op.gte(schema.chiiTimeline.id, since));
       }
       if (auth.login && mode === TimelineMode.Friends) {
         const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
@@ -59,7 +61,7 @@ export async function setup(app: App) {
           key.uid = 0;
         }
       }
-      if (offset === 0 && limit === 20) {
+      if (offset === 0) {
         const cached = await tmlCache.get(key);
         if (cached) {
           return cached;
@@ -72,10 +74,10 @@ export async function setup(app: App) {
         .innerJoin(schema.chiiUsers, op.eq(schema.chiiTimeline.uid, schema.chiiUsers.id))
         .where(conditions.length > 0 ? op.and(...conditions) : undefined)
         .orderBy(op.desc(schema.chiiTimeline.id))
-        .limit(limit)
+        .limit(20)
         .offset(offset);
       const items = data.map((d) => convert.toTimeline(d.chii_timeline, d.chii_members));
-      if (offset === 0 && limit === 20) {
+      if (offset === 0) {
         await tmlCache.set(key, items);
       }
       return items;
