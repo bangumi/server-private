@@ -2,12 +2,20 @@ import { Type as t } from '@sinclair/typebox';
 
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
+import { TypedCache } from '@app/lib/cache.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { TimelineCat, TimelineMode } from '@app/lib/timeline/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
+
+interface cacheKey {
+  uid: string;
+  cat: string;
+}
+
+const tmlCache = TypedCache<cacheKey, res.ITimeline[]>((key) => `tml:${key.uid}:${key.cat}`);
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -38,6 +46,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, query: { mode = TimelineMode.Friends, cat, limit = 20, offset = 0 } }) => {
+      const key = { uid: String(auth.userID), cat: String(cat ?? 0) };
       const conditions = [];
       if (cat) {
         conditions.push(op.eq(schema.chiiTimeline.cat, cat));
@@ -46,8 +55,17 @@ export async function setup(app: App) {
         const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
         if (friendIDs.length > 0) {
           conditions.push(op.inArray(schema.chiiTimeline.uid, friendIDs));
+        } else {
+          key.uid = '0';
         }
       }
+      if (offset === 0 && limit === 20) {
+        const cached = await tmlCache.get(key);
+        if (cached) {
+          return cached;
+        }
+      }
+
       const data = await db
         .select()
         .from(schema.chiiTimeline)
@@ -57,6 +75,9 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset);
       const items = data.map((d) => convert.toTimeline(d.chii_timeline, d.chii_members));
+      if (offset === 0 && limit === 20) {
+        await tmlCache.set(key, items);
+      }
       return items;
     },
   );
