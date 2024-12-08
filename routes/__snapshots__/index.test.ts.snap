@@ -4987,14 +4987,12 @@ paths:
               - enum:
                   - 9
                 type: number
-        - description: max 100
+        - description: 起始 Timeline ID
           in: query
-          name: limit
+          name: since
           required: false
           schema:
-            default: 20
-            maximum: 100
-            minimum: 1
+            minimum: 0
             type: integer
         - description: min 0
           in: query

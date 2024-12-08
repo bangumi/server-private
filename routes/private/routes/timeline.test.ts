@@ -34,7 +34,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '3', limit: '2', offset: '0' },
+      query: { cat: '3', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -45,7 +45,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '4', limit: '2', offset: '0' },
+      query: { cat: '4', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -56,7 +56,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '5', limit: '2', offset: '0' },
+      query: { cat: '5', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -67,7 +67,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '6', limit: '2', offset: '0' },
+      query: { cat: '6', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -78,7 +78,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '7', limit: '2', offset: '0' },
+      query: { cat: '7', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -89,7 +89,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { cat: '8', limit: '2', offset: '0' },
+      query: { cat: '8', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
