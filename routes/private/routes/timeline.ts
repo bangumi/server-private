@@ -11,8 +11,8 @@ import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
 interface cacheKey {
-  uid: string;
-  cat: string;
+  uid: number;
+  cat: number;
 }
 
 const tmlCache = TypedCache<cacheKey, res.ITimeline[]>((key) => `tml:${key.uid}:${key.cat}`);
@@ -46,7 +46,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, query: { mode = TimelineMode.Friends, cat, limit = 20, offset = 0 } }) => {
-      const key = { uid: String(auth.userID), cat: String(cat ?? 0) };
+      const key = { uid: auth.userID, cat: cat ?? 0 };
       const conditions = [];
       if (cat) {
         conditions.push(op.eq(schema.chiiTimeline.cat, cat));
@@ -56,7 +56,7 @@ export async function setup(app: App) {
         if (friendIDs.length > 0) {
           conditions.push(op.inArray(schema.chiiTimeline.uid, friendIDs));
         } else {
-          key.uid = '0';
+          key.uid = 0;
         }
       }
       if (offset === 0 && limit === 20) {
