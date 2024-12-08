@@ -113,14 +113,13 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiPersonSubjects.subjectID) })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
           schema.chiiSubjects,
           op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
         )
         .where(condition)
-        .groupBy(schema.chiiPersonSubjects.subjectID)
         .execute();
       const data = await db
         .select()
@@ -207,7 +206,7 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiCharacterCasts.characterID) })
         .from(schema.chiiCharacterCasts)
         .innerJoin(
           schema.chiiCharacters,
@@ -221,7 +220,6 @@ export async function setup(app: App) {
           ),
         )
         .where(condition)
-        .groupBy(schema.chiiCharacterCasts.characterID)
         .execute();
       const data = await db
         .select()

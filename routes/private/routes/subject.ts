@@ -362,14 +362,13 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiPersonSubjects.personID) })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
           schema.chiiPersons,
           op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
         )
         .where(condition)
-        .groupBy(schema.chiiPersonSubjects.personID)
         .execute();
       const data = await db
         .select()
