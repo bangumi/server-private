@@ -1342,12 +1342,30 @@ exports[`should build private api spec 1`] = `
           type: string
         rate:
           type: integer
+        type:
+          anyOf:
+            - enum:
+                - 1
+              type: number
+            - enum:
+                - 2
+              type: number
+            - enum:
+                - 3
+              type: number
+            - enum:
+                - 4
+              type: number
+            - enum:
+                - 5
+              type: number
         updatedAt:
           type: integer
         user:
           $ref: '#/components/schemas/SlimUser'
       required:
         - user
+        - type
         - rate
         - comment
         - updatedAt
