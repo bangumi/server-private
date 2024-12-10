@@ -30,7 +30,6 @@ interface Payload {
 }
 
 export async function handle(key: string, value: string) {
-  logger.debug('handle timeline event', key);
   const idx = JSON.parse(key) as Key;
   const payload = JSON.parse(value) as Payload;
 
