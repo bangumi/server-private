@@ -27,7 +27,6 @@ async function onMessage(key: string, value: string) {
       break;
     }
     default: {
-      logger.debug('unhandled', payload);
       break;
     }
   }
