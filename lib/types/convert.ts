@@ -5,8 +5,10 @@ import * as php from '@trim21/php-serialize';
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
-import { getInfoboxSummary } from '@app/lib/subject/infobox';
-import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type';
+import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
+import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
+import { parse as parseTimelineImage } from '@app/lib/timeline/image';
+import { parse as parseTimelineMemo } from '@app/lib/timeline/memo';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findSubjectPlatform,
@@ -520,5 +522,20 @@ export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): r
   return {
     user: toSlimUser(user),
     createdAt: collect.createdAt,
+  };
+}
+
+export function toTimeline(tml: orm.ITimeline): res.ITimeline {
+  return {
+    id: tml.id,
+    uid: tml.uid,
+    cat: tml.cat,
+    type: tml.type,
+    memo: parseTimelineMemo(tml.cat, tml.type, tml.batch, tml.memo),
+    image: parseTimelineImage(tml.cat, tml.type, tml.batch, tml.img),
+    batch: tml.batch,
+    replies: tml.replies,
+    source: tml.source,
+    createdAt: tml.createdAt,
   };
 }
