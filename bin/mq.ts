@@ -34,7 +34,7 @@ async function onMessage(key: string, value: string) {
 
 async function main() {
   if (!config.kafkaBrokers) {
-    logger.error('KAFKA_URI is not set');
+    logger.error('kafkaBrokers config is not set');
     return;
   }
 
