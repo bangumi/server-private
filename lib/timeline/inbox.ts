@@ -1,14 +1,10 @@
+import { DateTime } from 'luxon';
+
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import redis from '@app/lib/redis.ts';
 
-function getInboxCacheKey(uid: number) {
-  return `tml:inbox:${uid}`;
-}
-
-function getInboxVisitCacheKey(uid: number) {
-  return `tml:visit:inbox:${uid}`;
-}
+import { getInboxCacheKey, getInboxVisitCacheKey } from './cache.ts';
 
 export async function getTimelineInbox(
   uid: number,
@@ -48,7 +44,7 @@ export async function getTimelineInbox(
     ids.push(...data.map((d) => d.id));
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
-  const visitCacheKey = getInboxVisitCacheKey(uid);
-  await redis.setex(visitCacheKey, 604800, '1');
+  const ttl = DateTime.now().toUnixInteger() + 604800;
+  await redis.setex(getInboxVisitCacheKey(uid), 604800, ttl);
   return ids;
 }

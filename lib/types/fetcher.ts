@@ -2,6 +2,7 @@ import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import redis from '@app/lib/redis.ts';
 import type { UserEpisodeCollection } from '@app/lib/subject/type.ts';
+import { getItemCacheKey as getTimelineItemCacheKey } from '@app/lib/timeline/cache.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -312,7 +313,7 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
 }
 
 export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, res.ITimeline>> {
-  const cached = await redis.mget(ids.map((id) => `tml:item:${id}`));
+  const cached = await redis.mget(ids.map((id) => getTimelineItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
   const uids = new Set<number>();
   const missing = [];
@@ -335,7 +336,7 @@ export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, 
       const item = convert.toTimeline(d);
       uids.add(item.uid);
       result[d.id] = item;
-      await redis.setex(`tml:item:${d.id}`, 86400, JSON.stringify(item));
+      await redis.setex(getTimelineItemCacheKey(d.id), 86400, JSON.stringify(item));
     }
   }
   return result;

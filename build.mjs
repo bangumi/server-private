@@ -40,3 +40,9 @@ await esbuild.build({
   outfile: 'dist/cron.mjs',
   ...buildConfigs,
 });
+
+await esbuild.build({
+  entryPoints: ['bin/mq.ts'],
+  outfile: 'dist/mq.mjs',
+  ...buildConfigs,
+});
