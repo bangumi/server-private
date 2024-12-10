@@ -41,9 +41,10 @@ export async function handle(key: string, value: string) {
         return;
       }
       const tml = payload.after;
+      logger.info(`process timeline create event: ${tml.tml_id}`);
       const now = DateTime.now().toUnixInteger();
       const ttlUser = Number(await redis.get(getUserVisitCacheKey(tml.tml_uid)));
-      if (ttlUser) {
+      if (ttlUser > 0) {
         const userCacheKey = getUserCacheKey(tml.tml_uid);
         await redis.zadd(userCacheKey, payload.after.tml_dateline, tml.tml_id);
         await redis.expire(userCacheKey, ttlUser - now);
@@ -68,6 +69,7 @@ export async function handle(key: string, value: string) {
         return;
       }
       const tml = payload.before;
+      logger.info(`process timeline delete event: ${tml.tml_id}`);
       await redis.zrem(getUserCacheKey(tml.tml_uid), tml.tml_id);
       const friendIDs = await fetcher.fetchFriendIDsByUserID(tml.tml_uid);
       if (friendIDs.length > 0) {
