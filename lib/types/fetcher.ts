@@ -312,6 +312,7 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
   return topLevelReplies;
 }
 
+/** 优先从缓存中获取时间线数据，如果缓存中没有则从数据库中获取， 并将获取到的数据缓存到 Redis 中。 */
 export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, res.ITimeline>> {
   const cached = await redis.mget(ids.map((id) => getTimelineItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
