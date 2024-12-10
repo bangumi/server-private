@@ -25,7 +25,9 @@ MQ 从 kafka 消费 debezium 的 binlog，然后更新缓存
 ### create
 
 - 检查 `tml:visit:user:${tml_uid}` 是否存在，更新 `tml:user:{tml_uid}`，zadd 新的 tml_id+tml_dateline
+- 设置 `tml:user:{tml_uid}` 的过期时间与 `tml:visit:user:${tml_uid}` 一致
 - 获取 tml_uid 的好友，检查对应每个人的 `tml:visit:inbox:{follower_uid}` 是否存在，更新 `tml:inbox:{follower_uid}`，zadd 新的 tml_id+tml_dateline
+- 设置每个 `tml:inbox:{follower_uid}` 的过期时间与 `tml:visit:inbox:{follower_uid}` 一致
 
 ### delete
 
