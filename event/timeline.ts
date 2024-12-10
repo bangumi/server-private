@@ -46,6 +46,7 @@ export async function handle(key: string, value: string) {
       if (ttlUser > 0) {
         const userCacheKey = getUserCacheKey(tml.tml_uid);
         await redis.zadd(userCacheKey, payload.after.tml_dateline, tml.tml_id);
+        // 将 cache key 的过期时间设置为与 visit key 一致
         await redis.expire(userCacheKey, ttlUser - now);
       }
       const friendIDs = await fetcher.fetchFriendIDsByUserID(tml.tml_uid);
