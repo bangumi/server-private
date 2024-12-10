@@ -1,8 +1,4 @@
-import ZstdCodec from '@kafkajs/zstd';
-import { CompressionTypes, Kafka, logLevel } from 'kafkajs';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import KafkaJS from 'kafkajs';
+import { KafkaJS } from '@confluentinc/kafka-javascript';
 
 import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { Payload } from '@app/event/type';
@@ -34,20 +30,19 @@ async function onMessage(key: string, value: string) {
 
 async function main() {
   if (!config.kafkaBrokers) {
-    logger.error('kafkaBrokers config is not set');
+    logger.error('KAFKA_BROKERS is not set');
     return;
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  KafkaJS.CompressionCodecs[CompressionTypes.ZSTD] = ZstdCodec();
+  const { Kafka, logLevel } = KafkaJS;
 
   const kafka = new Kafka({
-    logLevel: logLevel.WARN,
-    brokers: config.kafkaBrokers,
-    clientId: 'server-private',
+    log_level: logLevel.WARN,
+    'client.id': 'server-private',
   });
-
-  const consumer = kafka.consumer({ groupId: 'server-private' });
+  const consumer = kafka.consumer({
+    'bootstrap.servers': config.kafkaBrokers,
+    'group.id': 'server-private',
+  });
   await consumer.connect();
   await consumer.subscribe({ topics: TOPICS });
 
