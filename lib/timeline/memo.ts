@@ -108,7 +108,8 @@ export function parse(cat: TimelineCat, type: number, batch: boolean, data: stri
             },
           };
         }
-        case 3 | 4: {
+        case 3:
+        case 4: {
           const groups = [];
           if (batch) {
             const info = php.parse(data) as GroupBatch;
