@@ -44,7 +44,7 @@ export async function getTimelineInbox(
     ids.push(...data.map((d) => d.id));
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
-  const ttl = DateTime.now().toUnixInteger() + 604800;
-  await redis.setex(getInboxVisitCacheKey(uid), 604800, ttl);
+  const ttl = DateTime.now().toUnixInteger() + 1209600;
+  await redis.setex(getInboxVisitCacheKey(uid), 1209600, ttl);
   return ids;
 }

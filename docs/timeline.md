@@ -4,17 +4,17 @@
 
 ### 用户时间胶囊
 
-缓存 tml_id 到 redis `tml:user:{uid}` 为 sorted set, 以 tml_dateline 为 score，整个 key 的过期时间为 7 天
+缓存 tml_id 到 redis `tml:user:{uid}` 为 sorted set, 以 tml_dateline 为 score，整个 key 的过期时间为 14 天
 
-1. 收到请求 /p1/users/{username}/timeline, 设置访问 key `tml:visit:user:${uid}`, 过期时间 7 天
+1. 收到请求 /p1/users/{username}/timeline, 设置访问 key `tml:visit:user:${uid}`, 过期时间 14 天
 2. 检查缓存 `tml:user:{uid}` 里的数据量，如果能覆盖当前的 offset 请求，则直接 range 返回缓存里的 tml_id, 否则请求数据库
 3. 从 redis mget 上一步拿到的 tml_id 列表，missing 的部分请求数据库
 
 ### 首页时间线
 
-缓存 tml_id 到 redis `tml:inbox:{uid}` 为 sorted set, 以 tml_dateline 为 score，整个 key 的过期时间为 7 天
+缓存 tml_id 到 redis `tml:inbox:{uid}` 为 sorted set, 以 tml_dateline 为 score，整个 key 的过期时间为 14 天
 
-1. 收到请求 /p1/timeline, 设置访问 key `tml:visit:inbox:{uid}`, 过期时间 7 天
+1. 收到请求 /p1/timeline, 设置访问 key `tml:visit:inbox:{uid}`, 过期时间 14 天
 2. 检查缓存 `tml:inbox:{uid}` 里的数据量，如果能覆盖当前的 offset 请求，则直接 range 返回缓存里的 tml_id, 否则请求数据库
 3. 从 redis mget 上一步拿到的 tml_id 列表，missing 的部分请求数据库
 

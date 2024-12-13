@@ -411,7 +411,7 @@ export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, 
       const item = convert.toTimeline(d);
       uids.add(item.uid);
       result[d.id] = item;
-      await redis.setex(getTimelineItemCacheKey(d.id), 86400, JSON.stringify(item));
+      await redis.setex(getTimelineItemCacheKey(d.id), 604800, JSON.stringify(item));
     }
   }
   return result;
