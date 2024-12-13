@@ -66,7 +66,11 @@ async function main() {
       if (!message.value) {
         return;
       }
-      await onMessage(message.key.toString(), message.value.toString());
+      try {
+        await onMessage(message.key.toString(), message.value.toString());
+      } catch (error) {
+        logger.error(`Error processing message ${message.key.toString()}: ${error}`);
+      }
     },
   });
 }
