@@ -293,7 +293,7 @@ export async function fetchSubjectIDsByFilter(
     .execute();
   const ids = data.map((d) => d.id);
   if (page === 1) {
-    await redis.setex(cacheKey, 604800, JSON.stringify(ids));
+    await redis.setex(cacheKey, 86400, JSON.stringify(ids));
   } else {
     await redis.setex(cacheKey, 3600, JSON.stringify(ids));
   }
