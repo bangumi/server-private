@@ -68,6 +68,18 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type IUserNetworkService = Static<typeof UserNetworkService>;
+export const UserNetworkService = t.Object(
+  {
+    name: t.String(),
+    title: t.String(),
+    url: t.String(),
+    color: t.String(),
+    account: t.String(),
+  },
+  { $id: 'UserNetworkService', title: 'UserNetworkService' },
+);
+
 export type IUserHomepage = Static<typeof UserHomepage>;
 export const UserHomepage = t.Object(
   {
@@ -104,6 +116,7 @@ export const User = t.Object(
     site: t.String(),
     location: t.String(),
     bio: t.String(),
+    networkServices: t.Array(UserNetworkService),
     // wait for permission
     // homepage: t.Ref(UserHomepage),
   },
