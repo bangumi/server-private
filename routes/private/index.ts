@@ -13,6 +13,7 @@ import * as misc from './routes/misc.ts';
 import * as person from './routes/person.ts';
 import * as post from './routes/post.ts';
 import * as subject from './routes/subject.ts';
+import * as timeline from './routes/timeline.ts';
 import * as group from './routes/topic.ts';
 import * as trending from './routes/trending.ts';
 import * as user from './routes/user.ts';
@@ -53,6 +54,7 @@ async function API(app: App) {
   await app.register(person.setup);
   await app.register(post.setup);
   await app.register(subject.setup);
+  await app.register(timeline.setup);
   await app.register(trending.setup);
   await app.register(user.setup);
   await app.register(wiki.setup, { prefix: '/wiki' });

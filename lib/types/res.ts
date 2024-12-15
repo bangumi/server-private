@@ -4,7 +4,8 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
 
 export const Paged = <T extends TSchema>(type: T) =>
@@ -67,6 +68,15 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type IUserHomepage = Static<typeof UserHomepage>;
+export const UserHomepage = t.Object(
+  {
+    left: t.Array(t.String()),
+    right: t.Array(t.String()),
+  },
+  { $id: 'UserHomepage', title: 'UserHomepage' },
+);
+
 export type ISlimUser = Static<typeof SlimUser>;
 export const SlimUser = t.Object(
   {
@@ -94,6 +104,8 @@ export const User = t.Object(
     site: t.String(),
     location: t.String(),
     bio: t.String(),
+    // wait for permission
+    // homepage: t.Ref(UserHomepage),
   },
   { $id: 'User', title: 'User' },
 );
@@ -204,6 +216,7 @@ export const Subject = t.Object(
     id: t.Integer(),
     images: t.Optional(t.Ref(SubjectImages)),
     infobox: t.Ref(Infobox),
+    info: t.String(),
     metaTags: t.Array(t.String()),
     locked: t.Boolean(),
     name: t.String(),
@@ -234,6 +247,7 @@ export const SlimSubject = t.Object(
     nameCN: t.String(),
     type: t.Enum(SubjectType),
     images: t.Optional(t.Ref(SubjectImages)),
+    info: t.String(),
     locked: t.Boolean(),
     nsfw: t.Boolean(),
   },
@@ -252,13 +266,22 @@ export const SubjectRelationType = t.Object(
   { $id: 'SubjectRelationType' },
 );
 
-export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
-export const SubjectStaffPosition = t.Object(
+export type ISubjectStaffPositionType = Static<typeof SubjectStaffPositionType>;
+export const SubjectStaffPositionType = t.Object(
   {
     id: t.Integer(),
     en: t.String(),
     cn: t.String(),
     jp: t.String(),
+  },
+  { $id: 'SubjectStaffPositionType' },
+);
+
+export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
+export const SubjectStaffPosition = t.Object(
+  {
+    type: t.Ref(SubjectStaffPositionType),
+    summary: t.String(),
   },
   { $id: 'SubjectStaffPosition' },
 );
@@ -298,6 +321,7 @@ export const Character = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     role: t.Integer(),
     infobox: t.Ref(Infobox),
     summary: t.String(),
@@ -320,8 +344,10 @@ export const SlimCharacter = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     role: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
     lock: t.Boolean(),
     nsfw: t.Boolean(),
   },
@@ -337,6 +363,7 @@ export const Person = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     type: t.Integer(),
     infobox: t.Ref(Infobox),
     career: t.Array(t.String(), {
@@ -363,8 +390,10 @@ export const SlimPerson = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
+    nameCN: t.String(),
     type: t.Integer(),
     images: t.Optional(t.Ref(PersonImages)),
+    comment: t.Integer(),
     lock: t.Boolean(),
     nsfw: t.Boolean(),
   },
@@ -414,6 +443,7 @@ export type ISubjectComment = Static<typeof SubjectComment>;
 export const SubjectComment = t.Object(
   {
     user: t.Ref(SlimUser),
+    type: t.Enum(CollectionType),
     rate: t.Integer(),
     comment: t.String(),
     updatedAt: t.Integer(),
@@ -456,9 +486,19 @@ export type ISubjectStaff = Static<typeof SubjectStaff>;
 export const SubjectStaff = t.Object(
   {
     person: t.Ref(SlimPerson),
-    position: t.Ref(SubjectStaffPosition),
+    positions: t.Array(t.Ref(SubjectStaffPosition)),
   },
   { $id: 'SubjectStaff' },
+);
+
+export type ISubjectRec = Static<typeof SubjectRec>;
+export const SubjectRec = t.Object(
+  {
+    subject: t.Ref(SlimSubject),
+    sim: t.Number(),
+    count: t.Integer(),
+  },
+  { $id: 'SubjectRec', title: 'SubjectRec' },
 );
 
 export type ICharacterRelation = Static<typeof CharacterRelation>;
@@ -502,7 +542,7 @@ export type IPersonWork = Static<typeof PersonWork>;
 export const PersonWork = t.Object(
   {
     subject: t.Ref(SlimSubject),
-    position: t.Ref(SubjectStaffPosition),
+    positions: t.Array(t.Ref(SubjectStaffPosition)),
   },
   { $id: 'PersonWork' },
 );
@@ -525,6 +565,12 @@ export const PersonCollect = t.Object(
   { $id: 'PersonCollect' },
 );
 
+export type IIndexStats = Static<typeof IndexStats>;
+export const IndexStats = t.Record(t.Integer(), t.Integer(), {
+  $id: 'IndexStats',
+  title: 'IndexStats',
+});
+
 export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
@@ -535,8 +581,7 @@ export const Index = t.Object(
     replies: t.Integer(),
     total: t.Integer(),
     collects: t.Integer(),
-    // TODO: parse stats
-    // stats: t.String(),
+    stats: t.Ref(IndexStats),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
     creator: t.Ref(SlimUser),
@@ -652,4 +697,167 @@ export const TopicDetail = t.Object(
     reactions: t.Array(t.Ref(Reaction)),
   },
   { $id: 'TopicDetail', title: 'TopicDetail' },
+);
+
+export type ITimelineMemo = Static<typeof TimelineMemo>;
+export const TimelineMemo = t.Object(
+  {
+    daily: t.Optional(
+      t.Object({
+        user: t.Optional(
+          t.Array(
+            t.Object({
+              uid: t.Integer(),
+              username: t.String(),
+              nickname: t.String(),
+            }),
+          ),
+        ),
+        group: t.Optional(
+          t.Array(
+            t.Object({
+              id: t.Integer(),
+              name: t.String(),
+              title: t.String(),
+              desc: t.String(),
+            }),
+          ),
+        ),
+      }),
+    ),
+    wiki: t.Optional(
+      t.Object({
+        subject: t.Object({
+          id: t.Integer(),
+          name: t.String(),
+          nameCN: t.String(),
+        }),
+      }),
+    ),
+    subject: t.Optional(
+      t.Array(
+        t.Object({
+          id: t.Integer(),
+          type: t.Integer(),
+          name: t.String(),
+          nameCN: t.String(),
+          series: t.Boolean(),
+          comment: t.String(),
+          rate: t.Number(),
+        }),
+      ),
+    ),
+    progress: t.Optional(
+      t.Object({
+        batch: t.Optional(
+          t.Object({
+            epsTotal: t.String(),
+            epsUpdate: t.Integer(),
+            volsTotal: t.String(),
+            volsUpdate: t.Integer(),
+            subjectID: t.Integer(),
+            subjectName: t.String(),
+          }),
+        ),
+        single: t.Optional(
+          t.Object({
+            epID: t.Integer(),
+            epName: t.String(),
+            epSort: t.Integer(),
+            subjectID: t.Integer(),
+            subjectName: t.String(),
+          }),
+        ),
+      }),
+    ),
+    status: t.Optional(
+      t.Object({
+        sign: t.Optional(t.String()),
+        tsukkomi: t.Optional(t.String()),
+        nickname: t.Optional(t.Object({ before: t.String(), after: t.String() })),
+      }),
+    ),
+    blog: t.Optional(
+      t.Object({
+        id: t.Integer(),
+        title: t.String(),
+        desc: t.String(),
+      }),
+    ),
+    index: t.Optional(
+      t.Object({
+        id: t.Integer(),
+        title: t.String(),
+        desc: t.String(),
+      }),
+    ),
+    mono: t.Optional(
+      t.Array(
+        t.Object({
+          cat: t.Integer(),
+          id: t.Integer(),
+          name: t.String(),
+        }),
+      ),
+    ),
+  },
+  { $id: 'TimelineMemo', title: 'TimelineMemo' },
+);
+
+export type ITimelineImage = Static<typeof TimelineImage>;
+export const TimelineImage = t.Object(
+  {
+    user: t.Optional(
+      t.Array(
+        t.Object({
+          uid: t.Integer(),
+          images: t.Optional(t.Ref(Avatar)),
+        }),
+      ),
+    ),
+    group: t.Optional(
+      t.Array(
+        t.Object({
+          id: t.Integer(),
+          images: t.Optional(t.Ref(Avatar)),
+        }),
+      ),
+    ),
+    subject: t.Optional(
+      t.Array(
+        t.Object({
+          id: t.Integer(),
+          images: t.Optional(t.Ref(SubjectImages)),
+        }),
+      ),
+    ),
+    mono: t.Optional(
+      t.Array(
+        t.Object({
+          cat: t.Integer(),
+          id: t.Integer(),
+          images: t.Optional(t.Ref(PersonImages)),
+        }),
+      ),
+    ),
+  },
+  { $id: 'TimelineImage', title: 'TimelineImage' },
+);
+
+export type ITimeline = Static<typeof Timeline>;
+export const Timeline = t.Object(
+  {
+    id: t.Integer(),
+    uid: t.Integer(),
+    user: t.Optional(t.Ref(SlimUser)),
+    cat: t.Enum(TimelineCat),
+    type: t.Integer(),
+    memo: t.Ref(TimelineMemo),
+    image: t.Ref(TimelineImage),
+    batch: t.Boolean(),
+    source: t.Enum(TimelineSource),
+    replies: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'Timeline', title: 'Timeline' },
 );

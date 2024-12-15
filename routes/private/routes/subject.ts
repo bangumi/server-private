@@ -49,10 +49,18 @@ function toSubjectCharacter(
   };
 }
 
-function toSubjectPerson(person: orm.IPerson, relation: orm.IPersonSubject): res.ISubjectStaff {
+function toSubjectStaff(person: orm.IPerson, relations: orm.IPersonSubject[]): res.ISubjectStaff {
   return {
     person: convert.toSlimPerson(person),
-    position: convert.toSubjectStaffPosition(relation),
+    positions: relations.map((r) => convert.toSubjectStaffPosition(r)),
+  };
+}
+
+function toSubjectRec(subject: orm.ISubject, rec: orm.ISubjectRec): res.ISubjectRec {
+  return {
+    subject: convert.toSlimSubject(subject),
+    sim: rec.sim,
+    count: rec.count,
   };
 }
 
@@ -342,18 +350,19 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { subjectID }, query: { position, limit = 20, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       const condition = op.and(
         op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+        position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
         op.ne(schema.chiiPersons.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiPersonSubjects.personID) })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
           schema.chiiPersons,
@@ -369,13 +378,95 @@ export async function setup(app: App) {
           op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
         )
         .where(condition)
+        .groupBy(schema.chiiPersonSubjects.personID)
         .orderBy(op.asc(schema.chiiPersonSubjects.position))
         .limit(limit)
         .offset(offset)
         .execute();
-      const persons = data.map((d) => toSubjectPerson(d.chii_persons, d.chii_person_cs_index));
+      const personIDs = data.map((d) => d.chii_person_cs_index.personID);
+      const relations = await db
+        .select()
+        .from(schema.chiiPersonSubjects)
+        .where(
+          op.and(
+            op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+            op.inArray(schema.chiiPersonSubjects.personID, personIDs),
+            position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
+          ),
+        )
+        .execute();
+      const relationsMap = new Map<number, orm.IPersonSubject[]>();
+      for (const r of relations) {
+        const relations = relationsMap.get(r.personID) || [];
+        relations.push(r);
+        relationsMap.set(r.personID, relations);
+      }
+      const persons = data.map((d) =>
+        toSubjectStaff(d.chii_persons, relationsMap.get(d.chii_persons.id) || []),
+      );
       return {
         data: persons,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/recs',
+    {
+      schema: {
+        summary: '获取条目的推荐',
+        operationId: 'getSubjectRecs',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 10, minimum: 1, maximum: 10, description: 'max 10' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.SubjectRec)),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 10, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectRec.subjectID, subjectID),
+        op.ne(schema.chiiSubjects.ban, 1),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectRec)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectRec.recSubjectID, schema.chiiSubjects.id),
+        )
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectRec)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectRec.recSubjectID, schema.chiiSubjects.id),
+        )
+        .where(condition)
+        .orderBy(op.asc(schema.chiiSubjectRec.count))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const recs = data.map((d) => toSubjectRec(d.chii_subjects, d.chii_subject_rec));
+      return {
+        data: recs,
         total: count,
       };
     },
@@ -670,8 +761,7 @@ export async function setup(app: App) {
       if (!top) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      const friends = await fetcher.fetchFriendsByUserID(auth.userID);
-      const friendIDs = new Set(friends.map((f) => f.user.id));
+      const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
       const reactions = await fetchTopicReactions(auth.userID, auth.userID);
 
       for (const reply of replies) {

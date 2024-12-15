@@ -130,6 +130,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         redirect:
@@ -141,6 +143,7 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - role
         - infobox
         - summary
@@ -580,6 +583,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         replies:
           type: integer
+        stats:
+          $ref: '#/components/schemas/IndexStats'
         title:
           type: string
         total:
@@ -596,10 +601,16 @@ exports[`should build private api spec 1`] = `
         - replies
         - total
         - collects
+        - stats
         - createdAt
         - updatedAt
         - creator
       title: Index
+      type: object
+    IndexStats:
+      additionalProperties:
+        type: integer
+      title: IndexStats
       type: object
     Infobox:
       items:
@@ -759,6 +770,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         redirect:
@@ -770,6 +783,7 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - type
         - infobox
         - career
@@ -867,13 +881,15 @@ exports[`should build private api spec 1`] = `
       type: object
     PersonWork:
       properties:
-        position:
-          $ref: '#/components/schemas/SubjectStaffPosition'
+        positions:
+          items:
+            $ref: '#/components/schemas/SubjectStaffPosition'
+          type: array
         subject:
           $ref: '#/components/schemas/SlimSubject'
       required:
         - subject
-        - position
+        - positions
       type: object
     Reaction:
       properties:
@@ -980,6 +996,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimCharacter:
       properties:
+        comment:
+          type: integer
         id:
           type: integer
         images:
@@ -988,6 +1006,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         role:
@@ -995,7 +1015,9 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - role
+        - comment
         - lock
         - nsfw
       title: SlimCharacter
@@ -1022,6 +1044,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimPerson:
       properties:
+        comment:
+          type: integer
         id:
           type: integer
         images:
@@ -1030,6 +1054,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         name:
           type: string
+        nameCN:
+          type: string
         nsfw:
           type: boolean
         type:
@@ -1037,7 +1063,9 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - name
+        - nameCN
         - type
+        - comment
         - lock
         - nsfw
       title: SlimPerson
@@ -1061,6 +1089,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/SubjectImages'
+        info:
+          type: string
         locked:
           type: boolean
         name:
@@ -1091,6 +1121,7 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - type
+        - info
         - locked
         - nsfw
       title: SlimSubject
@@ -1266,6 +1297,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/SubjectImages'
+        info:
+          type: string
         infobox:
           $ref: '#/components/schemas/Infobox'
         locked:
@@ -1321,6 +1354,7 @@ exports[`should build private api spec 1`] = `
         - eps
         - id
         - infobox
+        - info
         - metaTags
         - locked
         - name
@@ -1383,12 +1417,30 @@ exports[`should build private api spec 1`] = `
           type: string
         rate:
           type: integer
+        type:
+          anyOf:
+            - enum:
+                - 1
+              type: number
+            - enum:
+                - 2
+              type: number
+            - enum:
+                - 3
+              type: number
+            - enum:
+                - 4
+              type: number
+            - enum:
+                - 5
+              type: number
         updatedAt:
           type: integer
         user:
           $ref: '#/components/schemas/SlimUser'
       required:
         - user
+        - type
         - rate
         - comment
         - updatedAt
@@ -1569,6 +1621,20 @@ exports[`should build private api spec 1`] = `
         - total
       title: SubjectRating
       type: object
+    SubjectRec:
+      properties:
+        count:
+          type: integer
+        sim:
+          type: number
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+      required:
+        - subject
+        - sim
+        - count
+      title: SubjectRec
+      type: object
     SubjectRelation:
       properties:
         order:
@@ -1619,13 +1685,25 @@ exports[`should build private api spec 1`] = `
       properties:
         person:
           $ref: '#/components/schemas/SlimPerson'
-        position:
-          $ref: '#/components/schemas/SubjectStaffPosition'
+        positions:
+          items:
+            $ref: '#/components/schemas/SubjectStaffPosition'
+          type: array
       required:
         - person
-        - position
+        - positions
       type: object
     SubjectStaffPosition:
+      properties:
+        summary:
+          type: string
+        type:
+          $ref: '#/components/schemas/SubjectStaffPositionType'
+      required:
+        - type
+        - summary
+      type: object
+    SubjectStaffPositionType:
       properties:
         cn:
           type: string
@@ -1701,6 +1779,326 @@ exports[`should build private api spec 1`] = `
         - metaTags
         - summary
         - nsfw
+      type: object
+    Timeline:
+      properties:
+        batch:
+          type: boolean
+        cat:
+          anyOf:
+            - enum:
+                - 1
+              type: number
+            - enum:
+                - 2
+              type: number
+            - enum:
+                - 3
+              type: number
+            - enum:
+                - 4
+              type: number
+            - enum:
+                - 5
+              type: number
+            - enum:
+                - 6
+              type: number
+            - enum:
+                - 7
+              type: number
+            - enum:
+                - 8
+              type: number
+            - enum:
+                - 9
+              type: number
+        createdAt:
+          type: integer
+        id:
+          type: integer
+        image:
+          $ref: '#/components/schemas/TimelineImage'
+        memo:
+          $ref: '#/components/schemas/TimelineMemo'
+        replies:
+          type: integer
+        source:
+          anyOf:
+            - enum:
+                - 0
+              type: number
+            - enum:
+                - 1
+              type: number
+            - enum:
+                - 2
+              type: number
+            - enum:
+                - 3
+              type: number
+            - enum:
+                - 4
+              type: number
+            - enum:
+                - 5
+              type: number
+        type:
+          type: integer
+        uid:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - id
+        - uid
+        - cat
+        - type
+        - memo
+        - image
+        - batch
+        - source
+        - replies
+        - createdAt
+      title: Timeline
+      type: object
+    TimelineImage:
+      properties:
+        group:
+          items:
+            properties:
+              id:
+                type: integer
+              images:
+                $ref: '#/components/schemas/Avatar'
+            required:
+              - id
+            type: object
+          type: array
+        mono:
+          items:
+            properties:
+              cat:
+                type: integer
+              id:
+                type: integer
+              images:
+                $ref: '#/components/schemas/PersonImages'
+            required:
+              - cat
+              - id
+            type: object
+          type: array
+        subject:
+          items:
+            properties:
+              id:
+                type: integer
+              images:
+                $ref: '#/components/schemas/SubjectImages'
+            required:
+              - id
+            type: object
+          type: array
+        user:
+          items:
+            properties:
+              images:
+                $ref: '#/components/schemas/Avatar'
+              uid:
+                type: integer
+            required:
+              - uid
+            type: object
+          type: array
+      title: TimelineImage
+      type: object
+    TimelineMemo:
+      properties:
+        blog:
+          properties:
+            desc:
+              type: string
+            id:
+              type: integer
+            title:
+              type: string
+          required:
+            - id
+            - title
+            - desc
+          type: object
+        daily:
+          properties:
+            group:
+              items:
+                properties:
+                  desc:
+                    type: string
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  title:
+                    type: string
+                required:
+                  - id
+                  - name
+                  - title
+                  - desc
+                type: object
+              type: array
+            user:
+              items:
+                properties:
+                  nickname:
+                    type: string
+                  uid:
+                    type: integer
+                  username:
+                    type: string
+                required:
+                  - uid
+                  - username
+                  - nickname
+                type: object
+              type: array
+          type: object
+        index:
+          properties:
+            desc:
+              type: string
+            id:
+              type: integer
+            title:
+              type: string
+          required:
+            - id
+            - title
+            - desc
+          type: object
+        mono:
+          items:
+            properties:
+              cat:
+                type: integer
+              id:
+                type: integer
+              name:
+                type: string
+            required:
+              - cat
+              - id
+              - name
+            type: object
+          type: array
+        progress:
+          properties:
+            batch:
+              properties:
+                epsTotal:
+                  type: string
+                epsUpdate:
+                  type: integer
+                subjectID:
+                  type: integer
+                subjectName:
+                  type: string
+                volsTotal:
+                  type: string
+                volsUpdate:
+                  type: integer
+              required:
+                - epsTotal
+                - epsUpdate
+                - volsTotal
+                - volsUpdate
+                - subjectID
+                - subjectName
+              type: object
+            single:
+              properties:
+                epID:
+                  type: integer
+                epName:
+                  type: string
+                epSort:
+                  type: integer
+                subjectID:
+                  type: integer
+                subjectName:
+                  type: string
+              required:
+                - epID
+                - epName
+                - epSort
+                - subjectID
+                - subjectName
+              type: object
+          type: object
+        status:
+          properties:
+            nickname:
+              properties:
+                after:
+                  type: string
+                before:
+                  type: string
+              required:
+                - before
+                - after
+              type: object
+            sign:
+              type: string
+            tsukkomi:
+              type: string
+          type: object
+        subject:
+          items:
+            properties:
+              comment:
+                type: string
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+              rate:
+                type: number
+              series:
+                type: boolean
+              type:
+                type: integer
+            required:
+              - id
+              - type
+              - name
+              - nameCN
+              - series
+              - comment
+              - rate
+            type: object
+          type: array
+        wiki:
+          properties:
+            subject:
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                nameCN:
+                  type: string
+              required:
+                - id
+                - name
+                - nameCN
+              type: object
+          required:
+            - subject
+          type: object
+      title: TimelineMemo
       type: object
     Topic:
       properties:
@@ -1957,6 +2355,21 @@ exports[`should build private api spec 1`] = `
         - character
         - person
         - index
+      type: object
+    UserHomepage:
+      properties:
+        left:
+          items:
+            type: string
+          type: array
+        right:
+          items:
+            type: string
+          type: array
+      required:
+        - left
+        - right
+      title: UserHomepage
       type: object
     UserIndexCollection:
       properties:
@@ -4309,6 +4722,62 @@ paths:
       summary: 获取条目的剧集
       tags:
         - subject
+  /p1/subjects/{subjectID}/recs:
+    get:
+      operationId: getSubjectRecs
+      parameters:
+        - description: max 10
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 10
+            maximum: 10
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/SubjectRec'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目的推荐
+      tags:
+        - subject
   /p1/subjects/{subjectID}/relations:
     get:
       operationId: getSubjectRelations
@@ -4634,6 +5103,52 @@ paths:
       summary: 创建条目讨论
       tags:
         - subject
+  /p1/timeline:
+    get:
+      operationId: getTimeline
+      parameters:
+        - description: 'all: 全站, friends: 好友; 登录时默认为 friends, 未登录或没有好友时始终为 all'
+          in: query
+          name: mode
+          required: false
+          schema:
+            anyOf:
+              - enum:
+                  - all
+                type: string
+              - enum:
+                  - friends
+                type: string
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Timeline'
+                type: array
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取时间线
+      tags:
+        - timeline
   /p1/trending/subjects:
     get:
       operationId: getTrendingSubjects
@@ -5379,6 +5894,35 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取用户创建的目录
+      tags:
+        - user
+  /p1/users/{username}/timeline:
+    get:
+      operationId: getUserTimeline
+      parameters:
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      summary: 获取用户时间胶囊
       tags:
         - user
   /p1/wiki/ep/{episodeID}:

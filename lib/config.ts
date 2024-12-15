@@ -101,6 +101,8 @@ export const schema = Obj({
 
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
 
+  kafkaBrokers: t.String({ default: '127.0.0.1:9092', env: 'KAFKA_BROKERS' }),
+
   image: Obj({
     gatewayDomain: t.String({ default: 'lain.bgm.tv' }),
     provider: t.Enum(Image, { default: Image.FileSystem, env: 'CHII_IMAGE_PROVIDER' }),

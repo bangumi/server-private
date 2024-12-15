@@ -15,6 +15,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Group);
   app.addSchema(res.GroupMember);
   app.addSchema(res.Index);
+  app.addSchema(res.IndexStats);
   app.addSchema(res.Infobox);
   app.addSchema(res.Person);
   app.addSchema(res.PersonCharacter);
@@ -39,15 +40,21 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectRating);
+  app.addSchema(res.SubjectRec);
   app.addSchema(res.SubjectRelation);
   app.addSchema(res.SubjectRelationType);
   app.addSchema(res.SubjectReview);
   app.addSchema(res.SubjectStaff);
   app.addSchema(res.SubjectStaffPosition);
+  app.addSchema(res.SubjectStaffPositionType);
   app.addSchema(res.SubjectTag);
+  app.addSchema(res.Timeline);
+  app.addSchema(res.TimelineImage);
+  app.addSchema(res.TimelineMemo);
   app.addSchema(res.Topic);
   app.addSchema(res.TopicDetail);
   app.addSchema(res.User);
+  app.addSchema(res.UserHomepage);
 
   app.addSchema(req.CreateTopic);
   app.addSchema(req.UpdateTopic);

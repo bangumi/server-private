@@ -11,10 +11,14 @@ export interface Reaction {
 
 export const LikeType = {
   subject_cover: 1,
+
   group_topic: 7,
   group_reply: 8,
+
   subject_reply: 10,
   ep_reply: 11,
+
+  subject_collect: 40,
 } as const;
 
 export const LIKE_REACTIONS_ALLOWED: ReadonlySet<number> = Object.freeze(

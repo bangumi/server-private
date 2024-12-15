@@ -145,6 +145,7 @@ Object {
         ],
         "lock": false,
         "name": "ちぃ",
+        "nameCN": "小叽",
         "nsfw": false,
         "redirect": 0,
         "role": 1,
@@ -341,6 +342,7 @@ Object {
     ],
     "lock": false,
     "name": "ちぃ",
+    "nameCN": "小叽",
     "nsfw": false,
     "redirect": 0,
     "role": 1,
@@ -417,6 +419,7 @@ Object {
       "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
       "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
     },
+    "info": "2008年4月6日 / 谷口悟朗 / 木村貴宏",
     "infobox": Array [
       Object {
         "key": "中文名",
@@ -815,6 +818,7 @@ Object {
           "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
           "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
         },
+        "info": "2008年4月6日 / 谷口悟朗 / 木村貴宏",
         "infobox": Array [
           Object {
             "key": "中文名",
@@ -1233,6 +1237,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
             },
+            "info": "2008年4月6日 / 谷口悟朗 / 木村貴宏",
             "locked": false,
             "name": "コードギアス 反逆のルルーシュR2",
             "nameCN": "Code Geass 反叛的鲁路修R2",
@@ -1274,6 +1279,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/a8/7f/4_cMMK5.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/a8/7f/4_cMMK5.jpg",
             },
+            "info": "2008-07-17 / NDS / ACT / SNKプレイモア",
             "locked": false,
             "name": "メタルスラッグ7",
             "nameCN": "合金弹头7",
@@ -1289,6 +1295,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/85/3f/84399_y0J0e.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/85/3f/84399_y0J0e.jpg",
             },
+            "info": "2013年9月25日",
             "locked": false,
             "name": "Criminal Minds (Season 9)",
             "nameCN": "犯罪心理 第九季",
@@ -1304,6 +1311,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/35/eb/104833_CAd6k.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/35/eb/104833_CAd6k.jpg",
             },
+            "info": "2014年10月1日 / Glenn Kershaw / Thomas Gibson / Matthew Gray Gubler / Joe Mantegna / Larry Teng / Rob Bailey / Jesse Warn / Janine Sherman Barrois / Jeff Davis / Breen Frazier / Erica Messer / Virgil Williams / Kimberly A. Harrison / Joe Mantegna / Shemar Moore / Matthew Gray Gubler / A.J. Cook / Kirsten Vangsness / Jennifer Love Hewitt / Thomas Gibson / Kerr Smith / Lily Mariye / Daryl Crittenden / Al Vicente / Emily Dykes / Eric Frentzel / Katie Hilliard / Hailey Sole",
             "locked": false,
             "name": "Criminal Minds (Season 10)",
             "nameCN": "犯罪心理 第十季",
@@ -1319,6 +1327,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/72/8c/148228_O5mS0.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/72/8c/148228_O5mS0.jpg",
             },
+            "info": "2015年9月30日",
             "locked": false,
             "name": "Criminal Minds (Season 11)",
             "nameCN": "犯罪心理  第11季",
@@ -1327,6 +1336,7 @@ Object {
           },
           Object {
             "id": 184017,
+            "info": "1582-10-14",
             "locked": false,
             "name": "沙盒",
             "nameCN": "Bangumi Wiki 动画测试用沙盘",
@@ -1342,6 +1352,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
             },
+            "info": "2016-09-28",
             "locked": false,
             "name": "Criminal Minds Season 12",
             "nameCN": "犯罪心理 第12季",
@@ -1357,6 +1368,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/c7/0d/208783_0J0TH.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/c7/0d/208783_0J0TH.jpg",
             },
+            "info": "2017-10-27 / Matt Duffer / Ross Duffer / 肖恩·利维 / Andrew Stanton / 丽贝卡·托马斯 / Matt Duffer / Ross Duffer / Winona Ryder / David Harbour / Finn Wolfhard / Millie Bobby Brown / Gaten Matarazzo / Caleb McLaughlin / Noah Schnapp / Sadie Sink / Natalia Dyer / Charlie Heaton / Joe Keery / Dacre Montgomery / Cara Buono / Sean Astin / Paul Reiser",
             "locked": false,
             "name": "Stranger Things Season 2",
             "nameCN": "怪奇物语 第二季",
@@ -1382,6 +1394,592 @@ Object {
     },
   },
 }
+`;
+
+exports[`user collection > should get timeline 1`] = `
+Array [
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656458004,
+    "id": 29006093,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 262922,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/b2/f8/262922_u1OMP.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/b2/f8/262922_u1OMP.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/b2/f8/262922_u1OMP.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/b2/f8/262922_u1OMP.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/b2/f8/262922_u1OMP.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 262922,
+          "name": "Criminal Minds Season 14",
+          "nameCN": "犯罪心理 第十四季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656457954,
+    "id": 29006090,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 214114,
+          "name": "Criminal Minds Season 13",
+          "nameCN": "犯罪心理 第十三季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 6,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656457954,
+    "id": 29006089,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 22,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656375812,
+    "id": 28993551,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 751421,
+          "epName": "Last Gasp",
+          "epSort": 16,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656370302,
+    "id": 28993219,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 15,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656355851,
+    "id": 28992589,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 371546,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/c8/8a/371546_vXXP2.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/c8/8a/371546_vXXP2.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/c8/8a/371546_vXXP2.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/c8/8a/371546_vXXP2.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/c8/8a/371546_vXXP2.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 371546,
+          "name": "ようこそ実力至上主義の教室へ 2nd Season",
+          "nameCN": "欢迎来到实力至上主义教室 2nd Season",
+          "rate": 0,
+          "series": false,
+          "type": 2,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656285827,
+    "id": 28979826,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 751409,
+          "epName": "Killer App",
+          "epSort": 4,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656285346,
+    "id": 28979800,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 309445,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/87/e8/309445_jjbcm.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/87/e8/309445_jjbcm.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/87/e8/309445_jjbcm.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/87/e8/309445_jjbcm.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/87/e8/309445_jjbcm.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 309445,
+          "name": "沙盒音乐条目",
+          "nameCN": "沙盒音乐条目",
+          "rate": 0,
+          "series": false,
+          "type": 3,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 11,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656281750,
+    "id": 28979627,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 0,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 3,
+          "subjectID": 0,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656276191,
+    "id": 28979355,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 214114,
+          "name": "Criminal Minds Season 13",
+          "nameCN": "犯罪心理 第十三季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656276185,
+    "id": 28979353,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 194118,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "Hotch 的演员跟制片人起了争议被 CBS 停职，然后被解雇了... / 怎么一直在用旧凶手",
+          "id": 194118,
+          "name": "Criminal Minds Season 12",
+          "nameCN": "犯罪心理 第12季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 6,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656276185,
+    "id": 28979352,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 194118,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 22,
+          "subjectID": 194118,
+          "subjectName": "Criminal Minds Season 12",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656257440,
+    "id": 28976237,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 62229,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/60/d8/62229_SrxX4.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/60/d8/62229_SrxX4.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/60/d8/62229_SrxX4.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/60/d8/62229_SrxX4.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/60/d8/62229_SrxX4.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "武器耐久是个坏文明",
+          "id": 62229,
+          "name": "ゼルダの伝説 ブレス オブ ザ ワイルド",
+          "nameCN": "塞尔达传说 旷野之息",
+          "rate": 0,
+          "series": false,
+          "type": 4,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 8,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656257059,
+    "id": 28976108,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 366527,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_44zQG.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_44zQG.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_44zQG.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_44zQG.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_44zQG.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 1080550,
+          "epName": "",
+          "epSort": 1,
+          "subjectID": 366527,
+          "subjectName": "South Park Season 25",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656255672,
+    "id": 28975618,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 366527,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_44zQG.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_44zQG.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_44zQG.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_44zQG.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_44zQG.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 366527,
+          "name": "South Park Season 25",
+          "nameCN": "南方公园 第25季",
+          "rate": 0,
+          "series": false,
+          "type": 2,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656092626,
+    "id": 28941116,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 347656,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/6d/d9/347656_5Sk6o.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/6d/d9/347656_5Sk6o.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/6d/d9/347656_5Sk6o.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/6d/d9/347656_5Sk6o.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "11",
+          "epsUpdate": 4,
+          "subjectID": 347656,
+          "subjectName": "The Orville Season3",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+]
 `;
 
 exports[`user friends > should get friends 1`] = `

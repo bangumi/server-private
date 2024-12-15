@@ -17,6 +17,7 @@ import {
   SubjectTypeValues,
   type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
+import { getTimelineUser } from '@app/lib/timeline/user';
 import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -382,7 +383,12 @@ export async function setup(app: App) {
             interest_type: schema.chiiSubjectInterests.type,
           })
           .from(schema.chiiSubjectInterests)
-          .where(op.eq(schema.chiiSubjectInterests.uid, userID))
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, userID),
+              op.ne(schema.chiiSubjectInterests.type, 0),
+            ),
+          )
           .groupBy(schema.chiiSubjectInterests.subjectType, schema.chiiSubjectInterests.type)
           .execute();
         for (const d of data) {
@@ -614,7 +620,9 @@ export async function setup(app: App) {
       const conditions = op.and(
         op.eq(schema.chiiSubjectInterests.uid, user.id),
         subjectType ? op.eq(schema.chiiSubjectInterests.subjectType, subjectType) : undefined,
-        type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
+        type
+          ? op.eq(schema.chiiSubjectInterests.type, type)
+          : op.ne(schema.chiiSubjectInterests.type, 0),
         since ? op.gte(schema.chiiSubjectInterests.updatedAt, since) : undefined,
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
@@ -690,6 +698,7 @@ export async function setup(app: App) {
       const conditions = op.and(
         op.eq(schema.chiiSubjectInterests.uid, user.id),
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+        op.ne(schema.chiiSubjectInterests.type, 0),
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
         auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.private, 0),
@@ -752,9 +761,6 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, subjectID);
-      if (!epStatus) {
-        return { data: [], total: 0 };
-      }
       const conditions = op.and(
         op.eq(schema.chiiEpisodes.subjectID, subjectID),
         op.ne(schema.chiiEpisodes.ban, 1),
@@ -1211,6 +1217,43 @@ export async function setup(app: App) {
         data: indexes,
         total: count,
       };
+    },
+  );
+
+  app.get(
+    '/users/:username/timeline',
+    {
+      schema: {
+        summary: '获取用户时间胶囊',
+        operationId: 'getUserTimeline',
+        tags: [Tag.User],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        responses: {
+          200: t.Array(t.Ref(res.Timeline)),
+        },
+      },
+    },
+    async ({ params: { username }, query: { offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const ids = await getTimelineUser(user.id, 20, offset);
+      const result = await fetcher.fetchTimelineByIDs(ids);
+      const items = [];
+      for (const tid of ids) {
+        const item = result[tid];
+        if (item) {
+          items.push(item);
+        }
+      }
+      return items;
     },
   );
 }

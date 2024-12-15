@@ -74,7 +74,7 @@ export async function setup(app: App) {
       const topics = await addCreators(topicList, group.id);
 
       return {
-        group: { ...group, icon: groupIcon(group.icon) },
+        group: { ...group, icon: groupIcon(group.icon).small },
         totalTopics: total,
         inGroup: auth.login ? await orm.isMemberInGroup(group.id, auth.userID) : false,
         topics,
@@ -430,7 +430,7 @@ export async function handleTopicDetail(
     text: topic.text,
     parent: {
       ...parent,
-      icon: type === TopicParentType.Group ? groupIcon((parent as orm.IGroup).icon) : '',
+      icon: type === TopicParentType.Group ? groupIcon((parent as orm.IGroup).icon).small : '',
     },
     reactions: reactions[topic.contentPost.id] ?? [],
     replies: topic.replies.map((x) => {

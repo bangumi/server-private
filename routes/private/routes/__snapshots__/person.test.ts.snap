@@ -172,6 +172,7 @@ Object {
   ],
   "lock": false,
   "name": "水樹奈々",
+  "nameCN": "水树奈奈",
   "nsfw": false,
   "redirect": 0,
   "summary": "原名 近藤 奈々（こんどう なな），日本女性声优兼歌手。有个妹妹名字是近藤美香，为Daisy×Daisy主唱。
@@ -282,12 +283,17 @@ exports[`person > should get person works 1`] = `
 Object {
   "data": Array [
     Object {
-      "position": Object {
-        "cn": "插入歌演出",
-        "en": "Inserted Song Performance",
-        "id": 34,
-        "jp": "",
-      },
+      "positions": Array [
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "插入歌演出",
+            "en": "Inserted Song Performance",
+            "id": 34,
+            "jp": "",
+          },
+        },
+      ],
       "subject": Object {
         "id": 19,
         "images": Object {
@@ -297,6 +303,7 @@ Object {
           "medium": "https://lain.bgm.tv/pic/cover/m/1f/0e/19_GVzJ9.jpg",
           "small": "https://lain.bgm.tv/pic/cover/s/1f/0e/19_GVzJ9.jpg",
         },
+        "info": "2003-08-17 / Sound Horizon",
         "locked": false,
         "name": "Pico Magic Reloaded",
         "nameCN": "",
@@ -305,12 +312,17 @@ Object {
       },
     },
     Object {
-      "position": Object {
-        "cn": "游戏设计师",
-        "en": "Game Designer",
-        "id": 1003,
-        "jp": "ゲームクリエイター",
-      },
+      "positions": Array [
+        Object {
+          "summary": "",
+          "type": Object {
+            "cn": "游戏设计师",
+            "en": "Game Designer",
+            "id": 1003,
+            "jp": "ゲームクリエイター",
+          },
+        },
+      ],
       "subject": Object {
         "id": 6,
         "images": Object {
@@ -320,6 +332,7 @@ Object {
           "medium": "https://lain.bgm.tv/pic/cover/m/16/79/6_gC3iJ.jpg",
           "small": "https://lain.bgm.tv/pic/cover/s/16/79/6_gC3iJ.jpg",
         },
+        "info": "2007年10月10日 / Xbox 360、PS3、PC / FPS / Valve Corporation",
         "locked": false,
         "name": "Team Fortress 2",
         "nameCN": "军团要塞2",
