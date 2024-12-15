@@ -6,7 +6,7 @@ import { SubjectType } from '@app/lib/subject/type.ts';
 import type { TrendingItem } from '@app/lib/trending/type.ts';
 import { getTrendingDateline, TrendingPeriod } from '@app/lib/trending/type.ts';
 
-function getSubjectTrendingKey(type: SubjectType, period: TrendingPeriod) {
+export function getSubjectTrendingKey(type: SubjectType, period: TrendingPeriod) {
   return `trending:subjects:${type}:${period}`;
 }
 

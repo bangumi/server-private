@@ -9,7 +9,6 @@ import { db, op, schema, type Txn } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import { chiiLikes, chiiTagIndex, chiiTagList } from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
-import { TagCat } from '@app/lib/const.ts';
 import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { LikeType } from '@app/lib/like.ts';
 import { logger } from '@app/lib/logger.ts';
@@ -22,7 +21,7 @@ import { DATE } from '@app/lib/utils/date.ts';
 import { matchExpected } from '@app/lib/wiki.ts';
 import { getSubjectPlatforms } from '@app/vendor';
 
-import { SubjectType } from './type.ts';
+import { SubjectType, TagCat } from './type.ts';
 
 export const InvalidWikiSyntaxError = createError(
   'INVALID_SYNTAX_ERROR',
@@ -147,7 +146,7 @@ export async function edit({
         .delete(schema.chiiTagList)
         .where(
           op.and(
-            op.eq(schema.chiiTagList.cat, TagCat.meta),
+            op.eq(schema.chiiTagList.cat, TagCat.Meta),
             op.eq(schema.chiiTagList.type, s.typeID),
             op.eq(schema.chiiTagList.mainID, subjectID),
           ),
@@ -159,7 +158,7 @@ export async function edit({
             return {
               tagID: tag,
               mainID: subjectID,
-              cat: TagCat.meta,
+              cat: TagCat.Meta,
               userID: 0,
               type: s.typeID,
               createdAt: now.toUnixInteger(),
@@ -255,7 +254,7 @@ async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, nu
     .innerJoin(schema.chiiTagFields, op.eq(schema.chiiTagFields.tagID, schema.chiiTagIndex.id))
     .where(
       op.and(
-        op.eq(schema.chiiTagIndex.cat, TagCat.meta),
+        op.eq(schema.chiiTagIndex.cat, TagCat.Meta),
         op.eq(schema.chiiTagIndex.type, typeID),
         // 1 for public meta tags
         op.eq(schema.chiiTagFields.lock, 1),
@@ -272,7 +271,7 @@ async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, nu
     .where(
       op.and(
         op.eq(chiiTagList.userID, 0),
-        op.eq(chiiTagList.cat, TagCat.meta),
+        op.eq(chiiTagList.cat, TagCat.Meta),
         op.inArray(
           chiiTagList.mainID,
           metaRows.map((item) => item.id),

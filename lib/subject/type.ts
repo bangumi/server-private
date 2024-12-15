@@ -48,3 +48,27 @@ export enum PersonType {
   Character = 'crt',
   Person = 'prsn',
 }
+
+export enum TagCat {
+  Subject = 0,
+  Meta = 3,
+}
+
+export enum SubjectSort {
+  Rank = 'rank',
+  Trends = 'trends',
+  Collects = 'collects',
+  Date = 'date',
+  Title = 'title',
+}
+
+export interface SubjectFilter {
+  type: SubjectType;
+  nsfw: boolean;
+  cat?: number;
+  series?: boolean;
+  year?: number;
+  month?: number;
+  tags?: string[];
+  ids?: number[];
+}

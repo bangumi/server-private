@@ -84,7 +84,7 @@ describe('should update subject', () => {
           "nsfw": true,
           "onHold": 1,
           "platform": 3,
-          "series": 0,
+          "series": false,
           "seriesEntry": 0,
           "summary": "summary summary 2",
           "typeID": 2,
