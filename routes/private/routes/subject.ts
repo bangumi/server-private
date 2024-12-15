@@ -594,6 +594,70 @@ export async function setup(app: App) {
   );
 
   app.get(
+    '/subjects/:subjectID/reviews',
+    {
+      schema: {
+        summary: '获取条目的评论',
+        operationId: 'getSubjectReviews',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 5, minimum: 1, maximum: 20, description: 'max 20' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.SubjectReview)),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 5, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectRelatedBlogs.subjectID, subjectID),
+        op.eq(schema.chiiBlogEntries.public, true),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectRelatedBlogs)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectRelatedBlogs.uid, schema.chiiUsers.id))
+        .innerJoin(
+          schema.chiiBlogEntries,
+          op.eq(schema.chiiSubjectRelatedBlogs.entryID, schema.chiiBlogEntries.id),
+        )
+        .where(condition)
+        .execute();
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectRelatedBlogs)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectRelatedBlogs.uid, schema.chiiUsers.id))
+        .innerJoin(
+          schema.chiiBlogEntries,
+          op.eq(schema.chiiSubjectRelatedBlogs.entryID, schema.chiiBlogEntries.id),
+        )
+        .where(condition)
+        .orderBy(op.desc(schema.chiiBlogEntries.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const reviews = data.map((d) =>
+        convert.toSubjectReview(d.chii_subject_related_blog, d.chii_blog_entry, d.chii_members),
+      );
+      return {
+        data: reviews,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
     '/subjects/:subjectID/topics',
     {
       schema: {

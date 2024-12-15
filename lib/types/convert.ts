@@ -11,6 +11,7 @@ import { parse as parseTimelineImage } from '@app/lib/timeline/image';
 import { parse as parseTimelineMemo } from '@app/lib/timeline/memo';
 import type * as res from '@app/lib/types/res.ts';
 import {
+  findNetworkService,
   findSubjectPlatform,
   findSubjectRelationType,
   findSubjectStaffPosition,
@@ -105,6 +106,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     site: fields.site,
     location: fields.location,
     bio: fields.bio,
+    networkServices: [],
     // homepage: toUserHomepage(fields.homepage),
   };
 }
@@ -117,6 +119,26 @@ export function toSlimUser(user: orm.IUser): res.ISlimUser {
     avatar: avatar(user.avatar),
     sign: user.sign,
     joinedAt: user.regdate,
+  };
+}
+
+export function toUserNetworkService(service: orm.IUserNetworkServices): res.IUserNetworkService {
+  const svc = findNetworkService(service.serviceID);
+  if (!svc) {
+    return {
+      title: '',
+      name: '',
+      url: '',
+      color: '',
+      account: service.account,
+    };
+  }
+  return {
+    title: svc.title,
+    name: svc.name,
+    url: svc.url || '',
+    color: svc.bg_color,
+    account: service.account,
   };
 }
 
@@ -305,6 +327,37 @@ export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubje
   };
 }
 
+export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEntry {
+  return {
+    id: entry.id,
+    type: entry.type,
+    user: toSlimUser(user),
+    title: entry.title,
+    icon: entry.icon,
+    content: entry.content,
+    tags: splitTags(entry.tags),
+    views: entry.views,
+    replies: entry.replies,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+    noreply: entry.noreply,
+    related: entry.related,
+    public: entry.public,
+  };
+}
+
+export function toSlimBlogEntry(entry: orm.IBlogEntry): res.ISlimBlogEntry {
+  return {
+    id: entry.id,
+    type: entry.type,
+    title: entry.title,
+    summary: entry.content.slice(0, 120),
+    replies: entry.replies,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+  };
+}
+
 export function toSubjectComment(
   interest: orm.ISubjectInterest,
   user: orm.IUser,
@@ -315,6 +368,18 @@ export function toSubjectComment(
     rate: interest.rate,
     comment: interest.comment,
     updatedAt: interest.updatedAt,
+  };
+}
+
+export function toSubjectReview(
+  review: orm.ISubjectRelatedBlog,
+  blog: orm.IBlogEntry,
+  user: orm.IUser,
+): res.ISubjectReview {
+  return {
+    id: review.id,
+    user: toSlimUser(user),
+    entry: toSlimBlogEntry(blog),
   };
 }
 
