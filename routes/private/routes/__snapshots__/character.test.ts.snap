@@ -1,0 +1,187 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`character > should get character 1`] = `
+Object {
+  "collects": 329,
+  "comment": 56,
+  "id": 32,
+  "images": Object {
+    "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+    "large": "https://lain.bgm.tv/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+    "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+    "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+  },
+  "infobox": Array [
+    Object {
+      "key": "生日",
+      "values": Array [
+        Object {
+          "v": "4月13日",
+        },
+      ],
+    },
+    Object {
+      "key": "身高",
+      "values": Array [
+        Object {
+          "v": "152cm",
+        },
+      ],
+    },
+    Object {
+      "key": "性别",
+      "values": Array [
+        Object {
+          "v": "女",
+        },
+      ],
+    },
+    Object {
+      "key": "别名",
+      "values": Array [
+        Object {
+          "k": "日文名",
+          "v": "ちぃ",
+        },
+        Object {
+          "k": "罗马字",
+          "v": "chii",
+        },
+        Object {
+          "k": "第二中文名",
+          "v": "小唧",
+        },
+      ],
+    },
+    Object {
+      "key": "引用来源",
+      "values": Array [
+        Object {
+          "v": "anidb.net",
+        },
+      ],
+    },
+    Object {
+      "key": "简体中文名",
+      "values": Array [
+        Object {
+          "v": "小叽",
+        },
+      ],
+    },
+    Object {
+      "key": "忌日",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "血型",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "体重",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "BWH",
+      "values": Array [
+        Object {
+          "v": "",
+        },
+      ],
+    },
+    Object {
+      "key": "声优",
+      "values": Array [
+        Object {
+          "v": "田中理惠",
+        },
+      ],
+    },
+  ],
+  "lock": false,
+  "name": "ちぃ",
+  "nameCN": "小叽",
+  "nsfw": false,
+  "redirect": 0,
+  "role": 1,
+  "summary": "传说中性能超强的人型电脑，故事第一话时被人弃置在垃圾场，后被我们的本须和秀树发现，并抱回家。由于开始时唧只会'唧，唧'的这样叫，所以秀树为其取名 '唧'TV版第二话「ちぃでかける」时发现小唧本身并没有安OS，不过因为拥有“学习程式”，所以可以通过对话和教导让她‘成长’起来。",
+}
+`;
+
+exports[`character > should get character casts 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "actors": Array [],
+      "subject": Object {
+        "id": 12,
+        "images": Object {
+          "common": "https://lain.bgm.tv/pic/cover/c/c2/0a/12_aDoa8.jpg",
+          "grid": "https://lain.bgm.tv/pic/cover/g/c2/0a/12_aDoa8.jpg",
+          "large": "https://lain.bgm.tv/pic/cover/l/c2/0a/12_aDoa8.jpg",
+          "medium": "https://lain.bgm.tv/pic/cover/m/c2/0a/12_aDoa8.jpg",
+          "small": "https://lain.bgm.tv/pic/cover/s/c2/0a/12_aDoa8.jpg",
+        },
+        "info": "2002年4月2日 / 浅香守生 / CLAMP / 阿部恒",
+        "locked": false,
+        "name": "ちょびっツ",
+        "nameCN": "人形电脑天使心",
+        "nsfw": false,
+        "type": 2,
+      },
+      "type": 1,
+    },
+  ],
+  "total": 1,
+}
+`;
+
+exports[`character > should get character collects 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1296496835,
+      "user": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 1,
+        "joinedAt": 0,
+        "nickname": "nickname 1",
+        "sign": "sing 1",
+        "username": "1",
+      },
+    },
+    Object {
+      "createdAt": 1296496277,
+      "user": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 6162,
+        "joinedAt": 0,
+        "nickname": "nickname 6162",
+        "sign": "sing 6162",
+        "username": "6162",
+      },
+    },
+  ],
+  "total": 2,
+}
+`;

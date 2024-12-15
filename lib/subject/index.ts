@@ -143,7 +143,7 @@ export async function edit({
         newTags.push(id);
       }
 
-      await db
+      await t
         .delete(schema.chiiTagList)
         .where(
           op.and(
@@ -154,7 +154,7 @@ export async function edit({
         );
 
       if (newTags.length > 0) {
-        await db.insert(schema.chiiTagList).values(
+        await t.insert(schema.chiiTagList).values(
           newTags.map((tag) => {
             return {
               tagID: tag,

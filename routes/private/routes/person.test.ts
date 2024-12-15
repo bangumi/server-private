@@ -15,17 +15,6 @@ describe('person', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get person relations', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/persons/1/relations',
-      query: { limit: '2', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
   test('should get person works', async () => {
     const app = createTestServer();
     await app.register(setup);

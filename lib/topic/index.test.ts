@@ -3,6 +3,7 @@ import { afterAll, afterEach, describe, expect, test, vi } from 'vitest';
 import { AppDataSource, GroupPostRepo, GroupTopicRepo } from '@app/lib/orm/index.ts';
 
 import * as Topic from './index.ts';
+import { CommentState, TopicParentType } from './type.ts';
 
 describe('mocked', () => {
   const transaction = vi.fn().mockResolvedValue({
@@ -26,11 +27,11 @@ describe('mocked', () => {
 
   test('create topic reply', async () => {
     const r = await Topic.createTopicReply({
-      topicType: Topic.Type.group,
+      topicType: TopicParentType.Group,
       topicID: 10,
       content: 'c',
       userID: 1,
-      state: Topic.CommentState.Normal,
+      state: CommentState.Normal,
       parentID: 6,
     });
 
@@ -45,11 +46,11 @@ describe('should create topic reply', () => {
     const topicBefore = await GroupTopicRepo.findOneOrFail({ where: { id: 375793 } });
 
     const r = await Topic.createTopicReply({
-      topicType: Topic.Type.group,
+      topicType: TopicParentType.Group,
       topicID: 375793,
       content: 'new content for testing',
       userID: 1,
-      state: Topic.CommentState.Normal,
+      state: CommentState.Normal,
       parentID: 0,
     });
 

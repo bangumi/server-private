@@ -1,10 +1,14 @@
 import type { WikiMap } from '@bgm38/wiki';
 import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
+import * as php from '@trim21/php-serialize';
 
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
-import { CollectionType } from '@app/lib/subject/type';
+import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
+import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
+import { parse as parseTimelineImage } from '@app/lib/timeline/image';
+import { parse as parseTimelineMemo } from '@app/lib/timeline/memo';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findNetworkService,
@@ -12,6 +16,70 @@ import {
   findSubjectRelationType,
   findSubjectStaffPosition,
 } from '@app/vendor';
+
+export function splitTags(tags: string): string[] {
+  return tags
+    .split(' ')
+    .map((x) => x.trim())
+    .filter((x) => x !== '');
+}
+
+export function extractNameCN(infobox: res.IInfobox): string {
+  return infobox.find((x) => ['中文名', '简体中文名'].includes(x.key))?.values[0]?.v ?? '';
+}
+
+export function toIndexStats(stats: string): res.IIndexStats {
+  const result: Record<number, number> = {};
+  if (!stats) {
+    return result;
+  }
+  const statList = php.parse(stats) as Record<number, string>;
+  for (const [key, value] of Object.entries(statList)) {
+    const k = Number.parseInt(key);
+    const v = Number.parseInt(value);
+    if (Number.isNaN(k) || Number.isNaN(v)) {
+      continue;
+    }
+    result[k] = v;
+  }
+  return result;
+}
+
+export function toSubjectTags(tags: string): res.ISubjectTag[] {
+  if (!tags) {
+    return [];
+  }
+  const tagList = php.parse(tags) as { tag_name: string; result: string }[];
+  return tagList
+    .filter((x) => x.tag_name !== undefined)
+    .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
+    .filter((x) => !Number.isNaN(x.count));
+}
+
+export function toUserHomepage(homepage: string): res.IUserHomepage {
+  if (!homepage) {
+    // 默认布局
+    homepage = 'l:anime,game,book,music,real,blog;r:friend,group,index';
+  }
+  const layout: res.IUserHomepage = {
+    left: [],
+    right: [],
+  };
+  for (const item of homepage.split(';')) {
+    const [type, list] = item.split(':');
+    switch (type) {
+      case 'l': {
+        layout.left = list?.split(',') ?? [];
+        break;
+      }
+      case 'r': {
+        layout.right = list?.split(',') ?? [];
+        break;
+      }
+    }
+  }
+  return layout;
+}
 
 // for backward compatibility
 export function oldToUser(user: ormold.IUser): res.ISlimUser {
@@ -39,6 +107,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     location: fields.location,
     bio: fields.bio,
     networkServices: [],
+    // homepage: toUserHomepage(fields.homepage),
   };
 }
 
@@ -94,23 +163,25 @@ export function toInfobox(content: string): res.IInfobox {
       throw error;
     }
   }
-  const infobox: res.IInfobox = {};
+  const infobox: res.IInfobox = [];
   for (const [key, item] of wiki.data) {
     switch (typeof item) {
       case 'string': {
-        infobox[key] = [
-          {
-            v: item,
-          },
-        ];
+        infobox.push({
+          key: key,
+          values: [{ v: item }],
+        });
         break;
       }
       case 'object': {
-        infobox[key] = item.map((v) => {
-          return {
-            k: v.k,
-            v: v.v || '',
-          };
+        infobox.push({
+          key: key,
+          values: item.map((v) => {
+            return {
+              k: v.k,
+              v: v.v || '',
+            };
+          }),
         });
         break;
       }
@@ -171,6 +242,7 @@ function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
   const total = ratingCount.reduce((a, b) => a + b, 0);
   const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
   const rating = {
+    rank: fields.fieldRank,
     total: total,
     score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
@@ -179,29 +251,30 @@ function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
 }
 
 export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
+  const infobox = toInfobox(subject.infobox);
   return {
     id: subject.id,
     name: subject.name,
     nameCN: subject.nameCN,
     type: subject.typeID,
     images: subjectCover(subject.image) || undefined,
+    info: getInfoboxSummary(infobox, subject.typeID),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
   };
 }
 
 export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): res.ISubject {
+  const infobox = toInfobox(subject.infobox);
   return {
     airtime: toSubjectAirtime(fields),
     collection: toSubjectCollection(subject),
     eps: subject.eps,
     id: subject.id,
     images: subjectCover(subject.image) || undefined,
-    infobox: toInfobox(subject.infobox),
-    metaTags: subject.metaTags
-      .split(' ')
-      .map((x) => x.trim())
-      .filter((x) => x !== ''),
+    infobox: infobox,
+    info: getInfoboxSummary(infobox, subject.typeID),
+    metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     name: subject.name,
     nameCN: subject.nameCN,
@@ -214,6 +287,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     summary: subject.summary,
     type: subject.typeID,
     volumes: subject.volumes,
+    tags: toSubjectTags(fields.fieldTags),
   };
 }
 
@@ -231,16 +305,38 @@ export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubj
   };
 }
 
-export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
-  const position = findSubjectStaffPosition(relation.subjectType, relation.position);
-  if (!position) {
+export function toSubjectStaffPositionType(
+  relation: orm.IPersonSubject,
+): res.ISubjectStaffPositionType {
+  const positionType = findSubjectStaffPosition(relation.subjectType, relation.position);
+  if (!positionType) {
     return { id: relation.position, en: '', cn: '', jp: '' };
   }
   return {
     id: relation.position,
-    en: position.en,
-    cn: position.cn,
-    jp: position.jp,
+    en: positionType.en,
+    cn: positionType.cn,
+    jp: positionType.jp,
+  };
+}
+
+export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
+  return {
+    summary: relation.summary,
+    type: toSubjectStaffPositionType(relation),
+  };
+}
+
+export function toSubjectComment(
+  interest: orm.ISubjectInterest,
+  user: orm.IUser,
+): res.ISubjectComment {
+  return {
+    user: toSlimUser(user),
+    type: interest.type,
+    rate: interest.rate,
+    comment: interest.comment,
+    updatedAt: interest.updatedAt,
   };
 }
 
@@ -261,23 +357,46 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
+export function toSubjectEpStatus(
+  status: orm.ISubjectEpStatus,
+): Record<number, UserEpisodeCollection> {
+  const result: Record<number, UserEpisodeCollection> = {};
+  if (!status.status) {
+    return result;
+  }
+  const epStatusList = php.parse(status.status) as Record<number, { eid: string; type: number }>;
+  for (const [eid, x] of Object.entries(epStatusList)) {
+    const episodeId = Number.parseInt(eid);
+    if (Number.isNaN(episodeId)) {
+      continue;
+    }
+    result[episodeId] = { id: episodeId, type: x.type };
+  }
+  return result;
+}
+
 export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
+  const infobox = toInfobox(character.infobox);
   return {
     id: character.id,
     name: character.name,
+    nameCN: extractNameCN(infobox),
     role: character.role,
     images: personImages(character.img) || undefined,
+    comment: character.comment,
     nsfw: character.nsfw,
     lock: Boolean(character.lock),
   };
 }
 
 export function toCharacter(character: orm.ICharacter): res.ICharacter {
+  const infobox = toInfobox(character.infobox);
   return {
     id: character.id,
     name: character.name,
+    nameCN: extractNameCN(infobox),
     role: character.role,
-    infobox: toInfobox(character.infobox),
+    infobox: infobox,
     summary: character.summary,
     images: personImages(character.img) || undefined,
     comment: character.comment,
@@ -289,17 +408,21 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
 }
 
 export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
+  const infobox = toInfobox(person.infobox);
   return {
     id: person.id,
     name: person.name,
+    nameCN: extractNameCN(infobox),
     type: person.type,
     images: personImages(person.img) || undefined,
+    comment: person.comment,
     nsfw: person.nsfw,
     lock: Boolean(person.lock),
   };
 }
 
 export function toPerson(person: orm.IPerson): res.IPerson {
+  const infobox = toInfobox(person.infobox);
   const career = [];
   if (person.producer) {
     career.push('producer');
@@ -328,8 +451,9 @@ export function toPerson(person: orm.IPerson): res.IPerson {
   return {
     id: person.id,
     name: person.name,
+    nameCN: extractNameCN(infobox),
     type: person.type,
-    infobox: toInfobox(person.infobox),
+    infobox: infobox,
     career,
     summary: person.summary,
     images: personImages(person.img) || undefined,
@@ -360,6 +484,7 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     replies: index.replies,
     total: index.total,
     collects: index.collects,
+    stats: toIndexStats(index.stats),
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
     creator: toSlimUser(user),
@@ -373,5 +498,66 @@ export function toCharacterSubjectRelation(
   return {
     subject: toSlimSubject(subject),
     type: relation.type,
+  };
+}
+
+export function toSubjectTopic(topic: orm.ISubjectTopic, user: orm.IUser): res.ITopic {
+  return {
+    id: topic.id,
+    creator: toSlimUser(user),
+    title: topic.title,
+    parentID: topic.subjectID,
+    createdAt: topic.createdAt,
+    updatedAt: topic.updatedAt,
+    repliesCount: topic.replies,
+    state: topic.state,
+    display: topic.display,
+  };
+}
+
+export function toSubjectTopicReply(reply: orm.ISubjectPost, user: orm.IUser): res.IReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creator: toSlimUser(user),
+    replies: [],
+    reactions: [],
+    isFriend: false,
+  };
+}
+
+export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser): res.ISubReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creator: toSlimUser(user),
+    reactions: [],
+    isFriend: false,
+  };
+}
+
+export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
+  return {
+    user: toSlimUser(user),
+    createdAt: collect.createdAt,
+  };
+}
+
+export function toTimeline(tml: orm.ITimeline): res.ITimeline {
+  return {
+    id: tml.id,
+    uid: tml.uid,
+    cat: tml.cat,
+    type: tml.type,
+    memo: parseTimelineMemo(tml.cat, tml.type, tml.batch, tml.memo),
+    image: parseTimelineImage(tml.cat, tml.type, tml.batch, tml.img),
+    batch: tml.batch,
+    replies: tml.replies,
+    source: tml.source,
+    createdAt: tml.createdAt,
   };
 }

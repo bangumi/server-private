@@ -12,17 +12,10 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
-function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): res.IPersonRelation {
-  return {
-    person: convert.toSlimPerson(person),
-    relation: relation.relation,
-  };
-}
-
-function toPersonWork(subject: orm.ISubject, relation: orm.IPersonSubject): res.IPersonWork {
+function toPersonWork(subject: orm.ISubject, relations: orm.IPersonSubject[]): res.IPersonWork {
   return {
     subject: convert.toSlimSubject(subject),
-    position: convert.toSubjectStaffPosition(relation),
+    positions: relations.map((r) => convert.toSubjectStaffPosition(r)),
   };
 }
 
@@ -33,13 +26,6 @@ function toPersonCharacter(
   return {
     character: convert.toSlimCharacter(character),
     relations: relations,
-  };
-}
-
-function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
-  return {
-    user: convert.toSlimUser(user),
-    createdAt: collect.createdAt,
   };
 }
 
@@ -80,73 +66,6 @@ export async function setup(app: App) {
         return convert.toPerson(d);
       }
       throw new NotFoundError(`person ${personID}`);
-    },
-  );
-
-  app.get(
-    '/persons/:personID/relations',
-    {
-      schema: {
-        summary: '获取人物的关联人物',
-        operationId: 'getPersonRelations',
-        tags: [Tag.Person],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        params: t.Object({
-          personID: t.Integer(),
-        }),
-        querystring: t.Object({
-          limit: t.Optional(
-            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
-          ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
-        }),
-        response: {
-          200: res.Paged(t.Ref(res.PersonRelation)),
-          404: t.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('person')),
-          }),
-        },
-      },
-    },
-    async ({ auth, params: { personID }, query: { limit = 20, offset = 0 } }) => {
-      const person = await fetcher.fetchSlimPersonByID(personID, auth.allowNsfw);
-      if (!person) {
-        throw new NotFoundError(`person ${personID}`);
-      }
-      const condition = op.and(
-        op.eq(schema.chiiPersonRelations.id, personID),
-        op.ne(schema.chiiPersons.ban, 1),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
-      );
-      const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
-        .from(schema.chiiPersonRelations)
-        .innerJoin(
-          schema.chiiPersons,
-          op.eq(schema.chiiPersonRelations.relatedID, schema.chiiPersons.id),
-        )
-        .where(condition)
-        .execute();
-      const data = await db
-        .select()
-        .from(schema.chiiPersonRelations)
-        .innerJoin(
-          schema.chiiPersons,
-          op.eq(schema.chiiPersonRelations.relatedID, schema.chiiPersons.id),
-        )
-        .where(condition)
-        .orderBy(
-          op.asc(schema.chiiPersonRelations.relation),
-          op.desc(schema.chiiPersonRelations.relatedID),
-        )
-        .limit(limit)
-        .offset(offset)
-        .execute();
-      const persons = data.map((d) => toPersonRelation(d.chii_persons, d.chii_person_relationship));
-      return {
-        total: count,
-        data: persons,
-      };
     },
   );
 
@@ -194,7 +113,7 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiPersonSubjects.subjectID) })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
           schema.chiiSubjects,
@@ -210,11 +129,32 @@ export async function setup(app: App) {
           op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
         )
         .where(condition)
+        .groupBy(schema.chiiPersonSubjects.subjectID)
         .orderBy(op.desc(schema.chiiPersonSubjects.subjectID))
         .limit(limit)
         .offset(offset)
         .execute();
-      const subjects = data.map((d) => toPersonWork(d.chii_subjects, d.chii_person_cs_index));
+      const subjectIDs = data.map((d) => d.chii_person_cs_index.subjectID);
+      const relations = await db
+        .select()
+        .from(schema.chiiPersonSubjects)
+        .where(
+          op.and(
+            op.inArray(schema.chiiPersonSubjects.subjectID, subjectIDs),
+            op.eq(schema.chiiPersonSubjects.personID, personID),
+            position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
+          ),
+        )
+        .execute();
+      const relationsMap = new Map<number, orm.IPersonSubject[]>();
+      for (const r of relations) {
+        const relations = relationsMap.get(r.subjectID) || [];
+        relations.push(r);
+        relationsMap.set(r.subjectID, relations);
+      }
+      const subjects = data.map((d) =>
+        toPersonWork(d.chii_subjects, relationsMap.get(d.chii_subjects.id) || []),
+      );
       return {
         total: count,
         data: subjects,
@@ -266,7 +206,7 @@ export async function setup(app: App) {
         auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiCharacterCasts.characterID) })
         .from(schema.chiiCharacterCasts)
         .innerJoin(
           schema.chiiCharacters,
@@ -296,6 +236,7 @@ export async function setup(app: App) {
           ),
         )
         .where(condition)
+        .groupBy(schema.chiiCharacterCasts.characterID)
         .orderBy(op.desc(schema.chiiCharacterCasts.characterID))
         .limit(limit)
         .offset(offset)
@@ -367,7 +308,9 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-      const users = data.map((d) => toPersonCollect(d.chii_members, d.chii_person_collects));
+      const users = data.map((d) =>
+        convert.toPersonCollect(d.chii_members, d.chii_person_collects),
+      );
       return {
         total: count,
         data: users,

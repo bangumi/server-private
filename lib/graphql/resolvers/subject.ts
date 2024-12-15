@@ -1,12 +1,12 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
-import * as php from '@trim21/php-serialize';
 
 import type * as types from '@app/lib/graphql/__generated__/resolvers.ts';
 import { convertUser } from '@app/lib/graphql/schema.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import { SubjectRepo } from '@app/lib/orm/index.ts';
 import { subjectCover } from '@app/lib/response.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import { findSubjectPlatform } from '@app/vendor';
 
 export function convertSubject(subject: entity.Subject) {
@@ -92,10 +92,7 @@ export function convertSubject(subject: entity.Subject) {
     nsfw: subject.subjectNsfw,
     locked: subject.locked(),
     redirect: fields.fieldRedirect,
-    tags: (php.parse(fields.fieldTags) as { tag_name: string; result: string }[])
-      .filter((x) => x.tag_name !== undefined)
-      .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
-      .filter((x) => !Number.isNaN(x.count)),
+    tags: convert.toSubjectTags(fields.fieldTags),
   };
 }
 

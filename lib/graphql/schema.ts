@@ -22,7 +22,7 @@ import {
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
-import { ListTopicDisplays } from '@app/lib/topic/index.ts';
+import { ListTopicDisplays } from '@app/lib/topic/display.ts';
 
 import type * as types from './__generated__/resolvers.ts';
 

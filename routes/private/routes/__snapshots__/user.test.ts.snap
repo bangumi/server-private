@@ -45,74 +45,108 @@ Object {
           "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
           "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
         },
-        "infobox": Object {
-          "BWH": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "体重": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "别名": Array [
-            Object {
-              "k": "日文名",
-              "v": "ちぃ",
-            },
-            Object {
-              "k": "罗马字",
-              "v": "chii",
-            },
-            Object {
-              "k": "第二中文名",
-              "v": "小唧",
-            },
-          ],
-          "声优": Array [
-            Object {
-              "v": "田中理惠",
-            },
-          ],
-          "引用来源": Array [
-            Object {
-              "v": "anidb.net",
-            },
-          ],
-          "忌日": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "性别": Array [
-            Object {
-              "v": "女",
-            },
-          ],
-          "生日": Array [
-            Object {
-              "v": "4月13日",
-            },
-          ],
-          "简体中文名": Array [
-            Object {
-              "v": "小叽",
-            },
-          ],
-          "血型": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "身高": Array [
-            Object {
-              "v": "152cm",
-            },
-          ],
-        },
+        "infobox": Array [
+          Object {
+            "key": "生日",
+            "values": Array [
+              Object {
+                "v": "4月13日",
+              },
+            ],
+          },
+          Object {
+            "key": "身高",
+            "values": Array [
+              Object {
+                "v": "152cm",
+              },
+            ],
+          },
+          Object {
+            "key": "性别",
+            "values": Array [
+              Object {
+                "v": "女",
+              },
+            ],
+          },
+          Object {
+            "key": "别名",
+            "values": Array [
+              Object {
+                "k": "日文名",
+                "v": "ちぃ",
+              },
+              Object {
+                "k": "罗马字",
+                "v": "chii",
+              },
+              Object {
+                "k": "第二中文名",
+                "v": "小唧",
+              },
+            ],
+          },
+          Object {
+            "key": "引用来源",
+            "values": Array [
+              Object {
+                "v": "anidb.net",
+              },
+            ],
+          },
+          Object {
+            "key": "简体中文名",
+            "values": Array [
+              Object {
+                "v": "小叽",
+              },
+            ],
+          },
+          Object {
+            "key": "忌日",
+            "values": Array [
+              Object {
+                "v": "",
+              },
+            ],
+          },
+          Object {
+            "key": "血型",
+            "values": Array [
+              Object {
+                "v": "",
+              },
+            ],
+          },
+          Object {
+            "key": "体重",
+            "values": Array [
+              Object {
+                "v": "",
+              },
+            ],
+          },
+          Object {
+            "key": "BWH",
+            "values": Array [
+              Object {
+                "v": "",
+              },
+            ],
+          },
+          Object {
+            "key": "声优",
+            "values": Array [
+              Object {
+                "v": "田中理惠",
+              },
+            ],
+          },
+        ],
         "lock": false,
         "name": "ちぃ",
+        "nameCN": "小叽",
         "nsfw": false,
         "redirect": 0,
         "role": 1,
@@ -140,6 +174,48 @@ Object {
 }
 `;
 
+exports[`user collection > should get episodes 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "episode": Object {
+        "airdate": "2009-09-23",
+        "comment": 0,
+        "desc": "",
+        "disc": 0,
+        "duration": "",
+        "id": 17224,
+        "lock": true,
+        "name": "Nameless, Faceless (Part 3)",
+        "nameCN": "",
+        "sort": 1,
+        "subjectID": 2703,
+        "type": 0,
+      },
+      "type": 2,
+    },
+    Object {
+      "episode": Object {
+        "airdate": "2009-09-30",
+        "comment": 0,
+        "desc": "",
+        "disc": 0,
+        "duration": "",
+        "id": 17225,
+        "lock": true,
+        "name": "Haunted",
+        "nameCN": "",
+        "sort": 2,
+        "subjectID": 2703,
+        "type": 0,
+      },
+      "type": 2,
+    },
+  ],
+  "total": 23,
+}
+`;
+
 exports[`user collection > should get indexes 1`] = `
 Object {
   "data": Array [],
@@ -149,225 +225,566 @@ Object {
 
 exports[`user collection > should get persons 1`] = `
 Object {
-  "data": Array [
-    Object {
-      "createdAt": 1296495541,
-      "person": Object {
-        "career": Array [
-          "artist",
-          "seiyu",
-        ],
-        "collects": 841,
-        "comment": 110,
-        "id": 1,
-        "images": Object {
-          "grid": "https://lain.bgm.tv/pic/crt/g/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
-          "large": "https://lain.bgm.tv/pic/crt/l/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
-          "medium": "https://lain.bgm.tv/pic/crt/m/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
-          "small": "https://lain.bgm.tv/pic/crt/s/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
-        },
-        "infobox": Object {
-          "BWH": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "FanClub": Array [
-            Object {
-              "v": "https://fanclub.mizukinana.jp",
-            },
-          ],
-          "Twitter": Array [
-            Object {
-              "v": "https://twitter.com/NM_NANAPARTY",
-            },
-          ],
-          "个人状态": Array [
-            Object {
-              "v": "已婚",
-            },
-          ],
-          "体重": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "出身地区": Array [
-            Object {
-              "v": "爱媛县 新居滨市",
-            },
-          ],
-          "别名": Array [
-            Object {
-              "k": "第二中文名",
-              "v": "",
-            },
-            Object {
-              "k": "英文名",
-              "v": "",
-            },
-            Object {
-              "k": "日文名",
-              "v": "近藤奈々 (こんどう なな)",
-            },
-            Object {
-              "k": "纯假名",
-              "v": "みずき なな",
-            },
-            Object {
-              "k": "罗马字",
-              "v": "Mizuki Nana",
-            },
-            Object {
-              "k": "昵称",
-              "v": "奈々ちゃん、奈々さん、奈々様、お奈々、ヘッド",
-            },
-            Object {
-              "k": "其他名义",
-              "v": "",
-            },
-          ],
-          "官网": Array [
-            Object {
-              "v": "https://www.mizukinana.jp",
-            },
-          ],
-          "引用来源": Array [
-            Object {
-              "v": "zh.moegirl.org.cn",
-            },
-          ],
-          "性别": Array [
-            Object {
-              "v": "女",
-            },
-          ],
-          "所属公司": Array [
-            Object {
-              "v": "StarCrew(事务所) / KING AMUSEMENT CREATIVE(唱片公司)",
-            },
-          ],
-          "星座": Array [
-            Object {
-              "v": "水瓶座",
-            },
-          ],
-          "生日": Array [
-            Object {
-              "v": "1980年1月21日",
-            },
-          ],
-          "简体中文名": Array [
-            Object {
-              "v": "水树奈奈",
-            },
-          ],
-          "血型": Array [
-            Object {
-              "v": "O型",
-            },
-          ],
-          "身高": Array [
-            Object {
-              "v": "153cm",
-            },
-          ],
-        },
-        "lock": false,
-        "name": "水樹奈々",
-        "nsfw": false,
-        "redirect": 0,
-        "summary": "原名 近藤 奈々（こんどう なな），日本女性声优兼歌手。有个妹妹名字是近藤美香，为Daisy×Daisy主唱。
+  "data": Array [],
+  "total": 0,
+}
+`;
 
-简介
-自小受业余经营歌谣教室的父母影响，希望成为演歌歌手，从5岁起学习唱歌。小学和初中时经常在四国地区的各种歌唱比赛获奖，中一时以本名名义灌录单曲《杜樱》（つがざくら），中三时获“濑户内卡拉OK歌谣赛十周年记念全国大赛”总冠军，获其中一名评判赏识，邀请她初中毕业后往东京发展。高二（1997年）时入读代代木动画学院声优科，一边上学一边接受声优训练，不久她所属的事务所倒闭，几个月后加入由她的歌唱老师所成立的“产光音乐”事务所。其后参演PlayStation游戏NOёL ~La neige~，正式出道。因本名的日语读音跟另一位歌手近藤名奈完全一样，出道时以水树奈奈作为艺名。
-高中就读堀越高等学校，跟堂本刚、友坂理惠以及山口纱弥加等同班。毕业后获颁了“堀越赏”，至今只有她和草彅刚以艺能科毕业而获得该奖赏。
-水树奈奈原以演歌歌手为目标，自小受父亲训练演歌，高中时就读堀越高等学校中容许较低出席率的艺能科，尽管有所属的经纪公司，却迟迟未有歌手出道机会。
-高中1年级时，事务所向水树奈奈提出进行配音工作的建议，于是，接受该建议的水树奈奈在高中二年级开始入读了代代木动画学院声优科，在此接受配音演员的训练。在1997年高三时，终于获得出道机会，获选PS游戏软件‘NOeL 〜La neige〜’的门仓千纱都一角，以艺名水树奈奈完成声优出道。高中毕业后，在吉祥寺的美体沙龙做着一份时薪850日元的兼职工作。
-20岁时加盟King Records，2000年12月6日以单曲“想い”歌手出道，至今共推出34张单曲、12张大碟和3张精选集，歌手出道时的销情惨淡，但是之后就稳步上扬，销量不俗，惟近年因为实体唱片市场衰落以及日本个人女歌手热潮退却而出现下跌趋势。直到现时为止，音乐作品总销量约350万，声优唱片总销量排第三。演唱会场场爆满，音乐活动之外，也常接旁白以及配音的工作。
-2000年开始每年冬季举行演唱会，至2003年增至每年夏、冬各一次日本巡回演出。2005、06年两度在日本武道馆举行演唱会，是继椎名碧流后第二位踏足这舞台的声优；2007、08年更先后成为首位在横滨体育馆、埼玉超级体育馆及国立代代木竞技场举行个人演唱会的声优。
-2004年因配音人气动漫魔法少女奈叶中菲特·泰斯塔罗沙一角并演唱其中多首主题曲而走红，水树奈奈曾于出席发表会时透露配音过最喜欢的动漫角色为菲特·泰斯塔罗沙。
-2009年7月5日在西武巨蛋举办了个人（也是声优界）最大场的演唱会，全长4小时半，曲目29首，不但刷新个人纪录，也刷新了声优界的纪录。
-2009年12月31日获选第60回NHK红白歌合战，成为NHK红白歌合战史上第一位登上舞台的声优，被称“动画歌曲的女王”。
-因唱功获赞赏和唱片销量成绩不俗，2010－14年均被邀请参加第61回－第65回NHK红白歌合战（第61回兼任红白应援队队员）。
-2011年12月3日及4日首次登上东京巨蛋，是史上第八位以个人名义登上东京巨蛋、第四位连续两天开唱的日本女性歌手，而且是第一位声优能在东京巨蛋举行演唱会，再次破声优纪录。
-2013年7月14日在日本巡回演唱会“NANA MIZUKI LIVE CIRCUS 2013”大阪城音乐厅场次中，宣布将于台湾举办首次海外演唱会。
-2013年11月23日及24日，在台湾台北市华山1914创意文化园区台北音乐传记（Legacy Taipei）举办首次海外演唱会“NANA MIZUKI LIVE CIRCUS 2013+”。2013年11月24日，在“NANA MIZUKI LIVE CIRCUS 2013+”宣布，将于2014年再次于台湾举办海外演唱会。
-2014年6月，NANA MIZUKI LIVE CIRCUS×CIRCUS＋×WINTER FESTA BD作品首周以1.8万张销售额获得公信榜音乐部门第一名，综合部门第二名且打破纪录以连续9张BD作品蝉联音乐部门榜上第一名。第二名为安室奈美惠（5张）。
-2016年4月9、10日第二次在东京巨蛋举行演唱会，成为在东京巨蛋开唱过最多次的日本个人女歌手之一，并且宣布于2016年9月22日于阪神甲子园球场举办个人演唱会。
-
-演艺经历
-1998年在Pioneer LDC（现已改名为日本Geneon环球娱乐）旗下推出一张CD。
-1999年10月在网络电台JAM STATION主持自己的节目《NANA CHANNEL》。
-2000年1月23日于电台节目制作团队的协助下，举行第一场个人演唱会，被King Records制作人三嶋章夫所赏识，其后正式成为King Records（但不是King Records旗下制作动画、声优音乐为主的STARCHILD）的歌手。
-2001年9月受现在经纪人建议，离开她在东京寄宿的歌唱老师住所与其经纪公司，转往Sigma Seven事务所。
-2001年曾因《妹妹公主》而与桑谷夏子、小林由美子、望月久代组成声优组合“Prits”，并发行过3张单曲和1张大碟。
-同年（2001年）再因动画《七小花》（七人のナナ）而与秋田まどか、浅木舞、中原麻衣、名冢佳织、福井裕佳梨、桃森すもも组成“nana×nana”主唱该动画的主题曲。
-2003年7月7日成立官方俱乐部S.C. NANA NET。
-2005年1月2日于日本武道馆举行演唱会，是继椎名碧流后的第二位以个人名义在武道馆开演唱会的声优。
-2006年1月21日再次踏足日本武道馆，自2000年和2001年以来再次举行生日演唱会，演唱会当天更自弹自唱“宝物”。
-2006年10月29日日本电视台TBS Channel播放特别制作的水树奈奈特集，片长约90分钟，节目中有独家访问、2006年夏季演唱会精选片段和本人亲自下厨等珍贵镜头。
-2007年2月12日在横滨体育馆举行个人史上最长最大的演唱会，成为首位以个人名义使用这场地的声优。
-2007年3月3日第一届“声优Awards”获歌唱赏。
-2009年2月5日首度亮相全国广播的NHK电视音乐节目MUSIC JAPAN，并于同年4月开始担任节目旁白。
-2009年7月5日举办个人首场巨蛋演唱会，现场人数涌进3万人，为2009年唯一使用巨蛋级场地举办演唱会的女性歌手。
-2009年12月31日初次参与NHK红白歌合战。
-2010年3月6日第四届“声优Awards”获富山敬赏。
-2010年12月31日第二次参与NHK红白歌合战。
-2011年2月6日荣获“Billboard JAPAN MUSIC AWARDS 2010年年度优秀歌手赏”。
-2011年3月27日参与niconico为2011年日本本州岛海域地震举行的赈灾款募金义演，总金额达315万1800円。
-2011年12月3日及4日举办个人首场东京巨蛋演唱会，为史上第八位日本女歌手以个人名义登上东京巨蛋，累计现场人数为8万人。这场演唱会还创下“东京巨蛋史上的第一场全天域星象投影表演”的纪录。
-2011年12月31日第三次参与NHK红白歌合战。
-2012年3月3日荣获“Billboard JAPAN MUSIC AWARDS”年度最佳动画歌手。并在2012年度蝉联该奖项。
-2012年12月31日连续第四年参与NHK红白歌合战。
-2013年5月15日发表第一首合唱单曲“Preserved Roses”（合唱者为T.M.Revolution）。
-2013年11月10日参与于新加坡举行的Anime Festival Asia 2013: Valvrave Night演出，乃首个于国外进行的公开活动。
-2013年11月23日及24日举行第一场海外演唱会“NANA MIZUKI LIVE CIRCUS 2013+”，地点为台湾Legacy Taipei，其中24日场次于日本、台湾、新加坡、香港、泰国、印尼等65间戏院进行直播。
-2013年12月31日连续第五年参与NHK红白歌合战。
-2014年3月13日于文部科学省文化厅举办的“2013年度（第64届）艺术选奖”中获得大众艺能部门的新人赏。
-2014年6月1日 在演唱会上宣布追加海外公演，在新加坡及台湾举行，新加坡场于9月27日在“RESORTS WORLD THEATRE”演出，台湾场则于10月4、5两日在台北市立大学天母校区体育馆举行。
-2014年12月31日连续第六年参与NHK红白歌合战。
-2015年7月24日首度在MUSIC STATION中演出，是继椎名碧流后的第二位在该节目中演出的声优。
-2016年4月9日及10日再度于东京巨蛋举行演唱会，成为东京巨蛋中演唱会举行次数最多的日本个人女性歌手之一（另一个为安室奈美惠）。
-2016年9月22日首度于阪神甲子园球场举行演唱会，成为首位在阪神甲子园球场举行演唱会的个人歌手。
-2017年7、8月于帝国剧场参与以卡洛尔·金为题材的音乐剧，并与平原绫香担任双主演。
-
-个人生活
-水树奈奈的父亲为近藤信光，母亲为近藤训子 。名字的由来是因为父亲是演员冈田奈奈的粉丝，因为避免本名“近藤奈奈”与歌手近藤名奈出现混淆，所以决定使用“水树奈奈”作为艺名。
-她的妹妹近藤美香为Daisy×Daisy主唱，艺名为Mika。
-家庭环境并不富裕，所以学生时代是学校里少数几乎全勤的学生，并为领奖学金以贴补家用而十分用功，经常学年第一。2008年10月29日，水树奈奈的父亲去世 。
-持有书友会毛笔部七段、珠算三级、心算二级、自动档汽车驾驶执照等资格。
-与同事务所所属，在电台节目“スマイルギャング”中共演的声优福圆美里交情深厚，每年在彼此生日临近的时候都会互相交换生日礼物。因演出“放浪男孩”而与同事务所所属声优濑户麻沙美关系亲密，经常一起吃饭，将瀬戸视作自己妹妹般。2004年于因为演出魔法少女奈叶而和声优田村由香里关系亲密。与能登麻美子和泽城美雪一起去旅行后，交情加深。
-2020年7月6日，与作为音乐界从业者的丈夫登记结婚。11月6号，通过官网宣布怀孕，目前已经进入安定期，将暂时工作一段时间。
-水树的父亲持有硬式棒球的裁判执照，水树则是个颇热情的阪神虎爱好者。最初比较喜欢高校棒球，受喜欢读卖巨人的父亲影响而成为了巨人的球迷。1996年，当清原和博（已在2008年球季结束后退休）由Free Agent转至巨人时，开始觉得巨人不好，而转而喜欢阪神虎直至现在。特别尊敬星野仙一。
-水树为第11张专辑SMASHING ANTHEMS拍专辑照时，到过阪神虎的主场阪神甲子园球场取景。在阪神甲子园球场举行演唱会为水树的其中一个梦想，场方则以保护天然草皮为理由，每年只批准一组歌唱单位举行演唱会。每年在甲子园球场举行演唱会的TUBE宣布2016年不会在此场举行演唱会，结果水树得到这个机会。
-
-其他
-2006年，井上喜久子曾经希望水树能够加入17岁教。
-2008年6月19日，21岁的送报员堀大树用手机在2ch的声优板块预告中模仿加藤智大，发出拟于7月5日-6日在代代木体育馆举行的LIVE FIGHTER 2008 BLUE SIDE/RED SIDE中，杀害水树奈奈的犯罪预告，后嫌疑人被警方监控、逮捕。
-2008年10月29日晚间8时40分，水树之父近藤信光因多器官衰竭去世，卒年75岁。
-2009年11月21日于东京国际展示场举行的俱乐部活动中挑战吉尼斯世界纪录，原本要挑战三个项目，有两个项目挑战成功，分别是7014人全场手牵手形成最长人浪，以及动员6961人创下最多人于同一时间一起吹party blowers，其后由吉尼斯世界纪录职员即场颁发证书。
-至于无法挑战成功的项目，就是于室内发出最大音量的人声，现时纪录由香港饶舌团体农夫举行的演唱会保持。
-2009年12月13日，终于与一直想见面的同乡（爱媛县出身）・演员真锅香织在剧场版动画“雷顿教授与永远的歌姬”的首映会上见面。
-2010年2月20日，被任命为新居浜观光大使。
-2010年10月，台湾金牌大风取得代理并发售IMPACT EXCITER台压盘，是水树的第一张海外盘。
-2011年1月21日，于生日当天发售个人第一本自传“深爱”。
-2012年2月，中国大陆星外星唱片取得代理并发售IMPACT EXCITER引进版，是水树正式在大陆发行的首张个人专辑。
-2012年5月，台湾金牌大风取得代理并发售NANA MIZUKI LIVE CASTLE×JOURNEY台压盘，是第一张水树的演唱会海外盘。
-2012年4月17日，再次被任命为伊予观光大使。
-2012年6月10日播出的新堂本兄弟中与高中同学堂本刚实现了久隔14年见面的会谈，称水树为近藤さん，并在业界传开来。
-2012年12月5日，在富士电视台的FNS歌谣祭中水树与堂本刚所在的团队KinKi Kids坐在同一个圆桌时，并从刚君处听说他在他的演唱会上提到了水树。
-2014年1月16日，发售文库版本之自传。
-2014年6月10日，25岁男子福元一辉为了抽奖在演唱会与水树见面而购买1000包卡乐B薯片，将每包薯片上的抽奖券取去后丢弃在树林中，因违反《废弃物处理法》而被警方逮捕。
-2014年6月22日，由于水树的声带发炎导致失声，为日后着想需要休息一段时间，原定于当日以及6月28日和29日举行的巡回公演被迫取消。
-
-YouTube频道：
-https://www.youtube.com/user/mizukinanaKING",
-        "type": 1,
-      },
+exports[`user collection > should get single character 1`] = `
+Object {
+  "character": Object {
+    "collects": 329,
+    "comment": 56,
+    "id": 32,
+    "images": Object {
+      "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+      "large": "https://lain.bgm.tv/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+      "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+      "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
     },
+    "infobox": Array [
+      Object {
+        "key": "生日",
+        "values": Array [
+          Object {
+            "v": "4月13日",
+          },
+        ],
+      },
+      Object {
+        "key": "身高",
+        "values": Array [
+          Object {
+            "v": "152cm",
+          },
+        ],
+      },
+      Object {
+        "key": "性别",
+        "values": Array [
+          Object {
+            "v": "女",
+          },
+        ],
+      },
+      Object {
+        "key": "别名",
+        "values": Array [
+          Object {
+            "k": "日文名",
+            "v": "ちぃ",
+          },
+          Object {
+            "k": "罗马字",
+            "v": "chii",
+          },
+          Object {
+            "k": "第二中文名",
+            "v": "小唧",
+          },
+        ],
+      },
+      Object {
+        "key": "引用来源",
+        "values": Array [
+          Object {
+            "v": "anidb.net",
+          },
+        ],
+      },
+      Object {
+        "key": "简体中文名",
+        "values": Array [
+          Object {
+            "v": "小叽",
+          },
+        ],
+      },
+      Object {
+        "key": "忌日",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "血型",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "体重",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "BWH",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "声优",
+        "values": Array [
+          Object {
+            "v": "田中理惠",
+          },
+        ],
+      },
+    ],
+    "lock": false,
+    "name": "ちぃ",
+    "nameCN": "小叽",
+    "nsfw": false,
+    "redirect": 0,
+    "role": 1,
+    "summary": "传说中性能超强的人型电脑，故事第一话时被人弃置在垃圾场，后被我们的本须和秀树发现，并抱回家。由于开始时唧只会'唧，唧'的这样叫，所以秀树为其取名 '唧'TV版第二话「ちぃでかける」时发现小唧本身并没有安OS，不过因为拥有“学习程式”，所以可以通过对话和教导让她‘成长’起来。",
+  },
+  "createdAt": 1296496835,
+}
+`;
+
+exports[`user collection > should get single episode 1`] = `
+Object {
+  "episode": Object {
+    "airdate": "2009-10-14",
+    "comment": 0,
+    "desc": "",
+    "disc": 0,
+    "duration": "",
+    "id": 17227,
+    "lock": true,
+    "name": "Hopeless",
+    "nameCN": "",
+    "sort": 4,
+    "subjectID": 2703,
+    "type": 0,
+  },
+  "type": 2,
+}
+`;
+
+exports[`user collection > should get single index 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "collection not found",
+  "statusCode": 404,
+}
+`;
+
+exports[`user collection > should get single person 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "collection not found",
+  "statusCode": 404,
+}
+`;
+
+exports[`user collection > should get single subject 1`] = `
+Object {
+  "comment": "test comment",
+  "epStatus": 23,
+  "private": false,
+  "rate": 0,
+  "subject": Object {
+    "airtime": Object {
+      "date": "2008-04-06",
+      "month": 4,
+      "weekday": 7,
+      "year": 2008,
+    },
+    "collection": Object {
+      "1": 622,
+      "2": 13216,
+      "3": 147,
+      "4": 224,
+      "5": 115,
+    },
+    "eps": 25,
+    "id": 8,
+    "images": Object {
+      "common": "https://lain.bgm.tv/pic/cover/c/c9/f0/8_wK0z3.jpg",
+      "grid": "https://lain.bgm.tv/pic/cover/g/c9/f0/8_wK0z3.jpg",
+      "large": "https://lain.bgm.tv/pic/cover/l/c9/f0/8_wK0z3.jpg",
+      "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
+      "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
+    },
+    "info": "2008年4月6日 / 谷口悟朗 / 木村貴宏",
+    "infobox": Array [
+      Object {
+        "key": "中文名",
+        "values": Array [
+          Object {
+            "v": "Code Geass 反叛的鲁路修R2",
+          },
+        ],
+      },
+      Object {
+        "key": "别名",
+        "values": Array [
+          Object {
+            "v": "叛逆的鲁路修R2",
+          },
+          Object {
+            "v": "Code Geass: Hangyaku no Lelouch R2",
+          },
+          Object {
+            "v": "叛逆的勒鲁什R2",
+          },
+          Object {
+            "v": "叛逆的鲁鲁修R2",
+          },
+          Object {
+            "v": "コードギアス 反逆のルルーシュR2",
+          },
+          Object {
+            "v": "Code Geass: Lelouch of the Rebellion R2",
+          },
+          Object {
+            "v": "叛逆的勒路什R2",
+          },
+        ],
+      },
+      Object {
+        "key": "话数",
+        "values": Array [
+          Object {
+            "v": "25",
+          },
+        ],
+      },
+      Object {
+        "key": "放送开始",
+        "values": Array [
+          Object {
+            "v": "2008年4月6日",
+          },
+        ],
+      },
+      Object {
+        "key": "放送星期",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "官方网站",
+        "values": Array [
+          Object {
+            "v": "http://www.geass.jp/r2/",
+          },
+        ],
+      },
+      Object {
+        "key": "播放电视台",
+        "values": Array [
+          Object {
+            "v": "每日放送",
+          },
+        ],
+      },
+      Object {
+        "key": "其他电视台",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "播放结束",
+        "values": Array [
+          Object {
+            "v": "2008年9月28日",
+          },
+        ],
+      },
+      Object {
+        "key": "其他",
+        "values": Array [
+          Object {
+            "v": "",
+          },
+        ],
+      },
+      Object {
+        "key": "Copyright",
+        "values": Array [
+          Object {
+            "v": "（C）2006 SUNRISE inc./MBS",
+          },
+        ],
+      },
+      Object {
+        "key": "导演",
+        "values": Array [
+          Object {
+            "v": "谷口悟朗",
+          },
+        ],
+      },
+      Object {
+        "key": "系列构成",
+        "values": Array [
+          Object {
+            "v": "大河内一楼",
+          },
+        ],
+      },
+      Object {
+        "key": "人物原案",
+        "values": Array [
+          Object {
+            "v": "CLAMP",
+          },
+        ],
+      },
+      Object {
+        "key": "人物设定",
+        "values": Array [
+          Object {
+            "v": "木村貴宏",
+          },
+        ],
+      },
+      Object {
+        "key": "美术监督",
+        "values": Array [
+          Object {
+            "v": "菱沼由典",
+          },
+        ],
+      },
+      Object {
+        "key": "色彩设计",
+        "values": Array [
+          Object {
+            "v": "岩沢れい子",
+          },
+        ],
+      },
+      Object {
+        "key": "摄影监督",
+        "values": Array [
+          Object {
+            "v": "大矢創太",
+          },
+        ],
+      },
+      Object {
+        "key": "音响监督",
+        "values": Array [
+          Object {
+            "v": "浦上靖夫、井澤基",
+          },
+        ],
+      },
+      Object {
+        "key": "音乐",
+        "values": Array [
+          Object {
+            "v": "中川幸太郎、黒石ひとみ",
+          },
+        ],
+      },
+      Object {
+        "key": "音乐制作",
+        "values": Array [
+          Object {
+            "v": "AUDIO PLANNING U",
+          },
+        ],
+      },
+      Object {
+        "key": "动画制作",
+        "values": Array [
+          Object {
+            "v": "サンライズ",
+          },
+        ],
+      },
+    ],
+    "locked": false,
+    "metaTags": Array [],
+    "name": "コードギアス 反逆のルルーシュR2",
+    "nameCN": "Code Geass 反叛的鲁路修R2",
+    "nsfw": false,
+    "platform": Object {
+      "alias": "tv",
+      "enableHeader": true,
+      "id": 1,
+      "order": 0,
+      "type": "TV",
+      "typeCN": "TV",
+      "wikiTpl": "TVAnime",
+    },
+    "rating": Object {
+      "count": Array [
+        44,
+        15,
+        32,
+        66,
+        145,
+        457,
+        1472,
+        3190,
+        2640,
+        1377,
+      ],
+      "rank": 121,
+      "score": 8.19,
+      "total": 9438,
+    },
+    "redirect": 0,
+    "series": false,
+    "seriesEntry": 0,
+    "summary": "　　“东京决战”一年后，布里塔尼亚少年鲁路修在11区（原日本国）过着平凡的学生生活。但是，鲁路修与弟弟罗洛的一次出行，遇到了黑色骑士团的余党。在与少女C.C再次结成契约之后，尘封的记忆摆在了鲁路修的面前。
+　　身为帝国王子的鲁路修，为了建立人人平等的世界、让妹妹娜娜丽幸福的世界，而使用GEASS，令人绝对服从的力量，带领黑色骑士团向帝国宣战。带上假面化名ZERO的他，却在一年前的“东京决战”中被好友朱雀击败，被帝国皇帝抹去了记忆。
+　　现在，恢复记忆的鲁路修不仅要面对帝国的强大军事力量，更要面对虚假的弟弟罗洛、失踪的妹妹娜娜丽、不知敌友的中华联盟、内部出现分歧的黑色骑士团。面对内忧外患，鲁路修走上了GEASS之力的诅咒——孤独的王之路。 ",
+    "tags": Array [
+      Object {
+        "count": 1645,
+        "name": "叛逆的鲁鲁修",
+      },
+      Object {
+        "count": 1229,
+        "name": "SUNRISE",
+      },
+      Object {
+        "count": 936,
+        "name": "反逆のルルーシュ",
+      },
+      Object {
+        "count": 721,
+        "name": "还是死妹控",
+      },
+      Object {
+        "count": 664,
+        "name": "TV",
+      },
+      Object {
+        "count": 603,
+        "name": "妹控",
+      },
+      Object {
+        "count": 569,
+        "name": "codegeass",
+      },
+      Object {
+        "count": 523,
+        "name": "谷口悟朗",
+      },
+      Object {
+        "count": 453,
+        "name": "鲁路修",
+      },
+      Object {
+        "count": 427,
+        "name": "R2",
+      },
+      Object {
+        "count": 409,
+        "name": "2008",
+      },
+      Object {
+        "count": 385,
+        "name": "原创",
+      },
+      Object {
+        "count": 357,
+        "name": "2008年4月",
+      },
+      Object {
+        "count": 174,
+        "name": "大河内一楼",
+      },
+      Object {
+        "count": 151,
+        "name": "日升",
+      },
+      Object {
+        "count": 120,
+        "name": "萝卜",
+      },
+      Object {
+        "count": 111,
+        "name": "机战",
+      },
+      Object {
+        "count": 104,
+        "name": "狗得鸡鸭死",
+      },
+      Object {
+        "count": 94,
+        "name": "福山润",
+      },
+      Object {
+        "count": 84,
+        "name": "露露胸",
+      },
+      Object {
+        "count": 69,
+        "name": "CLAMP",
+      },
+      Object {
+        "count": 67,
+        "name": "科幻",
+      },
+      Object {
+        "count": 62,
+        "name": "鲁鲁修",
+      },
+      Object {
+        "count": 57,
+        "name": "GEASS",
+      },
+      Object {
+        "count": 54,
+        "name": "神作",
+      },
+      Object {
+        "count": 49,
+        "name": "战斗",
+      },
+      Object {
+        "count": 41,
+        "name": "战争",
+      },
+      Object {
+        "count": 40,
+        "name": "裸露修的跌二次KUSO",
+      },
+      Object {
+        "count": 37,
+        "name": "中二",
+      },
+      Object {
+        "count": 34,
+        "name": "樱井孝宏",
+      },
+    ],
+    "type": 2,
+    "volumes": 0,
+  },
+  "tags": Array [
+    "SUNRISE",
   ],
-  "total": 2,
+  "type": 2,
+  "updatedAt": 1639569371,
+  "volStatus": 0,
 }
 `;
 
@@ -402,136 +819,203 @@ Object {
           "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
           "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
         },
-        "infobox": Object {
-          "Copyright": Array [
-            Object {
-              "v": "（C）2006 SUNRISE inc./MBS",
-            },
-          ],
-          "中文名": Array [
-            Object {
-              "v": "Code Geass 反叛的鲁路修R2",
-            },
-          ],
-          "人物原案": Array [
-            Object {
-              "v": "CLAMP",
-            },
-          ],
-          "人物设定": Array [
-            Object {
-              "v": "木村貴宏",
-            },
-          ],
-          "其他": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "其他电视台": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "别名": Array [
-            Object {
-              "v": "叛逆的鲁路修R2",
-            },
-            Object {
-              "v": "Code Geass: Hangyaku no Lelouch R2",
-            },
-            Object {
-              "v": "叛逆的勒鲁什R2",
-            },
-            Object {
-              "v": "叛逆的鲁鲁修R2",
-            },
-            Object {
-              "v": "コードギアス 反逆のルルーシュR2",
-            },
-            Object {
-              "v": "Code Geass: Lelouch of the Rebellion R2",
-            },
-            Object {
-              "v": "叛逆的勒路什R2",
-            },
-          ],
-          "动画制作": Array [
-            Object {
-              "v": "サンライズ",
-            },
-          ],
-          "官方网站": Array [
-            Object {
-              "v": "http://www.geass.jp/r2/",
-            },
-          ],
-          "导演": Array [
-            Object {
-              "v": "谷口悟朗",
-            },
-          ],
-          "摄影监督": Array [
-            Object {
-              "v": "大矢創太",
-            },
-          ],
-          "播放电视台": Array [
-            Object {
-              "v": "每日放送",
-            },
-          ],
-          "播放结束": Array [
-            Object {
-              "v": "2008年9月28日",
-            },
-          ],
-          "放送开始": Array [
-            Object {
-              "v": "2008年4月6日",
-            },
-          ],
-          "放送星期": Array [
-            Object {
-              "v": "",
-            },
-          ],
-          "系列构成": Array [
-            Object {
-              "v": "大河内一楼",
-            },
-          ],
-          "美术监督": Array [
-            Object {
-              "v": "菱沼由典",
-            },
-          ],
-          "色彩设计": Array [
-            Object {
-              "v": "岩沢れい子",
-            },
-          ],
-          "话数": Array [
-            Object {
-              "v": "25",
-            },
-          ],
-          "音乐": Array [
-            Object {
-              "v": "中川幸太郎、黒石ひとみ",
-            },
-          ],
-          "音乐制作": Array [
-            Object {
-              "v": "AUDIO PLANNING U",
-            },
-          ],
-          "音响监督": Array [
-            Object {
-              "v": "浦上靖夫、井澤基",
-            },
-          ],
-        },
+        "info": "2008年4月6日 / 谷口悟朗 / 木村貴宏",
+        "infobox": Array [
+          Object {
+            "key": "中文名",
+            "values": Array [
+              Object {
+                "v": "Code Geass 反叛的鲁路修R2",
+              },
+            ],
+          },
+          Object {
+            "key": "别名",
+            "values": Array [
+              Object {
+                "v": "叛逆的鲁路修R2",
+              },
+              Object {
+                "v": "Code Geass: Hangyaku no Lelouch R2",
+              },
+              Object {
+                "v": "叛逆的勒鲁什R2",
+              },
+              Object {
+                "v": "叛逆的鲁鲁修R2",
+              },
+              Object {
+                "v": "コードギアス 反逆のルルーシュR2",
+              },
+              Object {
+                "v": "Code Geass: Lelouch of the Rebellion R2",
+              },
+              Object {
+                "v": "叛逆的勒路什R2",
+              },
+            ],
+          },
+          Object {
+            "key": "话数",
+            "values": Array [
+              Object {
+                "v": "25",
+              },
+            ],
+          },
+          Object {
+            "key": "放送开始",
+            "values": Array [
+              Object {
+                "v": "2008年4月6日",
+              },
+            ],
+          },
+          Object {
+            "key": "放送星期",
+            "values": Array [
+              Object {
+                "v": "",
+              },
+            ],
+          },
+          Object {
+            "key": "官方网站",
+            "values": Array [
+              Object {
+                "v": "http://www.geass.jp/r2/",
+              },
+            ],
+          },
+          Object {
+            "key": "播放电视台",
+            "values": Array [
+              Object {
+                "v": "每日放送",
+              },
+            ],
+          },
+          Object {
+            "key": "其他电视台",
+            "values": Array [
+              Object {
+                "v": "",
+              },
+            ],
+          },
+          Object {
+            "key": "播放结束",
+            "values": Array [
+              Object {
+                "v": "2008年9月28日",
+              },
+            ],
+          },
+          Object {
+            "key": "其他",
+            "values": Array [
+              Object {
+                "v": "",
+              },
+            ],
+          },
+          Object {
+            "key": "Copyright",
+            "values": Array [
+              Object {
+                "v": "（C）2006 SUNRISE inc./MBS",
+              },
+            ],
+          },
+          Object {
+            "key": "导演",
+            "values": Array [
+              Object {
+                "v": "谷口悟朗",
+              },
+            ],
+          },
+          Object {
+            "key": "系列构成",
+            "values": Array [
+              Object {
+                "v": "大河内一楼",
+              },
+            ],
+          },
+          Object {
+            "key": "人物原案",
+            "values": Array [
+              Object {
+                "v": "CLAMP",
+              },
+            ],
+          },
+          Object {
+            "key": "人物设定",
+            "values": Array [
+              Object {
+                "v": "木村貴宏",
+              },
+            ],
+          },
+          Object {
+            "key": "美术监督",
+            "values": Array [
+              Object {
+                "v": "菱沼由典",
+              },
+            ],
+          },
+          Object {
+            "key": "色彩设计",
+            "values": Array [
+              Object {
+                "v": "岩沢れい子",
+              },
+            ],
+          },
+          Object {
+            "key": "摄影监督",
+            "values": Array [
+              Object {
+                "v": "大矢創太",
+              },
+            ],
+          },
+          Object {
+            "key": "音响监督",
+            "values": Array [
+              Object {
+                "v": "浦上靖夫、井澤基",
+              },
+            ],
+          },
+          Object {
+            "key": "音乐",
+            "values": Array [
+              Object {
+                "v": "中川幸太郎、黒石ひとみ",
+              },
+            ],
+          },
+          Object {
+            "key": "音乐制作",
+            "values": Array [
+              Object {
+                "v": "AUDIO PLANNING U",
+              },
+            ],
+          },
+          Object {
+            "key": "动画制作",
+            "values": Array [
+              Object {
+                "v": "サンライズ",
+              },
+            ],
+          },
+        ],
         "locked": false,
         "metaTags": Array [],
         "name": "コードギアス 反逆のルルーシュR2",
@@ -559,6 +1043,7 @@ Object {
             2640,
             1377,
           ],
+          "rank": 121,
           "score": 8.19,
           "total": 9438,
         },
@@ -568,6 +1053,128 @@ Object {
         "summary": "　　“东京决战”一年后，布里塔尼亚少年鲁路修在11区（原日本国）过着平凡的学生生活。但是，鲁路修与弟弟罗洛的一次出行，遇到了黑色骑士团的余党。在与少女C.C再次结成契约之后，尘封的记忆摆在了鲁路修的面前。
 　　身为帝国王子的鲁路修，为了建立人人平等的世界、让妹妹娜娜丽幸福的世界，而使用GEASS，令人绝对服从的力量，带领黑色骑士团向帝国宣战。带上假面化名ZERO的他，却在一年前的“东京决战”中被好友朱雀击败，被帝国皇帝抹去了记忆。
 　　现在，恢复记忆的鲁路修不仅要面对帝国的强大军事力量，更要面对虚假的弟弟罗洛、失踪的妹妹娜娜丽、不知敌友的中华联盟、内部出现分歧的黑色骑士团。面对内忧外患，鲁路修走上了GEASS之力的诅咒——孤独的王之路。 ",
+        "tags": Array [
+          Object {
+            "count": 1645,
+            "name": "叛逆的鲁鲁修",
+          },
+          Object {
+            "count": 1229,
+            "name": "SUNRISE",
+          },
+          Object {
+            "count": 936,
+            "name": "反逆のルルーシュ",
+          },
+          Object {
+            "count": 721,
+            "name": "还是死妹控",
+          },
+          Object {
+            "count": 664,
+            "name": "TV",
+          },
+          Object {
+            "count": 603,
+            "name": "妹控",
+          },
+          Object {
+            "count": 569,
+            "name": "codegeass",
+          },
+          Object {
+            "count": 523,
+            "name": "谷口悟朗",
+          },
+          Object {
+            "count": 453,
+            "name": "鲁路修",
+          },
+          Object {
+            "count": 427,
+            "name": "R2",
+          },
+          Object {
+            "count": 409,
+            "name": "2008",
+          },
+          Object {
+            "count": 385,
+            "name": "原创",
+          },
+          Object {
+            "count": 357,
+            "name": "2008年4月",
+          },
+          Object {
+            "count": 174,
+            "name": "大河内一楼",
+          },
+          Object {
+            "count": 151,
+            "name": "日升",
+          },
+          Object {
+            "count": 120,
+            "name": "萝卜",
+          },
+          Object {
+            "count": 111,
+            "name": "机战",
+          },
+          Object {
+            "count": 104,
+            "name": "狗得鸡鸭死",
+          },
+          Object {
+            "count": 94,
+            "name": "福山润",
+          },
+          Object {
+            "count": 84,
+            "name": "露露胸",
+          },
+          Object {
+            "count": 69,
+            "name": "CLAMP",
+          },
+          Object {
+            "count": 67,
+            "name": "科幻",
+          },
+          Object {
+            "count": 62,
+            "name": "鲁鲁修",
+          },
+          Object {
+            "count": 57,
+            "name": "GEASS",
+          },
+          Object {
+            "count": 54,
+            "name": "神作",
+          },
+          Object {
+            "count": 49,
+            "name": "战斗",
+          },
+          Object {
+            "count": 41,
+            "name": "战争",
+          },
+          Object {
+            "count": 40,
+            "name": "裸露修的跌二次KUSO",
+          },
+          Object {
+            "count": 37,
+            "name": "中二",
+          },
+          Object {
+            "count": 34,
+            "name": "樱井孝宏",
+          },
+        ],
         "type": 2,
         "volumes": 0,
       },
@@ -631,6 +1238,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
             },
+            "info": "2008年4月6日 / 谷口悟朗 / 木村貴宏",
             "locked": false,
             "name": "コードギアス 反逆のルルーシュR2",
             "nameCN": "Code Geass 反叛的鲁路修R2",
@@ -672,6 +1280,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/a8/7f/4_cMMK5.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/a8/7f/4_cMMK5.jpg",
             },
+            "info": "2008-07-17 / NDS / ACT / SNKプレイモア",
             "locked": false,
             "name": "メタルスラッグ7",
             "nameCN": "合金弹头7",
@@ -687,6 +1296,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/85/3f/84399_y0J0e.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/85/3f/84399_y0J0e.jpg",
             },
+            "info": "2013年9月25日",
             "locked": false,
             "name": "Criminal Minds (Season 9)",
             "nameCN": "犯罪心理 第九季",
@@ -702,6 +1312,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/35/eb/104833_CAd6k.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/35/eb/104833_CAd6k.jpg",
             },
+            "info": "2014年10月1日 / Glenn Kershaw / Thomas Gibson / Matthew Gray Gubler / Joe Mantegna / Larry Teng / Rob Bailey / Jesse Warn / Janine Sherman Barrois / Jeff Davis / Breen Frazier / Erica Messer / Virgil Williams / Kimberly A. Harrison / Joe Mantegna / Shemar Moore / Matthew Gray Gubler / A.J. Cook / Kirsten Vangsness / Jennifer Love Hewitt / Thomas Gibson / Kerr Smith / Lily Mariye / Daryl Crittenden / Al Vicente / Emily Dykes / Eric Frentzel / Katie Hilliard / Hailey Sole",
             "locked": false,
             "name": "Criminal Minds (Season 10)",
             "nameCN": "犯罪心理 第十季",
@@ -717,6 +1328,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/72/8c/148228_O5mS0.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/72/8c/148228_O5mS0.jpg",
             },
+            "info": "2015年9月30日",
             "locked": false,
             "name": "Criminal Minds (Season 11)",
             "nameCN": "犯罪心理  第11季",
@@ -725,6 +1337,7 @@ Object {
           },
           Object {
             "id": 184017,
+            "info": "1582-10-14",
             "locked": false,
             "name": "沙盒",
             "nameCN": "Bangumi Wiki 动画测试用沙盘",
@@ -740,6 +1353,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
             },
+            "info": "2016-09-28",
             "locked": false,
             "name": "Criminal Minds Season 12",
             "nameCN": "犯罪心理 第12季",
@@ -755,6 +1369,7 @@ Object {
               "medium": "https://lain.bgm.tv/pic/cover/m/c7/0d/208783_0J0TH.jpg",
               "small": "https://lain.bgm.tv/pic/cover/s/c7/0d/208783_0J0TH.jpg",
             },
+            "info": "2017-10-27 / Matt Duffer / Ross Duffer / 肖恩·利维 / Andrew Stanton / 丽贝卡·托马斯 / Matt Duffer / Ross Duffer / Winona Ryder / David Harbour / Finn Wolfhard / Millie Bobby Brown / Gaten Matarazzo / Caleb McLaughlin / Noah Schnapp / Sadie Sink / Natalia Dyer / Charlie Heaton / Joe Keery / Dacre Montgomery / Cara Buono / Sean Astin / Paul Reiser",
             "locked": false,
             "name": "Stranger Things Season 2",
             "nameCN": "怪奇物语 第二季",
@@ -780,6 +1395,592 @@ Object {
     },
   },
 }
+`;
+
+exports[`user collection > should get timeline 1`] = `
+Array [
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656458004,
+    "id": 29006093,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 262922,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/b2/f8/262922_u1OMP.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/b2/f8/262922_u1OMP.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/b2/f8/262922_u1OMP.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/b2/f8/262922_u1OMP.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/b2/f8/262922_u1OMP.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 262922,
+          "name": "Criminal Minds Season 14",
+          "nameCN": "犯罪心理 第十四季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656457954,
+    "id": 29006090,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 214114,
+          "name": "Criminal Minds Season 13",
+          "nameCN": "犯罪心理 第十三季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 6,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656457954,
+    "id": 29006089,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 22,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656375812,
+    "id": 28993551,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 751421,
+          "epName": "Last Gasp",
+          "epSort": 16,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656370302,
+    "id": 28993219,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 15,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656355851,
+    "id": 28992589,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 371546,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/c8/8a/371546_vXXP2.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/c8/8a/371546_vXXP2.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/c8/8a/371546_vXXP2.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/c8/8a/371546_vXXP2.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/c8/8a/371546_vXXP2.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 371546,
+          "name": "ようこそ実力至上主義の教室へ 2nd Season",
+          "nameCN": "欢迎来到实力至上主义教室 2nd Season",
+          "rate": 0,
+          "series": false,
+          "type": 2,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656285827,
+    "id": 28979826,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 751409,
+          "epName": "Killer App",
+          "epSort": 4,
+          "subjectID": 214114,
+          "subjectName": "Criminal Minds Season 13",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656285346,
+    "id": 28979800,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 309445,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/87/e8/309445_jjbcm.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/87/e8/309445_jjbcm.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/87/e8/309445_jjbcm.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/87/e8/309445_jjbcm.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/87/e8/309445_jjbcm.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 309445,
+          "name": "沙盒音乐条目",
+          "nameCN": "沙盒音乐条目",
+          "rate": 0,
+          "series": false,
+          "type": 3,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 11,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656281750,
+    "id": 28979627,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 0,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 3,
+          "subjectID": 0,
+          "subjectName": "Criminal Minds Season 13",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656276191,
+    "id": 28979355,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 214114,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 214114,
+          "name": "Criminal Minds Season 13",
+          "nameCN": "犯罪心理 第十三季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656276185,
+    "id": 28979353,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 194118,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "Hotch 的演员跟制片人起了争议被 CBS 停职，然后被解雇了... / 怎么一直在用旧凶手",
+          "id": 194118,
+          "name": "Criminal Minds Season 12",
+          "nameCN": "犯罪心理 第12季",
+          "rate": 0,
+          "series": false,
+          "type": 6,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 6,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656276185,
+    "id": 28979352,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 194118,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 22,
+          "subjectID": 194118,
+          "subjectName": "Criminal Minds Season 12",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656257440,
+    "id": 28976237,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 62229,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/60/d8/62229_SrxX4.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/60/d8/62229_SrxX4.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/60/d8/62229_SrxX4.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/60/d8/62229_SrxX4.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/60/d8/62229_SrxX4.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "武器耐久是个坏文明",
+          "id": 62229,
+          "name": "ゼルダの伝説 ブレス オブ ザ ワイルド",
+          "nameCN": "塞尔达传说 旷野之息",
+          "rate": 0,
+          "series": false,
+          "type": 4,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 8,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656257059,
+    "id": 28976108,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 366527,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_44zQG.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_44zQG.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_44zQG.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_44zQG.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_44zQG.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "single": Object {
+          "epID": 1080550,
+          "epName": "",
+          "epSort": 1,
+          "subjectID": 366527,
+          "subjectName": "South Park Season 25",
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 2,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 3,
+    "createdAt": 1656255672,
+    "id": 28975618,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 366527,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_44zQG.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_44zQG.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_44zQG.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_44zQG.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_44zQG.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "subject": Array [
+        Object {
+          "comment": "",
+          "id": 366527,
+          "name": "South Park Season 25",
+          "nameCN": "南方公园 第25季",
+          "rate": 0,
+          "series": false,
+          "type": 2,
+        },
+      ],
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 10,
+    "uid": 287622,
+  },
+  Object {
+    "batch": false,
+    "cat": 4,
+    "createdAt": 1656092626,
+    "id": 28941116,
+    "image": Object {
+      "subject": Array [
+        Object {
+          "id": 347656,
+          "images": Object {
+            "common": "https://lain.bgm.tv/pic/cover/c/6d/d9/347656_5Sk6o.jpg",
+            "grid": "https://lain.bgm.tv/pic/cover/g/6d/d9/347656_5Sk6o.jpg",
+            "large": "https://lain.bgm.tv/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
+            "medium": "https://lain.bgm.tv/pic/cover/m/6d/d9/347656_5Sk6o.jpg",
+            "small": "https://lain.bgm.tv/pic/cover/s/6d/d9/347656_5Sk6o.jpg",
+          },
+        },
+      ],
+    },
+    "memo": Object {
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "11",
+          "epsUpdate": 4,
+          "subjectID": 347656,
+          "subjectName": "The Orville Season3",
+          "volsTotal": "??",
+          "volsUpdate": null,
+        },
+      },
+    },
+    "replies": 0,
+    "source": 0,
+    "type": 0,
+    "uid": 287622,
+  },
+]
 `;
 
 exports[`user friends > should get friends 1`] = `
