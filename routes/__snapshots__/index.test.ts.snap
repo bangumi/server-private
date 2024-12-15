@@ -2142,7 +2142,6 @@ exports[`should build private api spec 1`] = `
               - color
               - account
             title: UserNetworkService
-            type: object
           type: array
         nickname:
           example: Sai🖖
