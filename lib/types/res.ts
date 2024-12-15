@@ -79,7 +79,7 @@ export const UserNetworkService = t.Object(
   },
   { $id: 'UserNetworkService', title: 'UserNetworkService' },
 );
-    
+
 export type IUserHomepage = Static<typeof UserHomepage>;
 export const UserHomepage = t.Object(
   {
