@@ -50,7 +50,6 @@ export async function updateTrendingSubjects(
       op.and(
         op.eq(schema.chiiSubjects.typeID, subjectType),
         op.ne(schema.chiiSubjects.ban, 1),
-        op.eq(schema.chiiSubjects.nsfw, false),
         doingDateline
           ? op.gt(schema.chiiSubjectInterests.doingDateline, minDateline)
           : op.gt(schema.chiiSubjectInterests.updatedAt, minDateline),
