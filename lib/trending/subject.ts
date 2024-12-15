@@ -68,18 +68,3 @@ export async function updateTrendingSubjects(
   await redis.set(trendingKey, JSON.stringify(ids));
   await redis.del(lockKey);
 }
-
-export async function getTrendingSubjects(
-  subjectType: SubjectType,
-  period = TrendingPeriod.Month,
-  limit = 20,
-  offset = 0,
-): Promise<TrendingItem[]> {
-  const trendingKey = getSubjectTrendingKey(subjectType, period);
-  const data = await redis.get(trendingKey);
-  if (!data) {
-    return [];
-  }
-  const ids = JSON.parse(data) as TrendingItem[];
-  return ids.slice(offset, offset + limit);
-}

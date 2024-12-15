@@ -1,10 +1,11 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { Tag } from '@app/lib/openapi/index.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
+import redis from '@app/lib/redis';
 import { SubjectType } from '@app/lib/subject/type.ts';
-import { getTrendingSubjects } from '@app/lib/trending/subject.ts';
-import { TrendingPeriod } from '@app/lib/trending/type';
+import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
+import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
@@ -29,6 +30,7 @@ export async function setup(app: App) {
         summary: '获取热门条目',
         operationId: 'getTrendingSubjects',
         tags: [Tag.Trending],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           type: t.Enum(SubjectType, { description: '条目类型' }),
           limit: t.Optional(
@@ -37,14 +39,22 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(TrendingSubject)),
+          200: t.Array(t.Ref(TrendingSubject)),
         },
       },
     },
-    async ({ query: { type, limit = 20, offset = 0 } }) => {
-      const items = await getTrendingSubjects(type, TrendingPeriod.Month, limit, offset);
-      const subjectIDs = items.map((item) => item.id);
-      const subjects = await fetcher.fetchSubjectsByIDs(subjectIDs);
+    async ({ auth, query: { type, limit = 20, offset = 0 } }) => {
+      const cacheKey = getSubjectTrendingKey(type, TrendingPeriod.Month);
+      const cached = await redis.get(cacheKey);
+      if (!cached) {
+        return [];
+      }
+      const ids = JSON.parse(cached) as TrendingItem[];
+      const items = ids.slice(offset, offset + limit);
+      const subjects = await fetcher.fetchSubjectsByIDs(
+        items.map((item) => item.id),
+        auth.allowNsfw,
+      );
       const data = [];
       for (const item of items) {
         const subject = subjects.get(item.id);
@@ -55,10 +65,7 @@ export async function setup(app: App) {
           });
         }
       }
-      return {
-        total: 1000,
-        data,
-      };
+      return data;
     },
   );
 }
