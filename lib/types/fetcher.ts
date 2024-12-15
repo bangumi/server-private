@@ -195,7 +195,8 @@ export async function fetchSubjectIDsByFilter(
   sort: SubjectSort,
   page: number,
 ): Promise<number[]> {
-  const cached = await redis.get(getSubjectListCacheKey(filter, sort, page));
+  const cacheKey = getSubjectListCacheKey(filter, sort, page);
+  const cached = await redis.get(cacheKey);
   if (cached) {
     return JSON.parse(cached) as number[];
   }
@@ -292,9 +293,9 @@ export async function fetchSubjectIDsByFilter(
     .execute();
   const ids = data.map((d) => d.id);
   if (page === 1) {
-    await redis.setex(getSubjectListCacheKey(filter, sort, page), 604800, JSON.stringify(ids));
+    await redis.setex(cacheKey, 604800, JSON.stringify(ids));
   } else {
-    await redis.setex(getSubjectListCacheKey(filter, sort, page), 3600, JSON.stringify(ids));
+    await redis.setex(cacheKey, 3600, JSON.stringify(ids));
   }
   return ids;
 }
