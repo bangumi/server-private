@@ -290,7 +290,13 @@ export async function fetchSubjectIDsByFilter(
     .limit(24)
     .offset((page - 1) * 24)
     .execute();
-  return data.map((d) => d.id);
+  const ids = data.map((d) => d.id);
+  if (page === 1) {
+    await redis.setex(getSubjectListCacheKey(filter, sort, page), 604800, JSON.stringify(ids));
+  } else {
+    await redis.setex(getSubjectListCacheKey(filter, sort, page), 3600, JSON.stringify(ids));
+  }
+  return ids;
 }
 
 export async function fetchSubjectEpStatus(
