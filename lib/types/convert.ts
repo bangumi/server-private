@@ -327,6 +327,37 @@ export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubje
   };
 }
 
+export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEntry {
+  return {
+    id: entry.id,
+    type: entry.type,
+    user: toSlimUser(user),
+    title: entry.title,
+    icon: entry.icon,
+    content: entry.content,
+    tags: splitTags(entry.tags),
+    views: entry.views,
+    replies: entry.replies,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+    noreply: entry.noreply,
+    related: entry.related,
+    public: entry.public,
+  };
+}
+
+export function toSlimBlogEntry(entry: orm.IBlogEntry): res.ISlimBlogEntry {
+  return {
+    id: entry.id,
+    type: entry.type,
+    title: entry.title,
+    summary: entry.content.slice(0, 120),
+    replies: entry.replies,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+  };
+}
+
 export function toSubjectComment(
   interest: orm.ISubjectInterest,
   user: orm.IUser,
@@ -337,6 +368,18 @@ export function toSubjectComment(
     rate: interest.rate,
     comment: interest.comment,
     updatedAt: interest.updatedAt,
+  };
+}
+
+export function toSubjectReview(
+  review: orm.ISubjectRelatedBlog,
+  blog: orm.IBlogEntry,
+  user: orm.IUser,
+): res.ISubjectReview {
+  return {
+    id: review.id,
+    user: toSlimUser(user),
+    entry: toSlimBlogEntry(blog),
   };
 }
 
