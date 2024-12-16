@@ -68,6 +68,18 @@ export const Avatar = t.Object(
   { $id: 'Avatar', title: 'Avatar' },
 );
 
+export type IUserNetworkService = Static<typeof UserNetworkService>;
+export const UserNetworkService = t.Object(
+  {
+    name: t.String(),
+    title: t.String(),
+    url: t.String(),
+    color: t.String(),
+    account: t.String(),
+  },
+  { $id: 'UserNetworkService', title: 'UserNetworkService' },
+);
+
 export type IUserHomepage = Static<typeof UserHomepage>;
 export const UserHomepage = t.Object(
   {
@@ -104,6 +116,7 @@ export const User = t.Object(
     site: t.String(),
     location: t.String(),
     bio: t.String(),
+    networkServices: t.Array(UserNetworkService),
     // wait for permission
     // homepage: t.Ref(UserHomepage),
   },
@@ -404,6 +417,41 @@ export const SlimPerson = t.Object(
   },
 );
 
+export type IBlogEntry = Static<typeof BlogEntry>;
+export const BlogEntry = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer(),
+    user: t.Ref(SlimUser),
+    title: t.String(),
+    icon: t.String(),
+    content: t.String(),
+    tags: t.Array(t.String()),
+    views: t.Integer(),
+    replies: t.Integer(),
+    createdAt: t.Integer(),
+    updatedAt: t.Integer(),
+    noreply: t.Integer(),
+    related: t.Integer(),
+    public: t.Boolean(),
+  },
+  { $id: 'BlogEntry', title: 'BlogEntry' },
+);
+
+export type ISlimBlogEntry = Static<typeof SlimBlogEntry>;
+export const SlimBlogEntry = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer(),
+    title: t.String(),
+    summary: t.String(),
+    replies: t.Integer(),
+    createdAt: t.Integer(),
+    updatedAt: t.Integer(),
+  },
+  { $id: 'SlimBlogEntry', title: 'SlimBlogEntry' },
+);
+
 export type ISubjectComment = Static<typeof SubjectComment>;
 export const SubjectComment = t.Object(
   {
@@ -414,6 +462,16 @@ export const SubjectComment = t.Object(
     updatedAt: t.Integer(),
   },
   { $id: 'SubjectComment', title: 'SubjectComment' },
+);
+
+export type ISubjectReview = Static<typeof SubjectReview>;
+export const SubjectReview = t.Object(
+  {
+    id: t.Integer(),
+    user: t.Ref(SlimUser),
+    entry: t.Ref(SlimBlogEntry),
+  },
+  { $id: 'SubjectReview', title: 'SubjectReview' },
 );
 
 export type ISubjectRelation = Static<typeof SubjectRelation>;
