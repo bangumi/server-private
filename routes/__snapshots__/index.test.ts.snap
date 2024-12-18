@@ -3965,117 +3965,6 @@ paths:
       summary: 获取人物的参与作品
       tags:
         - person
-  /p1/subjects:
-    get:
-      operationId: getSubjects
-      parameters:
-        - description: 条目类型
-          in: query
-          name: type
-          required: true
-          schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
-        - description: 排序方式
-          in: query
-          name: sort
-          required: true
-          schema:
-            anyOf:
-              - enum:
-                  - rank
-                type: string
-              - enum:
-                  - trends
-                type: string
-              - enum:
-                  - collects
-                type: string
-              - enum:
-                  - date
-                type: string
-              - enum:
-                  - title
-                type: string
-            default: rank
-        - description: min 1
-          in: query
-          name: page
-          required: false
-          schema:
-            default: 1
-            minimum: 1
-            type: integer
-        - description: >-
-            每种条目类型分类不同，具体参考 https://github.com/bangumi/common 的
-            subject_platforms.yaml
-          in: query
-          name: cat
-          required: false
-          schema:
-            type: integer
-        - description: 是否为系列，仅对书籍类型的条目有效
-          in: query
-          name: series
-          required: false
-          schema:
-            type: boolean
-        - description: 年份
-          in: query
-          name: year
-          required: false
-          schema:
-            type: integer
-        - description: 月份
-          in: query
-          name: month
-          required: false
-          schema:
-            type: integer
-        - in: query
-          name: tags
-          required: false
-          schema:
-            items:
-              description: 标签，包括 分类/来源/类型/题材/地区/受众 等
-              type: string
-            type: array
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  $ref: '#/components/schemas/Subject'
-                type: array
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 获取条目列表
-      tags:
-        - subject
   /p1/subjects/-/episode/-/comments/{commentID}:
     delete:
       operationId: deleteSubjectEpComment
@@ -5337,12 +5226,13 @@ paths:
             maximum: 100
             minimum: 1
             type: integer
-        - description: min 0
+        - description: min 0, max 1000
           in: query
           name: offset
           required: false
           schema:
             default: 0
+            maximum: 1000
             minimum: 0
             type: integer
       responses:

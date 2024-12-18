@@ -3,18 +3,10 @@ import * as schema from '@app/drizzle/schema';
 import redis from '@app/lib/redis.ts';
 import {
   getItemCacheKey as getSubjectItemCacheKey,
-  getListCacheKey as getSubjectListCacheKey,
   getSlimCacheKey as getSubjectSlimCacheKey,
 } from '@app/lib/subject/cache.ts';
-import {
-  type SubjectFilter,
-  SubjectSort,
-  TagCat,
-  type UserEpisodeCollection,
-} from '@app/lib/subject/type.ts';
+import { type UserEpisodeCollection } from '@app/lib/subject/type.ts';
 import { getItemCacheKey as getTimelineItemCacheKey } from '@app/lib/timeline/cache.ts';
-import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
-import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -188,116 +180,6 @@ export async function fetchSubjectsByIDs(
     }
   }
   return result;
-}
-
-export async function fetchSubjectIDsByFilter(
-  filter: SubjectFilter,
-  sort: SubjectSort,
-  page: number,
-): Promise<number[]> {
-  const cacheKey = getSubjectListCacheKey(filter, sort, page);
-  const cached = await redis.get(cacheKey);
-  if (cached) {
-    return JSON.parse(cached) as number[];
-  }
-  if (sort === SubjectSort.Rank) {
-    const trendingKey = getSubjectTrendingKey(filter.type, TrendingPeriod.Month);
-    const data = await redis.get(trendingKey);
-    if (!data) {
-      return [];
-    }
-    const ids = JSON.parse(data) as TrendingItem[];
-    filter.ids = ids.map((item) => item.id);
-  }
-  if (filter.tags) {
-    const ids = await db
-      .selectDistinct({ id: schema.chiiTagList.mainID })
-      .from(schema.chiiTagList)
-      .innerJoin(schema.chiiTagIndex, op.eq(schema.chiiTagIndex.id, schema.chiiTagList.tagID))
-      .where(
-        op.and(
-          op.inArray(schema.chiiTagIndex.name, filter.tags),
-          op.eq(schema.chiiTagIndex.cat, TagCat.Meta),
-        ),
-      )
-      .execute();
-    if (filter.ids) {
-      filter.ids = filter.ids.filter((id) => ids.some((item) => item.id === id));
-    } else {
-      filter.ids = ids.map((item) => item.id);
-    }
-  }
-
-  const conditions = [
-    op.eq(schema.chiiSubjects.typeID, filter.type),
-    op.ne(schema.chiiSubjects.ban, 1),
-  ];
-  if (!filter.nsfw) {
-    conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
-  }
-  if (filter.cat) {
-    conditions.push(op.eq(schema.chiiSubjects.platform, filter.cat));
-  }
-  if (filter.series) {
-    conditions.push(op.eq(schema.chiiSubjects.series, filter.series));
-  }
-  if (filter.year) {
-    conditions.push(op.eq(schema.chiiSubjectFields.year, filter.year));
-  }
-  if (filter.month) {
-    conditions.push(op.eq(schema.chiiSubjectFields.month, filter.month));
-  }
-  if (filter.ids) {
-    conditions.push(op.inArray(schema.chiiSubjects.id, filter.ids));
-  }
-
-  const sorts = [];
-  switch (sort) {
-    case SubjectSort.Rank: {
-      conditions.push(op.ne(schema.chiiSubjectFields.fieldRank, 0));
-      sorts.push(op.asc(schema.chiiSubjectFields.fieldRank));
-      break;
-    }
-    case SubjectSort.Trends: {
-      break;
-    }
-    case SubjectSort.Collects: {
-      sorts.push(op.desc(schema.chiiSubjects.done));
-      break;
-    }
-    case SubjectSort.Date: {
-      sorts.push(op.desc(schema.chiiSubjectFields.date));
-      break;
-    }
-    case SubjectSort.Title: {
-      sorts.push(op.asc(schema.chiiSubjects.name));
-      break;
-    }
-  }
-  const query = db
-    .select({ id: schema.chiiSubjects.id })
-    .from(schema.chiiSubjects)
-    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(op.and(...conditions));
-  if (sort === SubjectSort.Trends) {
-    if (!filter.ids) {
-      return [];
-    }
-    query.orderBy(op.sql`find_in_set(id, ${filter.ids.join(',')})`);
-  } else {
-    query.orderBy(...sorts);
-  }
-  const data = await query
-    .limit(24)
-    .offset((page - 1) * 24)
-    .execute();
-  const ids = data.map((d) => d.id);
-  if (page === 1) {
-    await redis.setex(cacheKey, 86400, JSON.stringify(ids));
-  } else {
-    await redis.setex(cacheKey, 3600, JSON.stringify(ids));
-  }
-  return ids;
 }
 
 export async function fetchSubjectEpStatus(
