@@ -4051,7 +4051,7 @@ paths:
           required: false
           schema:
             items:
-              description: 标签，包括 分类/来源/类型/题材/地区/受众 等
+              description: wiki 标签，包括 分类/来源/类型/题材/地区/受众 等
               type: string
             type: array
       responses:
