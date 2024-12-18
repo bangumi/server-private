@@ -20,11 +20,7 @@ export async function handle(key: string, value: string) {
     }
     case EventOp.Update:
     case EventOp.Delete: {
-      await redis
-        .multi()
-        .del(getItemCacheKey(idx.subject_id))
-        .del(getSlimCacheKey(idx.subject_id))
-        .exec();
+      await redis.del(getItemCacheKey(idx.subject_id), getSlimCacheKey(idx.subject_id));
       break;
     }
     case EventOp.Snapshot: {
