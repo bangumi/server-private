@@ -107,7 +107,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     location: fields.location,
     bio: fields.bio,
     networkServices: [],
-    // homepage: toUserHomepage(fields.homepage),
+    homepage: toUserHomepage(fields.homepage),
   };
 }
 
