@@ -839,7 +839,7 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   doing: mediumint('subject_doing').notNull(),
   onHold: mediumint('subject_on_hold').notNull(),
   dropped: mediumint('subject_dropped').notNull(),
-  series: tinyint('subject_series').default(0).notNull(),
+  series: customBoolean('subject_series').notNull(),
   seriesEntry: mediumint('subject_series_entry').notNull(),
   idxCn: varchar('subject_idx_cn', { length: 1 }).notNull(),
   airtime: tinyint('subject_airtime').notNull(),

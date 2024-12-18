@@ -1,7 +1,11 @@
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import redis from '@app/lib/redis.ts';
-import type { UserEpisodeCollection } from '@app/lib/subject/type.ts';
+import {
+  getItemCacheKey as getSubjectItemCacheKey,
+  getSlimCacheKey as getSubjectSlimCacheKey,
+} from '@app/lib/subject/cache.ts';
+import { type UserEpisodeCollection } from '@app/lib/subject/type.ts';
 import { getItemCacheKey as getTimelineItemCacheKey } from '@app/lib/timeline/cache.ts';
 
 import * as convert from './convert.ts';
@@ -45,67 +49,137 @@ export async function fetchSlimSubjectByID(
   id: number,
   allowNsfw = false,
 ): Promise<res.ISlimSubject | null> {
-  const data = await db
+  const cached = await redis.get(getSubjectSlimCacheKey(id));
+  if (cached) {
+    const slim = JSON.parse(cached) as res.ISlimSubject;
+    if (!allowNsfw && slim.nsfw) {
+      return null;
+    } else {
+      return slim;
+    }
+  }
+  const [data] = await db
     .select()
     .from(schema.chiiSubjects)
-    .where(
-      op.and(
-        op.eq(schema.chiiSubjects.id, id),
-        op.ne(schema.chiiSubjects.ban, 1),
-        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
-      ),
-    )
+    .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
     .execute();
-  for (const d of data) {
-    return convert.toSlimSubject(d);
+  if (!data) {
+    return null;
   }
-  return null;
+  const slim = convert.toSlimSubject(data);
+  await redis.setex(getSubjectSlimCacheKey(id), 2592000, JSON.stringify(slim));
+  if (!allowNsfw && slim.nsfw) {
+    return null;
+  }
+  return slim;
+}
+
+export async function fetchSlimSubjectsByIDs(
+  ids: number[],
+  allowNsfw = false,
+): Promise<Record<number, res.ISlimSubject>> {
+  const cached = await redis.mget(ids.map((id) => getSubjectSlimCacheKey(id)));
+  const result: Record<number, res.ISlimSubject> = {};
+  const missing = [];
+  for (const id of ids) {
+    if (cached[id]) {
+      const slim = JSON.parse(cached[id]) as res.ISlimSubject;
+      if (!allowNsfw && slim.nsfw) {
+        continue;
+      }
+      result[id] = slim;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.and(op.inArray(schema.chiiSubjects.id, missing), op.ne(schema.chiiSubjects.ban, 1)))
+      .execute();
+    for (const d of data) {
+      const slim = convert.toSlimSubject(d);
+      await redis.setex(getSubjectSlimCacheKey(d.id), 2592000, JSON.stringify(slim));
+      if (!allowNsfw && slim.nsfw) {
+        continue;
+      }
+      result[d.id] = slim;
+    }
+  }
+  return result;
 }
 
 export async function fetchSubjectByID(
   id: number,
   allowNsfw = false,
 ): Promise<res.ISubject | null> {
-  const data = await db
+  const cached = await redis.get(getSubjectItemCacheKey(id));
+  if (cached) {
+    const item = JSON.parse(cached) as res.ISubject;
+    if (!allowNsfw && item.nsfw) {
+      return null;
+    }
+    return item;
+  }
+  const [data] = await db
     .select()
     .from(schema.chiiSubjects)
     .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(
-      op.and(
-        op.eq(schema.chiiSubjects.id, id),
-        op.ne(schema.chiiSubjects.ban, 1),
-        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
-      ),
-    )
+    .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
     .execute();
-  for (const d of data) {
-    return convert.toSubject(d.chii_subjects, d.chii_subject_fields);
+  if (!data) {
+    return null;
   }
-  return null;
+  const item = convert.toSubject(data.chii_subjects, data.chii_subject_fields);
+  await redis.setex(getSubjectItemCacheKey(id), 2592000, JSON.stringify(item));
+  if (!allowNsfw && item.nsfw) {
+    return null;
+  }
+  return item;
 }
 
 export async function fetchSubjectsByIDs(
   ids: number[],
   allowNsfw = false,
 ): Promise<Map<number, res.ISubject>> {
-  const data = await db
-    .select()
-    .from(schema.chiiSubjects)
-    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(
-      op.and(
-        op.inArray(schema.chiiSubjects.id, ids),
-        op.ne(schema.chiiSubjects.ban, 1),
-        allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
-      ),
-    )
-    .execute();
-  const map = new Map<number, res.ISubject>();
-  for (const d of data) {
-    const subject = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
-    map.set(subject.id, subject);
+  const cached = await redis.mget(ids.map((id) => getSubjectItemCacheKey(id)));
+  const result = new Map<number, res.ISubject>();
+  const missing = [];
+
+  for (const id of ids) {
+    if (cached[id]) {
+      const subject = JSON.parse(cached[id]) as res.ISubject;
+      if (!allowNsfw && subject.nsfw) {
+        continue;
+      }
+      result.set(id, subject);
+    } else {
+      missing.push(id);
+    }
   }
-  return map;
+
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .innerJoin(
+        schema.chiiSubjectFields,
+        op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+      )
+      .where(op.and(op.inArray(schema.chiiSubjects.id, missing), op.ne(schema.chiiSubjects.ban, 1)))
+      .execute();
+
+    for (const d of data) {
+      const item = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
+      await redis.setex(getSubjectItemCacheKey(item.id), 2592000, JSON.stringify(item));
+      if (!allowNsfw && item.nsfw) {
+        continue;
+      }
+      result.set(item.id, item);
+    }
+  }
+  return result;
 }
 
 export async function fetchSubjectEpStatus(
@@ -337,7 +411,7 @@ export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, 
       const item = convert.toTimeline(d);
       uids.add(item.uid);
       result[d.id] = item;
-      await redis.setex(getTimelineItemCacheKey(d.id), 86400, JSON.stringify(item));
+      await redis.setex(getTimelineItemCacheKey(d.id), 604800, JSON.stringify(item));
     }
   }
   return result;

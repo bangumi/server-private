@@ -6,7 +6,7 @@ import { SubjectType } from '@app/lib/subject/type.ts';
 import type { TrendingItem } from '@app/lib/trending/type.ts';
 import { getTrendingDateline, TrendingPeriod } from '@app/lib/trending/type.ts';
 
-function getSubjectTrendingKey(type: SubjectType, period: TrendingPeriod) {
+export function getSubjectTrendingKey(type: SubjectType, period: TrendingPeriod) {
   return `trending:subjects:${type}:${period}`;
 }
 
@@ -50,7 +50,6 @@ export async function updateTrendingSubjects(
       op.and(
         op.eq(schema.chiiSubjects.typeID, subjectType),
         op.ne(schema.chiiSubjects.ban, 1),
-        op.eq(schema.chiiSubjects.nsfw, false),
         doingDateline
           ? op.gt(schema.chiiSubjectInterests.doingDateline, minDateline)
           : op.gt(schema.chiiSubjectInterests.updatedAt, minDateline),
@@ -68,19 +67,4 @@ export async function updateTrendingSubjects(
   logger.info('Trending subjects for %s(%s) calculated: %d.', subjectType, period, ids.length);
   await redis.set(trendingKey, JSON.stringify(ids));
   await redis.del(lockKey);
-}
-
-export async function getTrendingSubjects(
-  subjectType: SubjectType,
-  period = TrendingPeriod.Month,
-  limit = 20,
-  offset = 0,
-): Promise<TrendingItem[]> {
-  const trendingKey = getSubjectTrendingKey(subjectType, period);
-  const data = await redis.get(trendingKey);
-  if (!data) {
-    return [];
-  }
-  const ids = JSON.parse(data) as TrendingItem[];
-  return ids.slice(offset, offset + limit);
 }

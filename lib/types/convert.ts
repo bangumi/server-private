@@ -282,7 +282,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     platform: toSubjectPlatform(subject),
     rating: toSubjectRating(fields),
     redirect: fields.fieldRedirect,
-    series: Boolean(subject.series),
+    series: subject.series,
     seriesEntry: subject.seriesEntry,
     summary: subject.summary,
     type: subject.typeID,
