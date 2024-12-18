@@ -133,7 +133,7 @@ export async function setup(app: App) {
           year: t.Optional(t.Integer({ description: '年份' })),
           month: t.Optional(t.Integer({ description: '月份' })),
           tags: t.Optional(
-            t.Array(t.String({ description: '标签，包括 分类/来源/类型/题材/地区/受众 等' })),
+            t.Array(t.String({ description: 'wiki 标签，包括 分类/来源/类型/题材/地区/受众 等' })),
           ),
         }),
         response: {
