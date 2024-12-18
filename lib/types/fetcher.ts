@@ -200,7 +200,7 @@ export async function fetchSubjectIDsByFilter(
   if (cached) {
     return JSON.parse(cached) as number[];
   }
-  if (sort === SubjectSort.Rank) {
+  if (sort === SubjectSort.Trends) {
     const trendingKey = getSubjectTrendingKey(filter.type, TrendingPeriod.Month);
     const data = await redis.get(trendingKey);
     if (!data) {
