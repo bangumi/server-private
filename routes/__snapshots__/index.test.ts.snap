@@ -2758,6 +2758,7 @@ paths:
                       $ref: '#/components/schemas/CharacterSubject'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -2827,6 +2828,7 @@ paths:
                       $ref: '#/components/schemas/PersonCollect'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -3268,6 +3270,7 @@ paths:
                       $ref: '#/components/schemas/GroupMember'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -3359,6 +3362,7 @@ paths:
                       $ref: '#/components/schemas/Topic'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -3629,6 +3633,7 @@ paths:
                       $ref: '#/components/schemas/Notice'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -3768,6 +3773,7 @@ paths:
                       $ref: '#/components/schemas/PersonCharacter'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -3837,6 +3843,7 @@ paths:
                       $ref: '#/components/schemas/PersonCollect'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -3933,6 +3940,7 @@ paths:
                       $ref: '#/components/schemas/PersonWork'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -4059,9 +4067,18 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/Subject'
-                type: array
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Subject'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
           description: Default Response
         '500':
           content:
@@ -4697,6 +4714,7 @@ paths:
                       $ref: '#/components/schemas/SubjectCharacter'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -4774,6 +4792,7 @@ paths:
                       $ref: '#/components/schemas/SubjectComment'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -4857,6 +4876,7 @@ paths:
                       $ref: '#/components/schemas/Episode'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -4913,6 +4933,7 @@ paths:
                       $ref: '#/components/schemas/SubjectRec'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -4997,6 +5018,7 @@ paths:
                       $ref: '#/components/schemas/SubjectRelation'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -5053,6 +5075,7 @@ paths:
                       $ref: '#/components/schemas/SubjectReview'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -5115,6 +5138,7 @@ paths:
                       $ref: '#/components/schemas/SubjectStaff'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -5171,6 +5195,7 @@ paths:
                       $ref: '#/components/schemas/Topic'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -5356,6 +5381,7 @@ paths:
                       $ref: '#/components/schemas/TrendingSubject'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -5505,6 +5531,7 @@ paths:
                       $ref: '#/components/schemas/UserSubjectEpisodeCollection'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -5871,6 +5898,7 @@ paths:
                       $ref: '#/components/schemas/UserSubjectCollection'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data
@@ -5993,6 +6021,7 @@ paths:
                       $ref: '#/components/schemas/Friend'
                     type: array
                   total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
                     type: integer
                 required:
                   - data

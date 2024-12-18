@@ -137,7 +137,7 @@ export async function setup(app: App) {
           ),
         }),
         response: {
-          200: t.Array(t.Ref(res.Subject)),
+          200: res.Paged(t.Ref(res.Subject)),
         },
       },
     },
@@ -151,19 +151,25 @@ export async function setup(app: App) {
         month,
         tags,
       } satisfies SubjectFilter;
-      const subjectIDs = await fetcher.fetchSubjectIDsByFilter(filter, sort, page);
-      if (subjectIDs.length === 0) {
-        return [];
+      const result = await fetcher.fetchSubjectIDsByFilter(filter, sort, page);
+      if (result.data.length === 0) {
+        return {
+          data: [],
+          total: result.total,
+        };
       }
-      const subjects = await fetcher.fetchSubjectsByIDs(subjectIDs);
-      const result = [];
-      for (const subjectID of subjectIDs) {
+      const subjects = await fetcher.fetchSubjectsByIDs(result.data);
+      const data = [];
+      for (const subjectID of result.data) {
         const subject = subjects.get(subjectID);
         if (subject) {
-          result.push(subject);
+          data.push(subject);
         }
       }
-      return result;
+      return {
+        data,
+        total: result.total,
+      };
     },
   );
 

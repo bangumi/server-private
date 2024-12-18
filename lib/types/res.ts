@@ -8,10 +8,17 @@ import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.
 import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
 
+export interface IPaged<T> {
+  data: T[];
+  total: number;
+}
+
 export const Paged = <T extends TSchema>(type: T) =>
   t.Object({
     data: t.Array(type),
-    total: t.Integer(),
+    total: t.Integer({
+      description: 'limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数',
+    }),
   });
 
 export const Error = t.Object(

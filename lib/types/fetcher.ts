@@ -194,17 +194,17 @@ export async function fetchSubjectIDsByFilter(
   filter: SubjectFilter,
   sort: SubjectSort,
   page: number,
-): Promise<number[]> {
+): Promise<res.IPaged<number>> {
   const cacheKey = getSubjectListCacheKey(filter, sort, page);
   const cached = await redis.get(cacheKey);
   if (cached) {
-    return JSON.parse(cached) as number[];
+    return JSON.parse(cached) as res.IPaged<number>;
   }
   if (sort === SubjectSort.Trends) {
     const trendingKey = getSubjectTrendingKey(filter.type, TrendingPeriod.Month);
     const data = await redis.get(trendingKey);
     if (!data) {
-      return [];
+      return { data: [], total: 0 };
     }
     const ids = JSON.parse(data) as TrendingItem[];
     filter.ids = ids.map((item) => item.id);
@@ -274,6 +274,17 @@ export async function fetchSubjectIDsByFilter(
       break;
     }
   }
+  const [{ count = 0 } = {}] = await db
+    .select({ count: op.count() })
+    .from(schema.chiiSubjects)
+    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
+    .where(op.and(...conditions))
+    .execute();
+  if (count === 0) {
+    return { data: [], total: 0 };
+  }
+  const total = Math.ceil(count / 24);
+
   const query = db
     .select({ id: schema.chiiSubjects.id })
     .from(schema.chiiSubjects)
@@ -281,7 +292,7 @@ export async function fetchSubjectIDsByFilter(
     .where(op.and(...conditions));
   if (sort === SubjectSort.Trends) {
     if (!filter.ids) {
-      return [];
+      return { data: [], total: 0 };
     }
     query.orderBy(op.sql`find_in_set(id, ${filter.ids.join(',')})`);
   } else {
@@ -291,13 +302,13 @@ export async function fetchSubjectIDsByFilter(
     .limit(24)
     .offset((page - 1) * 24)
     .execute();
-  const ids = data.map((d) => d.id);
+  const result = { data: data.map((d) => d.id), total };
   if (page === 1) {
-    await redis.setex(cacheKey, 86400, JSON.stringify(ids));
+    await redis.setex(cacheKey, 86400, JSON.stringify(result));
   } else {
-    await redis.setex(cacheKey, 3600, JSON.stringify(ids));
+    await redis.setex(cacheKey, 3600, JSON.stringify(result));
   }
-  return ids;
+  return result;
 }
 
 export async function fetchSubjectEpStatus(
