@@ -5350,9 +5350,17 @@ paths:
           content:
             application/json:
               schema:
-                items:
-                  $ref: '#/components/schemas/TrendingSubject'
-                type: array
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/TrendingSubject'
+                    type: array
+                  total:
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
           description: Default Response
         '500':
           content:
