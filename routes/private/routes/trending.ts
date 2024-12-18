@@ -36,12 +36,10 @@ export async function setup(app: App) {
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
-          offset: t.Optional(
-            t.Integer({ default: 0, minimum: 0, maximum: 1000, description: 'min 0, max 1000' }),
-          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: t.Array(t.Ref(TrendingSubject)),
+          200: res.Paged(t.Ref(TrendingSubject)),
         },
       },
     },
@@ -49,7 +47,7 @@ export async function setup(app: App) {
       const cacheKey = getSubjectTrendingKey(type, TrendingPeriod.Month);
       const cached = await redis.get(cacheKey);
       if (!cached) {
-        return [];
+        return { data: [], total: 0 };
       }
       const ids = JSON.parse(cached) as TrendingItem[];
       const items = ids.slice(offset, offset + limit);
@@ -67,7 +65,7 @@ export async function setup(app: App) {
           });
         }
       }
-      return data;
+      return { data, total: ids.length };
     },
   );
 }
