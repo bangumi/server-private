@@ -124,8 +124,7 @@ export const User = t.Object(
     location: t.String(),
     bio: t.String(),
     networkServices: t.Array(UserNetworkService),
-    // wait for permission
-    // homepage: t.Ref(UserHomepage),
+    homepage: t.Ref(UserHomepage),
   },
   { $id: 'User', title: 'User' },
 );

@@ -269,68 +269,68 @@ export const chiiFriends = mysqlTable(
 );
 
 export const chiiGroups = mysqlTable('chii_groups', {
-  grpId: smallint('grp_id').autoincrement().notNull(),
-  grpCat: smallint('grp_cat').notNull(),
-  grpName: char('grp_name', { length: 50 }).notNull(),
-  grpTitle: char('grp_title', { length: 50 }).notNull(),
-  grpIcon: varchar('grp_icon', { length: 255 }).notNull(),
-  grpCreator: mediumint('grp_creator').notNull(),
-  grpTopics: mediumint('grp_topics').notNull(),
-  grpPosts: mediumint('grp_posts').notNull(),
-  grpMembers: mediumint('grp_members').default(1).notNull(),
-  grpDesc: text('grp_desc').notNull(),
-  grpLastpost: int('grp_lastpost').notNull(),
-  grpBuilddate: int('grp_builddate').notNull(),
-  grpAccessible: tinyint('grp_accessible').default(1).notNull(),
+  id: smallint('grp_id').autoincrement().notNull(),
+  cat: smallint('grp_cat').notNull(),
+  name: char('grp_name', { length: 50 }).notNull(),
+  title: char('grp_title', { length: 50 }).notNull(),
+  icon: varchar('grp_icon', { length: 255 }).notNull(),
+  creator: mediumint('grp_creator').notNull(),
+  topics: mediumint('grp_topics').notNull(),
+  posts: mediumint('grp_posts').notNull(),
+  members: mediumint('grp_members').default(1).notNull(),
+  desc: text('grp_desc').notNull(),
+  updatedAt: int('grp_lastpost').notNull(),
+  createdAt: int('grp_builddate').notNull(),
+  accessible: tinyint('grp_accessible').default(1).notNull(),
   nsfw: customBoolean('grp_nsfw').notNull(),
 });
 
 export const chiiGroupMembers = mysqlTable('chii_group_members', {
-  gmbUid: mediumint('gmb_uid').notNull(),
-  gmbGid: smallint('gmb_gid').notNull(),
-  gmbModerator: tinyint('gmb_moderator').default(0).notNull(),
-  gmbDateline: int('gmb_dateline').default(0).notNull(),
+  uid: mediumint('gmb_uid').notNull(),
+  gid: smallint('gmb_gid').notNull(),
+  moderator: tinyint('gmb_moderator').default(0).notNull(),
+  createdAt: int('gmb_dateline').default(0).notNull(),
 });
-
-export const chiiGroupPosts = mysqlTable(
-  'chii_group_posts',
-  {
-    grpPstId: mediumint('grp_pst_id').autoincrement().notNull(),
-    grpPstMid: mediumint('grp_pst_mid').notNull(),
-    grpPstUid: mediumint('grp_pst_uid').notNull(),
-    grpPstRelated: mediumint('grp_pst_related').notNull(),
-    grpPstContent: htmlEscapedString('mediumtext')('grp_pst_content').notNull(),
-    grpPstState: tinyint('grp_pst_state').notNull(),
-    grpPstDateline: int('grp_pst_dateline').default(0).notNull(),
-  },
-  (table) => {
-    return {
-      pssTopicId: index('pss_topic_id').on(table.grpPstMid),
-      grpPstRelated: index('grp_pst_related').on(table.grpPstRelated),
-      grpPstUid: index('grp_pst_uid').on(table.grpPstUid),
-    };
-  },
-);
 
 export const chiiGroupTopics = mysqlTable(
   'chii_group_topics',
   {
-    grpTpcId: mediumint('grp_tpc_id').autoincrement().notNull(),
-    grpTpcGid: mediumint('grp_tpc_gid').notNull(),
-    grpTpcUid: mediumint('grp_tpc_uid').notNull(),
-    grpTpcTitle: varchar('grp_tpc_title', { length: 80 }).notNull(),
-    grpTpcDateline: int('grp_tpc_dateline').default(0).notNull(),
-    grpTpcLastpost: int('grp_tpc_lastpost').default(0).notNull(),
-    grpTpcReplies: mediumint('grp_tpc_replies').notNull(),
-    grpTpcState: tinyint('grp_tpc_state').notNull(),
-    grpTpcDisplay: tinyint('grp_tpc_display').default(1).notNull(),
+    id: mediumint('grp_tpc_id').autoincrement().notNull(),
+    gid: mediumint('grp_tpc_gid').notNull(),
+    uid: mediumint('grp_tpc_uid').notNull(),
+    title: htmlEscapedString('varchar')('grp_tpc_title', { length: 80 }).notNull(),
+    createdAt: int('grp_tpc_dateline').default(0).notNull(),
+    updatedAt: int('grp_tpc_lastpost').default(0).notNull(),
+    replies: mediumint('grp_tpc_replies').notNull(),
+    state: tinyint('grp_tpc_state').notNull(),
+    display: tinyint('grp_tpc_display').default(1).notNull(),
   },
   (table) => {
     return {
-      grpTpcGid: index('grp_tpc_gid').on(table.grpTpcGid),
-      grpTpcDisplay: index('grp_tpc_display').on(table.grpTpcDisplay),
-      grpTpcUid: index('grp_tpc_uid').on(table.grpTpcUid),
-      grpTpcLastpost: index('grp_tpc_lastpost').on(table.grpTpcLastpost),
+      grpTpcGid: index('grp_tpc_gid').on(table.gid),
+      grpTpcDisplay: index('grp_tpc_display').on(table.display),
+      grpTpcUid: index('grp_tpc_uid').on(table.uid),
+      grpTpcLastpost: index('grp_tpc_lastpost').on(table.updatedAt),
+    };
+  },
+);
+
+export const chiiGroupPosts = mysqlTable(
+  'chii_group_posts',
+  {
+    id: mediumint('grp_pst_id').autoincrement().notNull(),
+    mid: mediumint('grp_pst_mid').notNull(),
+    uid: mediumint('grp_pst_uid').notNull(),
+    related: mediumint('grp_pst_related').notNull(),
+    content: htmlEscapedString('mediumtext')('grp_pst_content').notNull(),
+    state: tinyint('grp_pst_state').notNull(),
+    createdAt: int('grp_pst_dateline').default(0).notNull(),
+  },
+  (table) => {
+    return {
+      pssTopicId: index('pss_topic_id').on(table.mid),
+      grpPstRelated: index('grp_pst_related').on(table.related),
+      grpPstUid: index('grp_pst_uid').on(table.uid),
     };
   },
 );
@@ -481,8 +481,8 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   site: varchar('site', { length: 75 }).default('').notNull(),
   location: varchar('location', { length: 30 }).default('').notNull(),
   bio: text('bio').notNull(),
-  // homepage: mediumtext('homepage').notNull(),
-  privacy: mediumtext('privacy').notNull(),
+  homepage: mediumtext('homepage').notNull(),
+  // privacy: mediumtext('privacy').notNull(),
   blocklist: mediumtext('blocklist').notNull(),
 });
 
@@ -1005,26 +1005,6 @@ export const chiiSubjectRelatedBlogs = mysqlTable(
   },
 );
 
-export const chiiSubjectPosts = mysqlTable(
-  'chii_subject_posts',
-  {
-    id: mediumint('sbj_pst_id').primaryKey().autoincrement().notNull(),
-    mid: mediumint('sbj_pst_mid').notNull(), // subject id
-    uid: mediumint('sbj_pst_uid').notNull(),
-    related: mediumint('sbj_pst_related').notNull(),
-    content: htmlEscapedString('mediumtext')('sbj_pst_content').notNull(),
-    state: tinyint('sbj_pst_state').notNull(),
-    createdAt: int('sbj_pst_dateline').default(0).notNull(),
-  },
-  (table) => {
-    return {
-      pssTopicId: index('pss_topic_id').on(table.mid),
-      sbjPstRelated: index('sbj_pst_related').on(table.related),
-      sbjPstUid: index('sbj_pst_uid').on(table.uid),
-    };
-  },
-);
-
 export const chiiSubjectRec = mysqlTable(
   'chii_subject_rec',
   {
@@ -1089,7 +1069,7 @@ export const chiiSubjectTopics = mysqlTable(
     id: mediumint('sbj_tpc_id').autoincrement().notNull(),
     subjectID: mediumint('sbj_tpc_subject_id').notNull(),
     uid: mediumint('sbj_tpc_uid').notNull(),
-    title: varchar('sbj_tpc_title', { length: 80 }).notNull(),
+    title: htmlEscapedString('varchar')('sbj_tpc_title', { length: 80 }).notNull(),
     createdAt: int('sbj_tpc_dateline').default(0).notNull(),
     updatedAt: int('sbj_tpc_lastpost').default(0).notNull(),
     replies: mediumint('sbj_tpc_replies').notNull(),
@@ -1102,6 +1082,26 @@ export const chiiSubjectTopics = mysqlTable(
       tpcDisplay: index('tpc_display').on(table.display),
       sbjTpcUid: index('sbj_tpc_uid').on(table.uid),
       sbjTpcLastpost: index('sbj_tpc_lastpost').on(table.updatedAt, table.subjectID, table.display),
+    };
+  },
+);
+
+export const chiiSubjectPosts = mysqlTable(
+  'chii_subject_posts',
+  {
+    id: mediumint('sbj_pst_id').primaryKey().autoincrement().notNull(),
+    mid: mediumint('sbj_pst_mid').notNull(), // subject id
+    uid: mediumint('sbj_pst_uid').notNull(),
+    related: mediumint('sbj_pst_related').notNull(),
+    content: htmlEscapedString('mediumtext')('sbj_pst_content').notNull(),
+    state: tinyint('sbj_pst_state').notNull(),
+    createdAt: int('sbj_pst_dateline').default(0).notNull(),
+  },
+  (table) => {
+    return {
+      pssTopicId: index('pss_topic_id').on(table.mid),
+      sbjPstRelated: index('sbj_pst_related').on(table.related),
+      sbjPstUid: index('sbj_pst_uid').on(table.uid),
     };
   },
 );
