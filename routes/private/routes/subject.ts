@@ -9,7 +9,13 @@ import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts'
 import { fetchTopicReactions } from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
-import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import {
+  CollectionType,
+  EpisodeType,
+  type SubjectFilter,
+  SubjectSort,
+  SubjectType,
+} from '@app/lib/subject/type.ts';
 import {
   CanViewTopicContent,
   CanViewTopicReply,
@@ -102,6 +108,68 @@ export async function setup(app: App) {
         return convert.toSubject(d.chii_subjects, d.chii_subject_fields);
       }
       throw new NotFoundError(`subject ${subjectID}`);
+    },
+  );
+
+  app.get(
+    '/subjects',
+    {
+      schema: {
+        summary: '获取条目列表',
+        operationId: 'getSubjects',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          type: t.Enum(SubjectType, { description: '条目类型' }),
+          sort: t.Enum(SubjectSort, { default: SubjectSort.Rank, description: '排序方式' }),
+          page: t.Optional(t.Integer({ default: 1, minimum: 1, description: 'min 1' })),
+          cat: t.Optional(
+            t.Integer({
+              description:
+                '每种条目类型分类不同，具体参考 https://github.com/bangumi/common 的 subject_platforms.yaml',
+            }),
+          ),
+          series: t.Optional(t.Boolean({ description: '是否为系列，仅对书籍类型的条目有效' })),
+          year: t.Optional(t.Integer({ description: '年份' })),
+          month: t.Optional(t.Integer({ description: '月份' })),
+          tags: t.Optional(
+            t.Array(t.String({ description: 'wiki 标签，包括 分类/来源/类型/题材/地区/受众 等' })),
+          ),
+        }),
+        response: {
+          200: res.Paged(t.Ref(res.Subject)),
+        },
+      },
+    },
+    async ({ auth, query: { type, cat, series, year, month, sort, tags, page = 1 } }) => {
+      const filter = {
+        type,
+        nsfw: auth.allowNsfw,
+        cat,
+        series,
+        year,
+        month,
+        tags,
+      } satisfies SubjectFilter;
+      const result = await fetcher.fetchSubjectIDsByFilter(filter, sort, page);
+      if (result.data.length === 0) {
+        return {
+          data: [],
+          total: result.total,
+        };
+      }
+      const subjects = await fetcher.fetchSubjectsByIDs(result.data);
+      const data = [];
+      for (const subjectID of result.data) {
+        const subject = subjects.get(subjectID);
+        if (subject) {
+          data.push(subject);
+        }
+      }
+      return {
+        data,
+        total: result.total,
+      };
     },
   );
 
