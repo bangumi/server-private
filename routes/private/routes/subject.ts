@@ -9,13 +9,7 @@ import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts'
 import { fetchTopicReactions } from '@app/lib/like.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
-import {
-  CollectionType,
-  EpisodeType,
-  type SubjectFilter,
-  SubjectSort,
-  SubjectType,
-} from '@app/lib/subject/type.ts';
+import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
 import {
   CanViewTopicContent,
   CanViewTopicReply,
@@ -121,7 +115,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           type: t.Ref(req.SubjectType),
-          sort: t.Enum(SubjectSort, { default: SubjectSort.Rank, description: '排序方式' }),
+          sort: t.Ref(req.SubjectSort),
           page: t.Optional(t.Integer({ default: 1, minimum: 1, description: 'min 1' })),
           cat: t.Optional(
             t.Integer({
@@ -151,7 +145,7 @@ export async function setup(app: App) {
         month,
         tags,
       } satisfies SubjectFilter;
-      const result = await fetcher.fetchSubjectIDsByFilter(filter, sort, page);
+      const result = await fetcher.fetchSubjectIDsByFilter(filter, sort as SubjectSort, page);
       if (result.data.length === 0) {
         return {
           data: [],
@@ -185,7 +179,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(EpisodeType, { description: '剧集类型' })),
+          type: t.Optional(t.Ref(req.EpisodeType)),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
@@ -243,7 +237,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
+          type: t.Optional(t.Ref(req.SubjectType)),
           offprint: t.Optional(t.Boolean({ default: false, description: '是否单行本' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -552,7 +546,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
+          type: t.Optional(t.Ref(req.CollectionType)),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),

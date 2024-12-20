@@ -79,6 +79,7 @@ export const EpisodeCollectionStatus = t.Integer({
 export const SubjectSort = t.String({
   $id: 'SubjectSort',
   enum: ['rank', 'trends', 'collects', 'date', 'title'],
+  default: 'rank',
   description: `条目排序方式
   - rank = 排名
   - trends = 热度

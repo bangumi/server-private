@@ -190,6 +190,21 @@ exports[`should build private api spec 1`] = `
         - subject
         - type
       type: object
+    CollectionType:
+      description: |-
+        条目收藏状态
+          - 1 = 想看
+          - 2 = 看过
+          - 3 = 在看
+          - 4 = 搁置
+          - 5 = 抛弃
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      type: integer
     CreateTopic:
       example:
         cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
@@ -284,28 +299,7 @@ exports[`should build private api spec 1`] = `
         subjectID:
           type: integer
         type:
-          anyOf:
-            - enum:
-                - 0
-              type: number
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 5
-              type: number
-            - enum:
-                - 6
-              type: number
+          $ref: '#/components/schemas/EpisodeType'
       required:
         - id
         - subjectID
@@ -321,6 +315,19 @@ exports[`should build private api spec 1`] = `
         - lock
       title: Episode
       type: object
+    EpisodeCollectionStatus:
+      description: |-
+        剧集收藏状态
+          - 0 = 撤消/删除
+          - 1 = 想看
+          - 2 = 看过
+          - 3 = 抛弃
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+      type: integer
     EpisodeComments:
       allOf:
         - properties:
@@ -359,6 +366,25 @@ exports[`should build private api spec 1`] = `
             - replies
           type: object
       type: object
+    EpisodeType:
+      description: |-
+        话数类型
+          - 0 = 本篇
+          - 1 = 特别篇
+          - 2 = OP
+          - 3 = ED
+          - 4 = 预告/宣传/广告
+          - 5 = MAD
+          - 6 = 其他
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+      type: integer
     EpisodeWikiInfo:
       properties:
         date:
@@ -382,28 +408,7 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         type:
-          anyOf:
-            - enum:
-                - 0
-              type: number
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 5
-              type: number
-            - enum:
-                - 6
-              type: number
+          $ref: '#/components/schemas/EpisodeType'
       required:
         - id
         - subjectID
@@ -856,22 +861,7 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         typeID:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 6
-              type: number
+          $ref: '#/components/schemas/SubjectType'
       required:
         - id
         - name
@@ -1100,22 +1090,7 @@ exports[`should build private api spec 1`] = `
         nsfw:
           type: boolean
         type:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 6
-              type: number
+          $ref: '#/components/schemas/SubjectType'
       required:
         - id
         - name
@@ -1330,22 +1305,7 @@ exports[`should build private api spec 1`] = `
             $ref: '#/components/schemas/SubjectTag'
           type: array
         type:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 6
-              type: number
+          $ref: '#/components/schemas/SubjectType'
         volumes:
           type: integer
       required:
@@ -1418,22 +1378,7 @@ exports[`should build private api spec 1`] = `
         rate:
           type: integer
         type:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 5
-              type: number
+          $ref: '#/components/schemas/CollectionType'
         updatedAt:
           type: integer
         user:
@@ -1548,22 +1493,7 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         type:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 6
-              type: number
+          $ref: '#/components/schemas/SubjectType'
       required:
         - name
         - type
@@ -1681,6 +1611,22 @@ exports[`should build private api spec 1`] = `
         - entry
       title: SubjectReview
       type: object
+    SubjectSort:
+      default: rank
+      description: |-
+        条目排序方式
+          - rank = 排名
+          - trends = 热度
+          - collects = 收藏数
+          - date = 发布日期
+          - title = 标题
+      enum:
+        - rank
+        - trends
+        - collects
+        - date
+        - title
+      type: string
     SubjectStaff:
       properties:
         person:
@@ -1730,6 +1676,23 @@ exports[`should build private api spec 1`] = `
         - count
       title: SubjectTag
       type: object
+    SubjectType:
+      description: |-
+        条目类型
+          - 1 = 书籍
+          - 2 = 动画
+          - 3 = 音乐
+          - 4 = 游戏
+          - 6 = 三次元
+
+          没有 5
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 6
+      type: integer
     SubjectWikiInfo:
       properties:
         availablePlatform:
@@ -1753,22 +1716,7 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         typeID:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 6
-              type: number
+          $ref: '#/components/schemas/SubjectType'
       required:
         - id
         - name
@@ -2466,22 +2414,7 @@ exports[`should build private api spec 1`] = `
             type: string
           type: array
         type:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 5
-              type: number
+          $ref: '#/components/schemas/CollectionType'
         updatedAt:
           type: integer
         volStatus:
@@ -2502,19 +2435,7 @@ exports[`should build private api spec 1`] = `
         episode:
           $ref: '#/components/schemas/Episode'
         type:
-          anyOf:
-            - enum:
-                - 0
-              type: number
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
+          $ref: '#/components/schemas/EpisodeCollectionStatus'
       required:
         - episode
         - type
@@ -2701,27 +2622,11 @@ paths:
     get:
       operationId: getCharacterCasts
       parameters:
-        - description: 条目类型
-          in: query
+        - in: query
           name: subjectType
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
+            $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
           in: query
           name: type
@@ -3716,27 +3621,11 @@ paths:
     get:
       operationId: getPersonCasts
       parameters:
-        - description: 条目类型
-          in: query
+        - in: query
           name: subjectType
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
+            $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
           in: query
           name: type
@@ -3883,27 +3772,11 @@ paths:
     get:
       operationId: getPersonWorks
       parameters:
-        - description: 条目类型
-          in: query
+        - in: query
           name: subjectType
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
+            $ref: '#/components/schemas/SubjectType'
         - description: 职位
           in: query
           name: position
@@ -3980,49 +3853,16 @@ paths:
     get:
       operationId: getSubjects
       parameters:
-        - description: 条目类型
-          in: query
+        - in: query
           name: type
           required: true
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
-        - description: 排序方式
-          in: query
+            $ref: '#/components/schemas/SubjectType'
+        - in: query
           name: sort
           required: true
           schema:
-            anyOf:
-              - enum:
-                  - rank
-                type: string
-              - enum:
-                  - trends
-                type: string
-              - enum:
-                  - collects
-                type: string
-              - enum:
-                  - date
-                type: string
-              - enum:
-                  - title
-                type: string
-            default: rank
+            $ref: '#/components/schemas/SubjectSort'
         - description: min 1
           in: query
           name: page
@@ -4741,27 +4581,11 @@ paths:
     get:
       operationId: getSubjectComments
       parameters:
-        - description: 收藏类型
-          in: query
+        - in: query
           name: type
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 5
-                type: number
+            $ref: '#/components/schemas/CollectionType'
         - description: max 100
           in: query
           name: limit
@@ -4819,33 +4643,11 @@ paths:
     get:
       operationId: getSubjectEpisodes
       parameters:
-        - description: 剧集类型
-          in: query
+        - in: query
           name: type
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 0
-                type: number
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 5
-                type: number
-              - enum:
-                  - 6
-                type: number
+            $ref: '#/components/schemas/EpisodeType'
         - description: max 1000
           in: query
           name: limit
@@ -4960,27 +4762,11 @@ paths:
     get:
       operationId: getSubjectRelations
       parameters:
-        - description: 条目类型
-          in: query
+        - in: query
           name: type
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
+            $ref: '#/components/schemas/SubjectType'
         - description: 是否单行本
           in: query
           name: offprint
@@ -5335,27 +5121,11 @@ paths:
     get:
       operationId: getTrendingSubjects
       parameters:
-        - description: 条目类型
-          in: query
+        - in: query
           name: type
           required: true
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
+            $ref: '#/components/schemas/SubjectType'
         - description: max 100
           in: query
           name: limit
@@ -5473,33 +5243,11 @@ paths:
     get:
       operationId: getUserSubjectCollectionEpisodesBySubjectID
       parameters:
-        - description: 剧集类型
-          in: query
+        - in: query
           name: type
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 0
-                type: number
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 5
-                type: number
-              - enum:
-                  - 6
-                type: number
+            $ref: '#/components/schemas/EpisodeType'
         - description: max 1000
           in: query
           name: limit
@@ -5818,48 +5566,16 @@ paths:
     get:
       operationId: getUserSubjectCollections
       parameters:
-        - description: 条目类型
-          in: query
+        - in: query
           name: subjectType
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 6
-                type: number
-        - description: 收藏类型
-          in: query
+            $ref: '#/components/schemas/SubjectType'
+        - in: query
           name: type
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - 1
-                type: number
-              - enum:
-                  - 2
-                type: number
-              - enum:
-                  - 3
-                type: number
-              - enum:
-                  - 4
-                type: number
-              - enum:
-                  - 5
-                type: number
+            $ref: '#/components/schemas/CollectionType'
         - description: 起始时间戳
           in: query
           name: since
@@ -6215,28 +5931,7 @@ paths:
                     summary:
                       type: string
                     type:
-                      anyOf:
-                        - enum:
-                            - 0
-                          type: number
-                        - enum:
-                            - 1
-                          type: number
-                        - enum:
-                            - 2
-                          type: number
-                        - enum:
-                            - 3
-                          type: number
-                        - enum:
-                            - 4
-                          type: number
-                        - enum:
-                            - 5
-                          type: number
-                        - enum:
-                            - 6
-                          type: number
+                      $ref: '#/components/schemas/EpisodeType'
                   type: object
               required:
                 - commitMessage
@@ -6529,22 +6224,7 @@ paths:
                 summary:
                   type: string
                 type:
-                  anyOf:
-                    - enum:
-                        - 1
-                      type: number
-                    - enum:
-                        - 2
-                      type: number
-                    - enum:
-                        - 3
-                      type: number
-                    - enum:
-                        - 4
-                      type: number
-                    - enum:
-                        - 6
-                      type: number
+                  $ref: '#/components/schemas/SubjectType'
               required:
                 - name
                 - type
