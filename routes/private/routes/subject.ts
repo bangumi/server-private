@@ -120,7 +120,7 @@ export async function setup(app: App) {
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
-          type: t.Enum(SubjectType, { description: '条目类型' }),
+          type: t.Ref(req.SubjectType),
           sort: t.Enum(SubjectSort, { default: SubjectSort.Rank, description: '排序方式' }),
           page: t.Optional(t.Integer({ default: 1, minimum: 1, description: 'min 1' })),
           cat: t.Optional(

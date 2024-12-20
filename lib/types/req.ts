@@ -1,6 +1,7 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
+import { SubjectTypeValues } from '@app/lib/subject/type';
 import * as examples from '@app/lib/types/examples.ts';
 
 const turnstileDescription = `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
@@ -28,3 +29,16 @@ export const UpdateTopic = t.Object(
   },
   { $id: 'UpdateTopic' },
 );
+
+export const SubjectType = t.Integer({
+  $id: 'SubjectType',
+  enum: [...SubjectTypeValues],
+  description: `条目类型
+  - 1 = 书籍
+  - 2 = 动画
+  - 3 = 音乐
+  - 4 = 游戏
+  - 6 = 三次元
+
+  没有 5`,
+});

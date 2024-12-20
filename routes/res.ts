@@ -3,6 +3,10 @@ import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
 export function addSchemas(app: App) {
+  app.addSchema(req.SubjectType);
+  app.addSchema(req.CreateTopic);
+  app.addSchema(req.UpdateTopic);
+
   app.addSchema(res.Avatar);
   app.addSchema(res.BlogEntry);
   app.addSchema(res.Character);
@@ -55,7 +59,4 @@ export function addSchemas(app: App) {
   app.addSchema(res.TopicDetail);
   app.addSchema(res.User);
   app.addSchema(res.UserHomepage);
-
-  app.addSchema(req.CreateTopic);
-  app.addSchema(req.UpdateTopic);
 }

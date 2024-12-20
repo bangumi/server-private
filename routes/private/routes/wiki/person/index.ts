@@ -7,7 +7,8 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { PersonRev } from '@app/lib/orm/entity/index.ts';
 import { createRevision, RevType } from '@app/lib/orm/entity/index.ts';
 import { AppDataSource, entity, PersonRepo } from '@app/lib/orm/index.ts';
-import { InvalidWikiSyntaxError, SubjectType } from '@app/lib/subject/index.ts';
+import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
@@ -18,7 +19,7 @@ export const PersonWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Enum(SubjectType),
+    typeID: t.Ref(req.SubjectType),
     infobox: t.String(),
     summary: t.String(),
   },

@@ -4,9 +4,10 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
+import { CollectionType, EpisodeType } from '@app/lib/subject/type.ts';
 import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
+import * as req from '@app/lib/types/req.ts';
 
 export interface IPaged<T> {
   data: T[];
@@ -247,7 +248,7 @@ export const Subject = t.Object(
     series: t.Boolean(),
     seriesEntry: t.Integer(),
     summary: t.String(),
-    type: t.Enum(SubjectType),
+    type: t.Ref(req.SubjectType),
     volumes: t.Integer(),
     tags: t.Array(t.Ref(SubjectTag)),
   },
@@ -264,7 +265,7 @@ export const SlimSubject = t.Object(
     id: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
-    type: t.Enum(SubjectType),
+    type: t.Ref(req.SubjectType),
     images: t.Optional(t.Ref(SubjectImages)),
     info: t.String(),
     locked: t.Boolean(),
