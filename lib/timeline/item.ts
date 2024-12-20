@@ -27,15 +27,15 @@ export async function parseTimelineMemo(
           const users = [];
           if (batch) {
             const info = php.parse(data) as memo.UserBatch;
-            for (const [_, value] of Object.entries(info)) {
-              const user = await fetcher.fetchSlimUserByUID(Number(value.uid));
-              if (user) {
-                users.push(user);
-              }
+            const us = await fetcher.fetchSlimUsersByIDs(
+              Object.entries(info).map(([_, v]) => Number(v.uid)),
+            );
+            for (const [_, user] of Object.entries(us)) {
+              users.push(user);
             }
           } else {
             const info = php.parse(data) as memo.User;
-            const user = await fetcher.fetchSlimUserByUID(Number(info.uid));
+            const user = await fetcher.fetchSlimUserByID(Number(info.uid));
             if (user) {
               users.push(user);
             }
@@ -51,11 +51,11 @@ export async function parseTimelineMemo(
           const groups = [];
           if (batch) {
             const info = php.parse(data) as memo.GroupBatch;
-            for (const [_, value] of Object.entries(info)) {
-              const group = await fetcher.fetchSlimGroupByID(Number(value.grp_id));
-              if (group) {
-                groups.push(group);
-              }
+            const gs = await fetcher.fetchSlimGroupsByIDs(
+              Object.entries(info).map(([_, v]) => Number(v.grp_id)),
+            );
+            for (const [_, group] of Object.entries(gs)) {
+              groups.push(group);
             }
           } else {
             const info = php.parse(data) as memo.Group;

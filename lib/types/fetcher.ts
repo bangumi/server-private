@@ -34,7 +34,7 @@ export async function fetchSlimUserByUsername(username: string): Promise<res.ISl
   return null;
 }
 
-export async function fetchSlimUserByUID(uid: number): Promise<res.ISlimUser | null> {
+export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | null> {
   const cached = await redis.get(getUserSlimCacheKey(uid));
   if (cached) {
     const item = JSON.parse(cached) as res.ISlimUser;
@@ -54,13 +54,23 @@ export async function fetchSlimUserByUID(uid: number): Promise<res.ISlimUser | n
 }
 
 export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
+  const cached = await redis.mget(ids.map((id) => getUserSlimCacheKey(id)));
+  const result: Record<number, res.ISlimUser> = {};
+  const missing = [];
+  for (const id of ids) {
+    if (cached[id]) {
+      result[id] = JSON.parse(cached[id]) as res.ISlimUser;
+    } else {
+      missing.push(id);
+    }
+  }
   const data = await db
     .select()
     .from(schema.chiiUsers)
-    .where(op.inArray(schema.chiiUsers.id, ids))
+    .where(op.inArray(schema.chiiUsers.id, missing))
     .execute();
-  const result: Record<number, res.ISlimUser> = {};
   for (const d of data) {
+    await redis.setex(getUserSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(convert.toSlimUser(d)));
     result[d.id] = convert.toSlimUser(d);
   }
   return result;
@@ -553,4 +563,30 @@ export async function fetchSlimGroupByID(groupID: number): Promise<res.ISlimGrou
   const group = convert.toSlimGroup(data);
   await redis.setex(getGroupSlimCacheKey(groupID), ONE_MONTH, JSON.stringify(group));
   return group;
+}
+
+export async function fetchSlimGroupsByIDs(ids: number[]): Promise<Record<number, res.ISlimGroup>> {
+  const cached = await redis.mget(ids.map((id) => getGroupSlimCacheKey(id)));
+  const result: Record<number, res.ISlimGroup> = {};
+  const missing = [];
+  for (const id of ids) {
+    if (cached[id]) {
+      result[id] = JSON.parse(cached[id]) as res.ISlimGroup;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiGroups)
+      .where(op.inArray(schema.chiiGroups.id, missing))
+      .execute();
+    for (const d of data) {
+      const group = convert.toSlimGroup(d);
+      await redis.setex(getGroupSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(group));
+      result[d.id] = group;
+    }
+  }
+  return result;
 }
