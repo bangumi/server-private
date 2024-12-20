@@ -85,7 +85,7 @@ describe('create subject', () => {
       Object {
         "code": "REQUEST_VALIDATION_ERROR",
         "error": "Bad Request",
-        "message": "body/type must be equal to constant, body/type must be equal to constant, body/type must be equal to constant, body/type must be equal to constant, body/type must be equal to constant, body/type must match a schema in anyOf",
+        "message": "body/type must be equal to one of the allowed values",
         "statusCode": 400,
       }
     `);

@@ -5,9 +5,9 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { SubjectType } from '@app/lib/subject/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
@@ -81,7 +81,7 @@ export async function setup(app: App) {
           personID: t.Integer(),
         }),
         querystring: t.Object({
-          subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
+          subjectType: t.Optional(t.Ref(req.SubjectType)),
           position: t.Optional(t.Integer({ description: '职位' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -174,7 +174,7 @@ export async function setup(app: App) {
           personID: t.Integer(),
         }),
         querystring: t.Object({
-          subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
+          subjectType: t.Optional(t.Ref(req.SubjectType)),
           type: t.Optional(t.Integer({ description: '角色出场类型: 主角，配角，客串' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),

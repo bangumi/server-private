@@ -3,10 +3,10 @@ import { Type as t } from '@sinclair/typebox';
 
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import redis from '@app/lib/redis';
-import { SubjectType } from '@app/lib/subject/type.ts';
 import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -32,7 +32,7 @@ export async function setup(app: App) {
         tags: [Tag.Trending],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
-          type: t.Enum(SubjectType, { description: '条目类型' }),
+          type: t.Ref(req.SubjectType),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),

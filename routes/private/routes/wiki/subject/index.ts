@@ -15,6 +15,7 @@ import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -61,7 +62,7 @@ export type ISubjectNew = Static<typeof SubjectNew>;
 export const SubjectNew = t.Object(
   {
     name: t.String({ minLength: 1 }),
-    type: t.Enum(SubjectType),
+    type: t.Ref(req.SubjectType),
     platform: t.Integer(),
     infobox: t.String({ minLength: 1 }),
     nsfw: t.Boolean(),
@@ -125,7 +126,7 @@ export const SubjectWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Enum(SubjectType),
+    typeID: t.Ref(req.SubjectType),
     infobox: t.String(),
     platform: t.Integer(),
     availablePlatform: t.Array(t.Ref(Platform)),
