@@ -757,9 +757,9 @@ export const TimelineMemo = t.Object(
         batch: t.Optional(
           t.Object({
             epsTotal: t.String(),
-            epsUpdate: t.Integer(),
+            epsUpdate: t.Optional(t.Integer()),
             volsTotal: t.String(),
-            volsUpdate: t.Integer(),
+            volsUpdate: t.Optional(t.Integer()),
             subject: t.Ref(SlimSubject),
           }),
         ),
