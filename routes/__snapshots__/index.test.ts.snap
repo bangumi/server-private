@@ -205,6 +205,15 @@ exports[`should build private api spec 1`] = `
         - 4
         - 5
       type: integer
+      x-enum-varnames:
+        - Wish
+        - Collect
+        - Doing
+        - OnHold
+        - Dropped
+      x-ms-enum:
+        modelAsString: false
+        name: CollectionType
     CreateTopic:
       example:
         cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
@@ -328,6 +337,14 @@ exports[`should build private api spec 1`] = `
         - 2
         - 3
       type: integer
+      x-enum-varnames:
+        - None
+        - Wish
+        - Done
+        - Dropped
+      x-ms-enum:
+        modelAsString: false
+        name: EpisodeCollectionStatus
     EpisodeComments:
       allOf:
         - properties:
@@ -385,6 +402,17 @@ exports[`should build private api spec 1`] = `
         - 5
         - 6
       type: integer
+      x-enum-varnames:
+        - Normal
+        - Special
+        - OP
+        - ED
+        - Pre
+        - MAD
+        - Other
+      x-ms-enum:
+        modelAsString: false
+        name: EpisodeType
     EpisodeWikiInfo:
       properties:
         date:
@@ -1627,6 +1655,15 @@ exports[`should build private api spec 1`] = `
         - date
         - title
       type: string
+      x-enum-varnames:
+        - Rank
+        - Trends
+        - Collects
+        - Date
+        - Title
+      x-ms-enum:
+        modelAsString: true
+        name: SubjectSort
     SubjectStaff:
       properties:
         person:
@@ -1693,6 +1730,15 @@ exports[`should build private api spec 1`] = `
         - 4
         - 6
       type: integer
+      x-enum-varnames:
+        - Book
+        - Anime
+        - Music
+        - Game
+        - Real
+      x-ms-enum:
+        modelAsString: false
+        name: SubjectType
     SubjectWikiInfo:
       properties:
         availablePlatform:
