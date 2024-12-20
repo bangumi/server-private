@@ -14,6 +14,7 @@ import { TimelineCat } from './type';
 export async function parseTimelineMemo(
   cat: TimelineCat,
   type: number,
+  related: string,
   batch: boolean,
   data: string,
 ): Promise<res.ITimelineMemo> {
@@ -119,7 +120,17 @@ export async function parseTimelineMemo(
     case TimelineCat.Progress: {
       if (type === 0) {
         const info = php.parse(data) as memo.ProgressBatch;
-        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
+        let subjectID = Number(info.subject_id);
+        // memo 里面的 subject_id 有时候为空，这时候 fallback 到 related
+        if (!subjectID) {
+          subjectID = Number(related);
+        }
+        if (!subjectID) {
+          return {
+            progress: {},
+          };
+        }
+        const subject = await fetcher.fetchSlimSubjectByID(subjectID);
         if (!subject) {
           return {
             progress: {},
@@ -256,7 +267,7 @@ export async function toTimeline(tml: orm.ITimeline): Promise<res.ITimeline> {
     uid: tml.uid,
     cat: tml.cat,
     type: tml.type,
-    memo: await parseTimelineMemo(tml.cat, tml.type, tml.batch, tml.memo),
+    memo: await parseTimelineMemo(tml.cat, tml.type, tml.related, tml.batch, tml.memo),
     batch: tml.batch,
     replies: tml.replies,
     source: tml.source,

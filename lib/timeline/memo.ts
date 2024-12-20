@@ -35,10 +35,10 @@ export type SubjectBatch = Record<number, Subject>;
 
 export interface ProgressBatch {
   eps_total: string;
-  eps_update: number;
+  eps_update?: number;
   vols_total: string;
-  vols_update: number;
-  subject_id: string;
+  vols_update?: number;
+  subject_id?: string;
   subject_name: string;
   subject_type_id?: number;
 }

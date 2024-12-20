@@ -404,7 +404,30 @@ Array [
     "createdAt": 1656281750,
     "id": 28979627,
     "memo": Object {
-      "progress": Object {},
+      "progress": Object {
+        "batch": Object {
+          "epsTotal": "22",
+          "epsUpdate": 3,
+          "subject": Object {
+            "id": 214114,
+            "images": Object {
+              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+            },
+            "info": "2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
+            "locked": false,
+            "name": "Criminal Minds Season 13",
+            "nameCN": "犯罪心理 第十三季",
+            "nsfw": false,
+            "type": 6,
+          },
+          "volsTotal": "??",
+          "volsUpdate": 0,
+        },
+      },
     },
     "replies": 0,
     "source": 0,
