@@ -36,6 +36,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Reply);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
+  app.addSchema(res.SlimGroup);
   app.addSchema(res.SlimIndex);
   app.addSchema(res.SlimPerson);
   app.addSchema(res.SlimSubject);

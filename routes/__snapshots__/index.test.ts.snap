@@ -1055,6 +1055,26 @@ exports[`should build private api spec 1`] = `
         - nsfw
       title: SlimCharacter
       type: object
+    SlimGroup:
+      properties:
+        icon:
+          $ref: '#/components/schemas/Avatar'
+        id:
+          type: integer
+        name:
+          type: string
+        nsfw:
+          type: boolean
+        title:
+          type: string
+      required:
+        - id
+        - name
+        - nsfw
+        - title
+        - icon
+      title: SlimGroup
+      type: object
     SlimIndex:
       properties:
         createdAt:
@@ -1826,8 +1846,6 @@ exports[`should build private api spec 1`] = `
           type: integer
         id:
           type: integer
-        image:
-          $ref: '#/components/schemas/TimelineImage'
         memo:
           $ref: '#/components/schemas/TimelineMemo'
         replies:
@@ -1864,143 +1882,43 @@ exports[`should build private api spec 1`] = `
         - cat
         - type
         - memo
-        - image
         - batch
         - source
         - replies
         - createdAt
       title: Timeline
       type: object
-    TimelineImage:
-      properties:
-        group:
-          items:
-            properties:
-              id:
-                type: integer
-              images:
-                $ref: '#/components/schemas/Avatar'
-            required:
-              - id
-            type: object
-          type: array
-        mono:
-          items:
-            properties:
-              cat:
-                type: integer
-              id:
-                type: integer
-              images:
-                $ref: '#/components/schemas/PersonImages'
-            required:
-              - cat
-              - id
-            type: object
-          type: array
-        subject:
-          items:
-            properties:
-              id:
-                type: integer
-              images:
-                $ref: '#/components/schemas/SubjectImages'
-            required:
-              - id
-            type: object
-          type: array
-        user:
-          items:
-            properties:
-              images:
-                $ref: '#/components/schemas/Avatar'
-              uid:
-                type: integer
-            required:
-              - uid
-            type: object
-          type: array
-      title: TimelineImage
-      type: object
     TimelineMemo:
       properties:
         blog:
-          properties:
-            desc:
-              type: string
-            id:
-              type: integer
-            title:
-              type: string
-          required:
-            - id
-            - title
-            - desc
-          type: object
+          $ref: '#/components/schemas/SlimBlogEntry'
         daily:
           properties:
-            group:
+            groups:
               items:
-                properties:
-                  desc:
-                    type: string
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  title:
-                    type: string
-                required:
-                  - id
-                  - name
-                  - title
-                  - desc
-                type: object
+                $ref: '#/components/schemas/SlimGroup'
               type: array
-            user:
+            users:
               items:
-                properties:
-                  nickname:
-                    type: string
-                  uid:
-                    type: integer
-                  username:
-                    type: string
-                required:
-                  - uid
-                  - username
-                  - nickname
-                type: object
+                $ref: '#/components/schemas/SlimUser'
               type: array
           type: object
         index:
-          properties:
-            desc:
-              type: string
-            id:
-              type: integer
-            title:
-              type: string
-          required:
-            - id
-            - title
-            - desc
-          type: object
+          $ref: '#/components/schemas/SlimIndex'
         mono:
-          items:
-            properties:
-              cat:
-                type: integer
-              id:
-                type: integer
-              name:
-                type: string
-            required:
-              - cat
-              - id
-              - name
-            type: object
-          type: array
+          properties:
+            characters:
+              items:
+                $ref: '#/components/schemas/SlimCharacter'
+              type: array
+            persons:
+              items:
+                $ref: '#/components/schemas/SlimPerson'
+              type: array
+          required:
+            - characters
+            - persons
+          type: object
         progress:
           properties:
             batch:
@@ -2009,10 +1927,8 @@ exports[`should build private api spec 1`] = `
                   type: string
                 epsUpdate:
                   type: integer
-                subjectID:
-                  type: integer
-                subjectName:
-                  type: string
+                subject:
+                  $ref: '#/components/schemas/SlimSubject'
                 volsTotal:
                   type: string
                 volsUpdate:
@@ -2022,27 +1938,17 @@ exports[`should build private api spec 1`] = `
                 - epsUpdate
                 - volsTotal
                 - volsUpdate
-                - subjectID
-                - subjectName
+                - subject
               type: object
             single:
               properties:
-                epID:
-                  type: integer
-                epName:
-                  type: string
-                epSort:
-                  type: integer
-                subjectID:
-                  type: integer
-                subjectName:
-                  type: string
+                episode:
+                  $ref: '#/components/schemas/Episode'
+                subject:
+                  $ref: '#/components/schemas/SlimSubject'
               required:
-                - epID
-                - epName
-                - epSort
-                - subjectID
-                - subjectName
+                - episode
+                - subject
               type: object
           type: object
         status:
@@ -2067,24 +1973,12 @@ exports[`should build private api spec 1`] = `
             properties:
               comment:
                 type: string
-              id:
-                type: integer
-              name:
-                type: string
-              nameCN:
-                type: string
               rate:
                 type: number
-              series:
-                type: boolean
-              type:
-                type: integer
+              subject:
+                $ref: '#/components/schemas/SlimSubject'
             required:
-              - id
-              - type
-              - name
-              - nameCN
-              - series
+              - subject
               - comment
               - rate
             type: object
@@ -2092,20 +1986,7 @@ exports[`should build private api spec 1`] = `
         wiki:
           properties:
             subject:
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-                nameCN:
-                  type: string
-              required:
-                - id
-                - name
-                - nameCN
-              type: object
-          required:
-            - subject
+              $ref: '#/components/schemas/SlimSubject'
           type: object
       title: TimelineMemo
       type: object
@@ -5136,7 +5017,7 @@ paths:
     get:
       operationId: getTimeline
       parameters:
-        - description: 过滤模式 - all = 全站 - friends = 好友 登录时默认为 friends, 未登录或没有好友时始终为 all
+        - description: 登录时默认为 friends, 未登录或没有好友时始终为 all
           in: query
           name: mode
           required: false
