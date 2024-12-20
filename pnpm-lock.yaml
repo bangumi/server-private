@@ -15,8 +15,8 @@ importers:
         specifier: ^0.3.3
         version: 0.3.3
       '@confluentinc/kafka-javascript':
-        specifier: ^0.5.2
-        version: 0.5.2
+        specifier: ^1.0.0
+        version: 1.0.0
       '@fastify/cookie':
         specifier: ^11.0.1
         version: 11.0.1
@@ -755,8 +755,8 @@ packages:
     resolution: {integrity: sha512-Extj5fsFmH8pqh+XYYjRDUm5Ar1c2KX6Jup4p198sm2Xmjsc/XK83wP71If2wStd3rf7stSgK7ADE/daX/lglA==}
     engines: {node: '>=18'}
 
-  '@confluentinc/kafka-javascript@0.5.2':
-    resolution: {integrity: sha512-mhdcHFbRFgnBcnBNPjlGdzDgMLBCN7pSiLtDxT0O9rfJH1usJ4ZqkfhtRWm9BFJ7HaAtn+1wL/h9I94vL8xbTQ==}
+  '@confluentinc/kafka-javascript@1.0.0':
+    resolution: {integrity: sha512-rMcoeTnQ3YtyFaJ5CsHZvwRC7SCleIk6fZ5sNh5cDbZa2ocuukyO5J5pIhyrUW1FwHm/sauLuXPgwS8xrfiBDQ==}
     engines: {node: '>=18.0.0'}
 
   '@drizzle-team/brocli@0.10.2':
@@ -6437,7 +6437,7 @@ snapshots:
 
   '@bgm38/wiki@0.3.3': {}
 
-  '@confluentinc/kafka-javascript@0.5.2':
+  '@confluentinc/kafka-javascript@1.0.0':
     dependencies:
       '@mapbox/node-pre-gyp': 1.0.11
       bindings: 1.5.0
