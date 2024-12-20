@@ -4,13 +4,19 @@ import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import redis from '@app/lib/redis.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
 
 import { getItemCacheKey } from './cache.ts';
 import type * as memo from './memo';
 import { TimelineCat } from './type';
 
-export function parseTimelineMemo(cat: TimelineCat, type: number, batch: boolean, data: string) {
+export async function parseTimelineMemo(
+  cat: TimelineCat,
+  type: number,
+  batch: boolean,
+  data: string,
+) {
   if (data === '') {
     return {};
   }
@@ -22,19 +28,21 @@ export function parseTimelineMemo(cat: TimelineCat, type: number, batch: boolean
           if (batch) {
             const info = php.parse(data) as memo.UserBatch;
             for (const [_, value] of Object.entries(info)) {
-              users.push(value);
+              const user = await fetcher.fetchSlimUserByUID(Number(value.uid));
+              if (user) {
+                users.push(user);
+              }
             }
           } else {
             const info = php.parse(data) as memo.User;
-            users.push(info);
+            const user = await fetcher.fetchSlimUserByUID(Number(info.uid));
+            if (user) {
+              users.push(user);
+            }
           }
           return {
             daily: {
-              user: users.map((u) => ({
-                uid: Number(u.uid),
-                username: u.username,
-                nickname: u.nickname,
-              })),
+              users,
             },
           };
         }
@@ -208,13 +216,13 @@ export function parseTimelineMemo(cat: TimelineCat, type: number, batch: boolean
   }
 }
 
-export function toTimeline(tml: orm.ITimeline): res.ITimeline {
+export async function toTimeline(tml: orm.ITimeline): Promise<res.ITimeline> {
   return {
     id: tml.id,
     uid: tml.uid,
     cat: tml.cat,
     type: tml.type,
-    memo: parseTimelineMemo(tml.cat, tml.type, tml.batch, tml.memo),
+    memo: await parseTimelineMemo(tml.cat, tml.type, tml.batch, tml.memo),
     batch: tml.batch,
     replies: tml.replies,
     source: tml.source,
@@ -243,7 +251,7 @@ export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, 
       .where(op.inArray(schema.chiiTimeline.id, missing))
       .execute();
     for (const d of data) {
-      const item = toTimeline(d);
+      const item = await toTimeline(d);
       uids.add(item.uid);
       result[d.id] = item;
       await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));

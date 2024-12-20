@@ -14,9 +14,12 @@ import {
 } from '@app/lib/subject/type.ts';
 import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
+import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
+
+const ONE_MONTH = 2592000;
 
 export async function fetchSlimUserByUsername(username: string): Promise<res.ISlimUser | null> {
   const data = await db
@@ -28,6 +31,25 @@ export async function fetchSlimUserByUsername(username: string): Promise<res.ISl
     return convert.toSlimUser(d);
   }
   return null;
+}
+
+export async function fetchSlimUserByUID(uid: number): Promise<res.ISlimUser | null> {
+  const cached = await redis.get(getUserSlimCacheKey(uid));
+  if (cached) {
+    const item = JSON.parse(cached) as res.ISlimUser;
+    return item;
+  }
+  const [data] = await db
+    .select()
+    .from(schema.chiiUsers)
+    .where(op.eq(schema.chiiUsers.id, uid))
+    .execute();
+  if (!data) {
+    return null;
+  }
+  const item = convert.toSlimUser(data);
+  await redis.setex(getUserSlimCacheKey(uid), ONE_MONTH, JSON.stringify(item));
+  return item;
 }
 
 export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
@@ -74,7 +96,7 @@ export async function fetchSlimSubjectByID(
     return null;
   }
   const slim = convert.toSlimSubject(data);
-  await redis.setex(getSubjectSlimCacheKey(id), 2592000, JSON.stringify(slim));
+  await redis.setex(getSubjectSlimCacheKey(id), ONE_MONTH, JSON.stringify(slim));
   if (!allowNsfw && slim.nsfw) {
     return null;
   }
@@ -107,7 +129,7 @@ export async function fetchSlimSubjectsByIDs(
       .execute();
     for (const d of data) {
       const slim = convert.toSlimSubject(d);
-      await redis.setex(getSubjectSlimCacheKey(d.id), 2592000, JSON.stringify(slim));
+      await redis.setex(getSubjectSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
       if (!allowNsfw && slim.nsfw) {
         continue;
       }
@@ -139,7 +161,7 @@ export async function fetchSubjectByID(
     return null;
   }
   const item = convert.toSubject(data.chii_subjects, data.chii_subject_fields);
-  await redis.setex(getSubjectItemCacheKey(id), 2592000, JSON.stringify(item));
+  await redis.setex(getSubjectItemCacheKey(id), ONE_MONTH, JSON.stringify(item));
   if (!allowNsfw && item.nsfw) {
     return null;
   }
@@ -179,7 +201,7 @@ export async function fetchSubjectsByIDs(
 
     for (const d of data) {
       const item = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
-      await redis.setex(getSubjectItemCacheKey(item.id), 2592000, JSON.stringify(item));
+      await redis.setex(getSubjectItemCacheKey(item.id), ONE_MONTH, JSON.stringify(item));
       if (!allowNsfw && item.nsfw) {
         continue;
       }

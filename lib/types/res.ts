@@ -723,16 +723,8 @@ export const TimelineMemo = t.Object(
   {
     daily: t.Optional(
       t.Object({
-        user: t.Optional(
-          t.Array(
-            t.Object({
-              uid: t.Integer(),
-              username: t.String(),
-              nickname: t.String(),
-            }),
-          ),
-        ),
-        group: t.Optional(
+        users: t.Optional(t.Array(t.Ref(SlimUser))),
+        groups: t.Optional(
           t.Array(
             t.Object({
               id: t.Integer(),
