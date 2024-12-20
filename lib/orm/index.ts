@@ -358,13 +358,13 @@ export interface IGroup {
   accessible: boolean;
 }
 
-export async function fetchGroupByID(id: number): Promise<IGroup | null> {
+export async function fetchGroupByID(id: number): Promise<IGroup | undefined> {
   const group = await GroupRepo.findOne({
     where: { id },
   });
 
   if (!group) {
-    return null;
+    return;
   }
 
   return {
@@ -405,13 +405,13 @@ export async function fetchGroups(ids: number[]): Promise<Record<number, IGroup>
   );
 }
 
-export async function fetchGroup(name: string): Promise<IGroup | null> {
+export async function fetchGroup(name: string): Promise<IGroup | undefined> {
   const group = await GroupRepo.findOne({
     where: { name },
   });
 
   if (!group) {
-    return null;
+    return;
   }
 
   return {

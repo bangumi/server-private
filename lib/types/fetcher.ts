@@ -22,7 +22,9 @@ import type * as res from './res.ts';
 
 const ONE_MONTH = 2592000;
 
-export async function fetchSlimUserByUsername(username: string): Promise<res.ISlimUser | null> {
+export async function fetchSlimUserByUsername(
+  username: string,
+): Promise<res.ISlimUser | undefined> {
   const data = await db
     .select()
     .from(schema.chiiUsers)
@@ -31,7 +33,7 @@ export async function fetchSlimUserByUsername(username: string): Promise<res.ISl
   for (const d of data) {
     return convert.toSlimUser(d);
   }
-  return null;
+  return;
 }
 
 export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | undefined> {
@@ -46,7 +48,7 @@ export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | un
     .where(op.eq(schema.chiiUsers.id, uid))
     .execute();
   if (!data) {
-    return null;
+    return;
   }
   const item = convert.toSlimUser(data);
   await redis.setex(getUserSlimCacheKey(uid), ONE_MONTH, JSON.stringify(item));
@@ -93,7 +95,7 @@ export async function fetchSlimSubjectByID(
   if (cached) {
     const slim = JSON.parse(cached) as res.ISlimSubject;
     if (!allowNsfw && slim.nsfw) {
-      return undefined;
+      return;
     } else {
       return slim;
     }
@@ -104,12 +106,12 @@ export async function fetchSlimSubjectByID(
     .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
     .execute();
   if (!data) {
-    return undefined;
+    return;
   }
   const slim = convert.toSlimSubject(data);
   await redis.setex(getSubjectSlimCacheKey(id), ONE_MONTH, JSON.stringify(slim));
   if (!allowNsfw && slim.nsfw) {
-    return undefined;
+    return;
   }
   return slim;
 }
@@ -153,12 +155,12 @@ export async function fetchSlimSubjectsByIDs(
 export async function fetchSubjectByID(
   id: number,
   allowNsfw = false,
-): Promise<res.ISubject | null> {
+): Promise<res.ISubject | undefined> {
   const cached = await redis.get(getSubjectItemCacheKey(id));
   if (cached) {
     const item = JSON.parse(cached) as res.ISubject;
     if (!allowNsfw && item.nsfw) {
-      return null;
+      return;
     }
     return item;
   }
@@ -169,12 +171,12 @@ export async function fetchSubjectByID(
     .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
     .execute();
   if (!data) {
-    return null;
+    return;
   }
   const item = convert.toSubject(data.chii_subjects, data.chii_subject_fields);
   await redis.setex(getSubjectItemCacheKey(id), ONE_MONTH, JSON.stringify(item));
   if (!allowNsfw && item.nsfw) {
-    return null;
+    return;
   }
   return item;
 }
@@ -363,7 +365,7 @@ export async function fetchSubjectEpStatus(
 export async function fetchSlimCharacterByID(
   id: number,
   allowNsfw = false,
-): Promise<res.ISlimCharacter | null> {
+): Promise<res.ISlimCharacter | undefined> {
   const data = await db
     .select()
     .from(schema.chiiCharacters)
@@ -378,13 +380,13 @@ export async function fetchSlimCharacterByID(
   for (const d of data) {
     return convert.toSlimCharacter(d);
   }
-  return null;
+  return;
 }
 
 export async function fetchSlimPersonByID(
   id: number,
   allowNsfw = false,
-): Promise<res.ISlimPerson | null> {
+): Promise<res.ISlimPerson | undefined> {
   const data = await db
     .select()
     .from(schema.chiiPersons)
@@ -399,7 +401,7 @@ export async function fetchSlimPersonByID(
   for (const d of data) {
     return convert.toSlimPerson(d);
   }
-  return null;
+  return;
 }
 
 export async function fetchCastsBySubjectAndCharacterIDs(
@@ -506,7 +508,7 @@ export async function fetchCastsByPersonAndCharacterIDs(
   return map;
 }
 
-export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | null> {
+export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | undefined> {
   const data = await db
     .select()
     .from(schema.chiiSubjectTopics)
@@ -516,7 +518,7 @@ export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic
   for (const d of data) {
     return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
   }
-  return null;
+  return;
 }
 
 export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promise<res.IReply[]> {
@@ -547,7 +549,7 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
   return topLevelReplies;
 }
 
-export async function fetchSlimGroupByID(groupID: number): Promise<res.ISlimGroup | null> {
+export async function fetchSlimGroupByID(groupID: number): Promise<res.ISlimGroup | undefined> {
   const cached = await redis.get(getGroupSlimCacheKey(groupID));
   if (cached) {
     return JSON.parse(cached) as res.ISlimGroup;
@@ -558,7 +560,7 @@ export async function fetchSlimGroupByID(groupID: number): Promise<res.ISlimGrou
     .where(op.eq(schema.chiiGroups.id, groupID))
     .execute();
   if (!data) {
-    return null;
+    return;
   }
   const group = convert.toSlimGroup(data);
   await redis.setex(getGroupSlimCacheKey(groupID), ONE_MONTH, JSON.stringify(group));

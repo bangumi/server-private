@@ -391,7 +391,7 @@ export async function handleTopicDetail(
     throw new NotFoundError(`topic ${id}`);
   }
 
-  let parent: orm.IGroup | res.ISubject | null;
+  let parent: orm.IGroup | res.ISubject | undefined;
   switch (type) {
     case TopicParentType.Group: {
       parent = await orm.fetchGroupByID(topic.parentID);
@@ -402,7 +402,7 @@ export async function handleTopicDetail(
       break;
     }
     default: {
-      parent = null;
+      parent = undefined;
     }
   }
   if (!parent) {
