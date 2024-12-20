@@ -823,46 +823,6 @@ export const TimelineMemo = t.Object(
   { $id: 'TimelineMemo', title: 'TimelineMemo' },
 );
 
-export type ITimelineImage = Static<typeof TimelineImage>;
-export const TimelineImage = t.Object(
-  {
-    user: t.Optional(
-      t.Array(
-        t.Object({
-          uid: t.Integer(),
-          images: t.Optional(t.Ref(Avatar)),
-        }),
-      ),
-    ),
-    group: t.Optional(
-      t.Array(
-        t.Object({
-          id: t.Integer(),
-          images: t.Optional(t.Ref(Avatar)),
-        }),
-      ),
-    ),
-    subject: t.Optional(
-      t.Array(
-        t.Object({
-          id: t.Integer(),
-          images: t.Optional(t.Ref(SubjectImages)),
-        }),
-      ),
-    ),
-    mono: t.Optional(
-      t.Array(
-        t.Object({
-          cat: t.Integer(),
-          id: t.Integer(),
-          images: t.Optional(t.Ref(PersonImages)),
-        }),
-      ),
-    ),
-  },
-  { $id: 'TimelineImage', title: 'TimelineImage' },
-);
-
 export type ITimeline = Static<typeof Timeline>;
 export const Timeline = t.Object(
   {
@@ -872,7 +832,6 @@ export const Timeline = t.Object(
     cat: t.Enum(TimelineCat),
     type: t.Integer(),
     memo: t.Ref(TimelineMemo),
-    image: t.Ref(TimelineImage),
     batch: t.Boolean(),
     source: t.Enum(TimelineSource),
     replies: t.Integer(),

@@ -2,6 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
+import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { TimelineMode } from '@app/lib/timeline/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -45,7 +46,7 @@ export async function setup(app: App) {
           break;
         }
       }
-      const result = await fetcher.fetchTimelineByIDs(ids);
+      const result = await fetchTimelineByIDs(ids);
       const items = [];
       for (const tid of ids) {
         const item = result[tid];
