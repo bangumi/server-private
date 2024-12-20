@@ -4,7 +4,6 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
 import * as req from '@app/lib/types/req.ts';
 
@@ -791,17 +790,64 @@ export const TimelineMemo = t.Object(
   { $id: 'TimelineMemo', title: 'TimelineMemo' },
 );
 
+export const TimelineCat = t.Integer({
+  $id: 'TimelineCat',
+  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  'x-ms-enum': {
+    name: 'TimelineCat',
+    modelAsString: true,
+  },
+  'x-enum-varnames': [
+    'Daily',
+    'Wiki',
+    'Subject',
+    'Progress',
+    'Status',
+    'Blog',
+    'Index',
+    'Mono',
+    'Doujin',
+  ],
+  description: `时间线类型
+  - 1 = 日常行为
+  - 2 = 维基操作
+  - 3 = 收藏条目
+  - 4 = 收视进度
+  - 5 = 状态
+  - 6 = 日志
+  - 7 = 目录
+  - 8 = 人物
+  - 9 = 天窗`,
+});
+
+export const TimelineSource = t.Integer({
+  $id: 'TimelineSource',
+  enum: [0, 1, 2, 3, 4, 5],
+  'x-ms-enum': {
+    name: 'TimelineSource',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['Web', 'Mobile', 'OnAir', 'InTouch', 'WP', 'API'],
+  description: `时间线来源
+  - 0 = 网站
+  - 1 = 移动端
+  - 2 = https://bgm.tv/onair
+  - 3 = https://netaba.re/
+  - 4 = WP
+  - 5 = API`,
+});
+
 export type ITimeline = Static<typeof Timeline>;
 export const Timeline = t.Object(
   {
     id: t.Integer(),
     uid: t.Integer(),
     user: t.Optional(t.Ref(SlimUser)),
-    cat: t.Enum(TimelineCat),
+    cat: t.Ref(TimelineCat),
     type: t.Integer(),
     memo: t.Ref(TimelineMemo),
     batch: t.Boolean(),
-    source: t.Enum(TimelineSource),
+    source: t.Ref(TimelineSource),
     replies: t.Integer(),
     createdAt: t.Integer(),
   },
