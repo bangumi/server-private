@@ -464,6 +464,21 @@ exports[`should build private api spec 1`] = `
         - message
         - statusCode
       type: object
+    FilterMode:
+      description: |-
+        过滤模式
+          - all = 全站
+          - friends = 好友
+      enum:
+        - all
+        - friends
+      type: string
+      x-enum-varnames:
+        - All
+        - Friends
+      x-ms-enum:
+        modelAsString: true
+        name: FilterMode
     Friend:
       properties:
         createdAt:
@@ -1039,6 +1054,26 @@ exports[`should build private api spec 1`] = `
         - lock
         - nsfw
       title: SlimCharacter
+      type: object
+    SlimGroup:
+      properties:
+        icon:
+          $ref: '#/components/schemas/Avatar'
+        id:
+          type: integer
+        name:
+          type: string
+        nsfw:
+          type: boolean
+        title:
+          type: string
+      required:
+        - id
+        - name
+        - nsfw
+        - title
+        - icon
+      title: SlimGroup
       type: object
     SlimIndex:
       properties:
@@ -1779,64 +1814,17 @@ exports[`should build private api spec 1`] = `
         batch:
           type: boolean
         cat:
-          anyOf:
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 5
-              type: number
-            - enum:
-                - 6
-              type: number
-            - enum:
-                - 7
-              type: number
-            - enum:
-                - 8
-              type: number
-            - enum:
-                - 9
-              type: number
+          $ref: '#/components/schemas/TimelineCat'
         createdAt:
           type: integer
         id:
           type: integer
-        image:
-          $ref: '#/components/schemas/TimelineImage'
         memo:
           $ref: '#/components/schemas/TimelineMemo'
         replies:
           type: integer
         source:
-          anyOf:
-            - enum:
-                - 0
-              type: number
-            - enum:
-                - 1
-              type: number
-            - enum:
-                - 2
-              type: number
-            - enum:
-                - 3
-              type: number
-            - enum:
-                - 4
-              type: number
-            - enum:
-                - 5
-              type: number
+          $ref: '#/components/schemas/TimelineSource'
         type:
           type: integer
         uid:
@@ -1849,143 +1837,79 @@ exports[`should build private api spec 1`] = `
         - cat
         - type
         - memo
-        - image
         - batch
         - source
         - replies
         - createdAt
       title: Timeline
       type: object
-    TimelineImage:
-      properties:
-        group:
-          items:
-            properties:
-              id:
-                type: integer
-              images:
-                $ref: '#/components/schemas/Avatar'
-            required:
-              - id
-            type: object
-          type: array
-        mono:
-          items:
-            properties:
-              cat:
-                type: integer
-              id:
-                type: integer
-              images:
-                $ref: '#/components/schemas/PersonImages'
-            required:
-              - cat
-              - id
-            type: object
-          type: array
-        subject:
-          items:
-            properties:
-              id:
-                type: integer
-              images:
-                $ref: '#/components/schemas/SubjectImages'
-            required:
-              - id
-            type: object
-          type: array
-        user:
-          items:
-            properties:
-              images:
-                $ref: '#/components/schemas/Avatar'
-              uid:
-                type: integer
-            required:
-              - uid
-            type: object
-          type: array
-      title: TimelineImage
-      type: object
+    TimelineCat:
+      description: |-
+        时间线类型
+          - 1 = 日常行为
+          - 2 = 维基操作
+          - 3 = 收藏条目
+          - 4 = 收视进度
+          - 5 = 状态
+          - 6 = 日志
+          - 7 = 目录
+          - 8 = 人物
+          - 9 = 天窗
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+      type: integer
+      x-enum-varnames:
+        - Daily
+        - Wiki
+        - Subject
+        - Progress
+        - Status
+        - Blog
+        - Index
+        - Mono
+        - Doujin
+      x-ms-enum:
+        modelAsString: true
+        name: TimelineCat
     TimelineMemo:
       properties:
         blog:
-          properties:
-            desc:
-              type: string
-            id:
-              type: integer
-            title:
-              type: string
-          required:
-            - id
-            - title
-            - desc
-          type: object
+          $ref: '#/components/schemas/SlimBlogEntry'
         daily:
           properties:
-            group:
+            groups:
               items:
-                properties:
-                  desc:
-                    type: string
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  title:
-                    type: string
-                required:
-                  - id
-                  - name
-                  - title
-                  - desc
-                type: object
+                $ref: '#/components/schemas/SlimGroup'
               type: array
-            user:
+            users:
               items:
-                properties:
-                  nickname:
-                    type: string
-                  uid:
-                    type: integer
-                  username:
-                    type: string
-                required:
-                  - uid
-                  - username
-                  - nickname
-                type: object
+                $ref: '#/components/schemas/SlimUser'
               type: array
           type: object
         index:
-          properties:
-            desc:
-              type: string
-            id:
-              type: integer
-            title:
-              type: string
-          required:
-            - id
-            - title
-            - desc
-          type: object
+          $ref: '#/components/schemas/SlimIndex'
         mono:
-          items:
-            properties:
-              cat:
-                type: integer
-              id:
-                type: integer
-              name:
-                type: string
-            required:
-              - cat
-              - id
-              - name
-            type: object
-          type: array
+          properties:
+            characters:
+              items:
+                $ref: '#/components/schemas/SlimCharacter'
+              type: array
+            persons:
+              items:
+                $ref: '#/components/schemas/SlimPerson'
+              type: array
+          required:
+            - characters
+            - persons
+          type: object
         progress:
           properties:
             batch:
@@ -1994,10 +1918,8 @@ exports[`should build private api spec 1`] = `
                   type: string
                 epsUpdate:
                   type: integer
-                subjectID:
-                  type: integer
-                subjectName:
-                  type: string
+                subject:
+                  $ref: '#/components/schemas/SlimSubject'
                 volsTotal:
                   type: string
                 volsUpdate:
@@ -2007,27 +1929,17 @@ exports[`should build private api spec 1`] = `
                 - epsUpdate
                 - volsTotal
                 - volsUpdate
-                - subjectID
-                - subjectName
+                - subject
               type: object
             single:
               properties:
-                epID:
-                  type: integer
-                epName:
-                  type: string
-                epSort:
-                  type: integer
-                subjectID:
-                  type: integer
-                subjectName:
-                  type: string
+                episode:
+                  $ref: '#/components/schemas/Episode'
+                subject:
+                  $ref: '#/components/schemas/SlimSubject'
               required:
-                - epID
-                - epName
-                - epSort
-                - subjectID
-                - subjectName
+                - episode
+                - subject
               type: object
           type: object
         status:
@@ -2052,24 +1964,12 @@ exports[`should build private api spec 1`] = `
             properties:
               comment:
                 type: string
-              id:
-                type: integer
-              name:
-                type: string
-              nameCN:
-                type: string
               rate:
                 type: number
-              series:
-                type: boolean
-              type:
-                type: integer
+              subject:
+                $ref: '#/components/schemas/SlimSubject'
             required:
-              - id
-              - type
-              - name
-              - nameCN
-              - series
+              - subject
               - comment
               - rate
             type: object
@@ -2077,23 +1977,37 @@ exports[`should build private api spec 1`] = `
         wiki:
           properties:
             subject:
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-                nameCN:
-                  type: string
-              required:
-                - id
-                - name
-                - nameCN
-              type: object
-          required:
-            - subject
+              $ref: '#/components/schemas/SlimSubject'
           type: object
       title: TimelineMemo
       type: object
+    TimelineSource:
+      description: |-
+        时间线来源
+          - 0 = 网站
+          - 1 = 移动端
+          - 2 = https://bgm.tv/onair
+          - 3 = https://netaba.re/
+          - 4 = WP
+          - 5 = API
+      enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      type: integer
+      x-enum-varnames:
+        - Web
+        - Mobile
+        - OnAir
+        - InTouch
+        - WP
+        - API
+      x-ms-enum:
+        modelAsString: true
+        name: TimelineSource
     Topic:
       properties:
         createdAt:
@@ -5121,18 +5035,12 @@ paths:
     get:
       operationId: getTimeline
       parameters:
-        - description: 'all: 全站, friends: 好友; 登录时默认为 friends, 未登录或没有好友时始终为 all'
+        - description: 登录时默认为 friends, 未登录或没有好友时始终为 all
           in: query
           name: mode
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - all
-                type: string
-              - enum:
-                  - friends
-                type: string
+            $ref: '#/components/schemas/FilterMode'
         - description: min 0
           in: query
           name: offset

@@ -4,7 +4,6 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
 import * as req from '@app/lib/types/req.ts';
 
@@ -635,6 +634,18 @@ export const Group = t.Object(
   { $id: 'Group', title: 'Group' },
 );
 
+export type ISlimGroup = Static<typeof SlimGroup>;
+export const SlimGroup = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    nsfw: t.Boolean(),
+    title: t.String(),
+    icon: t.Ref(Avatar),
+  },
+  { $id: 'SlimGroup', title: 'SlimGroup' },
+);
+
 export type IGroupMember = Static<typeof GroupMember>;
 export const GroupMember = t.Object(
   {
@@ -723,44 +734,19 @@ export const TimelineMemo = t.Object(
   {
     daily: t.Optional(
       t.Object({
-        user: t.Optional(
-          t.Array(
-            t.Object({
-              uid: t.Integer(),
-              username: t.String(),
-              nickname: t.String(),
-            }),
-          ),
-        ),
-        group: t.Optional(
-          t.Array(
-            t.Object({
-              id: t.Integer(),
-              name: t.String(),
-              title: t.String(),
-              desc: t.String(),
-            }),
-          ),
-        ),
+        users: t.Optional(t.Array(t.Ref(SlimUser))),
+        groups: t.Optional(t.Array(t.Ref(SlimGroup))),
       }),
     ),
     wiki: t.Optional(
       t.Object({
-        subject: t.Object({
-          id: t.Integer(),
-          name: t.String(),
-          nameCN: t.String(),
-        }),
+        subject: t.Optional(t.Ref(SlimSubject)),
       }),
     ),
     subject: t.Optional(
       t.Array(
         t.Object({
-          id: t.Integer(),
-          type: t.Integer(),
-          name: t.String(),
-          nameCN: t.String(),
-          series: t.Boolean(),
+          subject: t.Ref(SlimSubject),
           comment: t.String(),
           rate: t.Number(),
         }),
@@ -774,17 +760,13 @@ export const TimelineMemo = t.Object(
             epsUpdate: t.Integer(),
             volsTotal: t.String(),
             volsUpdate: t.Integer(),
-            subjectID: t.Integer(),
-            subjectName: t.String(),
+            subject: t.Ref(SlimSubject),
           }),
         ),
         single: t.Optional(
           t.Object({
-            epID: t.Integer(),
-            epName: t.String(),
-            epSort: t.Integer(),
-            subjectID: t.Integer(),
-            subjectName: t.String(),
+            episode: t.Ref(Episode),
+            subject: t.Ref(SlimSubject),
           }),
         ),
       }),
@@ -796,72 +778,64 @@ export const TimelineMemo = t.Object(
         nickname: t.Optional(t.Object({ before: t.String(), after: t.String() })),
       }),
     ),
-    blog: t.Optional(
-      t.Object({
-        id: t.Integer(),
-        title: t.String(),
-        desc: t.String(),
-      }),
-    ),
-    index: t.Optional(
-      t.Object({
-        id: t.Integer(),
-        title: t.String(),
-        desc: t.String(),
-      }),
-    ),
+    blog: t.Optional(t.Ref(SlimBlogEntry)),
+    index: t.Optional(t.Ref(SlimIndex)),
     mono: t.Optional(
-      t.Array(
-        t.Object({
-          cat: t.Integer(),
-          id: t.Integer(),
-          name: t.String(),
-        }),
-      ),
+      t.Object({
+        characters: t.Array(t.Ref(SlimCharacter)),
+        persons: t.Array(t.Ref(SlimPerson)),
+      }),
     ),
   },
   { $id: 'TimelineMemo', title: 'TimelineMemo' },
 );
 
-export type ITimelineImage = Static<typeof TimelineImage>;
-export const TimelineImage = t.Object(
-  {
-    user: t.Optional(
-      t.Array(
-        t.Object({
-          uid: t.Integer(),
-          images: t.Optional(t.Ref(Avatar)),
-        }),
-      ),
-    ),
-    group: t.Optional(
-      t.Array(
-        t.Object({
-          id: t.Integer(),
-          images: t.Optional(t.Ref(Avatar)),
-        }),
-      ),
-    ),
-    subject: t.Optional(
-      t.Array(
-        t.Object({
-          id: t.Integer(),
-          images: t.Optional(t.Ref(SubjectImages)),
-        }),
-      ),
-    ),
-    mono: t.Optional(
-      t.Array(
-        t.Object({
-          cat: t.Integer(),
-          id: t.Integer(),
-          images: t.Optional(t.Ref(PersonImages)),
-        }),
-      ),
-    ),
+export const TimelineCat = t.Integer({
+  $id: 'TimelineCat',
+  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  'x-ms-enum': {
+    name: 'TimelineCat',
+    modelAsString: true,
   },
-  { $id: 'TimelineImage', title: 'TimelineImage' },
-);
+  'x-enum-varnames': [
+    'Daily',
+    'Wiki',
+    'Subject',
+    'Progress',
+    'Status',
+    'Blog',
+    'Index',
+    'Mono',
+    'Doujin',
+  ],
+  description: `时间线类型
+  - 1 = 日常行为
+  - 2 = 维基操作
+  - 3 = 收藏条目
+  - 4 = 收视进度
+  - 5 = 状态
+  - 6 = 日志
+  - 7 = 目录
+  - 8 = 人物
+  - 9 = 天窗`,
+});
+
+export const TimelineSource = t.Integer({
+  $id: 'TimelineSource',
+  enum: [0, 1, 2, 3, 4, 5],
+  'x-ms-enum': {
+    name: 'TimelineSource',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['Web', 'Mobile', 'OnAir', 'InTouch', 'WP', 'API'],
+  description: `时间线来源
+  - 0 = 网站
+  - 1 = 移动端
+  - 2 = https://bgm.tv/onair
+  - 3 = https://netaba.re/
+  - 4 = WP
+  - 5 = API`,
+});
 
 export type ITimeline = Static<typeof Timeline>;
 export const Timeline = t.Object(
@@ -869,12 +843,11 @@ export const Timeline = t.Object(
     id: t.Integer(),
     uid: t.Integer(),
     user: t.Optional(t.Ref(SlimUser)),
-    cat: t.Enum(TimelineCat),
+    cat: t.Ref(TimelineCat),
     type: t.Integer(),
     memo: t.Ref(TimelineMemo),
-    image: t.Ref(TimelineImage),
     batch: t.Boolean(),
-    source: t.Enum(TimelineSource),
+    source: t.Ref(TimelineSource),
     replies: t.Integer(),
     createdAt: t.Integer(),
   },

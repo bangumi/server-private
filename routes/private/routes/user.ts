@@ -16,6 +16,7 @@ import {
   SubjectTypeValues,
   type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
+import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { getTimelineUser } from '@app/lib/timeline/user';
 import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
@@ -1253,7 +1254,7 @@ export async function setup(app: App) {
       }
 
       const ids = await getTimelineUser(user.id, 20, offset);
-      const result = await fetcher.fetchTimelineByIDs(ids);
+      const result = await fetchTimelineByIDs(ids);
       const items = [];
       for (const tid of ids) {
         const item = result[tid];

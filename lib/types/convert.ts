@@ -7,8 +7,6 @@ import type * as ormold from '@app/lib/orm/index.ts';
 import { avatar, personImages, subjectCover } from '@app/lib/response.ts';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
-import { parse as parseTimelineImage } from '@app/lib/timeline/image';
-import { parse as parseTimelineMemo } from '@app/lib/timeline/memo';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findNetworkService,
@@ -257,7 +255,7 @@ export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
     name: subject.name,
     nameCN: subject.nameCN,
     type: subject.typeID,
-    images: subjectCover(subject.image) || undefined,
+    images: subjectCover(subject.image),
     info: getInfoboxSummary(infobox, subject.typeID),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
@@ -271,7 +269,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     collection: toSubjectCollection(subject),
     eps: subject.eps,
     id: subject.id,
-    images: subjectCover(subject.image) || undefined,
+    images: subjectCover(subject.image),
     infobox: infobox,
     info: getInfoboxSummary(infobox, subject.typeID),
     metaTags: splitTags(subject.metaTags),
@@ -425,7 +423,7 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
     name: character.name,
     nameCN: extractNameCN(infobox),
     role: character.role,
-    images: personImages(character.img) || undefined,
+    images: personImages(character.img),
     comment: character.comment,
     nsfw: character.nsfw,
     lock: Boolean(character.lock),
@@ -441,7 +439,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
     role: character.role,
     infobox: infobox,
     summary: character.summary,
-    images: personImages(character.img) || undefined,
+    images: personImages(character.img),
     comment: character.comment,
     collects: character.collects,
     lock: Boolean(character.lock),
@@ -457,7 +455,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     name: person.name,
     nameCN: extractNameCN(infobox),
     type: person.type,
-    images: personImages(person.img) || undefined,
+    images: personImages(person.img),
     comment: person.comment,
     nsfw: person.nsfw,
     lock: Boolean(person.lock),
@@ -499,7 +497,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
     infobox: infobox,
     career,
     summary: person.summary,
-    images: personImages(person.img) || undefined,
+    images: personImages(person.img),
     comment: person.comment,
     collects: person.collects,
     lock: Boolean(person.lock),
@@ -590,17 +588,12 @@ export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): r
   };
 }
 
-export function toTimeline(tml: orm.ITimeline): res.ITimeline {
+export function toSlimGroup(group: orm.IGroup): res.ISlimGroup {
   return {
-    id: tml.id,
-    uid: tml.uid,
-    cat: tml.cat,
-    type: tml.type,
-    memo: parseTimelineMemo(tml.cat, tml.type, tml.batch, tml.memo),
-    image: parseTimelineImage(tml.cat, tml.type, tml.batch, tml.img),
-    batch: tml.batch,
-    replies: tml.replies,
-    source: tml.source,
-    createdAt: tml.createdAt,
+    id: group.id,
+    name: group.name,
+    nsfw: group.nsfw,
+    title: group.title,
+    icon: avatar(group.icon),
   };
 }

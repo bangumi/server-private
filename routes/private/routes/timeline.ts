@@ -2,8 +2,10 @@ import { Type as t } from '@sinclair/typebox';
 
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
+import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { TimelineMode } from '@app/lib/timeline/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -19,9 +21,8 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           mode: t.Optional(
-            t.Enum(TimelineMode, {
-              description:
-                'all: 全站, friends: 好友; 登录时默认为 friends, 未登录或没有好友时始终为 all',
+            t.Ref(req.FilterMode, {
+              description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
             }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
@@ -45,7 +46,7 @@ export async function setup(app: App) {
           break;
         }
       }
-      const result = await fetcher.fetchTimelineByIDs(ids);
+      const result = await fetchTimelineByIDs(ids);
       const items = [];
       for (const tid of ids) {
         const item = result[tid];
