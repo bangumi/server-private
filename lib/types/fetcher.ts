@@ -36,6 +36,7 @@ export async function fetchSlimUserByUsername(
   return;
 }
 
+/** Cached */
 export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | undefined> {
   const cached = await redis.get(getUserSlimCacheKey(uid));
   if (cached) {
@@ -55,6 +56,7 @@ export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | un
   return item;
 }
 
+/** Cached */
 export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
   const cached = await redis.mget(ids.map((id) => getUserSlimCacheKey(id)));
   const result: Record<number, res.ISlimUser> = {};
@@ -87,6 +89,7 @@ export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> 
   return data.map((d) => d.fid);
 }
 
+/** Cached */
 export async function fetchSlimSubjectByID(
   id: number,
   allowNsfw = false,
@@ -116,6 +119,7 @@ export async function fetchSlimSubjectByID(
   return slim;
 }
 
+/** Cached */
 export async function fetchSlimSubjectsByIDs(
   ids: number[],
   allowNsfw = false,
@@ -152,6 +156,7 @@ export async function fetchSlimSubjectsByIDs(
   return result;
 }
 
+/** Cached */
 export async function fetchSubjectByID(
   id: number,
   allowNsfw = false,
@@ -181,6 +186,7 @@ export async function fetchSubjectByID(
   return item;
 }
 
+/** Cached */
 export async function fetchSubjectsByIDs(
   ids: number[],
   allowNsfw = false,
@@ -224,6 +230,7 @@ export async function fetchSubjectsByIDs(
   return result;
 }
 
+/** Cached */
 export async function fetchSubjectIDsByFilter(
   filter: SubjectFilter,
   sort: SubjectSort,
@@ -549,6 +556,7 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
   return topLevelReplies;
 }
 
+/** Cached */
 export async function fetchSlimGroupByID(groupID: number): Promise<res.ISlimGroup | undefined> {
   const cached = await redis.get(getGroupSlimCacheKey(groupID));
   if (cached) {
@@ -567,6 +575,7 @@ export async function fetchSlimGroupByID(groupID: number): Promise<res.ISlimGrou
   return group;
 }
 
+/** Cached */
 export async function fetchSlimGroupsByIDs(ids: number[]): Promise<Record<number, res.ISlimGroup>> {
   const cached = await redis.mget(ids.map((id) => getGroupSlimCacheKey(id)));
   const result: Record<number, res.ISlimGroup> = {};
