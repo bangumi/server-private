@@ -464,6 +464,21 @@ exports[`should build private api spec 1`] = `
         - message
         - statusCode
       type: object
+    FilterMode:
+      description: |-
+        过滤模式
+          - all = 全站
+          - friends = 好友
+      enum:
+        - all
+        - friends
+      type: string
+      x-enum-varnames:
+        - All
+        - Friends
+      x-ms-enum:
+        modelAsString: true
+        name: FilterMode
     Friend:
       properties:
         createdAt:
@@ -5121,18 +5136,12 @@ paths:
     get:
       operationId: getTimeline
       parameters:
-        - description: 'all: 全站, friends: 好友; 登录时默认为 friends, 未登录或没有好友时始终为 all'
+        - description: 过滤模式 - all = 全站 - friends = 好友 登录时默认为 friends, 未登录或没有好友时始终为 all
           in: query
           name: mode
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - all
-                type: string
-              - enum:
-                  - friends
-                type: string
+            $ref: '#/components/schemas/FilterMode'
         - description: min 0
           in: query
           name: offset

@@ -29,6 +29,19 @@ export const UpdateTopic = t.Object(
   { $id: 'UpdateTopic' },
 );
 
+export const FilterMode = t.String({
+  $id: 'FilterMode',
+  enum: ['all', 'friends'],
+  'x-ms-enum': {
+    name: 'FilterMode',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['All', 'Friends'],
+  description: `过滤模式
+  - all = 全站
+  - friends = 好友`,
+});
+
 export const SubjectType = t.Integer({
   $id: 'SubjectType',
   enum: [1, 2, 3, 4, 6],

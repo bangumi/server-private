@@ -7,6 +7,7 @@ export function addSchemas(app: App) {
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.EpisodeType);
+  app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
   app.addSchema(req.SubjectType);
   app.addSchema(req.UpdateTopic);
