@@ -16,7 +16,7 @@ export async function parseTimelineMemo(
   type: number,
   batch: boolean,
   data: string,
-) {
+): Promise<res.ITimelineMemo> {
   if (data === '') {
     return {};
   }
