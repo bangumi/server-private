@@ -779,28 +779,13 @@ export const TimelineMemo = t.Object(
         nickname: t.Optional(t.Object({ before: t.String(), after: t.String() })),
       }),
     ),
-    blog: t.Optional(
-      t.Object({
-        id: t.Integer(),
-        title: t.String(),
-        desc: t.String(),
-      }),
-    ),
-    index: t.Optional(
-      t.Object({
-        id: t.Integer(),
-        title: t.String(),
-        desc: t.String(),
-      }),
-    ),
+    blog: t.Optional(t.Ref(SlimBlogEntry)),
+    index: t.Optional(t.Ref(SlimIndex)),
     mono: t.Optional(
-      t.Array(
-        t.Object({
-          cat: t.Integer(),
-          id: t.Integer(),
-          name: t.String(),
-        }),
-      ),
+      t.Object({
+        characters: t.Array(t.Ref(SlimCharacter)),
+        persons: t.Array(t.Ref(SlimPerson)),
+      }),
     ),
   },
   { $id: 'TimelineMemo', title: 'TimelineMemo' },

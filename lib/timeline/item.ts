@@ -189,42 +189,60 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Blog: {
       const info = php.parse(data) as memo.Blog;
+      const blog = await fetcher.fetchSlimBlogEntryByID(Number(info.entry_id));
       return {
-        blog: {
-          id: Number(info.entry_id),
-          title: info.entry_title,
-          desc: info.entry_desc,
-        },
+        blog,
       };
     }
     case TimelineCat.Index: {
       const info = php.parse(data) as memo.Index;
+      const index = await fetcher.fetchSlimIndexByID(Number(info.idx_id));
       return {
-        index: {
-          id: Number(info.idx_id),
-          title: info.idx_title,
-          desc: info.idx_desc,
-        },
+        index,
       };
     }
     case TimelineCat.Mono: {
-      const monos = [];
       if (batch) {
         const info = php.parse(data) as memo.MonoBatch;
+        const characterIDs = [];
+        const personIDs = [];
         for (const [_, value] of Object.entries(info)) {
-          monos.push(value);
+          if (value.cat === 1) {
+            characterIDs.push(value.id);
+          } else if (value.cat === 2) {
+            personIDs.push(value.id);
+          }
         }
+        const cs = await fetcher.fetchSlimCharactersByIDs(characterIDs);
+        const ps = await fetcher.fetchSlimPersonsByIDs(personIDs);
+        return {
+          mono: {
+            characters: Object.entries(cs).map(([_, v]) => v),
+            persons: Object.entries(ps).map(([_, v]) => v),
+          },
+        };
       } else {
         const info = php.parse(data) as memo.MonoSingle;
-        monos.push(info);
+        const characters = [];
+        const persons = [];
+        if (info.cat === 1) {
+          const character = await fetcher.fetchSlimCharacterByID(Number(info.id));
+          if (character) {
+            characters.push(character);
+          }
+        } else if (info.cat === 2) {
+          const person = await fetcher.fetchSlimPersonByID(Number(info.id));
+          if (person) {
+            persons.push(person);
+          }
+        }
+        return {
+          mono: {
+            characters,
+            persons,
+          },
+        };
       }
-      return {
-        mono: monos.map((m) => ({
-          cat: m.cat,
-          id: m.id,
-          name: m.name,
-        })),
-      };
     }
     case TimelineCat.Doujin: {
       return {};
