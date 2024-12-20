@@ -635,6 +635,18 @@ export const Group = t.Object(
   { $id: 'Group', title: 'Group' },
 );
 
+export type ISlimGroup = Static<typeof SlimGroup>;
+export const SlimGroup = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    nsfw: t.Boolean(),
+    title: t.String(),
+    icon: t.Ref(Avatar),
+  },
+  { $id: 'SlimGroup', title: 'SlimGroup' },
+);
+
 export type IGroupMember = Static<typeof GroupMember>;
 export const GroupMember = t.Object(
   {
@@ -724,16 +736,7 @@ export const TimelineMemo = t.Object(
     daily: t.Optional(
       t.Object({
         users: t.Optional(t.Array(t.Ref(SlimUser))),
-        groups: t.Optional(
-          t.Array(
-            t.Object({
-              id: t.Integer(),
-              name: t.String(),
-              title: t.String(),
-              desc: t.String(),
-            }),
-          ),
-        ),
+        groups: t.Optional(t.Array(t.Ref(SlimGroup))),
       }),
     ),
     wiki: t.Optional(

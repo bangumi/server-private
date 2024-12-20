@@ -1,5 +1,6 @@
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
+import { getSlimCacheKey as getGroupSlimCacheKey } from '@app/lib/group/cache.ts';
 import redis from '@app/lib/redis.ts';
 import {
   getItemCacheKey as getSubjectItemCacheKey,
@@ -534,4 +535,22 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
     reply.replies = subReplies[reply.id] ?? [];
   }
   return topLevelReplies;
+}
+
+export async function fetchSlimGroupByID(groupID: number): Promise<res.ISlimGroup | null> {
+  const cached = await redis.get(getGroupSlimCacheKey(groupID));
+  if (cached) {
+    return JSON.parse(cached) as res.ISlimGroup;
+  }
+  const [data] = await db
+    .select()
+    .from(schema.chiiGroups)
+    .where(op.eq(schema.chiiGroups.id, groupID))
+    .execute();
+  if (!data) {
+    return null;
+  }
+  const group = convert.toSlimGroup(data);
+  await redis.setex(getGroupSlimCacheKey(groupID), ONE_MONTH, JSON.stringify(group));
+  return group;
 }

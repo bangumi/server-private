@@ -587,3 +587,13 @@ export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): r
     createdAt: collect.createdAt,
   };
 }
+
+export function toSlimGroup(group: orm.IGroup): res.ISlimGroup {
+  return {
+    id: group.id,
+    name: group.name,
+    nsfw: group.nsfw,
+    title: group.title,
+    icon: avatar(group.icon),
+  };
+}

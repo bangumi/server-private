@@ -52,20 +52,21 @@ export async function parseTimelineMemo(
           if (batch) {
             const info = php.parse(data) as memo.GroupBatch;
             for (const [_, value] of Object.entries(info)) {
-              groups.push(value);
+              const group = await fetcher.fetchSlimGroupByID(Number(value.grp_id));
+              if (group) {
+                groups.push(group);
+              }
             }
           } else {
             const info = php.parse(data) as memo.Group;
-            groups.push(info);
+            const group = await fetcher.fetchSlimGroupByID(Number(info.grp_id));
+            if (group) {
+              groups.push(group);
+            }
           }
           return {
             daily: {
-              group: groups.map((g) => ({
-                id: Number(g.grp_id),
-                name: g.grp_name,
-                title: g.grp_title,
-                desc: g.grp_desc,
-              })),
+              groups,
             },
           };
         }

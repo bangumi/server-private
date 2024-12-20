@@ -35,3 +35,6 @@ export type IBlogPhoto = typeof schema.chiiBlogPhotos.$inferSelect;
 
 export type ITimeline = typeof schema.chiiTimeline.$inferSelect;
 export type ITimelineComment = typeof schema.chiiTimelineComments.$inferSelect;
+
+export type IGroup = typeof schema.chiiGroups.$inferSelect;
+export type IGroupMember = typeof schema.chiiGroupMembers.$inferSelect;
