@@ -88,23 +88,32 @@ export async function parseTimelineMemo(
       const subjects = [];
       if (batch) {
         const info = php.parse(data) as memo.SubjectBatch;
+        const ss = await fetcher.fetchSlimSubjectsByIDs(
+          Object.entries(info).map(([_, v]) => Number(v.subject_id)),
+        );
         for (const [_, value] of Object.entries(info)) {
-          subjects.push(value);
+          const subject = ss[Number(value.subject_id)];
+          if (subject) {
+            subjects.push({
+              subject,
+              comment: value.collect_comment,
+              rate: value.collect_rate,
+            });
+          }
         }
       } else {
         const info = php.parse(data) as memo.Subject;
-        subjects.push(info);
+        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
+        if (subject) {
+          subjects.push({
+            subject,
+            comment: info.collect_comment,
+            rate: info.collect_rate,
+          });
+        }
       }
       return {
-        subject: subjects.map((s) => ({
-          id: Number(s.subject_id),
-          type: Number(s.subject_type_id),
-          name: s.subject_name,
-          nameCN: s.subject_name_cn,
-          series: s.subject_series === '1',
-          comment: s.collect_comment,
-          rate: Number(s.collect_rate),
-        })),
+        subject: subjects,
       };
     }
     case TimelineCat.Progress: {
