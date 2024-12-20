@@ -58,7 +58,11 @@ export enum TimelineCat {
   /** 目录 */
   Index = 7,
 
-  /** 人物 */
+  /**
+   * 人物
+   *
+   * Cat: 1 = 角色, 2 = 人物
+   */
   Mono = 8,
 
   /**
