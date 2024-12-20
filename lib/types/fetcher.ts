@@ -34,7 +34,7 @@ export async function fetchSlimUserByUsername(username: string): Promise<res.ISl
   return null;
 }
 
-export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | null> {
+export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | undefined> {
   const cached = await redis.get(getUserSlimCacheKey(uid));
   if (cached) {
     const item = JSON.parse(cached) as res.ISlimUser;
@@ -88,12 +88,12 @@ export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> 
 export async function fetchSlimSubjectByID(
   id: number,
   allowNsfw = false,
-): Promise<res.ISlimSubject | null> {
+): Promise<res.ISlimSubject | undefined> {
   const cached = await redis.get(getSubjectSlimCacheKey(id));
   if (cached) {
     const slim = JSON.parse(cached) as res.ISlimSubject;
     if (!allowNsfw && slim.nsfw) {
-      return null;
+      return undefined;
     } else {
       return slim;
     }
@@ -104,12 +104,12 @@ export async function fetchSlimSubjectByID(
     .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
     .execute();
   if (!data) {
-    return null;
+    return undefined;
   }
   const slim = convert.toSlimSubject(data);
   await redis.setex(getSubjectSlimCacheKey(id), ONE_MONTH, JSON.stringify(slim));
   if (!allowNsfw && slim.nsfw) {
-    return null;
+    return undefined;
   }
   return slim;
 }

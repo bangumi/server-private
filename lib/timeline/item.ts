@@ -77,13 +77,10 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Wiki: {
       const info = php.parse(data) as memo.NewSubject;
+      const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
       return {
         wiki: {
-          subject: {
-            id: info.subject_id,
-            name: info.subject_name,
-            nameCN: info.subject_name_cn,
-          },
+          subject,
         },
       };
     }

@@ -741,11 +741,7 @@ export const TimelineMemo = t.Object(
     ),
     wiki: t.Optional(
       t.Object({
-        subject: t.Object({
-          id: t.Integer(),
-          name: t.String(),
-          nameCN: t.String(),
-        }),
+        subject: t.Optional(t.Ref(SlimSubject)),
       }),
     ),
     subject: t.Optional(
