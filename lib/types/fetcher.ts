@@ -3,6 +3,7 @@ import * as schema from '@app/drizzle/schema';
 import { getSlimCacheKey as getGroupSlimCacheKey } from '@app/lib/group/cache.ts';
 import redis from '@app/lib/redis.ts';
 import {
+  getEpCacheKey as getSubjectEpCacheKey,
   getItemCacheKey as getSubjectItemCacheKey,
   getListCacheKey as getSubjectListCacheKey,
   getSlimCacheKey as getSubjectSlimCacheKey,
@@ -367,6 +368,25 @@ export async function fetchSubjectEpStatus(
     return convert.toSubjectEpStatus(d);
   }
   return {};
+}
+
+/** Cached */
+export async function fetchEpisodeByID(episodeID: number): Promise<res.IEpisode | undefined> {
+  const cached = await redis.get(getSubjectEpCacheKey(episodeID));
+  if (cached) {
+    return JSON.parse(cached) as res.IEpisode;
+  }
+  const [data] = await db
+    .select()
+    .from(schema.chiiEpisodes)
+    .where(op.eq(schema.chiiEpisodes.id, episodeID))
+    .execute();
+  if (!data) {
+    return;
+  }
+  const item = convert.toEpisode(data);
+  await redis.setex(getSubjectEpCacheKey(episodeID), ONE_MONTH, JSON.stringify(item));
+  return item;
 }
 
 export async function fetchSlimCharacterByID(

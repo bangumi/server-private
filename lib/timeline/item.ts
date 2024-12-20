@@ -119,6 +119,12 @@ export async function parseTimelineMemo(
     case TimelineCat.Progress: {
       if (type === 0) {
         const info = php.parse(data) as memo.ProgressBatch;
+        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
+        if (!subject) {
+          return {
+            progress: {},
+          };
+        }
         return {
           progress: {
             batch: {
@@ -126,21 +132,24 @@ export async function parseTimelineMemo(
               epsUpdate: info.eps_update,
               volsTotal: info.vols_total,
               volsUpdate: info.vols_update,
-              subjectID: Number(info.subject_id),
-              subjectName: info.subject_name,
+              subject,
             },
           },
         };
       } else {
         const info = php.parse(data) as memo.ProgressSingle;
+        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
+        const episode = await fetcher.fetchEpisodeByID(Number(info.ep_id));
+        if (!subject || !episode) {
+          return {
+            progress: {},
+          };
+        }
         return {
           progress: {
             single: {
-              epID: Number(info.ep_id),
-              epName: info.ep_name,
-              epSort: Number(info.ep_sort),
-              subjectID: Number(info.subject_id),
-              subjectName: info.subject_name,
+              episode,
+              subject,
             },
           },
         };
