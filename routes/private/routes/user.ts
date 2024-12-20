@@ -11,7 +11,6 @@ import {
   CollectionType,
   CollectionTypeProfileValues,
   EpisodeCollectionStatus,
-  EpisodeType,
   PersonType,
   SubjectType,
   SubjectTypeValues,
@@ -21,6 +20,7 @@ import { getTimelineUser } from '@app/lib/timeline/user';
 import * as convert from '@app/lib/types/convert.ts';
 import * as examples from '@app/lib/types/examples.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -31,7 +31,7 @@ const UserSubjectCollection = t.Object(
   {
     subject: t.Ref(res.Subject),
     rate: t.Integer(),
-    type: t.Enum(CollectionType),
+    type: t.Ref(req.CollectionType),
     comment: t.String(),
     tags: t.Array(t.String()),
     epStatus: t.Integer(),
@@ -46,7 +46,7 @@ export type IUserSubjectEpisodeCollection = Static<typeof UserSubjectEpisodeColl
 const UserSubjectEpisodeCollection = t.Object(
   {
     episode: t.Ref(res.Episode),
-    type: t.Enum(EpisodeCollectionStatus),
+    type: t.Ref(req.EpisodeCollectionStatus),
   },
   { $id: 'UserSubjectEpisodeCollection' },
 );
@@ -602,8 +602,8 @@ export async function setup(app: App) {
           username: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
-          subjectType: t.Optional(t.Enum(SubjectType, { description: '条目类型' })),
-          type: t.Optional(t.Enum(CollectionType, { description: '收藏类型' })),
+          subjectType: t.Optional(t.Ref(req.SubjectType)),
+          type: t.Optional(t.Ref(req.CollectionType)),
           since: t.Optional(t.Integer({ minimum: 0, description: '起始时间戳' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -751,7 +751,7 @@ export async function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Enum(EpisodeType, { description: '剧集类型' })),
+          type: t.Optional(t.Ref(req.EpisodeType)),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),

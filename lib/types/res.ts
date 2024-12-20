@@ -4,14 +4,21 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { CollectionType, EpisodeType, SubjectType } from '@app/lib/subject/type.ts';
 import { TimelineCat, TimelineSource } from '@app/lib/timeline/type';
 import * as examples from '@app/lib/types/examples.ts';
+import * as req from '@app/lib/types/req.ts';
+
+export interface IPaged<T> {
+  data: T[];
+  total: number;
+}
 
 export const Paged = <T extends TSchema>(type: T) =>
   t.Object({
     data: t.Array(type),
-    total: t.Integer(),
+    total: t.Integer({
+      description: 'limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数',
+    }),
   });
 
 export const Error = t.Object(
@@ -240,7 +247,7 @@ export const Subject = t.Object(
     series: t.Boolean(),
     seriesEntry: t.Integer(),
     summary: t.String(),
-    type: t.Enum(SubjectType),
+    type: t.Ref(req.SubjectType),
     volumes: t.Integer(),
     tags: t.Array(t.Ref(SubjectTag)),
   },
@@ -257,7 +264,7 @@ export const SlimSubject = t.Object(
     id: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
-    type: t.Enum(SubjectType),
+    type: t.Ref(req.SubjectType),
     images: t.Optional(t.Ref(SubjectImages)),
     info: t.String(),
     locked: t.Boolean(),
@@ -304,7 +311,7 @@ export const Episode = t.Object(
     id: t.Integer(),
     subjectID: t.Integer(),
     sort: t.Number(),
-    type: t.Enum(EpisodeType),
+    type: t.Ref(req.EpisodeType),
     disc: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
@@ -455,7 +462,7 @@ export type ISubjectComment = Static<typeof SubjectComment>;
 export const SubjectComment = t.Object(
   {
     user: t.Ref(SlimUser),
-    type: t.Enum(CollectionType),
+    type: t.Ref(req.CollectionType),
     rate: t.Integer(),
     comment: t.String(),
     updatedAt: t.Integer(),

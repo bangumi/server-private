@@ -13,7 +13,7 @@ export enum EpisodeType {
   Normal = 0,
   /** 特别篇 */
   Special = 1,
-  Op = 2,
+  OP = 2,
   ED = 3,
   /** 预告/宣传/广告 */
   Pre = 4,

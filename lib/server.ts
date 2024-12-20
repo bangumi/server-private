@@ -62,6 +62,8 @@ export async function createServer(
     plugins: [
       function (ajv: Ajv) {
         ajv.addKeyword({ keyword: 'x-examples' });
+        ajv.addKeyword({ keyword: 'x-ms-enum' });
+        ajv.addKeyword({ keyword: 'x-enum-varnames' });
       },
       addFormats,
     ],

@@ -6,7 +6,7 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { AppDataSource, EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
-import { EpisodeType } from '@app/lib/subject/type.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { parseDuration } from '@app/lib/utils/index.ts';
@@ -22,7 +22,7 @@ export const EpisodeWikiInfo = t.Object(
     subjectID: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
-    type: t.Enum(EpisodeType),
+    type: t.Ref(req.EpisodeType),
     ep: t.Number(),
     duration: t.String({ examples: ['24:53', '24m52s'] }),
     date: t.Optional(
