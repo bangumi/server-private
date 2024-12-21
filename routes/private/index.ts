@@ -1,4 +1,5 @@
 import Cookie from '@fastify/cookie';
+import { Type as t } from '@sinclair/typebox';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { production } from '@app/lib/config.ts';
@@ -46,6 +47,23 @@ export async function setup(app: App) {
 async function API(app: App) {
   await swagger.privateAPI(app);
   addSchemas(app);
+
+  app.get(
+    '/debug',
+    {
+      schema: {
+        summary: 'debug',
+        description: 'debug 路由',
+        operationId: 'debug',
+        response: {
+          200: t.Any(),
+        },
+      },
+    },
+    async (req, res) => {
+      res.send({ requestID: req.id });
+    },
+  );
 
   await app.register(character.setup);
   await app.register(group.setup);

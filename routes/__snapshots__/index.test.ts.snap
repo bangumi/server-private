@@ -2782,6 +2782,24 @@ paths:
       summary: 标记通知为已读
       tags:
         - user
+  /p1/debug:
+    get:
+      description: debug 路由
+      operationId: debug
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      summary: debug
   /p1/groups/-/posts/{postID}:
     delete:
       operationId: deleteGroupPost
