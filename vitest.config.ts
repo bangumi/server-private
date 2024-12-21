@@ -19,6 +19,7 @@ export default defineConfig({
     snapshotFormat: {
       printBasicPrototype: true,
     },
+    isolate: false,
     fileParallelism: false,
     coverage: {
       provider: 'v8',
