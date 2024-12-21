@@ -68,6 +68,9 @@ export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | un
 
 /** Cached */
 export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getUserSlimCacheKey(id)));
   const result: Record<number, res.ISlimUser> = {};
   const missing = [];
@@ -134,6 +137,9 @@ export async function fetchSlimSubjectsByIDs(
   ids: number[],
   allowNsfw = false,
 ): Promise<Record<number, res.ISlimSubject>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getSubjectSlimCacheKey(id)));
   const result: Record<number, res.ISlimSubject> = {};
   const missing = [];
@@ -200,9 +206,12 @@ export async function fetchSubjectByID(
 export async function fetchSubjectsByIDs(
   ids: number[],
   allowNsfw = false,
-): Promise<Map<number, res.ISubject>> {
+): Promise<Record<number, res.ISubject>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getSubjectItemCacheKey(id)));
-  const result = new Map<number, res.ISubject>();
+  const result: Record<number, res.ISubject> = {};
   const missing = [];
 
   for (const id of ids) {
@@ -211,7 +220,7 @@ export async function fetchSubjectsByIDs(
       if (!allowNsfw && item.nsfw) {
         continue;
       }
-      result.set(id, item);
+      result[id] = item;
     } else {
       missing.push(id);
     }
@@ -234,7 +243,7 @@ export async function fetchSubjectsByIDs(
       if (!allowNsfw && item.nsfw) {
         continue;
       }
-      result.set(item.id, item);
+      result[item.id] = item;
     }
   }
   return result;
@@ -482,6 +491,9 @@ export async function fetchSlimCharactersByIDs(
   ids: number[],
   allowNsfw = false,
 ): Promise<Record<number, res.ISlimCharacter>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getCharacterSlimCacheKey(id)));
   const result: Record<number, res.ISlimCharacter> = {};
   const missing = [];
@@ -548,6 +560,9 @@ export async function fetchSlimPersonsByIDs(
   ids: number[],
   allowNsfw = false,
 ): Promise<Record<number, res.ISlimPerson>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getPersonSlimCacheKey(id)));
   const result: Record<number, res.ISlimPerson> = {};
   const missing = [];
@@ -584,7 +599,7 @@ export async function fetchCastsBySubjectAndCharacterIDs(
   subjectID: number,
   characterIDs: number[],
   allowNsfw: boolean,
-): Promise<Map<number, res.ISlimPerson[]>> {
+): Promise<Record<number, res.ISlimPerson[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -601,21 +616,21 @@ export async function fetchCastsBySubjectAndCharacterIDs(
       ),
     )
     .execute();
-  const map = new Map<number, res.ISlimPerson[]>();
+  const result: Record<number, res.ISlimPerson[]> = {};
   for (const d of data) {
     const person = convert.toSlimPerson(d.chii_persons);
-    const list = map.get(d.chii_crt_cast_index.characterID) || [];
+    const list = result[d.chii_crt_cast_index.characterID] || [];
     list.push(person);
-    map.set(d.chii_crt_cast_index.characterID, list);
+    result[d.chii_crt_cast_index.characterID] = list;
   }
-  return map;
+  return result;
 }
 
 export async function fetchCastsByCharacterAndSubjectIDs(
   characterID: number,
   subjectIDs: number[],
   allowNsfw: boolean,
-): Promise<Map<number, res.ISlimPerson[]>> {
+): Promise<Record<number, res.ISlimPerson[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -632,14 +647,14 @@ export async function fetchCastsByCharacterAndSubjectIDs(
       ),
     )
     .execute();
-  const map = new Map<number, res.ISlimPerson[]>();
+  const result: Record<number, res.ISlimPerson[]> = {};
   for (const d of data) {
     const person = convert.toSlimPerson(d.chii_persons);
-    const list = map.get(d.chii_crt_cast_index.subjectID) || [];
+    const list = result[d.chii_crt_cast_index.subjectID] || [];
     list.push(person);
-    map.set(d.chii_crt_cast_index.subjectID, list);
+    result[d.chii_crt_cast_index.subjectID] = list;
   }
-  return map;
+  return result;
 }
 
 export async function fetchCastsByPersonAndCharacterIDs(
@@ -648,7 +663,7 @@ export async function fetchCastsByPersonAndCharacterIDs(
   subjectType: number | undefined,
   type: number | undefined,
   allowNsfw: boolean,
-): Promise<Map<number, res.ICharacterSubjectRelation[]>> {
+): Promise<Record<number, res.ICharacterSubjectRelation[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -674,14 +689,14 @@ export async function fetchCastsByPersonAndCharacterIDs(
       ),
     )
     .execute();
-  const map = new Map<number, res.ICharacterSubjectRelation[]>();
+  const result: Record<number, res.ICharacterSubjectRelation[]> = {};
   for (const d of data) {
     const relation = convert.toCharacterSubjectRelation(d.chii_subjects, d.chii_crt_subject_index);
-    const list = map.get(d.chii_crt_cast_index.characterID) || [];
+    const list = result[d.chii_crt_cast_index.characterID] || [];
     list.push(relation);
-    map.set(d.chii_crt_cast_index.characterID, list);
+    result[d.chii_crt_cast_index.characterID] = list;
   }
-  return map;
+  return result;
 }
 
 export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | undefined> {
@@ -778,6 +793,9 @@ export async function fetchSlimGroupsByIDs(
   ids: number[],
   allowNsfw = false,
 ): Promise<Record<number, res.ISlimGroup>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getGroupSlimCacheKey(id)));
   const result: Record<number, res.ISlimGroup> = {};
   const missing = [];

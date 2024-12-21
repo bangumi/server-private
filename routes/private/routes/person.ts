@@ -250,7 +250,7 @@ export async function setup(app: App) {
         auth.allowNsfw,
       );
       const characters = data.map((d) =>
-        toPersonCharacter(d.chii_characters, subjects.get(d.chii_crt_cast_index.characterID) || []),
+        toPersonCharacter(d.chii_characters, subjects[d.chii_crt_cast_index.characterID] || []),
       );
       return {
         total: count,

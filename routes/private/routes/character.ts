@@ -141,7 +141,7 @@ export async function setup(app: App) {
         toCharacterSubject(
           d.chii_subjects,
           d.chii_crt_subject_index,
-          casts.get(d.chii_subjects.id) || [],
+          casts[d.chii_subjects.id] || [],
         ),
       );
       return {

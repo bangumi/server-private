@@ -155,7 +155,7 @@ export async function setup(app: App) {
       const subjects = await fetcher.fetchSubjectsByIDs(result.data);
       const data = [];
       for (const subjectID of result.data) {
-        const subject = subjects.get(subjectID);
+        const subject = subjects[subjectID];
         if (subject) {
           data.push(subject);
         }
@@ -379,7 +379,7 @@ export async function setup(app: App) {
         toSubjectCharacter(
           d.chii_characters,
           d.chii_crt_subject_index,
-          casts.get(d.chii_characters.id) || [],
+          casts[d.chii_characters.id] || [],
         ),
       );
       return {
