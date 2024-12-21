@@ -80,8 +80,6 @@ export async function createServer(
   });
 
   server.setErrorHandler(function (error, request, reply) {
-    request.headers['x-request-id'] = request.id;
-
     // hide TypeORM message
     if (error instanceof TypeORMError || error instanceof DrizzleError) {
       logger.error(error);
@@ -108,6 +106,7 @@ export async function createServer(
 
   server.addHook('onRequest', (req, res, done) => {
     void res.header('x-server-version', VERSION);
+    void res.header('x-request-id', req.id);
     done();
   });
 
