@@ -1241,6 +1241,9 @@ export async function setup(app: App) {
           username: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 20, description: 'min 1, max 20' }),
+          ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
@@ -1248,13 +1251,13 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { username }, query: { offset = 0 } }) => {
+    async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
       const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
 
-      const ids = await getTimelineUser(user.id, 20, offset);
+      const ids = await getTimelineUser(user.id, limit, offset);
       const result = await fetchTimelineByIDs(ids, auth.allowNsfw);
       const items = [];
       for (const tid of ids) {

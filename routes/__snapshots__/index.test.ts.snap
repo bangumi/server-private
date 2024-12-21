@@ -5104,6 +5104,15 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
+        - description: min 1, max 20
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 20
+            minimum: 1
+            type: integer
         - description: min 0
           in: query
           name: offset
@@ -5822,6 +5831,15 @@ paths:
     get:
       operationId: getUserTimeline
       parameters:
+        - description: min 1, max 20
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 20
+            minimum: 1
+            type: integer
         - description: min 0
           in: query
           name: offset

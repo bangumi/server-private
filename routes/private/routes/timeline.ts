@@ -25,6 +25,9 @@ export async function setup(app: App) {
               description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
             }),
           ),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 20, description: 'min 1, max 20' }),
+          ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
@@ -32,16 +35,16 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { mode = TimelineMode.Friends, offset = 0 } }) => {
+    async ({ auth, query: { mode = TimelineMode.Friends, limit = 20, offset = 0 } }) => {
       const ids = [];
       switch (mode) {
         case TimelineMode.Friends: {
-          const ret = await getTimelineInbox(auth.userID, 20, offset);
+          const ret = await getTimelineInbox(auth.userID, limit, offset);
           ids.push(...ret);
           break;
         }
         case TimelineMode.All: {
-          const ret = await getTimelineInbox(0, 20, offset);
+          const ret = await getTimelineInbox(0, limit, offset);
           ids.push(...ret);
           break;
         }
