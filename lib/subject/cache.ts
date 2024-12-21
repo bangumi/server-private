@@ -1,5 +1,9 @@
 import type { SubjectFilter, SubjectSort } from './type';
 
+export function getCalendarCacheKey(): string {
+  return 'sbj:calendar';
+}
+
 export function getSlimCacheKey(id: number): string {
   return `sbj:slim:${id}`;
 }

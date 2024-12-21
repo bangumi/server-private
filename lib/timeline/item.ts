@@ -17,6 +17,7 @@ export async function parseTimelineMemo(
   related: string,
   batch: boolean,
   data: string,
+  allowNsfw = false,
 ): Promise<res.ITimelineMemo> {
   if (data === '') {
     return {};
@@ -78,7 +79,7 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Wiki: {
       const info = php.parse(data) as memo.NewSubject;
-      const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
+      const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
       return {
         wiki: {
           subject,
@@ -91,6 +92,7 @@ export async function parseTimelineMemo(
         const info = php.parse(data) as memo.SubjectBatch;
         const ss = await fetcher.fetchSlimSubjectsByIDs(
           Object.entries(info).map(([_, v]) => Number(v.subject_id)),
+          allowNsfw,
         );
         for (const [_, value] of Object.entries(info)) {
           const subject = ss[Number(value.subject_id)];
@@ -104,7 +106,7 @@ export async function parseTimelineMemo(
         }
       } else {
         const info = php.parse(data) as memo.Subject;
-        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
+        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
         if (subject) {
           subjects.push({
             subject,
@@ -130,7 +132,7 @@ export async function parseTimelineMemo(
             progress: {},
           };
         }
-        const subject = await fetcher.fetchSlimSubjectByID(subjectID);
+        const subject = await fetcher.fetchSlimSubjectByID(subjectID, allowNsfw);
         if (!subject) {
           return {
             progress: {},
@@ -149,7 +151,7 @@ export async function parseTimelineMemo(
         };
       } else {
         const info = php.parse(data) as memo.ProgressSingle;
-        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id));
+        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
         const episode = await fetcher.fetchEpisodeByID(Number(info.ep_id));
         if (!subject || !episode) {
           return {
@@ -224,7 +226,7 @@ export async function parseTimelineMemo(
             personIDs.push(value.id);
           }
         }
-        const cs = await fetcher.fetchSlimCharactersByIDs(characterIDs);
+        const cs = await fetcher.fetchSlimCharactersByIDs(characterIDs, allowNsfw);
         const ps = await fetcher.fetchSlimPersonsByIDs(personIDs);
         return {
           mono: {
@@ -237,7 +239,7 @@ export async function parseTimelineMemo(
         const characters = [];
         const persons = [];
         if (info.cat === 1) {
-          const character = await fetcher.fetchSlimCharacterByID(Number(info.id));
+          const character = await fetcher.fetchSlimCharacterByID(Number(info.id), allowNsfw);
           if (character) {
             characters.push(character);
           }
@@ -261,13 +263,13 @@ export async function parseTimelineMemo(
   }
 }
 
-export async function toTimeline(tml: orm.ITimeline): Promise<res.ITimeline> {
+export async function toTimeline(tml: orm.ITimeline, allowNsfw = false): Promise<res.ITimeline> {
   return {
     id: tml.id,
     uid: tml.uid,
     cat: tml.cat,
     type: tml.type,
-    memo: await parseTimelineMemo(tml.cat, tml.type, tml.related, tml.batch, tml.memo),
+    memo: await parseTimelineMemo(tml.cat, tml.type, tml.related, tml.batch, tml.memo, allowNsfw),
     batch: tml.batch,
     replies: tml.replies,
     source: tml.source,
@@ -275,7 +277,10 @@ export async function toTimeline(tml: orm.ITimeline): Promise<res.ITimeline> {
   };
 }
 /** Cached */
-export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, res.ITimeline>> {
+export async function fetchTimelineByIDs(
+  ids: number[],
+  allowNsfw = false,
+): Promise<Record<number, res.ITimeline>> {
   const cached = await redis.mget(ids.map((id) => getItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
   const uids = new Set<number>();
@@ -296,7 +301,7 @@ export async function fetchTimelineByIDs(ids: number[]): Promise<Record<number, 
       .where(op.inArray(schema.chiiTimeline.id, missing))
       .execute();
     for (const d of data) {
-      const item = await toTimeline(d);
+      const item = await toTimeline(d, allowNsfw);
       uids.add(item.uid);
       result[d.id] = item;
       await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));

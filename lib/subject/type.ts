@@ -72,3 +72,9 @@ export interface SubjectFilter {
   tags?: string[];
   ids?: number[];
 }
+
+export interface CalendarItem {
+  id: number;
+  weekday: number;
+  watchers: number;
+}

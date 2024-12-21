@@ -1236,6 +1236,7 @@ export async function setup(app: App) {
         summary: '获取用户时间胶囊',
         operationId: 'getUserTimeline',
         tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           username: t.String({ minLength: 1 }),
         }),
@@ -1247,14 +1248,14 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { username }, query: { offset = 0 } }) => {
+    async ({ auth, params: { username }, query: { offset = 0 } }) => {
       const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
 
       const ids = await getTimelineUser(user.id, 20, offset);
-      const result = await fetchTimelineByIDs(ids);
+      const result = await fetchTimelineByIDs(ids, auth.allowNsfw);
       const items = [];
       for (const tid of ids) {
         const item = result[tid];

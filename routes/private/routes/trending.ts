@@ -57,7 +57,7 @@ export async function setup(app: App) {
       );
       const data = [];
       for (const item of items) {
-        const subject = subjects.get(item.id);
+        const subject = subjects[item.id];
         if (subject) {
           data.push({
             subject,

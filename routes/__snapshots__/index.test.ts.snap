@@ -114,6 +114,30 @@ exports[`should build private api spec 1`] = `
         - public
       title: BlogEntry
       type: object
+    Calendar:
+      additionalProperties:
+        items:
+          properties:
+            subject:
+              $ref: '#/components/schemas/SlimSubject'
+            watchers:
+              type: integer
+          required:
+            - subject
+            - watchers
+          type: object
+        type: array
+      type: object
+    CalendarItem:
+      properties:
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
+        watchers:
+          type: integer
+      required:
+        - subject
+        - watchers
+      type: object
     Character:
       properties:
         collects:
@@ -2534,6 +2558,29 @@ paths:
       summary: 将用户从绝交列表移出
       tags:
         - user
+  /p1/calendar:
+    get:
+      operationId: getCalendar
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取每日放送
+      tags:
+        - calendar
   /p1/characters/{characterID}:
     get:
       operationId: getCharacter
@@ -5797,6 +5844,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
       summary: 获取用户时间胶囊
       tags:
         - user
