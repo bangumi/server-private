@@ -18,6 +18,7 @@ import * as auth from './auth/index.ts';
 import config, { testing, VERSION } from './config.ts';
 import type { Context } from './graphql/context.ts';
 import { resolvers, schema } from './graphql/schema.ts';
+import { logger } from './logger.ts';
 import { repo } from './orm/index.ts';
 import type * as res from './types/res.ts';
 
@@ -81,28 +82,31 @@ export async function createServer(
   server.setErrorHandler(function (error, request, reply) {
     // hide TypeORM message
     if (error instanceof TypeORMError || error instanceof DrizzleError) {
-      this.log.error(error);
+      logger.error(error);
       void reply.status(500).send({
         error: 'Internal Server Error',
         message: 'internal database error, please contact admin',
         statusCode: 500,
       });
-    } else {
-      if (typeof error.statusCode !== 'number' || error.statusCode === 500) {
-        this.log.error(error);
-        void reply.status(500).send({
-          error: 'Internal Server Error',
-          message: 'internal error, please contact admin',
-          statusCode: 500,
-        });
-      } else {
-        void reply.send(error);
-      }
+      return;
     }
+
+    if (typeof error.statusCode !== 'number' || error.statusCode === 500) {
+      logger.error(error);
+      void reply.status(500).send({
+        error: 'Internal Server Error',
+        message: 'internal error, please contact admin',
+        statusCode: 500,
+      });
+      return;
+    }
+
+    void reply.send(error);
   });
 
   server.addHook('onRequest', (req, res, done) => {
     void res.header('x-server-version', VERSION);
+    void res.header('x-request-id', req.id);
     done();
   });
 
