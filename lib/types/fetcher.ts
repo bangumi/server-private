@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import { getSlimCacheKey as getBlogSlimCacheKey } from '@app/lib/blog/cache.ts';
@@ -7,14 +9,17 @@ import { getSlimCacheKey as getIndexSlimCacheKey } from '@app/lib/index/cache.ts
 import { getSlimCacheKey as getPersonSlimCacheKey } from '@app/lib/person/cache.ts';
 import redis from '@app/lib/redis.ts';
 import {
+  getCalendarCacheKey,
   getEpCacheKey as getSubjectEpCacheKey,
   getItemCacheKey as getSubjectItemCacheKey,
   getListCacheKey as getSubjectListCacheKey,
   getSlimCacheKey as getSubjectSlimCacheKey,
 } from '@app/lib/subject/cache.ts';
 import {
+  type CalendarItem,
   type SubjectFilter,
   SubjectSort,
+  SubjectType,
   TagCat,
   type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
@@ -354,6 +359,56 @@ export async function fetchSubjectIDsByFilter(
   } else {
     await redis.setex(cacheKey, 3600, JSON.stringify(result));
   }
+  return result;
+}
+
+/** Cached */
+export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
+  const cached = await redis.get(getCalendarCacheKey());
+  if (cached) {
+    return JSON.parse(cached) as CalendarItem[];
+  }
+
+  const now = DateTime.now();
+  const seasonSets = {
+    1: 1,
+    2: 1,
+    3: 1,
+    4: 4,
+    5: 4,
+    6: 4,
+    7: 7,
+    8: 7,
+    9: 7,
+    10: 10,
+    11: 10,
+    12: 10,
+  };
+  const data = await db
+    .select({
+      id: schema.chiiSubjects.id,
+      weekday: schema.chiiSubjectFields.weekDay,
+      watchers: schema.chiiSubjects.doing,
+    })
+    .from(schema.chiiSubjects)
+    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
+    .where(
+      op.and(
+        op.ne(schema.chiiSubjects.ban, 1),
+        op.eq(schema.chiiSubjects.typeID, SubjectType.Anime),
+        op.eq(schema.chiiSubjectFields.year, now.year),
+        op.eq(schema.chiiSubjectFields.month, seasonSets[now.month]),
+      ),
+    )
+    .execute();
+  const result = [];
+  for (const d of data) {
+    if (d.weekday < 1 || d.weekday > 7) {
+      continue;
+    }
+    result.push({ id: d.id, weekday: d.weekday, watchers: d.watchers });
+  }
+  await redis.setex(getCalendarCacheKey(), 86400, JSON.stringify(result));
   return result;
 }
 

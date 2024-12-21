@@ -7,6 +7,7 @@ import { addSchemas } from '@app/routes/res.ts';
 import * as swagger from '@app/routes/swagger.ts';
 import type { App } from '@app/routes/type.ts';
 
+import * as calendar from './routes/calendar.ts';
 import * as character from './routes/character.ts';
 import * as login from './routes/login.ts';
 import * as misc from './routes/misc.ts';
@@ -47,6 +48,7 @@ async function API(app: App) {
   await swagger.privateAPI(app);
   addSchemas(app);
 
+  await app.register(calendar.setup);
   await app.register(character.setup);
   await app.register(group.setup);
   await app.register(login.setup);
