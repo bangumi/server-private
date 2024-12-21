@@ -80,11 +80,12 @@ export async function createServer(
   });
 
   server.setErrorHandler(function (error, request, reply) {
+    request.headers['x-request-id'] = request.id;
+
     // hide TypeORM message
     if (error instanceof TypeORMError || error instanceof DrizzleError) {
       logger.error(error);
       void reply.status(500).send({
-        requestID: request.id,
         error: 'Internal Server Error',
         message: 'internal database error, please contact admin',
         statusCode: 500,
@@ -95,7 +96,6 @@ export async function createServer(
     if (typeof error.statusCode !== 'number' || error.statusCode === 500) {
       logger.error(error);
       void reply.status(500).send({
-        requestID: request.id,
         error: 'Internal Server Error',
         message: 'internal error, please contact admin',
         statusCode: 500,
@@ -103,10 +103,7 @@ export async function createServer(
       return;
     }
 
-    return reply.send({
-      requestID: request.id,
-      ...error,
-    });
+    void reply.send(error);
   });
 
   server.addHook('onRequest', (req, res, done) => {
