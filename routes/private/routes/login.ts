@@ -59,8 +59,8 @@ export async function setup(app: App) {
         tags: [Tag.User],
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: t.Ref(currentUser),
-          401: t.Ref(res.Error, {
+          200: res.Ref(currentUser),
+          401: res.Ref(res.Error, {
             examples: [res.formatError(new NeedLoginError('get current user'))],
           }),
         },
@@ -96,7 +96,7 @@ export async function setup(app: App) {
         body: t.Object({}),
         response: {
           200: {},
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
               NeedLoginError: { value: res.formatError(new NeedLoginError('logout')) },
@@ -156,13 +156,13 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         operationId: 'login',
         tags: [Tag.User],
         response: {
-          200: t.Ref(res.SlimUser, {
+          200: res.Ref(res.SlimUser, {
             headers: {
               'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
             },
           }),
-          400: t.Ref(res.Error, { description: 'request validation error' }),
-          401: t.Ref(res.Error, {
+          400: res.Ref(res.Error, { description: 'request validation error' }),
+          401: res.Ref(res.Error, {
             description: '验证码错误/账号密码不匹配',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
@@ -171,7 +171,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
             },
             'x-examples': res.formatErrors(new CaptchaError(), new EmailOrPasswordError()),
           }),
-          429: t.Ref(res.Error, {
+          429: res.Ref(res.Error, {
             description: '失败次数太多，需要过一段时间再重试',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
@@ -181,7 +181,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
             examples: [res.formatError(new TooManyRequestsError())],
           }),
         },
-        body: t.Ref(loginRequestBody),
+        body: res.Ref(loginRequestBody),
       },
     },
     async function loginHandler(

@@ -13,7 +13,7 @@ import type { App } from '@app/routes/type.ts';
 export type ITrendingSubject = Static<typeof TrendingSubject>;
 const TrendingSubject = t.Object(
   {
-    subject: t.Ref(res.Subject),
+    subject: res.Ref(res.Subject),
     count: t.Integer(),
   },
   { $id: 'TrendingSubject' },
@@ -32,14 +32,14 @@ export async function setup(app: App) {
         tags: [Tag.Trending],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
-          type: t.Ref(req.SubjectType),
+          type: req.Ref(req.SubjectType),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(TrendingSubject)),
+          200: res.Paged(res.Ref(TrendingSubject)),
         },
       },
     },

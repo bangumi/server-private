@@ -4,7 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { production } from '@app/lib/config.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
-import { addSchemas } from '@app/routes/res.ts';
+import { addSchemas } from '@app/routes/schemas.ts';
 import * as swagger from '@app/routes/swagger.ts';
 import type { App } from '@app/routes/type.ts';
 

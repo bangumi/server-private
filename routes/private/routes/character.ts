@@ -38,8 +38,8 @@ export async function setup(app: App) {
           characterID: t.Integer(),
         }),
         response: {
-          200: t.Ref(res.Character),
-          404: t.Ref(res.Error, {
+          200: res.Ref(res.Character),
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
         },
@@ -76,7 +76,7 @@ export async function setup(app: App) {
           characterID: t.Integer(),
         }),
         querystring: t.Object({
-          subjectType: t.Optional(t.Ref(req.SubjectType)),
+          subjectType: t.Optional(req.Ref(req.SubjectType)),
           type: t.Optional(t.Integer({ description: '角色出场类型: 主角，配角，客串' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -84,8 +84,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.CharacterSubject)),
-          404: t.Ref(res.Error, {
+          200: res.Paged(res.Ref(res.CharacterSubject)),
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
         },
@@ -169,8 +169,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.PersonCollect)),
-          404: t.Ref(res.Error, {
+          200: res.Paged(res.Ref(res.PersonCollect)),
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
         },

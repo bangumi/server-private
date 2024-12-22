@@ -11,7 +11,7 @@ import type { IAuth } from '@app/lib/auth/index.ts';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import { production, projectRoot } from '@app/lib/config';
 import { defaultSchemaErrorFormatter } from '@app/lib/server.ts';
-import { addSchemas } from '@app/routes/res.ts';
+import { addSchemas } from '@app/routes/schemas';
 
 export function createTestServer({
   auth = {},
