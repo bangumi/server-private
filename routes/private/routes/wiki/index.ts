@@ -4,7 +4,6 @@ import { Type as t } from '@sinclair/typebox';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import * as common from '@app/lib/types/common.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -46,8 +45,8 @@ export async function setupRecentChangeList(app: App) {
           }),
         }),
         response: {
-          200: common.Ref(RecentWikiChange),
-          401: common.Ref(res.Error),
+          200: res.Ref(RecentWikiChange),
+          401: res.Ref(res.Error),
         },
       },
     },

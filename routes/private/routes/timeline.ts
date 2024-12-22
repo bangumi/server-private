@@ -4,7 +4,6 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { TimelineMode } from '@app/lib/timeline/type.ts';
-import * as common from '@app/lib/types/common.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -22,7 +21,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           mode: t.Optional(
-            common.Ref(req.FilterMode, {
+            req.Ref(req.FilterMode, {
               description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
             }),
           ),
@@ -32,7 +31,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: t.Array(common.Ref(res.Timeline)),
+          200: t.Array(res.Ref(res.Timeline)),
         },
       },
     },

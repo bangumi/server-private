@@ -12,7 +12,6 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchPermission, fetchUser, UserRepo } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
-import * as common from '@app/lib/types/common.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
@@ -60,8 +59,8 @@ export async function setup(app: App) {
         tags: [Tag.User],
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: common.Ref(currentUser),
-          401: common.Ref(res.Error, {
+          200: res.Ref(currentUser),
+          401: res.Ref(res.Error, {
             examples: [res.formatError(new NeedLoginError('get current user'))],
           }),
         },
@@ -97,7 +96,7 @@ export async function setup(app: App) {
         body: t.Object({}),
         response: {
           200: {},
-          401: common.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
               NeedLoginError: { value: res.formatError(new NeedLoginError('logout')) },
@@ -157,13 +156,13 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         operationId: 'login',
         tags: [Tag.User],
         response: {
-          200: common.Ref(res.SlimUser, {
+          200: res.Ref(res.SlimUser, {
             headers: {
               'Set-Cookie': t.String({ description: `example: "${session.CookieKey}=12345abc"` }),
             },
           }),
-          400: common.Ref(res.Error, { description: 'request validation error' }),
-          401: common.Ref(res.Error, {
+          400: res.Ref(res.Error, { description: 'request validation error' }),
+          401: res.Ref(res.Error, {
             description: '验证码错误/账号密码不匹配',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
@@ -172,7 +171,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
             },
             'x-examples': res.formatErrors(new CaptchaError(), new EmailOrPasswordError()),
           }),
-          429: common.Ref(res.Error, {
+          429: res.Ref(res.Error, {
             description: '失败次数太多，需要过一段时间再重试',
             headers: {
               'X-RateLimit-Remaining': t.Integer({ description: 'remaining rate limit' }),
@@ -182,7 +181,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
             examples: [res.formatError(new TooManyRequestsError())],
           }),
         },
-        body: common.Ref(loginRequestBody),
+        body: res.Ref(loginRequestBody),
       },
     },
     async function loginHandler(

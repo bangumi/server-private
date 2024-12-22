@@ -2,7 +2,6 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import * as common from '@app/lib/types/common.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
@@ -10,7 +9,7 @@ import type { App } from '@app/routes/type.ts';
 export type ICalendarItem = Static<typeof CalendarItem>;
 export const CalendarItem = t.Object(
   {
-    subject: common.Ref(res.SlimSubject),
+    subject: res.Ref(res.SlimSubject),
     watchers: t.Integer(),
   },
   { $id: 'CalendarItem' },
@@ -31,7 +30,7 @@ export async function setup(app: App) {
         tags: [Tag.Calendar],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: common.Ref(Calendar),
+          200: res.Ref(Calendar),
         },
       },
     },

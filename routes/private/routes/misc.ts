@@ -11,7 +11,6 @@ import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
-import * as common from '@app/lib/types/common.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
 import { intval } from '@app/lib/utils';
@@ -54,8 +53,8 @@ export async function setup(app: App) {
           unread: t.Optional(t.Boolean()),
         }),
         response: {
-          200: res.Paged(common.Ref(NoticeRes)),
-          401: common.Ref(res.Error, {
+          200: res.Paged(res.Ref(NoticeRes)),
+          401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
               NeedLoginError: {
@@ -113,7 +112,7 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Null({ description: '没有返回值' }),
-          401: common.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
               NeedLoginError: {
