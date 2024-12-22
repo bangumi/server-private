@@ -45,8 +45,8 @@ export async function setupRecentChangeList(app: App) {
           }),
         }),
         response: {
-          200: t.Ref(RecentWikiChange),
-          401: t.Ref(res.Error),
+          200: res.Ref(RecentWikiChange),
+          401: res.Ref(res.Error),
         },
       },
     },

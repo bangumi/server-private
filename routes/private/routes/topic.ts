@@ -25,10 +25,10 @@ import type { App } from '@app/routes/type.ts';
 
 const GroupProfile = t.Object(
   {
-    recentAddedMembers: t.Array(t.Ref(res.GroupMember)),
-    topics: t.Array(t.Ref(res.Topic)),
+    recentAddedMembers: t.Array(res.Ref(res.GroupMember)),
+    topics: t.Array(res.Ref(res.Topic)),
     inGroup: t.Boolean({ description: '是否已经加入小组' }),
-    group: t.Ref(res.Group),
+    group: res.Ref(res.Group),
     totalTopics: t.Integer(),
   },
   { $id: 'GroupProfile' },
@@ -53,7 +53,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
         }),
         response: {
-          200: t.Ref(GroupProfile),
+          200: res.Ref(GroupProfile),
         },
       },
     },
@@ -94,7 +94,7 @@ export async function setup(app: App) {
           id: t.Integer({ examples: [371602] }),
         }),
         response: {
-          200: t.Ref(res.TopicDetail),
+          200: res.Ref(res.TopicDetail),
         },
       },
     },
@@ -128,7 +128,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.GroupMember)),
+          200: res.Paged(res.Ref(res.GroupMember)),
         },
       },
     },
@@ -160,8 +160,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.Topic)),
-          404: t.Ref(res.Error, {
+          200: res.Paged(res.Ref(res.Topic)),
+          404: res.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
               NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
@@ -207,7 +207,7 @@ export async function setup(app: App) {
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Ref(req.CreateTopic),
+        body: res.Ref(req.CreateTopic),
       },
       preHandler: [requireLogin('creating a post')],
     },
@@ -254,13 +254,13 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         response: {
           200: t.Object({}),
-          400: t.Ref(res.Error),
-          401: t.Ref(res.Error, {
+          400: res.Ref(res.Error),
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotAllowedError('edit a topic')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: t.Ref(req.CreateTopic),
+        body: res.Ref(req.CreateTopic),
       },
       preHandler: [requireLogin('edit a topic')],
     },

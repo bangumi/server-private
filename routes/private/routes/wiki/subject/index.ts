@@ -62,7 +62,7 @@ export type ISubjectNew = Static<typeof SubjectNew>;
 export const SubjectNew = t.Object(
   {
     name: t.String({ minLength: 1 }),
-    type: t.Ref(req.SubjectType),
+    type: res.Ref(req.SubjectType),
     platform: t.Integer(),
     infobox: t.String({ minLength: 1 }),
     nsfw: t.Boolean(),
@@ -126,10 +126,10 @@ export const SubjectWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Ref(req.SubjectType),
+    typeID: res.Ref(req.SubjectType),
     infobox: t.String(),
     platform: t.Integer(),
-    availablePlatform: t.Array(t.Ref(Platform)),
+    availablePlatform: t.Array(res.Ref(Platform)),
     metaTags: t.Array(t.String()),
     summary: t.String(),
     nsfw: t.Boolean(),
@@ -157,8 +157,8 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: t.Ref(SubjectWikiInfo),
-          401: t.Ref(res.Error, {
+          200: res.Ref(SubjectWikiInfo),
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
@@ -207,10 +207,10 @@ export async function setup(app: App) {
         body: SubjectNew,
         response: {
           200: t.Object({ subjectID: t.Number() }),
-          [StatusCodes.BAD_REQUEST]: t.Ref(res.Error, {
+          [StatusCodes.BAD_REQUEST]: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
-          401: t.Ref(res.Error, {}),
+          401: res.Ref(res.Error, {}),
         },
       },
     },
@@ -350,8 +350,8 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: t.Array(t.Ref(HistorySummary)),
-          401: t.Ref(res.Error, {
+          200: t.Array(res.Ref(HistorySummary)),
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
@@ -400,7 +400,7 @@ export async function setup(app: App) {
           {
             commitMessage: t.String({ minLength: 1 }),
             expectedRevision: SubjectExpected,
-            subject: t.Ref(SubjectEdit),
+            subject: res.Ref(SubjectEdit),
           },
           {
             examples: [
@@ -413,7 +413,7 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Null(),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
@@ -484,7 +484,7 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Null(),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },

@@ -9,7 +9,7 @@ import type { App } from '@app/routes/type.ts';
 export type ICalendarItem = Static<typeof CalendarItem>;
 export const CalendarItem = t.Object(
   {
-    subject: t.Ref(res.SlimSubject),
+    subject: res.Ref(res.SlimSubject),
     watchers: t.Integer(),
   },
   { $id: 'CalendarItem' },
@@ -30,7 +30,7 @@ export async function setup(app: App) {
         tags: [Tag.Calendar],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: t.Ref(Calendar),
+          200: res.Ref(Calendar),
         },
       },
     },

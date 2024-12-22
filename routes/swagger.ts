@@ -3,7 +3,6 @@ import * as path from 'node:path';
 
 import type { JSONObject } from '@fastify/swagger';
 import swagger from '@fastify/swagger';
-import { Type as t } from '@sinclair/typebox';
 import type { FastifySchema } from 'fastify';
 import * as yaml from 'js-yaml';
 import type { OpenAPIV3 } from 'openapi-types';
@@ -72,7 +71,7 @@ const transform: transformer = ({ schema, url }) => {
 
   const response = (schema.response ?? {}) as Record<number, unknown>;
   if (!response[500]) {
-    response[500] = t.Ref(res.Error, {
+    response[500] = res.Ref(res.Error, {
       description: '意料之外的服务器错误',
     });
   }

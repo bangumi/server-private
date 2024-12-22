@@ -32,7 +32,7 @@ const BaseEpisodeComment = t.Object(
     createdAt: t.Integer(),
     content: t.String(),
     state: t.Integer(),
-    user: t.Ref(res.SlimUser),
+    user: res.Ref(res.SlimUser),
   },
   {
     $id: 'BaseEpisodeComment',
@@ -44,7 +44,7 @@ const EpisodeComment = t.Intersect(
   [
     BaseEpisodeComment,
     t.Object({
-      replies: t.Array(t.Ref(BaseEpisodeComment)),
+      replies: t.Array(res.Ref(BaseEpisodeComment)),
     }),
   ],
   { $id: 'EpisodeComments' },
@@ -54,7 +54,7 @@ export type IBasicReply = Static<typeof BasicReply>;
 const BasicReply = t.Object(
   {
     id: t.Integer(),
-    creator: t.Ref(res.SlimUser),
+    creator: res.Ref(res.SlimUser),
     createdAt: t.Integer(),
     text: t.String(),
     state: t.Integer(),
@@ -197,7 +197,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Subject],
         response: {
-          200: t.Ref(BasicReply),
+          200: res.Ref(BasicReply),
         },
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
@@ -359,10 +359,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         tags: [Tag.Subject],
         response: {
           200: t.Object({}),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotAllowedError('delete this comment')),
           }),
-          404: t.Ref(res.Error, {
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('comment')),
           }),
         },
@@ -397,8 +397,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Group],
         response: {
-          200: t.Ref(Reply),
-          404: t.Ref(res.Error, {
+          200: res.Ref(Reply),
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
@@ -433,7 +433,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         tags: [Tag.Group],
         response: {
           200: t.Object({}),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotAllowedError('edit reply')),
           }),
         },
@@ -508,10 +508,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         tags: [Tag.Group],
         response: {
           200: t.Object({}),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotAllowedError('delete this post')),
           }),
-          404: t.Ref(res.Error, {
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
@@ -545,8 +545,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Group],
         response: {
-          200: t.Ref(BasicReply),
-          401: t.Ref(res.Error, {
+          200: res.Ref(BasicReply),
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
         },
@@ -614,8 +614,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Subject],
         response: {
-          200: t.Ref(BasicReply),
-          401: t.Ref(res.Error, {
+          200: res.Ref(BasicReply),
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
         },
@@ -679,10 +679,10 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         tags: [Tag.Subject],
         response: {
           200: t.Object({}),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotAllowedError('delete this post')),
           }),
-          404: t.Ref(res.Error, {
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
@@ -717,8 +717,8 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Subject],
         response: {
-          200: t.Ref(Reply),
-          404: t.Ref(res.Error, {
+          200: res.Ref(Reply),
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('post')),
           }),
         },
@@ -755,7 +755,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         tags: [Tag.Subject],
         response: {
           200: t.Object({}),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotAllowedError('edit reply')),
           }),
         },

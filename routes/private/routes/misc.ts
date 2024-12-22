@@ -53,8 +53,8 @@ export async function setup(app: App) {
           unread: t.Optional(t.Boolean()),
         }),
         response: {
-          200: res.Paged(t.Ref(NoticeRes)),
-          401: t.Ref(res.Error, {
+          200: res.Paged(res.Ref(NoticeRes)),
+          401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
               NeedLoginError: {
@@ -112,7 +112,7 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Null({ description: '没有返回值' }),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
               NeedLoginError: {

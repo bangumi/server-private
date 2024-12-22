@@ -21,7 +21,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           mode: t.Optional(
-            t.Ref(req.FilterMode, {
+            res.Ref(req.FilterMode, {
               description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
             }),
           ),
@@ -31,7 +31,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: t.Array(t.Ref(res.Timeline)),
+          200: t.Array(res.Ref(res.Timeline)),
         },
       },
     },

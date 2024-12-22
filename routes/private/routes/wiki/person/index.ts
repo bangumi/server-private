@@ -19,7 +19,7 @@ export const PersonWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: t.Ref(req.SubjectType),
+    typeID: res.Ref(req.SubjectType),
     infobox: t.String(),
     summary: t.String(),
   },
@@ -54,11 +54,11 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: t.Ref(PersonWikiInfo),
-          401: t.Ref(res.Error, {
+          200: res.Ref(PersonWikiInfo),
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
-          404: t.Ref(res.Error, {
+          404: res.Ref(res.Error, {
             description: '角色不存在',
           }),
         },
@@ -104,10 +104,10 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Object({}),
-          400: t.Ref(res.Error, {
+          400: res.Ref(res.Error, {
             'x-examples': formatErrors(new WikiChangedError('name', '1', '2')),
           }),
-          401: t.Ref(res.Error, {
+          401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },

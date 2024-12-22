@@ -30,9 +30,9 @@ import type { App } from '@app/routes/type.ts';
 export type IUserSubjectCollection = Static<typeof UserSubjectCollection>;
 const UserSubjectCollection = t.Object(
   {
-    subject: t.Ref(res.Subject),
+    subject: res.Ref(res.Subject),
     rate: t.Integer(),
-    type: t.Ref(req.CollectionType),
+    type: res.Ref(req.CollectionType),
     comment: t.String(),
     tags: t.Array(t.String()),
     epStatus: t.Integer(),
@@ -46,8 +46,8 @@ const UserSubjectCollection = t.Object(
 export type IUserSubjectEpisodeCollection = Static<typeof UserSubjectEpisodeCollection>;
 const UserSubjectEpisodeCollection = t.Object(
   {
-    episode: t.Ref(res.Episode),
-    type: t.Ref(req.EpisodeCollectionStatus),
+    episode: res.Ref(res.Episode),
+    type: res.Ref(req.EpisodeCollectionStatus),
   },
   { $id: 'UserSubjectEpisodeCollection' },
 );
@@ -55,7 +55,7 @@ const UserSubjectEpisodeCollection = t.Object(
 export type IUserCharacterCollection = Static<typeof UserCharacterCollection>;
 const UserCharacterCollection = t.Object(
   {
-    character: t.Ref(res.Character),
+    character: res.Ref(res.Character),
     createdAt: t.Integer(),
   },
   { $id: 'UserCharacterCollection' },
@@ -64,7 +64,7 @@ const UserCharacterCollection = t.Object(
 export type IUserPersonCollection = Static<typeof UserPersonCollection>;
 const UserPersonCollection = t.Object(
   {
-    person: t.Ref(res.Person),
+    person: res.Ref(res.Person),
     createdAt: t.Integer(),
   },
   { $id: 'UserPersonCollection' },
@@ -73,7 +73,7 @@ const UserPersonCollection = t.Object(
 export type IUserIndexCollection = Static<typeof UserIndexCollection>;
 const UserIndexCollection = t.Object(
   {
-    index: t.Ref(res.Index),
+    index: res.Ref(res.Index),
     createdAt: t.Integer(),
   },
   { $id: 'UserIndexCollection' },
@@ -87,7 +87,7 @@ const UserCollectionsSubjectSummary = t.Object(
     }),
     details: t.Record(
       t.String({ description: 'collection type id' }),
-      t.Array(t.Ref(res.SlimSubject)),
+      t.Array(res.Ref(res.SlimSubject)),
       {
         examples: [{ '1': [], '2': [examples.slimSubject], '3': [], '4': [], '5': [] }],
       },
@@ -100,7 +100,7 @@ export type IUserCollectionsCharacterSummary = Static<typeof UserCollectionsChar
 const UserCollectionsCharacterSummary = t.Object(
   {
     count: t.Integer(),
-    detail: t.Array(t.Ref(res.SlimCharacter)),
+    detail: t.Array(res.Ref(res.SlimCharacter)),
   },
   { $id: 'UserCollectionsCharacterSummary' },
 );
@@ -109,7 +109,7 @@ export type IUserCollectionsPersonSummary = Static<typeof UserCollectionsPersonS
 const UserCollectionsPersonSummary = t.Object(
   {
     count: t.Integer(),
-    detail: t.Array(t.Ref(res.SlimPerson)),
+    detail: t.Array(res.Ref(res.SlimPerson)),
   },
   { $id: 'UserCollectionsPersonSummary' },
 );
@@ -118,7 +118,7 @@ export type IUserIndexesSummary = Static<typeof UserIndexesSummary>;
 const UserIndexesSummary = t.Object(
   {
     count: t.Integer(),
-    detail: t.Array(t.Ref(res.SlimIndex)),
+    detail: t.Array(res.Ref(res.SlimIndex)),
   },
   { $id: 'UserIndexesSummary' },
 );
@@ -128,7 +128,7 @@ const UserCollectionsSummary = t.Object(
   {
     subject: t.Record(
       t.String({ description: 'subject type id' }),
-      t.Ref(UserCollectionsSubjectSummary),
+      res.Ref(UserCollectionsSubjectSummary),
       {
         examples: [
           {
@@ -140,9 +140,9 @@ const UserCollectionsSummary = t.Object(
         ],
       },
     ),
-    character: t.Ref(UserCollectionsCharacterSummary),
-    person: t.Ref(UserCollectionsPersonSummary),
-    index: t.Ref(UserIndexesSummary),
+    character: res.Ref(UserCollectionsCharacterSummary),
+    person: res.Ref(UserCollectionsPersonSummary),
+    index: res.Ref(UserIndexesSummary),
   },
   { $id: 'UserCollectionsSummary' },
 );
@@ -234,7 +234,7 @@ export async function setup(app: App) {
           username: t.String(),
         }),
         response: {
-          200: t.Ref(res.User),
+          200: res.Ref(res.User),
         },
       },
     },
@@ -279,7 +279,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(res.Friend)),
+          200: res.Paged(res.Ref(res.Friend)),
         },
       },
     },
@@ -329,7 +329,7 @@ export async function setup(app: App) {
           username: t.String({ minLength: 1 }),
         }),
         response: {
-          200: t.Ref(UserCollectionsSummary),
+          200: res.Ref(UserCollectionsSummary),
         },
       },
     },
@@ -603,8 +603,8 @@ export async function setup(app: App) {
           username: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
-          subjectType: t.Optional(t.Ref(req.SubjectType)),
-          type: t.Optional(t.Ref(req.CollectionType)),
+          subjectType: t.Optional(res.Ref(req.SubjectType)),
+          type: t.Optional(res.Ref(req.CollectionType)),
           since: t.Optional(t.Integer({ minimum: 0, description: '起始时间戳' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -612,7 +612,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(UserSubjectCollection)),
+          200: res.Paged(res.Ref(UserSubjectCollection)),
         },
       },
     },
@@ -694,7 +694,7 @@ export async function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Ref(UserSubjectCollection),
+          200: res.Ref(UserSubjectCollection),
         },
       },
     },
@@ -752,14 +752,14 @@ export async function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
         }),
         querystring: t.Object({
-          type: t.Optional(t.Ref(req.EpisodeType)),
+          type: t.Optional(res.Ref(req.EpisodeType)),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(t.Ref(UserSubjectEpisodeCollection)),
+          200: res.Paged(res.Ref(UserSubjectEpisodeCollection)),
         },
       },
       preHandler: [requireLogin('get subject episode collections')],
@@ -814,7 +814,7 @@ export async function setup(app: App) {
           episodeID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Ref(UserSubjectEpisodeCollection),
+          200: res.Ref(UserSubjectEpisodeCollection),
         },
       },
       preHandler: [requireLogin('get subject episode collection')],
@@ -854,7 +854,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
-          200: res.Paged(t.Ref(UserCharacterCollection)),
+          200: res.Paged(res.Ref(UserCharacterCollection)),
         },
       },
     },
@@ -918,7 +918,7 @@ export async function setup(app: App) {
           characterID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Ref(UserCharacterCollection),
+          200: res.Ref(UserCharacterCollection),
         },
       },
     },
@@ -972,7 +972,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
-          200: res.Paged(t.Ref(UserPersonCollection)),
+          200: res.Paged(res.Ref(UserPersonCollection)),
         },
       },
     },
@@ -1030,7 +1030,7 @@ export async function setup(app: App) {
           personID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Ref(UserPersonCollection),
+          200: res.Ref(UserPersonCollection),
         },
       },
     },
@@ -1082,7 +1082,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
-          200: res.Paged(t.Ref(UserIndexCollection)),
+          200: res.Paged(res.Ref(UserIndexCollection)),
         },
       },
     },
@@ -1138,7 +1138,7 @@ export async function setup(app: App) {
           indexID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Ref(UserIndexCollection),
+          200: res.Ref(UserIndexCollection),
         },
       },
     },
@@ -1188,8 +1188,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
-          200: res.Paged(t.Ref(res.Index)),
-          404: t.Ref(res.Error, {
+          200: res.Paged(res.Ref(res.Index)),
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('user')),
           }),
         },
@@ -1247,7 +1247,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         responses: {
-          200: t.Array(t.Ref(res.Timeline)),
+          200: t.Array(res.Ref(res.Timeline)),
         },
       },
     },

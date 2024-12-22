@@ -22,7 +22,7 @@ export const EpisodeWikiInfo = t.Object(
     subjectID: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
-    type: t.Ref(req.EpisodeType),
+    type: res.Ref(req.EpisodeType),
     ep: t.Number(),
     duration: t.String({ examples: ['24:53', '24m52s'] }),
     date: t.Optional(
@@ -55,7 +55,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: t.Ref(EpisodeWikiInfo, {
+          200: res.Ref(EpisodeWikiInfo, {
             examples: [
               {
                 id: 1148124,
@@ -71,7 +71,7 @@ export async function setup(app: App) {
               },
             ] satisfies IEpisodeWikiInfo[],
           }),
-          404: t.Ref(res.Error, {
+          404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('episode')),
           }),
         },
@@ -132,8 +132,8 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Object({}),
-          400: t.Ref(res.Error, { description: 'invalid input' }),
-          404: t.Ref(res.Error, { 'x-examples': formatErrors(new NotFoundError('episode 1')) }),
+          400: res.Ref(res.Error, { description: 'invalid input' }),
+          404: res.Ref(res.Error, { 'x-examples': formatErrors(new NotFoundError('episode 1')) }),
         },
       },
       preHandler: [
