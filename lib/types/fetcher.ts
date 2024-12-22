@@ -405,6 +405,8 @@ export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
       op.and(
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjects.typeID, SubjectType.Anime),
+        // platform tv
+        op.eq(schema.chiiSubjects.platform, 1),
         op.eq(schema.chiiSubjectFields.year, now.year),
         op.eq(schema.chiiSubjectFields.month, seasonSets[now.month]),
       ),
