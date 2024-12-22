@@ -15,7 +15,7 @@ import * as orm from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
-import * as req from '@app/lib/types/req.ts';
+import * as common from '@app/lib/types/common.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -62,7 +62,7 @@ export type ISubjectNew = Static<typeof SubjectNew>;
 export const SubjectNew = t.Object(
   {
     name: t.String({ minLength: 1 }),
-    type: res.Ref(req.SubjectType),
+    type: common.Ref(common.SubjectType),
     platform: t.Integer(),
     infobox: t.String({ minLength: 1 }),
     nsfw: t.Boolean(),
@@ -126,10 +126,10 @@ export const SubjectWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: res.Ref(req.SubjectType),
+    typeID: common.Ref(common.SubjectType),
     infobox: t.String(),
     platform: t.Integer(),
-    availablePlatform: t.Array(res.Ref(Platform)),
+    availablePlatform: t.Array(common.Ref(Platform)),
     metaTags: t.Array(t.String()),
     summary: t.String(),
     nsfw: t.Boolean(),
@@ -157,8 +157,8 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: res.Ref(SubjectWikiInfo),
-          401: res.Ref(res.Error, {
+          200: common.Ref(SubjectWikiInfo),
+          401: common.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
@@ -207,10 +207,10 @@ export async function setup(app: App) {
         body: SubjectNew,
         response: {
           200: t.Object({ subjectID: t.Number() }),
-          [StatusCodes.BAD_REQUEST]: res.Ref(res.Error, {
+          [StatusCodes.BAD_REQUEST]: common.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
-          401: res.Ref(res.Error, {}),
+          401: common.Ref(res.Error, {}),
         },
       },
     },
@@ -350,8 +350,8 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: t.Array(res.Ref(HistorySummary)),
-          401: res.Ref(res.Error, {
+          200: t.Array(common.Ref(HistorySummary)),
+          401: common.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
@@ -400,7 +400,7 @@ export async function setup(app: App) {
           {
             commitMessage: t.String({ minLength: 1 }),
             expectedRevision: SubjectExpected,
-            subject: res.Ref(SubjectEdit),
+            subject: common.Ref(SubjectEdit),
           },
           {
             examples: [
@@ -413,7 +413,7 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Null(),
-          401: res.Ref(res.Error, {
+          401: common.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
@@ -484,7 +484,7 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Null(),
-          401: res.Ref(res.Error, {
+          401: common.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },

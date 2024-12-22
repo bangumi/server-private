@@ -8,7 +8,7 @@ import type { PersonRev } from '@app/lib/orm/entity/index.ts';
 import { createRevision, RevType } from '@app/lib/orm/entity/index.ts';
 import { AppDataSource, entity, PersonRepo } from '@app/lib/orm/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
-import * as req from '@app/lib/types/req.ts';
+import * as common from '@app/lib/types/common.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
@@ -19,7 +19,7 @@ export const PersonWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: res.Ref(req.SubjectType),
+    typeID: common.Ref(common.SubjectType),
     infobox: t.String(),
     summary: t.String(),
   },
@@ -54,11 +54,11 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(PersonWikiInfo),
-          401: res.Ref(res.Error, {
+          200: common.Ref(PersonWikiInfo),
+          401: common.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
-          404: res.Ref(res.Error, {
+          404: common.Ref(res.Error, {
             description: '角色不存在',
           }),
         },
@@ -104,10 +104,10 @@ export async function setup(app: App) {
         ),
         response: {
           200: t.Object({}),
-          400: res.Ref(res.Error, {
+          400: common.Ref(res.Error, {
             'x-examples': formatErrors(new WikiChangedError('name', '1', '2')),
           }),
-          401: res.Ref(res.Error, {
+          401: common.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },

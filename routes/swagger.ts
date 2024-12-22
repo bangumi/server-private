@@ -10,6 +10,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import { projectRoot, VERSION } from '@app/lib/config.ts';
 import { Security } from '@app/lib/openapi/index.ts';
+import * as common from '@app/lib/types/common.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -71,7 +72,7 @@ const transform: transformer = ({ schema, url }) => {
 
   const response = (schema.response ?? {}) as Record<number, unknown>;
   if (!response[500]) {
-    response[500] = res.Ref(res.Error, {
+    response[500] = common.Ref(res.Error, {
       description: '意料之外的服务器错误',
     });
   }

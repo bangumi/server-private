@@ -15,6 +15,7 @@ import type { ITopic } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
 import { CommentState, TopicDisplay, TopicParentType } from '@app/lib/topic/type.ts';
+import * as common from '@app/lib/types/common.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -25,10 +26,10 @@ import type { App } from '@app/routes/type.ts';
 
 const GroupProfile = t.Object(
   {
-    recentAddedMembers: t.Array(res.Ref(res.GroupMember)),
-    topics: t.Array(res.Ref(res.Topic)),
+    recentAddedMembers: t.Array(common.Ref(res.GroupMember)),
+    topics: t.Array(common.Ref(res.Topic)),
     inGroup: t.Boolean({ description: '是否已经加入小组' }),
-    group: res.Ref(res.Group),
+    group: common.Ref(res.Group),
     totalTopics: t.Integer(),
   },
   { $id: 'GroupProfile' },
@@ -53,7 +54,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0 })),
         }),
         response: {
-          200: res.Ref(GroupProfile),
+          200: common.Ref(GroupProfile),
         },
       },
     },
@@ -94,7 +95,7 @@ export async function setup(app: App) {
           id: t.Integer({ examples: [371602] }),
         }),
         response: {
-          200: res.Ref(res.TopicDetail),
+          200: common.Ref(res.TopicDetail),
         },
       },
     },
@@ -128,7 +129,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.GroupMember)),
+          200: res.Paged(common.Ref(res.GroupMember)),
         },
       },
     },
@@ -160,8 +161,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.Topic)),
-          404: res.Ref(res.Error, {
+          200: res.Paged(common.Ref(res.Topic)),
+          404: common.Ref(res.Error, {
             description: '小组不存在',
             'x-examples': {
               NotFoundError: { value: res.formatError(new NotFoundError('topic')) },
@@ -207,7 +208,7 @@ export async function setup(app: App) {
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: res.Ref(req.CreateTopic),
+        body: common.Ref(req.CreateTopic),
       },
       preHandler: [requireLogin('creating a post')],
     },
@@ -254,13 +255,13 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         response: {
           200: t.Object({}),
-          400: res.Ref(res.Error),
-          401: res.Ref(res.Error, {
+          400: common.Ref(res.Error),
+          401: common.Ref(res.Error, {
             'x-examples': formatErrors(new NotAllowedError('edit a topic')),
           }),
         },
         security: [{ [Security.CookiesSession]: [] }],
-        body: res.Ref(req.CreateTopic),
+        body: common.Ref(req.CreateTopic),
       },
       preHandler: [requireLogin('edit a topic')],
     },

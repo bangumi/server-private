@@ -5,9 +5,9 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import * as common from '@app/lib/types/common.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
-import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
@@ -38,8 +38,8 @@ export async function setup(app: App) {
           characterID: t.Integer(),
         }),
         response: {
-          200: res.Ref(res.Character),
-          404: res.Ref(res.Error, {
+          200: common.Ref(res.Character),
+          404: common.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
         },
@@ -76,7 +76,7 @@ export async function setup(app: App) {
           characterID: t.Integer(),
         }),
         querystring: t.Object({
-          subjectType: t.Optional(res.Ref(req.SubjectType)),
+          subjectType: t.Optional(common.Ref(common.SubjectType)),
           type: t.Optional(t.Integer({ description: '角色出场类型: 主角，配角，客串' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -84,8 +84,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.CharacterSubject)),
-          404: res.Ref(res.Error, {
+          200: res.Paged(common.Ref(res.CharacterSubject)),
+          404: common.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
         },
@@ -169,8 +169,8 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.PersonCollect)),
-          404: res.Ref(res.Error, {
+          200: res.Paged(common.Ref(res.PersonCollect)),
+          404: common.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
         },

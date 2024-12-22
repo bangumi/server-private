@@ -1,15 +1,17 @@
+import * as common from '@app/lib/types/common.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
 export function addSchemas(app: App) {
-  app.addSchema(req.CollectionType);
+  app.addSchema(common.CollectionType);
+  app.addSchema(common.EpisodeType);
+  app.addSchema(common.SubjectType);
+
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
-  app.addSchema(req.EpisodeType);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
-  app.addSchema(req.SubjectType);
   app.addSchema(req.UpdateTopic);
 
   app.addSchema(res.Avatar);

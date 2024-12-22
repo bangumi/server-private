@@ -16,6 +16,7 @@ import {
   ListTopicDisplays,
 } from '@app/lib/topic/display.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
+import * as common from '@app/lib/types/common.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -78,7 +79,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         response: {
-          200: res.Ref(res.Subject),
+          200: common.Ref(res.Subject),
         },
       },
     },
@@ -114,8 +115,8 @@ export async function setup(app: App) {
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
-          type: res.Ref(req.SubjectType),
-          sort: res.Ref(req.SubjectSort),
+          type: common.Ref(common.SubjectType),
+          sort: common.Ref(req.SubjectSort),
           page: t.Optional(t.Integer({ default: 1, minimum: 1, description: 'min 1' })),
           cat: t.Optional(
             t.Integer({
@@ -131,7 +132,7 @@ export async function setup(app: App) {
           ),
         }),
         response: {
-          200: res.Paged(res.Ref(res.Subject)),
+          200: res.Paged(common.Ref(res.Subject)),
         },
       },
     },
@@ -179,14 +180,14 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(res.Ref(req.EpisodeType)),
+          type: t.Optional(common.Ref(common.EpisodeType)),
           limit: t.Optional(
             t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.Episode)),
+          200: res.Paged(common.Ref(res.Episode)),
         },
       },
     },
@@ -237,7 +238,7 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(res.Ref(req.SubjectType)),
+          type: t.Optional(common.Ref(common.SubjectType)),
           offprint: t.Optional(t.Boolean({ default: false, description: '是否单行本' })),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -245,7 +246,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.SubjectRelation)),
+          200: res.Paged(common.Ref(res.SubjectRelation)),
         },
       },
     },
@@ -330,7 +331,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.SubjectCharacter)),
+          200: res.Paged(common.Ref(res.SubjectCharacter)),
         },
       },
     },
@@ -408,7 +409,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.SubjectStaff)),
+          200: res.Paged(common.Ref(res.SubjectStaff)),
         },
       },
     },
@@ -491,7 +492,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.SubjectRec)),
+          200: res.Paged(common.Ref(res.SubjectRec)),
         },
       },
     },
@@ -546,14 +547,14 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         querystring: t.Object({
-          type: t.Optional(res.Ref(req.CollectionType)),
+          type: t.Optional(common.Ref(common.CollectionType)),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.SubjectComment)),
+          200: res.Paged(common.Ref(res.SubjectComment)),
         },
       },
     },
@@ -611,7 +612,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.SubjectReview)),
+          200: res.Paged(common.Ref(res.SubjectReview)),
         },
       },
     },
@@ -675,7 +676,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.Topic)),
+          200: res.Paged(common.Ref(res.Topic)),
         },
       },
     },
@@ -801,7 +802,7 @@ export async function setup(app: App) {
           topicID: t.Integer({ examples: [371602], minimum: 0 }),
         }),
         response: {
-          200: res.Ref(res.TopicDetail),
+          200: common.Ref(res.TopicDetail),
         },
       },
     },
