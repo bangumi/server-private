@@ -2,6 +2,11 @@ import { CronJob } from 'cron';
 
 import { logger } from '@app/lib/logger';
 import { heartbeat } from '@app/tasks/heartbeat';
+import {
+  truncateGlobalCache as truncateTimelineGlobalCache,
+  truncateInboxCache as truncateTimelineInboxCache,
+  truncateUserCache as truncateTimelineUserCache,
+} from '@app/tasks/timeline';
 import { trendingSubjects } from '@app/tasks/trending';
 
 // field          allowed values
@@ -18,6 +23,9 @@ async function main() {
   const jobs: Record<string, CronJob> = {
     heartbeat: new CronJob('*/10 * * * * *', heartbeat),
     trendingSubjects: new CronJob('0 0 19 * * *', trendingSubjects),
+    truncateTimelineGlobalCache: new CronJob('*/10 * * * *', truncateTimelineGlobalCache),
+    truncateTimelineInboxCache: new CronJob('0 0 20 * * *', truncateTimelineInboxCache),
+    truncateTimelineUserCache: new CronJob('0 0 21 * * *', truncateTimelineUserCache),
   };
 
   for (const [name, job] of Object.entries(jobs)) {
