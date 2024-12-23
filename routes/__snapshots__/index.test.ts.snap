@@ -5113,13 +5113,11 @@ paths:
             maximum: 20
             minimum: 1
             type: integer
-        - description: min 0
+        - description: max timeline id to fetch from
           in: query
-          name: offset
+          name: until
           required: false
           schema:
-            default: 0
-            minimum: 0
             type: integer
       responses:
         '200':
@@ -5840,13 +5838,11 @@ paths:
             maximum: 20
             minimum: 1
             type: integer
-        - description: min 0
+        - description: max timeline id to fetch from
           in: query
-          name: offset
+          name: until
           required: false
           schema:
-            default: 0
-            minimum: 0
             type: integer
         - in: path
           name: username

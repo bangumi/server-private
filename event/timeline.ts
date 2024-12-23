@@ -45,7 +45,7 @@ export async function handle(key: string, value: string) {
       const ttlUser = Number(await redis.get(getUserVisitCacheKey(tml.tml_uid)));
       if (ttlUser > 0) {
         const userCacheKey = getUserCacheKey(tml.tml_uid);
-        await redis.zadd(userCacheKey, payload.after.tml_dateline, tml.tml_id);
+        await redis.zadd(userCacheKey, tml.tml_id, tml.tml_id);
         // 将 cache key 的过期时间设置为与 visit key 一致
         await redis.expire(userCacheKey, ttlUser - now);
       }
@@ -56,7 +56,7 @@ export async function handle(key: string, value: string) {
           const ttl = Number(ttlInbox[idx]);
           if (ttl > 0) {
             const inboxCacheKey = getInboxCacheKey(fid);
-            await redis.zadd(inboxCacheKey, payload.after.tml_dateline, tml.tml_id);
+            await redis.zadd(inboxCacheKey, tml.tml_id, tml.tml_id);
             await redis.expire(inboxCacheKey, ttl - now);
           }
         }

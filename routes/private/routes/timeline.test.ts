@@ -12,7 +12,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { offset: '0' },
+      query: { mode: 'all' },
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -30,7 +30,7 @@ describe('timeline', () => {
     const res = await app.inject({
       method: 'get',
       url: '/timeline',
-      query: { mode: 'friends', offset: '0' },
+      query: { mode: 'friends' },
     });
     expect(res.json()).toMatchSnapshot();
   });
