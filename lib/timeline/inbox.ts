@@ -44,6 +44,7 @@ export async function getTimelineInbox(
     if (!until) {
       // 回填第一页的数据
       await redis.zadd(cacheKey, ...ids.flatMap((id) => [id, id]));
+      await redis.expire(cacheKey, 1209600);
     }
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
