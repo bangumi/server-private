@@ -38,3 +38,11 @@ MQ 从 kafka 消费 debezium 的 binlog，然后更新缓存
 ### update
 
 清除 `tml:item:{tml_id}` 的缓存，下次请求的时候会重新请求数据库并回填 cache
+
+## CRON 任务清理时间线缓存
+
+- 每 10 分钟 truncate 一次 `tml:inbox:0`，即全站时间线，只保留最新的 1000 条
+
+- 每天凌晨 4 点，scan 并 truncate 所有 `tml:inbox:*`，只保留最新的 1000 条
+
+- 每天凌晨 5 点，scan 并 truncate 所有 `tml:user:*`，只保留最新的 1000 条
