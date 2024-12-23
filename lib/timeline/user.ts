@@ -13,7 +13,8 @@ export async function getTimelineUser(
 ): Promise<number[]> {
   const cacheKey = getUserCacheKey(uid);
   const ids = [];
-  const cached = await redis.zrevrangebyscore(cacheKey, until ?? '+inf', '-inf', 'LIMIT', 0, limit);
+  const max_id = until ? until - 1 : '+inf';
+  const cached = await redis.zrevrangebyscore(cacheKey, max_id, '-inf', 'LIMIT', 0, limit);
   if (cached.length === limit) {
     ids.push(...cached.map(Number));
   } else {
@@ -30,7 +31,7 @@ export async function getTimelineUser(
       .limit(limit)
       .execute();
     ids.push(...data.map((d) => d.id));
-    if (!until) {
+    if (!until && ids.length > 0) {
       // 回填第一页的数据
       await redis.zadd(cacheKey, ...ids.flatMap((id) => [id, id]));
       await redis.expire(cacheKey, 1209600);
