@@ -41,6 +41,10 @@ export async function getTimelineInbox(
       .limit(limit)
       .execute();
     ids.push(...data.map((d) => d.id));
+    if (!until) {
+      // 回填第一页的数据
+      await redis.zadd(cacheKey, ...ids.flatMap((id) => [id, id]));
+    }
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
   const ttl = DateTime.now().toUnixInteger() + 1209600;
