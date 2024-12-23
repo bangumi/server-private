@@ -28,23 +28,23 @@ export async function setup(app: App) {
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 20, description: 'min 1, max 20' }),
           ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+          until: t.Optional(t.Integer({ description: 'max timeline id to fetch from' })),
         }),
         response: {
           200: t.Array(res.Ref(res.Timeline)),
         },
       },
     },
-    async ({ auth, query: { mode = TimelineMode.Friends, limit = 20, offset = 0 } }) => {
+    async ({ auth, query: { mode = TimelineMode.Friends, limit = 20, until } }) => {
       const ids = [];
       switch (mode) {
         case TimelineMode.Friends: {
-          const ret = await getTimelineInbox(auth.userID, limit, offset);
+          const ret = await getTimelineInbox(auth.userID, limit, until);
           ids.push(...ret);
           break;
         }
         case TimelineMode.All: {
-          const ret = await getTimelineInbox(0, limit, offset);
+          const ret = await getTimelineInbox(0, limit, until);
           ids.push(...ret);
           break;
         }

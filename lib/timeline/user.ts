@@ -9,24 +9,25 @@ import { getUserCacheKey, getUserVisitCacheKey } from './cache.ts';
 export async function getTimelineUser(
   uid: number,
   limit: number,
-  offset: number,
+  until?: number,
 ): Promise<number[]> {
   const cacheKey = getUserCacheKey(uid);
-  const cacheCount = await redis.zcard(cacheKey);
   const ids = [];
-  if (cacheCount > offset + limit) {
-    const ret = await redis.zrevrange(cacheKey, offset, offset + limit - 1);
-    if (ret) {
-      ids.push(...ret.map(Number));
-    }
+  const cached = await redis.zrevrangebyscore(cacheKey, until ?? '+inf', '-inf', 'LIMIT', 0, limit);
+  if (cached.length === limit) {
+    ids.push(...cached.map(Number));
   } else {
     const data = await db
       .select({ id: schema.chiiTimeline.id })
       .from(schema.chiiTimeline)
-      .where(op.eq(schema.chiiTimeline.uid, uid))
+      .where(
+        op.and(
+          until ? op.lt(schema.chiiTimeline.id, until) : undefined,
+          op.eq(schema.chiiTimeline.uid, uid),
+        ),
+      )
       .orderBy(op.desc(schema.chiiTimeline.id))
       .limit(limit)
-      .offset(offset)
       .execute();
     ids.push(...data.map((d) => d.id));
   }

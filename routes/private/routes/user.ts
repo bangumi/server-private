@@ -1244,20 +1244,20 @@ export async function setup(app: App) {
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 20, description: 'min 1, max 20' }),
           ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+          until: t.Optional(t.Integer({ description: 'max timeline id to fetch from' })),
         }),
         responses: {
           200: t.Array(res.Ref(res.Timeline)),
         },
       },
     },
-    async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { username }, query: { limit = 20, until } }) => {
       const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
 
-      const ids = await getTimelineUser(user.id, limit, offset);
+      const ids = await getTimelineUser(user.id, limit, until);
       const result = await fetchTimelineByIDs(ids, auth.allowNsfw);
       const items = [];
       for (const tid of ids) {

@@ -9,16 +9,13 @@ import { getInboxCacheKey, getInboxVisitCacheKey } from './cache.ts';
 export async function getTimelineInbox(
   uid: number,
   limit: number,
-  offset: number,
+  until?: number,
 ): Promise<number[]> {
   const cacheKey = getInboxCacheKey(uid);
-  const cacheCount = await redis.zcard(cacheKey);
   const ids = [];
-  if (cacheCount > offset + limit) {
-    const ret = await redis.zrevrange(cacheKey, offset, offset + limit - 1);
-    if (ret) {
-      ids.push(...ret.map(Number));
-    }
+  const cached = await redis.zrevrangebyscore(cacheKey, until ?? '+inf', '-inf', 'LIMIT', 0, limit);
+  if (cached.length === limit) {
+    ids.push(...cached.map(Number));
   } else {
     const conditions = [];
     if (uid > 0) {
@@ -29,9 +26,12 @@ export async function getTimelineInbox(
         .execute()
         .then((data) => data.map((d) => d.fid));
       if (friendIDs.length === 0) {
-        return getTimelineInbox(0, limit, offset);
+        return getTimelineInbox(0, limit, until);
       }
       conditions.push(op.inArray(schema.chiiTimeline.uid, friendIDs));
+    }
+    if (until) {
+      conditions.push(op.lt(schema.chiiTimeline.id, until));
     }
     const data = await db
       .select({ id: schema.chiiTimeline.id })
@@ -39,7 +39,6 @@ export async function getTimelineInbox(
       .where(conditions.length > 0 ? op.and(...conditions) : undefined)
       .orderBy(op.desc(schema.chiiTimeline.id))
       .limit(limit)
-      .offset(offset)
       .execute();
     ids.push(...data.map((d) => d.id));
   }
