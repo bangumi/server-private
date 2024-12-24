@@ -1,37 +1,23 @@
 import * as console from 'node:console';
-import * as fs from 'node:fs';
+import * as fs from 'node:fs/promises';
 
+import * as prettier from 'prettier';
 import * as yaml from 'yaml';
 
-const to_json = (file) => {
-  try {
-    const document = yaml.parse(fs.readFileSync(file, 'utf8'));
-    console.log(document);
-    const data = JSON.stringify(document);
-    return data;
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
-};
+async function to_json(file) {
+  const document = yaml.parse(await fs.readFile(file, 'utf8'));
+  const data = await prettier.format(JSON.stringify(document), { parser: 'json' });
+  return data;
+}
 
 const folder = './vendor/common/';
 const output_folder = './vendor/common-json/';
 
-fs.readdir(folder, (error, files) => {
-  for (const file of files) {
-    if (file.includes('.yml')) {
-      const json_content = to_json(folder + file);
-      if (json_content) {
-        const json_file = output_folder + file.replace('.yml', '.json');
-        console.log(`${file} to ${json_file}`);
-        console.log(json_content);
-        fs.writeFile(json_file, json_content, 'utf8', (error_) => {
-          if (error_) {
-            console.error(error_);
-          }
-        });
-      }
-    }
+for (const file of await fs.readdir(folder)) {
+  if (file.toLowerCase().endsWith('.yml') || file.toLowerCase().endsWith('.yaml')) {
+    const json_content = await to_json(folder + file);
+    const json_file = output_folder + file.replace('.yml', '.json');
+    console.log(`${file} to ${json_file}`);
+    await fs.writeFile(json_file, json_content, 'utf8');
   }
-});
+}

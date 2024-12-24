@@ -12,7 +12,14 @@
         "official": 1006
       },
       "book_series": { "offprint": 0, "series": 1 },
-      "anime": { "tv": 1, "ova": 2, "movie": 3, "short_film": 4, "web": 5, "anime_comic": 2006 },
+      "anime": {
+        "tv": 1,
+        "ova": 2,
+        "movie": 3,
+        "short_film": 4,
+        "web": 5,
+        "anime_comic": 2006
+      },
       "real": {
         "none": 0,
         "jp": 1,
@@ -166,7 +173,13 @@
       }
     },
     "4": {
-      "0": { "id": 0, "type": "other", "type_cn": "其他", "alias": "misc", "order": 4 },
+      "0": {
+        "id": 0,
+        "type": "other",
+        "type_cn": "其他",
+        "alias": "misc",
+        "order": 4
+      },
       "4001": {
         "id": 4001,
         "type": "games",
@@ -274,8 +287,20 @@
       }
     },
     "book_series": {
-      "0": { "id": 0, "type": "offprint", "type_cn": "单行本", "alias": "offprint", "order": 1 },
-      "1": { "id": 1, "type": "series", "type_cn": "系列", "alias": "series", "order": 0 }
+      "0": {
+        "id": 0,
+        "type": "offprint",
+        "type_cn": "单行本",
+        "alias": "offprint",
+        "order": 1
+      },
+      "1": {
+        "id": 1,
+        "type": "series",
+        "type_cn": "系列",
+        "alias": "series",
+        "order": 0
+      }
     },
     "game_platforms": {
       "4": {
