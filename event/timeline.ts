@@ -42,7 +42,7 @@ export async function handle(key: string, value: string) {
       const tml = payload.after;
       logger.info(`process timeline create event: ${tml.tml_id}`);
       // 始终写入全站时间线
-      await redis.zadd(getItemCacheKey(0), tml.tml_id, tml.tml_id);
+      await redis.zadd(getInboxCacheKey(0), tml.tml_id, tml.tml_id);
 
       const now = DateTime.now().toUnixInteger();
       const ttlUser = Number(await redis.get(getUserVisitCacheKey(tml.tml_uid)));
@@ -74,7 +74,7 @@ export async function handle(key: string, value: string) {
       const tml = payload.before;
       logger.info(`process timeline delete event: ${tml.tml_id}`);
       // 始终尝试从全站时间线中删除
-      await redis.zrem(getItemCacheKey(0), tml.tml_id);
+      await redis.zrem(getInboxCacheKey(0), tml.tml_id);
 
       await redis.zrem(getUserCacheKey(tml.tml_uid), tml.tml_id);
       const friendIDs = await fetcher.fetchFriendIDsByUserID(tml.tml_uid);
