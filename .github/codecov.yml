@@ -1,3 +1,10 @@
 ignore:
   - '**/*.test.ts'
   - 'lib/generated/'
+  - 'drizzle/new/'
+
+coverage:
+  status:
+    patch: false
+
+github_checks: false
