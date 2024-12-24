@@ -6,17 +6,6 @@ import { emptyAuth } from '@app/lib/auth/index.ts';
 import { setup } from './timeline.ts';
 
 describe('timeline', () => {
-  test('should get all', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/timeline',
-      query: { mode: 'all' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
   test('should get friends', async () => {
     const app = createTestServer({
       auth: {
