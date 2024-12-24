@@ -15,7 +15,8 @@ export async function getTimelineInbox(
   const ids = [];
   const max_id = until ? until - 1 : '+inf';
   const cached = await redis.zrevrangebyscore(cacheKey, max_id, '-inf', 'LIMIT', 0, limit);
-  if (cached.length === limit) {
+  // 对匿名全站时间线，只返回缓存数据
+  if (cached.length === limit || uid === 0) {
     ids.push(...cached.map(Number));
   } else {
     const conditions = [];
