@@ -8,10 +8,12 @@ export function addSchemas(app: App) {
   app.addSchema(common.EpisodeType);
   app.addSchema(common.SubjectType);
 
+  app.addSchema(req.CreateEpisodeComment);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
+  app.addSchema(req.UpdateEpisodeComment);
   app.addSchema(req.UpdateTopic);
 
   app.addSchema(res.Avatar);
@@ -22,7 +24,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.Episode);
   app.addSchema(res.EpisodeComment);
-  app.addSchema(res.EpisodeCommentBase);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
   app.addSchema(res.Group);
