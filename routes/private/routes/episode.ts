@@ -44,6 +44,12 @@ export async function setup(app: App) {
     },
   );
 
+  app.get('/subjects/-/episode/:episodeID', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}`, 307);
+  });
+
   app.get(
     '/subjects/-/episodes/:episodeID/comments',
     {
@@ -95,6 +101,12 @@ export async function setup(app: App) {
       return comments;
     },
   );
+
+  app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}/comments`, 307);
+  });
 
   app.post(
     '/subjects/-/episodes/:episodeID/comments',
@@ -171,6 +183,12 @@ export async function setup(app: App) {
     },
   );
 
+  app.post('/subjects/-/episode/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}/comments`, 307);
+  });
+
   app.put(
     '/subjects/-/episodes/-/comments/:commentID',
     {
@@ -219,6 +237,12 @@ export async function setup(app: App) {
     },
   );
 
+  app.put('/subjects/-/episode/-/comments/:commentID', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const commentID = params.commentID ?? '';
+    return reply.redirect(`/p1/subjects/-/episodes/-/comments/${commentID}`, 307);
+  });
+
   app.delete(
     '/subjects/-/episodes/-/comments/:commentID',
     {
@@ -255,4 +279,10 @@ export async function setup(app: App) {
       return {};
     },
   );
+
+  app.delete('/subjects/-/episode/-/comments/:commentID', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const commentID = params.commentID ?? '';
+    return reply.redirect(`/p1/subjects/-/episodes/-/comments/${commentID}`, 307);
+  });
 }

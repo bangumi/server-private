@@ -3957,6 +3957,59 @@ paths:
         - subject
   /p1/subjects/-/episode/-/comments/{commentID}:
     delete:
+      parameters:
+        - in: path
+          name: commentID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+    put:
+      parameters:
+        - in: path
+          name: commentID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+  /p1/subjects/-/episode/{episodeID}:
+    get:
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+  /p1/subjects/-/episode/{episodeID}/comments:
+    get:
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+    post:
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+  /p1/subjects/-/episodes/-/comments/{commentID}:
+    delete:
       operationId: deleteSubjectEpComment
       parameters:
         - example: 1034989
@@ -4007,7 +4060,7 @@ paths:
       summary: 编辑条目的剧集吐槽
       tags:
         - episode
-  /p1/subjects/-/episode/{episodeID}:
+  /p1/subjects/-/episodes/{episodeID}:
     get:
       operationId: getSubjectEpisode
       parameters:
@@ -4034,7 +4087,7 @@ paths:
       summary: 获取剧集信息
       tags:
         - episode
-  /p1/subjects/-/episode/{episodeID}/comments:
+  /p1/subjects/-/episodes/{episodeID}/comments:
     get:
       operationId: getSubjectEpisodeComments
       parameters:
