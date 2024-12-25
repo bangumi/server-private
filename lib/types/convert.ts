@@ -603,10 +603,7 @@ export function toSubjectTopicReply(reply: orm.ISubjectPost, user: orm.IUser): r
   };
 }
 
-export function toSubjectTopicReplyBasic(
-  reply: orm.ISubjectPost,
-  user: orm.IUser,
-): res.IReplyBasic {
+export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser): res.ISubReply {
   return {
     id: reply.id,
     text: reply.content,

@@ -337,7 +337,7 @@ export async function handleTopicReply(
   topicID: number,
   content: string,
   replyTo: number,
-): Promise<res.IReplyBasic> {
+): Promise<res.ISubReply> {
   if (!Dam.allCharacterPrintable(content)) {
     throw new BadRequestError('text contains invalid invisible character');
   }

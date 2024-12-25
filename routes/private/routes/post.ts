@@ -219,7 +219,7 @@ export async function setup(app: App) {
         }),
         tags: [Tag.Group],
         response: {
-          200: res.Ref(res.ReplyBasic),
+          200: res.Ref(res.SubReply),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
@@ -264,7 +264,7 @@ export async function setup(app: App) {
       auth,
       body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
-    }): Promise<res.IReplyBasic> => {
+    }): Promise<res.ISubReply> => {
       if (!(await turnstile.verify(cfCaptchaResponse))) {
         throw new CaptchaError();
       }
@@ -288,7 +288,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Subject],
         response: {
-          200: res.Ref(res.ReplyBasic),
+          200: res.Ref(res.SubReply),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
@@ -333,7 +333,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       auth,
       body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
-    }): Promise<res.IReplyBasic> => {
+    }): Promise<res.ISubReply> => {
       if (!(await turnstile.verify(cfCaptchaResponse))) {
         throw new CaptchaError();
       }

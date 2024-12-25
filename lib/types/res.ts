@@ -700,8 +700,8 @@ export const GroupMember = t.Object(
   { $id: 'GroupMember', title: 'GroupMember' },
 );
 
-export type IReplyBasic = Static<typeof ReplyBasic>;
-export const ReplyBasic = t.Object(
+export type ISubReply = Static<typeof SubReply>;
+export const SubReply = t.Object(
   {
     id: t.Integer(),
     creator: Ref(SlimUser),
@@ -711,7 +711,7 @@ export const ReplyBasic = t.Object(
     state: t.Integer(),
     reactions: t.Array(Ref(Reaction)),
   },
-  { $id: 'ReplyBasic', title: 'ReplyBasic' },
+  { $id: 'SubReply', title: 'SubReply' },
 );
 
 export type IReply = Static<typeof Reply>;
@@ -719,7 +719,7 @@ export const Reply = t.Object(
   {
     id: t.Integer(),
     isFriend: t.Optional(t.Boolean()),
-    replies: t.Array(Ref(ReplyBasic)),
+    replies: t.Array(Ref(SubReply)),
     creator: Ref(SlimUser),
     createdAt: t.Integer(),
     text: t.String(),

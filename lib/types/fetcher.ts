@@ -855,7 +855,7 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
     .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
     .execute();
 
-  const subReplies: Record<number, res.IReplyBasic[]> = {};
+  const subReplies: Record<number, res.ISubReply[]> = {};
   const topLevelReplies: res.IReply[] = [];
   for (const d of data) {
     const related = d.chii_subject_posts.related;
@@ -863,7 +863,7 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
       const reply = convert.toSubjectTopicReply(d.chii_subject_posts, d.chii_members);
       topLevelReplies.push(reply);
     } else {
-      const subReply = convert.toSubjectTopicReplyBasic(d.chii_subject_posts, d.chii_members);
+      const subReply = convert.toSubjectTopicSubReply(d.chii_subject_posts, d.chii_members);
       const list = subReplies[related] ?? [];
       list.push(subReply);
       subReplies[related] = list;

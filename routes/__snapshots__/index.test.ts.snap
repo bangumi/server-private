@@ -998,7 +998,7 @@ exports[`should build private api spec 1`] = `
           type: array
         replies:
           items:
-            $ref: '#/components/schemas/ReplyBasic'
+            $ref: '#/components/schemas/SubReply'
           type: array
         state:
           type: integer
@@ -1013,33 +1013,6 @@ exports[`should build private api spec 1`] = `
         - state
         - reactions
       title: Reply
-      type: object
-    ReplyBasic:
-      properties:
-        createdAt:
-          type: integer
-        creator:
-          $ref: '#/components/schemas/SlimUser'
-        id:
-          type: integer
-        isFriend:
-          type: boolean
-        reactions:
-          items:
-            $ref: '#/components/schemas/Reaction'
-          type: array
-        state:
-          type: integer
-        text:
-          type: string
-      required:
-        - id
-        - creator
-        - createdAt
-        - text
-        - state
-        - reactions
-      title: ReplyBasic
       type: object
     SlimBlogEntry:
       properties:
@@ -1229,6 +1202,33 @@ exports[`should build private api spec 1`] = `
         - sign
         - joinedAt
       title: SlimUser
+      type: object
+    SubReply:
+      properties:
+        createdAt:
+          type: integer
+        creator:
+          $ref: '#/components/schemas/SlimUser'
+        id:
+          type: integer
+        isFriend:
+          type: boolean
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
+        state:
+          type: integer
+        text:
+          type: string
+      required:
+        - id
+        - creator
+        - createdAt
+        - text
+        - state
+        - reactions
+      title: SubReply
       type: object
     Subject:
       example:
@@ -3119,7 +3119,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReplyBasic'
+                $ref: '#/components/schemas/SubReply'
           description: Default Response
         '401':
           content:
@@ -4428,7 +4428,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ReplyBasic'
+                $ref: '#/components/schemas/SubReply'
           description: Default Response
         '401':
           content:

@@ -39,7 +39,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.PersonWork);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
-  app.addSchema(res.ReplyBasic);
+  app.addSchema(res.SubReply);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.SlimGroup);
