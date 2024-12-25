@@ -52,12 +52,12 @@ export async function handle(key: string, value: string) {
         // 将 cache key 的过期时间设置为与 visit key 一致
         await redis.expire(userCacheKey, ttlUser - now);
       }
-      const friendIDs = await fetcher.fetchFriendIDsByUserID(tml.tml_uid);
-      if (friendIDs.length > 0) {
+      const followerIDs = await fetcher.fetchFollowerIDsByUserID(tml.tml_uid);
+      if (followerIDs.length > 0) {
         // 写入自己的首页时间线
-        friendIDs.push(tml.tml_uid);
-        const ttlInbox = await redis.mget(friendIDs.map((fid) => getInboxVisitCacheKey(fid)));
-        for (const [idx, fid] of friendIDs.entries()) {
+        followerIDs.push(tml.tml_uid);
+        const ttlInbox = await redis.mget(followerIDs.map((fid) => getInboxVisitCacheKey(fid)));
+        for (const [idx, fid] of followerIDs.entries()) {
           const ttl = Number(ttlInbox[idx]);
           if (ttl > 0) {
             const inboxCacheKey = getInboxCacheKey(fid);
@@ -79,11 +79,11 @@ export async function handle(key: string, value: string) {
       await redis.zrem(getInboxCacheKey(0), tml.tml_id);
 
       await redis.zrem(getUserCacheKey(tml.tml_uid), tml.tml_id);
-      const friendIDs = await fetcher.fetchFriendIDsByUserID(tml.tml_uid);
-      if (friendIDs.length > 0) {
+      const followerIDs = await fetcher.fetchFollowerIDsByUserID(tml.tml_uid);
+      if (followerIDs.length > 0) {
         // 也从自己的首页时间线中删除
-        friendIDs.push(tml.tml_uid);
-        for (const fid of friendIDs) {
+        followerIDs.push(tml.tml_uid);
+        for (const fid of followerIDs) {
           await redis.zrem(getInboxCacheKey(fid), tml.tml_id);
         }
       }
