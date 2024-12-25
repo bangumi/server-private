@@ -21,7 +21,7 @@ import type { App } from '@app/routes/type.ts';
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.get(
-    '/subjects/-/episode/:episodeID',
+    '/subjects/-/episodes/:episodeID',
     {
       schema: {
         summary: '获取剧集信息',
@@ -45,7 +45,7 @@ export async function setup(app: App) {
   );
 
   app.get(
-    '/subjects/-/episode/:episodeID/comments',
+    '/subjects/-/episodes/:episodeID/comments',
     {
       schema: {
         summary: '获取条目的剧集吐槽箱',
@@ -97,7 +97,7 @@ export async function setup(app: App) {
   );
 
   app.post(
-    '/subjects/-/episode/:episodeID/comments',
+    '/subjects/-/episodes/:episodeID/comments',
     {
       schema: {
         summary: '创建条目的剧集吐槽',
@@ -172,7 +172,7 @@ export async function setup(app: App) {
   );
 
   app.put(
-    '/subjects/-/episode/-/comments/:commentID',
+    '/subjects/-/episodes/-/comments/:commentID',
     {
       schema: {
         summary: '编辑条目的剧集吐槽',
@@ -220,7 +220,7 @@ export async function setup(app: App) {
   );
 
   app.delete(
-    '/subjects/-/episode/-/comments/:commentID',
+    '/subjects/-/episodes/-/comments/:commentID',
     {
       schema: {
         summary: '删除条目的剧集吐槽',
