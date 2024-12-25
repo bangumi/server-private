@@ -50,9 +50,12 @@ function getInfoboxValue(infobox: InfoboxItem[], keys: string[], limit = 5): str
   return rt;
 }
 
-export function getInfoboxSummary(infobox: InfoboxItem[], type: SubjectType): string {
+export function getInfoboxSummary(infobox: InfoboxItem[], type: SubjectType, eps = 0): string {
   const displayFields = getDisplayFields(type);
   const list: string[] = [];
+  if (eps > 0) {
+    list.push(`${eps}话`);
+  }
   for (const keys of displayFields) {
     const value = getInfoboxValue(infobox, keys);
     if (value) {
