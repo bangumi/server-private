@@ -102,6 +102,15 @@ export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> 
   return data.map((d) => d.fid);
 }
 
+export async function fetchFollowerIDsByUserID(userID: number): Promise<number[]> {
+  const data = await db
+    .select({ uid: schema.chiiFriends.uid })
+    .from(schema.chiiFriends)
+    .where(op.eq(schema.chiiFriends.fid, userID))
+    .execute();
+  return data.map((d) => d.uid);
+}
+
 /** Cached */
 export async function fetchSlimSubjectByID(
   id: number,
