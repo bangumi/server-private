@@ -18,7 +18,11 @@
         },
         "5": { "en": "Episode Direction", "cn": "演出", "jp": "" },
         "6": { "en": "Music", "cn": "音乐", "jp": "楽曲  音楽" },
-        "7": { "en": "Original Character Design", "cn": "人物原案", "jp": "キャラ原案" },
+        "7": {
+          "en": "Original Character Design",
+          "cn": "人物原案",
+          "jp": "キャラ原案"
+        },
         "8": { "en": "Character Design", "cn": "人物设定", "jp": "キャラ設定" },
         "9": { "en": "Layout", "cn": "构图", "jp": "レイアウト" },
         "10": {
@@ -32,19 +36,43 @@
           "jp": "美術監督 アートディレクション 背景監督"
         },
         "13": { "en": "Color Design", "cn": "色彩设计", "jp": "色彩設定" },
-        "14": { "en": "Chief Animation Director", "cn": "总作画监督", "jp": "チーフ作画監督" },
-        "15": { "en": "Animation Direction", "cn": "作画监督", "jp": "作監 アニメーション演出" },
-        "16": { "en": "Mechanical Design", "cn": "机械设定", "jp": "メカニック設定" },
-        "17": { "en": "Director of Photography", "cn": "摄影监督", "jp": "撮影監督" },
+        "14": {
+          "en": "Chief Animation Director",
+          "cn": "总作画监督",
+          "jp": "チーフ作画監督"
+        },
+        "15": {
+          "en": "Animation Direction",
+          "cn": "作画监督",
+          "jp": "作監 アニメーション演出"
+        },
+        "16": {
+          "en": "Mechanical Design",
+          "cn": "机械设定",
+          "jp": "メカニック設定"
+        },
+        "17": {
+          "en": "Director of Photography",
+          "cn": "摄影监督",
+          "jp": "撮影監督"
+        },
         "18": {
           "en": "Supervision/Supervisor",
           "cn": "监修",
           "jp": "シリーズ監修 スーパーバイザー"
         },
-        "19": { "en": "Prop Design", "cn": "道具设计", "jp": "プロップデザイン" },
+        "19": {
+          "en": "Prop Design",
+          "cn": "道具设计",
+          "jp": "プロップデザイン"
+        },
         "20": { "en": "Key Animation", "cn": "原画", "jp": "作画 原画" },
         "21": { "en": "2nd Key Animation", "cn": "第二原画", "jp": "原画協力" },
-        "22": { "en": "Animation Check", "cn": "动画检查", "jp": "動画チェック" },
+        "22": {
+          "en": "Animation Check",
+          "cn": "动画检查",
+          "jp": "動画チェック"
+        },
         "23": {
           "en": "Assistant Producer",
           "cn": "助理制片人",
@@ -64,8 +92,16 @@
         "31": { "en": "Theme Song Composition", "cn": "主题歌作曲", "jp": "" },
         "32": { "en": "Theme Song Lyrics", "cn": "主题歌作词", "jp": "" },
         "33": { "en": "Theme Song Performance", "cn": "主题歌演出", "jp": "" },
-        "34": { "en": "Inserted Song Performance", "cn": "插入歌演出", "jp": "" },
-        "35": { "en": "Planning", "cn": "企画", "jp": "プランニング  企画開発" },
+        "34": {
+          "en": "Inserted Song Performance",
+          "cn": "插入歌演出",
+          "jp": ""
+        },
+        "35": {
+          "en": "Planning",
+          "cn": "企画",
+          "jp": "プランニング  企画開発"
+        },
         "36": {
           "en": "Planning Producer",
           "cn": "企划制作人",
@@ -82,8 +118,16 @@
           "jp": "パブリシティ  宣伝  広告宣伝  番組宣伝  製作宣伝"
         },
         "39": { "en": "Recording", "cn": "录音", "jp": "録音" },
-        "40": { "en": "Recording Assistant", "cn": "录音助理", "jp": "録音アシスタント  録音助手" },
-        "41": { "en": "Series Production Director", "cn": "系列监督", "jp": "" },
+        "40": {
+          "en": "Recording Assistant",
+          "cn": "录音助理",
+          "jp": "録音アシスタント  録音助手"
+        },
+        "41": {
+          "en": "Series Production Director",
+          "cn": "系列监督",
+          "jp": ""
+        },
         "42": { "en": "Production", "cn": "製作", "jp": "" },
         "43": { "en": "Setting", "cn": "设定", "jp": "設定" },
         "44": { "en": "Sound Director", "cn": "音响监督", "jp": "" },
@@ -92,16 +136,32 @@
         "47": { "en": "Special Effects", "cn": "特效", "jp": "視覚効果" },
         "48": { "en": "ADR Director", "cn": "配音监督", "jp": "" },
         "49": { "en": "Co-Director", "cn": "联合导演", "jp": "" },
-        "50": { "en": "Setting", "cn": "背景设定", "jp": "基本設定  場面設定  場面設計  設定" },
+        "50": {
+          "en": "Setting",
+          "cn": "背景设定",
+          "jp": "基本設定  場面設定  場面設計  設定"
+        },
         "51": { "en": "In-Between Animation", "cn": "补间动画", "jp": "動画" },
-        "52": { "en": "Executive Producer", "cn": "执行制片人", "jp": "製作総指揮" },
+        "52": {
+          "en": "Executive Producer",
+          "cn": "执行制片人",
+          "jp": "製作総指揮"
+        },
         "53": {
           "en": "Assistant Producer",
           "cn": "助理制片人",
           "jp": "協力プロデューサー  アシスタントプロデューサー"
         },
-        "54": { "en": "Producer", "cn": "制片人", "jp": "プロデュース  プロデューサー" },
-        "55": { "en": "Music Assistant", "cn": "音乐助理", "jp": "音楽アシスタント" },
+        "54": {
+          "en": "Producer",
+          "cn": "制片人",
+          "jp": "プロデュース  プロデューサー"
+        },
+        "55": {
+          "en": "Music Assistant",
+          "cn": "音乐助理",
+          "jp": "音楽アシスタント"
+        },
         "56": {
           "en": "Assistant Production Manager",
           "cn": "制作进行",
@@ -131,8 +191,16 @@
           "jp": "制作アシスタント 制作補佐 製作補"
         },
         "63": { "en": "Production", "cn": "制作", "jp": "製作 製作スタジオ" },
-        "64": { "en": "Production Coordination", "cn": "制作协调", "jp": "制作コーディネーター" },
-        "65": { "en": "Music Work", "cn": "音乐制作", "jp": "楽曲制作 音楽制作" },
+        "64": {
+          "en": "Production Coordination",
+          "cn": "制作协调",
+          "jp": "制作コーディネーター"
+        },
+        "65": {
+          "en": "Music Work",
+          "cn": "音乐制作",
+          "jp": "楽曲制作 音楽制作"
+        },
         "66": { "en": "Special Thanks", "cn": "特别鸣谢", "jp": "友情協力" },
         "67": {
           "en": "Animation Work",
@@ -146,11 +214,19 @@
           "jp": "メカニック作監"
         },
         "71": { "en": "Art Design", "cn": "美术设计", "jp": "美術設定" },
-        "72": { "en": "Assistant Director", "cn": "副导演", "jp": "助監督 / 監督補佐" },
+        "72": {
+          "en": "Assistant Director",
+          "cn": "副导演",
+          "jp": "助監督 / 監督補佐"
+        },
         "73": { "en": "OP ED", "cn": "OP・ED 分镜", "jp": "OP・ED 分鏡" },
         "74": { "en": "Chief Director", "cn": "总导演", "jp": "総監督" },
         "75": { "en": "3DCG", "cn": "3DCG", "jp": "" },
-        "76": { "en": "Work Assistance", "cn": "制作协力", "jp": "制作協力 / 作品協力" },
+        "76": {
+          "en": "Work Assistance",
+          "cn": "制作协力",
+          "jp": "制作協力 / 作品協力"
+        },
         "77": {
           "en": "Action Animation Direction",
           "cn": "动作作画监督",
@@ -170,7 +246,11 @@
           "jp": "設定制作 制作設定",
           "desc": "有时需要额外的设计工作，联系负责部门并监督工作确保交付"
         },
-        "85": { "en": "Music Producer", "cn": "音乐制作人", "jp": "音楽プロデューサー" },
+        "85": {
+          "en": "Music Producer",
+          "cn": "音乐制作人",
+          "jp": "音楽プロデューサー"
+        },
         "86": { "en": "3DCG Director", "cn": "3DCG 导演", "jp": "3DCG 監督" },
         "87": {
           "en": "Animation Producer",
@@ -182,13 +262,25 @@
           "cn": "特效作画监督",
           "jp": "エフェクト作画監督"
         },
-        "90": { "en": "Assistant Animation Direction", "cn": "作画监督助理", "jp": "作画監督補佐" },
-        "92": { "en": "Main Animator", "cn": "主动画师", "jp": "メインアニメーター" }
+        "90": {
+          "en": "Assistant Animation Direction",
+          "cn": "作画监督助理",
+          "jp": "作画監督補佐"
+        },
+        "92": {
+          "en": "Main Animator",
+          "cn": "主动画师",
+          "jp": "メインアニメーター"
+        }
       },
       "game": {
         "1001": { "en": "Developer", "cn": "开发", "jp": "開発元" },
         "1002": { "en": "Publisher", "cn": "发行", "jp": "発売元" },
-        "1003": { "en": "Game Designer", "cn": "游戏设计师", "jp": "ゲームクリエイター" },
+        "1003": {
+          "en": "Game Designer",
+          "cn": "游戏设计师",
+          "jp": "ゲームクリエイター"
+        },
         "1004": { "en": "", "cn": "剧本", "jp": "腳本" },
         "1005": { "en": "", "cn": "美工", "jp": "美術" },
         "1006": { "en": "", "cn": "音乐", "jp": "音楽" },
@@ -198,10 +290,22 @@
           "cn": "人物设定",
           "jp": "キャラ設定 キャラクターデザイン"
         },
-        "1009": { "en": "Theme Song Composition", "cn": "主题歌作曲", "jp": "" },
+        "1009": {
+          "en": "Theme Song Composition",
+          "cn": "主题歌作曲",
+          "jp": ""
+        },
         "1010": { "en": "Theme Song Lyrics", "cn": "主题歌作词", "jp": "" },
-        "1011": { "en": "Theme Song Performance", "cn": "主题歌演出", "jp": "" },
-        "1012": { "en": "Inserted Song Performance", "cn": "插入歌演出", "jp": "" },
+        "1011": {
+          "en": "Theme Song Performance",
+          "cn": "主题歌演出",
+          "jp": ""
+        },
+        "1012": {
+          "en": "Inserted Song Performance",
+          "cn": "插入歌演出",
+          "jp": ""
+        },
         "1013": { "en": "", "cn": "原画", "jp": "" },
         "1014": {
           "en": "Animation Work",
@@ -209,7 +313,11 @@
           "jp": "アニメーション制作 アニメ制作 アニメーション"
         },
         "1015": { "en": "", "cn": "原作", "jp": "" },
-        "1016": { "en": "Director/Direction", "cn": "导演", "jp": "監督 演出 シリーズ監督" },
+        "1016": {
+          "en": "Director/Direction",
+          "cn": "导演",
+          "jp": "監督 演出 シリーズ監督"
+        },
         "1017": { "en": "", "cn": "动画监督", "jp": "アニメーション監督" },
         "1018": { "en": "", "cn": "制作总指挥", "jp": "" },
         "1019": { "en": "QC", "cn": "QC", "jp": "" },
@@ -222,7 +330,11 @@
         "1026": { "en": "", "cn": "监修", "jp": "監修" },
         "1027": { "en": "", "cn": "系列构成", "jp": "シリーズ構成" },
         "1028": { "en": "", "cn": "企画", "jp": "" },
-        "1029": { "en": "Mechanical Design", "cn": "机械设定", "jp": "メカニック設定" },
+        "1029": {
+          "en": "Mechanical Design",
+          "cn": "机械设定",
+          "jp": "メカニック設定"
+        },
         "1030": { "en": "Sound Director", "cn": "音响监督", "jp": "" },
         "1031": { "en": "", "cn": "作画监督", "jp": "作画監督" },
         "1032": { "en": "Producer", "cn": "制作人", "jp": "プロデューサー" }
@@ -234,9 +346,17 @@
         "2004": { "en": "", "cn": "出版社", "jp": "" },
         "2005": { "en": "", "cn": "连载杂志", "jp": "掲載誌" },
         "2006": { "en": "", "cn": "译者", "jp": "" },
-        "2007": { "en": "Original Creator/Original Work", "cn": "原作", "jp": "" },
+        "2007": {
+          "en": "Original Creator/Original Work",
+          "cn": "原作",
+          "jp": ""
+        },
         "2008": { "en": "Guest", "cn": "客串", "jp": "ゲスト" },
-        "2009": { "en": "Original Character Design", "cn": "人物原案", "jp": "キャラクター原案" },
+        "2009": {
+          "en": "Original Character Design",
+          "cn": "人物原案",
+          "jp": "キャラクター原案"
+        },
         "2010": { "en": "", "cn": "脚本", "jp": "シナリオ" },
         "2011": { "en": "Label", "cn": "书系", "jp": "" },
         "2012": { "en": "", "cn": "出品方", "jp": "" }
@@ -246,7 +366,11 @@
         "3002": { "en": "Producer", "cn": "制作人", "jp": "" },
         "3003": { "en": "Composer", "cn": "作曲", "jp": "" },
         "3004": { "en": "Label", "cn": "厂牌", "jp": "レーベル" },
-        "3005": { "en": "Original Creator/Original Work", "cn": "原作", "jp": "" },
+        "3005": {
+          "en": "Original Creator/Original Work",
+          "cn": "原作",
+          "jp": ""
+        },
         "3006": { "en": "Lyric", "cn": "作词", "jp": "" },
         "3007": { "en": "Recording", "cn": "录音", "jp": "" },
         "3008": { "en": "Arrange", "cn": "编曲", "jp": "" },
@@ -263,17 +387,33 @@
         "4002": { "en": "director", "cn": "导演", "jp": "" },
         "4003": { "en": "writer", "cn": "编剧", "jp": "" },
         "4004": { "en": "composer", "cn": "音乐", "jp": "" },
-        "4005": { "en": "executive producer", "cn": "执行制片人", "jp": "製作総指揮" },
+        "4005": {
+          "en": "executive producer",
+          "cn": "执行制片人",
+          "jp": "製作総指揮"
+        },
         "4006": { "en": "co exec", "cn": "共同执行制作", "jp": "" },
-        "4007": { "en": "producer", "cn": "制片人/制作人", "jp": "プロデューサー" },
+        "4007": {
+          "en": "producer",
+          "cn": "制片人/制作人",
+          "jp": "プロデューサー"
+        },
         "4008": { "en": "supervising producer", "cn": "监制", "jp": "" },
-        "4009": { "en": "consulting producer", "cn": "副制作人/制作顾问", "jp": "" },
+        "4009": {
+          "en": "consulting producer",
+          "cn": "副制作人/制作顾问",
+          "jp": ""
+        },
         "4010": { "en": "story", "cn": "故事", "jp": "" },
         "4011": { "en": "story editor", "cn": "编审", "jp": "" },
         "4012": { "en": "editor", "cn": "剪辑", "jp": "" },
         "4013": { "en": "creative director", "cn": "创意总监", "jp": "" },
         "4014": { "en": "cinematography", "cn": "摄影", "jp": "" },
-        "4015": { "en": "Theme Song Performance", "cn": "主题歌演出", "jp": "" },
+        "4015": {
+          "en": "Theme Song Performance",
+          "cn": "主题歌演出",
+          "jp": ""
+        },
         "4016": { "en": "Actor", "cn": "主演", "jp": "" },
         "4017": { "en": "Supporting Actor", "cn": "配角", "jp": "" },
         "4018": { "en": "Production", "cn": "制作", "jp": "製作 製作スタジオ" },
@@ -289,9 +429,17 @@
       "2004": { "en": "", "cn": "出版社", "jp": "" },
       "2005": { "en": "", "cn": "连载杂志", "jp": "掲載誌" },
       "2006": { "en": "", "cn": "译者", "jp": "" },
-      "2007": { "en": "Original Creator/Original Work", "cn": "原作", "jp": "" },
+      "2007": {
+        "en": "Original Creator/Original Work",
+        "cn": "原作",
+        "jp": ""
+      },
       "2008": { "en": "Guest", "cn": "客串", "jp": "ゲスト" },
-      "2009": { "en": "Original Character Design", "cn": "人物原案", "jp": "キャラクター原案" },
+      "2009": {
+        "en": "Original Character Design",
+        "cn": "人物原案",
+        "jp": "キャラクター原案"
+      },
       "2010": { "en": "", "cn": "脚本", "jp": "シナリオ" },
       "2011": { "en": "Label", "cn": "书系", "jp": "" },
       "2012": { "en": "", "cn": "出品方", "jp": "" }
@@ -312,7 +460,11 @@
       },
       "5": { "en": "Episode Direction", "cn": "演出", "jp": "" },
       "6": { "en": "Music", "cn": "音乐", "jp": "楽曲  音楽" },
-      "7": { "en": "Original Character Design", "cn": "人物原案", "jp": "キャラ原案" },
+      "7": {
+        "en": "Original Character Design",
+        "cn": "人物原案",
+        "jp": "キャラ原案"
+      },
       "8": { "en": "Character Design", "cn": "人物设定", "jp": "キャラ設定" },
       "9": { "en": "Layout", "cn": "构图", "jp": "レイアウト" },
       "10": {
@@ -326,11 +478,31 @@
         "jp": "美術監督 アートディレクション 背景監督"
       },
       "13": { "en": "Color Design", "cn": "色彩设计", "jp": "色彩設定" },
-      "14": { "en": "Chief Animation Director", "cn": "总作画监督", "jp": "チーフ作画監督" },
-      "15": { "en": "Animation Direction", "cn": "作画监督", "jp": "作監 アニメーション演出" },
-      "16": { "en": "Mechanical Design", "cn": "机械设定", "jp": "メカニック設定" },
-      "17": { "en": "Director of Photography", "cn": "摄影监督", "jp": "撮影監督" },
-      "18": { "en": "Supervision/Supervisor", "cn": "监修", "jp": "シリーズ監修 スーパーバイザー" },
+      "14": {
+        "en": "Chief Animation Director",
+        "cn": "总作画监督",
+        "jp": "チーフ作画監督"
+      },
+      "15": {
+        "en": "Animation Direction",
+        "cn": "作画监督",
+        "jp": "作監 アニメーション演出"
+      },
+      "16": {
+        "en": "Mechanical Design",
+        "cn": "机械设定",
+        "jp": "メカニック設定"
+      },
+      "17": {
+        "en": "Director of Photography",
+        "cn": "摄影监督",
+        "jp": "撮影監督"
+      },
+      "18": {
+        "en": "Supervision/Supervisor",
+        "cn": "监修",
+        "jp": "シリーズ監修 スーパーバイザー"
+      },
       "19": { "en": "Prop Design", "cn": "道具设计", "jp": "プロップデザイン" },
       "20": { "en": "Key Animation", "cn": "原画", "jp": "作画 原画" },
       "21": { "en": "2nd Key Animation", "cn": "第二原画", "jp": "原画協力" },
@@ -372,7 +544,11 @@
         "jp": "パブリシティ  宣伝  広告宣伝  番組宣伝  製作宣伝"
       },
       "39": { "en": "Recording", "cn": "录音", "jp": "録音" },
-      "40": { "en": "Recording Assistant", "cn": "录音助理", "jp": "録音アシスタント  録音助手" },
+      "40": {
+        "en": "Recording Assistant",
+        "cn": "录音助理",
+        "jp": "録音アシスタント  録音助手"
+      },
       "41": { "en": "Series Production Director", "cn": "系列监督", "jp": "" },
       "42": { "en": "Production", "cn": "製作", "jp": "" },
       "43": { "en": "Setting", "cn": "设定", "jp": "設定" },
@@ -382,16 +558,32 @@
       "47": { "en": "Special Effects", "cn": "特效", "jp": "視覚効果" },
       "48": { "en": "ADR Director", "cn": "配音监督", "jp": "" },
       "49": { "en": "Co-Director", "cn": "联合导演", "jp": "" },
-      "50": { "en": "Setting", "cn": "背景设定", "jp": "基本設定  場面設定  場面設計  設定" },
+      "50": {
+        "en": "Setting",
+        "cn": "背景设定",
+        "jp": "基本設定  場面設定  場面設計  設定"
+      },
       "51": { "en": "In-Between Animation", "cn": "补间动画", "jp": "動画" },
-      "52": { "en": "Executive Producer", "cn": "执行制片人", "jp": "製作総指揮" },
+      "52": {
+        "en": "Executive Producer",
+        "cn": "执行制片人",
+        "jp": "製作総指揮"
+      },
       "53": {
         "en": "Assistant Producer",
         "cn": "助理制片人",
         "jp": "協力プロデューサー  アシスタントプロデューサー"
       },
-      "54": { "en": "Producer", "cn": "制片人", "jp": "プロデュース  プロデューサー" },
-      "55": { "en": "Music Assistant", "cn": "音乐助理", "jp": "音楽アシスタント" },
+      "54": {
+        "en": "Producer",
+        "cn": "制片人",
+        "jp": "プロデュース  プロデューサー"
+      },
+      "55": {
+        "en": "Music Assistant",
+        "cn": "音乐助理",
+        "jp": "音楽アシスタント"
+      },
       "56": {
         "en": "Assistant Production Manager",
         "cn": "制作进行",
@@ -421,7 +613,11 @@
         "jp": "制作アシスタント 制作補佐 製作補"
       },
       "63": { "en": "Production", "cn": "制作", "jp": "製作 製作スタジオ" },
-      "64": { "en": "Production Coordination", "cn": "制作协调", "jp": "制作コーディネーター" },
+      "64": {
+        "en": "Production Coordination",
+        "cn": "制作协调",
+        "jp": "制作コーディネーター"
+      },
       "65": { "en": "Music Work", "cn": "音乐制作", "jp": "楽曲制作 音楽制作" },
       "66": { "en": "Special Thanks", "cn": "特别鸣谢", "jp": "友情協力" },
       "67": {
@@ -436,11 +632,19 @@
         "jp": "メカニック作監"
       },
       "71": { "en": "Art Design", "cn": "美术设计", "jp": "美術設定" },
-      "72": { "en": "Assistant Director", "cn": "副导演", "jp": "助監督 / 監督補佐" },
+      "72": {
+        "en": "Assistant Director",
+        "cn": "副导演",
+        "jp": "助監督 / 監督補佐"
+      },
       "73": { "en": "OP ED", "cn": "OP・ED 分镜", "jp": "OP・ED 分鏡" },
       "74": { "en": "Chief Director", "cn": "总导演", "jp": "総監督" },
       "75": { "en": "3DCG", "cn": "3DCG", "jp": "" },
-      "76": { "en": "Work Assistance", "cn": "制作协力", "jp": "制作協力 / 作品協力" },
+      "76": {
+        "en": "Work Assistance",
+        "cn": "制作协力",
+        "jp": "制作協力 / 作品協力"
+      },
       "77": {
         "en": "Action Animation Direction",
         "cn": "动作作画监督",
@@ -460,7 +664,11 @@
         "jp": "設定制作 制作設定",
         "desc": "有时需要额外的设计工作，联系负责部门并监督工作确保交付"
       },
-      "85": { "en": "Music Producer", "cn": "音乐制作人", "jp": "音楽プロデューサー" },
+      "85": {
+        "en": "Music Producer",
+        "cn": "音乐制作人",
+        "jp": "音楽プロデューサー"
+      },
       "86": { "en": "3DCG Director", "cn": "3DCG 导演", "jp": "3DCG 監督" },
       "87": {
         "en": "Animation Producer",
@@ -472,15 +680,27 @@
         "cn": "特效作画监督",
         "jp": "エフェクト作画監督"
       },
-      "90": { "en": "Assistant Animation Direction", "cn": "作画监督助理", "jp": "作画監督補佐" },
-      "92": { "en": "Main Animator", "cn": "主动画师", "jp": "メインアニメーター" }
+      "90": {
+        "en": "Assistant Animation Direction",
+        "cn": "作画监督助理",
+        "jp": "作画監督補佐"
+      },
+      "92": {
+        "en": "Main Animator",
+        "cn": "主动画师",
+        "jp": "メインアニメーター"
+      }
     },
     "3": {
       "3001": { "en": "Artist", "cn": "艺术家", "jp": "" },
       "3002": { "en": "Producer", "cn": "制作人", "jp": "" },
       "3003": { "en": "Composer", "cn": "作曲", "jp": "" },
       "3004": { "en": "Label", "cn": "厂牌", "jp": "レーベル" },
-      "3005": { "en": "Original Creator/Original Work", "cn": "原作", "jp": "" },
+      "3005": {
+        "en": "Original Creator/Original Work",
+        "cn": "原作",
+        "jp": ""
+      },
       "3006": { "en": "Lyric", "cn": "作词", "jp": "" },
       "3007": { "en": "Recording", "cn": "录音", "jp": "" },
       "3008": { "en": "Arrange", "cn": "编曲", "jp": "" },
@@ -495,7 +715,11 @@
     "4": {
       "1001": { "en": "Developer", "cn": "开发", "jp": "開発元" },
       "1002": { "en": "Publisher", "cn": "发行", "jp": "発売元" },
-      "1003": { "en": "Game Designer", "cn": "游戏设计师", "jp": "ゲームクリエイター" },
+      "1003": {
+        "en": "Game Designer",
+        "cn": "游戏设计师",
+        "jp": "ゲームクリエイター"
+      },
       "1004": { "en": "", "cn": "剧本", "jp": "腳本" },
       "1005": { "en": "", "cn": "美工", "jp": "美術" },
       "1006": { "en": "", "cn": "音乐", "jp": "音楽" },
@@ -508,7 +732,11 @@
       "1009": { "en": "Theme Song Composition", "cn": "主题歌作曲", "jp": "" },
       "1010": { "en": "Theme Song Lyrics", "cn": "主题歌作词", "jp": "" },
       "1011": { "en": "Theme Song Performance", "cn": "主题歌演出", "jp": "" },
-      "1012": { "en": "Inserted Song Performance", "cn": "插入歌演出", "jp": "" },
+      "1012": {
+        "en": "Inserted Song Performance",
+        "cn": "插入歌演出",
+        "jp": ""
+      },
       "1013": { "en": "", "cn": "原画", "jp": "" },
       "1014": {
         "en": "Animation Work",
@@ -516,7 +744,11 @@
         "jp": "アニメーション制作 アニメ制作 アニメーション"
       },
       "1015": { "en": "", "cn": "原作", "jp": "" },
-      "1016": { "en": "Director/Direction", "cn": "导演", "jp": "監督 演出 シリーズ監督" },
+      "1016": {
+        "en": "Director/Direction",
+        "cn": "导演",
+        "jp": "監督 演出 シリーズ監督"
+      },
       "1017": { "en": "", "cn": "动画监督", "jp": "アニメーション監督" },
       "1018": { "en": "", "cn": "制作总指挥", "jp": "" },
       "1019": { "en": "QC", "cn": "QC", "jp": "" },
@@ -529,7 +761,11 @@
       "1026": { "en": "", "cn": "监修", "jp": "監修" },
       "1027": { "en": "", "cn": "系列构成", "jp": "シリーズ構成" },
       "1028": { "en": "", "cn": "企画", "jp": "" },
-      "1029": { "en": "Mechanical Design", "cn": "机械设定", "jp": "メカニック設定" },
+      "1029": {
+        "en": "Mechanical Design",
+        "cn": "机械设定",
+        "jp": "メカニック設定"
+      },
       "1030": { "en": "Sound Director", "cn": "音响监督", "jp": "" },
       "1031": { "en": "", "cn": "作画监督", "jp": "作画監督" },
       "1032": { "en": "Producer", "cn": "制作人", "jp": "プロデューサー" }
@@ -539,11 +775,23 @@
       "4002": { "en": "director", "cn": "导演", "jp": "" },
       "4003": { "en": "writer", "cn": "编剧", "jp": "" },
       "4004": { "en": "composer", "cn": "音乐", "jp": "" },
-      "4005": { "en": "executive producer", "cn": "执行制片人", "jp": "製作総指揮" },
+      "4005": {
+        "en": "executive producer",
+        "cn": "执行制片人",
+        "jp": "製作総指揮"
+      },
       "4006": { "en": "co exec", "cn": "共同执行制作", "jp": "" },
-      "4007": { "en": "producer", "cn": "制片人/制作人", "jp": "プロデューサー" },
+      "4007": {
+        "en": "producer",
+        "cn": "制片人/制作人",
+        "jp": "プロデューサー"
+      },
       "4008": { "en": "supervising producer", "cn": "监制", "jp": "" },
-      "4009": { "en": "consulting producer", "cn": "副制作人/制作顾问", "jp": "" },
+      "4009": {
+        "en": "consulting producer",
+        "cn": "副制作人/制作顾问",
+        "jp": ""
+      },
       "4010": { "en": "story", "cn": "故事", "jp": "" },
       "4011": { "en": "story editor", "cn": "编审", "jp": "" },
       "4012": { "en": "editor", "cn": "剪辑", "jp": "" },

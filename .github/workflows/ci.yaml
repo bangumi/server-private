@@ -18,13 +18,13 @@ jobs:
           submodules: 'true'
       - uses: ./.github/actions/setup-js-env
 
-      - run: pnpm run build-common
-      - run: pnpm run format
-      - run: git diff --exit-code
-
       - run: pnpm exec prettier --check .
       - run: pnpm exec tsc
       - run: pnpm run lint
+
+      # check generated code fresh
+      - run: pnpm run build-common
+      - run: git diff --exit-code
 
   test:
     runs-on: ubuntu-24.04

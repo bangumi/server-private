@@ -9,9 +9,24 @@
           "jp": "",
           "desc": "同系列不同平台作品（如柯南漫画与动画版）"
         },
-        "2": { "en": "Prequel", "cn": "前传", "jp": "", "desc": "发生在故事之前" },
-        "3": { "en": "Sequel", "cn": "续集", "jp": "", "desc": "发生在故事之后" },
-        "4": { "en": "Summary", "cn": "总集篇", "jp": "", "desc": "对故事的概括版本" },
+        "2": {
+          "en": "Prequel",
+          "cn": "前传",
+          "jp": "",
+          "desc": "发生在故事之前"
+        },
+        "3": {
+          "en": "Sequel",
+          "cn": "续集",
+          "jp": "",
+          "desc": "发生在故事之后"
+        },
+        "4": {
+          "en": "Summary",
+          "cn": "总集篇",
+          "jp": "",
+          "desc": "对故事的概括版本"
+        },
         "5": {
           "en": "Full Story",
           "cn": "全集",
@@ -19,7 +34,12 @@
           "desc": "相对于剧场版/总集篇的完整故事"
         },
         "6": { "en": "Side Story", "cn": "番外篇", "jp": "", "desc": "" },
-        "7": { "en": "Character", "cn": "角色出演", "jp": "", "desc": "相同角色，没有关联的故事" },
+        "7": {
+          "en": "Character",
+          "cn": "角色出演",
+          "jp": "",
+          "desc": "相同角色，没有关联的故事"
+        },
         "8": {
           "en": "Same setting",
           "cn": "相同世界观",
@@ -52,7 +72,13 @@
           "desc": "出现了被关联作品中的角色",
           "skip_vice_versa": true
         },
-        "99": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+        "99": {
+          "en": "Other",
+          "cn": "其他",
+          "jp": "",
+          "desc": "",
+          "skip_vice_versa": true
+        }
       },
       "book": {
         "1": {
@@ -64,11 +90,31 @@
         "1002": { "en": "Series", "cn": "系列", "jp": "", "desc": "" },
         "1003": { "en": "Offprint", "cn": "单行本", "jp": "", "desc": "" },
         "1004": { "en": "Album", "cn": "画集", "jp": "", "desc": "" },
-        "1005": { "en": "Prequel", "cn": "前传", "jp": "", "desc": "发生在故事之前" },
-        "1006": { "en": "Sequel", "cn": "续集", "jp": "", "desc": "发生在故事之后" },
+        "1005": {
+          "en": "Prequel",
+          "cn": "前传",
+          "jp": "",
+          "desc": "发生在故事之前"
+        },
+        "1006": {
+          "en": "Sequel",
+          "cn": "续集",
+          "jp": "",
+          "desc": "发生在故事之后"
+        },
         "1007": { "en": "Side Story", "cn": "番外篇", "jp": "", "desc": "" },
-        "1008": { "en": "Parent Story", "cn": "主线故事", "jp": "", "desc": "" },
-        "1010": { "en": "Alternative version", "cn": "不同版本", "jp": "", "desc": "" },
+        "1008": {
+          "en": "Parent Story",
+          "cn": "主线故事",
+          "jp": "",
+          "desc": ""
+        },
+        "1010": {
+          "en": "Alternative version",
+          "cn": "不同版本",
+          "jp": "",
+          "desc": ""
+        },
         "1011": {
           "en": "Character",
           "cn": "角色出演",
@@ -94,17 +140,34 @@
           "desc": "出现了被关联作品中的角色",
           "skip_vice_versa": true
         },
-        "1099": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+        "1099": {
+          "en": "Other",
+          "cn": "其他",
+          "jp": "",
+          "desc": "",
+          "skip_vice_versa": true
+        }
       },
       "music": {
         "3001": { "en": "OST", "cn": "原声集", "jp": "", "desc": "" },
-        "3002": { "en": "Character Song", "cn": "角色歌", "jp": "", "desc": "" },
+        "3002": {
+          "en": "Character Song",
+          "cn": "角色歌",
+          "jp": "",
+          "desc": ""
+        },
         "3003": { "en": "Opening Song", "cn": "片头曲", "jp": "", "desc": "" },
         "3004": { "en": "Ending Song", "cn": "片尾曲", "jp": "", "desc": "" },
         "3005": { "en": "Insert Song", "cn": "插入歌", "jp": "", "desc": "" },
         "3006": { "en": "Image Song", "cn": "印象曲", "jp": "", "desc": "" },
         "3007": { "en": "Drama", "cn": "广播剧", "jp": "", "desc": "" },
-        "3099": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+        "3099": {
+          "en": "Other",
+          "cn": "其他",
+          "jp": "",
+          "desc": "",
+          "skip_vice_versa": true
+        }
       },
       "game": {
         "1": {
@@ -119,7 +182,12 @@
           "jp": "",
           "desc": "发生在故事之前/或作品发售之前"
         },
-        "4003": { "en": "Sequel", "cn": "续集", "jp": "", "desc": "发生在故事之后/或作品发售之后" },
+        "4003": {
+          "en": "Sequel",
+          "cn": "续集",
+          "jp": "",
+          "desc": "发生在故事之后/或作品发售之后"
+        },
         "4006": { "en": "Side Story", "cn": "外传", "jp": "", "desc": "" },
         "4007": {
           "en": "Character",
@@ -151,8 +219,18 @@
           "jp": "",
           "desc": "相同故事、角色，画面、音乐或系统改进"
         },
-        "4012": { "en": "Parent Story", "cn": "主线故事", "jp": "", "desc": "" },
-        "4013": { "en": "Main Version", "cn": "主版本", "jp": "", "desc": "游戏最初发售时的版本" },
+        "4012": {
+          "en": "Parent Story",
+          "cn": "主线故事",
+          "jp": "",
+          "desc": ""
+        },
+        "4013": {
+          "en": "Main Version",
+          "cn": "主版本",
+          "jp": "",
+          "desc": "游戏最初发售时的版本"
+        },
         "4014": {
           "en": "Collaboration",
           "cn": "联动",
@@ -161,14 +239,25 @@
           "skip_vice_versa": true
         },
         "4015": { "en": "DLC", "cn": "扩展包", "jp": "", "desc": "" },
-        "4016": { "en": "Collection", "cn": "合集", "jp": "", "desc": "收录本作品的合集条目" },
+        "4016": {
+          "en": "Collection",
+          "cn": "合集",
+          "jp": "",
+          "desc": "收录本作品的合集条目"
+        },
         "4017": {
           "en": "In Collection",
           "cn": "收录作品",
           "jp": "",
           "desc": "合集条目中收录的作品"
         },
-        "4099": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+        "4099": {
+          "en": "Other",
+          "cn": "其他",
+          "jp": "",
+          "desc": "",
+          "skip_vice_versa": true
+        }
       }
     }
   },
@@ -183,12 +272,32 @@
       "1002": { "en": "Series", "cn": "系列", "jp": "", "desc": "" },
       "1003": { "en": "Offprint", "cn": "单行本", "jp": "", "desc": "" },
       "1004": { "en": "Album", "cn": "画集", "jp": "", "desc": "" },
-      "1005": { "en": "Prequel", "cn": "前传", "jp": "", "desc": "发生在故事之前" },
-      "1006": { "en": "Sequel", "cn": "续集", "jp": "", "desc": "发生在故事之后" },
+      "1005": {
+        "en": "Prequel",
+        "cn": "前传",
+        "jp": "",
+        "desc": "发生在故事之前"
+      },
+      "1006": {
+        "en": "Sequel",
+        "cn": "续集",
+        "jp": "",
+        "desc": "发生在故事之后"
+      },
       "1007": { "en": "Side Story", "cn": "番外篇", "jp": "", "desc": "" },
       "1008": { "en": "Parent Story", "cn": "主线故事", "jp": "", "desc": "" },
-      "1010": { "en": "Alternative version", "cn": "不同版本", "jp": "", "desc": "" },
-      "1011": { "en": "Character", "cn": "角色出演", "jp": "", "desc": "相同角色，没有关联的故事" },
+      "1010": {
+        "en": "Alternative version",
+        "cn": "不同版本",
+        "jp": "",
+        "desc": ""
+      },
+      "1011": {
+        "en": "Character",
+        "cn": "角色出演",
+        "jp": "",
+        "desc": "相同角色，没有关联的故事"
+      },
       "1012": {
         "en": "Same setting",
         "cn": "相同世界观",
@@ -208,7 +317,13 @@
         "desc": "出现了被关联作品中的角色",
         "skip_vice_versa": true
       },
-      "1099": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+      "1099": {
+        "en": "Other",
+        "cn": "其他",
+        "jp": "",
+        "desc": "",
+        "skip_vice_versa": true
+      }
     },
     "2": {
       "1": {
@@ -217,12 +332,32 @@
         "jp": "",
         "desc": "同系列不同平台作品（如柯南漫画与动画版）"
       },
-      "2": { "en": "Prequel", "cn": "前传", "jp": "", "desc": "发生在故事之前" },
+      "2": {
+        "en": "Prequel",
+        "cn": "前传",
+        "jp": "",
+        "desc": "发生在故事之前"
+      },
       "3": { "en": "Sequel", "cn": "续集", "jp": "", "desc": "发生在故事之后" },
-      "4": { "en": "Summary", "cn": "总集篇", "jp": "", "desc": "对故事的概括版本" },
-      "5": { "en": "Full Story", "cn": "全集", "jp": "", "desc": "相对于剧场版/总集篇的完整故事" },
+      "4": {
+        "en": "Summary",
+        "cn": "总集篇",
+        "jp": "",
+        "desc": "对故事的概括版本"
+      },
+      "5": {
+        "en": "Full Story",
+        "cn": "全集",
+        "jp": "",
+        "desc": "相对于剧场版/总集篇的完整故事"
+      },
       "6": { "en": "Side Story", "cn": "番外篇", "jp": "", "desc": "" },
-      "7": { "en": "Character", "cn": "角色出演", "jp": "", "desc": "相同角色，没有关联的故事" },
+      "7": {
+        "en": "Character",
+        "cn": "角色出演",
+        "jp": "",
+        "desc": "相同角色，没有关联的故事"
+      },
       "8": {
         "en": "Same setting",
         "cn": "相同世界观",
@@ -255,7 +390,13 @@
         "desc": "出现了被关联作品中的角色",
         "skip_vice_versa": true
       },
-      "99": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+      "99": {
+        "en": "Other",
+        "cn": "其他",
+        "jp": "",
+        "desc": "",
+        "skip_vice_versa": true
+      }
     },
     "3": {
       "3001": { "en": "OST", "cn": "原声集", "jp": "", "desc": "" },
@@ -265,7 +406,13 @@
       "3005": { "en": "Insert Song", "cn": "插入歌", "jp": "", "desc": "" },
       "3006": { "en": "Image Song", "cn": "印象曲", "jp": "", "desc": "" },
       "3007": { "en": "Drama", "cn": "广播剧", "jp": "", "desc": "" },
-      "3099": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+      "3099": {
+        "en": "Other",
+        "cn": "其他",
+        "jp": "",
+        "desc": "",
+        "skip_vice_versa": true
+      }
     },
     "4": {
       "1": {
@@ -274,10 +421,25 @@
         "jp": "",
         "desc": "同系列不同平台作品（如 CLANNAD 游戏与动画版）"
       },
-      "4002": { "en": "Prequel", "cn": "前传", "jp": "", "desc": "发生在故事之前/或作品发售之前" },
-      "4003": { "en": "Sequel", "cn": "续集", "jp": "", "desc": "发生在故事之后/或作品发售之后" },
+      "4002": {
+        "en": "Prequel",
+        "cn": "前传",
+        "jp": "",
+        "desc": "发生在故事之前/或作品发售之前"
+      },
+      "4003": {
+        "en": "Sequel",
+        "cn": "续集",
+        "jp": "",
+        "desc": "发生在故事之后/或作品发售之后"
+      },
       "4006": { "en": "Side Story", "cn": "外传", "jp": "", "desc": "" },
-      "4007": { "en": "Character", "cn": "角色出演", "jp": "", "desc": "相同角色，没有关联的故事" },
+      "4007": {
+        "en": "Character",
+        "cn": "角色出演",
+        "jp": "",
+        "desc": "相同角色，没有关联的故事"
+      },
       "4008": {
         "en": "Same Setting",
         "cn": "相同世界观",
@@ -303,7 +465,12 @@
         "desc": "相同故事、角色，画面、音乐或系统改进"
       },
       "4012": { "en": "Parent Story", "cn": "主线故事", "jp": "", "desc": "" },
-      "4013": { "en": "Main Version", "cn": "主版本", "jp": "", "desc": "游戏最初发售时的版本" },
+      "4013": {
+        "en": "Main Version",
+        "cn": "主版本",
+        "jp": "",
+        "desc": "游戏最初发售时的版本"
+      },
       "4014": {
         "en": "Collaboration",
         "cn": "联动",
@@ -312,9 +479,25 @@
         "skip_vice_versa": true
       },
       "4015": { "en": "DLC", "cn": "扩展包", "jp": "", "desc": "" },
-      "4016": { "en": "Collection", "cn": "合集", "jp": "", "desc": "收录本作品的合集条目" },
-      "4017": { "en": "In Collection", "cn": "收录作品", "jp": "", "desc": "合集条目中收录的作品" },
-      "4099": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+      "4016": {
+        "en": "Collection",
+        "cn": "合集",
+        "jp": "",
+        "desc": "收录本作品的合集条目"
+      },
+      "4017": {
+        "en": "In Collection",
+        "cn": "收录作品",
+        "jp": "",
+        "desc": "合集条目中收录的作品"
+      },
+      "4099": {
+        "en": "Other",
+        "cn": "其他",
+        "jp": "",
+        "desc": "",
+        "skip_vice_versa": true
+      }
     },
     "6": {
       "1": {
@@ -323,12 +506,32 @@
         "jp": "",
         "desc": "同系列不同平台作品（如柯南漫画与动画版）"
       },
-      "2": { "en": "Prequel", "cn": "前传", "jp": "", "desc": "发生在故事之前" },
+      "2": {
+        "en": "Prequel",
+        "cn": "前传",
+        "jp": "",
+        "desc": "发生在故事之前"
+      },
       "3": { "en": "Sequel", "cn": "续集", "jp": "", "desc": "发生在故事之后" },
-      "4": { "en": "Summary", "cn": "总集篇", "jp": "", "desc": "对故事的概括版本" },
-      "5": { "en": "Full Story", "cn": "全集", "jp": "", "desc": "相对于剧场版/总集篇的完整故事" },
+      "4": {
+        "en": "Summary",
+        "cn": "总集篇",
+        "jp": "",
+        "desc": "对故事的概括版本"
+      },
+      "5": {
+        "en": "Full Story",
+        "cn": "全集",
+        "jp": "",
+        "desc": "相对于剧场版/总集篇的完整故事"
+      },
       "6": { "en": "Side Story", "cn": "番外篇", "jp": "", "desc": "" },
-      "7": { "en": "Character", "cn": "角色出演", "jp": "", "desc": "相同角色，没有关联的故事" },
+      "7": {
+        "en": "Character",
+        "cn": "角色出演",
+        "jp": "",
+        "desc": "相同角色，没有关联的故事"
+      },
       "8": {
         "en": "Same setting",
         "cn": "相同世界观",
@@ -361,7 +564,13 @@
         "desc": "出现了被关联作品中的角色",
         "skip_vice_versa": true
       },
-      "99": { "en": "Other", "cn": "其他", "jp": "", "desc": "", "skip_vice_versa": true }
+      "99": {
+        "en": "Other",
+        "cn": "其他",
+        "jp": "",
+        "desc": "",
+        "skip_vice_versa": true
+      }
     }
   }
 }

@@ -38,7 +38,12 @@
       "validate": "^[0-9]*$",
       "url": "https://www.pixiv.net/users/"
     },
-    "7": { "name": "github", "title": "GitHub", "bg_color": "#333", "url": "https://github.com/" },
+    "7": {
+      "name": "github",
+      "title": "GitHub",
+      "bg_color": "#333",
+      "url": "https://github.com/"
+    },
     "8": {
       "name": "twitter",
       "title": "Twitter",
