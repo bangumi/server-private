@@ -3,7 +3,7 @@ export function getItemCacheKey(id: number): string {
 }
 
 export function getUserCacheKey(uid: number | string) {
-  return `tml:v2:user:${uid}`;
+  return `tml:v3:user:${uid}`;
 }
 
 export function getUserVisitCacheKey(uid: number) {
@@ -11,7 +11,7 @@ export function getUserVisitCacheKey(uid: number) {
 }
 
 export function getInboxCacheKey(uid: number | string) {
-  return `tml:v2:inbox:${uid}`;
+  return `tml:v3:inbox:${uid}`;
 }
 
 export function getInboxVisitCacheKey(uid: number) {
