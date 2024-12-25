@@ -54,6 +54,8 @@ export async function handle(key: string, value: string) {
       }
       const friendIDs = await fetcher.fetchFriendIDsByUserID(tml.tml_uid);
       if (friendIDs.length > 0) {
+        // 写入自己的首页时间线
+        friendIDs.push(tml.tml_uid);
         const ttlInbox = await redis.mget(friendIDs.map((fid) => getInboxVisitCacheKey(fid)));
         for (const [idx, fid] of friendIDs.entries()) {
           const ttl = Number(ttlInbox[idx]);
@@ -79,6 +81,8 @@ export async function handle(key: string, value: string) {
       await redis.zrem(getUserCacheKey(tml.tml_uid), tml.tml_id);
       const friendIDs = await fetcher.fetchFriendIDsByUserID(tml.tml_uid);
       if (friendIDs.length > 0) {
+        // 也从自己的首页时间线中删除
+        friendIDs.push(tml.tml_uid);
         for (const fid of friendIDs) {
           await redis.zrem(getInboxCacheKey(fid), tml.tml_id);
         }
