@@ -256,7 +256,7 @@ export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
     nameCN: subject.nameCN,
     type: subject.typeID,
     images: subjectCover(subject.image),
-    info: getInfoboxSummary(infobox, subject.typeID),
+    info: getInfoboxSummary(infobox, subject.typeID, subject.eps),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
   };
@@ -271,7 +271,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     id: subject.id,
     images: subjectCover(subject.image),
     infobox: infobox,
-    info: getInfoboxSummary(infobox, subject.typeID),
+    info: getInfoboxSummary(infobox, subject.typeID, subject.eps),
     metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     name: subject.name,
