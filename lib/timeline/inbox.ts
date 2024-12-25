@@ -26,10 +26,12 @@ export async function getTimelineInbox(
     .where(op.eq(schema.chiiFriends.uid, uid))
     .execute()
     .then((data) => data.map((d) => d.fid));
-  // 对于没有关注的用户，返回全站时间线
+  // 对于没有好友的用户，返回全站时间线
   if (friendIDs.length === 0) {
     return getTimelineInbox(0, limit, until);
   }
+  // 自己的动态也在需要首页显示
+  friendIDs.push(uid);
   conditions.push(op.inArray(schema.chiiTimeline.uid, friendIDs));
   if (until) {
     conditions.push(op.lt(schema.chiiTimeline.id, until));
