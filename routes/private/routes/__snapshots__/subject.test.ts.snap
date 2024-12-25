@@ -470,7 +470,6 @@ Object {
     Object {
       "airdate": "2002-04-03",
       "comment": 16,
-      "desc": "",
       "disc": 0,
       "duration": "24m",
       "id": 1027,
@@ -484,7 +483,6 @@ Object {
     Object {
       "airdate": "2002-04-10",
       "comment": 8,
-      "desc": "",
       "disc": 0,
       "duration": "24m",
       "id": 1028,

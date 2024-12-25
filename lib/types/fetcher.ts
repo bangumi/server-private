@@ -441,7 +441,31 @@ export async function fetchSubjectEpStatus(
 }
 
 /** Cached */
+export async function fetchSlimEpisodeByID(episodeID: number): Promise<res.IEpisode | undefined> {
+  const episode = await fetchEpisodeItemByID(episodeID);
+  if (!episode) {
+    return;
+  }
+  episode.desc = undefined;
+  return episode;
+}
+
+/** Cached */
 export async function fetchEpisodeByID(episodeID: number): Promise<res.IEpisode | undefined> {
+  const episode = await fetchEpisodeItemByID(episodeID);
+  if (!episode) {
+    return;
+  }
+  const subject = await fetchSlimSubjectByID(episode.subjectID);
+  if (!subject) {
+    return;
+  }
+  episode.subject = subject;
+  return episode;
+}
+
+/** Cached */
+async function fetchEpisodeItemByID(episodeID: number): Promise<res.IEpisode | undefined> {
   const cached = await redis.get(getSubjectEpCacheKey(episodeID));
   if (cached) {
     return JSON.parse(cached) as res.IEpisode;

@@ -153,7 +153,6 @@ Array [
           "episode": Object {
             "airdate": "2018-03-15",
             "comment": 0,
-            "desc": "",
             "disc": 0,
             "duration": "",
             "id": 751421,
@@ -305,7 +304,6 @@ Array [
           "episode": Object {
             "airdate": "2017-10-19",
             "comment": 0,
-            "desc": "",
             "disc": 0,
             "duration": "",
             "id": 751409,
@@ -643,7 +641,6 @@ Array [
           "episode": Object {
             "airdate": "2022-02-02",
             "comment": 0,
-            "desc": "The 4th grade class is banned from wearing their pajamas to school on the most important day of the year.",
             "disc": 0,
             "duration": "22m",
             "id": 1080550,

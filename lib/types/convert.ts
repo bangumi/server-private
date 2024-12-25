@@ -384,7 +384,6 @@ export function toSubjectReview(
 export function toEpisode(episode: orm.IEpisode): res.IEpisode {
   return {
     id: episode.id,
-    subjectID: episode.subjectID,
     sort: episode.sort,
     type: episode.type,
     disc: episode.disc,
@@ -395,6 +394,7 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
     comment: episode.comment,
     desc: episode.desc,
     lock: Boolean(episode.lock),
+    subjectID: episode.subjectID,
   };
 }
 

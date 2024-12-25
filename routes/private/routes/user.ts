@@ -172,8 +172,10 @@ function toUserSubjectEpisodeCollection(
   episode: orm.IEpisode,
   epStatus: UserEpisodeCollection | undefined,
 ): IUserSubjectEpisodeCollection {
+  const ep = convert.toEpisode(episode);
+  ep.desc = undefined;
   return {
-    episode: convert.toEpisode(episode),
+    episode: ep,
     type: epStatus?.type ?? EpisodeCollectionStatus.None,
   };
 }

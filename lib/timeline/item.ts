@@ -152,7 +152,7 @@ export async function parseTimelineMemo(
       } else {
         const info = php.parse(data) as memo.ProgressSingle;
         const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
-        const episode = await fetcher.fetchEpisodeByID(Number(info.ep_id));
+        const episode = await fetcher.fetchSlimEpisodeByID(Number(info.ep_id));
         if (!subject || !episode) {
           return {
             progress: {},

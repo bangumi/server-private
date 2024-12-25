@@ -329,13 +329,14 @@ exports[`should build private api spec 1`] = `
           type: string
         sort:
           type: number
+        subject:
+          $ref: '#/components/schemas/SlimSubject'
         subjectID:
           type: integer
         type:
           $ref: '#/components/schemas/EpisodeType'
       required:
         - id
-        - subjectID
         - sort
         - type
         - disc
@@ -344,8 +345,8 @@ exports[`should build private api spec 1`] = `
         - duration
         - airdate
         - comment
-        - desc
         - lock
+        - subjectID
       title: Episode
       type: object
     EpisodeCollectionStatus:
