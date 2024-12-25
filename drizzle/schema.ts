@@ -482,8 +482,9 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   location: varchar('location', { length: 30 }).default('').notNull(),
   bio: text('bio').notNull(),
   homepage: mediumtext('homepage').notNull(),
+  // FIXME: wait for permission
   // privacy: mediumtext('privacy').notNull(),
-  blocklist: mediumtext('blocklist').notNull(),
+  // blocklist: mediumtext('blocklist').notNull(),
 });
 
 export const chiiUserNetworkServices = mysqlTable(
