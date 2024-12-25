@@ -18,53 +18,6 @@ exports[`should build private api spec 1`] = `
         - large
       title: Avatar
       type: object
-    BaseEpisodeComment:
-      properties:
-        content:
-          type: string
-        createdAt:
-          type: integer
-        creatorID:
-          type: integer
-        epID:
-          type: integer
-        id:
-          type: integer
-        relatedID:
-          type: integer
-        state:
-          type: integer
-        user:
-          $ref: '#/components/schemas/SlimUser'
-      required:
-        - id
-        - epID
-        - creatorID
-        - relatedID
-        - createdAt
-        - content
-        - state
-        - user
-      type: object
-    BasicReply:
-      properties:
-        createdAt:
-          type: integer
-        creator:
-          $ref: '#/components/schemas/SlimUser'
-        id:
-          type: integer
-        state:
-          type: integer
-        text:
-          type: string
-      required:
-        - id
-        - creator
-        - createdAt
-        - text
-        - state
-      type: object
     BlogEntry:
       properties:
         content:
@@ -238,6 +191,29 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: CollectionType
+    CreateEpisodeComment:
+      properties:
+        cf-turnstile-response:
+          description: >-
+            需要
+            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+            dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+          minLength: 1
+          type: string
+        content:
+          minLength: 1
+          type: string
+        replyTo:
+          default: 0
+          description: 被回复的吐槽 ID, \`0\` 代表发送顶层吐槽
+          type: integer
+      required:
+        - content
+        - cf-turnstile-response
+      type: object
     CreateTopic:
       example:
         cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
@@ -370,6 +346,39 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: EpisodeCollectionStatus
+    EpisodeCommentBase:
+      properties:
+        content:
+          type: string
+        createdAt:
+          type: integer
+        creatorID:
+          type: integer
+        epID:
+          type: integer
+        id:
+          type: integer
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
+        relatedID:
+          type: integer
+        state:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - id
+        - epID
+        - creatorID
+        - relatedID
+        - createdAt
+        - content
+        - state
+        - user
+        - reactions
+      type: object
     EpisodeComments:
       allOf:
         - properties:
@@ -383,6 +392,10 @@ exports[`should build private api spec 1`] = `
               type: integer
             id:
               type: integer
+            reactions:
+              items:
+                $ref: '#/components/schemas/Reaction'
+              type: array
             relatedID:
               type: integer
             state:
@@ -398,11 +411,12 @@ exports[`should build private api spec 1`] = `
             - content
             - state
             - user
+            - reactions
           type: object
         - properties:
             replies:
               items:
-                $ref: '#/components/schemas/BaseEpisodeComment'
+                $ref: '#/components/schemas/EpisodeCommentBase'
               type: array
           required:
             - replies
@@ -593,31 +607,6 @@ exports[`should build private api spec 1`] = `
         - inGroup
         - group
         - totalTopics
-      type: object
-    GroupReply:
-      properties:
-        createdAt:
-          type: integer
-        creator:
-          $ref: '#/components/schemas/SlimUser'
-        id:
-          type: integer
-        state:
-          type: integer
-        text:
-          type: string
-        topicID:
-          type: integer
-        topicTitle:
-          type: string
-      required:
-        - id
-        - creator
-        - createdAt
-        - text
-        - state
-        - topicID
-        - topicTitle
       type: object
     HistorySummary:
       properties:
@@ -1009,7 +998,7 @@ exports[`should build private api spec 1`] = `
           type: array
         replies:
           items:
-            $ref: '#/components/schemas/SubReply'
+            $ref: '#/components/schemas/ReplyBasic'
           type: array
         state:
           type: integer
@@ -1017,7 +1006,6 @@ exports[`should build private api spec 1`] = `
           type: string
       required:
         - id
-        - isFriend
         - replies
         - creator
         - createdAt
@@ -1025,6 +1013,33 @@ exports[`should build private api spec 1`] = `
         - state
         - reactions
       title: Reply
+      type: object
+    ReplyBasic:
+      properties:
+        createdAt:
+          type: integer
+        creator:
+          $ref: '#/components/schemas/SlimUser'
+        id:
+          type: integer
+        isFriend:
+          type: boolean
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
+        state:
+          type: integer
+        text:
+          type: string
+      required:
+        - id
+        - creator
+        - createdAt
+        - text
+        - state
+        - reactions
+      title: ReplyBasic
       type: object
     SlimBlogEntry:
       properties:
@@ -1214,34 +1229,6 @@ exports[`should build private api spec 1`] = `
         - sign
         - joinedAt
       title: SlimUser
-      type: object
-    SubReply:
-      properties:
-        createdAt:
-          type: integer
-        creator:
-          $ref: '#/components/schemas/SlimUser'
-        id:
-          type: integer
-        isFriend:
-          type: boolean
-        reactions:
-          items:
-            $ref: '#/components/schemas/Reaction'
-          type: array
-        state:
-          type: integer
-        text:
-          type: string
-      required:
-        - id
-        - creator
-        - createdAt
-        - isFriend
-        - text
-        - state
-        - reactions
-      title: SubReply
       type: object
     Subject:
       example:
@@ -2114,6 +2101,14 @@ exports[`should build private api spec 1`] = `
         - subject
         - count
       type: object
+    UpdateEpisodeComment:
+      properties:
+        content:
+          minLength: 1
+          type: string
+      required:
+        - content
+      type: object
     UpdateTopic:
       properties:
         text:
@@ -2917,7 +2912,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GroupReply'
+                $ref: '#/components/schemas/Reply'
           description: Default Response
         '404':
           content:
@@ -3124,7 +3119,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BasicReply'
+                $ref: '#/components/schemas/ReplyBasic'
           description: Default Response
         '401':
           content:
@@ -3971,39 +3966,6 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties: {}
-                type: object
-          description: Default Response
-        '401':
-          content:
-            application/json:
-              examples:
-                NOT_ALLOWED:
-                  value:
-                    code: NOT_ALLOWED
-                    error: Unauthorized
-                    message: you don't have permission to delete this comment
-                    statusCode: 401
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
-        '404':
-          content:
-            application/json:
-              examples:
-                NOT_FOUND:
-                  value:
-                    code: NOT_FOUND
-                    error: Not Found
-                    message: comment not found
-                    statusCode: 404
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
         '500':
           content:
             application/json:
@@ -4016,9 +3978,9 @@ paths:
           HTTPBearer: []
       summary: 删除条目的剧集吐槽
       tags:
-        - subject
+        - episode
     put:
-      operationId: editSubjectEpComment
+      operationId: updateSubjectEpComment
       parameters:
         - example: 1075440
           in: path
@@ -4029,25 +3991,9 @@ paths:
       requestBody:
         content:
           application/json:
-            example:
-              content: new comment contents
             schema:
-              properties:
-                content:
-                  minLength: 1
-                  type: string
-              required:
-                - content
-              type: object
-        required: true
+              $ref: '#/components/schemas/UpdateEpisodeComment'
       responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties: {}
-                type: object
-          description: Default Response
         '500':
           content:
             application/json:
@@ -4060,7 +4006,34 @@ paths:
           HTTPBearer: []
       summary: 编辑条目的剧集吐槽
       tags:
-        - subject
+        - episode
+  /p1/subjects/-/episode/{episodeID}:
+    get:
+      operationId: getSubjectEpisode
+      parameters:
+        - example: 1075440
+          in: path
+          name: episodeID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      summary: 获取剧集信息
+      tags:
+        - episode
   /p1/subjects/-/episode/{episodeID}/comments:
     get:
       operationId: getSubjectEpisodeComments
@@ -4090,6 +4063,10 @@ paths:
                           type: integer
                         id:
                           type: integer
+                        reactions:
+                          items:
+                            $ref: '#/components/schemas/Reaction'
+                          type: array
                         relatedID:
                           type: integer
                         state:
@@ -4105,11 +4082,12 @@ paths:
                         - content
                         - state
                         - user
+                        - reactions
                       type: object
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/BaseEpisodeComment'
+                            $ref: '#/components/schemas/EpisodeCommentBase'
                           type: array
                       required:
                         - replies
@@ -4126,17 +4104,8 @@ paths:
           description: 意料之外的服务器错误
       summary: 获取条目的剧集吐槽箱
       tags:
-        - subject
+        - episode
     post:
-      description: >-
-        需要
-        [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-
-        next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-
-        dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
       operationId: createSubjectEpComment
       parameters:
         - example: 1075440
@@ -4148,40 +4117,20 @@ paths:
       requestBody:
         content:
           application/json:
-            examples:
-              example1:
-                value:
-                  cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
-                  content: comment contents
-              example2:
-                value:
-                  cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
-                  content: comment contents
-                  replyTo: 2
             schema:
-              properties:
-                cf-turnstile-response:
-                  minLength: 1
-                  type: string
-                content:
-                  minLength: 1
-                  type: string
-                replyTo:
-                  default: 0
-                  description: 被回复的吐槽 ID, \`0\` 代表发送顶层吐槽
-                  example: 0
-                  type: integer
-              required:
-                - content
-                - cf-turnstile-response
-              type: object
-        required: true
+              $ref: '#/components/schemas/CreateEpisodeComment'
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BasicReply'
+                properties:
+                  id:
+                    description: new reply id
+                    type: integer
+                required:
+                  - id
+                type: object
           description: Default Response
         '500':
           content:
@@ -4195,7 +4144,7 @@ paths:
           HTTPBearer: []
       summary: 创建条目的剧集吐槽
       tags:
-        - subject
+        - episode
   /p1/subjects/-/posts/{postID}:
     delete:
       operationId: deleteSubjectPost
@@ -4267,7 +4216,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GroupReply'
+                $ref: '#/components/schemas/Reply'
           description: Default Response
         '404':
           content:
@@ -4479,7 +4428,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BasicReply'
+                $ref: '#/components/schemas/ReplyBasic'
           description: Default Response
         '401':
           content:

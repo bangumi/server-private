@@ -85,6 +85,7 @@ export async function setup(app: App) {
         } else {
           const rs = replies[d.related] ?? [];
           rs.push(convert.toEpisodeCommentBase(d, u));
+          replies[d.related] = rs;
         }
       }
       for (const comment of comments) {
@@ -164,7 +165,7 @@ export async function setup(app: App) {
         createdAt: DateTime.now().toUnixInteger(),
         state: CommentState.Normal,
       };
-      const [result] = await db.insert(schema.chiiEpComments).values(reply).execute();
+      const [result] = await db.insert(schema.chiiEpComments).values(reply);
 
       return { id: result.insertId };
     },
@@ -212,8 +213,7 @@ export async function setup(app: App) {
       await db
         .update(schema.chiiEpComments)
         .set({ content: content })
-        .where(op.eq(schema.chiiEpComments.id, commentID))
-        .execute();
+        .where(op.eq(schema.chiiEpComments.id, commentID));
 
       return {};
     },
@@ -250,8 +250,7 @@ export async function setup(app: App) {
       await db
         .update(schema.chiiEpComments)
         .set({ state: CommentState.UserDelete })
-        .where(op.eq(schema.chiiEpComments.id, commentID))
-        .execute();
+        .where(op.eq(schema.chiiEpComments.id, commentID));
 
       return {};
     },

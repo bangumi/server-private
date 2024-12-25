@@ -70,10 +70,10 @@ describe('get group post', () => {
           "username": "287622",
         },
         "id": 2092074,
+        "reactions": Array [],
+        "replies": Array [],
         "state": 0,
         "text": "sub",
-        "topicID": 371602,
-        "topicTitle": "tes",
       }
     `);
   });
@@ -116,10 +116,10 @@ describe('get subject post', () => {
           "username": "2",
         },
         "id": 3,
+        "reactions": Array [],
+        "replies": Array [],
         "state": 0,
         "text": "before-test",
-        "topicID": 1,
-        "topicTitle": "拿这个来测试",
       }
     `);
   });

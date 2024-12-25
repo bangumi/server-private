@@ -1,0 +1,155 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`create ep comment > should now allowd create ep comment 1`] = `
+Object {
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before creating a comment",
+  "statusCode": 401,
+}
+`;
+
+exports[`delete ep comment > not allowed not login 1`] = `
+Object {
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before delete a comment",
+  "statusCode": 401,
+}
+`;
+
+exports[`delete ep comment > not allowed wrong user 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to delete a comment which is not yours",
+  "statusCode": 401,
+}
+`;
+
+exports[`delete ep comment > ok 1`] = `Object {}`;
+
+exports[`edit ep comment > should not edit ep comment not owned 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to edit a comment which is not yours",
+  "statusCode": 401,
+}
+`;
+
+exports[`edit ep comment > should not edit ep comment with replies 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to cannot edit a comment with replies",
+  "statusCode": 401,
+}
+`;
+
+exports[`get ep comment > should get ep comment 1`] = `
+Array [
+  Object {
+    "content": "設計師太紳士了(bgm38)",
+    "createdAt": 1400517144,
+    "creatorID": 382951,
+    "epID": 1027,
+    "id": 205402,
+    "reactions": Array [],
+    "relatedID": 0,
+    "replies": Array [
+      Object {
+        "content": "结果现在再没有类似设定的了(?)。",
+        "createdAt": 1413713418,
+        "creatorID": 382951,
+        "epID": 1027,
+        "id": 242518,
+        "reactions": Array [],
+        "relatedID": 205402,
+        "state": 0,
+        "user": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+            "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+            "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+          },
+          "id": 382951,
+          "joinedAt": 1512262276,
+          "nickname": "树洞酱",
+          "sign": "treeholechan@gmail.com 密码:lovemeplease",
+          "username": "382951",
+        },
+      },
+    ],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+        "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+        "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+      },
+      "id": 382951,
+      "joinedAt": 1512262276,
+      "nickname": "树洞酱",
+      "sign": "treeholechan@gmail.com 密码:lovemeplease",
+      "username": "382951",
+    },
+  },
+  Object {
+    "content": "op神曲~",
+    "createdAt": 1404574453,
+    "creatorID": 382951,
+    "epID": 1027,
+    "id": 215256,
+    "reactions": Array [],
+    "relatedID": 0,
+    "replies": Array [],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+        "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+        "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+      },
+      "id": 382951,
+      "joinedAt": 1512262276,
+      "nickname": "树洞酱",
+      "sign": "treeholechan@gmail.com 密码:lovemeplease",
+      "username": "382951",
+    },
+  },
+]
+`;
+
+exports[`get episode > should get episode 1`] = `
+Object {
+  "airdate": "2002-04-03",
+  "comment": 16,
+  "desc": "",
+  "disc": 0,
+  "duration": "24m",
+  "id": 1027,
+  "lock": true,
+  "name": "ちぃ 目覚める",
+  "nameCN": "叽，觉醒了",
+  "sort": 1,
+  "subject": Object {
+    "id": 12,
+    "images": Object {
+      "common": "https://lain.bgm.tv/pic/cover/c/c2/0a/12_aDoa8.jpg",
+      "grid": "https://lain.bgm.tv/pic/cover/g/c2/0a/12_aDoa8.jpg",
+      "large": "https://lain.bgm.tv/pic/cover/l/c2/0a/12_aDoa8.jpg",
+      "medium": "https://lain.bgm.tv/pic/cover/m/c2/0a/12_aDoa8.jpg",
+      "small": "https://lain.bgm.tv/pic/cover/s/c2/0a/12_aDoa8.jpg",
+    },
+    "info": "2002年4月2日 / 浅香守生 / CLAMP / 阿部恒",
+    "locked": false,
+    "name": "ちょびっツ",
+    "nameCN": "人形电脑天使心",
+    "nsfw": false,
+    "type": 2,
+  },
+  "subjectID": 12,
+  "type": 0,
+}
+`;
