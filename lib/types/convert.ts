@@ -398,6 +398,41 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
+export function toEpisodeCommentBase(
+  comment: orm.IEpisodeComment,
+  user: res.ISlimUser,
+): res.IEpisodeCommentBase {
+  return {
+    id: comment.id,
+    epID: comment.mid,
+    creatorID: comment.uid,
+    relatedID: comment.related,
+    content: comment.content,
+    createdAt: comment.createdAt,
+    user,
+    state: comment.state,
+    reactions: [],
+  };
+}
+
+export function toEpisodeComment(
+  comment: orm.IEpisodeComment,
+  user: res.ISlimUser,
+): res.IEpisodeComment {
+  return {
+    id: comment.id,
+    epID: comment.mid,
+    creatorID: comment.uid,
+    relatedID: comment.related,
+    content: comment.content,
+    createdAt: comment.createdAt,
+    user,
+    state: comment.state,
+    reactions: [],
+    replies: [],
+  };
+}
+
 export function toSubjectEpStatus(
   status: orm.ISubjectEpStatus,
 ): Record<number, UserEpisodeCollection> {
@@ -565,11 +600,13 @@ export function toSubjectTopicReply(reply: orm.ISubjectPost, user: orm.IUser): r
     creator: toSlimUser(user),
     replies: [],
     reactions: [],
-    isFriend: false,
   };
 }
 
-export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser): res.ISubReply {
+export function toSubjectTopicReplyBasic(
+  reply: orm.ISubjectPost,
+  user: orm.IUser,
+): res.IReplyBasic {
   return {
     id: reply.id,
     text: reply.content,
@@ -577,7 +614,6 @@ export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser)
     createdAt: reply.createdAt,
     creator: toSlimUser(user),
     reactions: [],
-    isFriend: false,
   };
 }
 
