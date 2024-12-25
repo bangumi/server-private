@@ -69,11 +69,10 @@ export async function setup(app: App) {
         .from(schema.chiiEpComments)
         .where(op.eq(schema.chiiEpComments.mid, episodeID));
 
-      const comments: res.IEpisodeComment[] = [];
-
       const userIDs = new Set(data.map((v) => v.uid));
       const users = await fetcher.fetchSlimUsersByIDs([...userIDs]);
 
+      const comments: res.IEpisodeComment[] = [];
       const replies: Record<number, res.IEpisodeCommentBase[]> = {};
 
       for (const d of data) {
