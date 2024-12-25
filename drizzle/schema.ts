@@ -464,7 +464,7 @@ export const chiiUsers = mysqlTable(
     timeoffset: char('timeoffset', { length: 4 }).default('').notNull(),
     newpm: tinyint('newpm').default(0).notNull(),
     newNotify: smallint('new_notify').notNull(),
-    sign: varchar('sign', { length: 255 }).notNull(),
+    sign: htmlEscapedString('varchar')('sign', { length: 255 }).notNull(),
     passwordCrypt: char('password_crypt', { length: 64 }).notNull(),
     email: char('email', { length: 50 }).default('').notNull(),
     acl: mediumtext('acl').notNull(),
