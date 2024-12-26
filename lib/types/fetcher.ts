@@ -87,8 +87,9 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
     .where(op.inArray(schema.chiiUsers.id, missing))
     .execute();
   for (const d of data) {
-    await redis.setex(getUserSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(convert.toSlimUser(d)));
-    result[d.id] = convert.toSlimUser(d);
+    const slim = convert.toSlimUser(d);
+    await redis.setex(getUserSlimCacheKey(slim.id), ONE_MONTH, JSON.stringify(slim));
+    result[slim.id] = slim;
   }
   return result;
 }
