@@ -1995,7 +1995,14 @@ Array [
 ]
 `;
 
-exports[`user friends > should get friends 1`] = `
+exports[`user relations > should get followers 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
+exports[`user relations > should get friends 1`] = `
 Object {
   "data": Array [
     Object {
