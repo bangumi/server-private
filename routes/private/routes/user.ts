@@ -252,7 +252,12 @@ export async function setup(app: App) {
       const svcs = await db
         .select()
         .from(schema.chiiUserNetworkServices)
-        .where(op.eq(schema.chiiUserNetworkServices.uid, user.id))
+        .where(
+          op.and(
+            op.ne(schema.chiiUserNetworkServices.account, ''),
+            op.eq(schema.chiiUserNetworkServices.uid, user.id),
+          ),
+        )
         .execute();
       for (const svc of svcs) {
         user.networkServices.push(convert.toUserNetworkService(svc));
@@ -312,6 +317,62 @@ export async function setup(app: App) {
 
       return {
         data: friends,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/users/:username/followers',
+    {
+      schema: {
+        summary: '获取用户的关注者列表',
+        operationId: 'getUserFollowers',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          username: t.String(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.Friend)),
+        },
+      },
+    },
+    async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const conditions = op.and(op.eq(schema.chiiFriends.fid, user.id));
+
+      const [{ count = 0 } = {}] = await db
+        .select({
+          count: op.count(),
+        })
+        .from(schema.chiiFriends)
+        .where(conditions)
+        .execute();
+
+      const data = await db
+        .select()
+        .from(schema.chiiFriends)
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiFriends.uid, schema.chiiUsers.id))
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiFriends.createdAt))
+        .limit(limit)
+        .offset(offset)
+        .execute();
+      const followers = data.map((d) => convert.toFriend(d.chii_members, d.chii_friends));
+
+      return {
+        data: followers,
         total: count,
       };
     },

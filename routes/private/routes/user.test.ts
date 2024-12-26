@@ -17,13 +17,24 @@ describe('user', () => {
   });
 });
 
-describe('user friends', () => {
+describe('user relations', () => {
   test('should get friends', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/users/287622/friends',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get followers', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/287622/followers',
       query: { limit: '1', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
