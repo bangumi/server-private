@@ -120,7 +120,7 @@ describe('subject', () => {
     const text = 'new contents';
 
     const res = await app.inject({
-      url: '/subjects/497/topics',
+      url: '/subjects/12/topics',
       method: 'post',
       payload: {
         title: title,

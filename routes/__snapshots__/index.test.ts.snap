@@ -1162,6 +1162,8 @@ exports[`should build private api spec 1`] = `
           type: string
         nsfw:
           type: boolean
+        rating:
+          $ref: '#/components/schemas/SubjectRating'
         type:
           $ref: '#/components/schemas/SubjectType'
       required:
@@ -1170,6 +1172,7 @@ exports[`should build private api spec 1`] = `
         - nameCN
         - type
         - info
+        - rating
         - locked
         - nsfw
       title: SlimSubject

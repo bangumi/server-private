@@ -12,9 +12,13 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
-function toPersonWork(subject: orm.ISubject, relations: orm.IPersonSubject[]): res.IPersonWork {
+function toPersonWork(
+  subject: orm.ISubject,
+  fields: orm.ISubjectFields,
+  relations: orm.IPersonSubject[],
+): res.IPersonWork {
   return {
-    subject: convert.toSlimSubject(subject),
+    subject: convert.toSlimSubject(subject, fields),
     positions: relations.map((r) => convert.toSubjectStaffPosition(r)),
   };
 }
@@ -128,6 +132,10 @@ export async function setup(app: App) {
           schema.chiiSubjects,
           op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
         )
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
         .where(condition)
         .groupBy(schema.chiiPersonSubjects.subjectID)
         .orderBy(op.desc(schema.chiiPersonSubjects.subjectID))
@@ -153,7 +161,11 @@ export async function setup(app: App) {
         relationsMap.set(r.subjectID, relations);
       }
       const subjects = data.map((d) =>
-        toPersonWork(d.chii_subjects, relationsMap.get(d.chii_subjects.id) || []),
+        toPersonWork(
+          d.chii_subjects,
+          d.chii_subject_fields,
+          relationsMap.get(d.chii_subjects.id) || [],
+        ),
       );
       return {
         total: count,

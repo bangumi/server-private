@@ -14,11 +14,12 @@ import type { App } from '@app/routes/type.ts';
 
 function toCharacterSubject(
   subject: orm.ISubject,
+  fields: orm.ISubjectFields,
   relation: orm.ICharacterSubject,
   actors: res.ISlimPerson[],
 ): res.ICharacterSubject {
   return {
-    subject: convert.toSlimSubject(subject),
+    subject: convert.toSlimSubject(subject, fields),
     actors: actors,
     type: relation.type,
   };
@@ -123,6 +124,10 @@ export async function setup(app: App) {
           schema.chiiSubjects,
           op.eq(schema.chiiCharacterSubjects.subjectID, schema.chiiSubjects.id),
         )
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
         .where(condition)
         .orderBy(
           op.asc(schema.chiiCharacterSubjects.type),
@@ -140,6 +145,7 @@ export async function setup(app: App) {
       const subjects = data.map((d) =>
         toCharacterSubject(
           d.chii_subjects,
+          d.chii_subject_fields,
           d.chii_crt_subject_index,
           casts[d.chii_subjects.id] || [],
         ),

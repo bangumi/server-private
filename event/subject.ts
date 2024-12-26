@@ -42,7 +42,7 @@ export async function handleFields(key: string, value: string) {
     }
     case EventOp.Update:
     case EventOp.Delete: {
-      await redis.del(getItemCacheKey(idx.field_sid));
+      await redis.del(getItemCacheKey(idx.field_sid), getSlimCacheKey(idx.field_sid));
       break;
     }
     case EventOp.Snapshot: {

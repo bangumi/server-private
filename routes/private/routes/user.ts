@@ -553,7 +553,7 @@ export async function setup(app: App) {
           if (!details) {
             continue;
           }
-          const slim = convert.toSlimSubject(d.chii_subjects);
+          const slim = convert.toSlimSubject(d.chii_subjects, d.chii_subject_fields);
           details.push(slim);
         }
       }

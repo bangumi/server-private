@@ -128,12 +128,13 @@ export async function fetchSlimSubjectByID(
   const [data] = await db
     .select()
     .from(schema.chiiSubjects)
+    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
     .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
     .execute();
   if (!data) {
     return;
   }
-  const slim = convert.toSlimSubject(data);
+  const slim = convert.toSlimSubject(data.chii_subjects, data.chii_subject_fields);
   await redis.setex(getSubjectSlimCacheKey(id), ONE_MONTH, JSON.stringify(slim));
   if (!allowNsfw && slim.nsfw) {
     return;
@@ -167,15 +168,23 @@ export async function fetchSlimSubjectsByIDs(
     const data = await db
       .select()
       .from(schema.chiiSubjects)
+      .innerJoin(
+        schema.chiiSubjectFields,
+        op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+      )
       .where(op.and(op.inArray(schema.chiiSubjects.id, missing), op.ne(schema.chiiSubjects.ban, 1)))
       .execute();
     for (const d of data) {
-      const slim = convert.toSlimSubject(d);
-      await redis.setex(getSubjectSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
+      const slim = convert.toSlimSubject(d.chii_subjects, d.chii_subject_fields);
+      await redis.setex(
+        getSubjectSlimCacheKey(d.chii_subjects.id),
+        ONE_MONTH,
+        JSON.stringify(slim),
+      );
       if (!allowNsfw && slim.nsfw) {
         continue;
       }
-      result[d.id] = slim;
+      result[d.chii_subjects.id] = slim;
     }
   }
   return result;
@@ -707,6 +716,10 @@ export async function fetchCastsByPersonAndCharacterIDs(
       op.and(op.eq(schema.chiiCharacterCasts.subjectID, schema.chiiSubjects.id)),
     )
     .innerJoin(
+      schema.chiiSubjectFields,
+      op.and(op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id)),
+    )
+    .innerJoin(
       schema.chiiCharacterSubjects,
       op.and(
         op.eq(schema.chiiCharacterCasts.characterID, schema.chiiCharacterSubjects.characterID),
@@ -726,7 +739,11 @@ export async function fetchCastsByPersonAndCharacterIDs(
     .execute();
   const result: Record<number, res.ICharacterSubjectRelation[]> = {};
   for (const d of data) {
-    const relation = convert.toCharacterSubjectRelation(d.chii_subjects, d.chii_crt_subject_index);
+    const relation = convert.toCharacterSubjectRelation(
+      d.chii_subjects,
+      d.chii_subject_fields,
+      d.chii_crt_subject_index,
+    );
     const list = result[d.chii_crt_cast_index.characterID] || [];
     list.push(relation);
     result[d.chii_crt_cast_index.characterID] = list;
