@@ -276,6 +276,7 @@ export async function toTimeline(tml: orm.ITimeline, allowNsfw = false): Promise
     createdAt: tml.createdAt,
   };
 }
+
 /** Cached */
 export async function fetchTimelineByIDs(
   ids: number[],
@@ -283,12 +284,10 @@ export async function fetchTimelineByIDs(
 ): Promise<Record<number, res.ITimeline>> {
   const cached = await redis.mget(ids.map((id) => getItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
-  const uids = new Set<number>();
   const missing = [];
   for (const tid of ids) {
     if (cached[tid]) {
       const item = JSON.parse(cached[tid]) as res.ITimeline;
-      uids.add(item.uid);
       result[tid] = item;
     } else {
       missing.push(tid);
@@ -302,7 +301,6 @@ export async function fetchTimelineByIDs(
       .execute();
     for (const d of data) {
       const item = await toTimeline(d, allowNsfw);
-      uids.add(item.uid);
       result[d.id] = item;
       await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));
     }
