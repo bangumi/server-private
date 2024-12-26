@@ -393,7 +393,6 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
     airdate: episode.airdate,
     comment: episode.comment,
     desc: episode.desc,
-    lock: Boolean(episode.lock),
     subjectID: episode.subjectID,
   };
 }
@@ -409,7 +408,6 @@ export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
     duration: episode.duration,
     airdate: episode.airdate,
     comment: episode.comment,
-    lock: Boolean(episode.lock),
     subjectID: episode.subjectID,
   };
 }

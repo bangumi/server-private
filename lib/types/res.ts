@@ -329,7 +329,6 @@ export const Episode = t.Object(
     airdate: t.String(),
     comment: t.Integer(),
     desc: t.Optional(t.String()),
-    lock: t.Boolean(),
     subjectID: t.Integer(),
     subject: t.Optional(Ref(SlimSubject)),
   },

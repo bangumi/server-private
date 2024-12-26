@@ -297,8 +297,6 @@ exports[`should build private api spec 1`] = `
           type: string
         id:
           type: integer
-        lock:
-          type: boolean
         name:
           type: string
         nameCN:
@@ -321,7 +319,6 @@ exports[`should build private api spec 1`] = `
         - duration
         - airdate
         - comment
-        - lock
         - subjectID
       title: Episode
       type: object
