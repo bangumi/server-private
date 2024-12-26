@@ -398,6 +398,22 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
+export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
+  return {
+    id: episode.id,
+    sort: episode.sort,
+    type: episode.type,
+    disc: episode.disc,
+    name: episode.name,
+    nameCN: episode.nameCN,
+    duration: episode.duration,
+    airdate: episode.airdate,
+    comment: episode.comment,
+    lock: Boolean(episode.lock),
+    subjectID: episode.subjectID,
+  };
+}
+
 export function toEpisodeCommentBase(
   comment: orm.IEpisodeComment,
   user: res.ISlimUser,
