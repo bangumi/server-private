@@ -252,7 +252,12 @@ export async function setup(app: App) {
       const svcs = await db
         .select()
         .from(schema.chiiUserNetworkServices)
-        .where(op.eq(schema.chiiUserNetworkServices.uid, user.id))
+        .where(
+          op.and(
+            op.ne(schema.chiiUserNetworkServices.account, ''),
+            op.eq(schema.chiiUserNetworkServices.uid, user.id),
+          ),
+        )
         .execute();
       for (const svc of svcs) {
         user.networkServices.push(convert.toUserNetworkService(svc));
