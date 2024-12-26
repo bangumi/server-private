@@ -173,7 +173,7 @@ function toUserSubjectEpisodeCollection(
   epStatus: UserEpisodeCollection | undefined,
 ): IUserSubjectEpisodeCollection {
   return {
-    episode: convert.toEpisode(episode),
+    episode: convert.toSlimEpisode(episode),
     type: epStatus?.type ?? EpisodeCollectionStatus.None,
   };
 }

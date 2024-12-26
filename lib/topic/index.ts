@@ -26,9 +26,9 @@ import {
 } from '@app/lib/orm/index.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
 import * as convert from '@app/lib/types/convert.ts';
+import type * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit.ts';
-import type { IBasicReply } from '@app/routes/private/routes/post.ts';
 
 import { NotAllowedError } from './../auth/index';
 import { CommentState, TopicParentType } from './type.ts';
@@ -337,7 +337,7 @@ export async function handleTopicReply(
   topicID: number,
   content: string,
   replyTo: number,
-): Promise<IBasicReply> {
+): Promise<res.ISubReply> {
   if (!Dam.allCharacterPrintable(content)) {
     throw new BadRequestError('text contains invalid invisible character');
   }
@@ -435,5 +435,6 @@ export async function handleTopicReply(
     createdAt: t.createdAt,
     text: t.content,
     creator: convert.oldToUser(t.user),
+    reactions: [],
   };
 }

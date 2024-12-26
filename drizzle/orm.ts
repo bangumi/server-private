@@ -17,6 +17,7 @@ export type ISubjectEpStatus = typeof schema.chiiEpStatus.$inferSelect;
 export type ISubjectRec = typeof schema.chiiSubjectRec.$inferSelect;
 
 export type IEpisode = typeof schema.chiiEpisodes.$inferSelect;
+export type IEpisodeComment = typeof schema.chiiEpComments.$inferSelect;
 
 export type ICharacter = typeof schema.chiiCharacters.$inferSelect;
 export type ICharacterSubject = typeof schema.chiiCharacterSubjects.$inferSelect;

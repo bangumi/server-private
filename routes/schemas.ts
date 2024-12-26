@@ -8,10 +8,12 @@ export function addSchemas(app: App) {
   app.addSchema(common.EpisodeType);
   app.addSchema(common.SubjectType);
 
+  app.addSchema(req.CreateEpisodeComment);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
+  app.addSchema(req.UpdateEpisodeComment);
   app.addSchema(req.UpdateTopic);
 
   app.addSchema(res.Avatar);
@@ -21,6 +23,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.Episode);
+  app.addSchema(res.EpisodeComment);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
   app.addSchema(res.Group);
@@ -36,6 +39,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.PersonWork);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
+  app.addSchema(res.SubReply);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.SlimGroup);
@@ -43,7 +47,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.SlimPerson);
   app.addSchema(res.SlimSubject);
   app.addSchema(res.SlimUser);
-  app.addSchema(res.SubReply);
   app.addSchema(res.Subject);
   app.addSchema(res.SubjectAirtime);
   app.addSchema(res.SubjectCharacter);

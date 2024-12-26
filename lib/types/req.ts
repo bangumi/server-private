@@ -9,28 +9,6 @@ const turnstileDescription = `需要 [turnstile](https://developers.cloudflare.c
 next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``;
 
-export type ICreateTopic = Static<typeof CreateTopic>;
-export const CreateTopic = t.Object(
-  {
-    title: t.String({ minLength: 1 }),
-    text: t.String({ minLength: 1, description: 'bbcode' }),
-    'cf-turnstile-response': t.String({ description: turnstileDescription }),
-  },
-  {
-    $id: 'CreateTopic',
-    examples: [examples.createTopic],
-  },
-);
-
-export type IUpdateTopic = Static<typeof UpdateTopic>;
-export const UpdateTopic = t.Object(
-  {
-    title: t.String({ minLength: 1 }),
-    text: t.String({ minLength: 1, description: 'bbcode' }),
-  },
-  { $id: 'UpdateTopic' },
-);
-
 export const FilterMode = t.String({
   $id: 'FilterMode',
   enum: ['all', 'friends'],
@@ -75,3 +53,48 @@ export const SubjectSort = t.String({
   - date = 发布日期
   - title = 标题`,
 });
+
+export type ICreateTopic = Static<typeof CreateTopic>;
+export const CreateTopic = t.Object(
+  {
+    title: t.String({ minLength: 1 }),
+    text: t.String({ minLength: 1, description: 'bbcode' }),
+    'cf-turnstile-response': t.String({ description: turnstileDescription }),
+  },
+  {
+    $id: 'CreateTopic',
+    examples: [examples.createTopic],
+  },
+);
+
+export type IUpdateTopic = Static<typeof UpdateTopic>;
+export const UpdateTopic = t.Object(
+  {
+    title: t.String({ minLength: 1 }),
+    text: t.String({ minLength: 1, description: 'bbcode' }),
+  },
+  { $id: 'UpdateTopic' },
+);
+
+export type ICreateEpisodeComment = Static<typeof CreateEpisodeComment>;
+export const CreateEpisodeComment = t.Object(
+  {
+    content: t.String({ minLength: 1 }),
+    replyTo: t.Optional(
+      t.Integer({
+        default: 0,
+        description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
+      }),
+    ),
+    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+  },
+  { $id: 'CreateEpisodeComment' },
+);
+
+export type IUpdateEpisodeComment = Static<typeof UpdateEpisodeComment>;
+export const UpdateEpisodeComment = t.Object(
+  {
+    content: t.String({ minLength: 1 }),
+  },
+  { $id: 'UpdateEpisodeComment' },
+);

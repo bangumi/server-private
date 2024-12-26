@@ -450,7 +450,31 @@ export async function fetchSubjectEpStatus(
 }
 
 /** Cached */
+export async function fetchSlimEpisodeByID(episodeID: number): Promise<res.IEpisode | undefined> {
+  const episode = await fetchEpisodeItemByID(episodeID);
+  if (!episode) {
+    return;
+  }
+  episode.desc = undefined;
+  return episode;
+}
+
+/** Cached */
 export async function fetchEpisodeByID(episodeID: number): Promise<res.IEpisode | undefined> {
+  const episode = await fetchEpisodeItemByID(episodeID);
+  if (!episode) {
+    return;
+  }
+  const subject = await fetchSlimSubjectByID(episode.subjectID);
+  if (!subject) {
+    return;
+  }
+  episode.subject = subject;
+  return episode;
+}
+
+/** Cached */
+async function fetchEpisodeItemByID(episodeID: number): Promise<res.IEpisode | undefined> {
   const cached = await redis.get(getSubjectEpCacheKey(episodeID));
   if (cached) {
     return JSON.parse(cached) as res.IEpisode;
@@ -458,7 +482,7 @@ export async function fetchEpisodeByID(episodeID: number): Promise<res.IEpisode 
   const [data] = await db
     .select()
     .from(schema.chiiEpisodes)
-    .where(op.eq(schema.chiiEpisodes.id, episodeID))
+    .where(op.and(op.eq(schema.chiiEpisodes.id, episodeID), op.ne(schema.chiiEpisodes.ban, 1)))
     .execute();
   if (!data) {
     return;
@@ -710,47 +734,6 @@ export async function fetchCastsByPersonAndCharacterIDs(
   return result;
 }
 
-export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | undefined> {
-  const data = await db
-    .select()
-    .from(schema.chiiSubjectTopics)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectTopics.id, topicID))
-    .execute();
-  for (const d of data) {
-    return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
-  }
-  return;
-}
-
-export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promise<res.IReply[]> {
-  const data = await db
-    .select()
-    .from(schema.chiiSubjectPosts)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectPosts.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
-    .execute();
-
-  const subReplies: Record<number, res.ISubReply[]> = {};
-  const topLevelReplies: res.IReply[] = [];
-  for (const d of data) {
-    const related = d.chii_subject_posts.related;
-    if (related == 0) {
-      const reply = convert.toSubjectTopicReply(d.chii_subject_posts, d.chii_members);
-      topLevelReplies.push(reply);
-    } else {
-      const subReply = convert.toSubjectTopicSubReply(d.chii_subject_posts, d.chii_members);
-      const list = subReplies[related] ?? [];
-      list.push(subReply);
-      subReplies[related] = list;
-    }
-  }
-  for (const reply of topLevelReplies) {
-    reply.replies = subReplies[reply.id] ?? [];
-  }
-  return topLevelReplies;
-}
-
 /** Cached */
 export async function fetchSlimIndexByID(indexID: number): Promise<res.ISlimIndex | undefined> {
   const cached = await redis.get(getIndexSlimCacheKey(indexID));
@@ -858,4 +841,45 @@ export async function fetchSlimBlogEntryByID(
   const slim = convert.toSlimBlogEntry(data);
   await redis.setex(getBlogSlimCacheKey(entryID), ONE_MONTH, JSON.stringify(slim));
   return slim;
+}
+
+export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | undefined> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectTopics)
+    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
+    .where(op.eq(schema.chiiSubjectTopics.id, topicID))
+    .execute();
+  for (const d of data) {
+    return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
+  }
+  return;
+}
+
+export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promise<res.IReply[]> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectPosts)
+    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectPosts.uid, schema.chiiUsers.id))
+    .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
+    .execute();
+
+  const subReplies: Record<number, res.ISubReply[]> = {};
+  const topLevelReplies: res.IReply[] = [];
+  for (const d of data) {
+    const related = d.chii_subject_posts.related;
+    if (related == 0) {
+      const reply = convert.toSubjectTopicReply(d.chii_subject_posts, d.chii_members);
+      topLevelReplies.push(reply);
+    } else {
+      const subReply = convert.toSubjectTopicSubReply(d.chii_subject_posts, d.chii_members);
+      const list = subReplies[related] ?? [];
+      list.push(subReply);
+      subReplies[related] = list;
+    }
+  }
+  for (const reply of topLevelReplies) {
+    reply.replies = subReplies[reply.id] ?? [];
+  }
+  return topLevelReplies;
 }

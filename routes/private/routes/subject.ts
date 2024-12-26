@@ -217,7 +217,7 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-      const episodes = data.map((d) => convert.toEpisode(d));
+      const episodes = data.map((d) => convert.toSlimEpisode(d));
       return {
         data: episodes,
         total: count,

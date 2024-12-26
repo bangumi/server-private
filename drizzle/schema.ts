@@ -197,19 +197,19 @@ export const chiiEpisodes = mysqlTable(
 export const chiiEpComments = mysqlTable(
   'chii_ep_comments',
   {
-    epPstId: mediumint('ep_pst_id').autoincrement().notNull(),
-    epPstMid: mediumint('ep_pst_mid').notNull(),
-    epPstUid: mediumint('ep_pst_uid').notNull(),
-    epPstRelated: mediumint('ep_pst_related').notNull(),
-    epPstDateline: int('ep_pst_dateline').notNull(),
-    epPstContent: htmlEscapedString('mediumtext')('ep_pst_content').notNull(),
-    epPstState: tinyint('ep_pst_state').notNull(),
+    id: mediumint('ep_pst_id').autoincrement().notNull(),
+    mid: mediumint('ep_pst_mid').notNull(),
+    uid: mediumint('ep_pst_uid').notNull(),
+    related: mediumint('ep_pst_related').notNull(),
+    createdAt: int('ep_pst_dateline').notNull(),
+    content: htmlEscapedString('mediumtext')('ep_pst_content').notNull(),
+    state: tinyint('ep_pst_state').notNull(),
   },
   (table) => {
     return {
-      epCmtCrtId: index('ep_cmt_crt_id').on(table.epPstMid),
-      epPstRelated: index('ep_pst_related').on(table.epPstRelated),
-      epPstUid: index('ep_pst_uid').on(table.epPstUid),
+      epCmtCrtId: index('ep_cmt_crt_id').on(table.mid),
+      epPstRelated: index('ep_pst_related').on(table.related),
+      epPstUid: index('ep_pst_uid').on(table.uid),
     };
   },
 );

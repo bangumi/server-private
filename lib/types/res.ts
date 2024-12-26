@@ -141,6 +141,16 @@ export const Friend = t.Object(
   { $id: 'Friend', title: 'Friend' },
 );
 
+export type IReaction = Static<typeof Reaction>;
+export const Reaction = t.Object(
+  {
+    selected: t.Boolean(),
+    total: t.Integer(),
+    value: t.Integer(),
+  },
+  { $id: 'Reaction', title: 'Reaction' },
+);
+
 export type IInfoboxValue = Static<typeof InfoboxValue>;
 export const InfoboxValue = t.Object(
   {
@@ -310,7 +320,6 @@ export type IEpisode = Static<typeof Episode>;
 export const Episode = t.Object(
   {
     id: t.Integer(),
-    subjectID: t.Integer(),
     sort: t.Number(),
     type: Ref(EpisodeType),
     disc: t.Integer(),
@@ -319,10 +328,40 @@ export const Episode = t.Object(
     duration: t.String(),
     airdate: t.String(),
     comment: t.Integer(),
-    desc: t.String(),
-    lock: t.Boolean(),
+    desc: t.Optional(t.String()),
+    subjectID: t.Integer(),
+    subject: t.Optional(Ref(SlimSubject)),
   },
   { $id: 'Episode', title: 'Episode' },
+);
+
+export type IEpisodeCommentBase = Static<typeof EpisodeCommentBase>;
+export const EpisodeCommentBase = t.Object(
+  {
+    id: t.Integer(),
+    epID: t.Integer(),
+    creatorID: t.Integer(),
+    relatedID: t.Integer(),
+    createdAt: t.Integer(),
+    content: t.String(),
+    state: t.Integer(),
+    user: Ref(SlimUser),
+    reactions: t.Array(Ref(Reaction)),
+  },
+  {
+    $id: 'EpisodeCommentBase',
+  },
+);
+
+export type IEpisodeComment = Static<typeof EpisodeComment>;
+export const EpisodeComment = t.Intersect(
+  [
+    EpisodeCommentBase,
+    t.Object({
+      replies: t.Array(Ref(EpisodeCommentBase)),
+    }),
+  ],
+  { $id: 'EpisodeComments' },
 );
 
 export type IPersonImages = Static<typeof PersonImages>;
@@ -660,23 +699,13 @@ export const GroupMember = t.Object(
   { $id: 'GroupMember', title: 'GroupMember' },
 );
 
-export type IReaction = Static<typeof Reaction>;
-export const Reaction = t.Object(
-  {
-    selected: t.Boolean(),
-    total: t.Integer(),
-    value: t.Integer(),
-  },
-  { $id: 'Reaction', title: 'Reaction' },
-);
-
 export type ISubReply = Static<typeof SubReply>;
 export const SubReply = t.Object(
   {
     id: t.Integer(),
     creator: Ref(SlimUser),
     createdAt: t.Integer(),
-    isFriend: t.Boolean(),
+    isFriend: t.Optional(t.Boolean()),
     text: t.String(),
     state: t.Integer(),
     reactions: t.Array(Ref(Reaction)),
@@ -688,7 +717,7 @@ export type IReply = Static<typeof Reply>;
 export const Reply = t.Object(
   {
     id: t.Integer(),
-    isFriend: t.Boolean(),
+    isFriend: t.Optional(t.Boolean()),
     replies: t.Array(Ref(SubReply)),
     creator: Ref(SlimUser),
     createdAt: t.Integer(),

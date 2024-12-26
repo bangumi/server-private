@@ -1,81 +1,26 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
-import { DateTime } from 'luxon';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import config from '@app/lib/config';
 import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { entity } from '@app/lib/orm/index.ts';
-import { EpisodeCommentRepo, EpisodeRepo, fetchUserX } from '@app/lib/orm/index.ts';
+import { fetchUserX } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import { createTurnstileDriver } from '@app/lib/services/turnstile';
+import { turnstile } from '@app/lib/services/turnstile.ts';
 import { handleTopicReply, NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { CommentState, TopicParentType } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
-import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
-import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
-
-const BaseEpisodeComment = t.Object(
-  {
-    id: t.Integer(),
-    epID: t.Integer(),
-    creatorID: t.Integer(),
-    relatedID: t.Integer(),
-    createdAt: t.Integer(),
-    content: t.String(),
-    state: t.Integer(),
-    user: res.Ref(res.SlimUser),
-  },
-  {
-    $id: 'BaseEpisodeComment',
-  },
-);
-
-type IEpisodeComment = Static<typeof EpisodeComment>;
-const EpisodeComment = t.Intersect(
-  [
-    BaseEpisodeComment,
-    t.Object({
-      replies: t.Array(res.Ref(BaseEpisodeComment)),
-    }),
-  ],
-  { $id: 'EpisodeComments' },
-);
-
-export type IBasicReply = Static<typeof BasicReply>;
-const BasicReply = t.Object(
-  {
-    id: t.Integer(),
-    creator: res.Ref(res.SlimUser),
-    createdAt: t.Integer(),
-    text: t.String(),
-    state: t.Integer(),
-  },
-  { $id: 'BasicReply' },
-);
-
-const Reply = t.Object(
-  {
-    ...BasicReply.properties,
-    topicID: t.Integer(),
-    topicTitle: t.String(),
-  },
-  { $id: 'GroupReply' },
-);
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(BasicReply);
-  app.addSchema(Reply);
-
   async function getPost(auth: IAuth, postID: number, type: TopicParentType) {
     let post: entity.GroupPost | entity.SubjectPost | null;
     switch (type) {
@@ -116,277 +61,6 @@ export async function setup(app: App) {
     return { post, topic };
   }
 
-  app.addSchema(EpisodeComment);
-  app.get(
-    '/subjects/-/episode/:episodeID/comments',
-    {
-      schema: {
-        summary: '获取条目的剧集吐槽箱',
-        tags: [Tag.Subject],
-        operationId: 'getSubjectEpisodeComments',
-        params: t.Object({
-          episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
-        }),
-        response: {
-          200: t.Array(EpisodeComment),
-        },
-      },
-    },
-    async ({ params: { episodeID } }): Promise<IEpisodeComment[]> => {
-      const comments = await EpisodeCommentRepo.find({ where: { epID: episodeID } });
-      if (!comments) {
-        throw new NotFoundError(`comments of ep id ${episodeID}`);
-      }
-
-      const commentMap = new Map<number, IEpisodeComment>();
-      const repliesMap = new Map<number, IEpisodeComment[]>();
-
-      for (const comment of comments) {
-        const u = await fetchUserX(comment.creatorID);
-        const baseComment = comments
-          .map((v) => ({
-            id: v.id,
-            epID: v.epID,
-            creatorID: v.creatorID,
-            relatedID: v.relatedID,
-            createdAt: v.createdAt,
-            content: v.content,
-            state: v.state,
-            user: convert.oldToUser(u),
-            replies: [],
-          }))
-          .find((p) => p.id === comment.id);
-        if (!baseComment) {
-          continue;
-        }
-
-        if (comment.relatedID === 0) {
-          commentMap.set(comment.id, baseComment);
-        } else {
-          const relatedReplies = repliesMap.get(comment.relatedID) ?? [];
-          relatedReplies.push(baseComment);
-          repliesMap.set(comment.relatedID, relatedReplies);
-        }
-      }
-      for (const [id, replies] of repliesMap.entries()) {
-        const mainPost = commentMap.get(id);
-        if (mainPost) {
-          mainPost.replies = replies;
-        }
-      }
-
-      return [...commentMap.values()];
-    },
-  );
-
-  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
-
-  app.post(
-    '/subjects/-/episode/:episodeID/comments',
-    {
-      schema: {
-        summary: '创建条目的剧集吐槽',
-        operationId: 'createSubjectEpComment',
-        description: `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
-        params: t.Object({
-          episodeID: t.Integer({ examples: [1075440] }),
-        }),
-        tags: [Tag.Subject],
-        response: {
-          200: res.Ref(BasicReply),
-        },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: t.Object(
-          {
-            replyTo: t.Optional(
-              t.Integer({
-                examples: [0],
-                default: 0,
-                description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
-              }),
-            ),
-            content: t.String({ minLength: 1 }),
-            'cf-turnstile-response': t.String({ minLength: 1 }),
-          },
-          {
-            examples: [
-              {
-                content: 'comment contents',
-                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
-              },
-              {
-                content: 'comment contents',
-                replyTo: 2,
-                'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
-              },
-            ],
-          },
-        ),
-      },
-      preHandler: [requireLogin('creating a comment')],
-    },
-    /**
-     * @param auth -
-     * @param content - 吐槽内容
-     * @param relatedID - 子吐槽的父吐槽ID，默认为 `0` 代表发送顶层吐槽
-     * @param episodeID - 剧集 ID
-     */
-    async ({
-      auth,
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-      params: { episodeID },
-    }): Promise<Static<typeof BasicReply>> => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
-        throw new CaptchaError();
-      }
-
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('text contains invalid invisible character');
-      }
-
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create comment');
-      }
-
-      const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
-      if (!ep) {
-        throw new NotFoundError(`episode ${episodeID}`);
-      }
-      if (ep.epBan !== 0) {
-        throw new NotAllowedError('comment to a closed episode');
-      }
-
-      if (replyTo !== 0) {
-        const replied = await EpisodeCommentRepo.findOne({ where: { id: replyTo } });
-        if (!replied) {
-          throw new NotFoundError(`parent comment id ${replyTo}`);
-        }
-        if (replied.state !== CommentState.Normal) {
-          throw new NotAllowedError(`reply to a abnormal state comment`);
-        }
-      }
-
-      await rateLimit(LimitAction.Subject, auth.userID);
-
-      const c = await EpisodeCommentRepo.save({
-        content: content,
-        creatorID: auth.userID,
-        epID: episodeID,
-        relatedID: replyTo,
-        createdAt: DateTime.now().toUnixInteger(),
-        state: CommentState.Normal,
-      });
-
-      return {
-        id: c.id,
-        state: c.state,
-        createdAt: c.createdAt,
-        text: c.content,
-        creator: convert.oldToUser(await fetchUserX(auth.userID)),
-      };
-    },
-  );
-
-  app.put(
-    '/subjects/-/episode/-/comments/:commentID',
-    {
-      schema: {
-        summary: '编辑条目的剧集吐槽',
-        operationId: 'editSubjectEpComment',
-        params: t.Object({
-          commentID: t.Integer({ examples: [1075440] }),
-        }),
-        tags: [Tag.Subject],
-        response: {
-          200: t.Object({}),
-        },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: t.Object(
-          {
-            content: t.String({ minLength: 1 }),
-          },
-          {
-            examples: [{ content: 'new comment contents' }],
-          },
-        ),
-      },
-      preHandler: [requireLogin('edit a comment')],
-    },
-
-    async ({ auth, body: { content }, params: { commentID } }) => {
-      const comment = await EpisodeCommentRepo.findOne({ where: { id: commentID } });
-      if (!comment) {
-        throw new NotFoundError(`comment id ${commentID}`);
-      }
-      if (comment.creatorID !== auth.userID) {
-        throw new NotAllowedError('edit a comment which is not yours');
-      }
-      if (comment.state !== CommentState.Normal) {
-        throw new NotAllowedError(`edit to a abnormal state comment`);
-      }
-
-      const repliesCount = await EpisodeCommentRepo.count({
-        where: { relatedID: commentID },
-      });
-      if (repliesCount > 0) {
-        throw new NotAllowedError('cannot edit a comment with replies');
-      }
-
-      await EpisodeCommentRepo.update(
-        { id: commentID },
-        {
-          content: content,
-        },
-      );
-
-      return {};
-    },
-  );
-
-  app.delete(
-    '/subjects/-/episode/-/comments/:commentID',
-    {
-      schema: {
-        summary: '删除条目的剧集吐槽',
-        operationId: 'deleteSubjectEpComment',
-        params: t.Object({
-          commentID: t.Integer({ examples: [1034989] }),
-        }),
-        tags: [Tag.Subject],
-        response: {
-          200: t.Object({}),
-          401: res.Ref(res.Error, {
-            'x-examples': formatErrors(new NotAllowedError('delete this comment')),
-          }),
-          404: res.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('comment')),
-          }),
-        },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-      },
-      preHandler: [requireLogin('delete a comment')],
-    },
-    async ({ auth, params: { commentID } }) => {
-      const comment = await EpisodeCommentRepo.findOne({ where: { id: commentID } });
-      if (!comment) {
-        throw new NotFoundError(`comment id ${commentID}`);
-      }
-      if (comment.creatorID !== auth.userID) {
-        throw new NotAllowedError('delete a comment which is not yours');
-      }
-      if (comment.state !== CommentState.Normal) {
-        throw new NotAllowedError('delete a abnormal state comment');
-      }
-
-      await EpisodeCommentRepo.update({ id: commentID }, { state: CommentState.UserDelete });
-      return {};
-    },
-  );
-
   app.get(
     '/groups/-/posts/:postID',
     {
@@ -397,7 +71,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Group],
         response: {
-          200: res.Ref(Reply),
+          200: res.Ref(res.Reply),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('post')),
           }),
@@ -405,19 +79,19 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         security: [{ [Security.CookiesSession]: [] }],
       },
     },
-    async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const { topic, post } = await getPost(auth, postID, TopicParentType.Group);
+    async ({ auth, params: { postID } }): Promise<res.IReply> => {
+      const { post } = await getPost(auth, postID, TopicParentType.Group);
 
       const creator = convert.oldToUser(await fetchUserX(post.uid));
 
       return {
         id: postID,
         creator,
-        topicID: topic.id,
         state: post.state,
         createdAt: post.dateline,
         text: post.content,
-        topicTitle: topic.title,
+        replies: [],
+        reactions: [],
       };
     },
   );
@@ -545,7 +219,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Group],
         response: {
-          200: res.Ref(BasicReply),
+          200: res.Ref(res.SubReply),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
@@ -590,7 +264,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       auth,
       body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
-    }): Promise<Static<typeof BasicReply>> => {
+    }): Promise<res.ISubReply> => {
       if (!(await turnstile.verify(cfCaptchaResponse))) {
         throw new CaptchaError();
       }
@@ -614,7 +288,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Subject],
         response: {
-          200: res.Ref(BasicReply),
+          200: res.Ref(res.SubReply),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotJoinPrivateGroupError('沙盒')),
           }),
@@ -659,7 +333,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       auth,
       body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
       params: { topicID },
-    }): Promise<Static<typeof BasicReply>> => {
+    }): Promise<res.ISubReply> => {
       if (!(await turnstile.verify(cfCaptchaResponse))) {
         throw new CaptchaError();
       }
@@ -717,7 +391,7 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         }),
         tags: [Tag.Subject],
         response: {
-          200: res.Ref(Reply),
+          200: res.Ref(res.Reply),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('post')),
           }),
@@ -726,19 +400,19 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       },
       preHandler: [requireLogin('get a posts')],
     },
-    async ({ auth, params: { postID } }): Promise<Static<typeof Reply>> => {
-      const { topic, post } = await getPost(auth, postID, TopicParentType.Subject);
+    async ({ auth, params: { postID } }): Promise<Static<typeof res.Reply>> => {
+      const { post } = await getPost(auth, postID, TopicParentType.Subject);
 
       const creator = convert.oldToUser(await fetchUserX(post.uid));
 
       return {
         id: postID,
         creator,
-        topicID: topic.id,
         state: post.state,
         createdAt: post.dateline,
         text: post.content,
-        topicTitle: topic.title,
+        replies: [],
+        reactions: [],
       };
     },
   );
