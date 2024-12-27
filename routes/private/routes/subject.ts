@@ -27,10 +27,11 @@ import type { App } from '@app/routes/type.ts';
 
 function toSubjectRelation(
   subject: orm.ISubject,
+  fields: orm.ISubjectFields,
   relation: orm.ISubjectRelation,
 ): res.ISubjectRelation {
   return {
-    subject: convert.toSlimSubject(subject),
+    subject: convert.toSlimSubject(subject, fields),
     relation: convert.toSubjectRelationType(relation),
     order: relation.order,
   };
@@ -56,9 +57,13 @@ function toSubjectStaff(person: orm.IPerson, relations: orm.IPersonSubject[]): r
   };
 }
 
-function toSubjectRec(subject: orm.ISubject, rec: orm.ISubjectRec): res.ISubjectRec {
+function toSubjectRec(
+  subject: orm.ISubject,
+  fields: orm.ISubjectFields,
+  rec: orm.ISubjectRec,
+): res.ISubjectRec {
   return {
-    subject: convert.toSlimSubject(subject),
+    subject: convert.toSlimSubject(subject, fields),
     sim: rec.sim,
     count: rec.count,
   };
@@ -293,6 +298,10 @@ export async function setup(app: App) {
           schema.chiiSubjects,
           op.eq(schema.chiiSubjectRelations.relatedID, schema.chiiSubjects.id),
         )
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
         .where(condition)
         .orderBy(
           op.asc(schema.chiiSubjectRelations.relation),
@@ -302,7 +311,7 @@ export async function setup(app: App) {
         .offset(offset)
         .execute();
       const relations = data.map((d) =>
-        toSubjectRelation(d.chii_subjects, d.chii_subject_relations),
+        toSubjectRelation(d.chii_subjects, d.chii_subject_fields, d.chii_subject_relations),
       );
       return {
         data: relations,
@@ -521,12 +530,18 @@ export async function setup(app: App) {
           schema.chiiSubjects,
           op.eq(schema.chiiSubjectRec.recSubjectID, schema.chiiSubjects.id),
         )
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
         .where(condition)
         .orderBy(op.asc(schema.chiiSubjectRec.count))
         .limit(limit)
         .offset(offset)
         .execute();
-      const recs = data.map((d) => toSubjectRec(d.chii_subjects, d.chii_subject_rec));
+      const recs = data.map((d) =>
+        toSubjectRec(d.chii_subjects, d.chii_subject_fields, d.chii_subject_rec),
+      );
       return {
         data: recs,
         total: count,

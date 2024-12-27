@@ -29,11 +29,12 @@ export async function parseTimelineMemo(
           const users = [];
           if (batch) {
             const info = php.parse(data) as memo.UserBatch;
-            const us = await fetcher.fetchSlimUsersByIDs(
-              Object.entries(info).map(([_, v]) => Number(v.uid)),
-            );
-            for (const [_, user] of Object.entries(us)) {
-              users.push(user);
+            const us = await fetcher.fetchSlimUsersByIDs(Object.keys(info).map(Number));
+            for (const id of Object.keys(info).map(Number).sort()) {
+              const user = us[id];
+              if (user) {
+                users.push(user);
+              }
             }
           } else {
             const info = php.parse(data) as memo.User;
@@ -53,11 +54,12 @@ export async function parseTimelineMemo(
           const groups = [];
           if (batch) {
             const info = php.parse(data) as memo.GroupBatch;
-            const gs = await fetcher.fetchSlimGroupsByIDs(
-              Object.entries(info).map(([_, v]) => Number(v.grp_id)),
-            );
-            for (const [_, group] of Object.entries(gs)) {
-              groups.push(group);
+            const gs = await fetcher.fetchSlimGroupsByIDs(Object.keys(info).map(Number), allowNsfw);
+            for (const id of Object.keys(info).map(Number).sort()) {
+              const group = gs[id];
+              if (group) {
+                groups.push(group);
+              }
             }
           } else {
             const info = php.parse(data) as memo.Group;
@@ -90,19 +92,21 @@ export async function parseTimelineMemo(
       const subjects = [];
       if (batch) {
         const info = php.parse(data) as memo.SubjectBatch;
-        const ss = await fetcher.fetchSlimSubjectsByIDs(
-          Object.entries(info).map(([_, v]) => Number(v.subject_id)),
-          allowNsfw,
-        );
-        for (const [_, value] of Object.entries(info)) {
-          const subject = ss[Number(value.subject_id)];
-          if (subject) {
-            subjects.push({
-              subject,
-              comment: value.collect_comment,
-              rate: value.collect_rate,
-            });
+        const ss = await fetcher.fetchSlimSubjectsByIDs(Object.keys(info).map(Number), allowNsfw);
+        for (const id of Object.keys(info).map(Number).sort()) {
+          const subject = ss[id];
+          const v = info[id];
+          if (!subject) {
+            continue;
           }
+          if (!v) {
+            continue;
+          }
+          subjects.push({
+            subject,
+            comment: v.collect_comment,
+            rate: v.collect_rate,
+          });
         }
       } else {
         const info = php.parse(data) as memo.Subject;
@@ -219,7 +223,7 @@ export async function parseTimelineMemo(
         const info = php.parse(data) as memo.MonoBatch;
         const characterIDs = [];
         const personIDs = [];
-        for (const [_, value] of Object.entries(info)) {
+        for (const value of Object.values(info)) {
           if (value.cat === 1) {
             characterIDs.push(value.id);
           } else if (value.cat === 2) {
@@ -276,19 +280,21 @@ export async function toTimeline(tml: orm.ITimeline, allowNsfw = false): Promise
     createdAt: tml.createdAt,
   };
 }
+
 /** Cached */
 export async function fetchTimelineByIDs(
   ids: number[],
   allowNsfw = false,
 ): Promise<Record<number, res.ITimeline>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
-  const uids = new Set<number>();
   const missing = [];
   for (const tid of ids) {
     if (cached[tid]) {
       const item = JSON.parse(cached[tid]) as res.ITimeline;
-      uids.add(item.uid);
       result[tid] = item;
     } else {
       missing.push(tid);
@@ -302,7 +308,6 @@ export async function fetchTimelineByIDs(
       .execute();
     for (const d of data) {
       const item = await toTimeline(d, allowNsfw);
-      uids.add(item.uid);
       result[d.id] = item;
       await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));
     }

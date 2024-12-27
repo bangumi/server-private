@@ -1,7 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import type { IAuth } from '@app/lib/auth/index.ts';
-import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
+import { emptyAuth } from '@app/lib/auth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 import * as res from '@app/lib/types/res.ts';
 
@@ -120,7 +119,7 @@ describe('subject', () => {
     const text = 'new contents';
 
     const res = await app.inject({
-      url: '/subjects/497/topics',
+      url: '/subjects/12/topics',
       method: 'post',
       payload: {
         title: title,

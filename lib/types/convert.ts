@@ -248,7 +248,7 @@ function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
   return rating;
 }
 
-export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
+export function toSlimSubject(subject: orm.ISubject, fields: orm.ISubjectFields): res.ISlimSubject {
   const infobox = toInfobox(subject.infobox);
   return {
     id: subject.id,
@@ -257,6 +257,7 @@ export function toSlimSubject(subject: orm.ISubject): res.ISlimSubject {
     type: subject.typeID,
     images: subjectCover(subject.image),
     info: getInfoboxSummary(infobox, subject.typeID, subject.eps),
+    rating: toSubjectRating(fields),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
   };
@@ -583,10 +584,11 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
 
 export function toCharacterSubjectRelation(
   subject: orm.ISubject,
+  fields: orm.ISubjectFields,
   relation: orm.ICharacterSubject,
 ): res.ICharacterSubjectRelation {
   return {
-    subject: toSlimSubject(subject),
+    subject: toSlimSubject(subject, fields),
     type: relation.type,
   };
 }

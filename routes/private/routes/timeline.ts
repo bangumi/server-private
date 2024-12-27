@@ -57,7 +57,8 @@ export async function setup(app: App) {
           items.push(item);
         }
       }
-      const users = await fetcher.fetchSlimUsersByIDs(items.map((i) => i.uid));
+      const userIDs = new Set(items.map((v) => v.uid));
+      const users = await fetcher.fetchSlimUsersByIDs([...userIDs]);
       for (const item of items) {
         item.user = users[item.uid];
       }
