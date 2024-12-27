@@ -1188,7 +1188,7 @@ export const chiiTimelineComments = mysqlTable(
     uid: mediumint('tml_pst_uid').notNull(),
     related: mediumint('tml_pst_related').notNull(),
     createdAt: int('tml_pst_dateline').notNull(),
-    content: mediumtext('tml_pst_content').notNull(),
+    content: htmlEscapedString('mediumtext')('tml_pst_content').notNull(),
   },
   (table) => {
     return {
