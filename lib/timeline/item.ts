@@ -287,6 +287,9 @@ export async function fetchTimelineByIDs(
   ids: number[],
   allowNsfw = false,
 ): Promise<Record<number, res.ITimeline>> {
+  if (ids.length === 0) {
+    return {};
+  }
   const cached = await redis.mget(ids.map((id) => getItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
   const missing = [];
