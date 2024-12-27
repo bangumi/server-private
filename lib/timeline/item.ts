@@ -29,8 +29,8 @@ export async function parseTimelineMemo(
           const users = [];
           if (batch) {
             const info = php.parse(data) as memo.UserBatch;
-            const us = await fetcher.fetchSlimUsersByIDs(info.map(([id, _]) => id));
-            for (const [id, _] of info) {
+            const us = await fetcher.fetchSlimUsersByIDs(Object.keys(info).map(Number));
+            for (const id of Object.keys(info).map(Number).sort()) {
               const user = us[id];
               if (user) {
                 users.push(user);
@@ -54,11 +54,8 @@ export async function parseTimelineMemo(
           const groups = [];
           if (batch) {
             const info = php.parse(data) as memo.GroupBatch;
-            const gs = await fetcher.fetchSlimGroupsByIDs(
-              info.map(([id, _]) => id),
-              allowNsfw,
-            );
-            for (const [id, _] of info) {
+            const gs = await fetcher.fetchSlimGroupsByIDs(Object.keys(info).map(Number), allowNsfw);
+            for (const id of Object.keys(info).map(Number).sort()) {
               const group = gs[id];
               if (group) {
                 groups.push(group);
@@ -95,19 +92,21 @@ export async function parseTimelineMemo(
       const subjects = [];
       if (batch) {
         const info = php.parse(data) as memo.SubjectBatch;
-        const ss = await fetcher.fetchSlimSubjectsByIDs(
-          info.map(([id, _]) => id),
-          allowNsfw,
-        );
-        for (const [id, v] of info) {
+        const ss = await fetcher.fetchSlimSubjectsByIDs(Object.keys(info).map(Number), allowNsfw);
+        for (const id of Object.keys(info).map(Number).sort()) {
           const subject = ss[id];
-          if (subject) {
-            subjects.push({
-              subject,
-              comment: v.collect_comment,
-              rate: v.collect_rate,
-            });
+          const v = info[id];
+          if (!subject) {
+            continue;
           }
+          if (!v) {
+            continue;
+          }
+          subjects.push({
+            subject,
+            comment: v.collect_comment,
+            rate: v.collect_rate,
+          });
         }
       } else {
         const info = php.parse(data) as memo.Subject;
@@ -224,7 +223,7 @@ export async function parseTimelineMemo(
         const info = php.parse(data) as memo.MonoBatch;
         const characterIDs = [];
         const personIDs = [];
-        for (const [_, value] of info) {
+        for (const value of Object.values(info)) {
           if (value.cat === 1) {
             characterIDs.push(value.id);
           } else if (value.cat === 2) {
