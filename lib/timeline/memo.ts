@@ -4,7 +4,7 @@ export interface User {
   nickname: string;
 }
 
-export type UserBatch = [[number, User]];
+export type UserBatch = [number, User][];
 
 export interface Group {
   grp_id: string;
@@ -13,7 +13,7 @@ export interface Group {
   grp_desc: string;
 }
 
-export type GroupBatch = [[number, Group]];
+export type GroupBatch = [number, Group][];
 
 export interface NewSubject {
   subject_id: number;
@@ -31,7 +31,7 @@ export interface Subject {
   collect_rate: number;
 }
 
-export type SubjectBatch = [[number, Subject]];
+export type SubjectBatch = [number, Subject][];
 
 export interface ProgressBatch {
   eps_total: string;
@@ -74,4 +74,4 @@ export interface MonoSingle {
   name: string;
 }
 
-export type MonoBatch = [[number, MonoSingle]];
+export type MonoBatch = [number, MonoSingle][];
