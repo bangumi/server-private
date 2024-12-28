@@ -14,7 +14,6 @@ import {
   PersonType,
   SubjectType,
   SubjectTypeValues,
-  type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { getTimelineUser } from '@app/lib/timeline/user';
@@ -165,16 +164,6 @@ function toUserSubjectCollection(
     volStatus: interest.volStatus,
     private: Boolean(interest.private),
     updatedAt: interest.updatedAt,
-  };
-}
-
-function toUserSubjectEpisodeCollection(
-  episode: orm.IEpisode,
-  epStatus: UserEpisodeCollection | undefined,
-): IUserSubjectEpisodeCollection {
-  return {
-    episode: convert.toSlimEpisode(episode),
-    type: epStatus?.type ?? EpisodeCollectionStatus.None,
   };
 }
 
@@ -854,7 +843,10 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset)
         .execute();
-      const collections = data.map((d) => toUserSubjectEpisodeCollection(d, epStatus[d.id]));
+      const collections = data.map((d) => ({
+        episode: convert.toSlimEpisode(d),
+        type: epStatus[d.id]?.type ?? EpisodeCollectionStatus.None,
+      }));
 
       return {
         data: collections,
@@ -893,7 +885,10 @@ export async function setup(app: App) {
       if (!epStatus) {
         throw new NotFoundError(`status of episode ${episodeID}`);
       }
-      return toUserSubjectEpisodeCollection(episode, epStatus[episodeID]);
+      return {
+        episode: convert.toEpisode(episode),
+        type: epStatus[episodeID]?.type ?? EpisodeCollectionStatus.None,
+      };
     },
   );
 

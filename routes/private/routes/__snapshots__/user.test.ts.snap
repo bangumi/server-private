@@ -369,6 +369,7 @@ Object {
   "episode": Object {
     "airdate": "2009-10-14",
     "comment": 0,
+    "desc": "",
     "disc": 0,
     "duration": "",
     "id": 17227,
