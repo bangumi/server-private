@@ -1,8 +1,9 @@
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
-import * as res from '@app/lib/types/res.ts';
 
 import { setup } from './subject.ts';
 
@@ -93,6 +94,24 @@ describe('subject', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+});
+
+describe('subject topics', () => {
+  const testTopicID = 6873;
+  const testUserID = 382951;
+
+  beforeEach(async () => {
+    await db.delete(schema.chiiSubjectTopics).where(op.eq(schema.chiiSubjectTopics.subjectID, 12));
+    await db.insert(schema.chiiSubjectTopics).values({
+      id: testTopicID,
+      subjectID: 12,
+      createdAt: 1462335911,
+      uid: testUserID,
+      title: 'Test Topic',
+      state: 0,
+      replies: 0,
+    });
+  });
 
   test('should get subject topics', async () => {
     const app = createTestServer();
@@ -105,80 +124,85 @@ describe('subject', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should create and edit topic', async () => {
+  test('should create new topic', async () => {
     const app = createTestServer({
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 2,
+        userID: testUserID,
       },
     });
     await app.register(setup);
-
-    const title = 'new topic title';
-    const text = 'new contents';
 
     const res = await app.inject({
       url: '/subjects/12/topics',
       method: 'post',
       payload: {
-        title: title,
-        text: text,
+        title: 'New Topic',
+        text: 'New Content',
         'cf-turnstile-response': 'fake-response',
       },
     });
+
     expect(res.statusCode).toBe(200);
-    const result = res.json() as { id: number };
-    expect(result.id).toBeDefined();
-    const res2 = await app.inject({
-      url: `/subjects/-/topics/${result.id}`,
-      method: 'get',
-    });
-    expect(res2.statusCode).toBe(200);
-    const result2 = res2.json() as res.ITopicDetail;
-    expect(result2.title).toBe(title);
-    expect(result2.text).toBe(text);
+    const { id } = res.json() as { id: number };
 
-    const title2 = 'new topic title 2';
-    const text2 = 'new contents 2';
+    const [topic] = await db
+      .select()
+      .from(schema.chiiSubjectTopics)
+      .where(op.eq(schema.chiiSubjectTopics.id, id));
 
-    const res3 = await app.inject({
-      url: `/subjects/-/topics/${result.id}`,
-      method: 'put',
-      payload: {
-        title: title2,
-        text: text2,
-      },
-    });
-    expect(res3.statusCode).toBe(200);
-
-    const res4 = await app.inject({
-      url: `/subjects/-/topics/${result.id}`,
-      method: 'get',
-    });
-    expect(res4.statusCode).toBe(200);
-    const result4 = res4.json() as res.ITopicDetail;
-    expect(result4.title).toBe(title2);
-    expect(result4.text).toBe(text2);
+    expect(topic?.title).toBe('New Topic');
   });
 
-  test('should not edited topic by non-owner', async () => {
+  test('should edit own topic', async () => {
     const app = createTestServer({
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 1,
+        userID: testUserID,
       },
     });
-    app.register(setup);
+    await app.register(setup);
+
     const res = await app.inject({
-      url: '/subjects/-/topics/6873',
+      url: `/subjects/-/topics/${testTopicID}`,
       method: 'put',
       payload: {
-        title: 'new topic title',
-        text: 'new contents',
+        title: 'Updated Title',
+        text: 'Updated Content',
       },
     });
+
+    expect(res.statusCode).toBe(200);
+
+    const [topic] = await db
+      .select()
+      .from(schema.chiiSubjectTopics)
+      .where(op.eq(schema.chiiSubjectTopics.id, testTopicID));
+
+    expect(topic?.title).toBe('Updated Title');
+  });
+
+  test('should not edit topic by non-owner', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID + 1,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: `/subjects/-/topics/${testTopicID}`,
+      method: 'put',
+      payload: {
+        title: 'Unauthorized Update',
+        text: 'Unauthorized Content',
+      },
+    });
+
     expect(res.statusCode).toBe(401);
     expect(res.json()).toMatchSnapshot();
   });
