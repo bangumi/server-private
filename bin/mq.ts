@@ -2,6 +2,7 @@ import { KafkaJS } from '@confluentinc/kafka-javascript';
 
 import {
   handle as handleSubjectEvent,
+  handleEpisode as handleSubjectEpisodeEvent,
   handleFields as handleSubjectFieldsEvent,
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
@@ -17,6 +18,7 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_subject_fields',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_timeline',
+  'debezium.chii.bangumi.chii_episodes',
 ];
 
 async function onMessage(key: string, value: string) {
@@ -32,6 +34,10 @@ async function onMessage(key: string, value: string) {
     }
     case 'chii_subject_fields': {
       await handleSubjectFieldsEvent(key, value);
+      break;
+    }
+    case 'chii_episodes': {
+      await handleSubjectEpisodeEvent(key, value);
       break;
     }
     default: {

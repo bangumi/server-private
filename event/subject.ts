@@ -1,9 +1,9 @@
 import redis from '@app/lib/redis.ts';
-import { getItemCacheKey, getSlimCacheKey } from '@app/lib/subject/cache';
+import { getEpCacheKey, getItemCacheKey, getSlimCacheKey } from '@app/lib/subject/cache';
 
 import { EventOp } from './type';
 
-interface Key {
+interface SubjectKey {
   subject_id: number;
 }
 
@@ -12,7 +12,7 @@ interface Payload {
 }
 
 export async function handle(key: string, value: string) {
-  const idx = JSON.parse(key) as Key;
+  const idx = JSON.parse(key) as SubjectKey;
   const payload = JSON.parse(value) as Payload;
   switch (payload.op) {
     case EventOp.Create: {
@@ -43,6 +43,28 @@ export async function handleFields(key: string, value: string) {
     case EventOp.Update:
     case EventOp.Delete: {
       await redis.del(getItemCacheKey(idx.field_sid), getSlimCacheKey(idx.field_sid));
+      break;
+    }
+    case EventOp.Snapshot: {
+      break;
+    }
+  }
+}
+
+interface EpisodeKey {
+  episode_id: number;
+}
+
+export async function handleEpisode(key: string, value: string) {
+  const idx = JSON.parse(key) as EpisodeKey;
+  const payload = JSON.parse(value) as Payload;
+  switch (payload.op) {
+    case EventOp.Create: {
+      break;
+    }
+    case EventOp.Update:
+    case EventOp.Delete: {
+      await redis.del(getEpCacheKey(idx.episode_id));
       break;
     }
     case EventOp.Snapshot: {

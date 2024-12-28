@@ -882,7 +882,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`status of episode ${episodeID}`);
       }
       return {
-        episode: episode,
+        episode,
         type: epStatus[episodeID]?.type ?? EpisodeCollectionStatus.None,
       };
     },
