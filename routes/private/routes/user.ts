@@ -873,11 +873,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('get subject episode collection')],
     },
     async ({ auth, params: { episodeID } }) => {
-      const [episode] = await db
-        .select()
-        .from(schema.chiiEpisodes)
-        .where(op.and(op.eq(schema.chiiEpisodes.id, episodeID), op.ne(schema.chiiEpisodes.ban, 1)))
-        .execute();
+      const episode = await fetcher.fetchEpisodeByID(episodeID);
       if (!episode) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
@@ -886,7 +882,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`status of episode ${episodeID}`);
       }
       return {
-        episode: convert.toEpisode(episode),
+        episode: episode,
         type: epStatus[episodeID]?.type ?? EpisodeCollectionStatus.None,
       };
     },
