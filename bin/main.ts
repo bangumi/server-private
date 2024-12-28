@@ -32,7 +32,9 @@ async function main() {
           },
   });
 
-  Sentry.setupFastifyErrorHandler(server);
+  if (config.sentryDSN) {
+    Sentry.setupFastifyErrorHandler(server);
+  }
 
   server.addHook('onReady', async () => {
     await Promise.all([Subscriber.psubscribe(`event-user-notify-*`), AppDataSource.initialize()]);
