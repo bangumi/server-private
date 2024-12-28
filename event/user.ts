@@ -4,7 +4,7 @@ import { getSlimCacheKey } from '@app/lib/user/cache';
 import { EventOp } from './type';
 
 interface UserKey {
-  user_id: number;
+  uid: number;
 }
 
 interface Payload {
@@ -20,7 +20,7 @@ export async function handle(key: string, value: string) {
     }
     case EventOp.Update:
     case EventOp.Delete: {
-      await redis.del(getSlimCacheKey(idx.user_id));
+      await redis.del(getSlimCacheKey(idx.uid));
       break;
     }
     case EventOp.Snapshot: {
