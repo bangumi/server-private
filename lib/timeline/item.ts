@@ -1,4 +1,5 @@
 import * as php from '@trim21/php-serialize';
+import * as lo from 'lodash-es';
 
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
@@ -104,7 +105,7 @@ export async function parseTimelineMemo(
           }
           subjects.push({
             subject,
-            comment: v.collect_comment,
+            comment: lo.unescape(v.collect_comment),
             rate: v.collect_rate,
           });
         }
@@ -114,7 +115,7 @@ export async function parseTimelineMemo(
         if (subject) {
           subjects.push({
             subject,
-            comment: info.collect_comment,
+            comment: lo.unescape(info.collect_comment),
             rate: info.collect_rate,
           });
         }
@@ -177,14 +178,14 @@ export async function parseTimelineMemo(
         case 0: {
           return {
             status: {
-              sign: data,
+              sign: lo.unescape(data),
             },
           };
         }
         case 1: {
           return {
             status: {
-              tsukkomi: data,
+              tsukkomi: lo.unescape(data),
             },
           };
         }
@@ -193,8 +194,8 @@ export async function parseTimelineMemo(
           return {
             status: {
               nickname: {
-                before: info.before,
-                after: info.after,
+                before: lo.unescape(info.before),
+                after: lo.unescape(info.after),
               },
             },
           };
