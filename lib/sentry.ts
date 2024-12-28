@@ -11,14 +11,16 @@ if (config.sentryDSN) {
     includeLocalVariables: true,
     beforeSend(event, hint) {
       const error = hint.originalException as FastifyError;
+      if (!error) {
+        return null;
+      }
+
       if (
         typeof error.statusCode !== 'number' ||
         error.statusCode === 500 ||
         error instanceof TypeORMError ||
         error instanceof DrizzleError
       ) {
-        // drop expected and handled errors,
-        // like anything below code 500
         return event;
       }
 
