@@ -1,5 +1,7 @@
 import { KafkaJS } from '@confluentinc/kafka-javascript';
 
+import { handle as handleCharacterEvent } from '@app/event/character';
+import { handle as handlePersonEvent } from '@app/event/person';
 import {
   handle as handleSubjectEvent,
   handleEpisode as handleSubjectEpisodeEvent,
@@ -7,14 +9,15 @@ import {
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { Payload } from '@app/event/type';
+import { handle as handleUserEvent } from '@app/event/user';
 import config from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger';
 
 const TOPICS = [
-  // 'debezium.chii.bangumi.chii_characters',
-  // 'debezium.chii.bangumi.chii_members',
-  // 'debezium.chii.bangumi.chii_persons',
   // 'debezium.chii.bangumi.chii_pms',
+  'debezium.chii.bangumi.chii_characters',
+  'debezium.chii.bangumi.chii_persons',
+  'debezium.chii.bangumi.chii_members',
   'debezium.chii.bangumi.chii_subject_fields',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_timeline',
@@ -38,6 +41,18 @@ async function onMessage(key: string, value: string) {
     }
     case 'chii_episodes': {
       await handleSubjectEpisodeEvent(key, value);
+      break;
+    }
+    case 'chii_characters': {
+      await handleCharacterEvent(key, value);
+      break;
+    }
+    case 'chii_persons': {
+      await handlePersonEvent(key, value);
+      break;
+    }
+    case 'chii_members': {
+      await handleUserEvent(key, value);
       break;
     }
     default: {
