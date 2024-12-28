@@ -132,6 +132,8 @@ export const schema = Obj({
     siteKey: t.String({ default: '1x00000000000000000000AA', env: 'TURNSTILE_SITE_KEY' }),
   }),
 
+  sentryDSN: t.Optional(t.String({ env: 'SENTRY_DSN' })),
+
   mysql: Obj({
     db: t.String({ default: 'bangumi', env: 'MYSQL_DB' }),
     host: t.String({ default: '127.0.0.1', env: 'MYSQL_HOST' }),
