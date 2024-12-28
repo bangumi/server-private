@@ -15,9 +15,13 @@ mysql:
 
 redisUri: 'redis://:redis-pass@127.0.0.1:6379/0' # REDIS_URI
 
+kafkaBrokers: 127.0.0.1:29092
+
 turnstile:
   secretKey: '1x0000000000000000000000000000000AA' # TURNSTILE_SECRET_KEY
   siteKey: '1x00000000000000000000AA' # TURNSTILE_SITE_KEY
+
+sentryDSN: 'https://examplePublicKey@o0.ingest.sentry.io/0' # SENTRY_DSN
 
 image:
   provider: 'fs' # CHII_IMAGE_PROVIDER
