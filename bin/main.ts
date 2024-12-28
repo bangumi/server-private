@@ -1,6 +1,10 @@
+import '@app/lib/sentry';
+
 import * as console from 'node:console';
 import * as crypto from 'node:crypto';
 import * as process from 'node:process';
+
+import * as Sentry from '@sentry/node';
 
 import config, { production, stage } from '@app/lib/config.ts';
 import { logger } from '@app/lib/logger.ts';
@@ -27,6 +31,10 @@ async function main() {
             return `dummy-${crypto.randomUUID()}`;
           },
   });
+
+  if (config.sentryDSN) {
+    Sentry.setupFastifyErrorHandler(server);
+  }
 
   server.addHook('onReady', async () => {
     await Promise.all([Subscriber.psubscribe(`event-user-notify-*`), AppDataSource.initialize()]);
