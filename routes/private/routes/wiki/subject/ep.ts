@@ -47,6 +47,7 @@ const EpisodeExpected = t.Optional(
         nameCN: t.String(),
         duration: t.String(),
         date: t.String(),
+        summary: t.String(),
       },
       {
         description:
