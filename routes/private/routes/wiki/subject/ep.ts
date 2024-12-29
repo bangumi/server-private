@@ -46,7 +46,7 @@ const EpisodeExpected = t.Optional(
         name: t.String(),
         nameCN: t.String(),
         duration: t.String(),
-        airDate: t.String(),
+        date: t.String(),
       },
       {
         description:
@@ -106,7 +106,7 @@ export async function setup(app: App) {
         name: lo.unescape(ep.name),
         nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,
-        date: ep.airDate,
+        date: ep.date,
         type: 0,
         duration: ep.duration,
         summary: ep.summary,
@@ -188,7 +188,7 @@ export async function setup(app: App) {
           throw new BadRequestError(`${body.date} is not valid date`);
         }
 
-        ep.airDate = body.date;
+        ep.date = body.date;
       }
 
       if (body.duration) {
@@ -220,7 +220,7 @@ export async function setup(app: App) {
         await pushRev(t, {
           episodeID,
           rev: {
-            ep_airdate: ep.airDate,
+            ep_airdate: ep.date,
             ep_desc: ep.summary,
             ep_duration: ep.duration,
             ep_name: ep.name,

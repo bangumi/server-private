@@ -6037,7 +6037,7 @@ paths:
                     if some key is given, and current data in database doesn't
                     match input, subject will not be changed
                   properties:
-                    airDate:
+                    date:
                       type: string
                     duration:
                       type: string

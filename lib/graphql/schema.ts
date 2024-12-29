@@ -130,7 +130,7 @@ export const resolvers = {
           name: e.name,
           name_cn: e.nameCN,
           description: e.summary,
-          airdate: e.airDate,
+          airdate: e.date,
           comment: e.epComment,
           last_post: e.epLastPost,
           disc: e.epDisc,

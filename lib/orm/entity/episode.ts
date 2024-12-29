@@ -46,7 +46,7 @@ export class Episode {
   duration!: string;
 
   @Column('varchar', { name: 'ep_airdate', length: 80 })
-  airDate!: string;
+  date!: string;
 
   /** @deprecated 在线播放地址 */
   @Column('mediumtext', { name: 'ep_online' })
