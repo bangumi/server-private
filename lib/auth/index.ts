@@ -50,6 +50,10 @@ export const enum UserGroup {
   WikiEditor = 11,
 }
 
+const nsfwRestrictedUIDs = new Set([
+  873244, // by @everpcpc
+]);
+
 export interface IAuth {
   userID: number;
   login: boolean;
@@ -163,6 +167,7 @@ async function userToAuth(user: IUser): Promise<IAuth> {
     login: true,
     permission: perms,
     allowNsfw:
+      !nsfwRestrictedUIDs.has(user.id) &&
       !perms.ban_visit &&
       !perms.user_ban &&
       DateTime.now().toUnixInteger() - user.regTime >= 60 * 60 * 24 * 90,
