@@ -3,6 +3,8 @@ import { describe, expect, test } from 'vitest';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './ep.ts';
+import { DateTime } from 'luxon';
+import { UserGroup } from '@app/lib/auth/index.ts';
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -29,5 +31,41 @@ describe('edit subject ', () => {
         "type": 0,
       }
     `);
+  });
+
+  test('should update current wiki info', async () => {
+    const app = await testApp({
+      auth: {
+        login: true,
+        allowNsfw: true,
+        regTime: DateTime.now().toUnixInteger(),
+        userID: 1,
+        groupID: UserGroup.BangumiAdmin,
+        permission: { subject_edit: true, ep_edit: true },
+      },
+    });
+
+    const res = await app.inject({
+      url: '/ep/980049',
+      method: 'PATCH',
+      body: {
+        commitMessage: 'example commit message',
+        episode: {
+          date: '2024-12-01',
+          duration: '',
+          name: '蒼と白の境界線',
+          nameCN: '',
+          subjectID: 15,
+          summary: '',
+        },
+        expectedRevision: {
+          name: 'Beckoning (Genshin Impact Main Theme Var.)',
+          nameCN: '情不自禁',
+        },
+      },
+    });
+
+    expect(res.statusCode).toMatchInlineSnapshot(`200`);
+    expect(res.json()).toMatchInlineSnapshot(`Object {}`);
   });
 });

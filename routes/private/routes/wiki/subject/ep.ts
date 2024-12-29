@@ -9,6 +9,7 @@ import { pushRev } from '@app/lib/rev/ep.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { parseDuration } from '@app/lib/utils/index.ts';
+import { matchExpected } from '@app/lib/wiki';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -36,6 +37,23 @@ export const EpisodeWikiInfo = t.Object(
   {
     $id: 'EpisodeWikiInfo',
   },
+);
+
+const EpisodeExpected = t.Optional(
+  t.Partial(
+    t.Object(
+      {
+        name: t.String(),
+        nameCN: t.String(),
+        duration: t.String(),
+        airDate: t.String(),
+      },
+      {
+        description:
+          "a optional object to check if input is changed by others\nif some key is given, and current data in database doesn't match input, subject will not be changed",
+      },
+    ),
+  ),
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -111,6 +129,7 @@ export async function setup(app: App) {
           {
             commitMessage: t.String(),
             episode: t.Partial(t.Omit(EpisodeWikiInfo, ['id']), { $id: undefined }),
+            expectedRevision: EpisodeExpected,
           },
           {
             examples: [
@@ -124,6 +143,10 @@ export async function setup(app: App) {
                   nameCN: '中文名',
                   summary: 'a short description',
                   type: 0,
+                },
+                expectedRevision: {
+                  name: 'old name',
+                  nameCN: 'old cn name',
                 },
               },
             ],
@@ -145,7 +168,7 @@ export async function setup(app: App) {
     async ({
       auth,
       params: { episodeID },
-      body: { episode: body, commitMessage },
+      body: { episode: body, commitMessage, expectedRevision: expected },
     }): Promise<res.EmptyObject> => {
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
@@ -154,6 +177,10 @@ export async function setup(app: App) {
 
       if (Object.keys(body).length === 0) {
         throw new BadRequestError('request is a empty body');
+      }
+
+      if (expected) {
+        matchExpected(ep, expected);
       }
 
       if (body.date) {
