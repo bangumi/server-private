@@ -6000,6 +6000,9 @@ paths:
                 nameCN: 中文名
                 summary: a short description
                 type: 0
+              expectedRevision:
+                name: old name
+                nameCN: old cn name
             schema:
               properties:
                 commitMessage:
@@ -6026,6 +6029,22 @@ paths:
                       type: string
                     type:
                       $ref: '#/components/schemas/EpisodeType'
+                  type: object
+                expectedRevision:
+                  description: >-
+                    a optional object to check if input is changed by others
+
+                    if some key is given, and current data in database doesn't
+                    match input, subject will not be changed
+                  properties:
+                    date:
+                      type: string
+                    duration:
+                      type: string
+                    name:
+                      type: string
+                    nameCN:
+                      type: string
                   type: object
               required:
                 - commitMessage
