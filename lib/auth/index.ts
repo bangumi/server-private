@@ -50,7 +50,9 @@ export const enum UserGroup {
   WikiEditor = 11,
 }
 
-const nsfwRestrictedUIDs = new Set([873244]);
+const nsfwRestrictedUIDs = new Set([
+  873244, // by @everpcpc
+]);
 
 export interface IAuth {
   userID: number;
