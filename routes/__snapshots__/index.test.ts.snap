@@ -6045,6 +6045,8 @@ paths:
                       type: string
                     nameCN:
                       type: string
+                    summary:
+                      type: string
                   type: object
               required:
                 - commitMessage
