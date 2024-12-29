@@ -74,9 +74,9 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   const cached = await redis.mget(ids.map((id) => getUserSlimCacheKey(id)));
   const result: Record<number, res.ISlimUser> = {};
   const missing = [];
-  for (const id of ids) {
-    if (cached[id]) {
-      result[id] = JSON.parse(cached[id]) as res.ISlimUser;
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      result[id] = JSON.parse(cached[idx]) as res.ISlimUser;
     } else {
       missing.push(id);
     }
@@ -154,9 +154,9 @@ export async function fetchSlimSubjectsByIDs(
   const cached = await redis.mget(ids.map((id) => getSubjectSlimCacheKey(id)));
   const result: Record<number, res.ISlimSubject> = {};
   const missing = [];
-  for (const id of ids) {
-    if (cached[id]) {
-      const slim = JSON.parse(cached[id]) as res.ISlimSubject;
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      const slim = JSON.parse(cached[idx]) as res.ISlimSubject;
       if (!allowNsfw && slim.nsfw) {
         continue;
       }
@@ -233,9 +233,9 @@ export async function fetchSubjectsByIDs(
   const result: Record<number, res.ISubject> = {};
   const missing = [];
 
-  for (const id of ids) {
-    if (cached[id]) {
-      const item = JSON.parse(cached[id]) as res.ISubject;
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      const item = JSON.parse(cached[idx]) as res.ISubject;
       if (!allowNsfw && item.nsfw) {
         continue;
       }
@@ -542,9 +542,9 @@ export async function fetchSlimCharactersByIDs(
   const cached = await redis.mget(ids.map((id) => getCharacterSlimCacheKey(id)));
   const result: Record<number, res.ISlimCharacter> = {};
   const missing = [];
-  for (const id of ids) {
-    if (cached[id]) {
-      const slim = JSON.parse(cached[id]) as res.ISlimCharacter;
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      const slim = JSON.parse(cached[idx]) as res.ISlimCharacter;
       if (!allowNsfw && slim.nsfw) {
         continue;
       }
@@ -611,9 +611,9 @@ export async function fetchSlimPersonsByIDs(
   const cached = await redis.mget(ids.map((id) => getPersonSlimCacheKey(id)));
   const result: Record<number, res.ISlimPerson> = {};
   const missing = [];
-  for (const id of ids) {
-    if (cached[id]) {
-      const slim = JSON.parse(cached[id]) as res.ISlimPerson;
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      const slim = JSON.parse(cached[idx]) as res.ISlimPerson;
       if (!allowNsfw && slim.nsfw) {
         continue;
       }
@@ -811,9 +811,9 @@ export async function fetchSlimGroupsByIDs(
   const cached = await redis.mget(ids.map((id) => getGroupSlimCacheKey(id)));
   const result: Record<number, res.ISlimGroup> = {};
   const missing = [];
-  for (const id of ids) {
-    if (cached[id]) {
-      const slim = JSON.parse(cached[id]) as res.ISlimGroup;
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      const slim = JSON.parse(cached[idx]) as res.ISlimGroup;
       if (!allowNsfw && slim.nsfw) {
         continue;
       }

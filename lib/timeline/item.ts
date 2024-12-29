@@ -293,9 +293,9 @@ export async function fetchTimelineByIDs(
   const cached = await redis.mget(ids.map((id) => getItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
   const missing = [];
-  for (const tid of ids) {
-    if (cached[tid]) {
-      const item = JSON.parse(cached[tid]) as res.ITimeline;
+  for (const [idx, tid] of ids.entries()) {
+    if (cached[idx]) {
+      const item = JSON.parse(cached[idx]) as res.ITimeline;
       result[tid] = item;
     } else {
       missing.push(tid);
