@@ -60,10 +60,3 @@ export function blogIcon(s: string): string {
   }
   return `https://${imageDomain}/pic/photo/g/${s}`;
 }
-
-export function blogPhoto(s: string): string {
-  if (!s) {
-    return '';
-  }
-  return `https://${imageDomain}/pic/photo/l/${s}`;
-}
