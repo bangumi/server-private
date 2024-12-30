@@ -22,7 +22,6 @@ import * as examples from '@app/lib/types/examples.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -1241,9 +1240,6 @@ export async function setup(app: App) {
         }),
         responses: {
           200: res.Paged(res.Ref(res.Index)),
-          404: res.Ref(res.Error, {
-            'x-examples': formatErrors(new NotFoundError('user')),
-          }),
         },
       },
     },
@@ -1276,6 +1272,60 @@ export async function setup(app: App) {
 
       return {
         data: indexes,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/users/:username/blogs',
+    {
+      schema: {
+        summary: '获取用户创建的日志',
+        operationId: 'getUserBlogs',
+        tags: [Tag.User],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          username: t.String({ minLength: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        responses: {
+          200: res.Paged(res.Ref(res.BlogEntry)),
+        },
+      },
+    },
+    async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetchUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const conditions = op.and(
+        op.eq(schema.chiiBlogEntries.uid, user.id),
+        auth.userID === user.id ? undefined : op.eq(schema.chiiBlogEntries.public, true),
+      );
+
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiBlogEntries)
+        .where(conditions);
+
+      const data = await db
+        .select()
+        .from(schema.chiiBlogEntries)
+        .where(conditions)
+        .orderBy(op.desc(schema.chiiBlogEntries.createdAt))
+        .limit(limit)
+        .offset(offset);
+      const blogs = data.map((d) => convert.toSlimBlogEntry(d));
+
+      return {
+        data: blogs,
         total: count,
       };
     },

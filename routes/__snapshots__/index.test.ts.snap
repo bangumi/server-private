@@ -44,16 +44,16 @@ exports[`should build private api spec 1`] = `
           type: string
         type:
           type: integer
+        uid:
+          type: integer
         updatedAt:
           type: integer
-        user:
-          $ref: '#/components/schemas/SlimUser'
         views:
           type: integer
       required:
         - id
         - type
-        - user
+        - uid
         - title
         - icon
         - content
@@ -1015,6 +1015,8 @@ exports[`should build private api spec 1`] = `
       properties:
         createdAt:
           type: integer
+        icon:
+          type: string
         id:
           type: integer
         replies:
@@ -1031,6 +1033,7 @@ exports[`should build private api spec 1`] = `
         - id
         - type
         - title
+        - icon
         - summary
         - replies
         - createdAt
@@ -5356,6 +5359,47 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取用户信息
+      tags:
+        - user
+  /p1/users/{username}/blogs:
+    get:
+      operationId: getUserBlogs
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户创建的日志
       tags:
         - user
   /p1/users/{username}/collections/characters:

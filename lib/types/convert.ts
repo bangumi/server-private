@@ -326,11 +326,11 @@ export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubje
   };
 }
 
-export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEntry {
+export function toBlogEntry(entry: orm.IBlogEntry): res.IBlogEntry {
   return {
     id: entry.id,
+    uid: entry.uid,
     type: entry.type,
-    user: toSlimUser(user),
     title: entry.title,
     icon: entry.icon,
     content: entry.content,

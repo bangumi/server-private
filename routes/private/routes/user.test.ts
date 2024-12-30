@@ -180,6 +180,17 @@ describe('user collection', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get blogs', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/287622/blogs',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get timeline', async () => {
     const app = createTestServer();
     await app.register(setup);
