@@ -350,6 +350,7 @@ export function toSlimBlogEntry(entry: orm.IBlogEntry): res.ISlimBlogEntry {
     id: entry.id,
     type: entry.type,
     title: entry.title,
+    icon: entry.icon,
     summary: entry.content.replaceAll('\r\n', ' ').trim().slice(0, 120),
     replies: entry.replies,
     createdAt: entry.createdAt,
