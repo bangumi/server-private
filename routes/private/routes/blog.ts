@@ -15,7 +15,7 @@ export async function setup(app: App) {
     '/blogs/:entryID',
     {
       schema: {
-        summary: 'Get a blog entry',
+        summary: '获取日志详情',
         operationId: 'getBlogEntry',
         tags: [Tag.Blog],
         security: [{ [Security.HTTPBearer]: [] }],
@@ -48,7 +48,7 @@ export async function setup(app: App) {
     '/blogs/:entryID/subjects',
     {
       schema: {
-        summary: 'Get subjects related to a blog entry',
+        summary: '获取日志的关联条目',
         operationId: 'getBlogRelatedSubjects',
         tags: [Tag.Blog],
         security: [{ [Security.HTTPBearer]: [] }],
@@ -96,7 +96,7 @@ export async function setup(app: App) {
     '/blogs/:entryID/photos',
     {
       schema: {
-        summary: 'Get photos of a blog entry',
+        summary: '获取日志的图片',
         operationId: 'getBlogPhotos',
         tags: [Tag.Blog],
         security: [{ [Security.HTTPBearer]: [] }],
