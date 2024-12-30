@@ -53,3 +53,10 @@ export function personImages(s: string): res.IPersonImages | undefined {
     grid: `${basePersonImageUrl}/g/${s}`,
   };
 }
+
+export function blogIcon(s: string): string {
+  if (!s) {
+    return '';
+  }
+  return `https://${imageDomain}/pic/photo/g/${s}`;
+}

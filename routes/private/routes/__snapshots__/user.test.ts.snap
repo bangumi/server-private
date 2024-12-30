@@ -46,6 +46,24 @@ Object {
 }
 `;
 
+exports[`user collection > should get blogs 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1680065731,
+      "icon": "",
+      "id": 319484,
+      "replies": 1,
+      "summary": "试试",
+      "title": "试试",
+      "type": 1,
+      "updatedAt": 1680072373,
+    },
+  ],
+  "total": 1,
+}
+`;
+
 exports[`user collection > should get characters 1`] = `
 Object {
   "data": Array [

@@ -491,6 +491,7 @@ export const SlimBlogEntry = t.Object(
     id: t.Integer(),
     type: t.Integer(),
     title: t.String(),
+    icon: t.String(),
     summary: t.String(),
     replies: t.Integer(),
     createdAt: t.Integer(),
