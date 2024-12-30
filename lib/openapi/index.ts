@@ -1,4 +1,5 @@
 export const Tag = {
+  Blog: 'blog',
   Calendar: 'calendar',
   Character: 'character',
   Collection: 'collection',

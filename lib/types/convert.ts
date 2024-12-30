@@ -4,7 +4,7 @@ import * as php from '@trim21/php-serialize';
 
 import type * as orm from '@app/drizzle/orm.ts';
 import type * as ormold from '@app/lib/orm/index.ts';
-import { avatar, blogIcon, personImages, subjectCover } from '@app/lib/response.ts';
+import { avatar, blogIcon, blogPhoto, personImages, subjectCover } from '@app/lib/response.ts';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -348,13 +348,25 @@ export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEn
 export function toSlimBlogEntry(entry: orm.IBlogEntry): res.ISlimBlogEntry {
   return {
     id: entry.id,
+    uid: entry.uid,
     type: entry.type,
     title: entry.title,
     icon: blogIcon(entry.icon),
     summary: entry.content.replaceAll('\r\n', ' ').trim().slice(0, 120),
     replies: entry.replies,
+    public: entry.public,
     createdAt: entry.createdAt,
     updatedAt: entry.updatedAt,
+  };
+}
+
+export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
+  return {
+    id: photo.id,
+    url: blogPhoto(photo.target),
+    icon: blogIcon(photo.target),
+    vote: photo.vote,
+    createdAt: photo.createdAt,
   };
 }
 

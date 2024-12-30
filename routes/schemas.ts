@@ -18,6 +18,7 @@ export function addSchemas(app: App) {
 
   app.addSchema(res.Avatar);
   app.addSchema(res.BlogEntry);
+  app.addSchema(res.BlogPhoto);
   app.addSchema(res.Character);
   app.addSchema(res.CharacterRelation);
   app.addSchema(res.CharacterSubject);
