@@ -469,7 +469,7 @@ export const BlogEntry = t.Object(
   {
     id: t.Integer(),
     type: t.Integer(),
-    uid: t.Integer(),
+    user: Ref(SlimUser),
     title: t.String(),
     icon: t.String(),
     content: t.String(),

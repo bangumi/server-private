@@ -44,16 +44,16 @@ exports[`should build private api spec 1`] = `
           type: string
         type:
           type: integer
-        uid:
-          type: integer
         updatedAt:
           type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
         views:
           type: integer
       required:
         - id
         - type
-        - uid
+        - user
         - title
         - icon
         - content
