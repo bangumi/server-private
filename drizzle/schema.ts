@@ -452,7 +452,7 @@ export const chiiUsers = mysqlTable(
   {
     id: mediumint('uid').autoincrement().notNull(),
     username: char('username', { length: 15 }).default('').notNull(),
-    nickname: varchar('nickname', { length: 30 }).notNull(),
+    nickname: htmlEscapedString('varchar')('nickname', { length: 30 }).notNull(),
     avatar: varchar('avatar', { length: 255 }).notNull(),
     groupid: smallint('groupid').notNull(),
     regdate: int('regdate').default(0).notNull(),
