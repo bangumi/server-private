@@ -1,5 +1,4 @@
 import { createError } from '@fastify/error';
-import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
@@ -7,12 +6,11 @@ import { comparePassword, NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import config, { redisPrefix } from '@app/lib/config.ts';
-import { CaptchaError, UnexpectedNotFoundError } from '@app/lib/error.ts';
-import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchPermission, fetchUser, UserRepo } from '@app/lib/orm/index.ts';
+import { BadRequestError, CaptchaError } from '@app/lib/error.ts';
+import { Tag } from '@app/lib/openapi/index.ts';
+import { fetchPermission, UserRepo } from '@app/lib/orm/index.ts';
 import { avatar } from '@app/lib/response.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
-import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -32,59 +30,12 @@ const EmailOrPasswordError = createError(
 
 const UserBannedError = createError('USER_BANNED', 'user is banned', httpCodes.UNAUTHORIZED);
 
-const clientPermission = t.Object(
-  {
-    subjectWikiEdit: t.Boolean(),
-  },
-  { $id: 'Permission' },
-);
-
-const currentUser = t.Intersect([res.SlimUser, t.Object({ permission: clientPermission })], {
-  $id: 'CurrentUser',
-});
+const allowedRedirectUris: string[] = ['bangumi://', 'ani://bangumi-turnstile-callback'];
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   // 10 calls per 600s
   const limiter = createLimiter();
-
-  app.addSchema(clientPermission);
-  app.addSchema(currentUser);
-
-  app.get(
-    '/me',
-    {
-      schema: {
-        operationId: 'getCurrentUser',
-        tags: [Tag.User],
-        security: [{ [Security.CookiesSession]: [] }],
-        response: {
-          200: res.Ref(currentUser),
-          401: res.Ref(res.Error, {
-            examples: [res.formatError(new NeedLoginError('get current user'))],
-          }),
-        },
-      },
-    },
-    async function ({ auth }): Promise<Static<typeof currentUser>> {
-      if (!auth.login) {
-        throw new NeedLoginError('getting current user');
-      }
-
-      const u = await fetchUser(auth.userID);
-
-      if (!u) {
-        throw new UnexpectedNotFoundError(`user ${auth.userID}`);
-      }
-
-      return {
-        ...convert.oldToUser(u),
-        permission: {
-          subjectWikiEdit: auth.permission.subject_edit ?? false,
-        },
-      };
-    },
-  );
 
   app.post(
     '/logout',
@@ -92,7 +43,7 @@ export async function setup(app: App) {
       schema: {
         description: '登出',
         operationId: 'logout',
-        tags: [Tag.User],
+        tags: [Tag.Auth],
         body: t.Object({}),
         response: {
           200: {},
@@ -154,7 +105,7 @@ next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
 dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         operationId: 'login',
-        tags: [Tag.User],
+        tags: [Tag.Auth],
         response: {
           200: res.Ref(res.SlimUser, {
             headers: {
@@ -230,6 +181,46 @@ dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         avatar: avatar(user.avatar),
         joinedAt: user.regdate,
       };
+    },
+  );
+
+  app.get(
+    '/turnstile',
+    {
+      schema: {
+        summary: '获取 Turnstile 令牌',
+        description: '为防止滥用，Redirect URI 为白名单机制，如需添加请提交 PR。',
+        operationId: 'getTurnstileToken',
+        tags: [Tag.Auth],
+        querystring: t.Object({
+          theme: t.Optional(
+            t.Enum({
+              dark: 'dark',
+              light: 'light',
+              auto: 'auto',
+            }),
+          ),
+          redirect_uri: t.String(),
+        }),
+      },
+    },
+    async (req, res) => {
+      const redirectUri = req.query.redirect_uri;
+      try {
+        new URL(redirectUri);
+      } catch {
+        throw BadRequestError('Invalid redirect URI.');
+      }
+      if (!allowedRedirectUris.some((allowedUri) => redirectUri.startsWith(allowedUri))) {
+        throw BadRequestError(
+          `Redirect URI is not in the whitelist, you can PR your redirect URI.`,
+        );
+      }
+      await res.view('turnstile', {
+        TURNSTILE_SITE_KEY: config.turnstile.siteKey,
+        turnstile_theme: req.query.theme || 'auto',
+        redirect_uri: Buffer.from(redirectUri).toString('base64'),
+      });
     },
   );
 }

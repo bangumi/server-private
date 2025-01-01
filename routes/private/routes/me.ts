@@ -1,3 +1,4 @@
+import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
@@ -5,11 +6,10 @@ import type { Server } from 'socket.io';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
-import config from '@app/lib/config.ts';
-import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
+import { fetchUser, fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -31,6 +31,17 @@ const NoticeRes = t.Object(
   { $id: 'Notice' },
 );
 
+const clientPermission = t.Object(
+  {
+    subjectWikiEdit: t.Boolean(),
+  },
+  { $id: 'Permission' },
+);
+
+const currentUser = t.Intersect([res.SlimUser, t.Object({ permission: clientPermission })], {
+  $id: 'CurrentUser',
+});
+
 declare module 'fastify' {
   interface FastifyInstance {
     io: Server;
@@ -38,6 +49,44 @@ declare module 'fastify' {
 }
 
 export async function setup(app: App) {
+  app.addSchema(clientPermission);
+  app.addSchema(currentUser);
+
+  app.get(
+    '/me',
+    {
+      schema: {
+        operationId: 'getCurrentUser',
+        tags: [Tag.Me],
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: res.Ref(currentUser),
+          401: res.Ref(res.Error, {
+            examples: [res.formatError(new NeedLoginError('get current user'))],
+          }),
+        },
+      },
+    },
+    async function ({ auth }): Promise<Static<typeof currentUser>> {
+      if (!auth.login) {
+        throw new NeedLoginError('getting current user');
+      }
+
+      const u = await fetchUser(auth.userID);
+
+      if (!u) {
+        throw new UnexpectedNotFoundError(`user ${auth.userID}`);
+      }
+
+      return {
+        ...convert.oldToUser(u),
+        permission: {
+          subjectWikiEdit: auth.permission.subject_edit ?? false,
+        },
+      };
+    },
+  );
+
   app.addSchema(NoticeRes);
 
   app.get(
@@ -46,7 +95,7 @@ export async function setup(app: App) {
       schema: {
         summary: '获取未读通知',
         operationId: 'listNotice',
-        tags: [Tag.User],
+        tags: [Tag.Me],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 40, description: 'max 40' })),
@@ -97,7 +146,7 @@ export async function setup(app: App) {
         summary: '标记通知为已读',
         description: ['标记通知为已读', '不传id时会清空所有未读通知'].join('\n\n'),
         operationId: 'clearNotice',
-        tags: [Tag.User],
+        tags: [Tag.Me],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
@@ -138,7 +187,7 @@ export async function setup(app: App) {
       schema: {
         summary: '获取绝交用户列表',
         operationId: 'getBlocklist',
-        tags: [Tag.User],
+        tags: [Tag.Me],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({
@@ -165,7 +214,7 @@ export async function setup(app: App) {
       schema: {
         summary: '将用户添加到绝交列表',
         operationId: 'addToBlocklist',
-        tags: [Tag.User],
+        tags: [Tag.Me],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object({
           id: t.Integer(),
@@ -196,7 +245,7 @@ export async function setup(app: App) {
       schema: {
         summary: '将用户从绝交列表移出',
         operationId: 'removeFromBlocklist',
-        tags: [Tag.User],
+        tags: [Tag.Me],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           id: t.Integer(),
@@ -216,48 +265,6 @@ export async function setup(app: App) {
       f.blocklist = blocklist.join(',');
       await UserFieldRepo.save(f);
       return { blocklist: blocklist };
-    },
-  );
-
-  const allowedRedirectUris: string[] = ['bangumi://', 'ani://bangumi-turnstile-callback'];
-
-  app.get(
-    '/turnstile',
-    {
-      schema: {
-        summary: '获取 Turnstile 令牌',
-        description: '为防止滥用，Redirect URI 为白名单机制，如需添加请提交 PR。',
-        operationId: 'getTurnstileToken',
-        tags: [Tag.User],
-        querystring: t.Object({
-          theme: t.Optional(
-            t.Enum({
-              dark: 'dark',
-              light: 'light',
-              auto: 'auto',
-            }),
-          ),
-          redirect_uri: t.String(),
-        }),
-      },
-    },
-    async (req, res) => {
-      const redirectUri = req.query.redirect_uri;
-      try {
-        new URL(redirectUri);
-      } catch {
-        throw BadRequestError('Invalid redirect URI.');
-      }
-      if (!allowedRedirectUris.some((allowedUri) => redirectUri.startsWith(allowedUri))) {
-        throw BadRequestError(
-          `Redirect URI is not in the whitelist, you can PR your redirect URI.`,
-        );
-      }
-      await res.view('turnstile', {
-        TURNSTILE_SITE_KEY: config.turnstile.siteKey,
-        turnstile_theme: req.query.theme || 'auto',
-        redirect_uri: Buffer.from(redirectUri).toString('base64'),
-      });
     },
   );
 

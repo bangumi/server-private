@@ -2480,7 +2480,7 @@ paths:
           HTTPBearer: []
       summary: 获取绝交用户列表
       tags:
-        - user
+        - me
     post:
       operationId: addToBlocklist
       requestBody:
@@ -2520,7 +2520,7 @@ paths:
           HTTPBearer: []
       summary: 将用户添加到绝交列表
       tags:
-        - user
+        - me
   /p1/blocklist/{id}:
     delete:
       operationId: removeFromBlocklist
@@ -2556,7 +2556,7 @@ paths:
           HTTPBearer: []
       summary: 将用户从绝交列表移出
       tags:
-        - user
+        - me
   /p1/calendar:
     get:
       operationId: getCalendar
@@ -2827,7 +2827,7 @@ paths:
           HTTPBearer: []
       summary: 标记通知为已读
       tags:
-        - user
+        - me
   /p1/debug:
     get:
       description: debug 路由
@@ -3463,7 +3463,7 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
-        - user
+        - auth
   /p1/logout:
     post:
       description: 登出
@@ -3502,7 +3502,7 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
-        - user
+        - auth
   /p1/me:
     get:
       operationId: getCurrentUser
@@ -3534,7 +3534,7 @@ paths:
       security:
         - CookiesSession: []
       tags:
-        - user
+        - me
   /p1/notify:
     get:
       operationId: listNotice
@@ -3596,7 +3596,7 @@ paths:
           HTTPBearer: []
       summary: 获取未读通知
       tags:
-        - user
+        - me
   /p1/persons/{personID}:
     get:
       operationId: getPerson
@@ -5238,7 +5238,7 @@ paths:
           description: 意料之外的服务器错误
       summary: 获取 Turnstile 令牌
       tags:
-        - user
+        - auth
   /p1/users/-/collections/subjects/-/episodes/{episodeID}:
     get:
       operationId: getUserSubjectCollectionEpisodeByEpisodeID

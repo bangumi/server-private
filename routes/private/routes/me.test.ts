@@ -6,7 +6,7 @@ import * as Notify from '@app/lib/notify.ts';
 import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
-import { setup } from './misc.ts';
+import { setup } from './me.ts';
 
 describe('notify', () => {
   beforeEach(async () => {
