@@ -75,13 +75,13 @@ exports[`should build private api spec 1`] = `
           type: string
         id:
           type: integer
-        target:
+        url:
           type: string
         vote:
           type: integer
       required:
         - id
-        - target
+        - url
         - icon
         - vote
         - createdAt
