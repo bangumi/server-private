@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op } from '@app/drizzle/db.ts';
-import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { createTestServer } from '@app/tests/utils.ts';
 
