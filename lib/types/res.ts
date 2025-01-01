@@ -506,7 +506,7 @@ export type IBlogPhoto = Static<typeof BlogPhoto>;
 export const BlogPhoto = t.Object(
   {
     id: t.Integer(),
-    url: t.String(),
+    target: t.String(),
     icon: t.String(),
     vote: t.Integer(),
     createdAt: t.Integer(),
