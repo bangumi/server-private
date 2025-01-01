@@ -16,10 +16,10 @@ async function testApp(...args: Parameters<typeof createTestServer>) {
 
 describe('edit subject ', () => {
   beforeEach(async () => {
-    db.update(schema.chiiEpisodes)
+    await db
+      .update(schema.chiiEpisodes)
       .set({ name: 'Beckoning (Genshin Impact Main Theme Var.)', nameCN: '情不自禁' })
-      .where(op.eq(schema.chiiEpisodes.id, 980049))
-      .execute();
+      .where(op.eq(schema.chiiEpisodes.id, 980049));
   });
 
   test('should get current wiki info', async () => {
