@@ -1,5 +1,7 @@
-import { describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test } from 'vitest';
 
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './ep.ts';
@@ -13,6 +15,13 @@ async function testApp(...args: Parameters<typeof createTestServer>) {
 }
 
 describe('edit subject ', () => {
+  beforeEach(async () => {
+    db.update(schema.chiiEpisodes)
+      .set({ name: 'Beckoning (Genshin Impact Main Theme Var.)', nameCN: '情不自禁' })
+      .where(op.eq(schema.chiiEpisodes.id, 980049))
+      .execute();
+  });
+
   test('should get current wiki info', async () => {
     const app = await testApp({});
 
