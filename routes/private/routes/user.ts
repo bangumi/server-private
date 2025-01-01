@@ -6,6 +6,7 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { fetchUserByUsername } from '@app/lib/orm/index.ts';
 import {
   CollectionType,
   CollectionTypeProfileValues,
@@ -276,7 +277,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -332,7 +333,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -366,11 +367,11 @@ export async function setup(app: App) {
   );
 
   app.get(
-    '/users/:username/summary',
+    '/users/:username/collections/summary',
     {
       schema: {
-        summary: '获取用户概览',
-        operationId: 'getUserSummary',
+        summary: '获取用户收藏概览',
+        operationId: 'getUserCollectionsSummary',
         tags: [Tag.User],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -382,7 +383,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username } }): Promise<Static<typeof UserCollectionsSummary>> => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -669,7 +670,7 @@ export async function setup(app: App) {
       params: { username },
       query: { subjectType, type, since, limit = 20, offset = 0 },
     }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -747,7 +748,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username, subjectID } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -909,7 +910,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -973,7 +974,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username, characterID } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -1027,7 +1028,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -1085,7 +1086,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username, personID } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -1137,7 +1138,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -1193,7 +1194,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { username, indexID } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -1243,7 +1244,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -1299,7 +1300,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
@@ -1353,7 +1354,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { username }, query: { limit = 20, until } }) => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
+      const user = await fetchUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
