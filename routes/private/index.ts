@@ -12,7 +12,7 @@ import * as auth from './routes/auth.ts';
 import * as calendar from './routes/calendar.ts';
 import * as character from './routes/character.ts';
 import * as episode from './routes/episode.ts';
-import * as misc from './routes/me.ts';
+import * as misc from './routes/misc.ts';
 import * as person from './routes/person.ts';
 import * as post from './routes/post.ts';
 import * as subject from './routes/subject.ts';
