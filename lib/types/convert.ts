@@ -646,7 +646,7 @@ export function toSlimGroup(group: orm.IGroup): res.ISlimGroup {
     title: group.title,
     icon: avatar(group.icon),
     creatorID: group.creator,
-    members: group.members,
+    totalMembers: group.members,
     createdAt: group.createdAt,
   };
 }

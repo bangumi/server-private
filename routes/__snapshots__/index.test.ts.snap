@@ -550,17 +550,17 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/Avatar'
         id:
           type: integer
-        members:
-          type: integer
         name:
           type: string
         nsfw:
           type: boolean
-        posts:
-          type: integer
         title:
           type: string
-        topics:
+        totalMembers:
+          type: integer
+        totalPosts:
+          type: integer
+        totalTopics:
           type: integer
       required:
         - id
@@ -572,9 +572,9 @@ exports[`should build private api spec 1`] = `
         - creatorID
         - creator
         - description
-        - topics
-        - posts
-        - members
+        - totalTopics
+        - totalPosts
+        - totalMembers
         - accessible
         - createdAt
       title: Group
@@ -1122,14 +1122,14 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/Avatar'
         id:
           type: integer
-        members:
-          type: integer
         name:
           type: string
         nsfw:
           type: boolean
         title:
           type: string
+        totalMembers:
+          type: integer
       required:
         - id
         - name
@@ -1137,7 +1137,7 @@ exports[`should build private api spec 1`] = `
         - title
         - icon
         - creatorID
-        - members
+        - totalMembers
         - createdAt
       title: SlimGroup
       type: object
