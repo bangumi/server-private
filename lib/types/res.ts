@@ -666,12 +666,18 @@ export type IGroup = Static<typeof Group>;
 export const Group = t.Object(
   {
     id: t.Integer(),
+    cat: t.Integer(),
     name: t.String(),
     nsfw: t.Boolean(),
     title: t.String(),
-    icon: t.String(),
+    icon: Ref(Avatar),
+    creatorID: t.Integer(),
+    creator: Ref(SlimUser),
     description: t.String(),
-    totalMembers: t.Integer(),
+    topics: t.Integer(),
+    posts: t.Integer(),
+    members: t.Integer(),
+    accessible: t.Boolean(),
     createdAt: t.Integer(),
   },
   { $id: 'Group', title: 'Group' },
@@ -685,6 +691,9 @@ export const SlimGroup = t.Object(
     nsfw: t.Boolean(),
     title: t.String(),
     icon: Ref(Avatar),
+    creatorID: t.Integer(),
+    members: t.Integer(),
+    createdAt: t.Integer(),
   },
   { $id: 'SlimGroup', title: 'SlimGroup' },
 );
@@ -750,7 +759,7 @@ export type ITopicDetail = Static<typeof TopicDetail>;
 export const TopicDetail = t.Object(
   {
     id: t.Integer(),
-    parent: t.Union([Ref(Group), Ref(SlimSubject)]),
+    parent: t.Union([Ref(SlimGroup), Ref(SlimSubject)]),
     creator: Ref(SlimUser),
     title: t.String(),
     text: t.String(),

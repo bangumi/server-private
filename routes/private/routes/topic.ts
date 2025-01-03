@@ -28,7 +28,16 @@ const GroupProfile = t.Object(
     recentAddedMembers: t.Array(res.Ref(res.GroupMember)),
     topics: t.Array(res.Ref(res.Topic)),
     inGroup: t.Boolean({ description: '是否已经加入小组' }),
-    group: res.Ref(res.Group),
+    group: t.Object({
+      id: t.Integer(),
+      name: t.String(),
+      nsfw: t.Boolean(),
+      description: t.String(),
+      title: t.String(),
+      createdAt: t.Number(),
+      totalMembers: t.Integer(),
+      icon: t.String(),
+    }),
     totalTopics: t.Integer(),
   },
   { $id: 'GroupProfile' },
@@ -391,14 +400,14 @@ export async function handleTopicDetail(
     throw new NotFoundError(`topic ${id}`);
   }
 
-  let parent: orm.IGroup | res.ISubject | undefined;
+  let parent: res.ISlimGroup | res.ISlimSubject | undefined;
   switch (type) {
     case TopicParentType.Group: {
-      parent = await orm.fetchGroupByID(topic.parentID);
+      parent = await fetcher.fetchSlimGroupByID(topic.parentID);
       break;
     }
     case TopicParentType.Subject: {
-      parent = await fetcher.fetchSubjectByID(topic.parentID);
+      parent = await fetcher.fetchSlimSubjectByID(topic.parentID);
       break;
     }
     default: {
@@ -428,10 +437,7 @@ export async function handleTopicDetail(
     ...topic,
     creator: convert.oldToUser(creator),
     text: topic.text,
-    parent: {
-      ...parent,
-      icon: type === TopicParentType.Group ? groupIcon((parent as orm.IGroup).icon).small : '',
-    },
+    parent,
     reactions: reactions[topic.contentPost.id] ?? [],
     replies: topic.replies.map((x) => {
       const user = users[x.creatorID];

@@ -245,6 +245,28 @@ Object {
 }
 `;
 
+exports[`user collection > should get groups 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1531631310,
+      "creatorID": 287622,
+      "icon": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/000/00/42/4215.jpg?r=1531631345",
+        "medium": "https://lain.bgm.tv/pic/user/m/000/00/42/4215.jpg?r=1531631345",
+        "small": "https://lain.bgm.tv/pic/user/s/000/00/42/4215.jpg?r=1531631345",
+      },
+      "id": 4215,
+      "members": 3,
+      "name": "sandbox",
+      "nsfw": false,
+      "title": "沙盒",
+    },
+  ],
+  "total": 1,
+}
+`;
+
 exports[`user collection > should get indexes 1`] = `
 Object {
   "data": Array [],

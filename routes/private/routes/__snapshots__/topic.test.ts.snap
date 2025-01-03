@@ -27,13 +27,17 @@ Object {
   "id": 379821,
   "parent": Object {
     "createdAt": 1531631310,
-    "description": "[s]非[/s]官方沙盒",
-    "icon": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+    "creatorID": 287622,
+    "icon": Object {
+      "large": "https://lain.bgm.tv/pic/user/l/000/00/42/4215.jpg?r=1531631345",
+      "medium": "https://lain.bgm.tv/pic/user/m/000/00/42/4215.jpg?r=1531631345",
+      "small": "https://lain.bgm.tv/pic/user/s/000/00/42/4215.jpg?r=1531631345",
+    },
     "id": 4215,
+    "members": 3,
     "name": "sandbox",
     "nsfw": false,
     "title": "沙盒",
-    "totalMembers": 3,
   },
   "reactions": Array [
     Object {

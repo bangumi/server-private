@@ -534,30 +534,48 @@ exports[`should build private api spec 1`] = `
       type: object
     Group:
       properties:
+        accessible:
+          type: boolean
+        cat:
+          type: integer
         createdAt:
+          type: integer
+        creator:
+          $ref: '#/components/schemas/SlimUser'
+        creatorID:
           type: integer
         description:
           type: string
         icon:
-          type: string
+          $ref: '#/components/schemas/Avatar'
         id:
+          type: integer
+        members:
           type: integer
         name:
           type: string
         nsfw:
           type: boolean
+        posts:
+          type: integer
         title:
           type: string
-        totalMembers:
+        topics:
           type: integer
       required:
         - id
+        - cat
         - name
         - nsfw
         - title
         - icon
+        - creatorID
+        - creator
         - description
-        - totalMembers
+        - topics
+        - posts
+        - members
+        - accessible
         - createdAt
       title: Group
       type: object
@@ -584,7 +602,33 @@ exports[`should build private api spec 1`] = `
     GroupProfile:
       properties:
         group:
-          $ref: '#/components/schemas/Group'
+          properties:
+            createdAt:
+              type: number
+            description:
+              type: string
+            icon:
+              type: string
+            id:
+              type: integer
+            name:
+              type: string
+            nsfw:
+              type: boolean
+            title:
+              type: string
+            totalMembers:
+              type: integer
+          required:
+            - id
+            - name
+            - nsfw
+            - description
+            - title
+            - createdAt
+            - totalMembers
+            - icon
+          type: object
         inGroup:
           description: 是否已经加入小组
           type: boolean
@@ -1070,9 +1114,15 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimGroup:
       properties:
+        createdAt:
+          type: integer
+        creatorID:
+          type: integer
         icon:
           $ref: '#/components/schemas/Avatar'
         id:
+          type: integer
+        members:
           type: integer
         name:
           type: string
@@ -1086,6 +1136,9 @@ exports[`should build private api spec 1`] = `
         - nsfw
         - title
         - icon
+        - creatorID
+        - members
+        - createdAt
       title: SlimGroup
       type: object
     SlimIndex:
@@ -2066,7 +2119,7 @@ exports[`should build private api spec 1`] = `
           type: integer
         parent:
           anyOf:
-            - $ref: '#/components/schemas/Group'
+            - $ref: '#/components/schemas/SlimGroup'
             - $ref: '#/components/schemas/SlimSubject'
         reactions:
           items:
@@ -5887,6 +5940,47 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取用户的好友列表
+      tags:
+        - user
+  /p1/users/{username}/groups:
+    get:
+      operationId: getUserGroups
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            minLength: 1
+            type: string
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户加入的小组
       tags:
         - user
   /p1/users/{username}/indexes:
