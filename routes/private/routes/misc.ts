@@ -58,7 +58,7 @@ export async function setup(app: App) {
       schema: {
         summary: '获取当前用户信息',
         operationId: 'getCurrentUser',
-        tags: [Tag.User],
+        tags: [Tag.Misc],
         security: [{ [Security.CookiesSession]: [] }],
         response: {
           200: res.Ref(currentUser),
@@ -91,7 +91,7 @@ export async function setup(app: App) {
       schema: {
         summary: '获取未读通知',
         operationId: 'listNotice',
-        tags: [Tag.User],
+        tags: [Tag.Misc],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 40, description: 'max 40' })),
@@ -142,7 +142,7 @@ export async function setup(app: App) {
         summary: '标记通知为已读',
         description: ['标记通知为已读', '不传id时会清空所有未读通知'].join('\n\n'),
         operationId: 'clearNotice',
-        tags: [Tag.User],
+        tags: [Tag.Misc],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
@@ -183,7 +183,7 @@ export async function setup(app: App) {
       schema: {
         summary: '获取绝交用户列表',
         operationId: 'getBlocklist',
-        tags: [Tag.User],
+        tags: [Tag.Misc],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({
@@ -210,7 +210,7 @@ export async function setup(app: App) {
       schema: {
         summary: '将用户添加到绝交列表',
         operationId: 'addToBlocklist',
-        tags: [Tag.User],
+        tags: [Tag.Misc],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object({
           id: t.Integer(),
@@ -241,7 +241,7 @@ export async function setup(app: App) {
       schema: {
         summary: '将用户从绝交列表移出',
         operationId: 'removeFromBlocklist',
-        tags: [Tag.User],
+        tags: [Tag.Misc],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           id: t.Integer(),

@@ -2533,7 +2533,7 @@ paths:
           HTTPBearer: []
       summary: 获取绝交用户列表
       tags:
-        - user
+        - misc
     post:
       operationId: addToBlocklist
       requestBody:
@@ -2573,7 +2573,7 @@ paths:
           HTTPBearer: []
       summary: 将用户添加到绝交列表
       tags:
-        - user
+        - misc
   /p1/blocklist/{id}:
     delete:
       operationId: removeFromBlocklist
@@ -2609,7 +2609,7 @@ paths:
           HTTPBearer: []
       summary: 将用户从绝交列表移出
       tags:
-        - user
+        - misc
   /p1/calendar:
     get:
       operationId: getCalendar
@@ -2880,7 +2880,7 @@ paths:
           HTTPBearer: []
       summary: 标记通知为已读
       tags:
-        - user
+        - misc
   /p1/debug:
     get:
       description: debug 路由
@@ -3588,7 +3588,7 @@ paths:
         - CookiesSession: []
       summary: 获取当前用户信息
       tags:
-        - user
+        - misc
   /p1/notify:
     get:
       operationId: listNotice
@@ -3650,7 +3650,7 @@ paths:
           HTTPBearer: []
       summary: 获取未读通知
       tags:
-        - user
+        - misc
   /p1/persons/{personID}:
     get:
       operationId: getPerson
