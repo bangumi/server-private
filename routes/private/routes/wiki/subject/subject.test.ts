@@ -401,7 +401,7 @@ describe('create episodes', () => {
       auth: {
         groupID: UserGroup.Normal,
         login: true,
-        permission: { subject_edit: true },
+        permission: { ep_edit: true },
         allowNsfw: true,
         regTime: 0,
         userID: 100,
@@ -450,7 +450,7 @@ describe('create episodes', () => {
     expect(res.statusCode).toBe(401);
   });
 
-  test('should require subject_edit permission', async () => {
+  test('should require ep_edit permission', async () => {
     const app = await testApp({
       auth: {
         groupID: UserGroup.Normal,

@@ -601,7 +601,7 @@ export async function setup(app: App) {
       body: { episodes },
       params: { subjectID },
     }): Promise<{ episodeIDs: number[] }> => {
-      if (!auth.permission.subject_edit) {
+      if (!auth.permission.ep_edit) {
         throw new NotAllowedError('create episodes');
       }
 
