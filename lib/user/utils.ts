@@ -17,7 +17,7 @@ export async function fetchFriends(id?: number): Promise<Record<number, boolean>
 /** Is user(another) is friend of user(userID) */
 export async function isFriends(userID: number, another: number): Promise<boolean> {
   const [d] = await db
-    .select()
+    .select({ uid: schema.chiiFriends.uid, fid: schema.chiiFriends.fid })
     .from(schema.chiiFriends)
     .where(op.and(op.eq(schema.chiiFriends.uid, userID), op.eq(schema.chiiFriends.fid, another)));
 
