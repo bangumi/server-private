@@ -37,7 +37,12 @@ export async function setup(app: App) {
         throw new NotFoundError('Blog entry not found');
       }
       const entry = convert.toBlogEntry(item.chii_blog_entry, item.chii_members);
-      if (!entry.public && entry.user.id !== auth.userID) {
+      const authorFriendIDs = await fetcher.fetchFriendIDsByUserID(entry.user.id);
+      if (
+        !entry.public &&
+        entry.user.id !== auth.userID &&
+        !authorFriendIDs.includes(auth.userID)
+      ) {
         throw new NotFoundError('Blog entry not found');
       }
       return entry;
@@ -65,7 +70,8 @@ export async function setup(app: App) {
       if (!entry) {
         throw new NotFoundError('Blog entry not found');
       }
-      if (!entry.public && entry.uid !== auth.userID) {
+      const authorFriendIDs = await fetcher.fetchFriendIDsByUserID(entry.uid);
+      if (!entry.public && entry.uid !== auth.userID && !authorFriendIDs.includes(auth.userID)) {
         throw new NotFoundError('Blog entry not found');
       }
 
@@ -119,7 +125,8 @@ export async function setup(app: App) {
       if (!entry) {
         throw new NotFoundError('Blog entry not found');
       }
-      if (!entry.public && entry.uid !== auth.userID) {
+      // 只允许查看自己的日志图片
+      if (entry.uid !== auth.userID) {
         throw new NotFoundError('Blog entry not found');
       }
 
