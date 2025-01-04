@@ -24,6 +24,7 @@ import { fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import { EpochDefaultScope, type IScope, Scope, scopeMessage } from '@app/lib/scope.ts';
 import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import { randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App, Reply, Request } from '@app/routes/type.ts';
@@ -209,6 +210,11 @@ export async function userOauthRoutes(app: App) {
         const qs = new URLSearchParams({ backTo: req.url });
         return reply.redirect(`/login?${qs.toString()}`);
       }
+      const user = await fetcher.fetchSlimUserByID(req.auth.userID);
+      if (!user) {
+        const qs = new URLSearchParams({ backTo: req.url });
+        return reply.redirect(`/login?${qs.toString()}`);
+      }
 
       if (req.query.response_type !== 'code') {
         return await reply.view('oauth/authorize', { error: InvalidResponseTypeError });
@@ -257,6 +263,7 @@ export async function userOauthRoutes(app: App) {
 
       await reply.view('oauth/authorize', {
         app,
+        user,
         csrfToken,
         client,
         creator,
