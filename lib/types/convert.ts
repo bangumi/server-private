@@ -348,13 +348,25 @@ export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEn
 export function toSlimBlogEntry(entry: orm.IBlogEntry): res.ISlimBlogEntry {
   return {
     id: entry.id,
+    uid: entry.uid,
     type: entry.type,
     title: entry.title,
     icon: blogIcon(entry.icon),
     summary: entry.content.replaceAll('\r\n', ' ').trim().slice(0, 120),
     replies: entry.replies,
+    public: entry.public,
     createdAt: entry.createdAt,
     updatedAt: entry.updatedAt,
+  };
+}
+
+export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
+  return {
+    id: photo.id,
+    target: photo.target,
+    icon: blogIcon(photo.target),
+    vote: photo.vote,
+    createdAt: photo.createdAt,
   };
 }
 

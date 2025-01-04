@@ -489,29 +489,6 @@ export async function fetchSubjectTopicPosts(topicID: number) {
   });
 }
 
-export async function fetchFriends(id?: number): Promise<Record<number, boolean>> {
-  if (!id) {
-    return {};
-  }
-
-  const friends = await db
-    .select()
-    .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.uid, id));
-
-  return Object.fromEntries(friends.map((x) => [x.fid, true]));
-}
-
-/** Is user(another) is friend of user(userID) */
-export async function isFriends(userID: number, another: number): Promise<boolean> {
-  const [friends = 0] = await db
-    .select({ count: op.count() })
-    .from(schema.chiiFriends)
-    .where(op.and(op.eq(schema.chiiFriends.uid, userID), op.eq(schema.chiiFriends.uid, another)));
-
-  return friends !== 0;
-}
-
 interface PostCreation {
   title: string;
   content: string;

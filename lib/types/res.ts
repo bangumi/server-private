@@ -489,15 +489,29 @@ export type ISlimBlogEntry = Static<typeof SlimBlogEntry>;
 export const SlimBlogEntry = t.Object(
   {
     id: t.Integer(),
+    uid: t.Integer(),
     type: t.Integer(),
     title: t.String(),
     icon: t.String(),
     summary: t.String(),
     replies: t.Integer(),
+    public: t.Boolean(),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
   },
   { $id: 'SlimBlogEntry', title: 'SlimBlogEntry' },
+);
+
+export type IBlogPhoto = Static<typeof BlogPhoto>;
+export const BlogPhoto = t.Object(
+  {
+    id: t.Integer(),
+    target: t.String(),
+    icon: t.String(),
+    vote: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'BlogPhoto', title: 'BlogPhoto' },
 );
 
 export type ISubjectComment = Static<typeof SubjectComment>;

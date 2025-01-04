@@ -2,6 +2,7 @@ export const Tag = {
   Misc: 'misc',
 
   Auth: 'auth',
+  Blog: 'blog',
   Calendar: 'calendar',
   Character: 'character',
   Collection: 'collection',

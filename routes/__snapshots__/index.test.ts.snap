@@ -67,6 +67,26 @@ exports[`should build private api spec 1`] = `
         - public
       title: BlogEntry
       type: object
+    BlogPhoto:
+      properties:
+        createdAt:
+          type: integer
+        icon:
+          type: string
+        id:
+          type: integer
+        target:
+          type: string
+        vote:
+          type: integer
+      required:
+        - id
+        - target
+        - icon
+        - vote
+        - createdAt
+      title: BlogPhoto
+      type: object
     Calendar:
       additionalProperties:
         items:
@@ -1063,6 +1083,8 @@ exports[`should build private api spec 1`] = `
           type: string
         id:
           type: integer
+        public:
+          type: boolean
         replies:
           type: integer
         summary:
@@ -1071,15 +1093,19 @@ exports[`should build private api spec 1`] = `
           type: string
         type:
           type: integer
+        uid:
+          type: integer
         updatedAt:
           type: integer
       required:
         - id
+        - uid
         - type
         - title
         - icon
         - summary
         - replies
+        - public
         - createdAt
         - updatedAt
       title: SlimBlogEntry
