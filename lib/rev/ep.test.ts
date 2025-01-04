@@ -18,6 +18,7 @@ test('get episode rev', async () => {
           ep_name: 'n',
           ep_name_cn: 'nnn',
           ep_sort: '0',
+          ep_disc: '0',
           ep_type: '0',
         },
         creator: 1,
