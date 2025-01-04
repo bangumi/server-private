@@ -6,18 +6,10 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import {
-  CollectionType,
-  CollectionTypeProfileValues,
-  EpisodeCollectionStatus,
-  PersonType,
-  SubjectType,
-  SubjectTypeValues,
-} from '@app/lib/subject/type.ts';
+import { EpisodeCollectionStatus, PersonType } from '@app/lib/subject/type.ts';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { getTimelineUser } from '@app/lib/timeline/user';
 import * as convert from '@app/lib/types/convert.ts';
-import * as examples from '@app/lib/types/examples.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -74,74 +66,6 @@ const UserIndexCollection = t.Object(
     createdAt: t.Integer(),
   },
   { $id: 'UserIndexCollection' },
-);
-
-export type IUserCollectionsSubjectSummary = Static<typeof UserCollectionsSubjectSummary>;
-const UserCollectionsSubjectSummary = t.Object(
-  {
-    counts: t.Record(t.String({ description: 'collection type id' }), t.Integer(), {
-      examples: [{ '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }],
-    }),
-    details: t.Record(
-      t.String({ description: 'collection type id' }),
-      t.Array(res.Ref(res.SlimSubject)),
-      {
-        examples: [{ '1': [], '2': [examples.slimSubject], '3': [], '4': [], '5': [] }],
-      },
-    ),
-  },
-  { $id: 'UserCollectionsSubjectSummary' },
-);
-
-export type IUserCollectionsCharacterSummary = Static<typeof UserCollectionsCharacterSummary>;
-const UserCollectionsCharacterSummary = t.Object(
-  {
-    count: t.Integer(),
-    detail: t.Array(res.Ref(res.SlimCharacter)),
-  },
-  { $id: 'UserCollectionsCharacterSummary' },
-);
-
-export type IUserCollectionsPersonSummary = Static<typeof UserCollectionsPersonSummary>;
-const UserCollectionsPersonSummary = t.Object(
-  {
-    count: t.Integer(),
-    detail: t.Array(res.Ref(res.SlimPerson)),
-  },
-  { $id: 'UserCollectionsPersonSummary' },
-);
-
-export type IUserIndexesSummary = Static<typeof UserIndexesSummary>;
-const UserIndexesSummary = t.Object(
-  {
-    count: t.Integer(),
-    detail: t.Array(res.Ref(res.SlimIndex)),
-  },
-  { $id: 'UserIndexesSummary' },
-);
-
-export type IUserCollectionsSummary = Static<typeof UserCollectionsSummary>;
-const UserCollectionsSummary = t.Object(
-  {
-    subject: t.Record(
-      t.String({ description: 'subject type id' }),
-      res.Ref(UserCollectionsSubjectSummary),
-      {
-        examples: [
-          {
-            '1': {
-              counts: { '1': 0, '2': 1, '3': 0, '4': 0, '5': 0 },
-              details: { '1': [], '2': [examples.slimSubject], '3': [], '4': [], '5': [] },
-            },
-          },
-        ],
-      },
-    ),
-    character: res.Ref(UserCollectionsCharacterSummary),
-    person: res.Ref(UserCollectionsPersonSummary),
-    index: res.Ref(UserIndexesSummary),
-  },
-  { $id: 'UserCollectionsSummary' },
 );
 
 function toUserSubjectCollection(
@@ -203,11 +127,6 @@ export async function setup(app: App) {
   app.addSchema(UserCharacterCollection);
   app.addSchema(UserPersonCollection);
   app.addSchema(UserIndexCollection);
-  app.addSchema(UserCollectionsSubjectSummary);
-  app.addSchema(UserCollectionsCharacterSummary);
-  app.addSchema(UserCollectionsPersonSummary);
-  app.addSchema(UserIndexesSummary);
-  app.addSchema(UserCollectionsSummary);
 
   app.get(
     '/users/:username',
@@ -361,280 +280,6 @@ export async function setup(app: App) {
       return {
         data: followers,
         total: count,
-      };
-    },
-  );
-
-  app.get(
-    '/users/:username/collections/summary',
-    {
-      schema: {
-        summary: '获取用户收藏概览',
-        operationId: 'getUserCollectionsSummary',
-        tags: [Tag.User],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        params: t.Object({
-          username: t.String({ minLength: 1 }),
-        }),
-        response: {
-          200: res.Ref(UserCollectionsSummary),
-        },
-      },
-    },
-    async ({ auth, params: { username } }): Promise<Static<typeof UserCollectionsSummary>> => {
-      const user = await fetcher.fetchSlimUserByUsername(username);
-      if (!user) {
-        throw new NotFoundError('user');
-      }
-      const defaultCounts: Record<string, number> = {
-        [CollectionType.Wish]: 0,
-        [CollectionType.Collect]: 0,
-        [CollectionType.Doing]: 0,
-        [CollectionType.OnHold]: 0,
-        [CollectionType.Dropped]: 0,
-      };
-      const defaultDetails: Record<string, res.ISlimSubject[]> = {
-        [CollectionType.Wish]: [],
-        [CollectionType.Collect]: [],
-      };
-      const subjectSummary: Record<string, IUserCollectionsSubjectSummary> = {
-        [SubjectType.Book]: {
-          counts: structuredClone(defaultCounts),
-          details: structuredClone(defaultDetails),
-        },
-        [SubjectType.Anime]: {
-          counts: structuredClone(defaultCounts),
-          details: structuredClone(defaultDetails),
-        },
-        [SubjectType.Music]: {
-          counts: structuredClone(defaultCounts),
-          details: structuredClone(defaultDetails),
-        },
-        [SubjectType.Game]: {
-          counts: structuredClone(defaultCounts),
-          details: structuredClone(defaultDetails),
-        },
-        [SubjectType.Real]: {
-          counts: structuredClone(defaultCounts),
-          details: structuredClone(defaultDetails),
-        },
-      };
-      const characterSummary: IUserCollectionsCharacterSummary = {
-        count: 0,
-        detail: [],
-      };
-      const personSummary: IUserCollectionsPersonSummary = {
-        count: 0,
-        detail: [],
-      };
-      const indexSummary: IUserIndexesSummary = {
-        count: 0,
-        detail: [],
-      };
-
-      async function fillSubjectCounts(userID: number) {
-        const data = await db
-          .select({
-            count: op.count(),
-            interest_subject_type: schema.chiiSubjectInterests.subjectType,
-            interest_type: schema.chiiSubjectInterests.type,
-          })
-          .from(schema.chiiSubjectInterests)
-          .where(
-            op.and(
-              op.eq(schema.chiiSubjectInterests.uid, userID),
-              op.ne(schema.chiiSubjectInterests.type, 0),
-            ),
-          )
-          .groupBy(schema.chiiSubjectInterests.subjectType, schema.chiiSubjectInterests.type)
-          .execute();
-        for (const d of data) {
-          const summary = subjectSummary[d.interest_subject_type];
-          if (!summary) {
-            continue;
-          }
-          summary.counts[d.interest_type] = d.count;
-        }
-      }
-      async function fillCharacterCount(userID: number) {
-        const [{ count = 0 } = {}] = await db
-          .select({
-            count: op.count(),
-          })
-          .from(schema.chiiPersonCollects)
-          .where(
-            op.and(
-              op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
-            ),
-          )
-          .execute();
-        characterSummary.count = count;
-      }
-      async function fillPersonCount(userID: number) {
-        const [{ count = 0 } = {}] = await db
-          .select({
-            count: op.count(),
-          })
-          .from(schema.chiiPersonCollects)
-          .where(
-            op.and(
-              op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
-            ),
-          )
-          .execute();
-        personSummary.count = count;
-      }
-      async function fillIndexCount(userID: number) {
-        const [{ count = 0 } = {}] = await db
-          .select({
-            count: op.count(),
-          })
-          .from(schema.chiiIndexes)
-          .where(op.and(op.eq(schema.chiiIndexes.uid, userID), op.ne(schema.chiiIndexes.ban, 1)))
-          .execute();
-        indexSummary.count = count;
-      }
-
-      const countJobs = [
-        fillSubjectCounts(user.id),
-        fillCharacterCount(user.id),
-        fillPersonCount(user.id),
-        fillIndexCount(user.id),
-      ];
-      await Promise.all(countJobs);
-
-      async function appendSubjectDetails(stype: number, ctype: number, userID: number) {
-        const data = await db
-          .select()
-          .from(schema.chiiSubjectInterests)
-          .innerJoin(
-            schema.chiiSubjects,
-            op.eq(schema.chiiSubjectInterests.subjectID, schema.chiiSubjects.id),
-          )
-          .innerJoin(
-            schema.chiiSubjectFields,
-            op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
-          )
-          .where(
-            op.and(
-              op.eq(schema.chiiSubjectInterests.uid, userID),
-              op.eq(schema.chiiSubjectInterests.subjectType, stype),
-              op.eq(schema.chiiSubjectInterests.type, ctype),
-              op.ne(schema.chiiSubjects.ban, 1),
-              op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
-              auth.userID === userID ? undefined : op.eq(schema.chiiSubjectInterests.private, 0),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
-            ),
-          )
-          .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
-          .limit(7)
-          .execute();
-        for (const d of data) {
-          const summary = subjectSummary[stype];
-          if (!summary) {
-            continue;
-          }
-          const details = summary.details[ctype];
-          if (!details) {
-            continue;
-          }
-          const slim = convert.toSlimSubject(d.chii_subjects, d.chii_subject_fields);
-          details.push(slim);
-        }
-      }
-      async function appendCharacterDetail(userID: number) {
-        const data = await db
-          .select()
-          .from(schema.chiiPersonCollects)
-          .innerJoin(
-            schema.chiiCharacters,
-            op.eq(schema.chiiPersonCollects.mid, schema.chiiCharacters.id),
-          )
-          .where(
-            op.and(
-              op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
-              op.ne(schema.chiiCharacters.ban, 1),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
-            ),
-          )
-          .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
-          .limit(7)
-          .execute();
-        for (const d of data) {
-          const summary = characterSummary.detail;
-          if (!summary) {
-            continue;
-          }
-          const slim = convert.toSlimCharacter(d.chii_characters);
-          summary.push(slim);
-        }
-      }
-      async function appendPersonDetail(userID: number) {
-        const data = await db
-          .select()
-          .from(schema.chiiPersonCollects)
-          .innerJoin(
-            schema.chiiPersons,
-            op.eq(schema.chiiPersonCollects.mid, schema.chiiPersons.id),
-          )
-          .where(
-            op.and(
-              op.eq(schema.chiiPersonCollects.uid, userID),
-              op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
-              op.ne(schema.chiiPersons.ban, 1),
-              auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
-            ),
-          )
-          .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
-          .limit(7)
-          .execute();
-        for (const d of data) {
-          const summary = personSummary.detail;
-          if (!summary) {
-            continue;
-          }
-          const slim = convert.toSlimPerson(d.chii_persons);
-          summary.push(slim);
-        }
-      }
-      async function appendIndexDetail(userID: number) {
-        const data = await db
-          .select()
-          .from(schema.chiiIndexes)
-          .where(op.and(op.eq(schema.chiiIndexes.uid, userID), op.ne(schema.chiiIndexes.ban, 1)))
-          .orderBy(op.desc(schema.chiiIndexes.createdAt))
-          .limit(7)
-          .execute();
-        for (const d of data) {
-          const summary = indexSummary.detail;
-          if (!summary) {
-            continue;
-          }
-          const slim = convert.toSlimIndex(d);
-          summary.push(slim);
-        }
-      }
-
-      const detailJobs = [
-        appendCharacterDetail(user.id),
-        appendPersonDetail(user.id),
-        appendIndexDetail(user.id),
-      ];
-      for (const stype of SubjectTypeValues) {
-        for (const ctype of CollectionTypeProfileValues) {
-          detailJobs.push(appendSubjectDetails(stype, ctype, user.id));
-        }
-      }
-      await Promise.all(detailJobs);
-
-      return {
-        subject: subjectSummary,
-        character: characterSummary,
-        person: personSummary,
-        index: indexSummary,
       };
     },
   );
@@ -903,7 +548,7 @@ export async function setup(app: App) {
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
-        responses: {
+        response: {
           200: res.Paged(res.Ref(UserCharacterCollection)),
         },
       },
@@ -1021,7 +666,7 @@ export async function setup(app: App) {
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
-        responses: {
+        response: {
           200: res.Paged(res.Ref(UserPersonCollection)),
         },
       },
@@ -1131,7 +776,7 @@ export async function setup(app: App) {
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
-        responses: {
+        response: {
           200: res.Paged(res.Ref(UserIndexCollection)),
         },
       },
@@ -1237,7 +882,7 @@ export async function setup(app: App) {
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
-        responses: {
+        response: {
           200: res.Paged(res.Ref(res.SlimGroup)),
         },
       },
@@ -1297,8 +942,8 @@ export async function setup(app: App) {
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
-        responses: {
-          200: res.Paged(res.Ref(res.Index)),
+        response: {
+          200: res.Paged(res.Ref(res.SlimIndex)),
         },
       },
     },
@@ -1353,8 +998,8 @@ export async function setup(app: App) {
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
-        responses: {
-          200: res.Paged(res.Ref(res.BlogEntry)),
+        response: {
+          200: res.Paged(res.Ref(res.SlimBlogEntry)),
         },
       },
     },
@@ -1407,7 +1052,7 @@ export async function setup(app: App) {
           ),
           until: t.Optional(t.Integer({ description: 'max timeline id to fetch from' })),
         }),
-        responses: {
+        response: {
           200: t.Array(res.Ref(res.Timeline)),
         },
       },
