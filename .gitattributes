@@ -1,4 +1,4 @@
-pnpm-lock.yaml linguist-generated=true
-*.snap linguist-generated=true
-__snapshots__ linguist-generated=true
-vendor/common-json/* linguist-generated=true
+pnpm-lock.yaml linguist-generated
+*.snap linguist-generated
+__snapshots__ linguist-generated
+vendor/common-json/* linguist-generated
