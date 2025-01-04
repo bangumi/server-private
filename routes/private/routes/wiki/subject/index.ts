@@ -143,7 +143,7 @@ export const EpsisodesNew = t.Object(
   {
     episodes: t.Array(
       t.Object({
-        name: t.String(),
+        name: t.Optional(t.String()),
         nameCN: t.Optional(t.String()),
         type: t.Optional(res.Ref(res.EpisodeType)),
         disc: t.Optional(t.Number()),
@@ -601,6 +601,14 @@ export async function setup(app: App) {
       body: { episodes },
       params: { subjectID },
     }): Promise<{ episodeIDs: number[] }> => {
+      if (!auth.permission.subject_edit) {
+        throw new NotAllowedError('create episodes');
+      }
+
+      if (episodes.length === 0) {
+        return { episodeIDs: [] };
+      }
+
       const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);

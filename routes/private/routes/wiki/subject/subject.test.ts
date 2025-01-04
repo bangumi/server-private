@@ -401,7 +401,7 @@ describe('create episodes', () => {
       auth: {
         groupID: UserGroup.Normal,
         login: true,
-        permission: {},
+        permission: { subject_edit: true },
         allowNsfw: true,
         regTime: 0,
         userID: 100,
@@ -425,7 +425,6 @@ describe('create episodes', () => {
             summary: 'First episode summary',
           },
           {
-            name: 'Episode 2',
             ep: 2,
           },
         ],
@@ -444,11 +443,37 @@ describe('create episodes', () => {
       url: `/subjects/${subjectID}/ep`,
       method: 'post',
       payload: {
-        episodes: [{ name: 'Episode 1', ep: 1 }],
+        episodes: [{ ep: 1 }],
       },
     });
 
     expect(res.statusCode).toBe(401);
+  });
+
+  test('should require subject_edit permission', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'post',
+      payload: {
+        episodes: [{ ep: 1 }],
+      },
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.json()).toMatchObject({
+      code: 'NOT_ALLOWED',
+      message: expect.stringContaining('create episodes'),
+    });
   });
 
   test('should handle non-existent subject', async () => {
@@ -457,7 +482,7 @@ describe('create episodes', () => {
       url: '/subjects/999999/ep',
       method: 'post',
       payload: {
-        episodes: [{ name: 'Episode 1', ep: 1 }],
+        episodes: [{ ep: 1 }],
       },
     });
 

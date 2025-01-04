@@ -525,7 +525,6 @@ exports[`should build private api spec 1`] = `
               type:
                 $ref: '#/components/schemas/EpisodeType'
             required:
-              - name
               - ep
             type: object
           type: array
@@ -7116,7 +7115,6 @@ paths:
                       type:
                         $ref: '#/components/schemas/EpisodeType'
                     required:
-                      - name
                       - ep
                     type: object
                   type: array
