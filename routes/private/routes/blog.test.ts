@@ -37,6 +37,23 @@ describe('blog', () => {
     expect(res.statusCode).toBe(404);
   });
 
+  test('should get private blog entry from friend', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 427613, // friend
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: `/blogs/${privateEntryID}`,
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get private blog entry from self', async () => {
     const app = createTestServer({
       auth: {

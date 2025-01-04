@@ -70,6 +70,43 @@ Array [
 ]
 `;
 
+exports[`blog > should get private blog entry from friend 1`] = `
+Object {
+  "content": "感谢 @ klion 提供数据，相关条目数据进行了一次更新。
+
+
+[img]https://s3.bgm38.com/images/Snipaste_2023-06-05_16-33-39.jpg[/img]
+
+",
+  "createdAt": 1680065928,
+  "icon": "",
+  "id": 319486,
+  "noreply": 0,
+  "public": false,
+  "related": 1,
+  "replies": 1,
+  "tags": Array [
+    "动画",
+  ],
+  "title": "[2023-06-05] 相关条目数据更新",
+  "type": 1,
+  "updatedAt": 1724513422,
+  "user": Object {
+    "avatar": Object {
+      "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+      "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+      "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+    },
+    "id": 287622,
+    "joinedAt": 0,
+    "nickname": "nickname 287622",
+    "sign": "sing 287622",
+    "username": "287622",
+  },
+  "views": 0,
+}
+`;
+
 exports[`blog > should get private blog entry from self 1`] = `
 Object {
   "content": "感谢 @ klion 提供数据，相关条目数据进行了一次更新。
