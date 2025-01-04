@@ -10,7 +10,7 @@
   {% if client %}
     <div class='card shadow rounded p-2 col-12 col-lg-6'>
       <div class='card-body'>
-        <h1 class='card-title' style='color: #F09199;'>授权 {{ app.name }} 访问你的账户</h1>
+        <h1 class='card-title' style='color: #F09199; text-align: center;'>授权 {{ app.name }}</h1>
         <ul class='list-group list-group-flush'>
           <li class='list-group-item d-flex align-items-start border-0'>
             <a href='https://bgm.tv/user/{{ creator.username }}'>
@@ -18,7 +18,7 @@
                 width='64px'
                 height='64px'
                 class='rounded'
-                src='https://lain.bgm.tv/pic/user/l/{{ creator.avatar | default: 'icon.jpg' }}'
+                src='{{ user.avatar.large | default: 'https://lain.bgm.tv/pic/user/l/icon.jpg' }}'
               >
             </a>
             <div class='px-2' style='width: 100%;'>
@@ -32,7 +32,18 @@
                 </a>
               </span>
               <div>
-                <p>{{ app.description }}</p>
+                <small style='color: #999;'>{{ app.description }}</small>
+                <br>
+                <span>
+                  想要访问你的
+                  <a
+                    href='https://bgm.tv/user/{{ user.username }}'
+                    class='link-underline-light'
+                  >
+                    {{ user.nickname }}
+                  </a>
+                  账户
+                </span>
               </div>
               <hr class='mb-0 mt-2' style='border-top: dotted 1px;'>
             </div>
