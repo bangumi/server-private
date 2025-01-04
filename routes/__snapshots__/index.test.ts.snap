@@ -2516,6 +2516,120 @@ paths:
       summary: 将用户从绝交列表移出
       tags:
         - misc
+  /p1/blogs/{entryID}:
+    get:
+      operationId: getBlogEntry
+      parameters:
+        - in: path
+          name: entryID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogEntry'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - HTTPBearer: []
+      summary: 获取日志详情
+      tags:
+        - blog
+  /p1/blogs/{entryID}/photos:
+    get:
+      operationId: getBlogPhotos
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: entryID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/BlogPhoto'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - HTTPBearer: []
+      summary: 获取日志的图片
+      tags:
+        - blog
+  /p1/blogs/{entryID}/subjects:
+    get:
+      operationId: getBlogRelatedSubjects
+      parameters:
+        - in: path
+          name: entryID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SlimSubject'
+                type: array
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - HTTPBearer: []
+      summary: 获取日志的关联条目
+      tags:
+        - blog
   /p1/calendar:
     get:
       operationId: getCalendar
