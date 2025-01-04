@@ -66,7 +66,13 @@ describe('blog', () => {
   });
 
   test('should get blog photos', async () => {
-    const app = createTestServer();
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUID, // same user
+      },
+    });
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
@@ -75,5 +81,21 @@ describe('blog', () => {
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should not get blog photos from other user', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUID + 1, // different user
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: `/blogs/${publicEntryID}/photos`,
+    });
+    expect(res.statusCode).toBe(404);
   });
 });
