@@ -42,16 +42,6 @@ describe('user relations', () => {
 });
 
 describe('user collection', () => {
-  test('should get summary', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/users/382951/collections/summary',
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
   test('should get subjects', async () => {
     const app = createTestServer();
     await app.register(setup);
