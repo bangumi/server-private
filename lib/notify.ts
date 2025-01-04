@@ -4,6 +4,7 @@ import type { DateTime } from 'luxon';
 import type { Repository } from 'typeorm';
 
 import { siteUrl } from '@app/lib/config.ts';
+import { isFriends } from '@app/lib/user/utils.ts';
 
 import { UnreachableError } from './error.ts';
 import type { Notify } from './orm/entity/index.ts';
@@ -98,7 +99,7 @@ export async function create({
   }
 
   if (setting.CommentNotification === PrivacyFilter.Friends) {
-    const isFriend = await orm.isFriends(destUserID, sourceUserID);
+    const isFriend = await isFriends(destUserID, sourceUserID);
 
     if (!isFriend) {
       return;

@@ -20,6 +20,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { fetchFriends } from '@app/lib/user/utils.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -423,7 +424,7 @@ export async function handleTopicDetail(
     ...topic.replies.flatMap((x) => [x.creatorID, ...x.replies.map((x) => x.creatorID)]),
   ];
 
-  const friends = await orm.fetchFriends(auth.userID);
+  const friends = await fetchFriends(auth.userID);
   const users = await orm.fetchUsers([...new Set(userIds)]);
 
   const creator = users[topic.creatorID];

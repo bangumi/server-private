@@ -7,6 +7,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
+import { isFriends } from '@app/lib/user/utils.ts';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -37,12 +38,8 @@ export async function setup(app: App) {
         throw new NotFoundError('Blog entry not found');
       }
       const entry = convert.toBlogEntry(item.chii_blog_entry, item.chii_members);
-      const authorFriendIDs = await fetcher.fetchFriendIDsByUserID(entry.user.id);
-      if (
-        !entry.public &&
-        entry.user.id !== auth.userID &&
-        !authorFriendIDs.includes(auth.userID)
-      ) {
+      const isFriend = await isFriends(entry.user.id, auth.userID);
+      if (!entry.public && entry.user.id !== auth.userID && !isFriend) {
         throw new NotFoundError('Blog entry not found');
       }
       return entry;
@@ -70,8 +67,8 @@ export async function setup(app: App) {
       if (!entry) {
         throw new NotFoundError('Blog entry not found');
       }
-      const authorFriendIDs = await fetcher.fetchFriendIDsByUserID(entry.uid);
-      if (!entry.public && entry.uid !== auth.userID && !authorFriendIDs.includes(auth.userID)) {
+      const isFriend = await isFriends(entry.uid, auth.userID);
+      if (!entry.public && entry.uid !== auth.userID && !isFriend) {
         throw new NotFoundError('Blog entry not found');
       }
 
