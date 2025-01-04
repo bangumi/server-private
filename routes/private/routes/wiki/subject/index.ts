@@ -2,6 +2,7 @@ import { parseToMap } from '@bgm38/wiki';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
+import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
@@ -135,6 +136,24 @@ export const SubjectWikiInfo = t.Object(
     nsfw: t.Boolean(),
   },
   { $id: 'SubjectWikiInfo' },
+);
+
+export const EpsisodesNew = t.Object(
+  {
+    episodes: t.Array(
+      t.Object({
+        name: t.String(),
+        nameCN: t.Optional(t.String()),
+        type: t.Optional(res.Ref(res.EpisodeType)),
+        disc: t.Optional(t.Number()),
+        ep: t.Number(),
+        duration: t.Optional(t.String()),
+        date: t.Optional(t.String()),
+        summary: t.Optional(t.String()),
+      }),
+    ),
+  },
+  { $id: 'EpsisodesNew' },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -550,6 +569,69 @@ export async function setup(app: App) {
         now: DateTime.now(),
         expectedRevision,
       });
+    },
+  );
+
+  app.addSchema(EpsisodesNew);
+
+  app.post(
+    '/subjects/:subjectID/ep',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'createEpisodes',
+        description: '为条目添加新章节',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: EpsisodesNew,
+        response: {
+          200: t.Object({ episodeIDs: t.Array(t.Integer()) }),
+          401: res.Ref(res.Error, {
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('creating episodes')],
+    },
+    async ({ body: { episodes }, params: { subjectID } }): Promise<{ episodeIDs: number[] }> => {
+      const s = await orm.fetchSubjectByID(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+
+      const discDefault = s.typeID === SubjectType.Music ? 1 : 0;
+      const newEpisodes: Partial<entity.Episode>[] = episodes.map((ep) => ({
+        subjectID: subjectID,
+        sort: ep.ep,
+        type: ep.type ?? 0,
+        epDisc: ep.disc ?? discDefault,
+        name: lo.escape(ep.name),
+        nameCN: lo.escape(ep.nameCN ?? ''),
+        duration: ep.duration ?? '',
+        date: ep.date ?? '',
+        summary: ep.summary ?? '',
+      }));
+
+      const episodeIDs = await AppDataSource.transaction(async (txn) => {
+        const s = await txn
+          .getRepository(entity.Episode)
+          .createQueryBuilder()
+          .insert()
+          .values(newEpisodes)
+          .execute();
+
+        const r = s.raw as ResultSetHeader;
+
+        return Array.from({ length: newEpisodes.length }, (_, i) => r.insertId + i);
+      });
+
+      return { episodeIDs };
     },
   );
 }

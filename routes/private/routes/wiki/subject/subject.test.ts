@@ -393,3 +393,78 @@ describe('lock subject', () => {
     expect(subject?.subjectBan).toBe(0);
   });
 });
+
+describe('create episodes', () => {
+  const subjectID = 13;
+  const newEpisodeApp = () =>
+    testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+  test('create new episodes', async () => {
+    const app = await newEpisodeApp();
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'post',
+      payload: {
+        episodes: [
+          {
+            name: 'Episode 1',
+            nameCN: '第一话',
+            type: 0,
+            ep: 1,
+            duration: '24:00',
+            date: '2024-01-01',
+            summary: 'First episode summary',
+          },
+          {
+            name: 'Episode 2',
+            ep: 2,
+          },
+        ],
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      episodeIDs: expect.arrayContaining([expect.any(Number), expect.any(Number)]),
+    });
+  });
+
+  test('should require login', async () => {
+    const app = await testApp({});
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'post',
+      payload: {
+        episodes: [{ name: 'Episode 1', ep: 1 }],
+      },
+    });
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('should handle non-existent subject', async () => {
+    const app = await newEpisodeApp();
+    const res = await app.inject({
+      url: '/subjects/999999/ep',
+      method: 'post',
+      payload: {
+        episodes: [{ name: 'Episode 1', ep: 1 }],
+      },
+    });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.json()).toMatchObject({
+      code: 'NOT_FOUND',
+      message: expect.stringContaining('subject 999999'),
+    });
+  });
+});

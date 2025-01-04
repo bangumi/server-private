@@ -503,6 +503,35 @@ exports[`should build private api spec 1`] = `
         - duration
         - summary
       type: object
+    EpsisodesNew:
+      properties:
+        episodes:
+          items:
+            properties:
+              date:
+                type: string
+              disc:
+                type: number
+              duration:
+                type: string
+              ep:
+                type: number
+              name:
+                type: string
+              nameCN:
+                type: string
+              summary:
+                type: string
+              type:
+                $ref: '#/components/schemas/EpisodeType'
+            required:
+              - name
+              - ep
+            type: object
+          type: array
+      required:
+        - episodes
+      type: object
     ErrorResponse:
       description: default error response type
       properties:
@@ -7048,6 +7077,90 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 为条目封面投票
+      tags:
+        - wiki
+  /p1/wiki/subjects/{subjectID}/ep:
+    post:
+      description: 为条目添加新章节
+      operationId: createEpisodes
+      parameters:
+        - example: 363612
+          in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                episodes:
+                  items:
+                    properties:
+                      date:
+                        type: string
+                      disc:
+                        type: number
+                      duration:
+                        type: string
+                      ep:
+                        type: number
+                      name:
+                        type: string
+                      nameCN:
+                        type: string
+                      summary:
+                        type: string
+                      type:
+                        $ref: '#/components/schemas/EpisodeType'
+                    required:
+                      - name
+                      - ep
+                    type: object
+                  type: array
+              required:
+                - episodes
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  episodeIDs:
+                    items:
+                      type: integer
+                    type: array
+                required:
+                  - episodeIDs
+                type: object
+          description: Default Response
+        '401':
+          content:
+            application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
       tags:
         - wiki
   /p1/wiki/subjects/{subjectID}/history-summary:
