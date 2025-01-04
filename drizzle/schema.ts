@@ -281,7 +281,7 @@ export const chiiGroups = mysqlTable('chii_groups', {
   desc: text('grp_desc').notNull(),
   updatedAt: int('grp_lastpost').notNull(),
   createdAt: int('grp_builddate').notNull(),
-  accessible: tinyint('grp_accessible').default(1).notNull(),
+  accessible: customBoolean('grp_accessible').default(true).notNull(),
   nsfw: customBoolean('grp_nsfw').notNull(),
 });
 

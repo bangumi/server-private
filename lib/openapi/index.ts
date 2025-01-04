@@ -1,4 +1,7 @@
 export const Tag = {
+  Misc: 'misc',
+
+  Auth: 'auth',
   Calendar: 'calendar',
   Character: 'character',
   Collection: 'collection',
@@ -8,9 +11,9 @@ export const Tag = {
   Subject: 'subject',
   Timeline: 'timeline',
   Topic: 'topic',
+  Trending: 'trending',
   User: 'user',
   Wiki: 'wiki',
-  Trending: 'trending',
 } as const;
 
 export const Security = {

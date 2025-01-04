@@ -169,6 +169,17 @@ describe('user collection', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get groups', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/users/287622/groups',
+      query: { limit: '1', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get created indexes', async () => {
     const app = createTestServer();
     await app.register(setup);
