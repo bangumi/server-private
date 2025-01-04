@@ -9,6 +9,7 @@ import * as swagger from '@app/routes/swagger.ts';
 import type { App } from '@app/routes/type.ts';
 
 import * as auth from './routes/auth.ts';
+import * as blog from './routes/blog.ts';
 import * as calendar from './routes/calendar.ts';
 import * as character from './routes/character.ts';
 import * as episode from './routes/episode.ts';
@@ -68,6 +69,7 @@ async function API(app: App) {
   );
 
   await app.register(auth.setup);
+  await app.register(blog.setup);
   await app.register(calendar.setup);
   await app.register(character.setup);
   await app.register(episode.setup);
