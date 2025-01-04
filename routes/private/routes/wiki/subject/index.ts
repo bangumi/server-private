@@ -13,6 +13,7 @@ import * as entity from '@app/lib/orm/entity';
 import { RevType } from '@app/lib/orm/entity';
 import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
+import { pushRev } from '@app/lib/rev/ep.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
@@ -595,7 +596,11 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating episodes')],
     },
-    async ({ body: { episodes }, params: { subjectID } }): Promise<{ episodeIDs: number[] }> => {
+    async ({
+      auth,
+      body: { episodes },
+      params: { subjectID },
+    }): Promise<{ episodeIDs: number[] }> => {
       const s = await orm.fetchSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -627,6 +632,26 @@ export async function setup(app: App) {
           .execute();
 
         const r = s.raw as ResultSetHeader;
+
+        const now = new Date();
+        for (const [i, ep] of (newEpisodes as entity.Episode[]).entries()) {
+          await pushRev(txn, {
+            episodeID: r.insertId + i,
+            rev: {
+              ep_sort: ep.sort.toString(),
+              ep_type: ep.type.toString(),
+              ep_disc: ep.epDisc.toString(),
+              ep_name: ep.name,
+              ep_name_cn: ep.nameCN,
+              ep_duration: ep.duration,
+              ep_airdate: ep.date,
+              ep_desc: ep.summary,
+            },
+            creator: auth.userID,
+            now,
+            comment: '新章节',
+          });
+        }
 
         return Array.from({ length: newEpisodes.length }, (_, i) => r.insertId + i);
       });
