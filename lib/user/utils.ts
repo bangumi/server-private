@@ -19,7 +19,8 @@ export async function isFriends(userID: number, another: number): Promise<boolea
   const [d] = await db
     .select({ uid: schema.chiiFriends.uid, fid: schema.chiiFriends.fid })
     .from(schema.chiiFriends)
-    .where(op.and(op.eq(schema.chiiFriends.uid, userID), op.eq(schema.chiiFriends.fid, another)));
+    .where(op.and(op.eq(schema.chiiFriends.uid, userID), op.eq(schema.chiiFriends.fid, another)))
+    .limit(1);
 
   return Boolean(d);
 }
