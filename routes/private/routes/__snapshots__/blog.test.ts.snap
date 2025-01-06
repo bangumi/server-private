@@ -4,7 +4,7 @@ exports[`blog > should get blog entry 1`] = `
 Object {
   "content": "试试",
   "createdAt": 1680065731,
-  "icon": "",
+  "icon": "https://lain.bgm.tv/pic/photo/g/no_photo.png",
   "id": 319484,
   "noreply": 0,
   "public": true,
@@ -79,7 +79,7 @@ Object {
 
 ",
   "createdAt": 1680065928,
-  "icon": "",
+  "icon": "https://lain.bgm.tv/pic/photo/g/no_photo.png",
   "id": 319486,
   "noreply": 0,
   "public": false,
@@ -116,7 +116,7 @@ Object {
 
 ",
   "createdAt": 1680065928,
-  "icon": "",
+  "icon": "https://lain.bgm.tv/pic/photo/g/no_photo.png",
   "id": 319486,
   "noreply": 0,
   "public": false,

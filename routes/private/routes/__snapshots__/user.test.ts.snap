@@ -51,7 +51,7 @@ Object {
   "data": Array [
     Object {
       "createdAt": 1680065731,
-      "icon": "",
+      "icon": "https://lain.bgm.tv/pic/photo/g/no_photo.png",
       "id": 319484,
       "public": true,
       "replies": 1,
