@@ -1231,7 +1231,7 @@ export const chiiBlogEntries = mysqlTable(
     id: mediumint('entry_id').autoincrement().notNull(),
     type: smallint('entry_type').notNull(),
     uid: mediumint('entry_uid').notNull(),
-    title: varchar('entry_title', { length: 80 }).notNull(),
+    title: htmlEscapedString('varchar')('entry_title', { length: 80 }).notNull(),
     icon: varchar('entry_icon', { length: 255 }).notNull(),
     content: mediumtext('entry_content').notNull(),
     tags: mediumtext('entry_tags').notNull(),
