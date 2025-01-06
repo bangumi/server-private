@@ -1,13 +1,13 @@
 import { expect, test } from 'vitest';
 
-import { AppDataSource } from '@app/lib/orm/index.ts';
+import { db } from '@app/drizzle/db.ts';
 
 import { pushRev } from './ep.ts';
 
 test('get episode rev', async () => {
   // const r = await getRev(15, 8);
   // expect(r).toMatchInlineSnapshot('Array []');
-  await AppDataSource.transaction(async (t) => {
+  await db.transaction(async (t) => {
     await expect(
       pushRev(t, {
         episodeID: 8,

@@ -815,8 +815,7 @@ export const chiiRevHistory = mysqlTable(
 
 export const chiiRevText = mysqlTable('chii_rev_text', {
   revTextId: mediumint('rev_text_id').autoincrement().notNull(),
-  // Warning: Can't parse mediumblob from database
-  // mediumblobType: mediumblob("rev_text").notNull(),
+  revText: mediumblob('rev_text').notNull(),
 });
 
 export const chiiSubjects = mysqlTable('chii_subjects', {
