@@ -13,6 +13,14 @@ import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import {
+  countUserBlog,
+  countUserFriend,
+  countUserGroup,
+  countUserIndex,
+  countUserMonoCollection,
+  countUserSubjectCollection,
+} from '@app/lib/user/stats.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -155,6 +163,12 @@ export async function setup(app: App) {
         throw new NotFoundError(`user ${username}`);
       }
       const user = convert.toUser(data.chii_members, data.chii_memberfields);
+      user.stats.blog = await countUserBlog(user.id);
+      user.stats.friend = await countUserFriend(user.id);
+      user.stats.group = await countUserGroup(user.id);
+      user.stats.index = await countUserIndex(user.id);
+      user.stats.mono = await countUserMonoCollection(user.id);
+      user.stats.subject = await countUserSubjectCollection(user.id);
       const svcs = await db
         .select()
         .from(schema.chiiUserNetworkServices)

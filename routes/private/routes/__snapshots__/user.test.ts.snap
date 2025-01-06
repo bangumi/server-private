@@ -41,6 +41,56 @@ Object {
   "nickname": "树洞酱",
   "sign": "treeholechan@gmail.com 密码:lovemeplease",
   "site": "bgm.tv/character/13307",
+  "stats": Object {
+    "blog": 0,
+    "friend": 0,
+    "group": 1,
+    "index": Object {
+      "collect": 0,
+      "create": 0,
+    },
+    "mono": Object {
+      "character": 0,
+      "person": 0,
+    },
+    "subject": Object {
+      "1": Object {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 0,
+      },
+      "2": Object {
+        "1": 0,
+        "2": 1,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+      },
+      "3": Object {
+        "1": 0,
+        "2": 0,
+        "3": 1,
+        "4": 0,
+        "5": 0,
+      },
+      "4": Object {
+        "1": 21,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 1,
+      },
+      "6": Object {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+      },
+    },
+  },
   "user_group": 10,
   "username": "382951",
 }
