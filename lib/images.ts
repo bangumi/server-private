@@ -3,6 +3,8 @@ import { imageDomain } from '@app/lib/config.ts';
 import type * as res from './types/res.ts';
 
 const baseAvatarUrl = `https://${imageDomain}/pic/user`;
+const baseIconUrl = `https://${imageDomain}/pic/icon`;
+const basePhotoUrl = `https://${imageDomain}/pic/photo`;
 const baseSubjectImageUrl = `https://${imageDomain}/pic/cover`;
 const basePersonImageUrl = `https://${imageDomain}/pic/crt`;
 
@@ -20,18 +22,25 @@ export function avatar(s: string): res.IAvatar {
 
 export function groupIcon(s: string): res.IAvatar {
   if (!s) {
-    s = 'icon.jpg';
+    s = 'no_icon.jpg';
   }
   return {
-    large: `https://${imageDomain}/pic/icon/l/${s}`,
-    medium: `https://${imageDomain}/pic/icon/m/${s}`,
-    small: `https://${imageDomain}/pic/icon/s/${s}`,
+    large: `${baseIconUrl}/l/${s}`,
+    medium: `${baseIconUrl}/m/${s}`,
+    small: `${baseIconUrl}/s/${s}`,
   };
+}
+
+export function blogIcon(s: string): string {
+  if (!s) {
+    s = 'no_photo.png';
+  }
+  return `${basePhotoUrl}/g/${s}`;
 }
 
 export function subjectCover(s: string): res.ISubjectImages | undefined {
   if (!s) {
-    return undefined;
+    return;
   }
   return {
     large: `${baseSubjectImageUrl}/l/${s}`,
@@ -44,7 +53,7 @@ export function subjectCover(s: string): res.ISubjectImages | undefined {
 
 export function personImages(s: string): res.IPersonImages | undefined {
   if (!s) {
-    return undefined;
+    return;
   }
   return {
     large: `${basePersonImageUrl}/l/${s}`,
@@ -52,11 +61,4 @@ export function personImages(s: string): res.IPersonImages | undefined {
     small: `${basePersonImageUrl}/s/${s}`,
     grid: `${basePersonImageUrl}/g/${s}`,
   };
-}
-
-export function blogIcon(s: string): string {
-  if (!s) {
-    return '';
-  }
-  return `https://${imageDomain}/pic/photo/g/${s}`;
 }
