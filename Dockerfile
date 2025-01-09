@@ -26,7 +26,7 @@ RUN corepack enable && corepack prepare --activate \
 
 FROM gcr.io/distroless/nodejs22-debian12
 
-ENTRYPOINT ["node", "--enable-source-maps", "./dist/index.mjs"]
+ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps", "./dist/index.mjs"]
 
 ENV NODE_ENV=production
 
