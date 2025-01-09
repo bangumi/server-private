@@ -6,6 +6,7 @@
     "github>Trim21/renovate-config:app",
     "github>Trim21/renovate-config:monthly"
   ],
+  "assignees": [],
   "postUpdateOptions": ["pnpmDedupe"],
   "rangeStrategy": "bump",
   "dockerfile": {
