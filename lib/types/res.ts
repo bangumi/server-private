@@ -88,13 +88,74 @@ export const UserNetworkService = t.Object(
   { $id: 'UserNetworkService', title: 'UserNetworkService' },
 );
 
+export type IUserHomepageSection = Static<typeof UserHomepageSection>;
+export const UserHomepageSection = t.String({
+  $id: 'UserHomepageSection',
+  enum: ['anime', 'game', 'book', 'music', 'real', 'mono', 'blog', 'friend', 'group', 'index'],
+  'x-ms-enum': {
+    name: 'UserHomepageSection',
+    modelAsString: true,
+  },
+  'x-enum-varnames': [
+    'Anime',
+    'Game',
+    'Book',
+    'Music',
+    'Real',
+    'Mono',
+    'Blog',
+    'Friend',
+    'Group',
+    'Index',
+  ],
+  description: '用户时光机板块',
+});
+
 export type IUserHomepage = Static<typeof UserHomepage>;
 export const UserHomepage = t.Object(
   {
-    left: t.Array(t.String()),
-    right: t.Array(t.String()),
+    left: t.Array(Ref(UserHomepageSection)),
+    right: t.Array(Ref(UserHomepageSection)),
   },
   { $id: 'UserHomepage', title: 'UserHomepage' },
+);
+
+export type IUserSubjectCollectionStats = Static<typeof UserSubjectCollectionStats>;
+export const UserSubjectCollectionStats = t.Record(
+  t.Integer({ description: '条目类型(SubjectType)' }),
+  t.Record(t.Integer({ description: '收藏类型(CollectionType)' }), t.Integer()),
+  { $id: 'UserSubjectCollectionStats', title: 'UserSubjectCollectionStats' },
+);
+
+export type IUserMonoCollectionStats = Static<typeof UserMonoCollectionStats>;
+export const UserMonoCollectionStats = t.Object(
+  {
+    character: t.Integer(),
+    person: t.Integer(),
+  },
+  { $id: 'UserMonoCollectionStats', title: 'UserMonoCollectionStats' },
+);
+
+export type IUserIndexStats = Static<typeof UserIndexStats>;
+export const UserIndexStats = t.Object(
+  {
+    create: t.Integer(),
+    collect: t.Integer(),
+  },
+  { $id: 'UserIndexStats', title: 'UserIndexStats' },
+);
+
+export type IUserStats = Static<typeof UserStats>;
+export const UserStats = t.Object(
+  {
+    subject: Ref(UserSubjectCollectionStats),
+    mono: Ref(UserMonoCollectionStats),
+    blog: t.Integer(),
+    friend: t.Integer(),
+    group: t.Integer(),
+    index: Ref(UserIndexStats),
+  },
+  { $id: 'UserStats', title: 'UserStats' },
 );
 
 export type ISlimUser = Static<typeof SlimUser>;
@@ -126,6 +187,7 @@ export const User = t.Object(
     bio: t.String(),
     networkServices: t.Array(UserNetworkService),
     homepage: Ref(UserHomepage),
+    stats: Ref(UserStats),
   },
   { $id: 'User', title: 'User' },
 );
@@ -851,7 +913,7 @@ export const TimelineCat = t.Integer({
   enum: [1, 2, 3, 4, 5, 6, 7, 8, 9],
   'x-ms-enum': {
     name: 'TimelineCat',
-    modelAsString: true,
+    modelAsString: false,
   },
   'x-enum-varnames': [
     'Daily',
@@ -881,7 +943,7 @@ export const TimelineSource = t.Integer({
   enum: [0, 1, 2, 3, 4, 5],
   'x-ms-enum': {
     name: 'TimelineSource',
-    modelAsString: true,
+    modelAsString: false,
   },
   'x-enum-varnames': ['Web', 'Mobile', 'OnAir', 'InTouch', 'WP', 'API'],
   description: `时间线来源

@@ -54,6 +54,18 @@ export function toSubjectTags(tags: string): res.ISubjectTag[] {
     .filter((x) => !Number.isNaN(x.count));
 }
 
+// for backward compatibility
+export function oldToUser(user: ormold.IUser): res.ISlimUser {
+  return {
+    avatar: avatar(user.img),
+    username: user.username,
+    nickname: user.nickname,
+    id: user.id,
+    sign: user.sign,
+    joinedAt: 0,
+  };
+}
+
 export function toUserHomepage(homepage: string): res.IUserHomepage {
   if (!homepage) {
     // 默认布局
@@ -79,18 +91,6 @@ export function toUserHomepage(homepage: string): res.IUserHomepage {
   return layout;
 }
 
-// for backward compatibility
-export function oldToUser(user: ormold.IUser): res.ISlimUser {
-  return {
-    avatar: avatar(user.img),
-    username: user.username,
-    nickname: user.nickname,
-    id: user.id,
-    sign: user.sign,
-    joinedAt: 0,
-  };
-}
-
 export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
   return {
     id: user.id,
@@ -106,6 +106,20 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     bio: fields.bio,
     networkServices: [],
     homepage: toUserHomepage(fields.homepage),
+    stats: {
+      group: 0,
+      subject: {},
+      mono: {
+        character: 0,
+        person: 0,
+      },
+      blog: 0,
+      friend: 0,
+      index: {
+        create: 0,
+        collect: 0,
+      },
+    },
   };
 }
 
