@@ -24,7 +24,7 @@ RUN corepack enable && corepack prepare --activate \
   && npm pkg delete scripts.prepare \
   && pnpm install --prod --frozen-lockfile
 
-FROM gcr.io/distroless/nodejs22-debian12
+FROM gcr.io/distroless/nodejs22-debian12@sha256:f390937d3c60a9c806068870ee3c1a01ce2ab1e75ebe0ca5e7f63beac074ccc0
 
 WORKDIR /app
 
