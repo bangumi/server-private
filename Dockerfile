@@ -24,9 +24,11 @@ RUN corepack enable && corepack prepare --activate \
   && npm pkg delete scripts.prepare \
   && pnpm install --prod --frozen-lockfile
 
-FROM base AS final
+FROM gcr.io/distroless/nodejs22-debian12
 
-ENTRYPOINT ["node", "--enable-source-maps", "./dist/index.mjs"]
+WORKDIR /app
+
+ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps", "./dist/index.mjs"]
 
 ENV NODE_ENV=production
 

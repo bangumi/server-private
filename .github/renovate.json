@@ -22,7 +22,7 @@
   "packageRules": [
     {
       "matchDatasources": ["docker"],
-      "matchPackageNames": ["gcr.io/distroless/nodejs18-debian11", "node"],
+      "matchPackageNames": ["gcr.io/distroless/**", "node"],
       "pinDigests": true
     }
   ]
