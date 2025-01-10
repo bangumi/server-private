@@ -1,19 +1,9 @@
 import type { Txn } from '@app/drizzle/db.ts';
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
-import type { EpTextRev } from '@app/lib/orm/entity/index.ts';
+import type { EpTextRev, RevHistory } from '@app/lib/orm/entity/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
-
-interface RevHistory {
-  revId: number;
-  revType: number;
-  revMid: number;
-  revTextId: number;
-  revDateline: number;
-  revCreator: number;
-  revEditSummary: string;
-}
 
 export async function pushRev(
   t: Txn,
@@ -95,7 +85,7 @@ async function updatePreviousRevRecords({
     revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revText.revTextId,
-    revDateline: now.getTime() / 1000,
+    createdAt: now.getTime() / 1000,
     revMid: episodeID,
     revEditSummary: comment,
   });
@@ -135,7 +125,7 @@ async function createRevRecords({
     revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revTextId,
-    revDateline: now.getTime() / 1000,
+    createdAt: now.getTime() / 1000,
     revMid: episodeID,
     revEditSummary: comment,
   });

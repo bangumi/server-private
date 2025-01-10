@@ -800,7 +800,7 @@ export const chiiRevHistory = mysqlTable(
     revType: tinyint('rev_type').notNull(),
     revMid: mediumint('rev_mid').notNull(),
     revTextId: mediumint('rev_text_id').notNull(),
-    revDateline: int('rev_dateline').notNull(),
+    createdAt: int('rev_dateline').notNull(),
     revCreator: mediumint('rev_creator').notNull(),
     revEditSummary: varchar('rev_edit_summary', { length: 200 }).notNull(),
   },
