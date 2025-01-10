@@ -1,7 +1,6 @@
 import { expect, test } from 'vitest';
-import { and, eq } from 'drizzle-orm';
 
-import { db } from '@app/drizzle/db.ts';
+import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
 
@@ -14,9 +13,9 @@ test('get episode rev', async () => {
   await db
     .delete(schema.chiiRevHistory)
     .where(
-      and(
-        eq(schema.chiiRevHistory.revMid, 8),
-        eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
+      op.and(
+        op.eq(schema.chiiRevHistory.revMid, 8),
+        op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
       ),
     )
     .execute();
@@ -44,9 +43,9 @@ test('get episode rev', async () => {
       .select()
       .from(schema.chiiRevHistory)
       .where(
-        and(
-          eq(schema.chiiRevHistory.revMid, 8),
-          eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
+        op.and(
+          op.eq(schema.chiiRevHistory.revMid, 8),
+          op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
         ),
       )
       .execute();

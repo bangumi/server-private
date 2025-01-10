@@ -1,7 +1,5 @@
-import { and, eq } from 'drizzle-orm';
-
 import type { Txn } from '@app/drizzle/db.ts';
-import { db } from '@app/drizzle/db.ts';
+import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
 import type { EpTextRev } from '@app/lib/orm/entity/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
@@ -37,9 +35,9 @@ export async function pushRev(
     .select()
     .from(schema.chiiRevHistory)
     .where(
-      and(
-        eq(schema.chiiRevHistory.revMid, episodeID),
-        eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
+      op.and(
+        op.eq(schema.chiiRevHistory.revMid, episodeID),
+        op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
       ),
     )
     .execute();
@@ -86,7 +84,7 @@ async function updatePreviousRevRecords({
   const [revText] = await t
     .select()
     .from(schema.chiiRevText)
-    .where(eq(schema.chiiRevText.revTextId, previous.revTextId))
+    .where(op.eq(schema.chiiRevText.revTextId, previous.revTextId))
     .execute();
 
   if (!revText) {
@@ -111,7 +109,7 @@ async function updatePreviousRevRecords({
     .set({
       revText: revText.revText,
     })
-    .where(eq(schema.chiiRevText.revTextId, revText.revTextId));
+    .where(op.eq(schema.chiiRevText.revTextId, revText.revTextId));
 }
 
 async function createRevRecords({
@@ -148,5 +146,5 @@ async function createRevRecords({
     .set({
       revText: revText,
     })
-    .where(eq(schema.chiiRevText.revTextId, revTextId));
+    .where(op.eq(schema.chiiRevText.revTextId, revTextId));
 }
