@@ -16,7 +16,9 @@ export async function countUserBlog(uid: number): Promise<number> {
   const [{ count = 0 } = {}] = await db
     .select({ count: op.count() })
     .from(schema.chiiBlogEntries)
-    .where(op.eq(schema.chiiBlogEntries.uid, uid));
+    .where(
+      op.and(op.eq(schema.chiiBlogEntries.uid, uid), op.eq(schema.chiiBlogEntries.public, true)),
+    );
   await redis.setex(key, 3600, count);
   return count;
 }
@@ -61,7 +63,7 @@ export async function countUserIndex(uid: number): Promise<res.IUserIndexStats> 
   const [{ create = 0 } = {}] = await db
     .select({ create: op.count() })
     .from(schema.chiiIndexes)
-    .where(op.eq(schema.chiiIndexes.uid, uid));
+    .where(op.and(op.eq(schema.chiiIndexes.uid, uid), op.eq(schema.chiiIndexes.ban, 0)));
   const [{ collect = 0 } = {}] = await db
     .select({ collect: op.count() })
     .from(schema.chiiIndexCollects)
@@ -119,6 +121,7 @@ export async function countUserSubjectCollection(
     .where(
       op.and(
         op.eq(schema.chiiSubjectInterests.uid, uid),
+        op.eq(schema.chiiSubjectInterests.private, 0),
         op.ne(schema.chiiSubjectInterests.type, 0),
       ),
     )
