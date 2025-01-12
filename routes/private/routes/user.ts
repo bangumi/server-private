@@ -92,7 +92,7 @@ function toUserSubjectCollection(
       .filter((x) => x !== ''),
     epStatus: interest.epStatus,
     volStatus: interest.volStatus,
-    private: Boolean(interest.private),
+    private: interest.private,
     updatedAt: interest.updatedAt,
   };
 }
@@ -342,7 +342,7 @@ export async function setup(app: App) {
         since ? op.gte(schema.chiiSubjectInterests.updatedAt, since) : undefined,
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
-        auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.private, 0),
+        auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.private, false),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 
@@ -417,7 +417,7 @@ export async function setup(app: App) {
         op.ne(schema.chiiSubjectInterests.type, 0),
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
-        auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.private, 0),
+        auth.userID === user.id ? undefined : op.eq(schema.chiiSubjectInterests.private, false),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 
