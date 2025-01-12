@@ -92,7 +92,7 @@ function toUserSubjectCollection(
       .filter((x) => x !== ''),
     epStatus: interest.epStatus,
     volStatus: interest.volStatus,
-    private: Boolean(interest.private),
+    private: interest.private,
     updatedAt: interest.updatedAt,
   };
 }
