@@ -1,13 +1,26 @@
 import { expect, test } from 'vitest';
 
-import { AppDataSource } from '@app/lib/orm/index.ts';
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
+import { RevType } from '@app/lib/orm/entity/index.ts';
 
 import { pushRev } from './ep.ts';
 
 test('get episode rev', async () => {
   // const r = await getRev(15, 8);
   // expect(r).toMatchInlineSnapshot('Array []');
-  await AppDataSource.transaction(async (t) => {
+
+  await db
+    .delete(schema.chiiRevHistory)
+    .where(
+      op.and(
+        op.eq(schema.chiiRevHistory.revMid, 8),
+        op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
+      ),
+    )
+    .execute();
+
+  await db.transaction(async (t) => {
     await expect(
       pushRev(t, {
         episodeID: 8,
@@ -25,5 +38,23 @@ test('get episode rev', async () => {
         comment: 'test',
       }),
     ).resolves.toMatchInlineSnapshot('undefined');
+
+    const revs = await t
+      .select()
+      .from(schema.chiiRevHistory)
+      .where(
+        op.and(
+          op.eq(schema.chiiRevHistory.revMid, 8),
+          op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
+        ),
+      )
+      .execute();
+    expect(revs).toHaveLength(1);
+    expect(revs[0]).toMatchObject({
+      revMid: 8,
+      revType: RevType.episodeEdit,
+      revCreator: 1,
+      revEditSummary: 'test',
+    });
   });
 });
