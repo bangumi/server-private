@@ -121,7 +121,7 @@ export async function countUserSubjectCollection(
     .where(
       op.and(
         op.eq(schema.chiiSubjectInterests.uid, uid),
-        op.eq(schema.chiiSubjectInterests.private, 0),
+        op.eq(schema.chiiSubjectInterests.private, false),
         op.ne(schema.chiiSubjectInterests.type, 0),
       ),
     )

@@ -579,7 +579,7 @@ export async function setup(app: App) {
       }
       const condition = op.and(
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
-        op.eq(schema.chiiSubjectInterests.private, 0),
+        op.eq(schema.chiiSubjectInterests.private, false),
         op.eq(schema.chiiSubjectInterests.hasComment, 1),
         type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
       );

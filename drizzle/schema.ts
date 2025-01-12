@@ -930,7 +930,7 @@ export const chiiSubjectInterests = mysqlTable(
     createIp: char('interest_create_ip', { length: 15 }).notNull(),
     updateIp: char('interest_lasttouch_ip', { length: 15 }).notNull(),
     updatedAt: int('interest_lasttouch').default(0).notNull(),
-    private: tinyint('interest_private').notNull(),
+    private: customBoolean('interest_private').notNull(),
   },
   (table) => {
     return {
