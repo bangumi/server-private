@@ -2,9 +2,10 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 
+import { db } from '@app/drizzle/db.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { AppDataSource, EpisodeRepo } from '@app/lib/orm/index.ts';
+import { EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -217,7 +218,7 @@ export async function setup(app: App) {
 
       const now = new Date();
 
-      await AppDataSource.transaction(async (t) => {
+      await db.transaction(async (t) => {
         await pushRev(t, {
           episodeID,
           rev: {
