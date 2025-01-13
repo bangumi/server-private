@@ -3,7 +3,7 @@ import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import * as php from '@trim21/php-serialize';
 
 import type * as orm from '@app/drizzle/orm.ts';
-import { avatar, blogIcon, personImages, subjectCover } from '@app/lib/images';
+import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
@@ -670,7 +670,7 @@ export function toSlimGroup(group: orm.IGroup): res.ISlimGroup {
     name: group.name,
     nsfw: group.nsfw,
     title: group.title,
-    icon: avatar(group.icon),
+    icon: groupIcon(group.icon),
     creatorID: group.creator,
     totalMembers: group.members,
     createdAt: group.createdAt,
