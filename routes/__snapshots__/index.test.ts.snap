@@ -220,7 +220,7 @@ exports[`should build private api spec 1`] = `
 
             next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-            dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           minLength: 1
           type: string
         content:
@@ -247,7 +247,7 @@ exports[`should build private api spec 1`] = `
 
             next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-            dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           type: string
         text:
           description: bbcode
@@ -3527,7 +3527,7 @@ paths:
         next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
 
-        dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+        dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
       operationId: login
       requestBody:
         content:
@@ -4596,7 +4596,7 @@ paths:
         next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
 
-        dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+        dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
       operationId: createSubjectReply
       parameters:
         - example: 371602
@@ -5216,7 +5216,7 @@ paths:
 
                     next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-                    dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+                    dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
                   type: string
                 text:
                   description: bbcode
