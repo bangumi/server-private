@@ -304,6 +304,29 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
   };
 }
 
+export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    epStatus: interest.epStatus,
+    volStatus: interest.volStatus,
+    private: interest.private,
+    updatedAt: interest.updatedAt,
+  };
+}
+
+export function toSlimSubjectInterest(interest: orm.ISubjectInterest): res.ISlimSubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    updatedAt: interest.updatedAt,
+  };
+}
+
 export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubjectRelationType {
   const rtype = findSubjectRelationType(relation.relatedType, relation.relation);
   if (!rtype) {
@@ -593,7 +616,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
   };
 }
 
-export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
+export function toIndex(index: orm.IIndex): res.IIndex {
   return {
     id: index.id,
     type: index.type,
@@ -605,7 +628,6 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     stats: toIndexStats(index.stats),
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
-    creator: toSlimUser(user),
   };
 }
 
@@ -661,6 +683,24 @@ export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): r
   return {
     user: toSlimUser(user),
     createdAt: collect.createdAt,
+  };
+}
+
+export function toGroup(group: orm.IGroup): res.IGroup {
+  return {
+    id: group.id,
+    cat: group.cat,
+    name: group.name,
+    nsfw: group.nsfw,
+    title: group.title,
+    icon: groupIcon(group.icon),
+    creatorID: group.creator,
+    description: group.desc,
+    totalTopics: group.topics,
+    totalPosts: group.posts,
+    totalMembers: group.members,
+    accessible: group.accessible,
+    createdAt: group.createdAt,
   };
 }
 

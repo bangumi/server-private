@@ -40,13 +40,13 @@ export function addSchemas(app: App) {
   app.addSchema(res.PersonWork);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
-  app.addSchema(res.SubReply);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.SlimGroup);
   app.addSchema(res.SlimIndex);
   app.addSchema(res.SlimPerson);
   app.addSchema(res.SlimSubject);
+  app.addSchema(res.SlimSubjectInterest);
   app.addSchema(res.SlimUser);
   app.addSchema(res.Subject);
   app.addSchema(res.SubjectAirtime);
@@ -54,6 +54,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectCollection);
   app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
+  app.addSchema(res.SubjectInterest);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectRating);
   app.addSchema(res.SubjectRec);
@@ -64,6 +65,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.SubjectStaffPositionType);
   app.addSchema(res.SubjectTag);
+  app.addSchema(res.SubReply);
   app.addSchema(res.Timeline);
   app.addSchema(res.TimelineCat);
   app.addSchema(res.TimelineMemo);
@@ -73,8 +75,8 @@ export function addSchemas(app: App) {
   app.addSchema(res.User);
   app.addSchema(res.UserHomepage);
   app.addSchema(res.UserHomepageSection);
-  app.addSchema(res.UserStats);
   app.addSchema(res.UserIndexStats);
   app.addSchema(res.UserMonoCollectionStats);
+  app.addSchema(res.UserStats);
   app.addSchema(res.UserSubjectCollectionStats);
 }
