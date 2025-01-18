@@ -38,8 +38,7 @@ export async function fetchSlimUserByUsername(
   const data = await db
     .select()
     .from(schema.chiiUsers)
-    .where(op.eq(schema.chiiUsers.username, username))
-    .execute();
+    .where(op.eq(schema.chiiUsers.username, username));
   for (const d of data) {
     return convert.toSlimUser(d);
   }
@@ -53,11 +52,7 @@ export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | un
     const item = JSON.parse(cached) as res.ISlimUser;
     return item;
   }
-  const [data] = await db
-    .select()
-    .from(schema.chiiUsers)
-    .where(op.eq(schema.chiiUsers.id, uid))
-    .execute();
+  const [data] = await db.select().from(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, uid));
   if (!data) {
     return;
   }
@@ -84,8 +79,7 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   const data = await db
     .select()
     .from(schema.chiiUsers)
-    .where(op.inArray(schema.chiiUsers.id, missing))
-    .execute();
+    .where(op.inArray(schema.chiiUsers.id, missing));
   for (const d of data) {
     const slim = convert.toSlimUser(d);
     await redis.setex(getUserSlimCacheKey(slim.id), ONE_MONTH, JSON.stringify(slim));
@@ -98,8 +92,7 @@ export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> 
   const data = await db
     .select({ fid: schema.chiiFriends.fid })
     .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.uid, userID))
-    .execute();
+    .where(op.eq(schema.chiiFriends.uid, userID));
   return data.map((d) => d.fid);
 }
 
@@ -107,8 +100,7 @@ export async function fetchFollowerIDsByUserID(userID: number): Promise<number[]
   const data = await db
     .select({ uid: schema.chiiFriends.uid })
     .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.fid, userID))
-    .execute();
+    .where(op.eq(schema.chiiFriends.fid, userID));
   return data.map((d) => d.uid);
 }
 
@@ -130,8 +122,7 @@ export async function fetchSlimSubjectByID(
     .select()
     .from(schema.chiiSubjects)
     .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
-    .execute();
+    .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)));
   if (!data) {
     return;
   }
@@ -173,8 +164,9 @@ export async function fetchSlimSubjectsByIDs(
         schema.chiiSubjectFields,
         op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
       )
-      .where(op.and(op.inArray(schema.chiiSubjects.id, missing), op.ne(schema.chiiSubjects.ban, 1)))
-      .execute();
+      .where(
+        op.and(op.inArray(schema.chiiSubjects.id, missing), op.ne(schema.chiiSubjects.ban, 1)),
+      );
     for (const d of data) {
       const slim = convert.toSlimSubject(d.chii_subjects, d.chii_subject_fields);
       await redis.setex(
@@ -208,8 +200,7 @@ export async function fetchSubjectByID(
     .select()
     .from(schema.chiiSubjects)
     .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)))
-    .execute();
+    .where(op.and(op.eq(schema.chiiSubjects.id, id), op.ne(schema.chiiSubjects.ban, 1)));
   if (!data) {
     return;
   }
@@ -253,8 +244,9 @@ export async function fetchSubjectsByIDs(
         schema.chiiSubjectFields,
         op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
       )
-      .where(op.and(op.inArray(schema.chiiSubjects.id, missing), op.ne(schema.chiiSubjects.ban, 1)))
-      .execute();
+      .where(
+        op.and(op.inArray(schema.chiiSubjects.id, missing), op.ne(schema.chiiSubjects.ban, 1)),
+      );
 
     for (const d of data) {
       const item = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
@@ -298,8 +290,7 @@ export async function fetchSubjectIDsByFilter(
           op.inArray(schema.chiiTagIndex.name, filter.tags),
           op.eq(schema.chiiTagIndex.cat, TagCat.Meta),
         ),
-      )
-      .execute();
+      );
     if (filter.ids) {
       filter.ids = filter.ids.filter((id) => ids.some((item) => item.id === id));
     } else {
@@ -357,8 +348,7 @@ export async function fetchSubjectIDsByFilter(
     .select({ count: op.count() })
     .from(schema.chiiSubjects)
     .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(op.and(...conditions))
-    .execute();
+    .where(op.and(...conditions));
   if (count === 0) {
     return { data: [], total: 0 };
   }
@@ -377,10 +367,7 @@ export async function fetchSubjectIDsByFilter(
   } else {
     query.orderBy(...sorts);
   }
-  const data = await query
-    .limit(24)
-    .offset((page - 1) * 24)
-    .execute();
+  const data = await query.limit(24).offset((page - 1) * 24);
   const result = { data: data.map((d) => d.id), total };
   if (page === 1) {
     await redis.setex(cacheKey, 86400, JSON.stringify(result));
@@ -429,8 +416,7 @@ export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
         op.eq(schema.chiiSubjectFields.year, now.year),
         op.eq(schema.chiiSubjectFields.month, seasonSets[now.month]),
       ),
-    )
-    .execute();
+    );
   const result = [];
   for (const d of data) {
     if (d.weekday < 1 || d.weekday > 7) {
@@ -451,8 +437,7 @@ export async function fetchSubjectEpStatus(
     .from(schema.chiiEpStatus)
     .where(
       op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
-    )
-    .execute();
+    );
   for (const d of data) {
     return convert.toSubjectEpStatus(d);
   }
@@ -492,8 +477,7 @@ async function fetchEpisodeItemByID(episodeID: number): Promise<res.IEpisode | u
   const [data] = await db
     .select()
     .from(schema.chiiEpisodes)
-    .where(op.and(op.eq(schema.chiiEpisodes.id, episodeID), op.ne(schema.chiiEpisodes.ban, 1)))
-    .execute();
+    .where(op.and(op.eq(schema.chiiEpisodes.id, episodeID), op.ne(schema.chiiEpisodes.ban, 1)));
   if (!data) {
     return;
   }
@@ -518,8 +502,7 @@ export async function fetchSlimCharacterByID(
   const [data] = await db
     .select()
     .from(schema.chiiCharacters)
-    .where(op.and(op.eq(schema.chiiCharacters.id, id), op.ne(schema.chiiCharacters.ban, 1)))
-    .execute();
+    .where(op.and(op.eq(schema.chiiCharacters.id, id), op.ne(schema.chiiCharacters.ban, 1)));
   if (!data) {
     return;
   }
@@ -557,8 +540,7 @@ export async function fetchSlimCharactersByIDs(
     const data = await db
       .select()
       .from(schema.chiiCharacters)
-      .where(op.inArray(schema.chiiCharacters.id, missing))
-      .execute();
+      .where(op.inArray(schema.chiiCharacters.id, missing));
     for (const d of data) {
       const slim = convert.toSlimCharacter(d);
       await redis.setex(getCharacterSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
@@ -587,8 +569,7 @@ export async function fetchSlimPersonByID(
   const [data] = await db
     .select()
     .from(schema.chiiPersons)
-    .where(op.and(op.eq(schema.chiiPersons.id, id), op.ne(schema.chiiPersons.ban, 1)))
-    .execute();
+    .where(op.and(op.eq(schema.chiiPersons.id, id), op.ne(schema.chiiPersons.ban, 1)));
   if (!data) {
     return;
   }
@@ -626,8 +607,7 @@ export async function fetchSlimPersonsByIDs(
     const data = await db
       .select()
       .from(schema.chiiPersons)
-      .where(op.and(op.inArray(schema.chiiPersons.id, missing), op.ne(schema.chiiPersons.ban, 1)))
-      .execute();
+      .where(op.and(op.inArray(schema.chiiPersons.id, missing), op.ne(schema.chiiPersons.ban, 1)));
     for (const d of data) {
       const slim = convert.toSlimPerson(d);
       await redis.setex(getPersonSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
@@ -659,8 +639,7 @@ export async function fetchCastsBySubjectAndCharacterIDs(
         op.ne(schema.chiiPersons.ban, 1),
         allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
-    )
-    .execute();
+    );
   const result: Record<number, res.ISlimPerson[]> = {};
   for (const d of data) {
     const person = convert.toSlimPerson(d.chii_persons);
@@ -690,8 +669,7 @@ export async function fetchCastsByCharacterAndSubjectIDs(
         op.ne(schema.chiiPersons.ban, 1),
         allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
-    )
-    .execute();
+    );
   const result: Record<number, res.ISlimPerson[]> = {};
   for (const d of data) {
     const person = convert.toSlimPerson(d.chii_persons);
@@ -736,8 +714,7 @@ export async function fetchCastsByPersonAndCharacterIDs(
         op.ne(schema.chiiSubjects.ban, 1),
         allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       ),
-    )
-    .execute();
+    );
   const result: Record<number, res.ICharacterSubjectRelation[]> = {};
   for (const d of data) {
     const relation = convert.toCharacterSubjectRelation(
@@ -761,8 +738,7 @@ export async function fetchSlimIndexByID(indexID: number): Promise<res.ISlimInde
   const [data] = await db
     .select()
     .from(schema.chiiIndexes)
-    .where(op.and(op.eq(schema.chiiIndexes.id, indexID), op.ne(schema.chiiIndexes.ban, 1)))
-    .execute();
+    .where(op.and(op.eq(schema.chiiIndexes.id, indexID), op.ne(schema.chiiIndexes.ban, 1)));
   if (!data) {
     return;
   }
@@ -787,8 +763,7 @@ export async function fetchSlimGroupByID(
   const [data] = await db
     .select()
     .from(schema.chiiGroups)
-    .where(op.eq(schema.chiiGroups.id, groupID))
-    .execute();
+    .where(op.eq(schema.chiiGroups.id, groupID));
   if (!data) {
     return;
   }
@@ -826,8 +801,7 @@ export async function fetchSlimGroupsByIDs(
     const data = await db
       .select()
       .from(schema.chiiGroups)
-      .where(op.inArray(schema.chiiGroups.id, missing))
-      .execute();
+      .where(op.inArray(schema.chiiGroups.id, missing));
     for (const d of data) {
       const slim = convert.toSlimGroup(d);
       await redis.setex(getGroupSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
@@ -851,8 +825,7 @@ export async function fetchSlimBlogEntryByID(
   const [data] = await db
     .select()
     .from(schema.chiiBlogEntries)
-    .where(op.eq(schema.chiiBlogEntries.id, entryID))
-    .execute();
+    .where(op.eq(schema.chiiBlogEntries.id, entryID));
   if (!data) {
     return;
   }
@@ -866,8 +839,7 @@ export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic
     .select()
     .from(schema.chiiSubjectTopics)
     .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectTopics.id, topicID))
-    .execute();
+    .where(op.eq(schema.chiiSubjectTopics.id, topicID));
   for (const d of data) {
     return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
   }
@@ -879,8 +851,7 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
     .select()
     .from(schema.chiiSubjectPosts)
     .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectPosts.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
-    .execute();
+    .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
 
   const subReplies: Record<number, res.ISubReply[]> = {};
   const topLevelReplies: res.IReply[] = [];

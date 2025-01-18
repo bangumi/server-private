@@ -29,8 +29,7 @@ export async function pushRev(
         op.eq(schema.chiiRevHistory.revMid, episodeID),
         op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
       ),
-    )
-    .execute();
+    );
   const o = revs.pop();
   if (!o) {
     return await createRevRecords({
@@ -74,8 +73,7 @@ async function updatePreviousRevRecords({
   const [revText] = await t
     .select()
     .from(schema.chiiRevText)
-    .where(op.eq(schema.chiiRevText.revTextId, previous.revTextId))
-    .execute();
+    .where(op.eq(schema.chiiRevText.revTextId, previous.revTextId));
 
   if (!revText) {
     throw new Error(`RevText not found for ID: ${previous.revTextId}`);

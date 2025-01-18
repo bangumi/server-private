@@ -56,7 +56,7 @@ export async function fetchTopicReactions(
   id: number,
   uid: number,
 ): Promise<Record<number, Reaction[]>> {
-  const data = await db.select().from(chiiLikes).where(op.eq(chiiLikes.mainID, id)).execute();
+  const data = await db.select().from(chiiLikes).where(op.eq(chiiLikes.mainID, id));
 
   const r = lo.groupBy(data, (x) => x.relatedID);
 

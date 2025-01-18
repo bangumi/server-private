@@ -254,16 +254,13 @@ export function setup(app: App) {
         throw new NotFoundError(`image(id=${imageID}, subjectID=${subjectID})`);
       }
 
-      await db
-        .insert(chiiLikes)
-        .values({
-          type: LikeType.subject_cover,
-          relatedID: imageID,
-          uid: auth.userID,
-          createdAt: DateTime.now().toUnixInteger(),
-          deleted: 0,
-        })
-        .execute();
+      await db.insert(chiiLikes).values({
+        type: LikeType.subject_cover,
+        relatedID: imageID,
+        uid: auth.userID,
+        createdAt: DateTime.now().toUnixInteger(),
+        deleted: 0,
+      });
 
       await Subject.onSubjectVote(subjectID);
 
@@ -303,8 +300,7 @@ export function setup(app: App) {
             op.eq(chiiLikes.relatedID, imageID),
             op.eq(chiiLikes.deleted, 0),
           ),
-        )
-        .execute();
+        );
 
       if (result.affectedRows) {
         await Subject.onSubjectVote(subjectID);

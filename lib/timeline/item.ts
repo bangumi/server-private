@@ -305,8 +305,7 @@ export async function fetchTimelineByIDs(
     const data = await db
       .select()
       .from(schema.chiiTimeline)
-      .where(op.inArray(schema.chiiTimeline.id, missing))
-      .execute();
+      .where(op.inArray(schema.chiiTimeline.id, missing));
     for (const d of data) {
       const item = await toTimeline(d, allowNsfw);
       result[d.id] = item;

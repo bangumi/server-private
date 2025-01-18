@@ -9,12 +9,12 @@ import { createServer } from '@app/lib/server.ts';
 describe('login', () => {
   beforeEach(async () => {
     await redis.flushdb('SYNC');
-    await db.delete(chiiOsWebSessions).execute();
+    await db.delete(chiiOsWebSessions);
   });
 
   afterEach(async () => {
     await redis.flushdb('SYNC');
-    await db.delete(chiiOsWebSessions).execute();
+    await db.delete(chiiOsWebSessions);
   });
 
   test('should failed on too many requests', async () => {

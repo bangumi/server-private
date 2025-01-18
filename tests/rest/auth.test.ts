@@ -9,11 +9,11 @@ const treeHoleUser = { id: 382951, nickname: '树洞酱', username: '382951' };
 const fakeIP = 'fake-client-ip-should-not-fail';
 
 beforeEach(async () => {
-  await db.delete(chiiOsWebSessions).execute();
+  await db.delete(chiiOsWebSessions);
 });
 
 afterEach(async () => {
-  await db.delete(chiiOsWebSessions).execute();
+  await db.delete(chiiOsWebSessions);
 });
 
 test('should pass login/logout authorization flow', async () => {
