@@ -299,8 +299,7 @@ export async function userOauthRoutes(app: App) {
         .select()
         .from(chiiOauthClients)
         .where(op.eq(chiiOauthClients.clientID, req.body.client_id))
-        .limit(1)
-        .execute();
+        .limit(1);
       if (!client) {
         throw new AppNonexistenceError();
       }
@@ -389,8 +388,7 @@ async function tokenFromCode(req: {
     .from(chiiOauthClients)
     .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
     .where(op.eq(chiiOauthClients.clientID, req.clientID))
-    .limit(1)
-    .execute();
+    .limit(1);
 
   if (!client || !app) {
     throw new AppNonexistenceError();
@@ -473,8 +471,7 @@ async function tokenFromRefresh(req: {
         ),
       )
       .limit(1)
-      .for('update')
-      .execute();
+      .for('update');
     if (!refresh) {
       throw new InvalidRefreshTokenError();
     }
@@ -484,8 +481,7 @@ async function tokenFromRefresh(req: {
       .from(chiiOauthClients)
       .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
       .where(op.eq(chiiOauthClients.clientID, req.clientID))
-      .limit(1)
-      .execute();
+      .limit(1);
     if (!client || !app) {
       throw new InvalidClientIDError();
     }
@@ -523,8 +519,7 @@ async function tokenFromRefresh(req: {
     await t
       .update(chiiOAuthRefreshToken)
       .set({ expiredAt: now.toJSDate() })
-      .where(sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`)
-      .execute();
+      .where(sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`);
 
     return [token.accessToken, newRefresh.refreshToken, refresh.userID];
   });

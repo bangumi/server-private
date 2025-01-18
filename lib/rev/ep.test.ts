@@ -17,8 +17,7 @@ test('get episode rev', async () => {
         op.eq(schema.chiiRevHistory.revMid, 8),
         op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
       ),
-    )
-    .execute();
+    );
 
   await db.transaction(async (t) => {
     await expect(
@@ -47,8 +46,7 @@ test('get episode rev', async () => {
           op.eq(schema.chiiRevHistory.revMid, 8),
           op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
         ),
-      )
-      .execute();
+      );
     expect(revs).toHaveLength(1);
     expect(revs[0]).toMatchObject({
       revMid: 8,

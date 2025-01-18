@@ -57,8 +57,7 @@ export async function updateTrendingSubjects(
     )
     .groupBy(schema.chiiSubjects.id)
     .orderBy(op.desc(op.count(schema.chiiSubjects.id)))
-    .limit(1000)
-    .execute();
+    .limit(1000);
 
   const ids = [];
   for (const item of data) {

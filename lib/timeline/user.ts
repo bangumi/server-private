@@ -28,8 +28,7 @@ export async function getTimelineUser(
         ),
       )
       .orderBy(op.desc(schema.chiiTimeline.id))
-      .limit(limit)
-      .execute();
+      .limit(limit);
     ids.push(...data.map((d) => d.id));
     if (!until && ids.length > 0) {
       // 回填第一页的数据

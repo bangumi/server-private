@@ -10,11 +10,11 @@ import { create, get, revoke } from './session.ts';
 import { sql } from 'drizzle-orm';
 
 beforeEach(async () => {
-  await db.delete(chiiOsWebSessions).execute();
+  await db.delete(chiiOsWebSessions);
 });
 
 afterEach(async () => {
-  await db.delete(chiiOsWebSessions).execute();
+  await db.delete(chiiOsWebSessions);
 });
 
 test('should create and get session', async () => {
@@ -41,16 +41,13 @@ test('should create and get session', async () => {
 
 test('should revoke session', async () => {
   const token = 'fake-random-session-token';
-  await db
-    .insert(chiiOsWebSessions)
-    .values({
-      key: token,
-      value: Buffer.from(''),
-      userID: 0,
-      createdAt: DateTime.now().toUnixInteger(),
-      expiredAt: DateTime.now().toUnixInteger() + 60 * 60 * 242 * 30,
-    })
-    .execute();
+  await db.insert(chiiOsWebSessions).values({
+    key: token,
+    value: Buffer.from(''),
+    userID: 0,
+    createdAt: DateTime.now().toUnixInteger(),
+    expiredAt: DateTime.now().toUnixInteger() + 60 * 60 * 242 * 30,
+  });
 
   await revoke(token);
   const session = await db.query.chiiOsWebSessions.findFirst({

@@ -76,8 +76,7 @@ export async function setup(app: App) {
         .select({ id: schema.chiiSubjectRelatedBlogs.subjectID })
         .from(schema.chiiSubjectRelatedBlogs)
         .where(op.eq(schema.chiiSubjectRelatedBlogs.entryID, entryID))
-        .orderBy(op.desc(schema.chiiSubjectRelatedBlogs.id))
-        .execute();
+        .orderBy(op.desc(schema.chiiSubjectRelatedBlogs.id));
       const subjectIDs = data.map((item) => item.id);
       const subjects = await fetcher.fetchSlimSubjectsByIDs(subjectIDs);
       const result = [];
@@ -130,8 +129,7 @@ export async function setup(app: App) {
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiBlogPhotos)
-        .where(op.eq(schema.chiiBlogPhotos.eid, entryID))
-        .execute();
+        .where(op.eq(schema.chiiBlogPhotos.eid, entryID));
 
       const data = await db
         .select()
@@ -139,8 +137,7 @@ export async function setup(app: App) {
         .where(op.eq(schema.chiiBlogPhotos.eid, entryID))
         .orderBy(op.desc(schema.chiiBlogPhotos.createdAt))
         .limit(limit)
-        .offset(offset)
-        .execute();
+        .offset(offset);
 
       const photos = data.map((photo) => convert.toBlogPhoto(photo));
 
