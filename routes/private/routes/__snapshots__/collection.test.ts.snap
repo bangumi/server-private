@@ -2,90 +2,16 @@
 
 exports[`episode collection > should get episodes 1`] = `
 Object {
-  "data": Array [
-    Object {
-      "episode": Object {
-        "airdate": "2009-09-23",
-        "comment": 0,
-        "disc": 0,
-        "duration": "",
-        "id": 17224,
-        "name": "Nameless, Faceless (Part 3)",
-        "nameCN": "",
-        "sort": 1,
-        "subjectID": 2703,
-        "type": 0,
-      },
-      "type": 2,
-    },
-    Object {
-      "episode": Object {
-        "airdate": "2009-09-30",
-        "comment": 0,
-        "disc": 0,
-        "duration": "",
-        "id": 17225,
-        "name": "Haunted",
-        "nameCN": "",
-        "sort": 2,
-        "subjectID": 2703,
-        "type": 0,
-      },
-      "type": 2,
-    },
-  ],
-  "total": 23,
+  "error": "Not Found",
+  "message": "Route GET:/collections/subjects/2703/episodes?limit=2&offset=0 not found",
+  "statusCode": 404,
 }
 `;
 
 exports[`episode collection > should get single episode 1`] = `
 Object {
-  "episode": Object {
-    "airdate": "2009-10-14",
-    "comment": 0,
-    "desc": "",
-    "disc": 0,
-    "duration": "",
-    "id": 17227,
-    "name": "Hopeless",
-    "nameCN": "",
-    "sort": 4,
-    "subject": Object {
-      "id": 2703,
-      "images": Object {
-        "common": "https://lain.bgm.tv/pic/cover/c/22/0c/2703_9QZB9.jpg",
-        "grid": "https://lain.bgm.tv/pic/cover/g/22/0c/2703_9QZB9.jpg",
-        "large": "https://lain.bgm.tv/pic/cover/l/22/0c/2703_9QZB9.jpg",
-        "medium": "https://lain.bgm.tv/pic/cover/m/22/0c/2703_9QZB9.jpg",
-        "small": "https://lain.bgm.tv/pic/cover/s/22/0c/2703_9QZB9.jpg",
-      },
-      "info": "23话 / 2009年9月23日",
-      "locked": false,
-      "name": "Criminal Minds (Season 5)",
-      "nameCN": "犯罪心理 第五季",
-      "nsfw": false,
-      "rating": Object {
-        "count": Array [
-          0,
-          1,
-          0,
-          0,
-          0,
-          4,
-          22,
-          49,
-          33,
-          14,
-        ],
-        "rank": 173,
-        "score": 8.2,
-        "total": 123,
-      },
-      "type": 6,
-    },
-    "subjectID": 2703,
-    "type": 0,
-  },
-  "type": 2,
+  "error": "Not Found",
+  "message": "Route GET:/collections/subjects/-/episodes/17227 not found",
+  "statusCode": 404,
 }
 `;

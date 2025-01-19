@@ -325,6 +325,8 @@ exports[`should build private api spec 1`] = `
           type: string
         sort:
           type: number
+        status:
+          $ref: '#/components/schemas/EpisodeCollectionStatus'
         subject:
           $ref: '#/components/schemas/SlimSubject'
         subjectID:
@@ -2449,16 +2451,6 @@ exports[`should build private api spec 1`] = `
         type: object
       title: UserSubjectCollectionStats
       type: object
-    UserSubjectEpisodeCollection:
-      properties:
-        episode:
-          $ref: '#/components/schemas/Episode'
-        type:
-          $ref: '#/components/schemas/EpisodeCollectionStatus'
-      required:
-        - episode
-        - type
-      type: object
     WikiPlatform:
       properties:
         id:
@@ -3205,99 +3197,6 @@ paths:
       summary: 获取当前用户的条目收藏
       tags:
         - collection
-  /p1/collections/subjects/-/episodes/{episodeID}:
-    get:
-      operationId: getUserSubjectCollectionEpisodeByEpisodeID
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            minimum: 1
-            type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserSubjectEpisodeCollection'
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 获取当前用户的单个章节收藏
-      tags:
-        - collection
-  /p1/collections/subjects/{subjectID}/episodes:
-    get:
-      operationId: getUserSubjectCollectionEpisodesBySubjectID
-      parameters:
-        - in: query
-          name: type
-          required: false
-          schema:
-            $ref: '#/components/schemas/EpisodeType'
-        - description: max 1000
-          in: query
-          name: limit
-          required: false
-          schema:
-            default: 100
-            maximum: 1000
-            minimum: 1
-            type: integer
-        - description: min 0
-          in: query
-          name: offset
-          required: false
-          schema:
-            default: 0
-            minimum: 0
-            type: integer
-        - in: path
-          name: subjectID
-          required: true
-          schema:
-            minimum: 1
-            type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  data:
-                    items:
-                      $ref: '#/components/schemas/UserSubjectEpisodeCollection'
-                    type: array
-                  total:
-                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
-                    type: integer
-                required:
-                  - data
-                  - total
-                type: object
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 获取当前用户单个条目的章节收藏
-      tags:
-        - collection
   /p1/debug:
     get:
       description: debug 路由
@@ -3316,6 +3215,199 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: debug
+  /p1/episodes/-/comments/{commentID}:
+    delete:
+      operationId: deleteSubjectEpComment
+      parameters:
+        - example: 1034989
+          in: path
+          name: commentID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 删除条目的剧集吐槽
+      tags:
+        - episode
+    put:
+      operationId: updateSubjectEpComment
+      parameters:
+        - example: 1075440
+          in: path
+          name: commentID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEpisodeComment'
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 编辑条目的剧集吐槽
+      tags:
+        - episode
+  /p1/episodes/{episodeID}:
+    get:
+      operationId: getSubjectEpisode
+      parameters:
+        - example: 1075440
+          in: path
+          name: episodeID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取剧集信息
+      tags:
+        - episode
+  /p1/episodes/{episodeID}/comments:
+    get:
+      operationId: getSubjectEpisodeComments
+      parameters:
+        - example: 1075440
+          in: path
+          name: episodeID
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  allOf:
+                    - properties:
+                        content:
+                          type: string
+                        createdAt:
+                          type: integer
+                        creatorID:
+                          type: integer
+                        epID:
+                          type: integer
+                        id:
+                          type: integer
+                        reactions:
+                          items:
+                            $ref: '#/components/schemas/Reaction'
+                          type: array
+                        relatedID:
+                          type: integer
+                        state:
+                          type: integer
+                        user:
+                          $ref: '#/components/schemas/SlimUser'
+                      required:
+                        - id
+                        - epID
+                        - creatorID
+                        - relatedID
+                        - createdAt
+                        - content
+                        - state
+                        - user
+                        - reactions
+                      type: object
+                    - properties:
+                        replies:
+                          items:
+                            $ref: '#/components/schemas/EpisodeCommentBase'
+                          type: array
+                      required:
+                        - replies
+                      type: object
+                  type: object
+                type: array
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      summary: 获取条目的剧集吐槽箱
+      tags:
+        - episode
+    post:
+      operationId: createSubjectEpComment
+      parameters:
+        - example: 1075440
+          in: path
+          name: episodeID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEpisodeComment'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    description: new reply id
+                    type: integer
+                required:
+                  - id
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 创建条目的剧集吐槽
+      tags:
+        - episode
   /p1/followers:
     get:
       operationId: getMyFollowers
@@ -4533,249 +4625,6 @@ paths:
       summary: 获取条目列表
       tags:
         - subject
-  /p1/subjects/-/episode/-/comments/{commentID}:
-    delete:
-      parameters:
-        - in: path
-          name: commentID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-    put:
-      parameters:
-        - in: path
-          name: commentID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-  /p1/subjects/-/episode/{episodeID}:
-    get:
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-  /p1/subjects/-/episode/{episodeID}/comments:
-    get:
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-    post:
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-  /p1/subjects/-/episodes/-/comments/{commentID}:
-    delete:
-      operationId: deleteSubjectEpComment
-      parameters:
-        - example: 1034989
-          in: path
-          name: commentID
-          required: true
-          schema:
-            type: integer
-      responses:
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 删除条目的剧集吐槽
-      tags:
-        - episode
-    put:
-      operationId: updateSubjectEpComment
-      parameters:
-        - example: 1075440
-          in: path
-          name: commentID
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateEpisodeComment'
-      responses:
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 编辑条目的剧集吐槽
-      tags:
-        - episode
-  /p1/subjects/-/episodes/{episodeID}:
-    get:
-      operationId: getSubjectEpisode
-      parameters:
-        - example: 1075440
-          in: path
-          name: episodeID
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Episode'
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      summary: 获取剧集信息
-      tags:
-        - episode
-  /p1/subjects/-/episodes/{episodeID}/comments:
-    get:
-      operationId: getSubjectEpisodeComments
-      parameters:
-        - example: 1075440
-          in: path
-          name: episodeID
-          required: true
-          schema:
-            minimum: 0
-            type: integer
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                items:
-                  allOf:
-                    - properties:
-                        content:
-                          type: string
-                        createdAt:
-                          type: integer
-                        creatorID:
-                          type: integer
-                        epID:
-                          type: integer
-                        id:
-                          type: integer
-                        reactions:
-                          items:
-                            $ref: '#/components/schemas/Reaction'
-                          type: array
-                        relatedID:
-                          type: integer
-                        state:
-                          type: integer
-                        user:
-                          $ref: '#/components/schemas/SlimUser'
-                      required:
-                        - id
-                        - epID
-                        - creatorID
-                        - relatedID
-                        - createdAt
-                        - content
-                        - state
-                        - user
-                        - reactions
-                      type: object
-                    - properties:
-                        replies:
-                          items:
-                            $ref: '#/components/schemas/EpisodeCommentBase'
-                          type: array
-                      required:
-                        - replies
-                      type: object
-                  type: object
-                type: array
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      summary: 获取条目的剧集吐槽箱
-      tags:
-        - episode
-    post:
-      operationId: createSubjectEpComment
-      parameters:
-        - example: 1075440
-          in: path
-          name: episodeID
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateEpisodeComment'
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  id:
-                    description: new reply id
-                    type: integer
-                required:
-                  - id
-                type: object
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 创建条目的剧集吐槽
-      tags:
-        - episode
   /p1/subjects/-/posts/{postID}:
     delete:
       operationId: deleteSubjectPost
