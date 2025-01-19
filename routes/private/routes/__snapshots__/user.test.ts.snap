@@ -190,38 +190,6 @@ Object {
 }
 `;
 
-exports[`user collection > should get single character 1`] = `
-Object {
-  "error": "Not Found",
-  "message": "Route GET:/users/1/collections/characters/32 not found",
-  "statusCode": 404,
-}
-`;
-
-exports[`user collection > should get single index 1`] = `
-Object {
-  "error": "Not Found",
-  "message": "Route GET:/users/1/collections/indexes/1 not found",
-  "statusCode": 404,
-}
-`;
-
-exports[`user collection > should get single person 1`] = `
-Object {
-  "error": "Not Found",
-  "message": "Route GET:/users/1/collections/persons/1 not found",
-  "statusCode": 404,
-}
-`;
-
-exports[`user collection > should get single subject 1`] = `
-Object {
-  "error": "Not Found",
-  "message": "Route GET:/users/382951/collections/subjects/8 not found",
-  "statusCode": 404,
-}
-`;
-
 exports[`user collection > should get subjects 1`] = `
 Object {
   "data": Array [
