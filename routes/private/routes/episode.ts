@@ -25,8 +25,9 @@ export async function setup(app: App) {
     {
       schema: {
         summary: '获取剧集信息',
-        tags: [Tag.Episode],
         operationId: 'getSubjectEpisode',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
@@ -35,10 +36,14 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<res.IEpisode> => {
+    async ({ auth, params: { episodeID } }): Promise<res.IEpisode> => {
       const ep = await fetcher.fetchEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
+      }
+      if (auth.login) {
+        const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, ep.subjectID);
+        ep.status = epStatus[episodeID]?.type;
       }
       return ep;
     },

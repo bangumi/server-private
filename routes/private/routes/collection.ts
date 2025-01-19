@@ -1,32 +1,17 @@
-import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
-import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonType } from '@app/lib/subject/type.ts';
-import { EpisodeCollectionStatus } from '@app/lib/subject/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
-import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
-export type IUserSubjectEpisodeCollection = Static<typeof UserSubjectEpisodeCollection>;
-const UserSubjectEpisodeCollection = t.Object(
-  {
-    episode: res.Ref(res.Episode),
-    type: res.Ref(req.EpisodeCollectionStatus),
-  },
-  { $id: 'UserSubjectEpisodeCollection' },
-);
-
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(UserSubjectEpisodeCollection);
-
   app.get(
     '/friends',
     {
@@ -195,102 +180,6 @@ export async function setup(app: App) {
       return {
         data: collections,
         total: count,
-      };
-    },
-  );
-
-  app.get(
-    '/collections/subjects/:subjectID/episodes',
-    {
-      schema: {
-        summary: '获取当前用户单个条目的章节收藏',
-        operationId: 'getUserSubjectCollectionEpisodesBySubjectID',
-        tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        params: t.Object({
-          subjectID: t.Integer({ minimum: 1 }),
-        }),
-        querystring: t.Object({
-          type: t.Optional(req.Ref(req.EpisodeType)),
-          limit: t.Optional(
-            t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
-          ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
-        }),
-        response: {
-          200: res.Paged(res.Ref(UserSubjectEpisodeCollection)),
-        },
-      },
-      preHandler: [requireLogin('get subject episode collections')],
-    },
-    async ({ auth, params: { subjectID }, query: { type, limit = 100, offset = 0 } }) => {
-      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
-      if (!subject) {
-        throw new NotFoundError(`subject ${subjectID}`);
-      }
-      const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, subjectID);
-      const conditions = op.and(
-        op.eq(schema.chiiEpisodes.subjectID, subjectID),
-        op.ne(schema.chiiEpisodes.ban, 1),
-        type ? op.eq(schema.chiiEpisodes.type, type) : undefined,
-      );
-      const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
-        .from(schema.chiiEpisodes)
-        .where(conditions);
-
-      const data = await db
-        .select()
-        .from(schema.chiiEpisodes)
-        .where(conditions)
-        .orderBy(
-          op.asc(schema.chiiEpisodes.disc),
-          op.asc(schema.chiiEpisodes.type),
-          op.asc(schema.chiiEpisodes.sort),
-        )
-        .limit(limit)
-        .offset(offset);
-      const collections = data.map((d) => ({
-        episode: convert.toSlimEpisode(d),
-        type: epStatus[d.id]?.type ?? EpisodeCollectionStatus.None,
-      }));
-
-      return {
-        data: collections,
-        total: count,
-      };
-    },
-  );
-
-  app.get(
-    '/collections/subjects/-/episodes/:episodeID',
-    {
-      schema: {
-        summary: '获取当前用户的单个章节收藏',
-        operationId: 'getUserSubjectCollectionEpisodeByEpisodeID',
-        tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        params: t.Object({
-          episodeID: t.Integer({ minimum: 1 }),
-        }),
-        response: {
-          200: res.Ref(UserSubjectEpisodeCollection),
-        },
-      },
-      preHandler: [requireLogin('get subject episode collection')],
-    },
-    async ({ auth, params: { episodeID } }) => {
-      const episode = await fetcher.fetchEpisodeByID(episodeID);
-      if (!episode) {
-        throw new NotFoundError(`episode ${episodeID}`);
-      }
-      const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, episode.subjectID);
-      if (!epStatus) {
-        throw new NotFoundError(`status of episode ${episodeID}`);
-      }
-      return {
-        episode,
-        type: epStatus[episodeID]?.type ?? EpisodeCollectionStatus.None,
       };
     },
   );

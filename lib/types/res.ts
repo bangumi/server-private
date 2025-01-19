@@ -4,7 +4,13 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { CollectionType, EpisodeType, Ref, SubjectType } from '@app/lib/types/common.ts';
+import {
+  CollectionType,
+  EpisodeCollectionStatus,
+  EpisodeType,
+  Ref,
+  SubjectType,
+} from '@app/lib/types/common.ts';
 import * as examples from '@app/lib/types/examples.ts';
 
 export * from '@app/lib/types/common.ts';
@@ -421,6 +427,7 @@ export const Episode = t.Object(
     airdate: t.String(),
     comment: t.Integer(),
     desc: t.Optional(t.String()),
+    status: t.Optional(Ref(EpisodeCollectionStatus)),
     subjectID: t.Integer(),
     subject: t.Optional(Ref(SlimSubject)),
   },

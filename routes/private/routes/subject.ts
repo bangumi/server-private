@@ -88,7 +88,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { subjectID } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiSubjects)
         .innerJoin(
@@ -102,10 +102,15 @@ export async function setup(app: App) {
             auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
           ),
         );
-      for (const d of data) {
-        return convert.toSubject(d.chii_subjects, d.chii_subject_fields);
+      if (!data) {
+        throw new NotFoundError(`subject ${subjectID}`);
       }
-      throw new NotFoundError(`subject ${subjectID}`);
+      const subject = convert.toSubject(data.chii_subjects, data.chii_subject_fields);
+      if (auth.login) {
+        const interest = await fetcher.fetchSubjectInterest(auth.userID, subjectID);
+        subject.interest = interest;
+      }
+      return subject;
     },
   );
 
@@ -220,6 +225,12 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset);
       const episodes = data.map((d) => convert.toSlimEpisode(d));
+      if (auth.login) {
+        const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, subjectID);
+        for (const ep of episodes) {
+          ep.status = epStatus[ep.id]?.type;
+        }
+      }
       return {
         data: episodes,
         total: count,
