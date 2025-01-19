@@ -7,20 +7,6 @@ Object {
 }
 `;
 
-exports[`friends collection > should get followers 1`] = `
-Object {
-  "data": Array [],
-  "total": 0,
-}
-`;
-
-exports[`friends collection > should get friends 1`] = `
-Object {
-  "data": Array [],
-  "total": 0,
-}
-`;
-
 exports[`index collection > should get index collections 1`] = `
 Object {
   "data": Array [],

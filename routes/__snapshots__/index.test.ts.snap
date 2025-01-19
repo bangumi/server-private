@@ -3459,7 +3459,7 @@ paths:
           HTTPBearer: []
       summary: 获取当前用户的关注者列表
       tags:
-        - user
+        - friend
   /p1/friends:
     get:
       operationId: getMyFriends
@@ -3511,7 +3511,7 @@ paths:
           HTTPBearer: []
       summary: 获取当前用户的好友列表
       tags:
-        - user
+        - friend
   /p1/groups/-/posts/{postID}:
     delete:
       operationId: deleteGroupPost

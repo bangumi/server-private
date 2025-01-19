@@ -14,6 +14,7 @@ import * as calendar from './routes/calendar.ts';
 import * as character from './routes/character.ts';
 import * as collection from './routes/collection.ts';
 import * as episode from './routes/episode.ts';
+import * as friend from './routes/friend.ts';
 import * as misc from './routes/misc.ts';
 import * as person from './routes/person.ts';
 import * as post from './routes/post.ts';
@@ -75,6 +76,7 @@ async function API(app: App) {
   await app.register(character.setup);
   await app.register(collection.setup);
   await app.register(episode.setup);
+  await app.register(friend.setup);
   await app.register(group.setup);
   await app.register(misc.setup);
   await app.register(person.setup);

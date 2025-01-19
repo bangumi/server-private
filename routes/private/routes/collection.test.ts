@@ -5,42 +5,6 @@ import { emptyAuth } from '@app/lib/auth/index.ts';
 
 import { setup } from './collection.ts';
 
-describe('friends collection', () => {
-  test('should get friends', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 382951,
-      },
-    });
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/friends',
-      query: { limit: '2', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should get followers', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 382951,
-      },
-    });
-    await app.register(setup);
-    const res = await app.inject({
-      method: 'get',
-      url: '/followers',
-      query: { limit: '2', offset: '0' },
-    });
-    expect(res.json()).toMatchSnapshot();
-  });
-});
-
 describe('subject collection', () => {
   test('should get subject collections', async () => {
     const app = createTestServer({
