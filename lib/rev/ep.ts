@@ -8,14 +8,12 @@ import * as entity from '@app/lib/orm/entity/index.ts';
 export async function pushRev(
   t: Txn,
   {
-    episodeID,
-    rev,
+    revisions,
     creator,
     now,
     comment,
   }: {
-    episodeID: number;
-    rev: EpTextRev;
+    revisions: { episodeID: number; rev: EpTextRev }[];
     creator: number;
     now: Date;
     comment: string;
@@ -26,31 +24,38 @@ export async function pushRev(
     .from(schema.chiiRevHistory)
     .where(
       op.and(
-        op.eq(schema.chiiRevHistory.revMid, episodeID),
+        op.inArray(
+          schema.chiiRevHistory.revMid,
+          revisions.map((r) => r.episodeID),
+        ),
         op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
       ),
     );
-  const o = revs.pop();
-  if (!o) {
-    return await createRevRecords({
-      t: t,
-      episodeID: episodeID,
-      rev: rev,
-      creator: creator,
-      now: now,
-      comment,
-    });
-  }
+  const revMap = new Map<number, (typeof revs)[number]>(revs.map((r) => [r.revMid, r]));
 
-  return await updatePreviousRevRecords({
-    t: t,
-    previous: o,
-    episodeID: episodeID,
-    rev: rev,
-    creator: creator,
-    now: now,
-    comment,
-  });
+  for (const { episodeID, rev } of revisions) {
+    const o = revMap.get(episodeID);
+    if (o) {
+      await updatePreviousRevRecords({
+        t: t,
+        previous: o,
+        episodeID: episodeID,
+        rev: rev,
+        creator: creator,
+        now: now,
+        comment,
+      });
+    } else {
+      await createRevRecords({
+        t: t,
+        episodeID: episodeID,
+        rev: rev,
+        creator: creator,
+        now: now,
+        comment,
+      });
+    }
+  }
 }
 
 async function updatePreviousRevRecords({
