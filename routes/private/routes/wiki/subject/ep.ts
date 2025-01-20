@@ -220,16 +220,20 @@ export async function setup(app: App) {
 
       await db.transaction(async (t) => {
         await pushRev(t, {
-          episodeID,
-          rev: {
-            ep_airdate: ep.date,
-            ep_desc: ep.summary,
-            ep_duration: ep.duration,
-            ep_name: ep.name,
-            ep_name_cn: ep.nameCN,
-            ep_sort: '0',
-            ep_type: '0',
-          },
+          revisions: [
+            {
+              episodeID,
+              rev: {
+                ep_airdate: ep.date,
+                ep_desc: ep.summary,
+                ep_duration: ep.duration,
+                ep_name: ep.name,
+                ep_name_cn: ep.nameCN,
+                ep_sort: '0',
+                ep_type: '0',
+              },
+            },
+          ],
           creator: auth.userID,
           now,
           comment: commitMessage,
