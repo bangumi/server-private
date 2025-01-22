@@ -5,6 +5,8 @@ import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
+import { db } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -12,6 +14,7 @@ import * as entity from '@app/lib/orm/entity';
 import { RevType } from '@app/lib/orm/entity';
 import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
+import { pushRev } from '@app/lib/rev/ep.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
@@ -135,6 +138,24 @@ export const SubjectWikiInfo = t.Object(
     nsfw: t.Boolean(),
   },
   { $id: 'SubjectWikiInfo' },
+);
+
+export const EpsisodesNew = t.Object(
+  {
+    episodes: t.Array(
+      t.Object({
+        name: t.Optional(t.String()),
+        nameCN: t.Optional(t.String()),
+        type: t.Optional(res.Ref(res.EpisodeType)),
+        disc: t.Optional(t.Number()),
+        ep: t.Number(),
+        duration: t.Optional(t.String()),
+        date: t.Optional(t.String()),
+        summary: t.Optional(t.String()),
+      }),
+    ),
+  },
+  { $id: 'EpsisodesNew' },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -550,6 +571,99 @@ export async function setup(app: App) {
         now: DateTime.now(),
         expectedRevision,
       });
+    },
+  );
+
+  app.addSchema(EpsisodesNew);
+
+  app.post(
+    '/subjects/:subjectID/ep',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'createEpisodes',
+        description: '为条目添加新章节',
+        params: t.Object({
+          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: EpsisodesNew,
+        response: {
+          200: t.Object({ episodeIDs: t.Array(t.Integer()) }),
+          401: res.Ref(res.Error, {
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('creating episodes')],
+    },
+    async ({
+      auth,
+      body: { episodes },
+      params: { subjectID },
+    }): Promise<{ episodeIDs: number[] }> => {
+      if (!auth.permission.ep_edit) {
+        throw new NotAllowedError('create episodes');
+      }
+
+      if (episodes.length === 0) {
+        return { episodeIDs: [] };
+      }
+
+      const s = await orm.fetchSubjectByID(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+
+      const now = new Date();
+      const discDefault = s.typeID === SubjectType.Music ? 1 : 0;
+      const newEpisodes = episodes.map((ep) => ({
+        subjectID: subjectID,
+        sort: ep.ep,
+        type: ep.type ?? 0,
+        disc: ep.disc ?? discDefault,
+        name: ep.name ?? '',
+        nameCN: ep.nameCN ?? '',
+        rate: 0,
+        duration: ep.duration ?? '',
+        airdate: ep.date ?? '',
+        online: '',
+        comment: 0,
+        resources: 0,
+        desc: ep.summary ?? '',
+        createdAt: now.getTime() / 1000,
+        updatedAt: now.getTime() / 1000,
+      }));
+
+      const episodeIDs = await db.transaction(async (txn) => {
+        const [{ insertId: firstEpID }] = await txn.insert(schema.chiiEpisodes).values(newEpisodes);
+
+        await pushRev(txn, {
+          revisions: newEpisodes.map((ep, i) => ({
+            episodeID: firstEpID + i,
+            rev: {
+              ep_sort: ep.sort.toString(),
+              ep_type: ep.type.toString(),
+              ep_disc: ep.disc.toString(),
+              ep_name: ep.name,
+              ep_name_cn: ep.nameCN,
+              ep_duration: ep.duration,
+              ep_airdate: ep.airdate,
+              ep_desc: ep.desc,
+            },
+          })),
+          creator: auth.userID,
+          now,
+          comment: '新章节',
+        });
+        return Array.from({ length: newEpisodes.length }, (_, i) => firstEpID + i);
+      });
+
+      return { episodeIDs };
     },
   );
 }

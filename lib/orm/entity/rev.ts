@@ -166,6 +166,7 @@ export class EpRevision {
 
 export interface EpTextRev {
   ep_sort: string;
+  ep_disc: string;
   ep_type: string;
   ep_name: string;
   ep_name_cn: string;
