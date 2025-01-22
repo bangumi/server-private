@@ -2,10 +2,11 @@ import { parseToMap } from '@bgm38/wiki';
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
-import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
+import { db } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -618,50 +619,48 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
+      const now = new Date();
       const discDefault = s.typeID === SubjectType.Music ? 1 : 0;
-      const newEpisodes: Partial<entity.Episode>[] = episodes.map((ep) => ({
+      const newEpisodes = episodes.map((ep) => ({
         subjectID: subjectID,
         sort: ep.ep,
         type: ep.type ?? 0,
-        epDisc: ep.disc ?? discDefault,
-        name: lo.escape(ep.name),
-        nameCN: lo.escape(ep.nameCN ?? ''),
+        disc: ep.disc ?? discDefault,
+        name: ep.name ?? '',
+        nameCN: ep.nameCN ?? '',
+        rate: 0,
         duration: ep.duration ?? '',
-        date: ep.date ?? '',
-        summary: ep.summary ?? '',
+        airdate: ep.date ?? '',
+        online: '',
+        comment: 0,
+        resources: 0,
+        desc: ep.summary ?? '',
+        createdAt: now.getTime() / 1000,
+        updatedAt: now.getTime() / 1000,
       }));
 
-      const episodeIDs = await AppDataSource.transaction(async (txn) => {
-        const s = await txn
-          .getRepository(entity.Episode)
-          .createQueryBuilder()
-          .insert()
-          .values(newEpisodes)
-          .execute();
+      const episodeIDs = await db.transaction(async (txn) => {
+        const [{ insertId: firstEpID }] = await txn.insert(schema.chiiEpisodes).values(newEpisodes);
 
-        const r = s.raw as ResultSetHeader;
-
-        const now = new Date();
-        for (const [i, ep] of (newEpisodes as entity.Episode[]).entries()) {
-          await pushRev(txn, {
-            episodeID: r.insertId + i,
+        await pushRev(txn, {
+          revisions: newEpisodes.map((ep, i) => ({
+            episodeID: firstEpID + i,
             rev: {
               ep_sort: ep.sort.toString(),
               ep_type: ep.type.toString(),
-              ep_disc: ep.epDisc.toString(),
+              ep_disc: ep.disc.toString(),
               ep_name: ep.name,
               ep_name_cn: ep.nameCN,
               ep_duration: ep.duration,
-              ep_airdate: ep.date,
-              ep_desc: ep.summary,
+              ep_airdate: ep.airdate,
+              ep_desc: ep.desc,
             },
-            creator: auth.userID,
-            now,
-            comment: '新章节',
-          });
-        }
-
-        return Array.from({ length: newEpisodes.length }, (_, i) => r.insertId + i);
+          })),
+          creator: auth.userID,
+          now,
+          comment: '新章节',
+        });
+        return Array.from({ length: newEpisodes.length }, (_, i) => firstEpID + i);
       });
 
       return { episodeIDs };
