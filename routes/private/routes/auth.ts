@@ -7,9 +7,9 @@ import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import config, { redisPrefix } from '@app/lib/config.ts';
 import { BadRequestError, CaptchaError } from '@app/lib/error.ts';
+import { avatar } from '@app/lib/images';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchPermission, UserRepo } from '@app/lib/orm/index.ts';
-import { avatar } from '@app/lib/response.ts';
 import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
 import * as res from '@app/lib/types/res.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
@@ -103,7 +103,7 @@ export async function setup(app: App) {
 
 next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
+dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         operationId: 'login',
         tags: [Tag.Auth],
         response: {

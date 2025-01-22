@@ -1,50 +1,61 @@
-import type { EntityManager } from 'typeorm';
-
+import type { Txn } from '@app/drizzle/db.ts';
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
 import type { EpTextRev, RevHistory } from '@app/lib/orm/entity/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 
 export async function pushRev(
-  t: EntityManager,
+  t: Txn,
   {
-    episodeID,
-    rev,
+    revisions,
     creator,
     now,
     comment,
   }: {
-    episodeID: number;
-    rev: EpTextRev;
+    revisions: { episodeID: number; rev: EpTextRev }[];
     creator: number;
     now: Date;
     comment: string;
   },
 ) {
-  const revs = await t.findBy(entity.RevHistory, {
-    revMid: episodeID,
-    revType: RevType.episodeEdit,
-  });
-  const o = revs.pop();
-  if (!o) {
-    return await createRevRecords({
-      t: t,
-      episodeID: episodeID,
-      rev: rev,
-      creator: creator,
-      now: now,
-      comment,
-    });
-  }
+  const revs = await db
+    .select()
+    .from(schema.chiiRevHistory)
+    .where(
+      op.and(
+        op.inArray(
+          schema.chiiRevHistory.revMid,
+          revisions.map((r) => r.episodeID),
+        ),
+        op.eq(schema.chiiRevHistory.revType, RevType.episodeEdit),
+      ),
+    );
+  const revMap = new Map<number, (typeof revs)[number]>(revs.map((r) => [r.revMid, r]));
 
-  return await updatePreviousRevRecords({
-    t: t,
-    previous: o,
-    episodeID: episodeID,
-    rev: rev,
-    creator: creator,
-    now: now,
-    comment,
-  });
+  for (const { episodeID, rev } of revisions) {
+    const o = revMap.get(episodeID);
+    if (o) {
+      await updatePreviousRevRecords({
+        t: t,
+        previous: o,
+        episodeID: episodeID,
+        rev: rev,
+        creator: creator,
+        now: now,
+        comment,
+      });
+    } else {
+      await createRevRecords({
+        t: t,
+        episodeID: episodeID,
+        rev: rev,
+        creator: creator,
+        now: now,
+        comment,
+      });
+    }
+  }
 }
 
 async function updatePreviousRevRecords({
@@ -56,7 +67,7 @@ async function updatePreviousRevRecords({
   now,
   comment,
 }: {
-  t: EntityManager;
+  t: Txn;
   previous: RevHistory;
   episodeID: number;
   rev: EpTextRev;
@@ -64,13 +75,16 @@ async function updatePreviousRevRecords({
   now: Date;
   comment: string;
 }) {
-  const revText = await t.findOneOrFail(entity.RevText, {
-    where: {
-      revTextId: previous.revTextId,
-    },
-  });
+  const [revText] = await t
+    .select()
+    .from(schema.chiiRevText)
+    .where(op.eq(schema.chiiRevText.revTextId, previous.revTextId));
 
-  const revHistory = await t.save(entity.RevHistory, {
+  if (!revText) {
+    throw new Error(`RevText not found for ID: ${previous.revTextId}`);
+  }
+
+  const [{ insertId: revId }] = await t.insert(schema.chiiRevHistory).values({
     revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revText.revTextId,
@@ -81,9 +95,14 @@ async function updatePreviousRevRecords({
 
   revText.revText = await entity.RevText.serialize({
     ...(await entity.RevText.deserialize(revText.revText)),
-    [revHistory.revId]: rev,
+    [revId]: rev,
   });
-  await t.save(entity.RevText, revText);
+  await t
+    .update(schema.chiiRevText)
+    .set({
+      revText: revText.revText,
+    })
+    .where(op.eq(schema.chiiRevText.revTextId, revText.revTextId));
 }
 
 async function createRevRecords({
@@ -94,26 +113,31 @@ async function createRevRecords({
   now,
   comment,
 }: {
-  t: EntityManager;
+  t: Txn;
   episodeID: number;
   rev: EpTextRev;
   creator: number;
   now: Date;
   comment: string;
 }) {
-  const revText = await t.save(entity.RevText, {
+  const [{ insertId: revTextId }] = await t.insert(schema.chiiRevText).values({
     revText: await entity.RevText.serialize({}),
   });
 
-  const revHistory = await t.save(entity.RevHistory, {
+  const [{ insertId: revId }] = await t.insert(schema.chiiRevHistory).values({
     revType: RevType.episodeEdit,
     revCreator: creator,
-    revTextId: revText.revTextId,
+    revTextId: revTextId,
     createdAt: now.getTime() / 1000,
     revMid: episodeID,
     revEditSummary: comment,
   });
 
-  revText.revText = await entity.RevText.serialize({ [revHistory.revId]: rev });
-  await t.save(entity.RevText, revText);
+  const revText = await entity.RevText.serialize({ [revId]: rev });
+  await t
+    .update(schema.chiiRevText)
+    .set({
+      revText: revText,
+    })
+    .where(op.eq(schema.chiiRevText.revTextId, revTextId));
 }

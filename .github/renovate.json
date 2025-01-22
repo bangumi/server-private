@@ -6,6 +6,7 @@
     "github>Trim21/renovate-config:app",
     "github>Trim21/renovate-config:monthly"
   ],
+  "assignees": [],
   "postUpdateOptions": ["pnpmDedupe"],
   "rangeStrategy": "bump",
   "dockerfile": {
@@ -21,7 +22,7 @@
   "packageRules": [
     {
       "matchDatasources": ["docker"],
-      "matchPackageNames": ["gcr.io/distroless/nodejs18-debian11", "node"],
+      "matchPackageNames": ["gcr.io/distroless/**", "node"],
       "pinDigests": true
     }
   ]

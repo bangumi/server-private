@@ -220,7 +220,7 @@ exports[`should build private api spec 1`] = `
 
             next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-            dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           minLength: 1
           type: string
         content:
@@ -247,7 +247,7 @@ exports[`should build private api spec 1`] = `
 
             next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-            dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           type: string
         text:
           description: bbcode
@@ -1999,7 +1999,7 @@ exports[`should build private api spec 1`] = `
         - Mono
         - Doujin
       x-ms-enum:
-        modelAsString: true
+        modelAsString: false
         name: TimelineCat
     TimelineMemo:
       properties:
@@ -2126,7 +2126,7 @@ exports[`should build private api spec 1`] = `
         - WP
         - API
       x-ms-enum:
-        modelAsString: true
+        modelAsString: false
         name: TimelineSource
     Topic:
       properties:
@@ -2278,6 +2278,8 @@ exports[`should build private api spec 1`] = `
           type: string
         site:
           type: string
+        stats:
+          $ref: '#/components/schemas/UserStats'
         user_group:
           description: deprecated, use group instead
           type: integer
@@ -2298,6 +2300,7 @@ exports[`should build private api spec 1`] = `
         - bio
         - networkServices
         - homepage
+        - stats
       title: User
       type: object
     UserCharacterCollection:
@@ -2314,17 +2317,45 @@ exports[`should build private api spec 1`] = `
       properties:
         left:
           items:
-            type: string
+            $ref: '#/components/schemas/UserHomepageSection'
           type: array
         right:
           items:
-            type: string
+            $ref: '#/components/schemas/UserHomepageSection'
           type: array
       required:
         - left
         - right
       title: UserHomepage
       type: object
+    UserHomepageSection:
+      description: 用户时光机板块
+      enum:
+        - anime
+        - game
+        - book
+        - music
+        - real
+        - mono
+        - blog
+        - friend
+        - group
+        - index
+      type: string
+      x-enum-varnames:
+        - Anime
+        - Game
+        - Book
+        - Music
+        - Real
+        - Mono
+        - Blog
+        - Friend
+        - Group
+        - Index
+      x-ms-enum:
+        modelAsString: true
+        name: UserHomepageSection
     UserIndexCollection:
       properties:
         createdAt:
@@ -2334,6 +2365,28 @@ exports[`should build private api spec 1`] = `
       required:
         - index
         - createdAt
+      type: object
+    UserIndexStats:
+      properties:
+        collect:
+          type: integer
+        create:
+          type: integer
+      required:
+        - create
+        - collect
+      title: UserIndexStats
+      type: object
+    UserMonoCollectionStats:
+      properties:
+        character:
+          type: integer
+        person:
+          type: integer
+      required:
+        - character
+        - person
+      title: UserMonoCollectionStats
       type: object
     UserNetworkService:
       properties:
@@ -2364,6 +2417,29 @@ exports[`should build private api spec 1`] = `
       required:
         - person
         - createdAt
+      type: object
+    UserStats:
+      properties:
+        blog:
+          type: integer
+        friend:
+          type: integer
+        group:
+          type: integer
+        index:
+          $ref: '#/components/schemas/UserIndexStats'
+        mono:
+          $ref: '#/components/schemas/UserMonoCollectionStats'
+        subject:
+          $ref: '#/components/schemas/UserSubjectCollectionStats'
+      required:
+        - subject
+        - mono
+        - blog
+        - friend
+        - group
+        - index
+      title: UserStats
       type: object
     UserSubjectCollection:
       properties:
@@ -2397,6 +2473,13 @@ exports[`should build private api spec 1`] = `
         - volStatus
         - private
         - updatedAt
+      type: object
+    UserSubjectCollectionStats:
+      additionalProperties:
+        additionalProperties:
+          type: integer
+        type: object
+      title: UserSubjectCollectionStats
       type: object
     UserSubjectEpisodeCollection:
       properties:
@@ -2544,6 +2627,120 @@ paths:
       summary: 将用户从绝交列表移出
       tags:
         - misc
+  /p1/blogs/{entryID}:
+    get:
+      operationId: getBlogEntry
+      parameters:
+        - in: path
+          name: entryID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogEntry'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - HTTPBearer: []
+      summary: 获取日志详情
+      tags:
+        - blog
+  /p1/blogs/{entryID}/photos:
+    get:
+      operationId: getBlogPhotos
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: entryID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/BlogPhoto'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - HTTPBearer: []
+      summary: 获取日志的图片
+      tags:
+        - blog
+  /p1/blogs/{entryID}/subjects:
+    get:
+      operationId: getBlogRelatedSubjects
+      parameters:
+        - in: path
+          name: entryID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SlimSubject'
+                type: array
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - HTTPBearer: []
+      summary: 获取日志的关联条目
+      tags:
+        - blog
   /p1/calendar:
     get:
       operationId: getCalendar
@@ -3358,7 +3555,7 @@ paths:
         next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
 
-        dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+        dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
       operationId: login
       requestBody:
         content:
@@ -4427,7 +4624,7 @@ paths:
         next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
 
-        dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+        dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
       operationId: createSubjectReply
       parameters:
         - example: 371602
@@ -5047,7 +5244,7 @@ paths:
 
                     next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
-                    dev.bgm38.com 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+                    dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
                   type: string
                 text:
                   description: bbcode

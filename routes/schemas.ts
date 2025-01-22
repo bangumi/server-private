@@ -72,4 +72,9 @@ export function addSchemas(app: App) {
   app.addSchema(res.TopicDetail);
   app.addSchema(res.User);
   app.addSchema(res.UserHomepage);
+  app.addSchema(res.UserHomepageSection);
+  app.addSchema(res.UserStats);
+  app.addSchema(res.UserIndexStats);
+  app.addSchema(res.UserMonoCollectionStats);
+  app.addSchema(res.UserSubjectCollectionStats);
 }

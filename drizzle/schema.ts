@@ -800,7 +800,7 @@ export const chiiRevHistory = mysqlTable(
     revType: tinyint('rev_type').notNull(),
     revMid: mediumint('rev_mid').notNull(),
     revTextId: mediumint('rev_text_id').notNull(),
-    revDateline: int('rev_dateline').notNull(),
+    createdAt: int('rev_dateline').notNull(),
     revCreator: mediumint('rev_creator').notNull(),
     revEditSummary: varchar('rev_edit_summary', { length: 200 }).notNull(),
   },
@@ -815,8 +815,7 @@ export const chiiRevHistory = mysqlTable(
 
 export const chiiRevText = mysqlTable('chii_rev_text', {
   revTextId: mediumint('rev_text_id').autoincrement().notNull(),
-  // Warning: Can't parse mediumblob from database
-  // mediumblobType: mediumblob("rev_text").notNull(),
+  revText: mediumblob('rev_text').notNull(),
 });
 
 export const chiiSubjects = mysqlTable('chii_subjects', {
@@ -931,7 +930,7 @@ export const chiiSubjectInterests = mysqlTable(
     createIp: char('interest_create_ip', { length: 15 }).notNull(),
     updateIp: char('interest_lasttouch_ip', { length: 15 }).notNull(),
     updatedAt: int('interest_lasttouch').default(0).notNull(),
-    private: tinyint('interest_private').notNull(),
+    private: customBoolean('interest_private').notNull(),
   },
   (table) => {
     return {
@@ -1231,7 +1230,7 @@ export const chiiBlogEntries = mysqlTable(
     id: mediumint('entry_id').autoincrement().notNull(),
     type: smallint('entry_type').notNull(),
     uid: mediumint('entry_uid').notNull(),
-    title: varchar('entry_title', { length: 80 }).notNull(),
+    title: htmlEscapedString('varchar')('entry_title', { length: 80 }).notNull(),
     icon: varchar('entry_icon', { length: 255 }).notNull(),
     content: mediumtext('entry_content').notNull(),
     tags: mediumtext('entry_tags').notNull(),

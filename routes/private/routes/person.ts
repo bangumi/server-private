@@ -64,8 +64,7 @@ export async function setup(app: App) {
             op.ne(schema.chiiPersons.ban, 1),
             auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
           ),
-        )
-        .execute();
+        );
       for (const d of data) {
         return convert.toPerson(d);
       }
@@ -123,8 +122,7 @@ export async function setup(app: App) {
           schema.chiiSubjects,
           op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
         )
-        .where(condition)
-        .execute();
+        .where(condition);
       const data = await db
         .select()
         .from(schema.chiiPersonSubjects)
@@ -140,8 +138,7 @@ export async function setup(app: App) {
         .groupBy(schema.chiiPersonSubjects.subjectID)
         .orderBy(op.desc(schema.chiiPersonSubjects.subjectID))
         .limit(limit)
-        .offset(offset)
-        .execute();
+        .offset(offset);
       const subjectIDs = data.map((d) => d.chii_person_cs_index.subjectID);
       const relations = await db
         .select()
@@ -152,8 +149,7 @@ export async function setup(app: App) {
             op.eq(schema.chiiPersonSubjects.personID, personID),
             position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
           ),
-        )
-        .execute();
+        );
       const relationsMap = new Map<number, orm.IPersonSubject[]>();
       for (const r of relations) {
         const relations = relationsMap.get(r.subjectID) || [];
@@ -231,8 +227,7 @@ export async function setup(app: App) {
             op.eq(schema.chiiCharacterCasts.subjectID, schema.chiiCharacterSubjects.subjectID),
           ),
         )
-        .where(condition)
-        .execute();
+        .where(condition);
       const data = await db
         .select()
         .from(schema.chiiCharacterCasts)
@@ -251,8 +246,7 @@ export async function setup(app: App) {
         .groupBy(schema.chiiCharacterCasts.characterID)
         .orderBy(op.desc(schema.chiiCharacterCasts.characterID))
         .limit(limit)
-        .offset(offset)
-        .execute();
+        .offset(offset);
       const characterIDs = data.map((d) => d.chii_crt_cast_index.characterID);
       const subjects = await fetcher.fetchCastsByPersonAndCharacterIDs(
         personID,
@@ -309,8 +303,7 @@ export async function setup(app: App) {
         .select({ count: op.count() })
         .from(schema.chiiPersonCollects)
         .innerJoin(schema.chiiUsers, op.eq(schema.chiiPersonCollects.uid, schema.chiiUsers.id))
-        .where(condition)
-        .execute();
+        .where(condition);
       const data = await db
         .select()
         .from(schema.chiiPersonCollects)
@@ -318,8 +311,7 @@ export async function setup(app: App) {
         .where(condition)
         .orderBy(op.desc(schema.chiiPersonCollects.createdAt))
         .limit(limit)
-        .offset(offset)
-        .execute();
+        .offset(offset);
       const users = data.map((d) =>
         convert.toPersonCollect(d.chii_members, d.chii_person_collects),
       );

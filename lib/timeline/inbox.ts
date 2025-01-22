@@ -24,7 +24,6 @@ export async function getTimelineInbox(
     .select({ fid: schema.chiiFriends.fid })
     .from(schema.chiiFriends)
     .where(op.eq(schema.chiiFriends.uid, uid))
-    .execute()
     .then((data) => data.map((d) => d.fid));
   // 对于没有好友的用户，返回全站时间线
   if (friendIDs.length === 0) {
@@ -41,8 +40,7 @@ export async function getTimelineInbox(
     .from(schema.chiiTimeline)
     .where(conditions.length > 0 ? op.and(...conditions) : undefined)
     .orderBy(op.desc(schema.chiiTimeline.id))
-    .limit(limit)
-    .execute();
+    .limit(limit);
   ids.push(...data.map((d) => d.id));
   if (!until && ids.length > 0) {
     // 回填第一页的数据

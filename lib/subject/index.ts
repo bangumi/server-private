@@ -198,8 +198,7 @@ export async function edit({
         nsfw,
         infobox,
       })
-      .where(op.eq(schema.chiiSubjects.id, subjectID))
-      .execute();
+      .where(op.eq(schema.chiiSubjects.id, subjectID));
 
     const d: DATE = date ? DATE.parse(date) : extractDate(w, s.typeID, platform);
 
@@ -210,8 +209,7 @@ export async function edit({
         year: d.year,
         month: d.month,
       })
-      .where(op.eq(schema.chiiSubjectFields.id, subjectID))
-      .execute();
+      .where(op.eq(schema.chiiSubjectFields.id, subjectID));
   });
 }
 

@@ -74,8 +74,7 @@ export async function revoke(sessionID: string) {
   await db
     .update(chiiOsWebSessions)
     .set({ expiredAt: DateTime.now().toUnixInteger() })
-    .where(op.eq(chiiOsWebSessions.key, sessionID))
-    .execute();
+    .where(op.eq(chiiOsWebSessions.key, sessionID));
 
   await sessionCache.del(sessionID);
 }

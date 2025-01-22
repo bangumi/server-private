@@ -1,8 +1,8 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
+import { personImages } from '@app/lib/images';
 import type * as entity from '@app/lib/orm/entity/index.ts';
-import { personImages } from '@app/lib/response.ts';
 
 function convertCareer(person: entity.Person) {
   const result: string[] = [];

@@ -3,9 +3,9 @@ import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
 import type * as types from '@app/lib/graphql/__generated__/resolvers.ts';
 import { convertUser } from '@app/lib/graphql/schema.ts';
+import { subjectCover } from '@app/lib/images';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import { SubjectRepo } from '@app/lib/orm/index.ts';
-import { subjectCover } from '@app/lib/response.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import { findSubjectPlatform } from '@app/vendor';
 
