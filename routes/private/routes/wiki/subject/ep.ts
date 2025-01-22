@@ -230,6 +230,7 @@ export async function setup(app: App) {
                 ep_name: ep.name,
                 ep_name_cn: ep.nameCN,
                 ep_sort: '0',
+                ep_disc: '0',
                 ep_type: '0',
               },
             },
