@@ -20,19 +20,32 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  // backward compatibility
+  // tmp backward compatibility
   app.get('/subjects/-/episode/:episodeID', (req, reply) => {
     const params = req.params as Record<string, string>;
     const episodeID = params.episodeID ?? '';
     return reply.redirect(`/p1/episodes/${episodeID}`, 307);
   });
 
-  // backward compatibility
   app.get('/subjects/-/episodes/:episodeID', (req, reply) => {
     const params = req.params as Record<string, string>;
     const episodeID = params.episodeID ?? '';
     return reply.redirect(`/p1/episodes/${episodeID}`, 307);
   });
+
+  app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
+  });
+
+  app.get('/subjects/-/episodes/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
+  });
+
+  ////////////////////////////
 
   app.get(
     '/episodes/:episodeID',
