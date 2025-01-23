@@ -4653,6 +4653,50 @@ paths:
       summary: 获取条目列表
       tags:
         - subject
+  /p1/subjects/-/episode/{episodeID}:
+    get:
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+  /p1/subjects/-/episode/{episodeID}/comments:
+    get:
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+  /p1/subjects/-/episodes/{episodeID}:
+    get:
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
+  /p1/subjects/-/episodes/{episodeID}/comments:
+    get:
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Default Response
   /p1/subjects/-/posts/{postID}:
     delete:
       operationId: deleteSubjectPost
