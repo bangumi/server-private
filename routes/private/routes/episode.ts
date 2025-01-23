@@ -26,26 +26,21 @@ export async function setup(app: App) {
     const episodeID = params.episodeID ?? '';
     return reply.redirect(`/p1/episodes/${episodeID}`, 307);
   });
-
   app.get('/subjects/-/episodes/:episodeID', (req, reply) => {
     const params = req.params as Record<string, string>;
     const episodeID = params.episodeID ?? '';
     return reply.redirect(`/p1/episodes/${episodeID}`, 307);
   });
-
   app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
     const params = req.params as Record<string, string>;
     const episodeID = params.episodeID ?? '';
     return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
   });
-
   app.get('/subjects/-/episodes/:episodeID/comments', (req, reply) => {
     const params = req.params as Record<string, string>;
     const episodeID = params.episodeID ?? '';
     return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
   });
-
-  ////////////////////////////
 
   app.get(
     '/episodes/:episodeID',
