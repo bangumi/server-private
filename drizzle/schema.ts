@@ -49,6 +49,21 @@ const htmlEscapedString = (t: string) =>
     },
   });
 
+const mediumblob = (name: string) =>
+  customType<{ data: Buffer; driverData: string }>({
+    dataType() {
+      return 'mediumblob';
+    },
+    fromDriver(value) {
+      return Buffer.from(value);
+    },
+
+    toDriver(value: Buffer): string {
+      // @ts-expect-error https://github.com/drizzle-team/drizzle-orm/issues/1188
+      return value;
+    },
+  })(name);
+
 export const chiiApp = mysqlTable('chii_apps', {
   id: mediumint('app_id').autoincrement().notNull(),
   type: tinyint('app_type').notNull(),
@@ -347,21 +362,6 @@ export const chiiOauthClients = mysqlTable('chii_oauth_clients', {
   scope: varchar('scope', { length: 4000 }),
   userId: varchar('user_id', { length: 80 }),
 });
-
-const mediumblob = (name: string) =>
-  customType<{ data: Buffer; driverData: string }>({
-    dataType() {
-      return 'mediumblob';
-    },
-    fromDriver(value) {
-      return Buffer.from(value);
-    },
-
-    toDriver(value: Buffer): string {
-      // @ts-expect-error https://github.com/drizzle-team/drizzle-orm/issues/1188
-      return value;
-    },
-  })(name);
 
 export const chiiOsWebSessions = mysqlTable('chii_os_web_sessions', {
   key: char('key', { length: 64 }).notNull(),
