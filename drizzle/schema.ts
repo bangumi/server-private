@@ -458,12 +458,12 @@ export const chiiPms = mysqlTable('chii_pms', {
 });
 
 export const chiiPrsnComments = mysqlTable('chii_prsn_comments', {
-  prsnPstId: mediumint('prsn_pst_id').autoincrement().notNull(),
-  prsnPstMid: mediumint('prsn_pst_mid').notNull(),
-  prsnPstUid: mediumint('prsn_pst_uid').notNull(),
-  prsnPstRelated: mediumint('prsn_pst_related').notNull(),
-  prsnPstDateline: int('prsn_pst_dateline').notNull(),
-  prsnPstContent: htmlEscapedString('mediumtext')('prsn_pst_content').notNull(),
+  id: mediumint('prsn_pst_id').autoincrement().notNull(),
+  mid: mediumint('prsn_pst_mid').notNull(),
+  uid: mediumint('prsn_pst_uid').notNull(),
+  related: mediumint('prsn_pst_related').notNull(),
+  createdAt: int('prsn_pst_dateline').notNull(),
+  content: htmlEscapedString('mediumtext')('prsn_pst_content').notNull(),
 });
 
 export const chiiRevHistory = mysqlTable('chii_rev_history', {
