@@ -1576,6 +1576,28 @@ exports[`should build private api spec 1`] = `
         - updatedAt
       title: SubjectComment
       type: object
+    SubjectCrew:
+      items:
+        properties:
+          persons:
+            items:
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+              required:
+                - id
+                - name
+              type: object
+            type: array
+          position:
+            $ref: '#/components/schemas/SubjectStaffPositionType'
+        required:
+          - position
+          - persons
+        type: object
+      type: array
     SubjectEdit:
       example:
         infobox: |-
@@ -4851,6 +4873,35 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取条目的吐槽箱
+      tags:
+        - subject
+  /p1/subjects/{subjectID}/crew:
+    get:
+      operationId: getSubjectCrew
+      parameters:
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectCrew'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目的所有制作人员（按职位分组）
       tags:
         - subject
   /p1/subjects/{subjectID}/episodes:

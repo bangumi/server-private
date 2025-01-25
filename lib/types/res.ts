@@ -628,6 +628,20 @@ export const SubjectStaff = t.Object(
   { $id: 'SubjectStaff' },
 );
 
+export type ISubjectCrew = Static<typeof SubjectCrew>;
+export const SubjectCrew = t.Array(
+  t.Object({
+    position: Ref(SubjectStaffPositionType),
+    persons: t.Array(
+      t.Object({
+        id: t.Integer(),
+        name: t.String(),
+      }),
+    ),
+  }),
+  { $id: 'SubjectCrew' },
+);
+
 export type ISubjectRec = Static<typeof SubjectRec>;
 export const SubjectRec = t.Object(
   {

@@ -62,6 +62,16 @@ describe('subject', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get subject crew', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/12/crew',
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get subject recs', async () => {
     const app = createTestServer();
     await app.register(setup);

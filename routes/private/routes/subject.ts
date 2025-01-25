@@ -473,6 +473,67 @@ export async function setup(app: App) {
   );
 
   app.get(
+    '/subjects/:subjectID/crew',
+    {
+      schema: {
+        summary: '获取条目的所有制作人员（按职位分组）',
+        operationId: 'getSubjectCrew',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        response: {
+          200: res.Ref(res.SubjectCrew),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      const condition = op.and(
+        op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+        op.ne(schema.chiiPersons.ban, 1),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
+      );
+
+      const data = await db
+        .select({
+          position: schema.chiiPersonSubjects.position,
+          personId: schema.chiiPersons.id,
+          personName: schema.chiiPersons.name,
+        })
+        .from(schema.chiiPersonSubjects)
+        .innerJoin(
+          schema.chiiPersons,
+          op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
+        )
+        .where(condition)
+        .orderBy(op.asc(schema.chiiPersonSubjects.position));
+
+      const positions: Record<number, { id: number; name: string }[]> = {};
+
+      for (const staff of data) {
+        const pos = positions[staff.position] || [];
+        pos.push({
+          id: staff.personId,
+          name: staff.personName,
+        });
+        positions[staff.position] = pos;
+      }
+      const crew = Object.entries(positions).map(([position, persons]) => ({
+        position: convert.toSubjectStaffPositionType(subject.type, Number(position)),
+        persons,
+      }));
+
+      return crew;
+    },
+  );
+
+  app.get(
     '/subjects/:subjectID/recs',
     {
       schema: {

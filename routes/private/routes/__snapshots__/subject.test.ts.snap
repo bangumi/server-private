@@ -464,6 +464,755 @@ Object {
 }
 `;
 
+exports[`subject > should get subject crew 1`] = `
+Array [
+  Object {
+    "persons": Array [
+      Object {
+        "id": 39,
+        "name": "CLAMP",
+      },
+    ],
+    "position": Object {
+      "cn": "原作",
+      "en": "Original Creator/Original Work",
+      "id": 1,
+      "jp": "",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 40,
+        "name": "浅香守生",
+      },
+    ],
+    "position": Object {
+      "cn": "导演",
+      "en": "Director/Direction",
+      "id": 2,
+      "jp": "監督 シリーズ監督",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 19,
+        "name": "大久保智康",
+      },
+      Object {
+        "id": 21,
+        "name": "堀井明子",
+      },
+      Object {
+        "id": 262,
+        "name": "花田十輝",
+      },
+      Object {
+        "id": 380,
+        "name": "大川七瀬",
+      },
+      Object {
+        "id": 933,
+        "name": "植竹須美男",
+      },
+      Object {
+        "id": 3016,
+        "name": "玉井☆豪",
+      },
+      Object {
+        "id": 25981,
+        "name": "金子二郎",
+      },
+    ],
+    "position": Object {
+      "cn": "脚本",
+      "en": "Script/Screenplay",
+      "id": 3,
+      "jp": "シナリオ",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 40,
+        "name": "浅香守生",
+      },
+      Object {
+        "id": 306,
+        "name": "坂田純一",
+      },
+      Object {
+        "id": 505,
+        "name": "島崎奈々子",
+      },
+      Object {
+        "id": 750,
+        "name": "小島正幸",
+      },
+      Object {
+        "id": 900,
+        "name": "佐山聖子",
+      },
+      Object {
+        "id": 999,
+        "name": "八谷賢一",
+      },
+      Object {
+        "id": 2305,
+        "name": "片渕須直",
+      },
+      Object {
+        "id": 2540,
+        "name": "井上英紀",
+      },
+      Object {
+        "id": 2681,
+        "name": "青山弘",
+      },
+      Object {
+        "id": 3179,
+        "name": "長井龍雪",
+      },
+      Object {
+        "id": 3227,
+        "name": "原博",
+      },
+      Object {
+        "id": 19154,
+        "name": "渕上真",
+      },
+      Object {
+        "id": 27228,
+        "name": "島津奔",
+      },
+    ],
+    "position": Object {
+      "cn": "分镜",
+      "en": "Storyboard",
+      "id": 4,
+      "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 40,
+        "name": "浅香守生",
+      },
+      Object {
+        "id": 505,
+        "name": "島崎奈々子",
+      },
+      Object {
+        "id": 608,
+        "name": "おざわかずひろ",
+      },
+      Object {
+        "id": 1001,
+        "name": "関田修",
+      },
+      Object {
+        "id": 1119,
+        "name": "橋本みつお",
+      },
+      Object {
+        "id": 1294,
+        "name": "太田雅彦",
+      },
+      Object {
+        "id": 2540,
+        "name": "井上英紀",
+      },
+      Object {
+        "id": 2904,
+        "name": "小林智樹",
+      },
+      Object {
+        "id": 3179,
+        "name": "長井龍雪",
+      },
+      Object {
+        "id": 3327,
+        "name": "田中洋之",
+      },
+      Object {
+        "id": 3572,
+        "name": "増原光幸",
+      },
+      Object {
+        "id": 13038,
+        "name": "木村寛",
+      },
+      Object {
+        "id": 13047,
+        "name": "鈴木薫",
+      },
+      Object {
+        "id": 13521,
+        "name": "鎌仲史陽",
+      },
+      Object {
+        "id": 14205,
+        "name": "宮田亮",
+      },
+      Object {
+        "id": 19154,
+        "name": "渕上真",
+      },
+    ],
+    "position": Object {
+      "cn": "演出",
+      "en": "Episode Direction",
+      "id": 5,
+      "jp": "",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 11215,
+        "name": "高浪敬太郎",
+      },
+    ],
+    "position": Object {
+      "cn": "音乐",
+      "en": "Music",
+      "id": 6,
+      "jp": "楽曲  音楽",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 36,
+        "name": "阿部恒",
+      },
+    ],
+    "position": Object {
+      "cn": "人物设定",
+      "en": "Character Design",
+      "id": 8,
+      "jp": "キャラ設定",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 1661,
+        "name": "坂巻貞彦",
+      },
+    ],
+    "position": Object {
+      "cn": "构图",
+      "en": "Layout",
+      "id": 9,
+      "jp": "レイアウト",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 13438,
+        "name": "柴田千佳子",
+      },
+    ],
+    "position": Object {
+      "cn": "美术监督",
+      "en": "Art Direction",
+      "id": 11,
+      "jp": "美術監督 アートディレクション 背景監督",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 36,
+        "name": "阿部恒",
+      },
+    ],
+    "position": Object {
+      "cn": "总作画监督",
+      "en": "Chief Animation Director",
+      "id": 14,
+      "jp": "チーフ作画監督",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 36,
+        "name": "阿部恒",
+      },
+      Object {
+        "id": 194,
+        "name": "南伸一郎",
+      },
+      Object {
+        "id": 385,
+        "name": "藤田まり子",
+      },
+      Object {
+        "id": 913,
+        "name": "桜井邦彦",
+      },
+      Object {
+        "id": 1353,
+        "name": "阿部純子",
+      },
+      Object {
+        "id": 1709,
+        "name": "藤田しげる",
+      },
+      Object {
+        "id": 2076,
+        "name": "岩井優器",
+      },
+      Object {
+        "id": 2435,
+        "name": "柳瀬雄之",
+      },
+      Object {
+        "id": 2758,
+        "name": "田﨑聡",
+      },
+      Object {
+        "id": 3078,
+        "name": "濱田邦彦",
+      },
+      Object {
+        "id": 3214,
+        "name": "n",
+      },
+      Object {
+        "id": 3269,
+        "name": "田中将賀",
+      },
+      Object {
+        "id": 3611,
+        "name": "田中雄一",
+      },
+      Object {
+        "id": 12190,
+        "name": "内田孝",
+      },
+      Object {
+        "id": 12254,
+        "name": "斉藤雅和",
+      },
+      Object {
+        "id": 34895,
+        "name": "村上元一",
+      },
+    ],
+    "position": Object {
+      "cn": "作画监督",
+      "en": "Animation Direction",
+      "id": 15,
+      "jp": "作監 アニメーション演出",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 1738,
+        "name": "葛山剛士",
+      },
+      Object {
+        "id": 2330,
+        "name": "岸克芳",
+      },
+    ],
+    "position": Object {
+      "cn": "摄影监督",
+      "en": "Director of Photography",
+      "id": 17,
+      "jp": "撮影監督",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 28855,
+        "name": "木村雅広",
+      },
+    ],
+    "position": Object {
+      "cn": "道具设计",
+      "en": "Prop Design",
+      "id": 19,
+      "jp": "プロップデザイン",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 701,
+        "name": "髙田晃",
+      },
+      Object {
+        "id": 1298,
+        "name": "中野典克",
+      },
+      Object {
+        "id": 2737,
+        "name": "斉藤哲人",
+      },
+      Object {
+        "id": 3004,
+        "name": "島沢ノリコ",
+      },
+      Object {
+        "id": 7519,
+        "name": "和田高明",
+      },
+      Object {
+        "id": 11384,
+        "name": "小林冬至生",
+      },
+      Object {
+        "id": 11560,
+        "name": "阿部望",
+      },
+      Object {
+        "id": 11996,
+        "name": "奥田佳子",
+      },
+      Object {
+        "id": 12608,
+        "name": "田村正文",
+      },
+      Object {
+        "id": 23548,
+        "name": "仲澤崇仁",
+      },
+      Object {
+        "id": 28287,
+        "name": "あおのゆか",
+      },
+      Object {
+        "id": 34534,
+        "name": "金阪秀行",
+      },
+      Object {
+        "id": 47105,
+        "name": "塚本篤",
+      },
+      Object {
+        "id": 47647,
+        "name": "坂田佳江",
+      },
+      Object {
+        "id": 52369,
+        "name": "桑原愛",
+      },
+      Object {
+        "id": 60309,
+        "name": "阿尻隆司",
+      },
+      Object {
+        "id": 63985,
+        "name": "篠原信子",
+      },
+    ],
+    "position": Object {
+      "cn": "原画",
+      "en": "Key Animation",
+      "id": 20,
+      "jp": "作画 原画",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 36854,
+        "name": "スタジオカノン",
+      },
+    ],
+    "position": Object {
+      "cn": "背景美术",
+      "en": "Background Art",
+      "id": 25,
+      "jp": "背景",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 9049,
+        "name": "寺内聡",
+      },
+    ],
+    "position": Object {
+      "cn": "剪辑",
+      "en": "Editing",
+      "id": 28,
+      "jp": "編集",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 7985,
+        "name": "ROUND TABLE featuring Nino",
+      },
+    ],
+    "position": Object {
+      "cn": "主题歌演出",
+      "en": "Theme Song Performance",
+      "id": 33,
+      "jp": "",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 914,
+        "name": "丸山正雄",
+      },
+    ],
+    "position": Object {
+      "cn": "企画",
+      "en": "Planning",
+      "id": 35,
+      "jp": "プランニング  企画開発",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 31678,
+        "name": "内田誠",
+      },
+      Object {
+        "id": 32105,
+        "name": "アオイスタジオ",
+      },
+    ],
+    "position": Object {
+      "cn": "录音",
+      "en": "Recording",
+      "id": 39,
+      "jp": "録音",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 27,
+        "name": "TBS",
+      },
+    ],
+    "position": Object {
+      "cn": "製作",
+      "en": "Production",
+      "id": 42,
+      "jp": "",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 19778,
+        "name": "加茂靖子",
+      },
+    ],
+    "position": Object {
+      "cn": "设定",
+      "en": "Setting",
+      "id": 43,
+      "jp": "設定",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 42,
+        "name": "三間雅文",
+      },
+    ],
+    "position": Object {
+      "cn": "音响监督",
+      "en": "Sound Director",
+      "id": 44,
+      "jp": "",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 23711,
+        "name": "テクノサウンド",
+      },
+    ],
+    "position": Object {
+      "cn": "音响",
+      "en": "Sound",
+      "id": 45,
+      "jp": "音響 音声",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 615,
+        "name": "谷口久美子",
+      },
+    ],
+    "position": Object {
+      "cn": "特效",
+      "en": "Special Effects",
+      "id": 47,
+      "jp": "視覚効果",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 12613,
+        "name": "今井一暁",
+      },
+    ],
+    "position": Object {
+      "cn": "补间动画",
+      "en": "In-Between Animation",
+      "id": 51,
+      "jp": "動画",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 55158,
+        "name": "齋藤優一郎",
+      },
+    ],
+    "position": Object {
+      "cn": "助理制片人",
+      "en": "Assistant Producer",
+      "id": 53,
+      "jp": "協力プロデューサー  アシスタントプロデューサー",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 45087,
+        "name": "小野達矢",
+      },
+    ],
+    "position": Object {
+      "cn": "制片人",
+      "en": "Producer",
+      "id": 54,
+      "jp": "プロデュース  プロデューサー",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 15283,
+        "name": "城所聖明",
+      },
+    ],
+    "position": Object {
+      "cn": "制作进行",
+      "en": "Assistant Production Manager",
+      "id": 56,
+      "jp": "制作進行",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 41,
+        "name": "ビクターエンタテインメント",
+      },
+    ],
+    "position": Object {
+      "cn": "音乐制作",
+      "en": "Music Work",
+      "id": 65,
+      "jp": "楽曲制作 音楽制作",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 603,
+        "name": "MADHOUSE",
+      },
+    ],
+    "position": Object {
+      "cn": "动画制作",
+      "en": "Animation Work",
+      "id": 67,
+      "jp": "アニメーション制作 アニメ制作 アニメーション",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 1441,
+        "name": "角本百合子",
+      },
+    ],
+    "position": Object {
+      "cn": "美术设计",
+      "en": "Art Design",
+      "id": 71,
+      "jp": "美術設定",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 2540,
+        "name": "井上英紀",
+      },
+      Object {
+        "id": 3327,
+        "name": "田中洋之",
+      },
+    ],
+    "position": Object {
+      "cn": "副导演",
+      "en": "Assistant Director",
+      "id": 72,
+      "jp": "助監督 / 監督補佐",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 7309,
+        "name": "童夢",
+      },
+    ],
+    "position": Object {
+      "cn": "制作协力",
+      "en": "Work Assistance",
+      "id": 76,
+      "jp": "制作協力 / 作品協力",
+    },
+  },
+  Object {
+    "persons": Array [
+      Object {
+        "id": 2091,
+        "name": "スタジオコスモス",
+      },
+    ],
+    "position": Object {
+      "cn": "摄影",
+      "en": "Photography",
+      "id": 82,
+      "jp": "撮影",
+    },
+  },
+]
+`;
+
 exports[`subject > should get subject episodes 1`] = `
 Object {
   "data": Array [
