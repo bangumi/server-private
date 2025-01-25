@@ -106,12 +106,12 @@ export const chiiCharacterCasts = mysqlTable('chii_crt_cast_index', {
 });
 
 export const chiiCrtComments = mysqlTable('chii_crt_comments', {
-  crtPstId: mediumint('crt_pst_id').autoincrement().notNull(),
-  crtPstMid: mediumint('crt_pst_mid').notNull(),
-  crtPstUid: mediumint('crt_pst_uid').notNull(),
-  crtPstRelated: mediumint('crt_pst_related').notNull(),
-  crtPstDateline: int('crt_pst_dateline').notNull(),
-  crtPstContent: htmlEscapedString('mediumtext')('crt_pst_content').notNull(),
+  id: mediumint('crt_pst_id').autoincrement().notNull(),
+  mid: mediumint('crt_pst_mid').notNull(),
+  uid: mediumint('crt_pst_uid').notNull(),
+  related: mediumint('crt_pst_related').notNull(),
+  createdAt: int('crt_pst_dateline').notNull(),
+  content: htmlEscapedString('mediumtext')('crt_pst_content').notNull(),
 });
 
 export const chiiCharacterSubjects = mysqlTable('chii_crt_subject_index', {
