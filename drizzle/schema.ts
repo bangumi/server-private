@@ -66,13 +66,11 @@ export const chiiApp = mysqlTable(
     updatedAt: int('app_lasttouch').notNull(),
     deleted: tinyint('app_ban').notNull(),
   },
-  (table) => {
-    return {
-      appType: index('app_type').on(table.type, table.creator),
-      appBan: index('app_ban').on(table.deleted),
-      appStatus: index('app_status').on(table.status),
-    };
-  },
+  (table) => [
+    index('app_type').on(table.type, table.creator),
+    index('app_ban').on(table.deleted),
+    index('app_status').on(table.status),
+  ],
 );
 
 export const chiiCharacters = mysqlTable(
@@ -95,13 +93,11 @@ export const chiiCharacters = mysqlTable(
     redirect: int('crt_redirect').default(0).notNull(),
     nsfw: customBoolean('crt_nsfw').notNull(),
   },
-  (table) => {
-    return {
-      crtRole: index('crt_role').on(table.role),
-      crtLock: index('crt_lock').on(table.lock),
-      crtBan: index('crt_ban').on(table.ban),
-    };
-  },
+  (table) => [
+    index('crt_role').on(table.role),
+    index('crt_lock').on(table.lock),
+    index('crt_ban').on(table.ban),
+  ],
 );
 
 export const chiiCharacterCasts = mysqlTable(
@@ -113,13 +109,11 @@ export const chiiCharacterCasts = mysqlTable(
     subjectType: tinyint('subject_type_id').notNull(),
     summary: varchar('summary', { length: 255 }).notNull(),
   },
-  (table) => {
-    return {
-      prsnId: index('prsn_id').on(table.personID),
-      subjectId: index('subject_id').on(table.subjectID),
-      subjectTypeId: index('subject_type_id').on(table.subjectType),
-    };
-  },
+  (table) => [
+    index('prsn_id').on(table.personID),
+    index('subject_id').on(table.subjectID),
+    index('subject_type_id').on(table.subjectType),
+  ],
 );
 
 export const chiiCrtComments = mysqlTable(
@@ -132,13 +126,11 @@ export const chiiCrtComments = mysqlTable(
     crtPstDateline: int('crt_pst_dateline').notNull(),
     crtPstContent: htmlEscapedString('mediumtext')('crt_pst_content').notNull(),
   },
-  (table) => {
-    return {
-      cmtCrtId: index('cmt_crt_id').on(table.crtPstMid),
-      crtPstRelated: index('crt_pst_related').on(table.crtPstRelated),
-      crtPstUid: index('crt_pst_uid').on(table.crtPstUid),
-    };
-  },
+  (table) => [
+    index('cmt_crt_id').on(table.crtPstMid),
+    index('crt_pst_related').on(table.crtPstRelated),
+    index('crt_pst_uid').on(table.crtPstUid),
+  ],
 );
 
 export const chiiCharacterSubjects = mysqlTable(
@@ -152,11 +144,11 @@ export const chiiCharacterSubjects = mysqlTable(
     order: smallint('crt_order').notNull(),
   },
   (table) => {
-    return {
-      subjectId: index('subject_id').on(table.subjectID),
-      crtType: index('crt_type').on(table.type),
-      subjectTypeId: index('subject_type_id').on(table.subjectType),
-    };
+    return [
+      index('subject_id').on(table.subjectID),
+      index('crt_type').on(table.type),
+      index('subject_type_id').on(table.subjectType),
+    ];
   },
 );
 
@@ -182,16 +174,14 @@ export const chiiEpisodes = mysqlTable(
     lock: tinyint('ep_lock').default(0).notNull(),
     ban: tinyint('ep_ban').default(0).notNull(),
   },
-  (table) => {
-    return {
-      epSort: index('ep_sort').on(table.sort),
-      epDisc: index('ep_disc').on(table.disc),
-      epSubjectId: index('ep_subject_id').on(table.subjectID),
-      epLastpost: index('ep_lastpost').on(table.updatedAt),
-      epBan: index('ep_ban').on(table.ban),
-      epSubjectId2: index('ep_subject_id_2').on(table.subjectID, table.ban, table.sort),
-    };
-  },
+  (table) => [
+    index('ep_sort').on(table.sort),
+    index('ep_disc').on(table.disc),
+    index('ep_subject_id').on(table.subjectID),
+    index('ep_lastpost').on(table.updatedAt),
+    index('ep_ban').on(table.ban),
+    index('ep_subject_id_2').on(table.subjectID, table.ban, table.sort),
+  ],
 );
 
 export const chiiEpComments = mysqlTable(
@@ -205,13 +195,11 @@ export const chiiEpComments = mysqlTable(
     content: htmlEscapedString('mediumtext')('ep_pst_content').notNull(),
     state: tinyint('ep_pst_state').notNull(),
   },
-  (table) => {
-    return {
-      epCmtCrtId: index('ep_cmt_crt_id').on(table.mid),
-      epPstRelated: index('ep_pst_related').on(table.related),
-      epPstUid: index('ep_pst_uid').on(table.uid),
-    };
-  },
+  (table) => [
+    index('ep_cmt_crt_id').on(table.mid),
+    index('ep_pst_related').on(table.related),
+    index('ep_pst_uid').on(table.uid),
+  ],
 );
 
 export const chiiEpRevisions = mysqlTable(
@@ -226,11 +214,7 @@ export const chiiEpRevisions = mysqlTable(
     revDateline: int('rev_dateline').notNull(),
     revEditSummary: varchar('rev_edit_summary', { length: 200 }).notNull(),
   },
-  (table) => {
-    return {
-      revSid: index('rev_sid').on(table.revSid, table.revCreator),
-    };
-  },
+  (table) => [index('rev_sid').on(table.revSid, table.revCreator)],
 );
 
 export const chiiEpStatus = mysqlTable(
@@ -244,11 +228,7 @@ export const chiiEpStatus = mysqlTable(
     status: mediumtext('ep_stt_status').notNull(),
     updatedAt: int('ep_stt_lasttouch').notNull(),
   },
-  (table) => {
-    return {
-      epSttUniq: unique('ep_stt_uniq').on(table.uid, table.sid),
-    };
-  },
+  (table) => [index('ep_stt_uniq').on(table.uid, table.sid)],
 );
 
 export const chiiFriends = mysqlTable(
@@ -260,37 +240,40 @@ export const chiiFriends = mysqlTable(
     createdAt: int('frd_dateline').default(0).notNull(),
     description: char('frd_description', { length: 255 }).notNull(),
   },
-  (table) => {
-    return {
-      uid: index('uid').on(table.uid),
-      frdFid: index('frd_fid').on(table.fid),
-    };
-  },
+  (table) => [index('uid').on(table.uid), index('frd_fid').on(table.fid)],
 );
 
-export const chiiGroups = mysqlTable('chii_groups', {
-  id: smallint('grp_id').autoincrement().notNull(),
-  cat: smallint('grp_cat').notNull(),
-  name: char('grp_name', { length: 50 }).notNull(),
-  title: char('grp_title', { length: 50 }).notNull(),
-  icon: varchar('grp_icon', { length: 255 }).notNull(),
-  creator: mediumint('grp_creator').notNull(),
-  topics: mediumint('grp_topics').notNull(),
-  posts: mediumint('grp_posts').notNull(),
-  members: mediumint('grp_members').default(1).notNull(),
-  desc: text('grp_desc').notNull(),
-  updatedAt: int('grp_lastpost').notNull(),
-  createdAt: int('grp_builddate').notNull(),
-  accessible: customBoolean('grp_accessible').default(true).notNull(),
-  nsfw: customBoolean('grp_nsfw').notNull(),
-});
+export const chiiGroups = mysqlTable(
+  'chii_groups',
+  {
+    id: smallint('grp_id').autoincrement().notNull(),
+    cat: smallint('grp_cat').notNull(),
+    name: char('grp_name', { length: 50 }).notNull(),
+    title: char('grp_title', { length: 50 }).notNull(),
+    icon: varchar('grp_icon', { length: 255 }).notNull(),
+    creator: mediumint('grp_creator').notNull(),
+    topics: mediumint('grp_topics').notNull(),
+    posts: mediumint('grp_posts').notNull(),
+    members: mediumint('grp_members').default(1).notNull(),
+    desc: text('grp_desc').notNull(),
+    updatedAt: int('grp_lastpost').notNull(),
+    createdAt: int('grp_builddate').notNull(),
+    accessible: customBoolean('grp_accessible').default(true).notNull(),
+    nsfw: customBoolean('grp_nsfw').notNull(),
+  },
+  (table) => [index('grp_cat').on(table.cat)],
+);
 
-export const chiiGroupMembers = mysqlTable('chii_group_members', {
-  uid: mediumint('gmb_uid').notNull(),
-  gid: smallint('gmb_gid').notNull(),
-  moderator: tinyint('gmb_moderator').default(0).notNull(),
-  createdAt: int('gmb_dateline').default(0).notNull(),
-});
+export const chiiGroupMembers = mysqlTable(
+  'chii_group_members',
+  {
+    uid: mediumint('gmb_uid').notNull(),
+    gid: smallint('gmb_gid').notNull(),
+    moderator: tinyint('gmb_moderator').default(0).notNull(),
+    createdAt: int('gmb_dateline').default(0).notNull(),
+  },
+  (table) => [index('gmb_uid').on(table.uid)],
+);
 
 export const chiiGroupTopics = mysqlTable(
   'chii_group_topics',
@@ -305,14 +288,12 @@ export const chiiGroupTopics = mysqlTable(
     state: tinyint('grp_tpc_state').notNull(),
     display: tinyint('grp_tpc_display').default(1).notNull(),
   },
-  (table) => {
-    return {
-      grpTpcGid: index('grp_tpc_gid').on(table.gid),
-      grpTpcDisplay: index('grp_tpc_display').on(table.display),
-      grpTpcUid: index('grp_tpc_uid').on(table.uid),
-      grpTpcLastpost: index('grp_tpc_lastpost').on(table.updatedAt),
-    };
-  },
+  (table) => [
+    index('grp_tpc_gid').on(table.gid),
+    index('grp_tpc_display').on(table.display),
+    index('grp_tpc_uid').on(table.uid),
+    index('grp_tpc_lastpost').on(table.updatedAt, table.gid, table.display),
+  ],
 );
 
 export const chiiGroupPosts = mysqlTable(
@@ -326,13 +307,11 @@ export const chiiGroupPosts = mysqlTable(
     state: tinyint('grp_pst_state').notNull(),
     createdAt: int('grp_pst_dateline').default(0).notNull(),
   },
-  (table) => {
-    return {
-      pssTopicId: index('pss_topic_id').on(table.mid),
-      grpPstRelated: index('grp_pst_related').on(table.related),
-      grpPstUid: index('grp_pst_uid').on(table.uid),
-    };
-  },
+  (table) => [
+    index('pss_topic_id').on(table.mid),
+    index('grp_pst_related').on(table.related),
+    index('grp_pst_uid').on(table.uid),
+  ],
 );
 
 export const chiiIndexes = mysqlTable(
@@ -351,15 +330,13 @@ export const chiiIndexes = mysqlTable(
     uid: mediumint('idx_uid').notNull(),
     ban: tinyint('idx_ban').default(0).notNull(),
   },
-  (table) => {
-    return {
-      idxBan: index('idx_ban').on(table.ban),
-      idxType: index('idx_type').on(table.type),
-      idxUid: index('idx_uid').on(table.uid),
-      idxCollects: index('idx_collects').on(table.collects),
-      mid: unique('mid').on(table.id),
-    };
-  },
+  (table) => [
+    index('idx_ban').on(table.ban),
+    index('idx_type').on(table.type),
+    index('idx_uid').on(table.uid),
+    index('idx_collects').on(table.collects),
+    unique('mid').on(table.id),
+  ],
 );
 
 export const chiiIndexCollects = mysqlTable(
@@ -370,11 +347,7 @@ export const chiiIndexCollects = mysqlTable(
     uid: mediumint('idx_clt_uid').notNull(),
     createdAt: int('idx_clt_dateline').notNull(),
   },
-  (table) => {
-    return {
-      idxCltMid: index('idx_clt_mid').on(table.mid, table.uid),
-    };
-  },
+  (table) => [index('idx_clt_mid').on(table.mid, table.uid)],
 );
 
 export const chiiIndexComments = mysqlTable(
@@ -387,13 +360,11 @@ export const chiiIndexComments = mysqlTable(
     createdAt: int('idx_pst_dateline').notNull(),
     content: htmlEscapedString('mediumtext')('idx_pst_content').notNull(),
   },
-  (table) => {
-    return {
-      idxPstMid: index('idx_pst_mid').on(table.mid),
-      idxPstRelated: index('idx_pst_related').on(table.related),
-      idxPstUid: index('idx_pst_uid').on(table.uid),
-    };
-  },
+  (table) => [
+    index('idx_pst_mid').on(table.mid),
+    index('idx_pst_related').on(table.related),
+    index('idx_pst_uid').on(table.uid),
+  ],
 );
 
 export const chiiIndexRelated = mysqlTable(
@@ -409,21 +380,14 @@ export const chiiIndexRelated = mysqlTable(
     idxRltDateline: int('idx_rlt_dateline').notNull(),
     idxRltBan: tinyint('idx_rlt_ban').default(0).notNull(),
   },
-  (table) => {
-    return {
-      idxRltRid: index('idx_rlt_rid').on(table.idxRltRid, table.idxRltType),
-      idxRltSid: index('idx_rlt_sid').on(table.idxRltRid, table.idxRltSid),
-      idxRltSid2: index('idx_rlt_sid_2').on(table.idxRltSid),
-      idxRltCat: index('idx_rlt_cat').on(table.idxRltCat),
-      idxOrder: index('idx_order').on(
-        table.idxRltRid,
-        table.idxRltCat,
-        table.idxRltOrder,
-        table.idxRltSid,
-      ),
-      idxRltBan: index('idx_rlt_ban').on(table.idxRltBan),
-    };
-  },
+  (table) => [
+    index('idx_rlt_rid').on(table.idxRltRid, table.idxRltType),
+    index('idx_rlt_sid').on(table.idxRltRid, table.idxRltSid),
+    index('idx_rlt_sid_2').on(table.idxRltSid),
+    index('idx_rlt_cat').on(table.idxRltCat),
+    index('idx_order').on(table.idxRltRid, table.idxRltCat, table.idxRltOrder, table.idxRltSid),
+    index('idx_rlt_ban').on(table.idxRltBan),
+  ],
 );
 
 /** 用于点赞/封面投票 */
@@ -438,13 +402,11 @@ export const chiiLikes = mysqlTable(
     deleted: tinyint('ban').default(0).notNull(),
     createdAt: int('created_at').notNull(),
   },
-  (table) => {
-    return {
-      idxUid: index('idx_uid').on(table.uid),
-      idxRelated: index('idx_related').on(table.relatedID),
-      type: index('type').on(table.type, table.mainID, table.uid),
-    };
-  },
+  (table) => [
+    index('idx_uid').on(table.uid),
+    index('idx_related').on(table.relatedID),
+    index('type').on(table.type, table.mainID, table.uid),
+  ],
 );
 
 export const chiiUsers = mysqlTable(
@@ -469,23 +431,23 @@ export const chiiUsers = mysqlTable(
     email: char('email', { length: 50 }).default('').notNull(),
     acl: mediumtext('acl').notNull(),
   },
-  (table) => {
-    return {
-      username: unique('username').on(table.username),
-    };
-  },
+  (table) => [index('username').on(table.username)],
 );
 
-export const chiiUserFields = mysqlTable('chii_memberfields', {
-  uid: mediumint('uid').notNull(),
-  site: varchar('site', { length: 75 }).default('').notNull(),
-  location: varchar('location', { length: 30 }).default('').notNull(),
-  bio: text('bio').notNull(),
-  homepage: mediumtext('homepage').notNull(),
-  // FIXME: wait for permission
-  // privacy: mediumtext('privacy').notNull(),
-  // blocklist: mediumtext('blocklist').notNull(),
-});
+export const chiiUserFields = mysqlTable(
+  'chii_memberfields',
+  {
+    uid: mediumint('uid').notNull(),
+    site: varchar('site', { length: 75 }).default('').notNull(),
+    location: varchar('location', { length: 30 }).default('').notNull(),
+    bio: text('bio').notNull(),
+    homepage: mediumtext('homepage').notNull(),
+    // FIXME: wait for permission
+    // privacy: mediumtext('privacy').notNull(),
+    // blocklist: mediumtext('blocklist').notNull(),
+  },
+  (table) => [index('uid').on(table.uid)],
+);
 
 export const chiiUserNetworkServices = mysqlTable(
   'chii_network_services',
@@ -495,12 +457,7 @@ export const chiiUserNetworkServices = mysqlTable(
     account: varchar('ns_account', { length: 255 }).notNull(),
     createdAt: int('ns_dateline').notNull(),
   },
-  (table) => {
-    return {
-      nsUid2: index('ns_uid_2').on(table.uid),
-      nsUid: unique('ns_uid').on(table.uid, table.serviceID),
-    };
-  },
+  (table) => [index('ns_uid_2').on(table.uid), index('ns_uid').on(table.uid, table.serviceID)],
 );
 
 export const chiiNotify = mysqlTable(
@@ -515,13 +472,11 @@ export const chiiNotify = mysqlTable(
     ntRelatedId: int('nt_related_id').notNull(),
     ntDateline: int('nt_dateline').notNull(),
   },
-  (table) => {
-    return {
-      ntFromUid: index('nt_from_uid').on(table.ntFromUid),
-      ntMid: index('nt_mid').on(table.ntMid),
-      ntUid: index('nt_uid').on(table.ntUid, table.ntStatus, table.ntType, table.ntRelatedId),
-    };
-  },
+  (table) => [
+    index('nt_from_uid').on(table.ntFromUid),
+    index('nt_mid').on(table.ntMid),
+    index('nt_uid').on(table.ntUid, table.ntStatus, table.ntType, table.ntRelatedId),
+  ],
 );
 
 export const chiiNotifyField = mysqlTable(
@@ -532,12 +487,7 @@ export const chiiNotifyField = mysqlTable(
     ntfRid: int('ntf_rid').notNull(),
     ntfTitle: varchar('ntf_title', { length: 255 }).notNull(),
   },
-  (table) => {
-    return {
-      ntfHash: index('ntf_hash').on(table.ntfHash),
-      ntfRid: index('ntf_rid').on(table.ntfRid),
-    };
-  },
+  (table) => [index('ntf_hash').on(table.ntfHash), index('ntf_rid').on(table.ntfRid)],
 );
 
 export const chiiAccessToken = mysqlTable(
@@ -554,21 +504,22 @@ export const chiiAccessToken = mysqlTable(
     scope: varchar('scope', { length: 4000 }),
     info: varchar('info', { length: 255 }).notNull(),
   },
-  (table) => {
-    return {
-      type: index('type').on(table.type),
-      accessToken: unique('access_token').on(table.accessToken),
-    };
-  },
+  (table) => [index('type').on(table.type), index('access_token').on(table.accessToken)],
 );
 
-export const chiiOAuthRefreshToken = mysqlTable('chii_oauth_refresh_tokens', {
-  refreshToken: varchar('refresh_token', { length: 40 }).notNull(),
-  clientID: varchar('client_id', { length: 80 }).notNull(),
-  userID: varchar('user_id', { length: 80 }).notNull(),
-  expiredAt: timestamp('expires', { mode: 'date' }).default(sql.raw('CURRENT_TIMESTAMP')).notNull(),
-  scope: varchar('scope', { length: 4000 }),
-});
+export const chiiOAuthRefreshToken = mysqlTable(
+  'chii_oauth_refresh_tokens',
+  {
+    refreshToken: varchar('refresh_token', { length: 40 }).notNull(),
+    clientID: varchar('client_id', { length: 80 }).notNull(),
+    userID: varchar('user_id', { length: 80 }).notNull(),
+    expiredAt: timestamp('expires', { mode: 'date' })
+      .default(sql.raw('CURRENT_TIMESTAMP'))
+      .notNull(),
+    scope: varchar('scope', { length: 4000 }),
+  },
+  (table) => [index('refresh_token').on(table.refreshToken)],
+);
 
 export const chiiOauthClients = mysqlTable(
   'chii_oauth_clients',
@@ -581,11 +532,7 @@ export const chiiOauthClients = mysqlTable(
     scope: varchar('scope', { length: 4000 }),
     userId: varchar('user_id', { length: 80 }),
   },
-  (table) => {
-    return {
-      clientID: index('client_id').on(table.clientID),
-    };
-  },
+  (table) => [index('client_id').on(table.clientID)],
 );
 
 const mediumblob = (name: string) =>
@@ -603,13 +550,17 @@ const mediumblob = (name: string) =>
     },
   })(name);
 
-export const chiiOsWebSessions = mysqlTable('chii_os_web_sessions', {
-  key: char('key', { length: 64 }).notNull(),
-  userID: int('user_id').notNull(),
-  value: mediumblob('value').notNull(),
-  createdAt: bigint('created_at', { mode: 'number' }).notNull(),
-  expiredAt: bigint('expired_at', { mode: 'number' }).notNull(),
-});
+export const chiiOsWebSessions = mysqlTable(
+  'chii_os_web_sessions',
+  {
+    key: char('key', { length: 64 }).notNull(),
+    userID: int('user_id').notNull(),
+    value: mediumblob('value').notNull(),
+    createdAt: bigint('created_at', { mode: 'number' }).notNull(),
+    expiredAt: bigint('expired_at', { mode: 'number' }).notNull(),
+  },
+  (table) => [index('key').on(table.key)],
+);
 
 export type IChiiOsWebSessions = typeof chiiOsWebSessions.$inferSelect;
 
@@ -640,20 +591,18 @@ export const chiiPersons = mysqlTable(
     redirect: int('prsn_redirect').default(0).notNull(),
     nsfw: customBoolean('prsn_nsfw').notNull(),
   },
-  (table) => {
-    return {
-      prsnType: index('prsn_type').on(table.type),
-      prsnProducer: index('prsn_producer').on(table.producer),
-      prsnMangaka: index('prsn_mangaka').on(table.mangaka),
-      prsnArtist: index('prsn_artist').on(table.artist),
-      prsnSeiyu: index('prsn_seiyu').on(table.seiyu),
-      prsnWriter: index('prsn_writer').on(table.writer),
-      prsnIllustrator: index('prsn_illustrator').on(table.illustrator),
-      prsnActor: index('prsn_actor').on(table.actor),
-      prsnLock: index('prsn_lock').on(table.lock),
-      prsnBan: index('prsn_ban').on(table.ban),
-    };
-  },
+  (table) => [
+    index('prsn_type').on(table.type),
+    index('prsn_producer').on(table.producer),
+    index('prsn_mangaka').on(table.mangaka),
+    index('prsn_artist').on(table.artist),
+    index('prsn_seiyu').on(table.seiyu),
+    index('prsn_writer').on(table.writer),
+    index('prsn_illustrator').on(table.illustrator),
+    index('prsn_actor').on(table.actor),
+    index('prsn_lock').on(table.lock),
+    index('prsn_ban').on(table.ban),
+  ],
 );
 
 export const chiiPersonAlias = mysqlTable(
@@ -665,12 +614,7 @@ export const chiiPersonAlias = mysqlTable(
     aliasType: tinyint('alias_type').notNull(),
     aliasKey: varchar('alias_key', { length: 10 }).notNull(),
   },
-  (table) => {
-    return {
-      prsnCat: index('prsn_cat').on(table.prsnCat, table.prsnId),
-      prsnId: index('prsn_id').on(table.prsnId),
-    };
-  },
+  (table) => [index('prsn_cat').on(table.prsnCat, table.prsnId), index('prsn_id').on(table.prsnId)],
 );
 
 export const chiiPersonCollects = mysqlTable(
@@ -682,13 +626,11 @@ export const chiiPersonCollects = mysqlTable(
     uid: mediumint('prsn_clt_uid').notNull(),
     createdAt: int('prsn_clt_dateline').notNull(),
   },
-  (table) => {
-    return {
-      prsnCltCat: index('prsn_clt_cat').on(table.cat, table.mid),
-      prsnCltUid: index('prsn_clt_uid').on(table.uid),
-      prsnCltMid: index('prsn_clt_mid').on(table.mid),
-    };
-  },
+  (table) => [
+    index('prsn_clt_cat').on(table.cat, table.mid),
+    index('prsn_clt_uid').on(table.uid),
+    index('prsn_clt_mid').on(table.mid),
+  ],
 );
 
 export const chiiPersonSubjects = mysqlTable(
@@ -702,14 +644,12 @@ export const chiiPersonSubjects = mysqlTable(
     summary: mediumtext('summary').notNull(),
     appearEps: mediumtext('prsn_appear_eps').notNull(),
   },
-  (table) => {
-    return {
-      subjectId: index('subject_id').on(table.subjectID),
-      prsnPosition: index('prsn_position').on(table.position),
-      prsnId: index('prsn_id').on(table.personID),
-      subjectTypeId: index('subject_type_id').on(table.subjectType),
-    };
-  },
+  (table) => [
+    index('subject_id').on(table.subjectID),
+    index('prsn_position').on(table.position),
+    index('prsn_id').on(table.personID),
+    index('subject_type_id').on(table.subjectType),
+  ],
 );
 
 export const chiiPersonFields = mysqlTable(
@@ -724,11 +664,7 @@ export const chiiPersonFields = mysqlTable(
     birthMon: tinyint('birth_mon').notNull(),
     birthDay: tinyint('birth_day').notNull(),
   },
-  (table) => {
-    return {
-      prsnId: index('prsn_id').on(table.prsnId),
-    };
-  },
+  (table) => [index('prsn_id').on(table.prsnId)],
 );
 
 export const chiiPersonRelations = mysqlTable(
@@ -740,12 +676,10 @@ export const chiiPersonRelations = mysqlTable(
     relatedID: mediumint('relat_prsn_id').notNull(),
     relation: smallint('relat_type').notNull(),
   },
-  (table) => {
-    return {
-      prsnType: index('prsn_type').on(table.type, table.id),
-      relatPrsnType: index('relat_prsn_type').on(table.relatedType, table.relatedID),
-    };
-  },
+  (table) => [
+    index('prsn_type').on(table.type, table.id),
+    index('relat_prsn_type').on(table.relatedType, table.relatedID),
+  ],
 );
 
 export const chiiPms = mysqlTable(
@@ -764,14 +698,12 @@ export const chiiPms = mysqlTable(
     msgSdeleted: tinyint('msg_sdeleted').default(0).notNull(),
     msgRdeleted: tinyint('msg_rdeleted').default(0).notNull(),
   },
-  (table) => {
-    return {
-      msgSdeleted: index('msg_sdeleted').on(table.msgSdeleted, table.msgRdeleted),
-      msgfromid: index('msgfromid').on(table.msgSid, table.msgFolder, table.msgDateline),
-      msgtoid: index('msgtoid').on(table.msgRid, table.msgFolder, table.msgDateline),
-      pmRelated: index('pm_related').on(table.msgRelated),
-    };
-  },
+  (table) => [
+    index('msg_sdeleted').on(table.msgSdeleted, table.msgRdeleted),
+    index('msgfromid').on(table.msgSid, table.msgFolder, table.msgDateline),
+    index('msgtoid').on(table.msgRid, table.msgFolder, table.msgDateline),
+    index('pm_related').on(table.msgRelated),
+  ],
 );
 
 export const chiiPrsnComments = mysqlTable(
@@ -784,13 +716,11 @@ export const chiiPrsnComments = mysqlTable(
     prsnPstDateline: int('prsn_pst_dateline').notNull(),
     prsnPstContent: htmlEscapedString('mediumtext')('prsn_pst_content').notNull(),
   },
-  (table) => {
-    return {
-      cmtPrsnId: index('cmt_prsn_id').on(table.prsnPstMid),
-      prsnPstRelated: index('prsn_pst_related').on(table.prsnPstRelated),
-      prsnPstUid: index('prsn_pst_uid').on(table.prsnPstUid),
-    };
-  },
+  (table) => [
+    index('cmt_prsn_id').on(table.prsnPstMid),
+    index('prsn_pst_related').on(table.prsnPstRelated),
+    index('prsn_pst_uid').on(table.prsnPstUid),
+  ],
 );
 
 export const chiiRevHistory = mysqlTable(
@@ -804,73 +734,83 @@ export const chiiRevHistory = mysqlTable(
     revCreator: mediumint('rev_creator').notNull(),
     revEditSummary: varchar('rev_edit_summary', { length: 200 }).notNull(),
   },
-  (table) => {
-    return {
-      revCrtId: index('rev_crt_id').on(table.revType, table.revMid),
-      revCrtCreator: index('rev_crt_creator').on(table.revCreator),
-      revId: index('rev_id').on(table.revId, table.revType, table.revCreator),
-    };
-  },
+  (table) => [
+    index('rev_crt_id').on(table.revType, table.revMid),
+    index('rev_crt_creator').on(table.revCreator),
+    index('rev_id').on(table.revId, table.revType, table.revCreator),
+  ],
 );
 
-export const chiiRevText = mysqlTable('chii_rev_text', {
-  revTextId: mediumint('rev_text_id').autoincrement().notNull(),
-  revText: mediumblob('rev_text').notNull(),
-});
+export const chiiRevText = mysqlTable(
+  'chii_rev_text',
+  {
+    revTextId: mediumint('rev_text_id').autoincrement().notNull(),
+    revText: mediumblob('rev_text').notNull(),
+  },
+  (table) => [index('rev_text_id').on(table.revTextId)],
+);
 
-export const chiiSubjects = mysqlTable('chii_subjects', {
-  id: mediumint('subject_id').autoincrement().notNull(),
-  typeID: smallint('subject_type_id').notNull(),
-  name: htmlEscapedString('varchar')('subject_name', { length: 80 }).notNull(),
-  nameCN: htmlEscapedString('varchar')('subject_name_cn', { length: 80 }).notNull(),
-  Uid: varchar('subject_uid', { length: 20 }).notNull(),
-  creatorID: mediumint('subject_creator').notNull(),
-  createdAt: int('subject_dateline').default(0).notNull(),
-  image: varchar('subject_image', { length: 255 }).notNull(),
-  platform: smallint('subject_platform').notNull(),
-  metaTags: mediumtext('field_meta_tags').notNull(),
-  infobox: htmlEscapedString('mediumtext')('field_infobox').notNull(),
-  summary: mediumtext('field_summary').notNull(),
-  field5: mediumtext('field_5').notNull(),
-  volumes: mediumint('field_volumes').notNull(),
-  eps: mediumint('field_eps').notNull(),
-  wish: mediumint('subject_wish').notNull(),
-  done: mediumint('subject_collect').notNull(),
-  doing: mediumint('subject_doing').notNull(),
-  onHold: mediumint('subject_on_hold').notNull(),
-  dropped: mediumint('subject_dropped').notNull(),
-  series: customBoolean('subject_series').notNull(),
-  seriesEntry: mediumint('subject_series_entry').notNull(),
-  idxCn: varchar('subject_idx_cn', { length: 1 }).notNull(),
-  airtime: tinyint('subject_airtime').notNull(),
-  nsfw: customBoolean('subject_nsfw').notNull(),
-  ban: tinyint('subject_ban').default(0).notNull(),
-});
+export const chiiSubjects = mysqlTable(
+  'chii_subjects',
+  {
+    id: mediumint('subject_id').autoincrement().notNull(),
+    typeID: smallint('subject_type_id').notNull(),
+    name: htmlEscapedString('varchar')('subject_name', { length: 80 }).notNull(),
+    nameCN: htmlEscapedString('varchar')('subject_name_cn', { length: 80 }).notNull(),
+    Uid: varchar('subject_uid', { length: 20 }).notNull(),
+    creatorID: mediumint('subject_creator').notNull(),
+    createdAt: int('subject_dateline').default(0).notNull(),
+    image: varchar('subject_image', { length: 255 }).notNull(),
+    platform: smallint('subject_platform').notNull(),
+    metaTags: mediumtext('field_meta_tags').notNull(),
+    infobox: htmlEscapedString('mediumtext')('field_infobox').notNull(),
+    summary: mediumtext('field_summary').notNull(),
+    field5: mediumtext('field_5').notNull(),
+    volumes: mediumint('field_volumes').notNull(),
+    eps: mediumint('field_eps').notNull(),
+    wish: mediumint('subject_wish').notNull(),
+    done: mediumint('subject_collect').notNull(),
+    doing: mediumint('subject_doing').notNull(),
+    onHold: mediumint('subject_on_hold').notNull(),
+    dropped: mediumint('subject_dropped').notNull(),
+    series: customBoolean('subject_series').notNull(),
+    seriesEntry: mediumint('subject_series_entry').notNull(),
+    idxCn: varchar('subject_idx_cn', { length: 1 }).notNull(),
+    airtime: tinyint('subject_airtime').notNull(),
+    nsfw: customBoolean('subject_nsfw').notNull(),
+    ban: tinyint('subject_ban').default(0).notNull(),
+  },
+  (table) => [index('subject_type_id').on(table.typeID), index('subject_id').on(table.id)],
+);
 
-export const chiiSubjectFields = mysqlTable('chii_subject_fields', {
-  id: mediumint('field_sid').autoincrement().notNull(),
-  fieldTid: smallint('field_tid').notNull(),
-  fieldTags: mediumtext('field_tags').notNull(),
-  fieldRate1: mediumint('field_rate_1').notNull(),
-  fieldRate2: mediumint('field_rate_2').notNull(),
-  fieldRate3: mediumint('field_rate_3').notNull(),
-  fieldRate4: mediumint('field_rate_4').notNull(),
-  fieldRate5: mediumint('field_rate_5').notNull(),
-  fieldRate6: mediumint('field_rate_6').notNull(),
-  fieldRate7: mediumint('field_rate_7').notNull(),
-  fieldRate8: mediumint('field_rate_8').notNull(),
-  fieldRate9: mediumint('field_rate_9').notNull(),
-  fieldRate10: mediumint('field_rate_10').notNull(),
-  fieldAirtime: tinyint('field_airtime').notNull(),
-  fieldRank: int('field_rank').default(0).notNull(),
-  // Warning: Can't parse year(4) from database
-  year: year('field_year').notNull(),
-  month: tinyint('field_mon').notNull(),
-  weekDay: tinyint('field_week_day').notNull(),
-  // you can use { mode: 'date' }, if you want to have Date as type for this column
-  date: date('field_date', { mode: 'string' }).notNull(),
-  fieldRedirect: mediumint('field_redirect').notNull(),
-});
+export const chiiSubjectFields = mysqlTable(
+  'chii_subject_fields',
+  {
+    id: mediumint('field_sid').autoincrement().notNull(),
+    fieldTid: smallint('field_tid').notNull(),
+    fieldTags: mediumtext('field_tags').notNull(),
+    fieldRate1: mediumint('field_rate_1').notNull(),
+    fieldRate2: mediumint('field_rate_2').notNull(),
+    fieldRate3: mediumint('field_rate_3').notNull(),
+    fieldRate4: mediumint('field_rate_4').notNull(),
+    fieldRate5: mediumint('field_rate_5').notNull(),
+    fieldRate6: mediumint('field_rate_6').notNull(),
+    fieldRate7: mediumint('field_rate_7').notNull(),
+    fieldRate8: mediumint('field_rate_8').notNull(),
+    fieldRate9: mediumint('field_rate_9').notNull(),
+    fieldRate10: mediumint('field_rate_10').notNull(),
+    fieldAirtime: tinyint('field_airtime').notNull(),
+    fieldRank: int('field_rank').default(0).notNull(),
+    // Warning: Can't parse year(4) from database
+    year: year('field_year').notNull(),
+    month: tinyint('field_mon').notNull(),
+    weekDay: tinyint('field_week_day').notNull(),
+    // you can use { mode: 'date' }, if you want to have Date as type for this column
+    date: date('field_date', { mode: 'string' }).notNull(),
+    fieldRedirect: mediumint('field_redirect').notNull(),
+  },
+  (table) => [index('field_tid').on(table.fieldTid)],
+);
 
 export const chiiSubjectAlias = mysqlTable(
   'chii_subject_alias',
@@ -881,11 +821,7 @@ export const chiiSubjectAlias = mysqlTable(
     aliasType: tinyint('alias_type').default(0).notNull(),
     aliasKey: varchar('alias_key', { length: 10 }).notNull(),
   },
-  (table) => {
-    return {
-      subjectId: index('subject_id').on(table.subjectId),
-    };
-  },
+  (table) => [index('subject_id').on(table.subjectId)],
 );
 
 export const chiiSubjectImgs = mysqlTable(
@@ -900,12 +836,10 @@ export const chiiSubjectImgs = mysqlTable(
     imgBan: tinyint('img_ban').notNull(),
     imgDateline: int('img_dateline').notNull(),
   },
-  (table) => {
-    return {
-      imgSubjectId: index('img_subject_id').on(table.imgSubjectId),
-      imgNsfw: index('img_nsfw').on(table.imgNsfw, table.imgBan),
-    };
-  },
+  (table) => [
+    index('img_subject_id').on(table.imgSubjectId),
+    index('img_nsfw').on(table.imgNsfw, table.imgBan),
+  ],
 );
 
 export const chiiSubjectInterests = mysqlTable(
@@ -932,57 +866,36 @@ export const chiiSubjectInterests = mysqlTable(
     updatedAt: int('interest_lasttouch').default(0).notNull(),
     private: customBoolean('interest_private').notNull(),
   },
-  (table) => {
-    return {
-      interestCollectDateline: index('interest_collect_dateline').on(table.collectDateline),
-      interestId: index('interest_id').on(table.uid, table.private),
-      interestUpdatedAt: index('interest_lasttouch').on(table.updatedAt),
-      interestPrivate: index('interest_private').on(table.private),
-      interestRate: index('interest_rate').on(table.rate),
-      interestSubjectId: index('interest_subject_id').on(table.subjectID, table.type),
-      interestSubjectId2: index('interest_subject_id_2').on(table.subjectID),
-      interestSubjectType: index('interest_subject_type').on(table.subjectType),
-      interestType: index('interest_type').on(table.type),
-      interestType2: index('interest_type_2').on(table.type, table.uid),
-      interestUid: index('interest_uid').on(table.uid),
-      interestUid2: index('interest_uid_2').on(table.uid, table.private, table.updatedAt),
-      subjectCollect: index('subject_collect').on(
-        table.subjectID,
-        table.type,
-        table.private,
-        table.collectDateline,
-      ),
-      subjectComment: index('subject_comment').on(
-        table.subjectID,
-        table.hasComment,
-        table.private,
-        table.updatedAt,
-      ),
-      subjectUpdatedAt: index('subject_lasttouch').on(
-        table.subjectID,
-        table.private,
-        table.updatedAt,
-      ),
-      subjectRate: index('subject_rate').on(table.subjectID, table.rate, table.private),
-      tagSubjectId: index('tag_subject_id').on(table.subjectType, table.type, table.uid),
-      topSubject: index('top_subject').on(table.subjectID, table.subjectType, table.doingDateline),
-      userCollectLatest: index('user_collect_latest').on(
-        table.subjectType,
-        table.type,
-        table.uid,
-        table.private,
-      ),
-      userCollectType: index('user_collect_type').on(
-        table.subjectType,
-        table.type,
-        table.uid,
-        table.private,
-        table.collectDateline,
-      ),
-      userCollects: index('user_collects').on(table.subjectType, table.uid),
-      userInterest: unique('user_interest').on(table.uid, table.subjectID),
-    };
-  },
+  (table) => [
+    index('interest_collect_dateline').on(table.collectDateline),
+    index('interest_id').on(table.uid, table.private),
+    index('interest_lasttouch').on(table.updatedAt),
+    index('interest_private').on(table.private),
+    index('interest_rate').on(table.rate),
+    index('interest_subject_id').on(table.subjectID, table.type),
+    index('interest_subject_id_2').on(table.subjectID),
+    index('interest_subject_type').on(table.subjectType),
+    index('interest_type').on(table.type),
+    index('interest_type_2').on(table.type, table.uid),
+    index('interest_uid').on(table.uid),
+    index('interest_uid_2').on(table.uid, table.private, table.updatedAt),
+    index('subject_collect').on(table.subjectID, table.type, table.private, table.collectDateline),
+    index('subject_comment').on(table.subjectID, table.hasComment, table.private, table.updatedAt),
+    index('subject_lasttouch').on(table.subjectID, table.private, table.updatedAt),
+    index('subject_rate').on(table.subjectID, table.rate, table.private),
+    index('tag_subject_id').on(table.subjectType, table.type, table.uid),
+    index('top_subject').on(table.subjectID, table.subjectType, table.doingDateline),
+    index('user_collect_latest').on(table.subjectType, table.type, table.uid, table.private),
+    index('user_collect_type').on(
+      table.subjectType,
+      table.type,
+      table.uid,
+      table.private,
+      table.collectDateline,
+    ),
+    index('user_collects').on(table.subjectType, table.uid),
+    unique('user_interest').on(table.uid, table.subjectID),
+  ],
 );
 
 export const chiiSubjectRelatedBlogs = mysqlTable(
@@ -997,12 +910,10 @@ export const chiiSubjectRelatedBlogs = mysqlTable(
     dislike: mediumint('srb_dislike').notNull(),
     createdAt: int('srb_dateline').notNull(),
   },
-  (table) => {
-    return {
-      srbUid: index('srb_uid').on(table.uid, table.subjectID, table.entryID),
-      subjectRelated: index('subject_related').on(table.subjectID),
-    };
-  },
+  (table) => [
+    index('srb_uid').on(table.uid, table.subjectID, table.entryID),
+    index('subject_related').on(table.subjectID),
+  ],
 );
 
 export const chiiSubjectRec = mysqlTable(
@@ -1013,12 +924,7 @@ export const chiiSubjectRec = mysqlTable(
     sim: float('mio_sim').notNull(),
     count: mediumint('mio_count').notNull(),
   },
-  (table) => {
-    return {
-      subjectId: index('subject_id').on(table.subjectID),
-      mioCount: index('mio_count').on(table.count),
-    };
-  },
+  (table) => [index('subject_id').on(table.subjectID), index('mio_count').on(table.count)],
 );
 
 export const chiiSubjectRelations = mysqlTable(
@@ -1032,36 +938,42 @@ export const chiiSubjectRelations = mysqlTable(
     viceVersa: tinyint('rlt_vice_versa').notNull(),
     order: tinyint('rlt_order').notNull(),
   },
-  (table) => {
-    return {
-      rltRelatedSubjectTypeId: index('rlt_related_subject_type_id').on(
-        table.relatedID,
-        table.order,
-      ),
-      rltSubjectTypeId: index('rlt_subject_type_id').on(table.type),
-      rltRelationType: index('rlt_relation_type').on(table.relatedType, table.id, table.relatedID),
-      rltSubjectId: unique('rlt_subject_id').on(table.id, table.relatedID, table.viceVersa),
-    };
-  },
+  (table) => [
+    index('rlt_related_subject_type_id').on(table.relatedID, table.order),
+    index('rlt_subject_type_id').on(table.type),
+    index('rlt_relation_type').on(table.relatedType, table.id, table.relatedID),
+    index('rlt_subject_id').on(table.id, table.relatedID, table.viceVersa),
+  ],
 );
 
-export const chiiSubjectRev = mysqlTable('chii_subject_revisions', {
-  revId: mediumint('rev_id').autoincrement().notNull(),
-  type: tinyint('rev_type').default(1).notNull(),
-  subjectID: mediumint('rev_subject_id').notNull(),
-  typeID: smallint('rev_type_id').notNull(),
-  creatorID: mediumint('rev_creator').notNull(),
-  createdAt: int('rev_dateline').default(0).notNull(),
-  name: htmlEscapedString('varchar')('rev_name', { length: 80 }).notNull(),
-  nameCN: htmlEscapedString('varchar')('rev_name_cn', { length: 80 }).notNull(),
-  infobox: mediumtext('rev_field_infobox').notNull(),
-  metaTags: mediumtext('rev_field_meta_tags').notNull(),
-  summary: mediumtext('rev_field_summary').notNull(),
-  revVoteField: mediumtext('rev_vote_field').default('').notNull(),
-  eps: mediumint('rev_field_eps').default(0).notNull(),
-  commitMessage: varchar('rev_edit_summary', { length: 200 }).notNull(),
-  platform: smallint('rev_platform').notNull(),
-});
+export const chiiSubjectRev = mysqlTable(
+  'chii_subject_revisions',
+  {
+    revId: mediumint('rev_id').autoincrement().notNull(),
+    type: tinyint('rev_type').default(1).notNull(),
+    subjectID: mediumint('rev_subject_id').notNull(),
+    typeID: smallint('rev_type_id').notNull(),
+    creatorID: mediumint('rev_creator').notNull(),
+    createdAt: int('rev_dateline').default(0).notNull(),
+    name: htmlEscapedString('varchar')('rev_name', { length: 80 }).notNull(),
+    nameCN: htmlEscapedString('varchar')('rev_name_cn', { length: 80 }).notNull(),
+    infobox: mediumtext('rev_field_infobox').notNull(),
+    metaTags: mediumtext('rev_field_meta_tags').notNull(),
+    summary: mediumtext('rev_field_summary').notNull(),
+    revVoteField: mediumtext('rev_vote_field').default('').notNull(),
+    eps: mediumint('rev_field_eps').default(0).notNull(),
+    commitMessage: varchar('rev_edit_summary', { length: 200 }).notNull(),
+    platform: smallint('rev_platform').notNull(),
+  },
+  (table) => [
+    index('rev_id').on(table.revId),
+    index('rev_type').on(table.type),
+    index('rev_subject_id').on(table.subjectID),
+    index('rev_type_id').on(table.typeID),
+    index('rev_creator').on(table.creatorID),
+    index('rev_dateline').on(table.createdAt),
+  ],
+);
 
 export const chiiSubjectTopics = mysqlTable(
   'chii_subject_topics',
@@ -1076,14 +988,12 @@ export const chiiSubjectTopics = mysqlTable(
     state: tinyint('sbj_tpc_state').notNull(),
     display: tinyint('sbj_tpc_display').default(1).notNull(),
   },
-  (table) => {
-    return {
-      tpcSubjectId: index('tpc_subject_id').on(table.subjectID),
-      tpcDisplay: index('tpc_display').on(table.display),
-      sbjTpcUid: index('sbj_tpc_uid').on(table.uid),
-      sbjTpcLastpost: index('sbj_tpc_lastpost').on(table.updatedAt, table.subjectID, table.display),
-    };
-  },
+  (table) => [
+    index('tpc_subject_id').on(table.subjectID),
+    index('tpc_display').on(table.display),
+    index('sbj_tpc_uid').on(table.uid),
+    index('sbj_tpc_lastpost').on(table.updatedAt, table.subjectID, table.display),
+  ],
 );
 
 export const chiiSubjectPosts = mysqlTable(
@@ -1097,13 +1007,11 @@ export const chiiSubjectPosts = mysqlTable(
     state: tinyint('sbj_pst_state').notNull(),
     createdAt: int('sbj_pst_dateline').default(0).notNull(),
   },
-  (table) => {
-    return {
-      pssTopicId: index('pss_topic_id').on(table.mid),
-      sbjPstRelated: index('sbj_pst_related').on(table.related),
-      sbjPstUid: index('sbj_pst_uid').on(table.uid),
-    };
-  },
+  (table) => [
+    index('pss_topic_id').on(table.mid),
+    index('sbj_pst_related').on(table.related),
+    index('sbj_pst_uid').on(table.uid),
+  ],
 );
 
 export const chiiTagIndex = mysqlTable(
@@ -1117,13 +1025,11 @@ export const chiiTagIndex = mysqlTable(
     createdAt: int('tag_dateline').notNull(),
     updatedAt: int('tag_lasttouch').notNull(),
   },
-  (table) => {
-    return {
-      tagCat: index('tag_cat').on(table.cat, table.type),
-      tagResults: index('tag_results').on(table.cat, table.type, table.totalCount),
-      tagQuery: index('tag_query').on(table.name, table.cat, table.type),
-    };
-  },
+  (table) => [
+    index('tag_cat').on(table.cat, table.type),
+    index('tag_results').on(table.cat, table.type, table.totalCount),
+    index('tag_query').on(table.name, table.cat, table.type),
+  ],
 );
 
 export const chiiTagList = mysqlTable(
@@ -1136,23 +1042,25 @@ export const chiiTagList = mysqlTable(
     mainID: mediumint('tlt_mid').notNull(),
     createdAt: int('tlt_dateline').notNull(),
   },
-  (table) => {
-    return {
-      tltTid: index('tlt_tid').on(table.tagID, table.userID, table.cat, table.type, table.mainID),
-      userTags: index('user_tags').on(table.userID, table.cat, table.mainID, table.tagID),
-      subjectTags: index('subject_tags').on(table.cat, table.mainID, table.tagID),
-      tagToSubject: index('tag_to_subject').on(table.tagID, table.mainID),
-    };
-  },
+  (table) => [
+    index('tlt_tid').on(table.tagID, table.userID, table.cat, table.type, table.mainID),
+    index('user_tags').on(table.userID, table.cat, table.mainID, table.tagID),
+    index('subject_tags').on(table.cat, table.mainID, table.tagID),
+    index('tag_to_subject').on(table.tagID, table.mainID),
+  ],
 );
 
-export const chiiTagFields = mysqlTable('chii_tag_neue_fields', {
-  tagID: int('field_tid').notNull(),
-  summary: mediumtext('field_summary').notNull(),
-  order: mediumint('field_order').notNull(),
-  nsfw: customBoolean('field_nsfw').notNull(),
-  lock: int('field_lock').default(0).notNull(),
-});
+export const chiiTagFields = mysqlTable(
+  'chii_tag_neue_fields',
+  {
+    tagID: int('field_tid').notNull(),
+    summary: mediumtext('field_summary').notNull(),
+    order: mediumint('field_order').notNull(),
+    nsfw: customBoolean('field_nsfw').notNull(),
+    lock: int('field_lock').default(0).notNull(),
+  },
+  (table) => [index('field_tid').on(table.tagID)],
+);
 
 export const chiiTimeline = mysqlTable(
   'chii_timeline',
@@ -1169,14 +1077,12 @@ export const chiiTimeline = mysqlTable(
     replies: mediumint('tml_replies').notNull(),
     createdAt: int('tml_dateline').default(0).notNull(),
   },
-  (table) => {
-    return {
-      tmlUid: index('tml_uid').on(table.uid),
-      tmlCat: index('tml_cat').on(table.cat),
-      tmlBatch: index('tml_batch').on(table.batch),
-      queryTmlCat: index('query_tml_cat').on(table.uid, table.cat),
-    };
-  },
+  (table) => [
+    index('tml_uid').on(table.uid),
+    index('tml_cat').on(table.cat),
+    index('tml_batch').on(table.batch),
+    index('query_tml_cat').on(table.uid, table.cat),
+  ],
 );
 
 export const chiiTimelineComments = mysqlTable(
@@ -1189,21 +1095,23 @@ export const chiiTimelineComments = mysqlTable(
     createdAt: int('tml_pst_dateline').notNull(),
     content: htmlEscapedString('mediumtext')('tml_pst_content').notNull(),
   },
-  (table) => {
-    return {
-      cmtTmlId: index('cmt_tml_id').on(table.mid),
-      tmlPstRelated: index('tml_pst_related').on(table.related),
-      tmlPstUid: index('tml_pst_uid').on(table.uid),
-    };
-  },
+  (table) => [
+    index('cmt_tml_id').on(table.mid),
+    index('tml_pst_related').on(table.related),
+    index('tml_pst_uid').on(table.uid),
+  ],
 );
 
-export const chiiUsergroup = mysqlTable('chii_usergroup', {
-  id: mediumint('usr_grp_id').autoincrement().notNull(),
-  name: varchar('usr_grp_name', { length: 255 }).notNull(),
-  perm: mediumtext('usr_grp_perm').notNull(),
-  updatedAt: int('usr_grp_dateline').notNull(),
-});
+export const chiiUsergroup = mysqlTable(
+  'chii_usergroup',
+  {
+    id: mediumint('usr_grp_id').autoincrement().notNull(),
+    name: varchar('usr_grp_name', { length: 255 }).notNull(),
+    perm: mediumtext('usr_grp_perm').notNull(),
+    updatedAt: int('usr_grp_dateline').notNull(),
+  },
+  (table) => [index('usr_grp_id').on(table.id)],
+);
 
 export const chiiBlogComments = mysqlTable(
   'chii_blog_comments',
@@ -1215,13 +1123,11 @@ export const chiiBlogComments = mysqlTable(
     updatedAt: int('blg_pst_dateline').notNull(),
     content: mediumtext('blg_pst_content').notNull(),
   },
-  (table) => {
-    return {
-      blgCmtEid: index('blg_cmt_eid').on(table.mid),
-      blgCmtUid: index('blg_cmt_uid').on(table.uid),
-      blgPstRelated: index('blg_pst_related').on(table.related),
-    };
-  },
+  (table) => [
+    index('blg_cmt_eid').on(table.mid),
+    index('blg_cmt_uid').on(table.uid),
+    index('blg_pst_related').on(table.related),
+  ],
 );
 
 export const chiiBlogEntries = mysqlTable(
@@ -1244,15 +1150,13 @@ export const chiiBlogEntries = mysqlTable(
     related: tinyint('entry_related').default(0).notNull(),
     public: customBoolean('entry_public').default(true).notNull(),
   },
-  (table) => {
-    return {
-      entryType: index('entry_type').on(table.type, table.uid, table.noreply),
-      entryRelate: index('entry_relate').on(table.related),
-      entryPublic: index('entry_public').on(table.public),
-      entryDateline: index('entry_dateline').on(table.createdAt),
-      entryUid: index('entry_uid').on(table.uid, table.public),
-    };
-  },
+  (table) => [
+    index('entry_type').on(table.type, table.uid, table.noreply),
+    index('entry_relate').on(table.related),
+    index('entry_public').on(table.public),
+    index('entry_dateline').on(table.createdAt),
+    index('entry_uid').on(table.uid, table.public),
+  ],
 );
 
 export const chiiBlogPhotos = mysqlTable(
@@ -1265,9 +1169,5 @@ export const chiiBlogPhotos = mysqlTable(
     vote: mediumint('photo_vote').notNull(),
     createdAt: int('photo_dateline').notNull(),
   },
-  (table) => {
-    return {
-      photoEid: index('photo_eid').on(table.eid),
-    };
-  },
+  (table) => [index('photo_eid').on(table.eid)],
 );
