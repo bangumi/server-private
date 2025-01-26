@@ -505,10 +505,7 @@ export async function setup(app: App) {
         .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID));
 
       const data = await db
-        .select({
-          subjectType: schema.chiiPersonSubjects.subjectType,
-          position: schema.chiiPersonSubjects.position,
-        })
+        .select({ position: schema.chiiPersonSubjects.position })
         .from(schema.chiiPersonSubjects)
         .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID))
         .groupBy(schema.chiiPersonSubjects.position)
@@ -516,7 +513,7 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset);
       const positions = data.map((d) =>
-        convert.toSubjectStaffPositionType(d.subjectType, d.position),
+        convert.toSubjectStaffPositionType(subject.type, d.position),
       );
       const positionIDs = positions.map((p) => p.id);
 
