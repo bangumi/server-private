@@ -25,6 +25,7 @@ import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
 
+import * as epRoutes from './ep.ts';
 import * as imageRoutes from './image.ts';
 import * as manageRoutes from './mgr.ts';
 
@@ -621,23 +622,26 @@ export async function setup(app: App) {
 
       const now = new Date();
       const discDefault = s.typeID === SubjectType.Music ? 1 : 0;
-      const newEpisodes = episodes.map((ep) => ({
-        subjectID: subjectID,
-        sort: ep.ep,
-        type: ep.type ?? 0,
-        disc: ep.disc ?? discDefault,
-        name: ep.name ?? '',
-        nameCN: ep.nameCN ?? '',
-        rate: 0,
-        duration: ep.duration ?? '',
-        airdate: ep.date ?? '',
-        online: '',
-        comment: 0,
-        resources: 0,
-        desc: ep.summary ?? '',
-        createdAt: now.getTime() / 1000,
-        updatedAt: now.getTime() / 1000,
-      }));
+      const newEpisodes = episodes.map((ep) => {
+        epRoutes.validateDateDuration(ep.date, ep.duration);
+        return {
+          subjectID: subjectID,
+          sort: ep.ep,
+          type: ep.type ?? 0,
+          disc: ep.disc ?? discDefault,
+          name: ep.name ?? '',
+          nameCN: ep.nameCN ?? '',
+          rate: 0,
+          duration: ep.duration ?? '',
+          airdate: ep.date ?? '',
+          online: '',
+          comment: 0,
+          resources: 0,
+          desc: ep.summary ?? '',
+          createdAt: now.getTime() / 1000,
+          updatedAt: now.getTime() / 1000,
+        };
+      });
 
       const episodeIDs = await db.transaction(async (txn) => {
         const [{ insertId: firstEpID }] = await txn.insert(schema.chiiEpisodes).values(newEpisodes);

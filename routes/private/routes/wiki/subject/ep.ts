@@ -187,22 +187,11 @@ export async function setup(app: App) {
         matchExpected(ep, expected);
       }
 
+      validateDateDuration(body.date, body.duration);
       if (body.date) {
-        if (!datePattern.test(body.date)) {
-          throw new BadRequestError(`${body.date} is not valid date`);
-        }
-
         ep.date = body.date;
       }
-
       if (body.duration) {
-        const duration = parseDuration(body.duration);
-        if (Number.isNaN(duration)) {
-          throw new BadRequestError(
-            `${body.duration} is not valid duration, use string like 'hh:mm:dd' or '1h10m20s'`,
-          );
-        }
-
         ep.duration = body.duration;
       }
 
@@ -260,4 +249,19 @@ export async function setup(app: App) {
       return {};
     },
   );
+}
+
+export function validateDateDuration(date: string | undefined, duration: string | undefined) {
+  if (date && !datePattern.test(date)) {
+    throw new BadRequestError(`${date} is not valid date`);
+  }
+
+  if (duration) {
+    const durationN = parseDuration(duration);
+    if (Number.isNaN(durationN)) {
+      throw new BadRequestError(
+        `${duration} is not valid duration, use string like 'hh:mm:dd' or '1h10m20s'`,
+      );
+    }
+  }
 }
