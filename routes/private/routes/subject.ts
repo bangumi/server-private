@@ -505,7 +505,10 @@ export async function setup(app: App) {
         .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID));
 
       const data = await db
-        .select()
+        .select({
+          subjectType: schema.chiiPersonSubjects.subjectType,
+          position: schema.chiiPersonSubjects.position,
+        })
         .from(schema.chiiPersonSubjects)
         .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID))
         .groupBy(schema.chiiPersonSubjects.position)
@@ -517,7 +520,7 @@ export async function setup(app: App) {
       );
       const positionIDs = positions.map((p) => p.id);
 
-      const relationData = await db
+      const relationsData = await db
         .select()
         .from(schema.chiiPersonSubjects)
         .where(
@@ -526,11 +529,11 @@ export async function setup(app: App) {
             op.inArray(schema.chiiPersonSubjects.position, positionIDs),
           ),
         );
-      const personIDs = relationData.map((d) => d.personID);
+      const personIDs = relationsData.map((d) => d.personID);
       const persons = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
 
       const relations: Record<number, res.ISubjectPositionStaff[]> = {};
-      for (const r of relationData) {
+      for (const r of relationsData) {
         const staffs = relations[r.position] || [];
         const person = persons[r.personID];
         if (!person) {
