@@ -334,13 +334,6 @@ export function toSubjectStaffPositionType(
   };
 }
 
-export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
-  return {
-    summary: relation.summary,
-    type: toSubjectStaffPositionType(relation.subjectType, relation.position),
-  };
-}
-
 export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEntry {
   return {
     id: entry.id,

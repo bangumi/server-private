@@ -62,12 +62,12 @@ describe('subject', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get subject crew', async () => {
+  test('should get subject positions', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/12/crew',
+      url: '/subjects/12/positions',
     });
     expect(res.json()).toMatchSnapshot();
   });

@@ -464,755 +464,6 @@ Object {
 }
 `;
 
-exports[`subject > should get subject crew 1`] = `
-Array [
-  Object {
-    "persons": Array [
-      Object {
-        "id": 39,
-        "name": "CLAMP",
-      },
-    ],
-    "position": Object {
-      "cn": "原作",
-      "en": "Original Creator/Original Work",
-      "id": 1,
-      "jp": "",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 40,
-        "name": "浅香守生",
-      },
-    ],
-    "position": Object {
-      "cn": "导演",
-      "en": "Director/Direction",
-      "id": 2,
-      "jp": "監督 シリーズ監督",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 19,
-        "name": "大久保智康",
-      },
-      Object {
-        "id": 21,
-        "name": "堀井明子",
-      },
-      Object {
-        "id": 262,
-        "name": "花田十輝",
-      },
-      Object {
-        "id": 380,
-        "name": "大川七瀬",
-      },
-      Object {
-        "id": 933,
-        "name": "植竹須美男",
-      },
-      Object {
-        "id": 3016,
-        "name": "玉井☆豪",
-      },
-      Object {
-        "id": 25981,
-        "name": "金子二郎",
-      },
-    ],
-    "position": Object {
-      "cn": "脚本",
-      "en": "Script/Screenplay",
-      "id": 3,
-      "jp": "シナリオ",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 40,
-        "name": "浅香守生",
-      },
-      Object {
-        "id": 306,
-        "name": "坂田純一",
-      },
-      Object {
-        "id": 505,
-        "name": "島崎奈々子",
-      },
-      Object {
-        "id": 750,
-        "name": "小島正幸",
-      },
-      Object {
-        "id": 900,
-        "name": "佐山聖子",
-      },
-      Object {
-        "id": 999,
-        "name": "八谷賢一",
-      },
-      Object {
-        "id": 2305,
-        "name": "片渕須直",
-      },
-      Object {
-        "id": 2540,
-        "name": "井上英紀",
-      },
-      Object {
-        "id": 2681,
-        "name": "青山弘",
-      },
-      Object {
-        "id": 3179,
-        "name": "長井龍雪",
-      },
-      Object {
-        "id": 3227,
-        "name": "原博",
-      },
-      Object {
-        "id": 19154,
-        "name": "渕上真",
-      },
-      Object {
-        "id": 27228,
-        "name": "島津奔",
-      },
-    ],
-    "position": Object {
-      "cn": "分镜",
-      "en": "Storyboard",
-      "id": 4,
-      "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 40,
-        "name": "浅香守生",
-      },
-      Object {
-        "id": 505,
-        "name": "島崎奈々子",
-      },
-      Object {
-        "id": 608,
-        "name": "おざわかずひろ",
-      },
-      Object {
-        "id": 1001,
-        "name": "関田修",
-      },
-      Object {
-        "id": 1119,
-        "name": "橋本みつお",
-      },
-      Object {
-        "id": 1294,
-        "name": "太田雅彦",
-      },
-      Object {
-        "id": 2540,
-        "name": "井上英紀",
-      },
-      Object {
-        "id": 2904,
-        "name": "小林智樹",
-      },
-      Object {
-        "id": 3179,
-        "name": "長井龍雪",
-      },
-      Object {
-        "id": 3327,
-        "name": "田中洋之",
-      },
-      Object {
-        "id": 3572,
-        "name": "増原光幸",
-      },
-      Object {
-        "id": 13038,
-        "name": "木村寛",
-      },
-      Object {
-        "id": 13047,
-        "name": "鈴木薫",
-      },
-      Object {
-        "id": 13521,
-        "name": "鎌仲史陽",
-      },
-      Object {
-        "id": 14205,
-        "name": "宮田亮",
-      },
-      Object {
-        "id": 19154,
-        "name": "渕上真",
-      },
-    ],
-    "position": Object {
-      "cn": "演出",
-      "en": "Episode Direction",
-      "id": 5,
-      "jp": "",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 11215,
-        "name": "高浪敬太郎",
-      },
-    ],
-    "position": Object {
-      "cn": "音乐",
-      "en": "Music",
-      "id": 6,
-      "jp": "楽曲  音楽",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 36,
-        "name": "阿部恒",
-      },
-    ],
-    "position": Object {
-      "cn": "人物设定",
-      "en": "Character Design",
-      "id": 8,
-      "jp": "キャラ設定",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 1661,
-        "name": "坂巻貞彦",
-      },
-    ],
-    "position": Object {
-      "cn": "构图",
-      "en": "Layout",
-      "id": 9,
-      "jp": "レイアウト",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 13438,
-        "name": "柴田千佳子",
-      },
-    ],
-    "position": Object {
-      "cn": "美术监督",
-      "en": "Art Direction",
-      "id": 11,
-      "jp": "美術監督 アートディレクション 背景監督",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 36,
-        "name": "阿部恒",
-      },
-    ],
-    "position": Object {
-      "cn": "总作画监督",
-      "en": "Chief Animation Director",
-      "id": 14,
-      "jp": "チーフ作画監督",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 36,
-        "name": "阿部恒",
-      },
-      Object {
-        "id": 194,
-        "name": "南伸一郎",
-      },
-      Object {
-        "id": 385,
-        "name": "藤田まり子",
-      },
-      Object {
-        "id": 913,
-        "name": "桜井邦彦",
-      },
-      Object {
-        "id": 1353,
-        "name": "阿部純子",
-      },
-      Object {
-        "id": 1709,
-        "name": "藤田しげる",
-      },
-      Object {
-        "id": 2076,
-        "name": "岩井優器",
-      },
-      Object {
-        "id": 2435,
-        "name": "柳瀬雄之",
-      },
-      Object {
-        "id": 2758,
-        "name": "田﨑聡",
-      },
-      Object {
-        "id": 3078,
-        "name": "濱田邦彦",
-      },
-      Object {
-        "id": 3214,
-        "name": "北尾勝",
-      },
-      Object {
-        "id": 3269,
-        "name": "田中将賀",
-      },
-      Object {
-        "id": 3611,
-        "name": "田中雄一",
-      },
-      Object {
-        "id": 12190,
-        "name": "内田孝",
-      },
-      Object {
-        "id": 12254,
-        "name": "斉藤雅和",
-      },
-      Object {
-        "id": 34895,
-        "name": "村上元一",
-      },
-    ],
-    "position": Object {
-      "cn": "作画监督",
-      "en": "Animation Direction",
-      "id": 15,
-      "jp": "作監 アニメーション演出",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 1738,
-        "name": "葛山剛士",
-      },
-      Object {
-        "id": 2330,
-        "name": "岸克芳",
-      },
-    ],
-    "position": Object {
-      "cn": "摄影监督",
-      "en": "Director of Photography",
-      "id": 17,
-      "jp": "撮影監督",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 28855,
-        "name": "木村雅広",
-      },
-    ],
-    "position": Object {
-      "cn": "道具设计",
-      "en": "Prop Design",
-      "id": 19,
-      "jp": "プロップデザイン",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 701,
-        "name": "髙田晃",
-      },
-      Object {
-        "id": 1298,
-        "name": "中野典克",
-      },
-      Object {
-        "id": 2737,
-        "name": "斉藤哲人",
-      },
-      Object {
-        "id": 3004,
-        "name": "島沢ノリコ",
-      },
-      Object {
-        "id": 7519,
-        "name": "和田高明",
-      },
-      Object {
-        "id": 11384,
-        "name": "小林冬至生",
-      },
-      Object {
-        "id": 11560,
-        "name": "阿部望",
-      },
-      Object {
-        "id": 11996,
-        "name": "奥田佳子",
-      },
-      Object {
-        "id": 12608,
-        "name": "田村正文",
-      },
-      Object {
-        "id": 23548,
-        "name": "仲澤崇仁",
-      },
-      Object {
-        "id": 28287,
-        "name": "あおのゆか",
-      },
-      Object {
-        "id": 34534,
-        "name": "金阪秀行",
-      },
-      Object {
-        "id": 47105,
-        "name": "塚本篤",
-      },
-      Object {
-        "id": 47647,
-        "name": "坂田佳江",
-      },
-      Object {
-        "id": 52369,
-        "name": "桑原愛",
-      },
-      Object {
-        "id": 60309,
-        "name": "阿尻隆司",
-      },
-      Object {
-        "id": 63985,
-        "name": "篠原信子",
-      },
-    ],
-    "position": Object {
-      "cn": "原画",
-      "en": "Key Animation",
-      "id": 20,
-      "jp": "作画 原画",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 36854,
-        "name": "スタジオカノン",
-      },
-    ],
-    "position": Object {
-      "cn": "背景美术",
-      "en": "Background Art",
-      "id": 25,
-      "jp": "背景",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 9049,
-        "name": "寺内聡",
-      },
-    ],
-    "position": Object {
-      "cn": "剪辑",
-      "en": "Editing",
-      "id": 28,
-      "jp": "編集",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 7985,
-        "name": "ROUND TABLE featuring Nino",
-      },
-    ],
-    "position": Object {
-      "cn": "主题歌演出",
-      "en": "Theme Song Performance",
-      "id": 33,
-      "jp": "",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 914,
-        "name": "丸山正雄",
-      },
-    ],
-    "position": Object {
-      "cn": "企画",
-      "en": "Planning",
-      "id": 35,
-      "jp": "プランニング  企画開発",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 31678,
-        "name": "内田誠",
-      },
-      Object {
-        "id": 32105,
-        "name": "アオイスタジオ",
-      },
-    ],
-    "position": Object {
-      "cn": "录音",
-      "en": "Recording",
-      "id": 39,
-      "jp": "録音",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 27,
-        "name": "TBS",
-      },
-    ],
-    "position": Object {
-      "cn": "製作",
-      "en": "Production",
-      "id": 42,
-      "jp": "",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 19778,
-        "name": "加茂靖子",
-      },
-    ],
-    "position": Object {
-      "cn": "设定",
-      "en": "Setting",
-      "id": 43,
-      "jp": "設定",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 42,
-        "name": "三間雅文",
-      },
-    ],
-    "position": Object {
-      "cn": "音响监督",
-      "en": "Sound Director",
-      "id": 44,
-      "jp": "",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 23711,
-        "name": "テクノサウンド",
-      },
-    ],
-    "position": Object {
-      "cn": "音响",
-      "en": "Sound",
-      "id": 45,
-      "jp": "音響 音声",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 615,
-        "name": "谷口久美子",
-      },
-    ],
-    "position": Object {
-      "cn": "特效",
-      "en": "Special Effects",
-      "id": 47,
-      "jp": "視覚効果",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 12613,
-        "name": "今井一暁",
-      },
-    ],
-    "position": Object {
-      "cn": "补间动画",
-      "en": "In-Between Animation",
-      "id": 51,
-      "jp": "動画",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 55158,
-        "name": "齋藤優一郎",
-      },
-    ],
-    "position": Object {
-      "cn": "助理制片人",
-      "en": "Assistant Producer",
-      "id": 53,
-      "jp": "協力プロデューサー  アシスタントプロデューサー",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 45087,
-        "name": "小野達矢",
-      },
-    ],
-    "position": Object {
-      "cn": "制片人",
-      "en": "Producer",
-      "id": 54,
-      "jp": "プロデュース  プロデューサー",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 15283,
-        "name": "城所聖明",
-      },
-    ],
-    "position": Object {
-      "cn": "制作进行",
-      "en": "Assistant Production Manager",
-      "id": 56,
-      "jp": "制作進行",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 41,
-        "name": "ビクターエンタテインメント",
-      },
-    ],
-    "position": Object {
-      "cn": "音乐制作",
-      "en": "Music Work",
-      "id": 65,
-      "jp": "楽曲制作 音楽制作",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 603,
-        "name": "MADHOUSE",
-      },
-    ],
-    "position": Object {
-      "cn": "动画制作",
-      "en": "Animation Work",
-      "id": 67,
-      "jp": "アニメーション制作 アニメ制作 アニメーション",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 1441,
-        "name": "角本百合子",
-      },
-    ],
-    "position": Object {
-      "cn": "美术设计",
-      "en": "Art Design",
-      "id": 71,
-      "jp": "美術設定",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 2540,
-        "name": "井上英紀",
-      },
-      Object {
-        "id": 3327,
-        "name": "田中洋之",
-      },
-    ],
-    "position": Object {
-      "cn": "副导演",
-      "en": "Assistant Director",
-      "id": 72,
-      "jp": "助監督 / 監督補佐",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 7309,
-        "name": "童夢",
-      },
-    ],
-    "position": Object {
-      "cn": "制作协力",
-      "en": "Work Assistance",
-      "id": 76,
-      "jp": "制作協力 / 作品協力",
-    },
-  },
-  Object {
-    "persons": Array [
-      Object {
-        "id": 2091,
-        "name": "スタジオコスモス",
-      },
-    ],
-    "position": Object {
-      "cn": "摄影",
-      "en": "Photography",
-      "id": 82,
-      "jp": "撮影",
-    },
-  },
-]
-`;
-
 exports[`subject > should get subject episodes 1`] = `
 Object {
   "data": Array [
@@ -1242,6 +493,1148 @@ Object {
     },
   ],
   "total": 27,
+}
+`;
+
+exports[`subject > should get subject positions 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "position": Object {
+        "cn": "导演",
+        "en": "Director/Direction",
+        "id": 2,
+        "jp": "監督 シリーズ監督",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 59,
+            "id": 39,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/d6/7d/39_prsn_anidb.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/d6/7d/39_prsn_anidb.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/d6/7d/39_prsn_anidb.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/d6/7d/39_prsn_anidb.jpg",
+            },
+            "lock": false,
+            "name": "CLAMP",
+            "nameCN": "",
+            "nsfw": false,
+            "type": 3,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "脚本",
+        "en": "Script/Screenplay",
+        "id": 3,
+        "jp": "シナリオ",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 100,
+            "id": 40,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "large": "https://lain.bgm.tv/pic/crt/l/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "medium": "https://lain.bgm.tv/pic/crt/m/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "small": "https://lain.bgm.tv/pic/crt/s/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+            },
+            "lock": false,
+            "name": "浅香守生",
+            "nameCN": "浅香守生",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "分镜",
+        "en": "Storyboard",
+        "id": 4,
+        "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 19,
+            "lock": false,
+            "name": "大久保智康",
+            "nameCN": "大久保智康",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 21,
+            "lock": false,
+            "name": "堀井明子",
+            "nameCN": "堀井明子",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 551,
+            "id": 262,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/92/18/262_prsn_ZX5aD.jpg?r=1687148390",
+              "large": "https://lain.bgm.tv/pic/crt/l/92/18/262_prsn_ZX5aD.jpg?r=1687148390",
+              "medium": "https://lain.bgm.tv/pic/crt/m/92/18/262_prsn_ZX5aD.jpg?r=1687148390",
+              "small": "https://lain.bgm.tv/pic/crt/s/92/18/262_prsn_ZX5aD.jpg?r=1687148390",
+            },
+            "lock": false,
+            "name": "花田十輝",
+            "nameCN": "花田十辉",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 6,
+            "id": 380,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/bc/a8/380_prsn_anidb.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/bc/a8/380_prsn_anidb.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/bc/a8/380_prsn_anidb.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/bc/a8/380_prsn_anidb.jpg",
+            },
+            "lock": false,
+            "name": "大川七瀬",
+            "nameCN": "大川七濑",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 4,
+            "id": 933,
+            "lock": false,
+            "name": "植竹須美男",
+            "nameCN": "植竹须美男",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 3,
+            "id": 3016,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/a7/81/3016_prsn_845Ta.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/a7/81/3016_prsn_845Ta.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/a7/81/3016_prsn_845Ta.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/a7/81/3016_prsn_845Ta.jpg",
+            },
+            "lock": false,
+            "name": "玉井☆豪",
+            "nameCN": "玉井豪",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 25981,
+            "lock": false,
+            "name": "金子二郎",
+            "nameCN": "金子二郎",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "演出",
+        "en": "Episode Direction",
+        "id": 5,
+        "jp": "",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 100,
+            "id": 40,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "large": "https://lain.bgm.tv/pic/crt/l/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "medium": "https://lain.bgm.tv/pic/crt/m/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "small": "https://lain.bgm.tv/pic/crt/s/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+            },
+            "lock": false,
+            "name": "浅香守生",
+            "nameCN": "浅香守生",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 306,
+            "lock": false,
+            "name": "坂田純一",
+            "nameCN": "坂田纯一",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 1,
+            "id": 505,
+            "lock": false,
+            "name": "島崎奈々子",
+            "nameCN": "岛崎奈奈子",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 34,
+            "id": 750,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/b4/62/750_prsn_8W459.jpg?r=1688016307",
+              "large": "https://lain.bgm.tv/pic/crt/l/b4/62/750_prsn_8W459.jpg?r=1688016307",
+              "medium": "https://lain.bgm.tv/pic/crt/m/b4/62/750_prsn_8W459.jpg?r=1688016307",
+              "small": "https://lain.bgm.tv/pic/crt/s/b4/62/750_prsn_8W459.jpg?r=1688016307",
+            },
+            "lock": false,
+            "name": "小島正幸",
+            "nameCN": "小岛正幸",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 12,
+            "id": 900,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/e2/8d/900_prsn_wIuuq.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/e2/8d/900_prsn_wIuuq.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/e2/8d/900_prsn_wIuuq.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/e2/8d/900_prsn_wIuuq.jpg",
+            },
+            "lock": false,
+            "name": "佐山聖子",
+            "nameCN": "佐山圣子",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 2,
+            "id": 999,
+            "lock": false,
+            "name": "八谷賢一",
+            "nameCN": "八谷贤一",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 52,
+            "id": 2305,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/a9/af/2305_prsn_7eBnA.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/a9/af/2305_prsn_7eBnA.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/a9/af/2305_prsn_7eBnA.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/a9/af/2305_prsn_7eBnA.jpg",
+            },
+            "lock": false,
+            "name": "片渕須直",
+            "nameCN": "片渊须直",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 5,
+            "id": 2540,
+            "lock": false,
+            "name": "井上英紀",
+            "nameCN": "井上英纪",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 2681,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/f2/5a/2681_prsn_hnz7N.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/f2/5a/2681_prsn_hnz7N.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/f2/5a/2681_prsn_hnz7N.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/f2/5a/2681_prsn_hnz7N.jpg",
+            },
+            "lock": false,
+            "name": "青山弘",
+            "nameCN": "青山弘",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 111,
+            "id": 3179,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+              "large": "https://lain.bgm.tv/pic/crt/l/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+              "medium": "https://lain.bgm.tv/pic/crt/m/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+              "small": "https://lain.bgm.tv/pic/crt/s/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+            },
+            "lock": false,
+            "name": "長井龍雪",
+            "nameCN": "长井龙雪",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 2,
+            "id": 3227,
+            "lock": false,
+            "name": "原博",
+            "nameCN": "原博",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 3,
+            "id": 19154,
+            "lock": false,
+            "name": "渕上真",
+            "nameCN": "渊上真",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 27228,
+            "lock": false,
+            "name": "島津奔",
+            "nameCN": "岛津奔",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "音乐",
+        "en": "Music",
+        "id": 6,
+        "jp": "楽曲  音楽",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 100,
+            "id": 40,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "large": "https://lain.bgm.tv/pic/crt/l/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "medium": "https://lain.bgm.tv/pic/crt/m/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "small": "https://lain.bgm.tv/pic/crt/s/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+            },
+            "lock": false,
+            "name": "浅香守生",
+            "nameCN": "浅香守生",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 1,
+            "id": 505,
+            "lock": false,
+            "name": "島崎奈々子",
+            "nameCN": "岛崎奈奈子",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 4,
+            "id": 608,
+            "lock": false,
+            "name": "おざわかずひろ",
+            "nameCN": "小泽一浩",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 4,
+            "id": 1001,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/64/71/1001_prsn_GbfbU.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/64/71/1001_prsn_GbfbU.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/64/71/1001_prsn_GbfbU.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/64/71/1001_prsn_GbfbU.jpg",
+            },
+            "lock": false,
+            "name": "関田修",
+            "nameCN": "关田修",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 1119,
+            "lock": false,
+            "name": "橋本みつお",
+            "nameCN": "桥本光夫",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 69,
+            "id": 1294,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/26/e7/1294_prsn_fG2lg.jpg?r=1609690393",
+              "large": "https://lain.bgm.tv/pic/crt/l/26/e7/1294_prsn_fG2lg.jpg?r=1609690393",
+              "medium": "https://lain.bgm.tv/pic/crt/m/26/e7/1294_prsn_fG2lg.jpg?r=1609690393",
+              "small": "https://lain.bgm.tv/pic/crt/s/26/e7/1294_prsn_fG2lg.jpg?r=1609690393",
+            },
+            "lock": false,
+            "name": "太田雅彦",
+            "nameCN": "太田雅彦",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 5,
+            "id": 2540,
+            "lock": false,
+            "name": "井上英紀",
+            "nameCN": "井上英纪",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 18,
+            "id": 2904,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/c2/32/2904_prsn_22qAA.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/c2/32/2904_prsn_22qAA.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/c2/32/2904_prsn_22qAA.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/c2/32/2904_prsn_22qAA.jpg",
+            },
+            "lock": false,
+            "name": "小林智樹",
+            "nameCN": "小林智树",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 111,
+            "id": 3179,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+              "large": "https://lain.bgm.tv/pic/crt/l/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+              "medium": "https://lain.bgm.tv/pic/crt/m/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+              "small": "https://lain.bgm.tv/pic/crt/s/99/62/3179_prsn_D1K1H.jpg?r=1725625306",
+            },
+            "lock": false,
+            "name": "長井龍雪",
+            "nameCN": "长井龙雪",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 22,
+            "id": 3327,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/20/b0/3327_prsn_anidb.jpg?r=1586115634",
+              "large": "https://lain.bgm.tv/pic/crt/l/20/b0/3327_prsn_anidb.jpg?r=1586115634",
+              "medium": "https://lain.bgm.tv/pic/crt/m/20/b0/3327_prsn_anidb.jpg?r=1586115634",
+              "small": "https://lain.bgm.tv/pic/crt/s/20/b0/3327_prsn_anidb.jpg?r=1586115634",
+            },
+            "lock": false,
+            "name": "田中洋之",
+            "nameCN": "田中洋之",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 2,
+            "id": 3572,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/af/e7/3572_prsn_400Ye.jpg?r=1692340928",
+              "large": "https://lain.bgm.tv/pic/crt/l/af/e7/3572_prsn_400Ye.jpg?r=1692340928",
+              "medium": "https://lain.bgm.tv/pic/crt/m/af/e7/3572_prsn_400Ye.jpg?r=1692340928",
+              "small": "https://lain.bgm.tv/pic/crt/s/af/e7/3572_prsn_400Ye.jpg?r=1692340928",
+            },
+            "lock": false,
+            "name": "増原光幸",
+            "nameCN": "增原光幸",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 2,
+            "id": 13038,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/42/79/13038_prsn_6FlQZ.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/42/79/13038_prsn_6FlQZ.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/42/79/13038_prsn_6FlQZ.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/42/79/13038_prsn_6FlQZ.jpg",
+            },
+            "lock": false,
+            "name": "木村寛",
+            "nameCN": "木村宽",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 13047,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/ed/ae/13047_prsn_ySKJ7.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/ed/ae/13047_prsn_ySKJ7.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/ed/ae/13047_prsn_ySKJ7.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/ed/ae/13047_prsn_ySKJ7.jpg",
+            },
+            "lock": false,
+            "name": "鈴木薫",
+            "nameCN": "铃木薰（动画师）",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 25,
+            "id": 13521,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/7a/ff/13521_prsn_m4l7d.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/7a/ff/13521_prsn_m4l7d.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/7a/ff/13521_prsn_m4l7d.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/7a/ff/13521_prsn_m4l7d.jpg",
+            },
+            "lock": false,
+            "name": "鎌仲史陽",
+            "nameCN": "镰仲史阳",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 14205,
+            "lock": false,
+            "name": "宮田亮",
+            "nameCN": "宫田亮",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 3,
+            "id": 19154,
+            "lock": false,
+            "name": "渕上真",
+            "nameCN": "渊上真",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "人物设定",
+        "en": "Character Design",
+        "id": 8,
+        "jp": "キャラ設定",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 11215,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/a0/c8/11215_prsn_zSGVJ.jpg?r=1390748112",
+              "large": "https://lain.bgm.tv/pic/crt/l/a0/c8/11215_prsn_zSGVJ.jpg?r=1390748112",
+              "medium": "https://lain.bgm.tv/pic/crt/m/a0/c8/11215_prsn_zSGVJ.jpg?r=1390748112",
+              "small": "https://lain.bgm.tv/pic/crt/s/a0/c8/11215_prsn_zSGVJ.jpg?r=1390748112",
+            },
+            "lock": false,
+            "name": "高浪敬太郎",
+            "nameCN": "高浪敬太郎",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "美术监督",
+        "en": "Art Direction",
+        "id": 11,
+        "jp": "美術監督 アートディレクション 背景監督",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 36,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/19/ca/36_prsn_anidb.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/19/ca/36_prsn_anidb.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/19/ca/36_prsn_anidb.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/19/ca/36_prsn_anidb.jpg",
+            },
+            "lock": false,
+            "name": "阿部恒",
+            "nameCN": "阿部恒",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "总作画监督",
+        "en": "Chief Animation Director",
+        "id": 14,
+        "jp": "チーフ作画監督",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 1661,
+            "lock": false,
+            "name": "坂巻貞彦",
+            "nameCN": "坂卷贞彦",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "摄影监督",
+        "en": "Director of Photography",
+        "id": 17,
+        "jp": "撮影監督",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 1,
+            "id": 13438,
+            "lock": false,
+            "name": "柴田千佳子",
+            "nameCN": "柴田千佳子",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "背景美术",
+        "en": "Background Art",
+        "id": 25,
+        "jp": "背景",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 36,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/19/ca/36_prsn_anidb.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/19/ca/36_prsn_anidb.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/19/ca/36_prsn_anidb.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/19/ca/36_prsn_anidb.jpg",
+            },
+            "lock": false,
+            "name": "阿部恒",
+            "nameCN": "阿部恒",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "剪辑",
+        "en": "Editing",
+        "id": 28,
+        "jp": "編集",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 36,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/19/ca/36_prsn_anidb.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/19/ca/36_prsn_anidb.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/19/ca/36_prsn_anidb.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/19/ca/36_prsn_anidb.jpg",
+            },
+            "lock": false,
+            "name": "阿部恒",
+            "nameCN": "阿部恒",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 194,
+            "lock": false,
+            "name": "南伸一郎",
+            "nameCN": "南伸一郎",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 385,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/13/7c/385_prsn_C4ZKJ.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/13/7c/385_prsn_C4ZKJ.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/13/7c/385_prsn_C4ZKJ.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/13/7c/385_prsn_C4ZKJ.jpg",
+            },
+            "lock": false,
+            "name": "藤田まり子",
+            "nameCN": "藤田圆子",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 913,
+            "lock": false,
+            "name": "桜井邦彦",
+            "nameCN": "樱井邦彦",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 2,
+            "id": 1353,
+            "lock": false,
+            "name": "阿部純子",
+            "nameCN": "阿部纯子",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 3,
+            "id": 1709,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/07/c4/1709_prsn_761M4.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/07/c4/1709_prsn_761M4.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/07/c4/1709_prsn_761M4.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/07/c4/1709_prsn_761M4.jpg",
+            },
+            "lock": false,
+            "name": "藤田しげる",
+            "nameCN": "藤田荣",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 2076,
+            "lock": false,
+            "name": "岩井優器",
+            "nameCN": "岩井优器",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 12,
+            "id": 2435,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/a8/65/2435_prsn_TOBlR.jpg?r=1689570190",
+              "large": "https://lain.bgm.tv/pic/crt/l/a8/65/2435_prsn_TOBlR.jpg?r=1689570190",
+              "medium": "https://lain.bgm.tv/pic/crt/m/a8/65/2435_prsn_TOBlR.jpg?r=1689570190",
+              "small": "https://lain.bgm.tv/pic/crt/s/a8/65/2435_prsn_TOBlR.jpg?r=1689570190",
+            },
+            "lock": false,
+            "name": "柳瀬雄之",
+            "nameCN": "柳濑雄之",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 2,
+            "id": 2758,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/fc/e2/2758_prsn_QoKLl.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/fc/e2/2758_prsn_QoKLl.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/fc/e2/2758_prsn_QoKLl.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/fc/e2/2758_prsn_QoKLl.jpg",
+            },
+            "lock": false,
+            "name": "田﨑聡",
+            "nameCN": "田崎聪",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 8,
+            "id": 3078,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/0f/b8/3078_prsn_S3p7t.jpg?r=1701577259",
+              "large": "https://lain.bgm.tv/pic/crt/l/0f/b8/3078_prsn_S3p7t.jpg?r=1701577259",
+              "medium": "https://lain.bgm.tv/pic/crt/m/0f/b8/3078_prsn_S3p7t.jpg?r=1701577259",
+              "small": "https://lain.bgm.tv/pic/crt/s/0f/b8/3078_prsn_S3p7t.jpg?r=1701577259",
+            },
+            "lock": false,
+            "name": "濱田邦彦",
+            "nameCN": "滨田邦彦",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 3,
+            "id": 3214,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/89/d4/3214_prsn_anidb.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/89/d4/3214_prsn_anidb.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/89/d4/3214_prsn_anidb.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/89/d4/3214_prsn_anidb.jpg",
+            },
+            "lock": false,
+            "name": "n",
+            "nameCN": "",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 72,
+            "id": 3269,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/89/4f/3269_prsn_07pFs.jpg?r=1688016124",
+              "large": "https://lain.bgm.tv/pic/crt/l/89/4f/3269_prsn_07pFs.jpg?r=1688016124",
+              "medium": "https://lain.bgm.tv/pic/crt/m/89/4f/3269_prsn_07pFs.jpg?r=1688016124",
+              "small": "https://lain.bgm.tv/pic/crt/s/89/4f/3269_prsn_07pFs.jpg?r=1688016124",
+            },
+            "lock": false,
+            "name": "田中将賀",
+            "nameCN": "田中将贺",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 23,
+            "id": 3611,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/65/20/3611_prsn_jN16z.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/65/20/3611_prsn_jN16z.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/65/20/3611_prsn_jN16z.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/65/20/3611_prsn_jN16z.jpg",
+            },
+            "lock": false,
+            "name": "田中雄一",
+            "nameCN": "田中雄一",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 12190,
+            "lock": false,
+            "name": "内田孝",
+            "nameCN": "",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 12254,
+            "lock": false,
+            "name": "斉藤雅和",
+            "nameCN": "齐藤雅和",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 34895,
+            "lock": false,
+            "name": "村上元一",
+            "nameCN": "村上元一",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "企画",
+        "en": "Planning",
+        "id": 35,
+        "jp": "プランニング  企画開発",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 1738,
+            "lock": false,
+            "name": "葛山剛士",
+            "nameCN": "葛山刚士",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 2330,
+            "lock": false,
+            "name": "岸克芳",
+            "nameCN": "岸克芳",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "製作",
+        "en": "Production",
+        "id": 42,
+        "jp": "",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 0,
+            "id": 28855,
+            "lock": false,
+            "name": "木村雅広",
+            "nameCN": "木村雅广",
+            "nsfw": false,
+            "type": 1,
+          },
+          "summary": "",
+        },
+      ],
+    },
+  ],
+  "total": 34,
 }
 `;
 
@@ -1342,7 +1735,19 @@ exports[`subject > should get subject staffs 1`] = `
 Object {
   "data": Array [
     Object {
-      "person": Object {
+      "positions": Array [
+        Object {
+          "appearEps": "",
+          "summary": "",
+          "type": Object {
+            "cn": "原作",
+            "en": "Original Creator/Original Work",
+            "id": 1,
+            "jp": "",
+          },
+        },
+      ],
+      "staff": Object {
         "comment": 59,
         "id": 39,
         "images": Object {
@@ -1357,20 +1762,41 @@ Object {
         "nsfw": false,
         "type": 3,
       },
+    },
+    Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
-            "cn": "原作",
-            "en": "Original Creator/Original Work",
-            "id": 1,
+            "cn": "导演",
+            "en": "Director/Direction",
+            "id": 2,
+            "jp": "監督 シリーズ監督",
+          },
+        },
+        Object {
+          "appearEps": "",
+          "summary": "",
+          "type": Object {
+            "cn": "分镜",
+            "en": "Storyboard",
+            "id": 4,
+            "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
+          },
+        },
+        Object {
+          "appearEps": "",
+          "summary": "",
+          "type": Object {
+            "cn": "演出",
+            "en": "Episode Direction",
+            "id": 5,
             "jp": "",
           },
         },
       ],
-    },
-    Object {
-      "person": Object {
+      "staff": Object {
         "comment": 100,
         "id": 40,
         "images": Object {
@@ -1385,35 +1811,6 @@ Object {
         "nsfw": false,
         "type": 1,
       },
-      "positions": Array [
-        Object {
-          "summary": "",
-          "type": Object {
-            "cn": "导演",
-            "en": "Director/Direction",
-            "id": 2,
-            "jp": "監督 シリーズ監督",
-          },
-        },
-        Object {
-          "summary": "",
-          "type": Object {
-            "cn": "分镜",
-            "en": "Storyboard",
-            "id": 4,
-            "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
-          },
-        },
-        Object {
-          "summary": "",
-          "type": Object {
-            "cn": "演出",
-            "en": "Episode Direction",
-            "id": 5,
-            "jp": "",
-          },
-        },
-      ],
     },
   ],
   "total": 91,

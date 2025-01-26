@@ -50,13 +50,6 @@ function toSubjectCharacter(
   };
 }
 
-function toSubjectStaff(person: orm.IPerson, relations: orm.IPersonSubject[]): res.ISubjectStaff {
-  return {
-    person: convert.toSlimPerson(person),
-    positions: relations.map((r) => convert.toSubjectStaffPosition(r)),
-  };
-}
-
 function toSubjectRec(
   subject: orm.ISubject,
   fields: orm.ISubjectFields,
@@ -422,31 +415,24 @@ export async function setup(app: App) {
       const condition = op.and(
         op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
         position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
-        op.ne(schema.chiiPersons.ban, 1),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.countDistinct(schema.chiiPersonSubjects.personID) })
         .from(schema.chiiPersonSubjects)
-        .innerJoin(
-          schema.chiiPersons,
-          op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
-        )
         .where(condition);
       const data = await db
-        .select()
+        .select({ personID: schema.chiiPersonSubjects.personID })
         .from(schema.chiiPersonSubjects)
-        .innerJoin(
-          schema.chiiPersons,
-          op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
-        )
         .where(condition)
         .groupBy(schema.chiiPersonSubjects.personID)
         .orderBy(op.asc(schema.chiiPersonSubjects.position))
         .limit(limit)
         .offset(offset);
-      const personIDs = data.map((d) => d.chii_person_cs_index.personID);
-      const relations = await db
+
+      const personIDs = data.map((d) => d.personID);
+      const persons = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
+
+      const relationsData = await db
         .select()
         .from(schema.chiiPersonSubjects)
         .where(
@@ -456,80 +442,123 @@ export async function setup(app: App) {
             position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
           ),
         );
-      const relationsMap = new Map<number, orm.IPersonSubject[]>();
-      for (const r of relations) {
-        const relations = relationsMap.get(r.personID) || [];
-        relations.push(r);
-        relationsMap.set(r.personID, relations);
+      const relations: Record<number, res.ISubjectStaffPosition[]> = {};
+      for (const r of relationsData) {
+        const positions = relations[r.personID] || [];
+        positions.push({
+          type: convert.toSubjectStaffPositionType(r.subjectType, r.position),
+          summary: r.summary,
+          appearEps: r.appearEps,
+        });
+        relations[r.personID] = positions;
       }
-      const persons = data.map((d) =>
-        toSubjectStaff(d.chii_persons, relationsMap.get(d.chii_persons.id) || []),
-      );
+
+      const result = [];
+      for (const pid of personIDs) {
+        const staff = persons[pid];
+        if (staff) {
+          result.push({
+            staff: staff,
+            positions: relations[pid] || [],
+          });
+        }
+      }
+
       return {
-        data: persons,
+        data: result,
         total: count,
       };
     },
   );
 
   app.get(
-    '/subjects/:subjectID/crew',
+    '/subjects/:subjectID/positions',
     {
       schema: {
-        summary: '获取条目的所有制作人员（按职位分组）',
-        operationId: 'getSubjectCrew',
+        summary: '获取条目的制作人员职位',
+        operationId: 'getSubjectPositions',
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           subjectID: t.Integer(),
         }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
         response: {
-          200: res.Ref(res.SubjectCrew),
+          200: res.Paged(res.Ref(res.SubjectPosition)),
         },
       },
     },
-    async ({ auth, params: { subjectID } }) => {
+    async ({ auth, params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      const condition = op.and(
-        op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
-        op.ne(schema.chiiPersons.ban, 1),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
-      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.countDistinct(schema.chiiPersonSubjects.position) })
+        .from(schema.chiiPersonSubjects)
+        .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID));
 
       const data = await db
-        .select({
-          position: schema.chiiPersonSubjects.position,
-          personId: schema.chiiPersons.id,
-          personName: schema.chiiPersons.name,
-        })
+        .select()
         .from(schema.chiiPersonSubjects)
-        .innerJoin(
-          schema.chiiPersons,
-          op.eq(schema.chiiPersonSubjects.personID, schema.chiiPersons.id),
-        )
-        .where(condition)
-        .orderBy(op.asc(schema.chiiPersonSubjects.position));
+        .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID))
+        .groupBy(schema.chiiPersonSubjects.position)
+        .orderBy(op.asc(schema.chiiPersonSubjects.position))
+        .limit(limit)
+        .offset(offset);
+      const positions = data.map((d) =>
+        convert.toSubjectStaffPositionType(d.subjectType, d.position),
+      );
+      const positionIDs = positions.map((p) => p.id);
 
-      const positions: Record<number, { id: number; name: string }[]> = {};
+      const relationData = await db
+        .select()
+        .from(schema.chiiPersonSubjects)
+        .where(
+          op.and(
+            op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+            op.inArray(schema.chiiPersonSubjects.position, positionIDs),
+          ),
+        );
+      const personIDs = relationData.map((d) => d.personID);
+      const persons = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
 
-      for (const staff of data) {
-        const pos = positions[staff.position] || [];
-        pos.push({
-          id: staff.personId,
-          name: staff.personName,
+      const relations: Record<number, res.ISubjectPositionStaff[]> = {};
+      for (const r of relationData) {
+        const staffs = relations[r.position] || [];
+        const person = persons[r.personID];
+        if (!person) {
+          continue;
+        }
+        staffs.push({
+          person: person,
+          summary: r.summary,
+          appearEps: r.appearEps,
         });
-        positions[staff.position] = pos;
+        relations[r.position] = staffs;
       }
-      const crew = Object.entries(positions).map(([position, persons]) => ({
-        position: convert.toSubjectStaffPositionType(subject.type, Number(position)),
-        persons,
-      }));
 
-      return crew;
+      const result: res.ISubjectPosition[] = [];
+      for (const pid of positionIDs) {
+        const position = positions[pid];
+        if (position) {
+          result.push({
+            position: position,
+            staffs: relations[pid] || [],
+          });
+        }
+      }
+
+      return {
+        data: result,
+        total: count,
+      };
     },
   );
 
