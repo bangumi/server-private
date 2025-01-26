@@ -656,6 +656,30 @@ export async function setup(app: App) {
     },
   );
 
+  app.post(
+    '/subjects/:subjectID/collect',
+    {
+      schema: {
+        summary: '新增或修改条目收藏',
+        operationId: 'collectSubject',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        body: req.Ref(req.CollectSubject),
+      },
+      preHandler: [requireLogin('collecting a subject')],
+    },
+    async ({ auth, params: { subjectID } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      // TODO:
+    },
+  );
+
   app.get(
     '/subjects/:subjectID/topics',
     {
