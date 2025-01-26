@@ -4,6 +4,7 @@ import * as lo from 'lodash-es';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
+import { fetchSubjectCollectReactions } from '@app/lib/like.ts';
 import redis from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -113,10 +114,15 @@ export async function parseTimelineMemo(
         const info = php.parse(data) as memo.Subject;
         const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
         if (subject) {
+          let reactions = undefined;
+          if (info.collect_comment) {
+            reactions = await fetchSubjectCollectReactions(Number(subject.id), info.collect_id);
+          }
           subjects.push({
             subject,
             comment: lo.unescape(info.collect_comment),
             rate: info.collect_rate,
+            reactions,
           });
         }
       }

@@ -1873,6 +1873,7 @@ Array [
         Object {
           "comment": "Hotch 的演员跟制片人起了争议被 CBS 停职，然后被解雇了... / 怎么一直在用旧凶手",
           "rate": 0,
+          "reactions": Array [],
           "subject": Object {
             "id": 194118,
             "images": Object {
@@ -1977,6 +1978,7 @@ Array [
         Object {
           "comment": "武器耐久是个坏文明",
           "rate": 0,
+          "reactions": Array [],
           "subject": Object {
             "id": 62229,
             "images": Object {

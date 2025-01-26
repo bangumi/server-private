@@ -2,12 +2,8 @@ import * as lo from 'lodash-es';
 
 import { db, op } from '@app/drizzle/db.ts';
 import { chiiLikes } from '@app/drizzle/schema.ts';
-
-export interface Reaction {
-  selected: boolean;
-  total: number;
-  value: number;
-}
+import * as fetcher from '@app/lib/types/fetcher.ts';
+import type * as res from '@app/lib/types/res.ts';
 
 export const LikeType = {
   subject_cover: 1,
@@ -53,24 +49,49 @@ export const LIKE_REACTIONS_ALLOWED: ReadonlySet<number> = Object.freeze(
 );
 
 export async function fetchTopicReactions(
-  id: number,
-  uid: number,
-): Promise<Record<number, Reaction[]>> {
-  const data = await db.select().from(chiiLikes).where(op.eq(chiiLikes.mainID, id));
+  topicID: number,
+): Promise<Record<number, res.IReaction[]>> {
+  const data = await db.select().from(chiiLikes).where(op.eq(chiiLikes.mainID, topicID));
 
+  const uids = data.map((x) => x.uid);
+  const users = await fetcher.fetchSimpleUsersByIDs(uids);
   const r = lo.groupBy(data, (x) => x.relatedID);
 
-  return lo.mapValues(r, (v): Reaction[] => {
+  return lo.mapValues(r, (v): res.IReaction[] => {
     return Object.entries(
       lo.groupBy(v, (a) => {
         return a.value;
       }),
     ).map(([key, values]) => {
       return {
-        selected: values.some((x) => x.uid === uid),
-        total: values.length,
+        users: values.map((x) => users[x.uid]).filter((x) => x !== undefined),
         value: Number(key),
       };
     });
+  });
+}
+
+export async function fetchSubjectCollectReactions(
+  subjectID: number,
+  collectID: number,
+): Promise<res.IReaction[]> {
+  const data = await db
+    .select()
+    .from(chiiLikes)
+    .where(
+      op.and(
+        op.eq(chiiLikes.type, LikeType.subject_collect),
+        op.eq(chiiLikes.mainID, subjectID),
+        op.eq(chiiLikes.relatedID, collectID),
+      ),
+    );
+  const uids = data.map((x) => x.uid);
+  const users = await fetcher.fetchSimpleUsersByIDs(uids);
+  const r = lo.groupBy(data, (x) => x.value);
+  return Object.entries(r).map(([key, values]) => {
+    return {
+      users: values.map((x) => users[x.uid]).filter((x) => x !== undefined),
+      value: Number(key),
+    };
   });
 }

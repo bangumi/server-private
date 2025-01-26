@@ -432,7 +432,7 @@ export async function handleTopicDetail(
     throw new UnexpectedNotFoundError(`user ${topic.creatorID}`);
   }
 
-  const reactions = await Like.fetchTopicReactions(id, auth.userID);
+  const reactions = await Like.fetchTopicReactions(id);
 
   return {
     ...topic,

@@ -158,6 +158,16 @@ export const UserStats = t.Object(
   { $id: 'UserStats', title: 'UserStats' },
 );
 
+export type ISimpleUser = Static<typeof SimpleUser>;
+export const SimpleUser = t.Object(
+  {
+    id: t.Integer(),
+    username: t.String(),
+    nickname: t.String(),
+  },
+  { $id: 'SimpleUser', title: 'SimpleUser' },
+);
+
 export type ISlimUser = Static<typeof SlimUser>;
 export const SlimUser = t.Object(
   {
@@ -206,8 +216,7 @@ export const Friend = t.Object(
 export type IReaction = Static<typeof Reaction>;
 export const Reaction = t.Object(
   {
-    selected: t.Boolean(),
-    total: t.Integer(),
+    users: t.Array(Ref(SimpleUser)),
     value: t.Integer(),
   },
   { $id: 'Reaction', title: 'Reaction' },
@@ -867,6 +876,7 @@ export const TimelineMemo = t.Object(
           subject: Ref(SlimSubject),
           comment: t.String(),
           rate: t.Number(),
+          reactions: t.Optional(t.Array(Ref(Reaction))),
         }),
       ),
     ),

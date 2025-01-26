@@ -4,97 +4,79 @@ exports[`group topic reactions 1`] = `
 Object {
   "2288668": Array [
     Object {
-      "selected": false,
-      "total": 2,
+      "users": Array [],
       "value": 54,
     },
     Object {
-      "selected": false,
-      "total": 2,
+      "users": Array [],
       "value": 68,
     },
     Object {
-      "selected": true,
-      "total": 1,
+      "users": Array [],
       "value": 92,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 122,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 128,
     },
     Object {
-      "selected": false,
-      "total": 2,
+      "users": Array [],
       "value": 132,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 137,
     },
   ],
   "2288669": Array [
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 68,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 85,
     },
     Object {
-      "selected": true,
-      "total": 1,
+      "users": Array [],
       "value": 90,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 92,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 122,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 132,
     },
   ],
   "2288670": Array [
     Object {
-      "selected": true,
-      "total": 1,
+      "users": Array [],
       "value": 60,
     },
     Object {
-      "selected": false,
-      "total": 2,
+      "users": Array [],
       "value": 62,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 122,
     },
     Object {
-      "selected": false,
-      "total": 1,
+      "users": Array [],
       "value": 128,
     },
     Object {
-      "selected": false,
-      "total": 3,
+      "users": Array [],
       "value": 137,
     },
   ],

@@ -88,12 +88,20 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   return result;
 }
 
-export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
-  const data = await db
-    .select({ fid: schema.chiiFriends.fid })
-    .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.uid, userID));
-  return data.map((d) => d.fid);
+export async function fetchSimpleUsersByIDs(
+  ids: number[],
+): Promise<Record<number, res.ISimpleUser>> {
+  const slims = await fetchSlimUsersByIDs(ids);
+  return Object.fromEntries(
+    Object.entries(slims).map(([id, slim]) => [
+      id,
+      {
+        id: slim.id,
+        username: slim.username,
+        nickname: slim.nickname,
+      },
+    ]),
+  );
 }
 
 export async function fetchFollowerIDsByUserID(userID: number): Promise<number[]> {
@@ -102,6 +110,14 @@ export async function fetchFollowerIDsByUserID(userID: number): Promise<number[]
     .from(schema.chiiFriends)
     .where(op.eq(schema.chiiFriends.fid, userID));
   return data.map((d) => d.uid);
+}
+
+export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
+  const data = await db
+    .select({ fid: schema.chiiFriends.fid })
+    .from(schema.chiiFriends)
+    .where(op.eq(schema.chiiFriends.uid, userID));
+  return data.map((d) => d.fid);
 }
 
 /** Cached */
