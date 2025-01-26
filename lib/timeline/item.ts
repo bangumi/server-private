@@ -116,7 +116,7 @@ export async function parseTimelineMemo(
         if (subject) {
           let reactions = undefined;
           if (info.collect_comment) {
-            reactions = await fetchSubjectCollectReactions(Number(subject.id), info.collect_id);
+            reactions = await fetchSubjectCollectReactions(subject.id, info.collect_id);
           }
           subjects.push({
             subject,
