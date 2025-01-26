@@ -676,6 +676,7 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+      // const interest = await fetcher.fetchSubjectInterest(auth.userID, subjectID);
       // TODO:
     },
   );
