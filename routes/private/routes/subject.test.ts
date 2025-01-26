@@ -68,6 +68,7 @@ describe('subject', () => {
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/positions',
+      query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
