@@ -25,6 +25,7 @@ export const EpisodeWikiInfo = t.Object(
     nameCN: t.String(),
     type: res.Ref(res.EpisodeType),
     ep: t.Number(),
+    disc: t.Optional(t.Number()),
     duration: t.String({ examples: ['24:53', '24m52s'] }),
     date: t.Optional(
       t.String({
@@ -108,8 +109,9 @@ export async function setup(app: App) {
         name: lo.unescape(ep.name),
         nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,
+        disc: ep.epDisc,
         date: ep.date,
-        type: 0,
+        type: ep.type,
         duration: ep.duration,
         summary: ep.summary,
       };
@@ -216,6 +218,18 @@ export async function setup(app: App) {
         ep.summary = body.summary;
       }
 
+      if (body.ep !== undefined) {
+        ep.sort = body.ep;
+      }
+
+      if (body.disc !== undefined) {
+        ep.epDisc = body.disc;
+      }
+
+      if (body.type !== undefined) {
+        ep.type = body.type;
+      }
+
       const now = new Date();
 
       await db.transaction(async (t) => {
@@ -229,9 +243,9 @@ export async function setup(app: App) {
                 ep_duration: ep.duration,
                 ep_name: ep.name,
                 ep_name_cn: ep.nameCN,
-                ep_sort: '0',
-                ep_disc: '0',
-                ep_type: '0',
+                ep_sort: ep.sort.toString(),
+                ep_disc: ep.epDisc.toString(),
+                ep_type: ep.type.toString(),
               },
             },
           ],

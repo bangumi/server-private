@@ -476,6 +476,8 @@ exports[`should build private api spec 1`] = `
           example: '2022-02-02'
           pattern: ^\\d{4}-\\d{2}-\\d{2}$
           type: string
+        disc:
+          type: number
         duration:
           example: '24:53'
           type: string
@@ -6364,6 +6366,8 @@ paths:
                       example: '2022-02-02'
                       pattern: ^\\d{4}-\\d{2}-\\d{2}$
                       type: string
+                    disc:
+                      type: number
                     duration:
                       example: '24:53'
                       type: string
