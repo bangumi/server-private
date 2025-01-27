@@ -319,24 +319,18 @@ export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubj
 }
 
 export function toSubjectStaffPositionType(
-  relation: orm.IPersonSubject,
+  subjectType: number,
+  position: number,
 ): res.ISubjectStaffPositionType {
-  const positionType = findSubjectStaffPosition(relation.subjectType, relation.position);
+  const positionType = findSubjectStaffPosition(subjectType, position);
   if (!positionType) {
-    return { id: relation.position, en: '', cn: '', jp: '' };
+    return { id: position, en: '', cn: '', jp: '' };
   }
   return {
-    id: relation.position,
+    id: position,
     en: positionType.en,
     cn: positionType.cn,
     jp: positionType.jp,
-  };
-}
-
-export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
-  return {
-    summary: relation.summary,
-    type: toSubjectStaffPositionType(relation),
   };
 }
 

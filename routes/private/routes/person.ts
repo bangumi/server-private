@@ -19,7 +19,13 @@ function toPersonWork(
 ): res.IPersonWork {
   return {
     subject: convert.toSlimSubject(subject, fields),
-    positions: relations.map((r) => convert.toSubjectStaffPosition(r)),
+    positions: relations.map((r) => {
+      return {
+        summary: r.summary,
+        appearEps: r.appearEps,
+        type: convert.toSubjectStaffPositionType(r.subjectType, r.position),
+      };
+    }),
   };
 }
 
