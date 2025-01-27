@@ -3234,7 +3234,7 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
-        - topic
+        - group
   /p1/groups/-/topics/{topicID}:
     put:
       operationId: editGroupTopic
@@ -3427,7 +3427,7 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
-        - topic
+        - group
   /p1/groups/{groupName}/profile:
     get:
       description: 获取小组首页
@@ -3468,7 +3468,7 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
-        - topic
+        - group
   /p1/groups/{groupName}/topics:
     get:
       description: 获取帖子列表
@@ -3533,7 +3533,7 @@ paths:
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
-        - topic
+        - group
     post:
       operationId: createNewGroupTopic
       parameters:
