@@ -589,11 +589,23 @@ Object {
 }
 `;
 
-exports[`subject > should get subject staffs 1`] = `
+exports[`subject > should get subject staffs persons 1`] = `
 Object {
   "data": Array [
     Object {
-      "person": Object {
+      "positions": Array [
+        Object {
+          "appearEps": "",
+          "summary": "",
+          "type": Object {
+            "cn": "原作",
+            "en": "Original Creator/Original Work",
+            "id": 1,
+            "jp": "",
+          },
+        },
+      ],
+      "staff": Object {
         "comment": 59,
         "id": 39,
         "images": Object {
@@ -608,20 +620,41 @@ Object {
         "nsfw": false,
         "type": 3,
       },
+    },
+    Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
-            "cn": "原作",
-            "en": "Original Creator/Original Work",
-            "id": 1,
+            "cn": "导演",
+            "en": "Director/Direction",
+            "id": 2,
+            "jp": "監督 シリーズ監督",
+          },
+        },
+        Object {
+          "appearEps": "",
+          "summary": "",
+          "type": Object {
+            "cn": "分镜",
+            "en": "Storyboard",
+            "id": 4,
+            "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
+          },
+        },
+        Object {
+          "appearEps": "",
+          "summary": "",
+          "type": Object {
+            "cn": "演出",
+            "en": "Episode Direction",
+            "id": 5,
             "jp": "",
           },
         },
       ],
-    },
-    Object {
-      "person": Object {
+      "staff": Object {
         "comment": 100,
         "id": 40,
         "images": Object {
@@ -636,38 +669,46 @@ Object {
         "nsfw": false,
         "type": 1,
       },
-      "positions": Array [
+    },
+  ],
+  "total": 91,
+}
+`;
+
+exports[`subject > should get subject staffs positions 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "position": Object {
+        "cn": "导演",
+        "en": "Director/Direction",
+        "id": 2,
+        "jp": "監督 シリーズ監督",
+      },
+      "staffs": Array [
         Object {
-          "summary": "",
-          "type": Object {
-            "cn": "导演",
-            "en": "Director/Direction",
-            "id": 2,
-            "jp": "監督 シリーズ監督",
+          "appearEps": "",
+          "person": Object {
+            "comment": 59,
+            "id": 39,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/d6/7d/39_prsn_anidb.jpg",
+              "large": "https://lain.bgm.tv/pic/crt/l/d6/7d/39_prsn_anidb.jpg",
+              "medium": "https://lain.bgm.tv/pic/crt/m/d6/7d/39_prsn_anidb.jpg",
+              "small": "https://lain.bgm.tv/pic/crt/s/d6/7d/39_prsn_anidb.jpg",
+            },
+            "lock": false,
+            "name": "CLAMP",
+            "nameCN": "",
+            "nsfw": false,
+            "type": 3,
           },
-        },
-        Object {
           "summary": "",
-          "type": Object {
-            "cn": "分镜",
-            "en": "Storyboard",
-            "id": 4,
-            "jp": "コンテ  ストーリーボード  画コンテ  絵コンテ",
-          },
-        },
-        Object {
-          "summary": "",
-          "type": Object {
-            "cn": "演出",
-            "en": "Episode Direction",
-            "id": 5,
-            "jp": "",
-          },
         },
       ],
     },
   ],
-  "total": 91,
+  "total": 34,
 }
 `;
 
