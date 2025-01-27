@@ -65,7 +65,7 @@ export const IndexRelatedCategory = t.Integer({
     modelAsString: false,
   },
   'x-enum-varnames': ['Subject', 'Character', 'Person', 'Episode'],
-  description: `索引相关类型
+  description: `目录关联类型
   - 0 = 条目
   - 1 = 角色
   - 2 = 人物

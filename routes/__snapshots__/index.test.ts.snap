@@ -797,7 +797,7 @@ exports[`should build private api spec 1`] = `
       type: object
     IndexRelatedCategory:
       description: |-
-        索引相关类型
+        目录关联类型
           - 0 = 条目
           - 1 = 角色
           - 2 = 人物
