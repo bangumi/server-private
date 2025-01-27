@@ -265,7 +265,7 @@ export const chiiIndexRelated = mysqlTable('chii_index_related', {
   type: smallint('idx_rlt_type').notNull(),
   sid: mediumint('idx_rlt_sid').notNull(),
   order: mediumint('idx_rlt_order').notNull(),
-  comment: mediumtext('idx_rlt_comment').notNull(),
+  comment: htmlEscapedString('mediumtext')('idx_rlt_comment').notNull(),
   createdAt: int('idx_rlt_dateline').notNull(),
   ban: tinyint('idx_rlt_ban').default(0).notNull(),
 });
