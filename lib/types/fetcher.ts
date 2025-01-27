@@ -747,6 +747,25 @@ export async function fetchSlimIndexByID(indexID: number): Promise<res.ISlimInde
   return item;
 }
 
+export async function fetchSlimGroupByName(
+  groupName: string,
+  allowNsfw = false,
+): Promise<res.ISlimGroup | undefined> {
+  const [data] = await db
+    .select()
+    .from(schema.chiiGroups)
+    .where(
+      op.and(
+        op.eq(schema.chiiGroups.name, groupName),
+        allowNsfw ? undefined : op.eq(schema.chiiGroups.nsfw, false),
+      ),
+    );
+  if (!data) {
+    return;
+  }
+  return convert.toSlimGroup(data);
+}
+
 /** Cached */
 export async function fetchSlimGroupByID(
   groupID: number,
@@ -841,7 +860,7 @@ export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic
     .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
     .where(op.eq(schema.chiiSubjectTopics.id, topicID));
   for (const d of data) {
-    return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
+    return convert.toSubjectTopic(d.chii_subject_topics);
   }
   return;
 }
@@ -850,18 +869,17 @@ export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promis
   const data = await db
     .select()
     .from(schema.chiiSubjectPosts)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectPosts.uid, schema.chiiUsers.id))
     .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
 
   const subReplies: Record<number, res.ISubReply[]> = {};
   const topLevelReplies: res.IReply[] = [];
   for (const d of data) {
-    const related = d.chii_subject_posts.related;
+    const related = d.related;
     if (related == 0) {
-      const reply = convert.toSubjectTopicReply(d.chii_subject_posts, d.chii_members);
+      const reply = convert.toSubjectTopicReply(d);
       topLevelReplies.push(reply);
     } else {
-      const subReply = convert.toSubjectTopicSubReply(d.chii_subject_posts, d.chii_members);
+      const subReply = convert.toSubjectTopicSubReply(d);
       const list = subReplies[related] ?? [];
       list.push(subReply);
       subReplies[related] = list;

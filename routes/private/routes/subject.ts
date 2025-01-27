@@ -791,7 +791,12 @@ export async function setup(app: App) {
         .orderBy(op.desc(schema.chiiSubjectTopics.createdAt))
         .limit(limit)
         .offset(offset);
-      const topics = data.map((d) => convert.toSubjectTopic(d.chii_subject_topics, d.chii_members));
+      const topics = data.map((d) => convert.toSubjectTopic(d.chii_subject_topics));
+      const uids = topics.map((t) => t.creatorID);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      for (const topic of topics) {
+        topic.creator = users[topic.creatorID];
+      }
       return {
         data: topics,
         total: count,
@@ -897,12 +902,18 @@ export async function setup(app: App) {
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
+
+      if (!CanViewTopicContent(auth, topic.state, topic.display, topic.creatorID)) {
+        throw new NotAllowedError('view topic');
+      }
+
       const subject = await fetcher.fetchSlimSubjectByID(topic.parentID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${topic.parentID}`);
       }
-      if (!CanViewTopicContent(auth, topic.state, topic.display, topic.creator.id)) {
-        throw new NotAllowedError('view topic');
+      const creator = await fetcher.fetchSlimUserByID(topic.creatorID);
+      if (!creator) {
+        throw new NotFoundError(`user ${topic.creatorID}`);
       }
 
       const replies = await fetcher.fetchSubjectTopicRepliesByTopicID(topicID);
@@ -910,29 +921,23 @@ export async function setup(app: App) {
       if (!top) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
       const reactions = await fetchTopicReactions(auth.userID, auth.userID);
 
       for (const reply of replies) {
         if (!CanViewTopicReply(reply.state)) {
           reply.text = '';
         }
-        if (reply.creator.id in friendIDs) {
-          reply.isFriend = true;
-        }
-        reply.reactions = reactions[reply.creator.id] ?? [];
+        reply.reactions = reactions[reply.creatorID] ?? [];
         for (const subReply of reply.replies) {
           if (!CanViewTopicReply(subReply.state)) {
             subReply.text = '';
           }
-          if (subReply.creator.id in friendIDs) {
-            subReply.isFriend = true;
-          }
-          subReply.reactions = reactions[subReply.creator.id] ?? [];
+          subReply.reactions = reactions[subReply.creatorID] ?? [];
         }
       }
       return {
         ...topic,
+        creator,
         parent: subject,
         text: top.text,
         replies,
@@ -976,7 +981,7 @@ export async function setup(app: App) {
       ) {
         throw new NotAllowedError('edit this topic');
       }
-      if (topic.creator.id !== auth.userID) {
+      if (topic.creatorID !== auth.userID) {
         throw new NotAllowedError('update topic');
       }
 

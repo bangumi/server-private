@@ -7,13 +7,11 @@ import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { entity } from '@app/lib/orm/index.ts';
-import { fetchUserX } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import { handleTopicReply, NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
 import * as Topic from '@app/lib/topic/index.ts';
 import { CommentState, TopicParentType } from '@app/lib/topic/type.ts';
-import * as convert from '@app/lib/types/convert.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import * as res from '@app/lib/types/res.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -82,11 +80,9 @@ export async function setup(app: App) {
     async ({ auth, params: { postID } }): Promise<res.IReply> => {
       const { post } = await getPost(auth, postID, TopicParentType.Group);
 
-      const creator = convert.oldToUser(await fetchUserX(post.uid));
-
       return {
         id: postID,
-        creator,
+        creatorID: post.uid,
         state: post.state,
         createdAt: post.dateline,
         text: post.content,
@@ -403,11 +399,9 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
     async ({ auth, params: { postID } }): Promise<Static<typeof res.Reply>> => {
       const { post } = await getPost(auth, postID, TopicParentType.Subject);
 
-      const creator = convert.oldToUser(await fetchUserX(post.uid));
-
       return {
         id: postID,
-        creator,
+        creatorID: post.uid,
         state: post.state,
         createdAt: post.dateline,
         text: post.content,

@@ -769,10 +769,10 @@ export const Group = t.Object(
     icon: Ref(Avatar),
     creatorID: t.Integer(),
     creator: Ref(SlimUser),
-    description: t.String(),
-    totalTopics: t.Integer(),
-    totalPosts: t.Integer(),
-    totalMembers: t.Integer(),
+    topics: t.Integer(),
+    posts: t.Integer(),
+    members: t.Integer(),
+    desc: t.String(),
     accessible: t.Boolean(),
     createdAt: t.Integer(),
   },
@@ -788,7 +788,8 @@ export const SlimGroup = t.Object(
     title: t.String(),
     icon: Ref(Avatar),
     creatorID: t.Integer(),
-    totalMembers: t.Integer(),
+    members: t.Integer(),
+    accessible: t.Boolean(),
     createdAt: t.Integer(),
   },
   { $id: 'SlimGroup', title: 'SlimGroup' },
@@ -797,10 +798,9 @@ export const SlimGroup = t.Object(
 export type IGroupMember = Static<typeof GroupMember>;
 export const GroupMember = t.Object(
   {
-    id: t.Integer(),
-    nickname: t.String(),
-    username: t.String(),
-    avatar: Ref(Avatar),
+    uid: t.Integer(),
+    user: t.Optional(Ref(SlimUser)),
+    moderator: t.Boolean(),
     joinedAt: t.Integer(),
   },
   { $id: 'GroupMember', title: 'GroupMember' },
@@ -810,9 +810,9 @@ export type ISubReply = Static<typeof SubReply>;
 export const SubReply = t.Object(
   {
     id: t.Integer(),
-    creator: Ref(SlimUser),
+    creatorID: t.Integer(),
+    creator: t.Optional(Ref(SlimUser)),
     createdAt: t.Integer(),
-    isFriend: t.Optional(t.Boolean()),
     text: t.String(),
     state: t.Integer(),
     reactions: t.Array(Ref(Reaction)),
@@ -824,9 +824,9 @@ export type IReply = Static<typeof Reply>;
 export const Reply = t.Object(
   {
     id: t.Integer(),
-    isFriend: t.Optional(t.Boolean()),
     replies: t.Array(Ref(SubReply)),
-    creator: Ref(SlimUser),
+    creatorID: t.Integer(),
+    creator: t.Optional(Ref(SlimUser)),
     createdAt: t.Integer(),
     text: t.String(),
     state: t.Integer(),
@@ -839,12 +839,13 @@ export type ITopic = Static<typeof Topic>;
 export const Topic = t.Object(
   {
     id: t.Integer(),
-    creator: Ref(SlimUser),
+    creatorID: t.Integer(),
+    creator: t.Optional(Ref(SlimUser)),
     title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
     updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
-    repliesCount: t.Integer(),
+    replies: t.Integer(),
     state: t.Integer(),
     display: t.Integer(),
   },
@@ -863,6 +864,7 @@ export const TopicDetail = t.Object(
     createdAt: t.Integer(),
     replies: t.Array(Ref(Reply)),
     reactions: t.Array(Ref(Reaction)),
+    display: t.Integer(),
   },
   { $id: 'TopicDetail', title: 'TopicDetail' },
 );

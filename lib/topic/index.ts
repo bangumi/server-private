@@ -25,7 +25,6 @@ import {
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { CanViewTopicContent, filterReply, ListTopicDisplays } from '@app/lib/topic/display.ts';
-import * as convert from '@app/lib/types/convert.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit.ts';
@@ -434,7 +433,7 @@ export async function handleTopicReply(
     state: t.state,
     createdAt: t.createdAt,
     text: t.content,
-    creator: convert.oldToUser(t.user),
+    creatorID: t.user.id,
     reactions: [],
   };
 }
