@@ -230,8 +230,8 @@ export const chiiGroupPosts = mysqlTable('chii_group_posts', {
 export const chiiIndexes = mysqlTable('chii_index', {
   id: mediumint('idx_id').autoincrement().notNull(),
   type: tinyint('idx_type').default(0).notNull(),
-  title: varchar('idx_title', { length: 80 }).notNull(),
-  desc: mediumtext('idx_desc').notNull(),
+  title: htmlEscapedString('varchar')('idx_title', { length: 80 }).notNull(),
+  desc: htmlEscapedString('mediumtext')('idx_desc').notNull(),
   replies: mediumint('idx_replies').notNull(),
   total: mediumint('idx_subject_total').notNull(),
   collects: mediumint('idx_collects').notNull(),
