@@ -1287,6 +1287,28 @@ exports[`should build private api spec 1`] = `
         - nsfw
       title: SlimSubject
       type: object
+    SlimSubjectInterest:
+      properties:
+        comment:
+          type: string
+        rate:
+          type: integer
+        tags:
+          items:
+            type: string
+          type: array
+        type:
+          $ref: '#/components/schemas/CollectionType'
+        updatedAt:
+          type: integer
+      required:
+        - rate
+        - type
+        - comment
+        - tags
+        - updatedAt
+      title: SlimSubjectInterest
+      type: object
     SlimUser:
       properties:
         avatar:
@@ -1658,6 +1680,37 @@ exports[`should build private api spec 1`] = `
         - small
         - grid
       title: SubjectImages
+      type: object
+    SubjectInterest:
+      properties:
+        comment:
+          type: string
+        epStatus:
+          type: integer
+        private:
+          type: boolean
+        rate:
+          type: integer
+        tags:
+          items:
+            type: string
+          type: array
+        type:
+          $ref: '#/components/schemas/CollectionType'
+        updatedAt:
+          type: integer
+        volStatus:
+          type: integer
+      required:
+        - rate
+        - type
+        - comment
+        - tags
+        - epStatus
+        - volStatus
+        - private
+        - updatedAt
+      title: SubjectInterest
       type: object
     SubjectNew:
       properties:

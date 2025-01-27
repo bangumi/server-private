@@ -304,6 +304,29 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
   };
 }
 
+export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    epStatus: interest.epStatus,
+    volStatus: interest.volStatus,
+    private: interest.private,
+    updatedAt: interest.updatedAt,
+  };
+}
+
+export function toSlimSubjectInterest(interest: orm.ISubjectInterest): res.ISlimSubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    updatedAt: interest.updatedAt,
+  };
+}
+
 export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubjectRelationType {
   const rtype = findSubjectRelationType(relation.relatedType, relation.relation);
   if (!rtype) {
