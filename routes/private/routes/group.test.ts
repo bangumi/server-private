@@ -7,8 +7,7 @@ import { fetchTopicDetail } from '@app/lib/topic/index.ts';
 import { TopicParentType } from '@app/lib/topic/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
-import { setup } from './topic.ts';
-import { join } from 'path';
+import { setup } from './group.ts';
 
 const expectedGroupTopic = {
   createdAt: 1657885648,

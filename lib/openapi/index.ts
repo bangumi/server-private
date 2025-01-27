@@ -11,7 +11,6 @@ export const Tag = {
   Person: 'person',
   Subject: 'subject',
   Timeline: 'timeline',
-  Topic: 'topic',
   Trending: 'trending',
   User: 'user',
   Wiki: 'wiki',

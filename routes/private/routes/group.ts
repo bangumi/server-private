@@ -54,7 +54,7 @@ export async function setup(app: App) {
       schema: {
         description: '获取小组首页',
         operationId: 'getGroupProfile',
-        tags: [Tag.Topic],
+        tags: [Tag.Group],
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
@@ -99,7 +99,7 @@ export async function setup(app: App) {
       schema: {
         description: '获取帖子列表',
         operationId: 'getGroupTopicDetail',
-        tags: [Tag.Topic],
+        tags: [Tag.Group],
         params: t.Object({
           id: t.Integer({ examples: [371602] }),
         }),
@@ -119,7 +119,7 @@ export async function setup(app: App) {
       schema: {
         description: '获取帖子列表',
         operationId: 'listGroupMembersByName',
-        tags: [Tag.Topic],
+        tags: [Tag.Group],
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
@@ -161,7 +161,7 @@ export async function setup(app: App) {
       schema: {
         description: '获取帖子列表',
         operationId: 'getGroupTopicsByGroupName',
-        tags: [Tag.Topic],
+        tags: [Tag.Group],
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
