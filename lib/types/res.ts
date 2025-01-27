@@ -368,26 +368,6 @@ export const SubjectRelationType = t.Object(
   { $id: 'SubjectRelationType' },
 );
 
-export type ISubjectStaffPositionType = Static<typeof SubjectStaffPositionType>;
-export const SubjectStaffPositionType = t.Object(
-  {
-    id: t.Integer(),
-    en: t.String(),
-    cn: t.String(),
-    jp: t.String(),
-  },
-  { $id: 'SubjectStaffPositionType' },
-);
-
-export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
-export const SubjectStaffPosition = t.Object(
-  {
-    type: Ref(SubjectStaffPositionType),
-    summary: t.String(),
-  },
-  { $id: 'SubjectStaffPosition' },
-);
-
 export type IEpisode = Static<typeof Episode>;
 export const Episode = t.Object(
   {
@@ -628,13 +608,53 @@ export const SubjectCharacter = t.Object(
   { $id: 'SubjectCharacter' },
 );
 
+export type ISubjectStaffPositionType = Static<typeof SubjectStaffPositionType>;
+export const SubjectStaffPositionType = t.Object(
+  {
+    id: t.Integer(),
+    en: t.String(),
+    cn: t.String(),
+    jp: t.String(),
+  },
+  { $id: 'SubjectStaffPositionType' },
+);
+
+export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
+export const SubjectStaffPosition = t.Object(
+  {
+    type: Ref(SubjectStaffPositionType),
+    summary: t.String(),
+    appearEps: t.String(),
+  },
+  { $id: 'SubjectStaffPosition' },
+);
+
+export type ISubjectPositionStaff = Static<typeof SubjectPositionStaff>;
+export const SubjectPositionStaff = t.Object(
+  {
+    person: Ref(SlimPerson),
+    summary: t.String(),
+    appearEps: t.String(),
+  },
+  { $id: 'SubjectPositionStaff' },
+);
+
 export type ISubjectStaff = Static<typeof SubjectStaff>;
 export const SubjectStaff = t.Object(
   {
-    person: Ref(SlimPerson),
+    staff: Ref(SlimPerson),
     positions: t.Array(Ref(SubjectStaffPosition)),
   },
   { $id: 'SubjectStaff' },
+);
+
+export type ISubjectPosition = Static<typeof SubjectPosition>;
+export const SubjectPosition = t.Object(
+  {
+    position: Ref(SubjectStaffPositionType),
+    staffs: t.Array(Ref(SubjectPositionStaff)),
+  },
+  { $id: 'SubjectPosition' },
 );
 
 export type ISubjectRec = Static<typeof SubjectRec>;

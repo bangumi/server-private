@@ -56,6 +56,8 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectPlatform);
+  app.addSchema(res.SubjectPosition);
+  app.addSchema(res.SubjectPositionStaff);
   app.addSchema(res.SubjectRating);
   app.addSchema(res.SubjectRec);
   app.addSchema(res.SubjectRelation);

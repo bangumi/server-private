@@ -285,6 +285,7 @@ Object {
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "插入歌演出",
@@ -331,6 +332,7 @@ Object {
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "游戏设计师",

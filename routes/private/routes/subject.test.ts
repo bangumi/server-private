@@ -51,12 +51,23 @@ describe('subject', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
-  test('should get subject staffs', async () => {
+  test('should get subject staffs persons', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/12/staffs',
+      url: '/subjects/12/staffs/persons',
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject staffs positions', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/12/staffs/positions',
       query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
