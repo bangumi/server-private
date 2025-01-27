@@ -385,11 +385,11 @@ export async function setup(app: App) {
   );
 
   app.get(
-    '/subjects/:subjectID/staffs',
+    '/subjects/:subjectID/staffs/persons',
     {
       schema: {
         summary: '获取条目的制作人员',
-        operationId: 'getSubjectStaffs',
+        operationId: 'getSubjectStaffPersons',
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -472,11 +472,11 @@ export async function setup(app: App) {
   );
 
   app.get(
-    '/subjects/:subjectID/positions',
+    '/subjects/:subjectID/staffs/positions',
     {
       schema: {
         summary: '获取条目的制作人员职位',
-        operationId: 'getSubjectPositions',
+        operationId: 'getSubjectStaffPositions',
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
