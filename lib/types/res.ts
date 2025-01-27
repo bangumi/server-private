@@ -299,6 +299,33 @@ export const SubjectImages = t.Object(
   { $id: 'SubjectImages', title: 'SubjectImages' },
 );
 
+export type ISubjectInterest = Static<typeof SubjectInterest>;
+export const SubjectInterest = t.Object(
+  {
+    rate: t.Integer(),
+    type: Ref(CollectionType),
+    comment: t.String(),
+    tags: t.Array(t.String()),
+    epStatus: t.Integer(),
+    volStatus: t.Integer(),
+    private: t.Boolean(),
+    updatedAt: t.Integer(),
+  },
+  { $id: 'SubjectInterest', title: 'SubjectInterest' },
+);
+
+export type ISlimSubjectInterest = Static<typeof SlimSubjectInterest>;
+export const SlimSubjectInterest = t.Object(
+  {
+    rate: t.Integer(),
+    type: Ref(CollectionType),
+    comment: t.String(),
+    tags: t.Array(t.String()),
+    updatedAt: t.Integer(),
+  },
+  { $id: 'SlimSubjectInterest', title: 'SlimSubjectInterest' },
+);
+
 export type ISubject = Static<typeof Subject>;
 export const Subject = t.Object(
   {
