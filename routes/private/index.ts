@@ -13,6 +13,7 @@ import * as blog from './routes/blog.ts';
 import * as calendar from './routes/calendar.ts';
 import * as character from './routes/character.ts';
 import * as episode from './routes/episode.ts';
+import * as index from './routes/index.ts';
 import * as misc from './routes/misc.ts';
 import * as person from './routes/person.ts';
 import * as post from './routes/post.ts';
@@ -74,6 +75,7 @@ async function API(app: App) {
   await app.register(character.setup);
   await app.register(episode.setup);
   await app.register(group.setup);
+  await app.register(index.setup);
   await app.register(misc.setup);
   await app.register(person.setup);
   await app.register(post.setup);

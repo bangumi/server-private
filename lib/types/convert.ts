@@ -609,6 +609,19 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
   };
 }
 
+export function toIndexRelated(related: orm.IIndexRelated): res.IIndexRelated {
+  return {
+    id: related.id,
+    cat: related.cat,
+    rid: related.rid,
+    type: related.type,
+    sid: related.sid,
+    order: related.order,
+    comment: related.comment,
+    createdAt: related.createdAt,
+  };
+}
+
 export function toCharacterSubjectRelation(
   subject: orm.ISubject,
   fields: orm.ISubjectFields,

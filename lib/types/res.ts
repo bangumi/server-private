@@ -738,6 +738,26 @@ export const SlimIndex = t.Object(
   { $id: 'SlimIndex', title: 'SlimIndex' },
 );
 
+export type IIndexRelated = Static<typeof IndexRelated>;
+export const IndexRelated = t.Object(
+  {
+    id: t.Integer(),
+    cat: t.Integer(),
+    rid: t.Integer(),
+    type: t.Integer(),
+    sid: t.Integer(),
+    order: t.Integer(),
+    comment: t.String(),
+    createdAt: t.Integer(),
+
+    subject: t.Optional(Ref(SlimSubject)),
+    character: t.Optional(Ref(SlimCharacter)),
+    person: t.Optional(Ref(SlimPerson)),
+    episode: t.Optional(Ref(Episode)),
+  },
+  { $id: 'IndexRelated', title: 'IndexRelated' },
+);
+
 export type IGroup = Static<typeof Group>;
 export const Group = t.Object(
   {

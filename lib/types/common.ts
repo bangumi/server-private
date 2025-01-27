@@ -56,3 +56,18 @@ export const CollectionType = t.Integer({
   - 4 = 搁置
   - 5 = 抛弃`,
 });
+
+export const IndexRelatedCategory = t.Integer({
+  $id: 'IndexRelatedCategory',
+  enum: [0, 1, 2, 3],
+  'x-ms-enum': {
+    name: 'IndexRelatedCategory',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['Subject', 'Character', 'Person', 'Episode'],
+  description: `索引相关类型
+  - 0 = 条目
+  - 1 = 角色
+  - 2 = 人物
+  - 3 = 剧集`,
+});
