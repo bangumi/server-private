@@ -444,6 +444,25 @@ export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
   return result;
 }
 
+export async function fetchSubjectInterest(
+  userID: number,
+  subjectID: number,
+): Promise<res.ISubjectInterest | undefined> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectInterests)
+    .where(
+      op.and(
+        op.eq(schema.chiiSubjectInterests.uid, userID),
+        op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+      ),
+    );
+  for (const d of data) {
+    return convert.toSubjectInterest(d);
+  }
+  return;
+}
+
 export async function fetchSubjectEpStatus(
   userID: number,
   subjectID: number,

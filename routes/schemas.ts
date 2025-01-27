@@ -48,6 +48,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SlimIndex);
   app.addSchema(res.SlimPerson);
   app.addSchema(res.SlimSubject);
+  app.addSchema(res.SlimSubjectInterest);
   app.addSchema(res.SlimUser);
   app.addSchema(res.Subject);
   app.addSchema(res.SubjectAirtime);
@@ -55,6 +56,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectCollection);
   app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
+  app.addSchema(res.SubjectInterest);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectPosition);
   app.addSchema(res.SubjectPositionStaff);
