@@ -893,7 +893,7 @@ export async function setup(app: App) {
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          topicID: t.Integer({ examples: [371602], minimum: 0 }),
+          topicID: t.Integer(),
         }),
         response: {
           200: res.Ref(res.TopicDetail),
