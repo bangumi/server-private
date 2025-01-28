@@ -16,11 +16,7 @@ import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
-import {
-  CanViewTopicContent,
-  CanViewTopicReply,
-  ListTopicDisplays,
-} from '@app/lib/topic/display.ts';
+import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, postCanReply } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -780,21 +776,20 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      const display = ListTopicDisplays(auth);
-      const condition = op.and(
-        op.eq(schema.chiiSubjectTopics.subjectID, subjectID),
-        op.inArray(schema.chiiSubjectTopics.display, display),
-      );
+      const conditions = [op.eq(schema.chiiSubjectTopics.subjectID, subjectID)];
+      if (!auth.permission.manage_topic_state) {
+        conditions.push(op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal));
+      }
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiSubjectTopics)
         .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
-        .where(condition);
+        .where(op.and(...conditions));
       const data = await db
         .select()
         .from(schema.chiiSubjectTopics)
         .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
-        .where(condition)
+        .where(op.and(...conditions))
         .orderBy(op.desc(schema.chiiSubjectTopics.createdAt))
         .limit(limit)
         .offset(offset);
