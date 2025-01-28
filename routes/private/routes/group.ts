@@ -427,11 +427,10 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('edit a post')],
     },
-    async function ({ auth, body: { text }, params: { postID } }): Promise<Record<string, never>> {
+    async ({ auth, body: { text }, params: { postID } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('edit reply');
       }
-
       if (!Dam.allCharacterPrintable(text)) {
         throw new BadRequestError('text contains invalid invisible character');
       }
@@ -457,12 +456,10 @@ export async function setup(app: App) {
       if (!topic) {
         throw new UnexpectedNotFoundError(`topic ${post.mid}`);
       }
-
       if (topic.state === CommentState.AdminCloseTopic) {
         throw new NotAllowedError('edit reply in a closed topic');
       }
-
-      if ([CommentState.AdminDelete, CommentState.UserDelete].includes(topic.state)) {
+      if ([CommentState.AdminDelete, CommentState.UserDelete].includes(post.state)) {
         throw new NotAllowedError('edit a deleted reply');
       }
 
@@ -549,11 +546,11 @@ export async function setup(app: App) {
       if (!(await turnstile.verify(cfCaptchaResponse))) {
         throw new CaptchaError();
       }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('text contains invalid invisible character');
-      }
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
+      }
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('text contains invalid invisible character');
       }
       const [topic] = await db
         .select()

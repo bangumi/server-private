@@ -12,6 +12,7 @@ import {
   NotFoundError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
+import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
@@ -20,7 +21,7 @@ import {
   CanViewTopicReply,
   ListTopicDisplays,
 } from '@app/lib/topic/display.ts';
-import { canEditTopic } from '@app/lib/topic/state';
+import { canEditTopic, postCanReply } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -1025,6 +1026,226 @@ export async function setup(app: App) {
           .update(schema.chiiSubjectPosts)
           .set({ content: text })
           .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
+      });
+
+      return {};
+    },
+  );
+
+  app.put(
+    '/subjects/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'editSubjectPost',
+        summary: '编辑条目讨论回复',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        body: t.Object({
+          text: t.String({ minLength: 1 }),
+        }),
+      },
+      preHandler: [requireLogin('editing a post')],
+    },
+    async ({ auth, body: { text }, params: { postID } }) => {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('edit reply');
+      }
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const [post] = await db
+        .select()
+        .from(schema.chiiSubjectPosts)
+        .where(op.eq(schema.chiiSubjectPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('edit reply not created by you');
+      }
+
+      const [topic] = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .where(op.eq(schema.chiiSubjectTopics.id, post.mid))
+        .limit(1);
+      if (!topic) {
+        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
+      }
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('edit reply in a closed topic');
+      }
+      if ([CommentState.AdminDelete, CommentState.UserDelete].includes(post.state)) {
+        throw new NotAllowedError('edit a deleted reply');
+      }
+
+      const [reply] = await db
+        .select()
+        .from(schema.chiiSubjectPosts)
+        .where(
+          op.and(
+            op.eq(schema.chiiSubjectPosts.mid, topic.id),
+            op.eq(schema.chiiSubjectPosts.related, postID),
+          ),
+        )
+        .limit(1);
+      if (!reply) {
+        throw new UnexpectedNotFoundError(`reply ${postID} of topic ${topic.id}`);
+      }
+
+      await db
+        .update(schema.chiiSubjectPosts)
+        .set({ content: text })
+        .where(op.eq(schema.chiiSubjectPosts.id, postID));
+
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/posts/:postID',
+    {
+      schema: {
+        summary: '删除条目讨论回复',
+        operationId: 'deleteSubjectPost',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+      },
+      preHandler: [requireLogin('deleting a post')],
+    },
+    async ({ auth, params: { postID } }) => {
+      const [post] = await db
+        .select()
+        .from(schema.chiiSubjectPosts)
+        .where(op.eq(schema.chiiSubjectPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('delete reply not created by you');
+      }
+
+      await db
+        .update(schema.chiiSubjectPosts)
+        .set({ state: CommentState.UserDelete })
+        .where(op.eq(schema.chiiSubjectPosts.id, postID));
+
+      return {};
+    },
+  );
+
+  app.post(
+    '/subjects/-/topics/:topicID/replies',
+    {
+      schema: {
+        operationId: 'createSubjectReply',
+        summary: '创建条目讨论回复',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          topicID: t.Integer(),
+        }),
+        body: req.Ref(req.CreateTopicReply),
+      },
+      preHandler: [requireLogin('creating a reply')],
+    },
+    async ({
+      auth,
+      params: { topicID },
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+      const [topic] = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .where(op.eq(schema.chiiSubjectTopics.id, topicID))
+        .limit(1);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('reply to a closed topic');
+      }
+
+      let notifyUserID = topic.uid;
+      if (replyTo) {
+        const [parent] = await db
+          .select()
+          .from(schema.chiiSubjectPosts)
+          .where(op.eq(schema.chiiSubjectPosts.id, replyTo))
+          .limit(1);
+        if (!parent) {
+          throw new NotFoundError(`post ${replyTo}`);
+        }
+        if (!postCanReply(parent.state)) {
+          throw new NotAllowedError('reply to a admin action post');
+        }
+        notifyUserID = parent.uid;
+      }
+
+      await rateLimit(LimitAction.Subject, auth.userID);
+
+      const now = DateTime.now();
+
+      let postID = 0;
+      await db.transaction(async (t) => {
+        const [{ count = 0 } = {}] = await t
+          .select({ count: op.count() })
+          .from(schema.chiiSubjectPosts)
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectPosts.mid, topicID),
+              op.eq(schema.chiiSubjectPosts.state, CommentState.Normal),
+            ),
+          );
+        const [{ insertId }] = await t.insert(schema.chiiSubjectPosts).values({
+          mid: topicID,
+          uid: auth.userID,
+          related: replyTo,
+          content,
+          state: CommentState.Normal,
+          createdAt: now.toUnixInteger(),
+        });
+        postID = insertId;
+        const topicUpdate: Record<string, number> = {
+          replies: count,
+        };
+        if (topic.state !== CommentState.AdminSilentTopic) {
+          topicUpdate.updatedAt = now.toUnixInteger();
+        }
+        await t
+          .update(schema.chiiSubjectTopics)
+          .set(topicUpdate)
+          .where(op.eq(schema.chiiSubjectTopics.id, topicID));
+      });
+
+      await Notify.create({
+        destUserID: notifyUserID,
+        sourceUserID: auth.userID,
+        now,
+        type: replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply,
+        postID,
+        topicID: topic.id,
+        title: topic.title,
       });
 
       return {};
