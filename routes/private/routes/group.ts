@@ -9,6 +9,7 @@ import {
   BadRequestError,
   CaptchaError,
   NotFoundError,
+  NotJoinPrivateGroupError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
 import { isMemberInGroup } from '@app/lib/group/utils.ts';
@@ -16,7 +17,6 @@ import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
-import { NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
 import { canEditTopic, postCanReply } from '@app/lib/topic/state.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
