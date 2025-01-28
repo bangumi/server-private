@@ -1,4 +1,5 @@
 import { Type as t } from '@sinclair/typebox';
+import { DateTime } from 'luxon';
 
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
@@ -820,7 +821,7 @@ export async function setup(app: App) {
             id: t.Integer({ description: 'new topic id' }),
           }),
         },
-        body: req.CreateTopic,
+        body: res.Ref(req.CreateTopic),
       },
       preHandler: [requireLogin('creating a topic')],
     },
@@ -832,11 +833,14 @@ export async function setup(app: App) {
       if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
         throw new CaptchaError();
       }
-      if (!Dam.allCharacterPrintable(text)) {
-        throw new BadRequestError('text contains invalid invisible character');
-      }
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create topic');
+      }
+      if (!Dam.allCharacterPrintable(title)) {
+        throw new BadRequestError('title contains invalid invisible character');
+      }
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
       }
 
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
@@ -849,35 +853,34 @@ export async function setup(app: App) {
       if (dam.needReview(title) || dam.needReview(text)) {
         display = TopicDisplay.Review;
       }
+
       await rateLimit(LimitAction.Subject, auth.userID);
+      const now = DateTime.now().toUnixInteger();
 
-      const now = Math.round(Date.now() / 1000);
-
-      const topic: typeof schema.chiiSubjectTopics.$inferInsert = {
-        createdAt: now,
-        updatedAt: now,
-        subjectID: subjectID,
-        uid: auth.userID,
-        title,
-        replies: 0,
-        state,
-        display,
-      };
-      const post: typeof schema.chiiSubjectPosts.$inferInsert = {
-        content: text,
-        uid: auth.userID,
-        createdAt: now,
-        state,
-        mid: 0,
-        related: 0,
-      };
+      let topicID = 0;
       await db.transaction(async (t) => {
-        const [result] = await t.insert(schema.chiiSubjectTopics).values(topic);
-        post.mid = result.insertId;
-        await t.insert(schema.chiiSubjectPosts).values(post);
+        const [{ insertId }] = await t.insert(schema.chiiSubjectTopics).values({
+          createdAt: now,
+          updatedAt: now,
+          subjectID: subjectID,
+          uid: auth.userID,
+          title,
+          replies: 0,
+          state,
+          display,
+        });
+        await t.insert(schema.chiiSubjectPosts).values({
+          content: text,
+          uid: auth.userID,
+          createdAt: now,
+          state,
+          mid: insertId,
+          related: 0,
+        });
+        topicID = insertId;
       });
 
-      return { id: post.mid };
+      return { id: topicID };
     },
   );
 

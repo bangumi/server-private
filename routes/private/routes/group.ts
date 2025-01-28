@@ -195,28 +195,43 @@ export async function setup(app: App) {
         },
         body: res.Ref(req.CreateTopic),
       },
-      preHandler: [requireLogin('creating a post')],
+      preHandler: [requireLogin('creating a topic')],
     },
-    async ({ auth, body: { text, title }, params: { groupName } }) => {
+    async ({
+      auth,
+      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      params: { groupName },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
+        throw new CaptchaError();
+      }
       if (auth.permission.ban_post) {
-        throw new NotAllowedError('create posts');
+        throw new NotAllowedError('create topic');
+      }
+      if (!Dam.allCharacterPrintable(title)) {
+        throw new BadRequestError('title contains invalid invisible character');
+      }
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
       }
 
       const group = await fetcher.fetchSlimGroupByName(groupName, auth.allowNsfw);
       if (!group) {
         throw new NotFoundError(`group ${groupName}`);
       }
+      if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
+        throw new NotAllowedError('create posts, join group first');
+      }
 
+      const state = CommentState.Normal;
       let display = TopicDisplay.Normal;
       if (dam.needReview(title) || dam.needReview(text)) {
         display = TopicDisplay.Review;
       }
 
-      if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
-        throw new NotAllowedError('create posts, join group first');
-      }
-
+      await rateLimit(LimitAction.Group, auth.userID);
       const now = DateTime.now().toUnixInteger();
+
       let topicID = 0;
       await db.transaction(async (t) => {
         const [{ insertId }] = await t.insert(schema.chiiGroupTopics).values({
@@ -224,7 +239,7 @@ export async function setup(app: App) {
           uid: auth.userID,
           title,
           replies: 0,
-          state: CommentState.Normal,
+          state,
           display,
           createdAt: now,
           updatedAt: now,
@@ -234,7 +249,7 @@ export async function setup(app: App) {
           uid: auth.userID,
           related: 0,
           content: text,
-          state: CommentState.Normal,
+          state,
           createdAt: now,
         });
         topicID = insertId;

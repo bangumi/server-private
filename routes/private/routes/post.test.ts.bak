@@ -10,8 +10,6 @@ import { CommentState, TopicDisplay, TopicParentType } from '@app/lib/topic/type
 import * as Topic from '@app/lib/topic/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
-import { setup } from './post.ts';
-
 /**
  * Topic 375793
  *
