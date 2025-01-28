@@ -11,6 +11,7 @@ import {
   UnexpectedNotFoundError,
   UnimplementedError,
 } from '@app/lib/error.ts';
+import { HotGroups } from '@app/lib/group/consts.ts';
 import * as Notify from '@app/lib/notify.ts';
 import * as orm from '@app/lib/orm';
 import * as entity from '@app/lib/orm/entity/index.ts';
@@ -316,7 +317,7 @@ function scoredUpdateTime(
 ): number {
   if (
     type === TopicParentType.Group &&
-    [364].includes(main_info.parentID) &&
+    HotGroups.includes(main_info.parentID) &&
     main_info.replies > 0
   ) {
     const $created_at = main_info.createdAt;

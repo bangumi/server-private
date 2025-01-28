@@ -98,3 +98,18 @@ export const UpdateEpisodeComment = t.Object(
   },
   { $id: 'UpdateEpisodeComment' },
 );
+
+export type ICreateTopicReply = Static<typeof CreateTopicReply>;
+export const CreateTopicReply = t.Object(
+  {
+    content: t.String({ minLength: 1 }),
+    replyTo: t.Optional(
+      t.Integer({
+        default: 0,
+        description: '被回复的 topic ID, `0` 代表回复楼主',
+      }),
+    ),
+    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+  },
+  { $id: 'CreateTopicReply' },
+);

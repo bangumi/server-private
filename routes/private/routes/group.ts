@@ -5,17 +5,27 @@ import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
-import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import {
+  BadRequestError,
+  CaptchaError,
+  NotFoundError,
+  UnexpectedNotFoundError,
+} from '@app/lib/error.ts';
 import { isMemberInGroup } from '@app/lib/group/utils.ts';
+import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { turnstile } from '@app/lib/services/turnstile';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
 import { NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
+import { postCanReply } from '@app/lib/topic/state.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -176,7 +186,7 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          groupName: t.String({ minLength: 1, examples: ['sandbox'] }),
+          groupName: t.String({ minLength: 1 }),
         }),
         response: {
           200: t.Object({
@@ -243,7 +253,7 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          topicID: t.Integer({ examples: [371602] }),
+          topicID: t.Integer(),
         }),
         response: {
           200: res.Ref(res.TopicDetail),
@@ -338,7 +348,7 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          topicID: t.Integer({ examples: [371602] }),
+          topicID: t.Integer(),
         }),
         body: req.Ref(req.CreateTopic),
       },
@@ -399,6 +409,241 @@ export async function setup(app: App) {
           .update(schema.chiiGroupPosts)
           .set({ content: text })
           .where(op.eq(schema.chiiGroupPosts.id, post.id));
+      });
+
+      return {};
+    },
+  );
+
+  app.put(
+    '/groups/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'editGroupPost',
+        summary: '编辑小组帖子回复',
+        tags: [Tag.Group],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        body: t.Object({
+          text: t.String({ minLength: 1 }),
+        }),
+      },
+      preHandler: [requireLogin('edit a post')],
+    },
+    async function ({ auth, body: { text }, params: { postID } }): Promise<Record<string, never>> {
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('edit reply');
+      }
+
+      if (!Dam.allCharacterPrintable(text)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+
+      const [post] = await db
+        .select()
+        .from(schema.chiiGroupPosts)
+        .where(op.eq(schema.chiiGroupPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('edit reply not created by you');
+      }
+
+      const [topic] = await db
+        .select()
+        .from(schema.chiiGroupTopics)
+        .where(op.eq(schema.chiiGroupTopics.id, post.mid))
+        .limit(1);
+      if (!topic) {
+        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
+      }
+
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('edit reply in a closed topic');
+      }
+
+      if ([CommentState.AdminDelete, CommentState.UserDelete].includes(topic.state)) {
+        throw new NotAllowedError('edit a deleted reply');
+      }
+
+      const [reply] = await db
+        .select()
+        .from(schema.chiiGroupPosts)
+        .where(
+          op.and(
+            op.eq(schema.chiiGroupPosts.mid, topic.id),
+            op.eq(schema.chiiGroupPosts.related, postID),
+          ),
+        )
+        .limit(1);
+      if (!reply) {
+        throw new UnexpectedNotFoundError(`reply ${postID} of topic ${topic.id}`);
+      }
+
+      await db
+        .update(schema.chiiGroupPosts)
+        .set({ content: text })
+        .where(op.eq(schema.chiiGroupPosts.id, postID));
+
+      return {};
+    },
+  );
+
+  app.delete(
+    '/groups/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'deleteGroupPost',
+        summary: '删除小组帖子回复',
+        tags: [Tag.Group],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+      },
+      preHandler: [requireLogin('delete a post')],
+    },
+    async ({ auth, params: { postID } }) => {
+      const [post] = await db
+        .select()
+        .from(schema.chiiGroupPosts)
+        .where(op.eq(schema.chiiGroupPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('delete reply not created by you');
+      }
+
+      await db
+        .update(schema.chiiGroupPosts)
+        .set({ state: CommentState.UserDelete })
+        .where(op.eq(schema.chiiGroupPosts.id, postID));
+
+      return {};
+    },
+  );
+
+  app.post(
+    '/groups/-/topics/:topicID/replies',
+    {
+      schema: {
+        operationId: 'createGroupReply',
+        summary: '创建小组帖子回复',
+        tags: [Tag.Group],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          topicID: t.Integer(),
+        }),
+        body: req.Ref(req.CreateTopicReply),
+      },
+      preHandler: [requireLogin('creating a reply')],
+    },
+    async ({
+      auth,
+      params: { topicID },
+      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
+    }) => {
+      if (!(await turnstile.verify(cfCaptchaResponse))) {
+        throw new CaptchaError();
+      }
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('text contains invalid invisible character');
+      }
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create reply');
+      }
+      const [topic] = await db
+        .select()
+        .from(schema.chiiGroupTopics)
+        .where(op.eq(schema.chiiGroupTopics.id, topicID))
+        .limit(1);
+      if (!topic) {
+        throw new NotFoundError(`topic ${topicID}`);
+      }
+      if (topic.state === CommentState.AdminCloseTopic) {
+        throw new NotAllowedError('reply to a closed topic');
+      }
+
+      const [group] = await db
+        .select()
+        .from(schema.chiiGroups)
+        .where(op.eq(schema.chiiGroups.id, topic.gid))
+        .limit(1);
+      if (!group) {
+        throw new UnexpectedNotFoundError(`group ${topic.gid}`);
+      }
+      if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
+        throw new NotJoinPrivateGroupError(group.name);
+      }
+
+      let notifyUserID = topic.uid;
+      if (replyTo) {
+        const [parent] = await db
+          .select()
+          .from(schema.chiiGroupPosts)
+          .where(op.eq(schema.chiiGroupPosts.id, replyTo))
+          .limit(1);
+        if (!parent) {
+          throw new NotFoundError(`post ${replyTo}`);
+        }
+        if (!postCanReply(parent.state)) {
+          throw new NotAllowedError('reply to a admin action post');
+        }
+        notifyUserID = parent.uid;
+      }
+
+      await rateLimit(LimitAction.Group, auth.userID);
+
+      const now = DateTime.now();
+
+      let postID = 0;
+      await db.transaction(async (t) => {
+        const [{ count = 0 } = {}] = await t
+          .select({ count: op.count() })
+          .from(schema.chiiGroupPosts)
+          .where(
+            op.and(
+              op.eq(schema.chiiGroupPosts.mid, topicID),
+              op.eq(schema.chiiGroupPosts.state, CommentState.Normal),
+            ),
+          );
+        const [{ insertId }] = await t.insert(schema.chiiGroupPosts).values({
+          mid: topicID,
+          uid: auth.userID,
+          related: replyTo,
+          content,
+          state: CommentState.Normal,
+          createdAt: now.toUnixInteger(),
+        });
+        postID = insertId;
+        const topicUpdate: Record<string, number> = {
+          replies: count,
+        };
+        if (topic.state !== CommentState.AdminSilentTopic) {
+          topicUpdate.updatedAt = now.toUnixInteger();
+        }
+        await t
+          .update(schema.chiiGroupTopics)
+          .set(topicUpdate)
+          .where(op.eq(schema.chiiGroupTopics.id, topicID));
+      });
+
+      await Notify.create({
+        destUserID: notifyUserID,
+        sourceUserID: auth.userID,
+        now,
+        type: replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply,
+        postID,
+        topicID: topic.id,
+        title: topic.title,
       });
 
       return {};
