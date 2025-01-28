@@ -351,7 +351,7 @@ export async function setup(app: App) {
         params: t.Object({
           topicID: t.Integer(),
         }),
-        body: req.Ref(req.CreateTopic),
+        body: req.Ref(req.UpdateTopic),
       },
       preHandler: [requireLogin('edit a topic')],
     },
@@ -421,9 +421,7 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
-        body: t.Object({
-          text: t.String({ minLength: 1 }),
-        }),
+        body: req.Ref(req.UpdatePost),
       },
       preHandler: [requireLogin('edit a post')],
     },
@@ -534,7 +532,7 @@ export async function setup(app: App) {
         params: t.Object({
           topicID: t.Integer(),
         }),
-        body: req.Ref(req.CreateTopicReply),
+        body: req.Ref(req.CreatePost),
       },
       preHandler: [requireLogin('creating a reply')],
     },
