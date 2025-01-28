@@ -13,3 +13,16 @@ export function postCanReply(state: CommentState) {
     }
   }
 }
+
+export function canEditTopic(state: CommentState) {
+  switch (state) {
+    case CommentState.AdminReopen:
+    case CommentState.AdminPin:
+    case CommentState.Normal: {
+      return true;
+    }
+    default: {
+      return false;
+    }
+  }
+}

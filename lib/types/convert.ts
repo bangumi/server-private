@@ -735,3 +735,26 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
     display: topic.display,
   };
 }
+
+export function toGroupTopicReply(reply: orm.IGroupPost): res.IReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creatorID: reply.uid,
+    replies: [],
+    reactions: [],
+  };
+}
+
+export function toGroupTopicSubReply(reply: orm.IGroupPost): res.ISubReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creatorID: reply.uid,
+    reactions: [],
+  };
+}

@@ -6,8 +6,12 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
-import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
-import { fetchTopicReactions } from '@app/lib/like.ts';
+import {
+  BadRequestError,
+  CaptchaError,
+  NotFoundError,
+  UnexpectedNotFoundError,
+} from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
@@ -16,6 +20,7 @@ import {
   CanViewTopicReply,
   ListTopicDisplays,
 } from '@app/lib/topic/display.ts';
+import { canEditTopic } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -901,50 +906,65 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { topicID } }) => {
-      const topic = await fetcher.fetchSubjectTopicByID(topicID);
+      const [topic] = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .where(op.eq(schema.chiiSubjectTopics.id, topicID));
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-
-      if (!CanViewTopicContent(auth, topic.state, topic.display, topic.creatorID)) {
-        throw new NotAllowedError('view topic');
-      }
-
-      const subject = await fetcher.fetchSlimSubjectByID(topic.parentID, auth.allowNsfw);
-      if (!subject) {
-        throw new NotFoundError(`subject ${topic.parentID}`);
-      }
-      const creator = await fetcher.fetchSlimUserByID(topic.creatorID);
-      if (!creator) {
-        throw new NotFoundError(`user ${topic.creatorID}`);
-      }
-
-      const replies = await fetcher.fetchSubjectTopicRepliesByTopicID(topicID);
-      const top = replies.shift();
-      if (!top) {
+      if (!CanViewTopicContent(auth, topic.state, topic.display, topic.uid)) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      const reactions = await fetchTopicReactions(auth.userID, auth.userID);
-
-      for (const reply of replies) {
-        if (!CanViewTopicReply(reply.state)) {
-          reply.text = '';
+      const subject = await fetcher.fetchSlimSubjectByID(topic.subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${topic.subjectID}`);
+      }
+      const creator = await fetcher.fetchSlimUserByID(topic.uid);
+      if (!creator) {
+        throw new NotFoundError(`user ${topic.uid}`);
+      }
+      const replies = await db
+        .select()
+        .from(schema.chiiSubjectPosts)
+        .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
+      const top = replies.shift();
+      if (!top || top.related !== 0) {
+        throw new UnexpectedNotFoundError(`top reply of topic ${topicID}`);
+      }
+      const uids = replies.map((x) => x.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const subReplies: Record<number, res.ISubReply[]> = {};
+      for (const x of replies.filter((x) => x.related !== 0)) {
+        if (!CanViewTopicReply(x.state)) {
+          x.content = '';
         }
-        reply.reactions = reactions[reply.creatorID] ?? [];
-        for (const subReply of reply.replies) {
-          if (!CanViewTopicReply(subReply.state)) {
-            subReply.text = '';
-          }
-          subReply.reactions = reactions[subReply.creatorID] ?? [];
+        const sub = convert.toSubjectTopicSubReply(x);
+        sub.creator = users[sub.creatorID];
+        const subR = subReplies[x.related] ?? [];
+        subR.push(sub);
+        subReplies[x.related] = subR;
+      }
+      const topLevelReplies = [];
+      for (const x of replies.filter((x) => x.related === 0)) {
+        if (!CanViewTopicReply(x.state)) {
+          x.content = '';
         }
+        const reply = convert.toSubjectTopicReply(x);
+        reply.replies = subReplies[reply.id] ?? [];
+        topLevelReplies.push(reply);
       }
       return {
-        ...topic,
-        creator,
+        id: topic.id,
         parent: subject,
-        text: top.text,
-        replies,
-        reactions: reactions[top.id] ?? [],
+        creator,
+        title: topic.title,
+        text: top.content,
+        state: topic.state,
+        createdAt: topic.createdAt,
+        replies: topLevelReplies,
+        reactions: [],
+        display: topic.display,
       };
     },
   );
@@ -972,19 +992,18 @@ export async function setup(app: App) {
         throw new BadRequestError('text contains invalid invisible character');
       }
 
-      const topic = await fetcher.fetchSubjectTopicByID(topicID);
+      const [topic] = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .where(op.eq(schema.chiiSubjectTopics.id, topicID));
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
 
-      if (
-        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
-          topic.state,
-        )
-      ) {
+      if (!canEditTopic(topic.state)) {
         throw new NotAllowedError('edit this topic');
       }
-      if (topic.creatorID !== auth.userID) {
+      if (topic.uid !== auth.userID) {
         throw new NotAllowedError('update topic');
       }
 

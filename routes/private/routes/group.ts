@@ -17,7 +17,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
 import { NotJoinPrivateGroupError } from '@app/lib/topic/index.ts';
-import { postCanReply } from '@app/lib/topic/state.ts';
+import { canEditTopic, postCanReply } from '@app/lib/topic/state.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -309,15 +309,8 @@ export async function setup(app: App) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        const sub: res.ISubReply = {
-          id: x.id,
-          creatorID: x.uid,
-          creator: users[x.uid],
-          createdAt: x.createdAt,
-          text: x.content,
-          state: x.state,
-          reactions: [],
-        };
+        const sub = convert.toGroupTopicSubReply(x);
+        sub.creator = users[sub.creatorID];
         const subR = subReplies[x.related] ?? [];
         subR.push(sub);
         subReplies[x.related] = subR;
@@ -327,16 +320,9 @@ export async function setup(app: App) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        topLevelReplies.push({
-          id: x.id,
-          replies: subReplies[x.id] ?? ([] as res.ISubReply[]),
-          creatorID: x.uid,
-          creator: users[x.uid],
-          createdAt: x.createdAt,
-          text: x.content,
-          state: x.state,
-          reactions: [],
-        });
+        const reply = convert.toGroupTopicReply(x);
+        reply.replies = subReplies[reply.id] ?? [];
+        topLevelReplies.push(reply);
       }
 
       return {
@@ -373,7 +359,6 @@ export async function setup(app: App) {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('edit topic');
       }
-
       if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(text))) {
         throw new BadRequestError('text contains invalid invisible character');
       }
@@ -394,14 +379,9 @@ export async function setup(app: App) {
         throw new UnexpectedNotFoundError(`top post of topic ${topicID}`);
       }
 
-      if (
-        ![CommentState.AdminReopen, CommentState.AdminPin, CommentState.Normal].includes(
-          topic.state,
-        )
-      ) {
+      if (!canEditTopic(topic.state)) {
         throw new NotAllowedError('edit this topic');
       }
-
       if (topic.uid !== auth.userID) {
         throw new NotAllowedError('edit this topic');
       }
