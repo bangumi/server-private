@@ -263,7 +263,7 @@ export async function setup(app: App) {
     '/groups/-/topics/:topicID',
     {
       schema: {
-        operationId: 'getGroupTopicDetail',
+        operationId: 'getGroupTopic',
         summary: '获取小组帖子详情',
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
