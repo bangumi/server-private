@@ -888,8 +888,8 @@ export async function setup(app: App) {
     '/subjects/-/topics/:topicID',
     {
       schema: {
-        summary: '获取条目讨论',
         operationId: 'getSubjectTopic',
+        summary: '获取条目讨论详情',
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
