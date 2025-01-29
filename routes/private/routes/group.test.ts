@@ -52,11 +52,11 @@ describe('group topics', () => {
     expect(data.data).toContainEqual(expect.objectContaining(expectedGroupTopic));
   });
 
-  test('should fetch group profile', async () => {
+  test('should fetch group details', async () => {
     const app = await createTestServer();
     await app.register(setup);
 
-    const res = await app.inject('/groups/sandbox/profile');
+    const res = await app.inject('/groups/sandbox');
     const data = res.json();
 
     expect(res.statusCode).toBe(200);
