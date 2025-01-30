@@ -118,11 +118,11 @@ describe('subject topics', () => {
   beforeEach(async () => {
     await db
       .delete(schema.chiiSubjectTopics)
-      .where(op.eq(schema.chiiSubjectTopics.sid, testSubjectID));
+      .where(op.eq(schema.chiiSubjectTopics.subjectID, testSubjectID));
     await db.delete(schema.chiiSubjectPosts).where(op.eq(schema.chiiSubjectPosts.mid, testTopicID));
     await db.insert(schema.chiiSubjectTopics).values({
       id: testTopicID,
-      sid: testSubjectID,
+      subjectID: testSubjectID,
       createdAt: 1462335911,
       updatedAt: 1462335911,
       uid: testUserID,

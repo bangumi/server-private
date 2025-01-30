@@ -642,7 +642,7 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
     id: topic.id,
     creatorID: topic.uid,
     title: topic.title,
-    parentID: topic.sid,
+    parentID: topic.subjectID,
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
     replies: topic.replies,

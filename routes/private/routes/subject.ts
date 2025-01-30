@@ -776,7 +776,7 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      const conditions = [op.eq(schema.chiiSubjectTopics.sid, subjectID)];
+      const conditions = [op.eq(schema.chiiSubjectTopics.subjectID, subjectID)];
       if (!auth.permission.manage_topic_state) {
         conditions.push(op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal));
       }
@@ -863,7 +863,7 @@ export async function setup(app: App) {
         const [{ insertId }] = await t.insert(schema.chiiSubjectTopics).values({
           createdAt: now,
           updatedAt: now,
-          sid: subjectID,
+          subjectID,
           uid: auth.userID,
           title,
           replies: 0,
@@ -912,9 +912,9 @@ export async function setup(app: App) {
       if (!CanViewTopicContent(auth, topic.state, topic.display, topic.uid)) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      const subject = await fetcher.fetchSlimSubjectByID(topic.sid, auth.allowNsfw);
+      const subject = await fetcher.fetchSlimSubjectByID(topic.subjectID, auth.allowNsfw);
       if (!subject) {
-        throw new NotFoundError(`subject ${topic.sid}`);
+        throw new NotFoundError(`subject ${topic.subjectID}`);
       }
       const creator = await fetcher.fetchSlimUserByID(topic.uid);
       if (!creator) {

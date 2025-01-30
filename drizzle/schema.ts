@@ -623,7 +623,7 @@ export const chiiSubjectRev = mysqlTable('chii_subject_revisions', {
 
 export const chiiSubjectTopics = mysqlTable('chii_subject_topics', {
   id: mediumint('sbj_tpc_id').autoincrement().notNull(),
-  sid: mediumint('sbj_tpc_subject_id').notNull(),
+  subjectID: mediumint('sbj_tpc_subject_id').notNull(),
   uid: mediumint('sbj_tpc_uid').notNull(),
   title: htmlEscapedString('varchar')('sbj_tpc_title', { length: 80 }).notNull(),
   createdAt: int('sbj_tpc_dateline').default(0).notNull(),
