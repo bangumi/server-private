@@ -10,6 +10,7 @@ export const Tag = {
   Group: 'group',
   Person: 'person',
   Subject: 'subject',
+  Topic: 'topic',
   Timeline: 'timeline',
   Trending: 'trending',
   User: 'user',

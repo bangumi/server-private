@@ -3119,7 +3119,7 @@ paths:
           HTTPBearer: []
       summary: 删除小组帖子回复
       tags:
-        - group
+        - topic
     put:
       operationId: editGroupPost
       parameters:
@@ -3146,7 +3146,7 @@ paths:
           HTTPBearer: []
       summary: 编辑小组帖子回复
       tags:
-        - group
+        - topic
   /p1/groups/-/topics/{topicID}:
     get:
       operationId: getGroupTopic
@@ -3175,7 +3175,7 @@ paths:
           HTTPBearer: []
       summary: 获取小组帖子详情
       tags:
-        - group
+        - topic
     put:
       description: 编辑小组帖子
       operationId: editGroupTopic
@@ -3202,7 +3202,7 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       tags:
-        - group
+        - topic
   /p1/groups/-/topics/{topicID}/replies:
     post:
       operationId: createGroupReply
@@ -3241,7 +3241,7 @@ paths:
           HTTPBearer: []
       summary: 创建小组帖子回复
       tags:
-        - group
+        - topic
   /p1/groups/{groupName}:
     get:
       operationId: getGroup
@@ -4289,7 +4289,7 @@ paths:
           HTTPBearer: []
       summary: 删除条目讨论回复
       tags:
-        - subject
+        - topic
     put:
       operationId: editSubjectPost
       parameters:
@@ -4316,7 +4316,7 @@ paths:
           HTTPBearer: []
       summary: 编辑条目讨论回复
       tags:
-        - subject
+        - topic
   /p1/subjects/-/topics/{topicID}:
     get:
       operationId: getSubjectTopic
@@ -4345,7 +4345,7 @@ paths:
           HTTPBearer: []
       summary: 获取条目讨论详情
       tags:
-        - subject
+        - topic
     put:
       operationId: updateSubjectTopic
       parameters:
@@ -4386,7 +4386,7 @@ paths:
           HTTPBearer: []
       summary: 编辑自己创建的条目讨论
       tags:
-        - subject
+        - topic
   /p1/subjects/-/topics/{topicID}/replies:
     post:
       operationId: createSubjectReply
@@ -4425,7 +4425,7 @@ paths:
           HTTPBearer: []
       summary: 创建条目讨论回复
       tags:
-        - subject
+        - topic
   /p1/subjects/{subjectID}:
     get:
       operationId: getSubject

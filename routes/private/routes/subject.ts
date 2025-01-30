@@ -891,7 +891,7 @@ export async function setup(app: App) {
       schema: {
         operationId: 'getSubjectTopic',
         summary: '获取条目讨论详情',
-        tags: [Tag.Subject],
+        tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           topicID: t.Integer(),
@@ -972,7 +972,7 @@ export async function setup(app: App) {
       schema: {
         summary: '编辑自己创建的条目讨论',
         operationId: 'updateSubjectTopic',
-        tags: [Tag.Subject],
+        tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           topicID: t.Integer({ examples: [371602], minimum: 0 }),
@@ -1035,7 +1035,7 @@ export async function setup(app: App) {
       schema: {
         operationId: 'editSubjectPost',
         summary: '编辑条目讨论回复',
-        tags: [Tag.Subject],
+        tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           postID: t.Integer(),
@@ -1109,7 +1109,7 @@ export async function setup(app: App) {
       schema: {
         summary: '删除条目讨论回复',
         operationId: 'deleteSubjectPost',
-        tags: [Tag.Subject],
+        tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           postID: t.Integer(),
@@ -1146,7 +1146,7 @@ export async function setup(app: App) {
       schema: {
         operationId: 'createSubjectReply',
         summary: '创建条目讨论回复',
-        tags: [Tag.Subject],
+        tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           topicID: t.Integer(),
