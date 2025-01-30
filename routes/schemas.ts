@@ -31,6 +31,8 @@ export function addSchemas(app: App) {
   app.addSchema(res.GroupMember);
   app.addSchema(res.Index);
   app.addSchema(res.IndexStats);
+  app.addSchema(res.IndexRelated);
+  app.addSchema(res.IndexRelatedCategory);
   app.addSchema(res.Infobox);
   app.addSchema(res.Person);
   app.addSchema(res.PersonCharacter);
