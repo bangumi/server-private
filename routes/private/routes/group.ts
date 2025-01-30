@@ -471,8 +471,8 @@ export async function setup(app: App) {
           ),
         )
         .limit(1);
-      if (!reply) {
-        throw new UnexpectedNotFoundError(`reply ${postID} of topic ${topic.id}`);
+      if (reply) {
+        throw new NotAllowedError('edit a post with reply');
       }
 
       await db

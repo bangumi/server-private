@@ -180,7 +180,7 @@ describe('group topics', () => {
     await app.register(setup);
 
     // create post
-    const res = await app.inject({
+    const createRes = await app.inject({
       url: `/groups/-/topics/${testTopicID}/replies`,
       method: 'post',
       payload: {
@@ -188,8 +188,8 @@ describe('group topics', () => {
         'cf-turnstile-response': 'fake-response',
       },
     });
-    expect(res.statusCode).toBe(200);
-    const { id } = res.json() as { id: number };
+    expect(createRes.statusCode).toBe(200);
+    const { id } = createRes.json() as { id: number };
     const [createdPost] = await db
       .select()
       .from(schema.chiiGroupPosts)
@@ -198,14 +198,14 @@ describe('group topics', () => {
     expect(createdPost?.related).toBe(0);
 
     // update post
-    await app.inject({
+    const updateRes = await app.inject({
       url: `/groups/-/posts/${id}`,
       method: 'put',
       payload: {
         content: 'Updated Reply',
       },
     });
-    expect(res.statusCode).toBe(200);
+    expect(updateRes.statusCode).toBe(200);
     const [updatedPost] = await db
       .select()
       .from(schema.chiiGroupPosts)
@@ -213,11 +213,11 @@ describe('group topics', () => {
     expect(updatedPost?.content).toBe('Updated Reply');
 
     // delete post
-    await app.inject({
+    const deleteRes = await app.inject({
       url: `/groups/-/posts/${id}`,
       method: 'delete',
     });
-    expect(res.statusCode).toBe(200);
+    expect(deleteRes.statusCode).toBe(200);
     const [deletedPost] = await db
       .select()
       .from(schema.chiiGroupPosts)
