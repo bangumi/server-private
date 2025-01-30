@@ -708,7 +708,7 @@ export function toGroup(group: orm.IGroup, user: orm.IUser): res.IGroup {
     topics: group.topics,
     posts: group.posts,
     members: group.members,
-    desc: group.desc,
+    description: group.desc,
     accessible: group.accessible,
     createdAt: group.createdAt,
   };

@@ -615,7 +615,7 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/SlimUser'
         creatorID:
           type: integer
-        desc:
+        description:
           type: string
         icon:
           $ref: '#/components/schemas/Avatar'
@@ -645,7 +645,7 @@ exports[`should build private api spec 1`] = `
         - topics
         - posts
         - members
-        - desc
+        - description
         - accessible
         - createdAt
       title: Group

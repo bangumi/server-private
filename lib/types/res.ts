@@ -799,7 +799,7 @@ export const Group = t.Object(
     topics: t.Integer(),
     posts: t.Integer(),
     members: t.Integer(),
-    desc: t.String(),
+    description: t.String(),
     accessible: t.Boolean(),
     createdAt: t.Integer(),
   },

@@ -778,7 +778,8 @@ export async function fetchSlimGroupByName(
         op.eq(schema.chiiGroups.name, groupName),
         allowNsfw ? undefined : op.eq(schema.chiiGroups.nsfw, false),
       ),
-    );
+    )
+    .limit(1);
   if (!data) {
     return;
   }

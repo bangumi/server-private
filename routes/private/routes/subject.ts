@@ -905,7 +905,8 @@ export async function setup(app: App) {
       const [topic] = await db
         .select()
         .from(schema.chiiSubjectTopics)
-        .where(op.eq(schema.chiiSubjectTopics.id, topicID));
+        .where(op.eq(schema.chiiSubjectTopics.id, topicID))
+        .limit(1);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
@@ -991,7 +992,8 @@ export async function setup(app: App) {
       const [topic] = await db
         .select()
         .from(schema.chiiSubjectTopics)
-        .where(op.eq(schema.chiiSubjectTopics.id, topicID));
+        .where(op.eq(schema.chiiSubjectTopics.id, topicID))
+        .limit(1);
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
