@@ -19,6 +19,7 @@ import {
   countUserMonoCollection,
   countUserSubjectCollection,
 } from '@app/lib/user/stats.ts';
+import { isFriends } from '@app/lib/user/utils.ts';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -602,20 +603,21 @@ export async function setup(app: App) {
         throw new NotFoundError('user');
       }
 
-      const conditions = op.and(
-        op.eq(schema.chiiBlogEntries.uid, user.id),
-        auth.userID === user.id ? undefined : op.eq(schema.chiiBlogEntries.public, true),
-      );
+      const isFriend = await isFriends(user.id, auth.userID);
+      const conditions = [op.eq(schema.chiiBlogEntries.uid, user.id)];
+      if (auth.userID !== user.id && !isFriend) {
+        conditions.push(op.eq(schema.chiiBlogEntries.public, true));
+      }
 
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiBlogEntries)
-        .where(conditions);
+        .where(op.and(...conditions));
 
       const data = await db
         .select()
         .from(schema.chiiBlogEntries)
-        .where(conditions)
+        .where(op.and(...conditions))
         .orderBy(op.desc(schema.chiiBlogEntries.createdAt))
         .limit(limit)
         .offset(offset);
