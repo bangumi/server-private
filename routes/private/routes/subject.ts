@@ -776,7 +776,7 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      const conditions = [op.eq(schema.chiiSubjectTopics.subjectID, subjectID)];
+      const conditions = [op.eq(schema.chiiSubjectTopics.sid, subjectID)];
       if (!auth.permission.manage_topic_state) {
         conditions.push(op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal));
       }
@@ -828,7 +828,7 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      body: { title, content, 'cf-turnstile-response': cfCaptchaResponse },
       params: { subjectID },
     }) => {
       if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
@@ -840,8 +840,8 @@ export async function setup(app: App) {
       if (!Dam.allCharacterPrintable(title)) {
         throw new BadRequestError('title contains invalid invisible character');
       }
-      if (!Dam.allCharacterPrintable(text)) {
-        throw new BadRequestError('text contains invalid invisible character');
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('content contains invalid invisible character');
       }
 
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
@@ -851,7 +851,7 @@ export async function setup(app: App) {
 
       const state = CommentState.Normal;
       let display = TopicDisplay.Normal;
-      if (dam.needReview(title) || dam.needReview(text)) {
+      if (dam.needReview(title) || dam.needReview(content)) {
         display = TopicDisplay.Review;
       }
 
@@ -863,7 +863,7 @@ export async function setup(app: App) {
         const [{ insertId }] = await t.insert(schema.chiiSubjectTopics).values({
           createdAt: now,
           updatedAt: now,
-          subjectID: subjectID,
+          sid: subjectID,
           uid: auth.userID,
           title,
           replies: 0,
@@ -871,7 +871,7 @@ export async function setup(app: App) {
           display,
         });
         await t.insert(schema.chiiSubjectPosts).values({
-          content: text,
+          content,
           uid: auth.userID,
           createdAt: now,
           state,
@@ -912,9 +912,9 @@ export async function setup(app: App) {
       if (!CanViewTopicContent(auth, topic.state, topic.display, topic.uid)) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      const subject = await fetcher.fetchSlimSubjectByID(topic.subjectID, auth.allowNsfw);
+      const subject = await fetcher.fetchSlimSubjectByID(topic.sid, auth.allowNsfw);
       if (!subject) {
-        throw new NotFoundError(`subject ${topic.subjectID}`);
+        throw new NotFoundError(`subject ${topic.sid}`);
       }
       const creator = await fetcher.fetchSlimUserByID(topic.uid);
       if (!creator) {
@@ -955,7 +955,7 @@ export async function setup(app: App) {
         parent: subject,
         creator,
         title: topic.title,
-        text: top.content,
+        content: top.content,
         state: topic.state,
         createdAt: topic.createdAt,
         replies: topLevelReplies,
@@ -980,12 +980,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('updating a topic')],
     },
-    async ({ auth, body: { text, title }, params: { topicID } }) => {
+    async ({ auth, body: { title, content }, params: { topicID } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
       }
-      if (!Dam.allCharacterPrintable(text)) {
-        throw new BadRequestError('text contains invalid invisible character');
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('content contains invalid invisible character');
       }
 
       const [topic] = await db
@@ -1004,7 +1004,7 @@ export async function setup(app: App) {
       }
 
       let display = topic.display;
-      if (dam.needReview(title) || dam.needReview(text)) {
+      if (dam.needReview(title) || dam.needReview(content)) {
         if (display === TopicDisplay.Normal) {
           display = TopicDisplay.Review;
         } else {
@@ -1019,7 +1019,7 @@ export async function setup(app: App) {
           .where(op.eq(schema.chiiSubjectTopics.id, topicID));
         await t
           .update(schema.chiiSubjectPosts)
-          .set({ content: text })
+          .set({ content })
           .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
       });
 
@@ -1042,12 +1042,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('editing a post')],
     },
-    async ({ auth, body: { text }, params: { postID } }) => {
+    async ({ auth, body: { content }, params: { postID } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('edit reply');
       }
-      if (!Dam.allCharacterPrintable(text)) {
-        throw new BadRequestError('text contains invalid invisible character');
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('content contains invalid invisible character');
       }
 
       const [post] = await db
@@ -1094,7 +1094,7 @@ export async function setup(app: App) {
 
       await db
         .update(schema.chiiSubjectPosts)
-        .set({ content: text })
+        .set({ content })
         .where(op.eq(schema.chiiSubjectPosts.id, postID));
 
       return {};
@@ -1150,6 +1150,9 @@ export async function setup(app: App) {
           topicID: t.Integer(),
         }),
         body: req.Ref(req.CreatePost),
+        response: {
+          200: t.Object({ id: t.Integer() }),
+        },
       },
       preHandler: [requireLogin('creating a reply')],
     },
@@ -1165,7 +1168,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('create reply');
       }
       if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('text contains invalid invisible character');
+        throw new BadRequestError('content contains invalid invisible character');
       }
       const [topic] = await db
         .select()
@@ -1241,7 +1244,7 @@ export async function setup(app: App) {
         title: topic.title,
       });
 
-      return {};
+      return { id: postID };
     },
   );
 }

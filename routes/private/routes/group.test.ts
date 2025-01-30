@@ -1,227 +1,227 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import type { IAuth } from '@app/lib/auth/index.ts';
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema';
 import { emptyAuth, UserGroup } from '@app/lib/auth/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './group.ts';
+import { CommentState } from '@app/lib/topic/type.ts';
 
-const expectedGroupTopic = {
-  createdAt: 1657885648,
-  creator: {
-    avatar: {
-      large: 'https://lain.bgm.tv/pic/user/l/icon.jpg',
-      medium: 'https://lain.bgm.tv/pic/user/m/icon.jpg',
-      small: 'https://lain.bgm.tv/pic/user/s/icon.jpg',
-    },
-    id: 287622,
-    joinedAt: 0,
-    nickname: 'nickname 287622',
-    sign: 'sing 287622',
-    username: '287622',
-  },
-  id: 371602,
-  parentID: 4215,
-  title: 'tes',
-};
-
-describe('group topics', () => {
-  test('should failed on not found group', async () => {
-    const app = await createTestServer();
-    await app.register(setup);
-
-    const res = await app.inject({
-      url: '/groups/non-existing/topics',
-    });
-
-    expect(res.statusCode).toBe(404);
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should return data', async () => {
-    const app = await createTestServer();
-    await app.register(setup);
-
-    const res = await app.inject({
-      url: '/groups/sandbox/topics',
-    });
-    const data = res.json();
-
-    expect(res.statusCode).toBe(200);
-    expect(data.data).toContainEqual(expect.objectContaining(expectedGroupTopic));
-  });
-
-  test('should fetch group details', async () => {
+describe('group info', () => {
+  test('should get group info', async () => {
     const app = await createTestServer();
     await app.register(setup);
 
     const res = await app.inject('/groups/sandbox');
-    const data = res.json();
-
     expect(res.statusCode).toBe(200);
-    expect(data.group).toEqual({
-      createdAt: 1531631310,
-      description: '[s]非[/s]官方沙盒',
-      icon: 'https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345',
-      id: 4215,
-      name: 'sandbox',
-      nsfw: false,
-      title: '沙盒',
-      totalMembers: 3,
-    });
-    expect(data.topics).toContainEqual(expect.objectContaining(expectedGroupTopic));
+    expect(res.json()).toMatchSnapshot();
   });
 
-  test('should fetch topic details', async () => {
+  test('should get group members', async () => {
     const app = await createTestServer();
     await app.register(setup);
 
-    const res = await app.inject('/groups/-/topics/379821');
+    const res = await app.inject('/groups/sandbox/members');
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
 });
 
-describe('create group post', () => {
-  const createPostInGroup = vi.fn().mockResolvedValue({ id: 1 });
-  vi.spyOn(orm, 'createPost').mockImplementation(createPostInGroup);
+describe('group topics', () => {
+  const testGroupID = 4215;
+  const testTopicID = 100;
+  const testTopicPostID = 100;
+  const testUserID = 382951;
+  const testPostID = 101;
 
-  test('should create group topic', async () => {
-    const app = createTestServer();
-
-    app.addHook('preHandler', (req, res, done) => {
-      req.auth = {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: {},
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      } satisfies IAuth;
-      done();
+  beforeEach(async () => {
+    await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.id, testTopicID));
+    await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.mid, testTopicID));
+    await db.insert(schema.chiiGroupTopics).values({
+      id: testTopicID,
+      gid: testGroupID,
+      uid: testUserID,
+      title: 'Test Topic',
+      createdAt: 1462335911,
+      updatedAt: 1462335911,
+      replies: 0,
+      state: 0,
+      display: 1,
     });
+    await db.insert(schema.chiiGroupPosts).values({
+      id: testTopicPostID,
+      mid: testTopicID,
+      uid: testUserID,
+      content: 'Test Topic Content',
+      related: 0,
+      state: 0,
+      createdAt: 1462335911,
+    });
+    await db.insert(schema.chiiGroupPosts).values({
+      id: testPostID,
+      mid: testTopicID,
+      uid: testUserID,
+      content: 'Test Reply',
+      related: 0,
+      state: 0,
+      createdAt: 1462335911,
+    });
+  });
 
+  test('should get group topics', async () => {
+    const app = await createTestServer();
     await app.register(setup);
 
     const res = await app.inject({
-      url: '/groups/sandbox/topics',
-      method: 'post',
-      payload: {
-        title: 'post title',
-        text: 'post contents',
-        'cf-turnstile-response': 'fake-response',
-      },
+      url: `/groups/sandbox/topics`,
+      query: { limit: '2', offset: '0' },
     });
-
-    expect(res.json()).toMatchObject({ id: 1 });
     expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
   });
 
-  test('should not create with banned user', async () => {
-    const app = createTestServer();
-
-    app.addHook('preHandler', (req, res, done) => {
-      req.auth = {
-        groupID: UserGroup.Normal,
+  test('should create new topic', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
         login: true,
-        permission: {
-          ban_post: true,
-        },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 1,
-      } satisfies IAuth;
-      done();
+        userID: testUserID,
+      },
     });
-
     await app.register(setup);
 
     const res = await app.inject({
-      url: '/groups/sandbox/topics',
+      url: `/groups/sandbox/topics`,
       method: 'post',
       payload: {
-        title: 'post title',
-        text: 'post contents',
+        title: 'New Topic',
+        content: 'New Content',
         'cf-turnstile-response': 'fake-response',
       },
     });
 
-    expect(res.statusCode).toBe(401);
-    expect(createPostInGroup).toBeCalledTimes(1);
-  });
-});
+    expect(res.statusCode).toBe(200);
+    const { id } = res.json() as { id: number };
 
-describe('edit group topic', () => {
-  test('should edit topic', async () => {
+    const [topic] = await db
+      .select()
+      .from(schema.chiiGroupTopics)
+      .where(op.eq(schema.chiiGroupTopics.id, id));
+    expect(topic?.title).toBe('New Topic');
+
+    const [post] = await db
+      .select()
+      .from(schema.chiiGroupPosts)
+      .where(op.eq(schema.chiiGroupPosts.mid, id))
+      .limit(1);
+    expect(post?.content).toBe('New Content');
+  });
+
+  test('should edit own topic', async () => {
     const app = createTestServer({
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 287622,
+        userID: testUserID,
       },
     });
-
-    await app.register(setup);
-
-    {
-      const res = await app.inject({
-        url: '/groups/-/topics/375793',
-        method: 'put',
-        payload: {
-          title: 'new topic title',
-          text: 'new contents',
-          'cf-turnstile-response': 'fake-response',
-        },
-      });
-
-      expect(res.statusCode).toBe(200);
-    }
-
-    {
-      const res = await app.inject({
-        url: '/groups/-/topics/375793',
-        method: 'put',
-        payload: {
-          title: 'new topic title 2',
-          text: 'new contents 2',
-          'cf-turnstile-response': 'fake-response',
-        },
-      });
-
-      expect(res.statusCode).toBe(200);
-    }
-  });
-
-  test('should not edited topic by non-owner', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 1,
-      },
-    });
-
     await app.register(setup);
 
     const res = await app.inject({
-      url: '/groups/-/topics/371602',
+      url: `/groups/-/topics/${testTopicID}`,
       method: 'put',
       payload: {
-        title: 'new topic title',
-        text: 'new contents',
-        'cf-turnstile-response': 'fake-response',
+        title: 'Updated Title',
+        content: 'Updated Content',
       },
     });
 
-    expect(res.json()).toMatchInlineSnapshot(`
-      Object {
-        "code": "NOT_ALLOWED",
-        "error": "Unauthorized",
-        "message": "you don't have permission to edit this topic",
-        "statusCode": 401,
-      }
-    `);
+    expect(res.statusCode).toBe(200);
+
+    const [topic] = await db
+      .select()
+      .from(schema.chiiGroupTopics)
+      .where(op.eq(schema.chiiGroupTopics.id, testTopicID));
+    expect(topic?.title).toBe('Updated Title');
+  });
+
+  test('should not edit topic by non-owner', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID + 1,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: `/groups/-/topics/${testTopicID}`,
+      method: 'put',
+      payload: {
+        title: 'Unauthorized Update',
+        content: 'Unauthorized Content',
+      },
+    });
+
     expect(res.statusCode).toBe(401);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should create/edit/delete new post', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID,
+      },
+    });
+    await app.register(setup);
+
+    // create post
+    const res = await app.inject({
+      url: `/groups/-/topics/${testTopicID}/replies`,
+      method: 'post',
+      payload: {
+        content: 'New Reply',
+        'cf-turnstile-response': 'fake-response',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const { id } = res.json() as { id: number };
+    const [createdPost] = await db
+      .select()
+      .from(schema.chiiGroupPosts)
+      .where(op.eq(schema.chiiGroupPosts.id, id));
+    expect(createdPost?.content).toBe('New Reply');
+    expect(createdPost?.related).toBe(0);
+
+    // update post
+    await app.inject({
+      url: `/groups/-/posts/${id}`,
+      method: 'put',
+      payload: {
+        content: 'Updated Reply',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const [updatedPost] = await db
+      .select()
+      .from(schema.chiiGroupPosts)
+      .where(op.eq(schema.chiiGroupPosts.id, id));
+    expect(updatedPost?.content).toBe('Updated Reply');
+
+    // delete post
+    await app.inject({
+      url: `/groups/-/posts/${id}`,
+      method: 'delete',
+    });
+    expect(res.statusCode).toBe(200);
+    const [deletedPost] = await db
+      .select()
+      .from(schema.chiiGroupPosts)
+      .where(op.eq(schema.chiiGroupPosts.id, id));
+    expect(deletedPost?.state).toBe(CommentState.UserDelete);
   });
 });

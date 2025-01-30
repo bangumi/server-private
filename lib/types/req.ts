@@ -58,7 +58,7 @@ export type ICreateTopic = Static<typeof CreateTopic>;
 export const CreateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
-    text: t.String({ minLength: 1, description: 'bbcode' }),
+    content: t.String({ minLength: 1, description: 'bbcode' }),
     'cf-turnstile-response': t.String({ description: turnstileDescription }),
   },
   {
@@ -71,7 +71,7 @@ export type IUpdateTopic = Static<typeof UpdateTopic>;
 export const UpdateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
-    text: t.String({ minLength: 1, description: 'bbcode' }),
+    content: t.String({ minLength: 1, description: 'bbcode' }),
   },
   { $id: 'UpdateTopic' },
 );
@@ -94,7 +94,7 @@ export const CreatePost = t.Object(
 export type IUpdatePost = Static<typeof UpdatePost>;
 export const UpdatePost = t.Object(
   {
-    text: t.String({ minLength: 1, description: 'bbcode' }),
+    content: t.String({ minLength: 1, description: 'bbcode' }),
   },
   { $id: 'UpdatePost' },
 );

@@ -886,7 +886,7 @@ export const TopicDetail = t.Object(
     parent: t.Union([Ref(SlimGroup), Ref(SlimSubject)]),
     creator: Ref(SlimUser),
     title: t.String(),
-    text: t.String(),
+    content: t.String(),
     state: t.Integer(),
     createdAt: t.Integer(),
     replies: t.Array(Ref(Reply)),

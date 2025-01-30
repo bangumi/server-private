@@ -199,7 +199,7 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { text, title, 'cf-turnstile-response': cfCaptchaResponse },
+      body: { title, content, 'cf-turnstile-response': cfCaptchaResponse },
       params: { groupName },
     }) => {
       if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
@@ -211,8 +211,8 @@ export async function setup(app: App) {
       if (!Dam.allCharacterPrintable(title)) {
         throw new BadRequestError('title contains invalid invisible character');
       }
-      if (!Dam.allCharacterPrintable(text)) {
-        throw new BadRequestError('text contains invalid invisible character');
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('content contains invalid invisible character');
       }
 
       const group = await fetcher.fetchSlimGroupByName(groupName, auth.allowNsfw);
@@ -225,7 +225,7 @@ export async function setup(app: App) {
 
       const state = CommentState.Normal;
       let display = TopicDisplay.Normal;
-      if (dam.needReview(title) || dam.needReview(text)) {
+      if (dam.needReview(title) || dam.needReview(content)) {
         display = TopicDisplay.Review;
       }
 
@@ -248,7 +248,7 @@ export async function setup(app: App) {
           mid: insertId,
           uid: auth.userID,
           related: 0,
-          content: text,
+          content,
           state,
           createdAt: now,
         });
@@ -330,7 +330,7 @@ export async function setup(app: App) {
         parent: group,
         creator,
         title: topic.title,
-        text: top.content,
+        content: top.content,
         state: topic.state,
         createdAt: topic.createdAt,
         replies: topLevelReplies,
@@ -355,12 +355,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('edit a topic')],
     },
-    async ({ auth, body: { title, text }, params: { topicID } }) => {
+    async ({ auth, body: { title, content }, params: { topicID } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('edit topic');
       }
-      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(text))) {
-        throw new BadRequestError('text contains invalid invisible character');
+      if (!(Dam.allCharacterPrintable(title) && Dam.allCharacterPrintable(content))) {
+        throw new BadRequestError('content contains invalid invisible character');
       }
 
       const [topic] = await db
@@ -387,7 +387,7 @@ export async function setup(app: App) {
       }
 
       let display = topic.display;
-      if (dam.needReview(title) || dam.needReview(text)) {
+      if (dam.needReview(title) || dam.needReview(content)) {
         if (display === TopicDisplay.Normal) {
           display = TopicDisplay.Review;
         } else {
@@ -402,7 +402,7 @@ export async function setup(app: App) {
           .where(op.eq(schema.chiiGroupTopics.id, topic.id));
         await t
           .update(schema.chiiGroupPosts)
-          .set({ content: text })
+          .set({ content })
           .where(op.eq(schema.chiiGroupPosts.id, post.id));
       });
 
@@ -425,12 +425,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('edit a post')],
     },
-    async ({ auth, body: { text }, params: { postID } }) => {
+    async ({ auth, body: { content }, params: { postID } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('edit reply');
       }
-      if (!Dam.allCharacterPrintable(text)) {
-        throw new BadRequestError('text contains invalid invisible character');
+      if (!Dam.allCharacterPrintable(content)) {
+        throw new BadRequestError('content contains invalid invisible character');
       }
 
       const [post] = await db
@@ -477,7 +477,7 @@ export async function setup(app: App) {
 
       await db
         .update(schema.chiiGroupPosts)
-        .set({ content: text })
+        .set({ content })
         .where(op.eq(schema.chiiGroupPosts.id, postID));
 
       return {};
@@ -533,6 +533,9 @@ export async function setup(app: App) {
           topicID: t.Integer(),
         }),
         body: req.Ref(req.CreatePost),
+        response: {
+          200: t.Object({ id: t.Integer() }),
+        },
       },
       preHandler: [requireLogin('creating a reply')],
     },
@@ -548,7 +551,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('create reply');
       }
       if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('text contains invalid invisible character');
+        throw new BadRequestError('content contains invalid invisible character');
       }
       const [topic] = await db
         .select()
@@ -636,7 +639,7 @@ export async function setup(app: App) {
         title: topic.title,
       });
 
-      return {};
+      return { id: postID };
     },
   );
 }
