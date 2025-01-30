@@ -17,7 +17,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
-import { canEditTopic, postCanReply } from '@app/lib/topic/state';
+import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -1192,7 +1192,7 @@ export async function setup(app: App) {
         if (!parent) {
           throw new NotFoundError(`post ${replyTo}`);
         }
-        if (!postCanReply(parent.state)) {
+        if (!canReplyPost(parent.state)) {
           throw new NotAllowedError('reply to a admin action post');
         }
         notifyUserID = parent.uid;
