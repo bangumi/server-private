@@ -1,22 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`subject > should reject nested subject relations 1`] = `
-Object {
-  "data": null,
-  "errors": Array [
-    Object {
-      "locations": Array [
-        Object {
-          "column": 9,
-          "line": 8,
-        },
-      ],
-      "message": "Cannot query field "relations" on type "SlimSubject". Did you mean "rating"?",
-    },
-  ],
-}
-`;
-
 exports[`subject > should subject characters 1`] = `
 Object {
   "data": Object {
@@ -120,7 +103,6 @@ Object {
           "replies": 2,
           "state": 0,
           "title": "Test Topic",
-          "updated_at": 1738213173,
         },
       ],
     },

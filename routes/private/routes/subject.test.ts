@@ -129,6 +129,7 @@ describe('subject topics', () => {
       title: 'Test Topic',
       state: 0,
       replies: 1,
+      display: 1,
     });
     await db.insert(schema.chiiSubjectPosts).values({
       id: testTopicPostID,
