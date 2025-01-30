@@ -39,7 +39,7 @@ export class UnreachableError extends Error {
 
 export const CaptchaError = createError('CAPTCHA_ERROR', 'wrong captcha', httpCodes.UNAUTHORIZED);
 
-export const NotJoinPrivateGroupError = createError(
+export const NotJoinPrivateGroupError = createError<[string]>(
   'NOT_JOIN_PRIVATE_GROUP_ERROR',
   `you need to join private group '%s' before you create a post or reply`,
   401,
