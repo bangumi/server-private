@@ -36,7 +36,7 @@ describe('group topics', () => {
   const testPostID = 101;
 
   beforeEach(async () => {
-    await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.id, testTopicID));
+    await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
     await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.mid, testTopicID));
     await db.insert(schema.chiiGroupTopics).values({
       id: testTopicID,
@@ -45,7 +45,7 @@ describe('group topics', () => {
       title: 'Test Topic',
       createdAt: 1462335911,
       updatedAt: 1462335911,
-      replies: 0,
+      replies: 1,
       state: 0,
       display: 1,
     });

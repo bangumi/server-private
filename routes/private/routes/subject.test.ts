@@ -124,10 +124,11 @@ describe('subject topics', () => {
       id: testTopicID,
       sid: testSubjectID,
       createdAt: 1462335911,
+      updatedAt: 1462335911,
       uid: testUserID,
       title: 'Test Topic',
       state: 0,
-      replies: 0,
+      replies: 1,
     });
     await db.insert(schema.chiiSubjectPosts).values({
       id: testTopicPostID,
@@ -136,6 +137,7 @@ describe('subject topics', () => {
       content: 'Test Topic Content',
       related: 0,
       state: 0,
+      createdAt: 1462335911,
     });
     await db.insert(schema.chiiSubjectPosts).values({
       id: testPostID,
@@ -144,6 +146,7 @@ describe('subject topics', () => {
       content: 'Test Reply',
       related: 0,
       state: 0,
+      createdAt: 1462335911,
     });
   });
 
