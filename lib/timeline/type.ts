@@ -74,7 +74,7 @@ export enum TimelineCat {
   Doujin = 9,
 }
 
-/** 时间线状态类型 */
+/** 时间线状态类型: cat = 5 */
 export enum TimelineStatusType {
   /** 更新签名 */
   Sign = 0,
