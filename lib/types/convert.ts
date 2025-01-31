@@ -304,6 +304,29 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
   };
 }
 
+export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    epStatus: interest.epStatus,
+    volStatus: interest.volStatus,
+    private: interest.private,
+    updatedAt: interest.updatedAt,
+  };
+}
+
+export function toSlimSubjectInterest(interest: orm.ISubjectInterest): res.ISlimSubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    updatedAt: interest.updatedAt,
+  };
+}
+
 export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubjectRelationType {
   const rtype = findSubjectRelationType(relation.relatedType, relation.relation);
   if (!rtype) {
@@ -319,24 +342,18 @@ export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubj
 }
 
 export function toSubjectStaffPositionType(
-  relation: orm.IPersonSubject,
+  subjectType: number,
+  position: number,
 ): res.ISubjectStaffPositionType {
-  const positionType = findSubjectStaffPosition(relation.subjectType, relation.position);
+  const positionType = findSubjectStaffPosition(subjectType, position);
   if (!positionType) {
-    return { id: relation.position, en: '', cn: '', jp: '' };
+    return { id: position, en: '', cn: '', jp: '' };
   }
   return {
-    id: relation.position,
+    id: position,
     en: positionType.en,
     cn: positionType.cn,
     jp: positionType.jp,
-  };
-}
-
-export function toSubjectStaffPosition(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
-  return {
-    summary: relation.summary,
-    type: toSubjectStaffPositionType(relation),
   };
 }
 
@@ -620,39 +637,39 @@ export function toCharacterSubjectRelation(
   };
 }
 
-export function toSubjectTopic(topic: orm.ISubjectTopic, user: orm.IUser): res.ITopic {
+export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
   return {
     id: topic.id,
-    creator: toSlimUser(user),
+    creatorID: topic.uid,
     title: topic.title,
     parentID: topic.subjectID,
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
-    repliesCount: topic.replies,
+    replies: topic.replies,
     state: topic.state,
     display: topic.display,
   };
 }
 
-export function toSubjectTopicReply(reply: orm.ISubjectPost, user: orm.IUser): res.IReply {
+export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReply {
   return {
     id: reply.id,
     text: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
-    creator: toSlimUser(user),
+    creatorID: reply.uid,
     replies: [],
     reactions: [],
   };
 }
 
-export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser): res.ISubReply {
+export function toSubjectTopicSubReply(reply: orm.ISubjectPost): res.ISubReply {
   return {
     id: reply.id,
     text: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
-    creator: toSlimUser(user),
+    creatorID: reply.uid,
     reactions: [],
   };
 }
@@ -672,7 +689,72 @@ export function toSlimGroup(group: orm.IGroup): res.ISlimGroup {
     title: group.title,
     icon: groupIcon(group.icon),
     creatorID: group.creator,
-    totalMembers: group.members,
+    members: group.members,
+    accessible: group.accessible,
     createdAt: group.createdAt,
+  };
+}
+
+export function toGroup(group: orm.IGroup, user: orm.IUser): res.IGroup {
+  return {
+    id: group.id,
+    cat: group.cat,
+    name: group.name,
+    nsfw: group.nsfw,
+    title: group.title,
+    icon: groupIcon(group.icon),
+    creatorID: group.creator,
+    creator: toSlimUser(user),
+    topics: group.topics,
+    posts: group.posts,
+    members: group.members,
+    description: group.desc,
+    accessible: group.accessible,
+    createdAt: group.createdAt,
+  };
+}
+
+export function toGroupMember(member: orm.IGroupMember): res.IGroupMember {
+  return {
+    uid: member.uid,
+    moderator: member.moderator,
+    joinedAt: member.createdAt,
+  };
+}
+
+export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
+  return {
+    id: topic.id,
+    creatorID: topic.uid,
+    title: topic.title,
+    parentID: topic.gid,
+    createdAt: topic.createdAt,
+    updatedAt: topic.updatedAt,
+    replies: topic.replies,
+    state: topic.state,
+    display: topic.display,
+  };
+}
+
+export function toGroupTopicReply(reply: orm.IGroupPost): res.IReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creatorID: reply.uid,
+    replies: [],
+    reactions: [],
+  };
+}
+
+export function toGroupTopicSubReply(reply: orm.IGroupPost): res.ISubReply {
+  return {
+    id: reply.id,
+    text: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creatorID: reply.uid,
+    reactions: [],
   };
 }

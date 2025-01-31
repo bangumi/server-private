@@ -59,7 +59,7 @@ export type ICreateTopic = Static<typeof CreateTopic>;
 export const CreateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
-    text: t.String({ minLength: 1, description: 'bbcode' }),
+    content: t.String({ minLength: 1, description: 'bbcode' }),
     'cf-turnstile-response': t.String({ description: turnstileDescription }),
   },
   {
@@ -72,9 +72,32 @@ export type IUpdateTopic = Static<typeof UpdateTopic>;
 export const UpdateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
-    text: t.String({ minLength: 1, description: 'bbcode' }),
+    content: t.String({ minLength: 1, description: 'bbcode' }),
   },
   { $id: 'UpdateTopic' },
+);
+
+export type ICreatePost = Static<typeof CreatePost>;
+export const CreatePost = t.Object(
+  {
+    content: t.String({ minLength: 1 }),
+    replyTo: t.Optional(
+      t.Integer({
+        default: 0,
+        description: '被回复的帖子 ID, `0` 代表回复楼主',
+      }),
+    ),
+    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+  },
+  { $id: 'CreatePost' },
+);
+
+export type IUpdatePost = Static<typeof UpdatePost>;
+export const UpdatePost = t.Object(
+  {
+    content: t.String({ minLength: 1, description: 'bbcode' }),
+  },
+  { $id: 'UpdatePost' },
 );
 
 export type ICreateEpisodeComment = Static<typeof CreateEpisodeComment>;

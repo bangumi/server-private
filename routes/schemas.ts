@@ -9,11 +9,13 @@ export function addSchemas(app: App) {
   app.addSchema(common.SubjectType);
 
   app.addSchema(req.CreateEpisodeComment);
+  app.addSchema(req.CreatePost);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
   app.addSchema(req.UpdateEpisodeComment);
+  app.addSchema(req.UpdatePost);
   app.addSchema(req.UpdateTopic);
 
   app.addSchema(res.Avatar);
@@ -47,6 +49,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.SlimIndex);
   app.addSchema(res.SlimPerson);
   app.addSchema(res.SlimSubject);
+  app.addSchema(res.SlimSubjectInterest);
   app.addSchema(res.SlimUser);
   app.addSchema(res.Subject);
   app.addSchema(res.SubjectAirtime);
@@ -54,7 +57,10 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectCollection);
   app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
+  app.addSchema(res.SubjectInterest);
   app.addSchema(res.SubjectPlatform);
+  app.addSchema(res.SubjectPosition);
+  app.addSchema(res.SubjectPositionStaff);
   app.addSchema(res.SubjectRating);
   app.addSchema(res.SubjectRec);
   app.addSchema(res.SubjectRelation);

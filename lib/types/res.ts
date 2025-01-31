@@ -299,6 +299,33 @@ export const SubjectImages = t.Object(
   { $id: 'SubjectImages', title: 'SubjectImages' },
 );
 
+export type ISubjectInterest = Static<typeof SubjectInterest>;
+export const SubjectInterest = t.Object(
+  {
+    rate: t.Integer(),
+    type: Ref(CollectionType),
+    comment: t.String(),
+    tags: t.Array(t.String()),
+    epStatus: t.Integer(),
+    volStatus: t.Integer(),
+    private: t.Boolean(),
+    updatedAt: t.Integer(),
+  },
+  { $id: 'SubjectInterest', title: 'SubjectInterest' },
+);
+
+export type ISlimSubjectInterest = Static<typeof SlimSubjectInterest>;
+export const SlimSubjectInterest = t.Object(
+  {
+    rate: t.Integer(),
+    type: Ref(CollectionType),
+    comment: t.String(),
+    tags: t.Array(t.String()),
+    updatedAt: t.Integer(),
+  },
+  { $id: 'SlimSubjectInterest', title: 'SlimSubjectInterest' },
+);
+
 export type ISubject = Static<typeof Subject>;
 export const Subject = t.Object(
   {
@@ -357,26 +384,6 @@ export const SubjectRelationType = t.Object(
     desc: t.String(),
   },
   { $id: 'SubjectRelationType' },
-);
-
-export type ISubjectStaffPositionType = Static<typeof SubjectStaffPositionType>;
-export const SubjectStaffPositionType = t.Object(
-  {
-    id: t.Integer(),
-    en: t.String(),
-    cn: t.String(),
-    jp: t.String(),
-  },
-  { $id: 'SubjectStaffPositionType' },
-);
-
-export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
-export const SubjectStaffPosition = t.Object(
-  {
-    type: Ref(SubjectStaffPositionType),
-    summary: t.String(),
-  },
-  { $id: 'SubjectStaffPosition' },
 );
 
 export type IEpisode = Static<typeof Episode>;
@@ -619,13 +626,53 @@ export const SubjectCharacter = t.Object(
   { $id: 'SubjectCharacter' },
 );
 
+export type ISubjectStaffPositionType = Static<typeof SubjectStaffPositionType>;
+export const SubjectStaffPositionType = t.Object(
+  {
+    id: t.Integer(),
+    en: t.String(),
+    cn: t.String(),
+    jp: t.String(),
+  },
+  { $id: 'SubjectStaffPositionType' },
+);
+
+export type ISubjectStaffPosition = Static<typeof SubjectStaffPosition>;
+export const SubjectStaffPosition = t.Object(
+  {
+    type: Ref(SubjectStaffPositionType),
+    summary: t.String(),
+    appearEps: t.String(),
+  },
+  { $id: 'SubjectStaffPosition' },
+);
+
+export type ISubjectPositionStaff = Static<typeof SubjectPositionStaff>;
+export const SubjectPositionStaff = t.Object(
+  {
+    person: Ref(SlimPerson),
+    summary: t.String(),
+    appearEps: t.String(),
+  },
+  { $id: 'SubjectPositionStaff' },
+);
+
 export type ISubjectStaff = Static<typeof SubjectStaff>;
 export const SubjectStaff = t.Object(
   {
-    person: Ref(SlimPerson),
+    staff: Ref(SlimPerson),
     positions: t.Array(Ref(SubjectStaffPosition)),
   },
   { $id: 'SubjectStaff' },
+);
+
+export type ISubjectPosition = Static<typeof SubjectPosition>;
+export const SubjectPosition = t.Object(
+  {
+    position: Ref(SubjectStaffPositionType),
+    staffs: t.Array(Ref(SubjectPositionStaff)),
+  },
+  { $id: 'SubjectPosition' },
 );
 
 export type ISubjectRec = Static<typeof SubjectRec>;
@@ -749,10 +796,10 @@ export const Group = t.Object(
     icon: Ref(Avatar),
     creatorID: t.Integer(),
     creator: Ref(SlimUser),
+    topics: t.Integer(),
+    posts: t.Integer(),
+    members: t.Integer(),
     description: t.String(),
-    totalTopics: t.Integer(),
-    totalPosts: t.Integer(),
-    totalMembers: t.Integer(),
     accessible: t.Boolean(),
     createdAt: t.Integer(),
   },
@@ -768,7 +815,8 @@ export const SlimGroup = t.Object(
     title: t.String(),
     icon: Ref(Avatar),
     creatorID: t.Integer(),
-    totalMembers: t.Integer(),
+    members: t.Integer(),
+    accessible: t.Boolean(),
     createdAt: t.Integer(),
   },
   { $id: 'SlimGroup', title: 'SlimGroup' },
@@ -777,10 +825,9 @@ export const SlimGroup = t.Object(
 export type IGroupMember = Static<typeof GroupMember>;
 export const GroupMember = t.Object(
   {
-    id: t.Integer(),
-    nickname: t.String(),
-    username: t.String(),
-    avatar: Ref(Avatar),
+    uid: t.Integer(),
+    user: t.Optional(Ref(SlimUser)),
+    moderator: t.Boolean(),
     joinedAt: t.Integer(),
   },
   { $id: 'GroupMember', title: 'GroupMember' },
@@ -790,9 +837,9 @@ export type ISubReply = Static<typeof SubReply>;
 export const SubReply = t.Object(
   {
     id: t.Integer(),
-    creator: Ref(SlimUser),
+    creatorID: t.Integer(),
+    creator: t.Optional(Ref(SlimUser)),
     createdAt: t.Integer(),
-    isFriend: t.Optional(t.Boolean()),
     text: t.String(),
     state: t.Integer(),
     reactions: t.Array(Ref(Reaction)),
@@ -804,9 +851,9 @@ export type IReply = Static<typeof Reply>;
 export const Reply = t.Object(
   {
     id: t.Integer(),
-    isFriend: t.Optional(t.Boolean()),
     replies: t.Array(Ref(SubReply)),
-    creator: Ref(SlimUser),
+    creatorID: t.Integer(),
+    creator: t.Optional(Ref(SlimUser)),
     createdAt: t.Integer(),
     text: t.String(),
     state: t.Integer(),
@@ -819,12 +866,13 @@ export type ITopic = Static<typeof Topic>;
 export const Topic = t.Object(
   {
     id: t.Integer(),
-    creator: Ref(SlimUser),
+    creatorID: t.Integer(),
+    creator: t.Optional(Ref(SlimUser)),
     title: t.String(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
     updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
-    repliesCount: t.Integer(),
+    replies: t.Integer(),
     state: t.Integer(),
     display: t.Integer(),
   },
@@ -838,11 +886,12 @@ export const TopicDetail = t.Object(
     parent: t.Union([Ref(SlimGroup), Ref(SlimSubject)]),
     creator: Ref(SlimUser),
     title: t.String(),
-    text: t.String(),
+    content: t.String(),
     state: t.Integer(),
     createdAt: t.Integer(),
     replies: t.Array(Ref(Reply)),
     reactions: t.Array(Ref(Reaction)),
+    display: t.Integer(),
   },
   { $id: 'TopicDetail', title: 'TopicDetail' },
 );
