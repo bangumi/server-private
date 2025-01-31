@@ -764,11 +764,80 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('collecting a subject')],
     },
-    async ({ auth, params: { subjectID } }) => {
+    async ({
+      auth,
+      params: { subjectID },
+      body: { type, rate, epStatus, volStatus, comment, priv, tags },
+    }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('collect subject');
+      }
+      if (comment) {
+        if (!Dam.allCharacterPrintable(comment)) {
+          throw new BadRequestError('comment contains invalid invisible character');
+        }
+        comment = comment.normalize('NFC');
+        if (comment.length > 380) {
+          throw new BadRequestError('comment too long');
+        }
+      }
+      await rateLimit(LimitAction.Subject, auth.userID);
+      const _ = {
+        uid: auth.userID,
+        subjectID,
+        subjectType: subject.type,
+        type,
+        rate,
+        epStatus,
+        volStatus,
+        comment,
+        private: priv,
+        tag: tags?.join(' '),
+      };
+
+      // await db.transaction(async (t) => {
+      //   const [interest] = await t
+      //     .select()
+      //     .from(schema.chiiSubjectInterests)
+      //     .where(
+      //       op.and(
+      //         op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+      //         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+      //       ),
+      //     )
+      //     .limit(1);
+      //   if (interest) {
+      //     await t
+      //       .update(schema.chiiSubjectInterests)
+      //       .set({
+      //         type,
+      //         rate,
+      //         epStatus,
+      //         volStatus,
+      //         comment,
+      //         private: priv,
+      //         tag: tags?.join(' '),
+      //       })
+      //       .where(op.eq(schema.chiiSubjectInterests.id, interest.id));
+      //   } else {
+      //     await t.insert(schema.chiiSubjectInterests).values({
+      //       uid: auth.userID,
+      //       subjectID,
+      //       subjectType: subject.type,
+      //       type,
+      //       rate,
+      //       epStatus,
+      //       volStatus,
+      //       comment,
+      //       private: priv,
+      //       tag: tags?.join(' '),
+      //     });
+      //   }
+      // });
       // const interest = await fetcher.fetchSubjectInterest(auth.userID, subjectID);
       // TODO:
     },

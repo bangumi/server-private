@@ -130,7 +130,7 @@ export const CollectSubject = t.Object({
   epStatus: t.Optional(t.Integer({ minimum: 0, description: '书籍条目章节进度' })),
   volStatus: t.Optional(t.Integer({ minimum: 0, description: '书籍条目卷数进度' })),
   comment: t.Optional(t.String({ description: '评价' })),
-  private: t.Optional(t.Boolean({ description: '仅自己可见' })),
+  priv: t.Optional(t.Boolean({ description: '仅自己可见' })),
   tags: t.Optional(t.Array(t.String({ description: '标签, 不能包含空格' }))),
 });
 
