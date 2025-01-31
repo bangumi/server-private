@@ -74,7 +74,7 @@ export enum TimelineCat {
 }
 
 export enum TimelineStatusType {
-  Sign = 1,
-  Tsukkomi = 2,
-  Nickname = 3,
+  Sign = 0,
+  Tsukkomi = 1,
+  Nickname = 2,
 }
