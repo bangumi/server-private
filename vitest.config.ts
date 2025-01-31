@@ -11,7 +11,7 @@ export default defineConfig({
     extensions: ['.js', '.ts'],
   },
   test: {
-    reporters: isCI ? ['github-actions'] : 'basic',
+    reporters: isCI ? ['basic', 'github-actions'] : 'basic',
     watch: false,
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
