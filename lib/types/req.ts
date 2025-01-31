@@ -133,3 +133,12 @@ export const CollectSubject = t.Object({
   private: t.Optional(t.Boolean({ description: '仅自己可见' })),
   tags: t.Optional(t.Array(t.String({ description: '标签, 不能包含空格' }))),
 });
+
+export type ICreateTimelineSay = Static<typeof CreateTimelineSay>;
+export const CreateTimelineSay = t.Object(
+  {
+    content: t.String({ minLength: 1 }),
+    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+  },
+  { $id: 'CreateTimelineSay' },
+);
