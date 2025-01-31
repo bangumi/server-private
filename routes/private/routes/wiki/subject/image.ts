@@ -102,7 +102,7 @@ export function setup(app: App) {
                 chiiLikes.relatedID,
                 images.map((x) => x.id),
               ),
-              op.eq(chiiLikes.type, LikeType.subject_cover),
+              op.eq(chiiLikes.type, LikeType.SubjectCover),
               op.eq(chiiLikes.uid, auth.userID),
               op.eq(chiiLikes.deleted, 0),
             ),
@@ -255,7 +255,7 @@ export function setup(app: App) {
       }
 
       await db.insert(chiiLikes).values({
-        type: LikeType.subject_cover,
+        type: LikeType.SubjectCover,
         relatedID: imageID,
         uid: auth.userID,
         createdAt: DateTime.now().toUnixInteger(),
@@ -295,7 +295,7 @@ export function setup(app: App) {
         .set({ deleted: 1 })
         .where(
           op.and(
-            op.eq(chiiLikes.type, LikeType.subject_cover),
+            op.eq(chiiLikes.type, LikeType.SubjectCover),
             op.eq(chiiLikes.uid, auth.userID),
             op.eq(chiiLikes.relatedID, imageID),
             op.eq(chiiLikes.deleted, 0),
