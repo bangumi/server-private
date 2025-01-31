@@ -1,0 +1,134 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`group info > should get group info 1`] = `
+Object {
+  "accessible": true,
+  "cat": 32,
+  "createdAt": 1531631310,
+  "creator": Object {
+    "avatar": Object {
+      "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+      "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+      "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+    },
+    "id": 287622,
+    "joinedAt": 0,
+    "nickname": "nickname 287622",
+    "sign": "sing 287622",
+    "username": "287622",
+  },
+  "creatorID": 287622,
+  "description": "[s]非[/s]官方沙盒",
+  "icon": Object {
+    "large": "https://lain.bgm.tv/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
+    "medium": "https://lain.bgm.tv/pic/icon/m/000/00/42/4215.jpg?r=1531631345",
+    "small": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+  },
+  "id": 4215,
+  "members": 3,
+  "name": "sandbox",
+  "nsfw": false,
+  "posts": 0,
+  "title": "沙盒",
+  "topics": 1,
+}
+`;
+
+exports[`group info > should get group members 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "joinedAt": 1531631310,
+      "moderator": true,
+      "uid": 287622,
+      "user": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 287622,
+        "joinedAt": 0,
+        "nickname": "nickname 287622",
+        "sign": "sing 287622",
+        "username": "287622",
+      },
+    },
+    Object {
+      "joinedAt": 1640499538,
+      "moderator": false,
+      "uid": 382951,
+      "user": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+          "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+          "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+        },
+        "id": 382951,
+        "joinedAt": 1512262276,
+        "nickname": "树洞酱",
+        "sign": "treeholechan@gmail.com 密码:lovemeplease",
+        "username": "382951",
+      },
+    },
+    Object {
+      "joinedAt": 1531631570,
+      "moderator": false,
+      "uid": 427613,
+      "user": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "id": 427613,
+        "joinedAt": 0,
+        "nickname": "nickname 427613",
+        "sign": "sing 427613",
+        "username": "427613",
+      },
+    },
+  ],
+  "total": 3,
+}
+`;
+
+exports[`group topics > should get group topics 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1462335911,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+          "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
+          "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+        },
+        "id": 382951,
+        "joinedAt": 1512262276,
+        "nickname": "树洞酱",
+        "sign": "treeholechan@gmail.com 密码:lovemeplease",
+        "username": "382951",
+      },
+      "creatorID": 382951,
+      "display": 1,
+      "id": 100,
+      "parentID": 4215,
+      "replies": 1,
+      "state": 0,
+      "title": "Test Topic",
+      "updatedAt": 1462335911,
+    },
+  ],
+  "total": 1,
+}
+`;
+
+exports[`group topics > should not edit topic by non-owner 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to edit this topic",
+  "statusCode": 401,
+}
+`;

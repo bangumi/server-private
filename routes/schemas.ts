@@ -9,11 +9,13 @@ export function addSchemas(app: App) {
   app.addSchema(common.SubjectType);
 
   app.addSchema(req.CreateEpisodeComment);
+  app.addSchema(req.CreatePost);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
   app.addSchema(req.UpdateEpisodeComment);
+  app.addSchema(req.UpdatePost);
   app.addSchema(req.UpdateTopic);
 
   app.addSchema(res.Avatar);
