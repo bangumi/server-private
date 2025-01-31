@@ -24,9 +24,9 @@ export async function setup(app: App) {
     '/subjects/-/episodes/:episodeID',
     {
       schema: {
+        operationId: 'getSubjectEpisode',
         summary: '获取剧集信息',
         tags: [Tag.Episode],
-        operationId: 'getSubjectEpisode',
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
@@ -54,9 +54,9 @@ export async function setup(app: App) {
     '/subjects/-/episodes/:episodeID/comments',
     {
       schema: {
+        operationId: 'getSubjectEpisodeComments',
         summary: '获取条目的剧集吐槽箱',
         tags: [Tag.Episode],
-        operationId: 'getSubjectEpisodeComments',
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
         }),
@@ -112,19 +112,19 @@ export async function setup(app: App) {
     '/subjects/-/episodes/:episodeID/comments',
     {
       schema: {
-        summary: '创建条目的剧集吐槽',
         operationId: 'createSubjectEpComment',
+        summary: '创建条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
-        tags: [Tag.Episode],
+        body: req.Ref(req.CreateEpisodeComment),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new reply id' }),
           }),
         },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: req.Ref(req.CreateEpisodeComment),
       },
       preHandler: [requireLogin('creating a comment')],
     },
@@ -193,14 +193,17 @@ export async function setup(app: App) {
     '/subjects/-/episodes/-/comments/:commentID',
     {
       schema: {
-        summary: '编辑条目的剧集吐槽',
         operationId: 'updateSubjectEpComment',
+        summary: '编辑条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           commentID: t.Integer({ examples: [1075440] }),
         }),
-        tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: req.Ref(req.UpdateEpisodeComment),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('edit a comment')],
     },
@@ -247,13 +250,16 @@ export async function setup(app: App) {
     '/subjects/-/episodes/-/comments/:commentID',
     {
       schema: {
-        summary: '删除条目的剧集吐槽',
         operationId: 'deleteSubjectEpComment',
+        summary: '删除条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           commentID: t.Integer({ examples: [1034989] }),
         }),
-        tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('delete a comment')],
     },

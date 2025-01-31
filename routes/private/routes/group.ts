@@ -188,12 +188,12 @@ export async function setup(app: App) {
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
+        body: res.Ref(req.CreateTopic),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new topic id' }),
           }),
         },
-        body: res.Ref(req.CreateTopic),
       },
       preHandler: [requireLogin('creating a topic')],
     },
@@ -352,6 +352,9 @@ export async function setup(app: App) {
           topicID: t.Integer(),
         }),
         body: req.Ref(req.UpdateTopic),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('edit a topic')],
     },
@@ -422,6 +425,9 @@ export async function setup(app: App) {
           postID: t.Integer(),
         }),
         body: req.Ref(req.UpdatePost),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('edit a post')],
     },
@@ -495,6 +501,9 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('delete a post')],
     },
