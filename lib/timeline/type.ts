@@ -12,6 +12,7 @@ export enum TimelineMode {
   Friends = 'friends',
 }
 
+/** 时间线分类 */
 export enum TimelineCat {
   /**
    * 日常行为
@@ -73,8 +74,14 @@ export enum TimelineCat {
   Doujin = 9,
 }
 
+/** 时间线状态类型 */
 export enum TimelineStatusType {
+  /** 更新签名 */
   Sign = 0,
+
+  /** 吐槽 */
   Tsukkomi = 1,
+
+  /** 修改昵称 */
   Nickname = 2,
 }
