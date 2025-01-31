@@ -11,7 +11,12 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
-import { TimelineCat, TimelineMode, TimelineStatusType } from '@app/lib/timeline/type.ts';
+import {
+  TimelineCat,
+  TimelineMode,
+  TimelineSource,
+  TimelineStatusType,
+} from '@app/lib/timeline/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -117,7 +122,7 @@ export async function setup(app: App) {
         memo: text,
         img: '',
         batch: false,
-        source: 0,
+        source: TimelineSource.API,
         replies: 0,
         createdAt: DateTime.now().toUnixInteger(),
       });
