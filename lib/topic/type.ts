@@ -1,8 +1,3 @@
-export const enum TopicParentType {
-  Group = 'group',
-  Subject = 'subject',
-}
-
 export const enum CommentState {
   Normal = 0, // 正常
   // CommentStateAdminCloseTopic 管理员关闭主题 https://bgm.tv/subject/topic/12629#post_108127

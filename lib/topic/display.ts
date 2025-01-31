@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
-import type { IReply } from '@app/lib/topic/index.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 
 export const CanViewStateClosedTopic = 24 * 60 * 60 * 180;
@@ -94,25 +93,4 @@ export function CanViewTopicReply(state: number): boolean {
       return true;
     }
   }
-}
-
-export function filterReply(x: IReply): IReply {
-  return {
-    ...filterSubReply(x),
-    replies: x.replies.map((x) => filterSubReply(x)),
-  };
-}
-
-function filterSubReply<T extends { state: number; text: string }>(x: T): T {
-  if (
-    x.state === CommentState.AdminDelete ||
-    x.state === CommentState.UserDelete ||
-    x.state === CommentState.AdminReopen ||
-    x.state === CommentState.AdminCloseTopic ||
-    x.state === CommentState.AdminSilentTopic
-  ) {
-    return { ...x, text: '' };
-  }
-
-  return x;
 }
