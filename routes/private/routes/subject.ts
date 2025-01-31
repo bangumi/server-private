@@ -98,7 +98,8 @@ export async function setup(app: App) {
             op.ne(schema.chiiSubjects.ban, 1),
             auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
           ),
-        );
+        )
+        .limit(1);
       if (!data) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
