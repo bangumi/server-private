@@ -913,7 +913,6 @@ export async function setup(app: App) {
       if (!CanViewTopicContent(auth, topic.state, topic.display, topic.uid)) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-
       const subject = await fetcher.fetchSlimSubjectByID(topic.subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${topic.subjectID}`);
