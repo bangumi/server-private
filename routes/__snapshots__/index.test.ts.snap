@@ -303,48 +303,6 @@ exports[`should build private api spec 1`] = `
         - content
         - cf-turnstile-response
       type: object
-    CurrentUser:
-      allOf:
-        - properties:
-            avatar:
-              $ref: '#/components/schemas/Avatar'
-            id:
-              examples:
-                - 1
-              type: integer
-            joinedAt:
-              type: integer
-            nickname:
-              examples:
-                - Sai🖖
-              type: string
-            sign:
-              type: string
-            username:
-              examples:
-                - sai
-              type: string
-          required:
-            - id
-            - username
-            - nickname
-            - avatar
-            - sign
-            - joinedAt
-          title: SlimUser
-          type: object
-        - properties:
-            permission:
-              properties:
-                subjectWikiEdit:
-                  type: boolean
-              required:
-                - subjectWikiEdit
-              type: object
-          required:
-            - permission
-          type: object
-      type: object
     Episode:
       properties:
         airdate:
@@ -880,12 +838,13 @@ exports[`should build private api spec 1`] = `
         - createdAt
         - unread
       type: object
-    Permission:
+    Permissions:
       properties:
         subjectWikiEdit:
           type: boolean
       required:
         - subjectWikiEdit
+      title: Permissions
       type: object
     Person:
       properties:
@@ -1014,6 +973,49 @@ exports[`should build private api spec 1`] = `
       required:
         - subject
         - positions
+      type: object
+    Profile:
+      properties:
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+        bio:
+          type: string
+        friendIDs:
+          items:
+            type: integer
+          type: array
+        group:
+          type: integer
+        id:
+          type: integer
+        joinedAt:
+          type: integer
+        location:
+          type: string
+        nickname:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+        sign:
+          type: string
+        site:
+          type: string
+        username:
+          type: string
+      required:
+        - id
+        - username
+        - nickname
+        - avatar
+        - sign
+        - group
+        - joinedAt
+        - site
+        - location
+        - bio
+        - friendIDs
+        - permissions
+      title: Profile
       type: object
     Reaction:
       properties:
@@ -2392,9 +2394,6 @@ exports[`should build private api spec 1`] = `
           type: string
         stats:
           $ref: '#/components/schemas/UserStats'
-        user_group:
-          description: deprecated, use group instead
-          type: integer
         username:
           example: sai
           type: string
@@ -2404,7 +2403,6 @@ exports[`should build private api spec 1`] = `
         - nickname
         - avatar
         - group
-        - user_group
         - joinedAt
         - sign
         - site
@@ -3642,7 +3640,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrentUser'
+                $ref: '#/components/schemas/Profile'
           description: Default Response
         '401':
           content:
