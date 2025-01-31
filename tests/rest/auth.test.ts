@@ -25,7 +25,7 @@ test('should pass login/logout authorization flow', async () => {
     payload: {
       email: 'treeholechan@gmail.com',
       password: 'lovemeplease',
-      'cf-turnstile-response': 'fake-response',
+      turnstileToken: 'fake-response',
     },
     headers: {
       'cf-connecting-ip': fakeIP,

@@ -97,7 +97,7 @@ describe('group topics', () => {
       payload: {
         title: 'New Topic',
         content: 'New Content',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
 
@@ -185,7 +185,7 @@ describe('group topics', () => {
       method: 'post',
       payload: {
         content: 'New Reply',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
     expect(createRes.statusCode).toBe(200);

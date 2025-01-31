@@ -198,5 +198,5 @@ export const subject = {
 export const createTopic = {
   title: 'topic title',
   content: 'topic content',
-  'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+  turnstileToken: '10000000-aaaa-bbbb-cccc-000000000001',
 };
