@@ -21,11 +21,8 @@ export default defineConfig({
       printBasicPrototype: true,
     },
     ui: false,
-    isolate: false,
+    isolate: true,
     fileParallelism: false,
-    coverage: {
-      provider: 'v8',
-      reporter: ['lcov', 'text-summary'],
-    },
+    // coverage: false,
   },
 });
