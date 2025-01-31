@@ -925,6 +925,7 @@ export const TimelineMemo = t.Object(
           subject: Ref(SlimSubject),
           comment: t.String(),
           rate: t.Number(),
+          collectID: t.Optional(t.Integer()),
           reactions: t.Optional(t.Array(Ref(Reaction))),
         }),
       ),

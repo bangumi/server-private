@@ -72,26 +72,32 @@ export async function fetchTopicReactions(
 }
 
 export async function fetchSubjectCollectReactions(
-  subjectID: number,
-  collectID: number,
-): Promise<res.IReaction[]> {
+  collectIDs: number[],
+): Promise<Record<number, res.IReaction[]>> {
   const data = await db
     .select()
     .from(chiiLikes)
     .where(
       op.and(
         op.eq(chiiLikes.type, LikeType.subject_collect),
-        op.eq(chiiLikes.mainID, subjectID),
-        op.eq(chiiLikes.relatedID, collectID),
+        op.inArray(chiiLikes.relatedID, collectIDs),
       ),
     );
+
   const uids = data.map((x) => x.uid);
   const users = await fetcher.fetchSimpleUsersByIDs(uids);
-  const r = lo.groupBy(data, (x) => x.value);
-  return Object.entries(r).map(([key, values]) => {
-    return {
-      users: values.map((x) => users[x.uid]).filter((x) => x !== undefined),
-      value: Number(key),
-    };
+  const r = lo.groupBy(data, (x) => x.relatedID);
+
+  return lo.mapValues(r, (v): res.IReaction[] => {
+    return Object.entries(
+      lo.groupBy(v, (a) => {
+        return a.value;
+      }),
+    ).map(([key, values]) => {
+      return {
+        users: values.map((x) => users[x.uid]).filter((x) => x !== undefined),
+        value: Number(key),
+      };
+    });
   });
 }

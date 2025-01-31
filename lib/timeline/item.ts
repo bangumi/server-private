@@ -108,21 +108,18 @@ export async function parseTimelineMemo(
             subject,
             comment: lo.unescape(v.collect_comment),
             rate: v.collect_rate,
+            collectID: v.collect_id,
           });
         }
       } else {
         const info = php.parse(data) as memo.Subject;
         const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
         if (subject) {
-          let reactions = undefined;
-          if (info.collect_comment) {
-            reactions = await fetchSubjectCollectReactions(subject.id, info.collect_id);
-          }
           subjects.push({
             subject,
             comment: lo.unescape(info.collect_comment),
             rate: info.collect_rate,
-            reactions,
+            collectID: info.collect_id,
           });
         }
       }
@@ -317,6 +314,39 @@ export async function fetchTimelineByIDs(
       result[d.id] = item;
       await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));
     }
+  }
+
+  const collectIDs: Record<number, number> = {};
+  for (const [tid, item] of Object.entries(result)) {
+    if (item.cat !== TimelineCat.Subject) {
+      continue;
+    }
+    if (item.batch) {
+      continue;
+    }
+    const subject = item.memo.subject?.[0];
+    if (!subject) {
+      continue;
+    }
+    if (subject.comment && subject.collectID) {
+      collectIDs[Number(tid)] = subject.collectID;
+    }
+  }
+  const collectReactions = await fetchSubjectCollectReactions(Object.values(collectIDs));
+  for (const [tid, collectID] of Object.entries(collectIDs)) {
+    const reactions = collectReactions[collectID];
+    if (!reactions) {
+      continue;
+    }
+    const item = result[Number(tid)];
+    if (!item) {
+      continue;
+    }
+    const subject = item.memo.subject?.[0];
+    if (!subject) {
+      continue;
+    }
+    subject.reactions = reactions;
   }
   return result;
 }
