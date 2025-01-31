@@ -134,12 +134,8 @@ export async function setup(app: App) {
      * @param relatedID - 子吐槽的父吐槽ID，默认为 `0` 代表发送顶层吐槽
      * @param episodeID - 剧集 ID
      */
-    async ({
-      auth,
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-      params: { episodeID },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, body: { turnstileToken, content, replyTo = 0 }, params: { episodeID } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (!Dam.allCharacterPrintable(content)) {

@@ -79,7 +79,7 @@ export async function setup(app: App) {
     {
       email: t.String({ minLength: 1 }),
       password: t.String({ minLength: 1 }),
-      'cf-turnstile-response': t.String({ minLength: 1 }),
+      turnstileToken: t.String({ minLength: 1 }),
     },
     {
       $id: 'LoginRequestBody',
@@ -87,7 +87,7 @@ export async function setup(app: App) {
         {
           email: 'treeholechan@gmail.com',
           password: 'lovemeplease',
-          'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+          turnstileToken: '10000000-aaaa-bbbb-cccc-000000000001',
         },
       ],
     },
@@ -136,7 +136,7 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       },
     },
     async function loginHandler(
-      { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, ip },
+      { body: { email, password, turnstileToken }, ip },
       reply,
     ): Promise<res.ISlimUser> {
       const limitKey = `${redisPrefix}-login-rate-limit-${ip}`;
@@ -150,7 +150,7 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new TooManyRequestsError();
       }
 
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
 

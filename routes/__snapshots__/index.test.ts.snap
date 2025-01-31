@@ -213,16 +213,6 @@ exports[`should build private api spec 1`] = `
         name: CollectionType
     CreateEpisodeComment:
       properties:
-        cf-turnstile-response:
-          description: >-
-            需要
-            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
-          minLength: 1
-          type: string
         content:
           minLength: 1
           type: string
@@ -230,13 +220,7 @@ exports[`should build private api spec 1`] = `
           default: 0
           description: 被回复的吐槽 ID, \`0\` 代表发送顶层吐槽
           type: integer
-      required:
-        - content
-        - cf-turnstile-response
-      type: object
-    CreatePost:
-      properties:
-        cf-turnstile-response:
+        turnstileToken:
           description: >-
             需要
             [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
@@ -246,6 +230,12 @@ exports[`should build private api spec 1`] = `
             dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           minLength: 1
           type: string
+      required:
+        - content
+        - turnstileToken
+      type: object
+    CreatePost:
+      properties:
         content:
           minLength: 1
           type: string
@@ -253,13 +243,26 @@ exports[`should build private api spec 1`] = `
           default: 0
           description: 被回复的帖子 ID, \`0\` 代表回复楼主
           type: integer
+        turnstileToken:
+          description: >-
+            需要
+            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+          minLength: 1
+          type: string
       required:
         - content
-        - cf-turnstile-response
+        - turnstileToken
       type: object
     CreateTimelineSay:
       properties:
-        cf-turnstile-response:
+        content:
+          minLength: 1
+          type: string
+        turnstileToken:
           description: >-
             需要
             [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
@@ -267,30 +270,18 @@ exports[`should build private api spec 1`] = `
             next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 
             dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
-          minLength: 1
-          type: string
-        content:
           minLength: 1
           type: string
       required:
         - content
-        - cf-turnstile-response
+        - turnstileToken
       type: object
     CreateTopic:
       example:
-        cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
         content: topic content
         title: topic title
+        turnstileToken: 10000000-aaaa-bbbb-cccc-000000000001
       properties:
-        cf-turnstile-response:
-          description: >-
-            需要
-            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
-          type: string
         content:
           description: bbcode
           minLength: 1
@@ -298,52 +289,19 @@ exports[`should build private api spec 1`] = `
         title:
           minLength: 1
           type: string
+        turnstileToken:
+          description: >-
+            需要
+            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+          type: string
       required:
         - title
         - content
-        - cf-turnstile-response
-      type: object
-    CurrentUser:
-      allOf:
-        - properties:
-            avatar:
-              $ref: '#/components/schemas/Avatar'
-            id:
-              examples:
-                - 1
-              type: integer
-            joinedAt:
-              type: integer
-            nickname:
-              examples:
-                - Sai🖖
-              type: string
-            sign:
-              type: string
-            username:
-              examples:
-                - sai
-              type: string
-          required:
-            - id
-            - username
-            - nickname
-            - avatar
-            - sign
-            - joinedAt
-          title: SlimUser
-          type: object
-        - properties:
-            permission:
-              properties:
-                subjectWikiEdit:
-                  type: boolean
-              required:
-                - subjectWikiEdit
-              type: object
-          required:
-            - permission
-          type: object
+        - turnstileToken
       type: object
     Episode:
       properties:
@@ -808,23 +766,23 @@ exports[`should build private api spec 1`] = `
       type: object
     LoginRequestBody:
       example:
-        cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
         email: treeholechan@gmail.com
         password: lovemeplease
+        turnstileToken: 10000000-aaaa-bbbb-cccc-000000000001
       properties:
-        cf-turnstile-response:
-          minLength: 1
-          type: string
         email:
           minLength: 1
           type: string
         password:
           minLength: 1
           type: string
+        turnstileToken:
+          minLength: 1
+          type: string
       required:
         - email
         - password
-        - cf-turnstile-response
+        - turnstileToken
       type: object
     Notice:
       properties:
@@ -880,12 +838,13 @@ exports[`should build private api spec 1`] = `
         - createdAt
         - unread
       type: object
-    Permission:
+    Permissions:
       properties:
         subjectWikiEdit:
           type: boolean
       required:
         - subjectWikiEdit
+      title: Permissions
       type: object
     Person:
       properties:
@@ -1014,6 +973,49 @@ exports[`should build private api spec 1`] = `
       required:
         - subject
         - positions
+      type: object
+    Profile:
+      properties:
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+        bio:
+          type: string
+        friendIDs:
+          items:
+            type: integer
+          type: array
+        group:
+          type: integer
+        id:
+          type: integer
+        joinedAt:
+          type: integer
+        location:
+          type: string
+        nickname:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+        sign:
+          type: string
+        site:
+          type: string
+        username:
+          type: string
+      required:
+        - id
+        - username
+        - nickname
+        - avatar
+        - sign
+        - group
+        - joinedAt
+        - site
+        - location
+        - bio
+        - friendIDs
+        - permissions
+      title: Profile
       type: object
     Reaction:
       properties:
@@ -2392,9 +2394,6 @@ exports[`should build private api spec 1`] = `
           type: string
         stats:
           $ref: '#/components/schemas/UserStats'
-        user_group:
-          description: deprecated, use group instead
-          type: integer
         username:
           example: sai
           type: string
@@ -2404,7 +2403,6 @@ exports[`should build private api spec 1`] = `
         - nickname
         - avatar
         - group
-        - user_group
         - joinedAt
         - sign
         - site
@@ -3642,7 +3640,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrentUser'
+                $ref: '#/components/schemas/Profile'
           description: Default Response
         '401':
           content:

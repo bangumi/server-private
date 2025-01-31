@@ -76,7 +76,7 @@ describe('create ep comment', () => {
     const res = await app.inject({
       url: '/subjects/-/episodes/1027/comments',
       method: 'post',
-      payload: { content: '114514', 'cf-turnstile-response': 'fake-response' },
+      payload: { content: '114514', turnstileToken: 'fake-response' },
     });
     expect(res.statusCode).toBe(200);
     const pstID: number = res.json().id;
@@ -94,7 +94,7 @@ describe('create ep comment', () => {
     const res = await app.inject({
       url: '/subjects/-/episodes/1027/comments',
       method: 'post',
-      payload: { content: '114514', 'cf-turnstile-response': 'fake-response' },
+      payload: { content: '114514', turnstileToken: 'fake-response' },
     });
     expect(res.statusCode).toBe(401);
     expect(res.json()).toMatchSnapshot();

@@ -189,7 +189,6 @@ export const User = t.Object(
     nickname: t.String({ examples: ['Sai🖖'] }),
     avatar: Ref(Avatar),
     group: t.Integer(),
-    user_group: t.Integer({ description: 'deprecated, use group instead' }),
     joinedAt: t.Integer(),
     sign: t.String(),
     site: t.String(),
@@ -200,6 +199,33 @@ export const User = t.Object(
     stats: Ref(UserStats),
   },
   { $id: 'User', title: 'User' },
+);
+
+export type IPermissions = Static<typeof Permissions>;
+export const Permissions = t.Object(
+  {
+    subjectWikiEdit: t.Boolean(),
+  },
+  { $id: 'Permissions', title: 'Permissions' },
+);
+
+export type IProfile = Static<typeof Profile>;
+export const Profile = t.Object(
+  {
+    id: t.Integer(),
+    username: t.String(),
+    nickname: t.String(),
+    avatar: Ref(Avatar),
+    sign: t.String(),
+    group: t.Integer(),
+    joinedAt: t.Integer(),
+    site: t.String(),
+    location: t.String(),
+    bio: t.String(),
+    friendIDs: t.Array(t.Integer()),
+    permissions: Ref(Permissions),
+  },
+  { $id: 'Profile', title: 'Profile' },
 );
 
 export type IFriend = Static<typeof Friend>;

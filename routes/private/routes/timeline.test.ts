@@ -53,7 +53,7 @@ describe('timeline status', () => {
     const res = await app.inject({
       method: 'post',
       url: '/timeline',
-      body: { content: '^_^\n(bgm38)>_<', 'cf-turnstile-response': 'fake' },
+      body: { content: '^_^\n(bgm38)>_<', turnstileToken: 'fake' },
     });
     expect(res.statusCode).toBe(200);
     const id = res.json().id;

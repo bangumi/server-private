@@ -832,12 +832,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a topic')],
     },
-    async ({
-      auth,
-      body: { title, content, 'cf-turnstile-response': cfCaptchaResponse },
-      params: { subjectID },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
+    async ({ auth, body: { title, content, turnstileToken }, params: { subjectID } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {
@@ -1173,12 +1169,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a reply')],
     },
-    async ({
-      auth,
-      params: { topicID },
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, params: { topicID }, body: { turnstileToken, content, replyTo = 0 } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {
