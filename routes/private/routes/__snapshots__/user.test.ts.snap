@@ -158,6 +158,7 @@ exports[`user collection > should get groups 1`] = `
 Object {
   "data": Array [
     Object {
+      "accessible": true,
       "createdAt": 1531631310,
       "creatorID": 287622,
       "icon": Object {
@@ -166,10 +167,10 @@ Object {
         "small": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
       },
       "id": 4215,
+      "members": 3,
       "name": "sandbox",
       "nsfw": false,
       "title": "沙盒",
-      "totalMembers": 3,
     },
   ],
   "total": 1,
