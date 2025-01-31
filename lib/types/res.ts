@@ -4,7 +4,13 @@ import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { CollectionType, EpisodeType, Ref, SubjectType } from '@app/lib/types/common.ts';
+import {
+  CollectionType,
+  EpisodeCollectionStatus,
+  EpisodeType,
+  Ref,
+  SubjectType,
+} from '@app/lib/types/common.ts';
 import * as examples from '@app/lib/types/examples.ts';
 
 export * from '@app/lib/types/common.ts';
@@ -385,6 +391,7 @@ export const Subject = t.Object(
     type: Ref(SubjectType),
     volumes: t.Integer(),
     tags: t.Array(Ref(SubjectTag)),
+    interest: t.Optional(Ref(SubjectInterest)),
   },
   {
     $id: 'Subject',
@@ -405,6 +412,7 @@ export const SlimSubject = t.Object(
     rating: Ref(SubjectRating),
     locked: t.Boolean(),
     nsfw: t.Boolean(),
+    interest: t.Optional(Ref(SlimSubjectInterest)),
   },
   { $id: 'SlimSubject', title: 'SlimSubject', examples: [examples.slimSubject] },
 );
@@ -434,6 +442,7 @@ export const Episode = t.Object(
     airdate: t.String(),
     comment: t.Integer(),
     desc: t.Optional(t.String()),
+    status: t.Optional(Ref(EpisodeCollectionStatus)),
     subjectID: t.Integer(),
     subject: t.Optional(Ref(SlimSubject)),
   },
@@ -495,6 +504,7 @@ export const Character = t.Object(
     lock: t.Boolean(),
     redirect: t.Integer(),
     nsfw: t.Boolean(),
+    collectedAt: t.Optional(t.Integer()),
   },
   {
     $id: 'Character',
@@ -541,6 +551,7 @@ export const Person = t.Object(
     lock: t.Boolean(),
     redirect: t.Integer(),
     nsfw: t.Boolean(),
+    collectedAt: t.Optional(t.Integer()),
   },
   {
     $id: 'Person',
@@ -805,7 +816,7 @@ export const Index = t.Object(
     stats: Ref(IndexStats),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
-    creator: Ref(SlimUser),
+    collectedAt: t.Optional(t.Integer()),
   },
   { $id: 'Index', title: 'Index' },
 );
@@ -832,7 +843,7 @@ export const Group = t.Object(
     title: t.String(),
     icon: Ref(Avatar),
     creatorID: t.Integer(),
-    creator: Ref(SlimUser),
+    creator: t.Optional(Ref(SlimUser)),
     topics: t.Integer(),
     posts: t.Integer(),
     members: t.Integer(),

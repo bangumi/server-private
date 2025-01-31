@@ -44,7 +44,7 @@ describe('get episode', () => {
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/-/episodes/1027',
+      url: '/episodes/1027',
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -56,7 +56,7 @@ describe('get ep comment', () => {
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/subjects/-/episodes/1027/comments',
+      url: '/episodes/1027/comments',
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -74,7 +74,7 @@ describe('create ep comment', () => {
     await app.register(setup);
 
     const res = await app.inject({
-      url: '/subjects/-/episodes/1027/comments',
+      url: '/episodes/1027/comments',
       method: 'post',
       payload: { content: '114514', turnstileToken: 'fake-response' },
     });
@@ -92,7 +92,7 @@ describe('create ep comment', () => {
     await app.register(setup);
 
     const res = await app.inject({
-      url: '/subjects/-/episodes/1027/comments',
+      url: '/episodes/1027/comments',
       method: 'post',
       payload: { content: '114514', turnstileToken: 'fake-response' },
     });
@@ -113,7 +113,7 @@ describe('edit ep comment', () => {
     await app.register(setup);
 
     const res = await app.inject({
-      url: `/subjects/-/episodes/-/comments/215256`,
+      url: `/episodes/-/comments/215256`,
       method: 'put',
       payload: { content: 'new comment' },
     });
@@ -137,7 +137,7 @@ describe('edit ep comment', () => {
     await app.register(setup);
 
     const res = await app.inject({
-      url: `/subjects/-/episodes/-/comments/205402`,
+      url: `/episodes/-/comments/205402`,
       method: 'put',
       payload: { content: 'new comment again' },
     });
@@ -157,7 +157,7 @@ describe('edit ep comment', () => {
     await app.register(setup);
 
     const res = await app.inject({
-      url: `/subjects/-/episodes/-/comments/205402`,
+      url: `/episodes/-/comments/205402`,
       method: 'put',
       payload: { content: 'new comment again' },
     });
@@ -172,7 +172,7 @@ describe('delete ep comment', () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
-      url: '/subjects/-/episodes/-/comments/114514',
+      url: '/episodes/-/comments/114514',
       method: 'delete',
     });
 
@@ -190,7 +190,7 @@ describe('delete ep comment', () => {
     });
     await app.register(setup);
     const res = await app.inject({
-      url: '/subjects/-/episodes/-/comments/205402',
+      url: '/episodes/-/comments/205402',
       method: 'delete',
     });
 
@@ -210,7 +210,7 @@ describe('delete ep comment', () => {
 
     const res = await app.inject({
       method: 'delete',
-      url: '/subjects/-/episodes/-/comments/205402',
+      url: '/episodes/-/comments/205402',
     });
     expect(res.json()).toMatchSnapshot();
     expect(res.statusCode).toBe(200);

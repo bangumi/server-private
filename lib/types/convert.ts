@@ -610,7 +610,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
   };
 }
 
-export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
+export function toIndex(index: orm.IIndex): res.IIndex {
   return {
     id: index.id,
     type: index.type,
@@ -622,7 +622,6 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     stats: toIndexStats(index.stats),
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
-    creator: toSlimUser(user),
   };
 }
 

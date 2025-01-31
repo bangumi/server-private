@@ -20,13 +20,36 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  // tmp backward compatibility
+  app.get('/subjects/-/episode/:episodeID', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}`, 307);
+  });
+  app.get('/subjects/-/episodes/:episodeID', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}`, 307);
+  });
+  app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
+  });
+  app.get('/subjects/-/episodes/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
+  });
+
   app.get(
-    '/subjects/-/episodes/:episodeID',
+    '/episodes/:episodeID',
     {
       schema: {
         operationId: 'getSubjectEpisode',
         summary: '获取剧集信息',
         tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
@@ -35,23 +58,21 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<res.IEpisode> => {
+    async ({ auth, params: { episodeID } }): Promise<res.IEpisode> => {
       const ep = await fetcher.fetchEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
+      }
+      if (auth.login) {
+        const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, ep.subjectID);
+        ep.status = epStatus[episodeID]?.type;
       }
       return ep;
     },
   );
 
-  app.get('/subjects/-/episode/:episodeID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}`, 307);
-  });
-
   app.get(
-    '/subjects/-/episodes/:episodeID/comments',
+    '/episodes/:episodeID/comments',
     {
       schema: {
         operationId: 'getSubjectEpisodeComments',
@@ -102,14 +123,8 @@ export async function setup(app: App) {
     },
   );
 
-  app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}/comments`, 307);
-  });
-
   app.post(
-    '/subjects/-/episodes/:episodeID/comments',
+    '/episodes/:episodeID/comments',
     {
       schema: {
         operationId: 'createSubjectEpComment',
@@ -179,14 +194,8 @@ export async function setup(app: App) {
     },
   );
 
-  app.post('/subjects/-/episode/:episodeID/comments', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}/comments`, 307);
-  });
-
   app.put(
-    '/subjects/-/episodes/-/comments/:commentID',
+    '/episodes/-/comments/:commentID',
     {
       schema: {
         operationId: 'updateSubjectEpComment',
@@ -236,14 +245,8 @@ export async function setup(app: App) {
     },
   );
 
-  app.put('/subjects/-/episode/-/comments/:commentID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const commentID = params.commentID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/-/comments/${commentID}`, 307);
-  });
-
   app.delete(
-    '/subjects/-/episodes/-/comments/:commentID',
+    '/episodes/-/comments/:commentID',
     {
       schema: {
         operationId: 'deleteSubjectEpComment',
@@ -281,10 +284,4 @@ export async function setup(app: App) {
       return {};
     },
   );
-
-  app.delete('/subjects/-/episode/-/comments/:commentID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const commentID = params.commentID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/-/comments/${commentID}`, 307);
-  });
 }
