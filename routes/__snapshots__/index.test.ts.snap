@@ -645,7 +645,6 @@ exports[`should build private api spec 1`] = `
         - title
         - icon
         - creatorID
-        - creator
         - topics
         - posts
         - members
