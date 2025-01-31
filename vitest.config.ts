@@ -11,13 +11,16 @@ export default defineConfig({
     extensions: ['.js', '.ts'],
   },
   test: {
-    reporters: isCI ? ['basic', 'github-actions'] : 'basic',
+    reporters: isCI
+      ? [['default' as const, { summary: false }], 'github-actions']
+      : [['default' as const, { summary: false }]],
     watch: false,
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
     snapshotFormat: {
       printBasicPrototype: true,
     },
+    ui: false,
     isolate: false,
     fileParallelism: false,
     coverage: {
