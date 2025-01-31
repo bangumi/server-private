@@ -12,6 +12,7 @@ import {
   NotFoundError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
+import { fetchSubjectCollectReactions } from '@app/lib/like';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
@@ -691,6 +692,11 @@ export async function setup(app: App) {
       const comments = data.map((d) =>
         convert.toSubjectComment(d.chii_subject_interests, d.chii_members),
       );
+      const collectIDs = comments.map((c) => c.id);
+      const reactions = await fetchSubjectCollectReactions(collectIDs);
+      for (const comment of comments) {
+        comment.reactions = reactions[comment.id];
+      }
       return {
         data: comments,
         total: count,
@@ -837,12 +843,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a topic')],
     },
-    async ({
-      auth,
-      body: { title, content, 'cf-turnstile-response': cfCaptchaResponse },
-      params: { subjectID },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
+    async ({ auth, body: { title, content, turnstileToken }, params: { subjectID } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {
@@ -989,6 +991,9 @@ export async function setup(app: App) {
           topicID: t.Integer({ examples: [371602], minimum: 0 }),
         }),
         body: req.UpdateTopic,
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('updating a topic')],
     },
@@ -1052,6 +1057,9 @@ export async function setup(app: App) {
           postID: t.Integer(),
         }),
         body: req.Ref(req.UpdatePost),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('editing a post')],
     },
@@ -1125,6 +1133,9 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('deleting a post')],
     },
@@ -1169,12 +1180,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a reply')],
     },
-    async ({
-      auth,
-      params: { topicID },
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, params: { topicID }, body: { turnstileToken, content, replyTo = 0 } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {

@@ -10,6 +10,7 @@ export function addSchemas(app: App) {
 
   app.addSchema(req.CreateEpisodeComment);
   app.addSchema(req.CreatePost);
+  app.addSchema(req.CreateTimelineSay);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
@@ -41,7 +42,11 @@ export function addSchemas(app: App) {
   app.addSchema(res.PersonRelation);
   app.addSchema(res.PersonWork);
   app.addSchema(res.Reaction);
+  app.addSchema(res.Permissions);
+  app.addSchema(res.Profile);
   app.addSchema(res.Reply);
+  app.addSchema(res.SubReply);
+  app.addSchema(res.SimpleUser);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.SlimGroup);

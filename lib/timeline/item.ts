@@ -4,13 +4,14 @@ import * as lo from 'lodash-es';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
+import { fetchSubjectCollectReactions } from '@app/lib/like.ts';
 import redis from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
 
 import { getItemCacheKey } from './cache.ts';
 import type * as memo from './memo';
-import { TimelineCat } from './type';
+import { TimelineCat, TimelineStatusType } from './type';
 
 export async function parseTimelineMemo(
   cat: TimelineCat,
@@ -107,6 +108,7 @@ export async function parseTimelineMemo(
             subject,
             comment: lo.unescape(v.collect_comment),
             rate: v.collect_rate,
+            collectID: v.collect_id,
           });
         }
       } else {
@@ -117,6 +119,7 @@ export async function parseTimelineMemo(
             subject,
             comment: lo.unescape(info.collect_comment),
             rate: info.collect_rate,
+            collectID: info.collect_id,
           });
         }
       }
@@ -175,21 +178,21 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Status: {
       switch (type) {
-        case 0: {
+        case TimelineStatusType.Sign: {
           return {
             status: {
               sign: lo.unescape(data),
             },
           };
         }
-        case 1: {
+        case TimelineStatusType.Tsukkomi: {
           return {
             status: {
               tsukkomi: lo.unescape(data),
             },
           };
         }
-        case 2: {
+        case TimelineStatusType.Nickname: {
           const info = php.parse(data) as memo.Nickname;
           return {
             status: {
@@ -311,6 +314,39 @@ export async function fetchTimelineByIDs(
       result[d.id] = item;
       await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));
     }
+  }
+
+  const collectIDs: Record<number, number> = {};
+  for (const [tid, item] of Object.entries(result)) {
+    if (item.cat !== TimelineCat.Subject) {
+      continue;
+    }
+    if (item.batch) {
+      continue;
+    }
+    const subject = item.memo.subject?.[0];
+    if (!subject) {
+      continue;
+    }
+    if (subject.comment && subject.collectID) {
+      collectIDs[Number(tid)] = subject.collectID;
+    }
+  }
+  const collectReactions = await fetchSubjectCollectReactions(Object.values(collectIDs));
+  for (const [tid, collectID] of Object.entries(collectIDs)) {
+    const reactions = collectReactions[collectID];
+    if (!reactions) {
+      continue;
+    }
+    const item = result[Number(tid)];
+    if (!item) {
+      continue;
+    }
+    const subject = item.memo.subject?.[0];
+    if (!subject) {
+      continue;
+    }
+    subject.reactions = reactions;
   }
   return result;
 }

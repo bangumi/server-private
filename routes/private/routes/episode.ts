@@ -46,8 +46,8 @@ export async function setup(app: App) {
     '/episodes/:episodeID',
     {
       schema: {
-        summary: '获取剧集信息',
         operationId: 'getSubjectEpisode',
+        summary: '获取剧集信息',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -75,9 +75,9 @@ export async function setup(app: App) {
     '/episodes/:episodeID/comments',
     {
       schema: {
+        operationId: 'getSubjectEpisodeComments',
         summary: '获取条目的剧集吐槽箱',
         tags: [Tag.Episode],
-        operationId: 'getSubjectEpisodeComments',
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
         }),
@@ -96,8 +96,8 @@ export async function setup(app: App) {
         .from(schema.chiiEpComments)
         .where(op.eq(schema.chiiEpComments.mid, episodeID));
 
-      const userIDs = new Set(data.map((v) => v.uid));
-      const users = await fetcher.fetchSlimUsersByIDs([...userIDs]);
+      const uids = data.map((v) => v.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
 
       const comments: res.IEpisodeComment[] = [];
       const replies: Record<number, res.IEpisodeCommentBase[]> = {};
@@ -127,19 +127,19 @@ export async function setup(app: App) {
     '/episodes/:episodeID/comments',
     {
       schema: {
-        summary: '创建条目的剧集吐槽',
         operationId: 'createSubjectEpComment',
+        summary: '创建条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
-        tags: [Tag.Episode],
+        body: req.Ref(req.CreateEpisodeComment),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new reply id' }),
           }),
         },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: req.Ref(req.CreateEpisodeComment),
       },
       preHandler: [requireLogin('creating a comment')],
     },
@@ -149,12 +149,8 @@ export async function setup(app: App) {
      * @param relatedID - 子吐槽的父吐槽ID，默认为 `0` 代表发送顶层吐槽
      * @param episodeID - 剧集 ID
      */
-    async ({
-      auth,
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-      params: { episodeID },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, body: { turnstileToken, content, replyTo = 0 }, params: { episodeID } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (!Dam.allCharacterPrintable(content)) {
@@ -202,14 +198,17 @@ export async function setup(app: App) {
     '/episodes/-/comments/:commentID',
     {
       schema: {
-        summary: '编辑条目的剧集吐槽',
         operationId: 'updateSubjectEpComment',
+        summary: '编辑条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           commentID: t.Integer({ examples: [1075440] }),
         }),
-        tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: req.Ref(req.UpdateEpisodeComment),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('edit a comment')],
     },
@@ -250,13 +249,16 @@ export async function setup(app: App) {
     '/episodes/-/comments/:commentID',
     {
       schema: {
-        summary: '删除条目的剧集吐槽',
         operationId: 'deleteSubjectEpComment',
+        summary: '删除条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           commentID: t.Integer({ examples: [1034989] }),
         }),
-        tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('delete a comment')],
     },

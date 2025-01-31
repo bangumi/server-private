@@ -164,6 +164,16 @@ export const UserStats = t.Object(
   { $id: 'UserStats', title: 'UserStats' },
 );
 
+export type ISimpleUser = Static<typeof SimpleUser>;
+export const SimpleUser = t.Object(
+  {
+    id: t.Integer(),
+    username: t.String(),
+    nickname: t.String(),
+  },
+  { $id: 'SimpleUser', title: 'SimpleUser' },
+);
+
 export type ISlimUser = Static<typeof SlimUser>;
 export const SlimUser = t.Object(
   {
@@ -185,7 +195,6 @@ export const User = t.Object(
     nickname: t.String({ examples: ['Sai🖖'] }),
     avatar: Ref(Avatar),
     group: t.Integer(),
-    user_group: t.Integer({ description: 'deprecated, use group instead' }),
     joinedAt: t.Integer(),
     sign: t.String(),
     site: t.String(),
@@ -196,6 +205,33 @@ export const User = t.Object(
     stats: Ref(UserStats),
   },
   { $id: 'User', title: 'User' },
+);
+
+export type IPermissions = Static<typeof Permissions>;
+export const Permissions = t.Object(
+  {
+    subjectWikiEdit: t.Boolean(),
+  },
+  { $id: 'Permissions', title: 'Permissions' },
+);
+
+export type IProfile = Static<typeof Profile>;
+export const Profile = t.Object(
+  {
+    id: t.Integer(),
+    username: t.String(),
+    nickname: t.String(),
+    avatar: Ref(Avatar),
+    sign: t.String(),
+    group: t.Integer(),
+    joinedAt: t.Integer(),
+    site: t.String(),
+    location: t.String(),
+    bio: t.String(),
+    friendIDs: t.Array(t.Integer()),
+    permissions: Ref(Permissions),
+  },
+  { $id: 'Profile', title: 'Profile' },
 );
 
 export type IFriend = Static<typeof Friend>;
@@ -212,8 +248,7 @@ export const Friend = t.Object(
 export type IReaction = Static<typeof Reaction>;
 export const Reaction = t.Object(
   {
-    selected: t.Boolean(),
-    total: t.Integer(),
+    users: t.Array(Ref(SimpleUser)),
     value: t.Integer(),
   },
   { $id: 'Reaction', title: 'Reaction' },
@@ -597,11 +632,13 @@ export const BlogPhoto = t.Object(
 export type ISubjectComment = Static<typeof SubjectComment>;
 export const SubjectComment = t.Object(
   {
+    id: t.Integer(),
     user: Ref(SlimUser),
     type: Ref(CollectionType),
     rate: t.Integer(),
     comment: t.String(),
     updatedAt: t.Integer(),
+    reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   { $id: 'SubjectComment', title: 'SubjectComment' },
 );
@@ -927,6 +964,8 @@ export const TimelineMemo = t.Object(
           subject: Ref(SlimSubject),
           comment: t.String(),
           rate: t.Number(),
+          collectID: t.Optional(t.Integer()),
+          reactions: t.Optional(t.Array(Ref(Reaction))),
         }),
       ),
     ),

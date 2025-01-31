@@ -188,21 +188,17 @@ export async function setup(app: App) {
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
+        body: res.Ref(req.CreateTopic),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new topic id' }),
           }),
         },
-        body: res.Ref(req.CreateTopic),
       },
       preHandler: [requireLogin('creating a topic')],
     },
-    async ({
-      auth,
-      body: { title, content, 'cf-turnstile-response': cfCaptchaResponse },
-      params: { groupName },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
+    async ({ auth, body: { title, content, turnstileToken }, params: { groupName } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {
@@ -352,6 +348,9 @@ export async function setup(app: App) {
           topicID: t.Integer(),
         }),
         body: req.Ref(req.UpdateTopic),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('edit a topic')],
     },
@@ -422,6 +421,9 @@ export async function setup(app: App) {
           postID: t.Integer(),
         }),
         body: req.Ref(req.UpdatePost),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('edit a post')],
     },
@@ -495,6 +497,9 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('delete a post')],
     },
@@ -539,12 +544,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a reply')],
     },
-    async ({
-      auth,
-      params: { topicID },
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, params: { topicID }, body: { turnstileToken, content, replyTo = 0 } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {

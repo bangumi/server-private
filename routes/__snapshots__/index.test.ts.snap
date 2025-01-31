@@ -215,16 +215,6 @@ exports[`should build private api spec 1`] = `
         name: CollectionType
     CreateEpisodeComment:
       properties:
-        cf-turnstile-response:
-          description: >-
-            需要
-            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
-          minLength: 1
-          type: string
         content:
           minLength: 1
           type: string
@@ -232,13 +222,7 @@ exports[`should build private api spec 1`] = `
           default: 0
           description: 被回复的吐槽 ID, \`0\` 代表发送顶层吐槽
           type: integer
-      required:
-        - content
-        - cf-turnstile-response
-      type: object
-    CreatePost:
-      properties:
-        cf-turnstile-response:
+        turnstileToken:
           description: >-
             需要
             [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
@@ -248,6 +232,12 @@ exports[`should build private api spec 1`] = `
             dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           minLength: 1
           type: string
+      required:
+        - content
+        - turnstileToken
+      type: object
+    CreatePost:
+      properties:
         content:
           minLength: 1
           type: string
@@ -255,17 +245,53 @@ exports[`should build private api spec 1`] = `
           default: 0
           description: 被回复的帖子 ID, \`0\` 代表回复楼主
           type: integer
+        turnstileToken:
+          description: >-
+            需要
+            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+          minLength: 1
+          type: string
       required:
         - content
-        - cf-turnstile-response
+        - turnstileToken
+      type: object
+    CreateTimelineSay:
+      properties:
+        content:
+          minLength: 1
+          type: string
+        turnstileToken:
+          description: >-
+            需要
+            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
+
+            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
+
+            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
+          minLength: 1
+          type: string
+      required:
+        - content
+        - turnstileToken
       type: object
     CreateTopic:
       example:
-        cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
         content: topic content
         title: topic title
+        turnstileToken: 10000000-aaaa-bbbb-cccc-000000000001
       properties:
-        cf-turnstile-response:
+        content:
+          description: bbcode
+          minLength: 1
+          type: string
+        title:
+          minLength: 1
+          type: string
+        turnstileToken:
           description: >-
             需要
             [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
@@ -274,59 +300,10 @@ exports[`should build private api spec 1`] = `
 
             dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
           type: string
-        content:
-          description: bbcode
-          minLength: 1
-          type: string
-        title:
-          minLength: 1
-          type: string
       required:
         - title
         - content
-        - cf-turnstile-response
-      type: object
-    CurrentUser:
-      allOf:
-        - properties:
-            avatar:
-              $ref: '#/components/schemas/Avatar'
-            id:
-              examples:
-                - 1
-              type: integer
-            joinedAt:
-              type: integer
-            nickname:
-              examples:
-                - Sai🖖
-              type: string
-            sign:
-              type: string
-            username:
-              examples:
-                - sai
-              type: string
-          required:
-            - id
-            - username
-            - nickname
-            - avatar
-            - sign
-            - joinedAt
-          title: SlimUser
-          type: object
-        - properties:
-            permission:
-              properties:
-                subjectWikiEdit:
-                  type: boolean
-              required:
-                - subjectWikiEdit
-              type: object
-          required:
-            - permission
-          type: object
+        - turnstileToken
       type: object
     Episode:
       properties:
@@ -791,23 +768,23 @@ exports[`should build private api spec 1`] = `
       type: object
     LoginRequestBody:
       example:
-        cf-turnstile-response: 10000000-aaaa-bbbb-cccc-000000000001
         email: treeholechan@gmail.com
         password: lovemeplease
+        turnstileToken: 10000000-aaaa-bbbb-cccc-000000000001
       properties:
-        cf-turnstile-response:
-          minLength: 1
-          type: string
         email:
           minLength: 1
           type: string
         password:
           minLength: 1
           type: string
+        turnstileToken:
+          minLength: 1
+          type: string
       required:
         - email
         - password
-        - cf-turnstile-response
+        - turnstileToken
       type: object
     Notice:
       properties:
@@ -863,12 +840,13 @@ exports[`should build private api spec 1`] = `
         - createdAt
         - unread
       type: object
-    Permission:
+    Permissions:
       properties:
         subjectWikiEdit:
           type: boolean
       required:
         - subjectWikiEdit
+      title: Permissions
       type: object
     Person:
       properties:
@@ -1000,17 +978,59 @@ exports[`should build private api spec 1`] = `
         - subject
         - positions
       type: object
+    Profile:
+      properties:
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+        bio:
+          type: string
+        friendIDs:
+          items:
+            type: integer
+          type: array
+        group:
+          type: integer
+        id:
+          type: integer
+        joinedAt:
+          type: integer
+        location:
+          type: string
+        nickname:
+          type: string
+        permissions:
+          $ref: '#/components/schemas/Permissions'
+        sign:
+          type: string
+        site:
+          type: string
+        username:
+          type: string
+      required:
+        - id
+        - username
+        - nickname
+        - avatar
+        - sign
+        - group
+        - joinedAt
+        - site
+        - location
+        - bio
+        - friendIDs
+        - permissions
+      title: Profile
+      type: object
     Reaction:
       properties:
-        selected:
-          type: boolean
-        total:
-          type: integer
+        users:
+          items:
+            $ref: '#/components/schemas/SimpleUser'
+          type: array
         value:
           type: integer
       required:
-        - selected
-        - total
+        - users
         - value
       title: Reaction
       type: object
@@ -1075,6 +1095,20 @@ exports[`should build private api spec 1`] = `
         - state
         - reactions
       title: Reply
+      type: object
+    SimpleUser:
+      properties:
+        id:
+          type: integer
+        nickname:
+          type: string
+        username:
+          type: string
+      required:
+        - id
+        - username
+        - nickname
+      title: SimpleUser
       type: object
     SlimBlogEntry:
       properties:
@@ -1562,8 +1596,14 @@ exports[`should build private api spec 1`] = `
       properties:
         comment:
           type: string
+        id:
+          type: integer
         rate:
           type: integer
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
         type:
           $ref: '#/components/schemas/CollectionType'
         updatedAt:
@@ -1571,6 +1611,7 @@ exports[`should build private api spec 1`] = `
         user:
           $ref: '#/components/schemas/SlimUser'
       required:
+        - id
         - user
         - type
         - rate
@@ -2143,10 +2184,16 @@ exports[`should build private api spec 1`] = `
         subject:
           items:
             properties:
+              collectID:
+                type: integer
               comment:
                 type: string
               rate:
                 type: number
+              reactions:
+                items:
+                  $ref: '#/components/schemas/Reaction'
+                type: array
               subject:
                 $ref: '#/components/schemas/SlimSubject'
             required:
@@ -2355,9 +2402,6 @@ exports[`should build private api spec 1`] = `
           type: string
         stats:
           $ref: '#/components/schemas/UserStats'
-        user_group:
-          description: deprecated, use group instead
-          type: integer
         username:
           example: sai
           type: string
@@ -2367,7 +2411,6 @@ exports[`should build private api spec 1`] = `
         - nickname
         - avatar
         - group
-        - user_group
         - joinedAt
         - sign
         - site
@@ -3564,6 +3607,13 @@ paths:
           schema:
             type: integer
       responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:
@@ -3591,6 +3641,13 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdatePost'
       responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:
@@ -3648,6 +3705,13 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateTopic'
       responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:
@@ -4033,7 +4097,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CurrentUser'
+                $ref: '#/components/schemas/Profile'
           description: Default Response
         '401':
           content:
@@ -4514,6 +4578,99 @@ paths:
       responses:
         '200':
           description: Default Response
+  /p1/subjects/-/episodes/-/comments/{commentID}:
+    delete:
+      operationId: deleteSubjectEpComment
+      parameters:
+        - example: 1034989
+          in: path
+          name: commentID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 删除条目的剧集吐槽
+      tags:
+        - episode
+    put:
+      operationId: updateSubjectEpComment
+      parameters:
+        - example: 1075440
+          in: path
+          name: commentID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEpisodeComment'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 编辑条目的剧集吐槽
+      tags:
+        - episode
+  /p1/subjects/-/episodes/{episodeID}:
+    get:
+      operationId: getSubjectEpisode
+      parameters:
+        - example: 1075440
+          in: path
+          name: episodeID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Episode'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      summary: 获取剧集信息
+      tags:
+        - episode
   /p1/subjects/-/episodes/{episodeID}/comments:
     get:
       parameters:
@@ -4535,6 +4692,13 @@ paths:
           schema:
             type: integer
       responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:
@@ -4562,6 +4726,13 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdatePost'
       responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:
@@ -4632,6 +4803,13 @@ paths:
               type: object
         required: true
       responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:
@@ -5346,6 +5524,38 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取时间线
+      tags:
+        - timeline
+    post:
+      operationId: createTimelineSay
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTimelineSay'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  id:
+                    type: integer
+                required:
+                  - id
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 发送时间线吐槽
       tags:
         - timeline
   /p1/trending/subjects:

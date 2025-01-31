@@ -98,7 +98,6 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     nickname: user.nickname,
     avatar: avatar(user.avatar),
     group: user.groupid,
-    user_group: user.groupid,
     joinedAt: user.regdate,
     sign: user.sign,
     site: fields.site,
@@ -406,6 +405,7 @@ export function toSubjectComment(
   user: orm.IUser,
 ): res.ISubjectComment {
   return {
+    id: interest.id,
     user: toSlimUser(user),
     type: interest.type,
     rate: interest.rate,

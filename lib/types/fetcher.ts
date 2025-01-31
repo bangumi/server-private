@@ -88,6 +88,22 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   return result;
 }
 
+export async function fetchSimpleUsersByIDs(
+  ids: number[],
+): Promise<Record<number, res.ISimpleUser>> {
+  const slims = await fetchSlimUsersByIDs(ids);
+  return Object.fromEntries(
+    Object.entries(slims).map(([id, slim]) => [
+      id,
+      {
+        id: slim.id,
+        username: slim.username,
+        nickname: slim.nickname,
+      },
+    ]),
+  );
+}
+
 export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
   const data = await db
     .select({ fid: schema.chiiFriends.fid })
