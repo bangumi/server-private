@@ -52,7 +52,7 @@ describe('timeline status', () => {
     await app.register(setup);
     const res = await app.inject({
       method: 'post',
-      url: '/timeline/say',
+      url: '/timeline',
       body: { content: '^_^\n(bgm38)>_<', 'cf-turnstile-response': 'fake' },
     });
     expect(res.statusCode).toBe(200);

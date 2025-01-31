@@ -5109,7 +5109,6 @@ paths:
       summary: 获取时间线
       tags:
         - timeline
-  /p1/timeline/say:
     post:
       operationId: createTimelineSay
       requestBody:

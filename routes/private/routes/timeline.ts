@@ -78,7 +78,7 @@ export async function setup(app: App) {
   );
 
   app.post(
-    '/timeline/say',
+    '/timeline',
     {
       schema: {
         summary: '发送时间线吐槽',
