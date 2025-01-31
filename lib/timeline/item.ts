@@ -11,7 +11,7 @@ import type * as res from '@app/lib/types/res.ts';
 
 import { getItemCacheKey } from './cache.ts';
 import type * as memo from './memo';
-import { TimelineCat } from './type';
+import { TimelineCat, TimelineStatusType } from './type';
 
 export async function parseTimelineMemo(
   cat: TimelineCat,
@@ -181,21 +181,21 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Status: {
       switch (type) {
-        case 0: {
+        case TimelineStatusType.Sign: {
           return {
             status: {
               sign: lo.unescape(data),
             },
           };
         }
-        case 1: {
+        case TimelineStatusType.Tsukkomi: {
           return {
             status: {
               tsukkomi: lo.unescape(data),
             },
           };
         }
-        case 2: {
+        case TimelineStatusType.Nickname: {
           const info = php.parse(data) as memo.Nickname;
           return {
             status: {
