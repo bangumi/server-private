@@ -113,7 +113,7 @@ exports[`should build private api spec 1`] = `
       type: object
     Character:
       properties:
-        collectAt:
+        collectedAt:
           type: integer
         collects:
           type: integer
@@ -694,7 +694,7 @@ exports[`should build private api spec 1`] = `
       type: object
     Index:
       properties:
-        collectAt:
+        collectedAt:
           type: integer
         collects:
           type: integer
@@ -878,7 +878,7 @@ exports[`should build private api spec 1`] = `
           items:
             type: string
           type: array
-        collectAt:
+        collectedAt:
           type: integer
         collects:
           type: integer

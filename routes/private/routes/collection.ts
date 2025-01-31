@@ -146,7 +146,7 @@ export async function setup(app: App) {
         const character = convert.toCharacter(d.chii_characters);
         return {
           ...character,
-          collectAt: d.chii_person_collects.createdAt,
+          collectedAt: d.chii_person_collects.createdAt,
         };
       });
 
@@ -204,7 +204,7 @@ export async function setup(app: App) {
         const person = convert.toPerson(d.chii_persons);
         return {
           ...person,
-          collectAt: d.chii_person_collects.createdAt,
+          collectedAt: d.chii_person_collects.createdAt,
         };
       });
 
@@ -259,7 +259,7 @@ export async function setup(app: App) {
         const index = convert.toIndex(d.chii_index);
         return {
           ...index,
-          collectAt: d.chii_index_collects.createdAt,
+          collectedAt: d.chii_index_collects.createdAt,
         };
       });
 

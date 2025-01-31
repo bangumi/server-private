@@ -469,7 +469,7 @@ export const Character = t.Object(
     lock: t.Boolean(),
     redirect: t.Integer(),
     nsfw: t.Boolean(),
-    collectAt: t.Optional(t.Integer()),
+    collectedAt: t.Optional(t.Integer()),
   },
   {
     $id: 'Character',
@@ -516,7 +516,7 @@ export const Person = t.Object(
     lock: t.Boolean(),
     redirect: t.Integer(),
     nsfw: t.Boolean(),
-    collectAt: t.Optional(t.Integer()),
+    collectedAt: t.Optional(t.Integer()),
   },
   {
     $id: 'Person',
@@ -779,7 +779,7 @@ export const Index = t.Object(
     stats: Ref(IndexStats),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
-    collectAt: t.Optional(t.Integer()),
+    collectedAt: t.Optional(t.Integer()),
   },
   { $id: 'Index', title: 'Index' },
 );
