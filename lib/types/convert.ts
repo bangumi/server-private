@@ -406,6 +406,7 @@ export function toSubjectComment(
   user: orm.IUser,
 ): res.ISubjectComment {
   return {
+    id: interest.id,
     user: toSlimUser(user),
     type: interest.type,
     rate: interest.rate,

@@ -27,6 +27,7 @@ export interface Subject {
   subject_name: string;
   subject_name_cn: string;
   subject_series: string;
+  collect_id: number;
   collect_comment: string;
   collect_rate: number;
 }

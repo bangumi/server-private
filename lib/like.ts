@@ -2,24 +2,20 @@ import * as lo from 'lodash-es';
 
 import { db, op } from '@app/drizzle/db.ts';
 import { chiiLikes } from '@app/drizzle/schema.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
+import type * as res from '@app/lib/types/res.ts';
 
-export interface Reaction {
-  selected: boolean;
-  total: number;
-  value: number;
+export enum LikeType {
+  SubjectCover = 1,
+
+  GroupTopic = 7,
+  GroupReply = 8,
+
+  SubjectReply = 10,
+  EpReply = 11,
+
+  SubjectCollect = 40,
 }
-
-export const LikeType = {
-  subject_cover: 1,
-
-  group_topic: 7,
-  group_reply: 8,
-
-  subject_reply: 10,
-  ep_reply: 11,
-
-  subject_collect: 40,
-} as const;
 
 export const LIKE_REACTIONS_ALLOWED: ReadonlySet<number> = Object.freeze(
   new Set([
@@ -53,22 +49,57 @@ export const LIKE_REACTIONS_ALLOWED: ReadonlySet<number> = Object.freeze(
 );
 
 export async function fetchTopicReactions(
-  id: number,
-  uid: number,
-): Promise<Record<number, Reaction[]>> {
-  const data = await db.select().from(chiiLikes).where(op.eq(chiiLikes.mainID, id));
+  topicID: number,
+  type: LikeType,
+): Promise<Record<number, res.IReaction[]>> {
+  const data = await db
+    .select()
+    .from(chiiLikes)
+    .where(op.and(op.eq(chiiLikes.mainID, topicID), op.eq(chiiLikes.type, type)));
 
+  const uids = data.map((x) => x.uid);
+  const users = await fetcher.fetchSimpleUsersByIDs(uids);
   const r = lo.groupBy(data, (x) => x.relatedID);
 
-  return lo.mapValues(r, (v): Reaction[] => {
+  return lo.mapValues(r, (v): res.IReaction[] => {
     return Object.entries(
       lo.groupBy(v, (a) => {
         return a.value;
       }),
     ).map(([key, values]) => {
       return {
-        selected: values.some((x) => x.uid === uid),
-        total: values.length,
+        users: values.map((x) => users[x.uid]).filter((x) => x !== undefined),
+        value: Number(key),
+      };
+    });
+  });
+}
+
+export async function fetchSubjectCollectReactions(
+  collectIDs: number[],
+): Promise<Record<number, res.IReaction[]>> {
+  const data = await db
+    .select()
+    .from(chiiLikes)
+    .where(
+      op.and(
+        op.eq(chiiLikes.type, LikeType.SubjectCollect),
+        op.inArray(chiiLikes.relatedID, collectIDs),
+      ),
+    );
+
+  const uids = data.map((x) => x.uid);
+  const users = await fetcher.fetchSimpleUsersByIDs(uids);
+  const r = lo.groupBy(data, (x) => x.relatedID);
+
+  return lo.mapValues(r, (v): res.IReaction[] => {
+    return Object.entries(
+      lo.groupBy(v, (a) => {
+        return a.value;
+      }),
+    ).map(([key, values]) => {
+      return {
+        users: values.map((x) => users[x.uid]).filter((x) => x !== undefined),
         value: Number(key),
       };
     });

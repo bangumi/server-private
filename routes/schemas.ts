@@ -44,6 +44,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
   app.addSchema(res.SubReply);
+  app.addSchema(res.SimpleUser);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.SlimGroup);

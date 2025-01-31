@@ -335,7 +335,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
     .from(chiiLikes)
     .where(
       op.and(
-        op.eq(chiiLikes.type, LikeType.subject_cover),
+        op.eq(chiiLikes.type, LikeType.SubjectCover),
         op.inArray(
           chiiLikes.relatedID,
           images.map((x) => x.id),

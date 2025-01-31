@@ -158,6 +158,16 @@ export const UserStats = t.Object(
   { $id: 'UserStats', title: 'UserStats' },
 );
 
+export type ISimpleUser = Static<typeof SimpleUser>;
+export const SimpleUser = t.Object(
+  {
+    id: t.Integer(),
+    username: t.String(),
+    nickname: t.String(),
+  },
+  { $id: 'SimpleUser', title: 'SimpleUser' },
+);
+
 export type ISlimUser = Static<typeof SlimUser>;
 export const SlimUser = t.Object(
   {
@@ -206,8 +216,7 @@ export const Friend = t.Object(
 export type IReaction = Static<typeof Reaction>;
 export const Reaction = t.Object(
   {
-    selected: t.Boolean(),
-    total: t.Integer(),
+    users: t.Array(Ref(SimpleUser)),
     value: t.Integer(),
   },
   { $id: 'Reaction', title: 'Reaction' },
@@ -586,11 +595,13 @@ export const BlogPhoto = t.Object(
 export type ISubjectComment = Static<typeof SubjectComment>;
 export const SubjectComment = t.Object(
   {
+    id: t.Integer(),
     user: Ref(SlimUser),
     type: Ref(CollectionType),
     rate: t.Integer(),
     comment: t.String(),
     updatedAt: t.Integer(),
+    reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   { $id: 'SubjectComment', title: 'SubjectComment' },
 );
@@ -916,6 +927,8 @@ export const TimelineMemo = t.Object(
           subject: Ref(SlimSubject),
           comment: t.String(),
           rate: t.Number(),
+          collectID: t.Optional(t.Integer()),
+          reactions: t.Optional(t.Array(Ref(Reaction))),
         }),
       ),
     ),
