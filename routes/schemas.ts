@@ -8,6 +8,7 @@ export function addSchemas(app: App) {
   app.addSchema(common.EpisodeType);
   app.addSchema(common.SubjectType);
 
+  app.addSchema(req.CollectSubject);
   app.addSchema(req.CreateEpisodeComment);
   app.addSchema(req.CreatePost);
   app.addSchema(req.CreateTopic);
