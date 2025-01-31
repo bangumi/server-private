@@ -106,3 +106,12 @@ export const UpdateEpisodeComment = t.Object(
   },
   { $id: 'UpdateEpisodeComment' },
 );
+
+export type ICreateTimelineSay = Static<typeof CreateTimelineSay>;
+export const CreateTimelineSay = t.Object(
+  {
+    content: t.String({ minLength: 1 }),
+    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+  },
+  { $id: 'CreateTimelineSay' },
+);
