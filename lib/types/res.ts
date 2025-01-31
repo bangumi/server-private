@@ -595,11 +595,13 @@ export const BlogPhoto = t.Object(
 export type ISubjectComment = Static<typeof SubjectComment>;
 export const SubjectComment = t.Object(
   {
+    id: t.Integer(),
     user: Ref(SlimUser),
     type: Ref(CollectionType),
     rate: t.Integer(),
     comment: t.String(),
     updatedAt: t.Integer(),
+    reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   { $id: 'SubjectComment', title: 'SubjectComment' },
 );

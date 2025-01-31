@@ -12,6 +12,7 @@ import {
   NotFoundError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
+import { fetchSubjectCollectReactions } from '@app/lib/like';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
@@ -680,6 +681,11 @@ export async function setup(app: App) {
       const comments = data.map((d) =>
         convert.toSubjectComment(d.chii_subject_interests, d.chii_members),
       );
+      const collectIDs = comments.map((c) => c.id);
+      const reactions = await fetchSubjectCollectReactions(collectIDs);
+      for (const comment of comments) {
+        comment.reactions = reactions[comment.id];
+      }
       return {
         data: comments,
         total: count,

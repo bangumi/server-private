@@ -1586,8 +1586,14 @@ exports[`should build private api spec 1`] = `
       properties:
         comment:
           type: string
+        id:
+          type: integer
         rate:
           type: integer
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
         type:
           $ref: '#/components/schemas/CollectionType'
         updatedAt:
@@ -1595,6 +1601,7 @@ exports[`should build private api spec 1`] = `
         user:
           $ref: '#/components/schemas/SlimUser'
       required:
+        - id
         - user
         - type
         - rate
