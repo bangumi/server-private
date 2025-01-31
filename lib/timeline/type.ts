@@ -72,3 +72,9 @@ export enum TimelineCat {
    */
   Doujin = 9,
 }
+
+export enum TimelineStatusType {
+  Sign = 1,
+  Tsukkomi = 2,
+  Nickname = 3,
+}

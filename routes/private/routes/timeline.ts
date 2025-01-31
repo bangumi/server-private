@@ -11,7 +11,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
-import { TimelineCat, TimelineMode } from '@app/lib/timeline/type.ts';
+import { TimelineCat, TimelineMode, TimelineStatusType } from '@app/lib/timeline/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -112,7 +112,7 @@ export async function setup(app: App) {
       const [result] = await db.insert(schema.chiiTimeline).values({
         uid: auth.userID,
         cat: TimelineCat.Status,
-        type: 1,
+        type: TimelineStatusType.Tsukkomi,
         related: '',
         memo: text,
         img: '',
