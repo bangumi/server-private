@@ -14,6 +14,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher';
 import * as res from '@app/lib/types/res.ts';
 import { intval } from '@app/lib/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
@@ -67,10 +68,7 @@ export async function setup(app: App) {
       if (!u) {
         throw new UnexpectedNotFoundError(`user ${auth.userID}`);
       }
-      const friends = await db
-        .select({ fid: schema.chiiFriends.fid })
-        .from(schema.chiiFriends)
-        .where(op.eq(schema.chiiFriends.uid, auth.userID));
+      const friendIDs = await fetcher.fetchFriendIDsByUserID(auth.userID);
       return {
         id: u.chii_members.id,
         username: u.chii_members.username,
@@ -79,7 +77,7 @@ export async function setup(app: App) {
         sign: u.chii_members.sign,
         group: u.chii_members.groupid,
         joinedAt: u.chii_members.regdate,
-        friendIDs: friends.map((x) => x.fid),
+        friendIDs,
         site: u.chii_memberfields.site,
         location: u.chii_memberfields.location,
         bio: u.chii_memberfields.bio,
