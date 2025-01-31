@@ -984,6 +984,9 @@ export async function setup(app: App) {
           topicID: t.Integer({ examples: [371602], minimum: 0 }),
         }),
         body: req.UpdateTopic,
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('updating a topic')],
     },
@@ -1047,6 +1050,9 @@ export async function setup(app: App) {
           postID: t.Integer(),
         }),
         body: req.Ref(req.UpdatePost),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('editing a post')],
     },
@@ -1120,6 +1126,9 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('deleting a post')],
     },
