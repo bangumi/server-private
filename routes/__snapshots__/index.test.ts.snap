@@ -657,6 +657,7 @@ exports[`should build private api spec 1`] = `
                 $ref: '#/components/schemas/Reply'
               type: array
           required:
+            - creator
             - group
             - content
             - replies
@@ -1982,6 +1983,7 @@ exports[`should build private api spec 1`] = `
             subject:
               $ref: '#/components/schemas/SlimSubject'
           required:
+            - creator
             - subject
             - content
             - replies
