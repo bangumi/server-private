@@ -94,7 +94,7 @@ export async function setup(app: App) {
       }
 
       const conditions = [op.eq(schema.chiiGroupMembers.gid, group.id)];
-      if (moderator) {
+      if (moderator !== undefined) {
         conditions.push(op.eq(schema.chiiGroupMembers.moderator, moderator));
       }
 
