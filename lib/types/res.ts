@@ -460,7 +460,7 @@ export const EpisodeCommentBase = t.Object(
     content: t.String(),
     state: t.Integer(),
     user: Ref(SlimUser),
-    reactions: t.Array(Ref(Reaction)),
+    reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   {
     $id: 'EpisodeCommentBase',
@@ -881,26 +881,26 @@ export const GroupMember = t.Object(
   { $id: 'GroupMember', title: 'GroupMember' },
 );
 
-export type ISubReply = Static<typeof SubReply>;
-export const SubReply = t.Object(
+export type IReplyBase = Static<typeof ReplyBase>;
+export const ReplyBase = t.Object(
   {
     id: t.Integer(),
     creatorID: t.Integer(),
     creator: t.Optional(Ref(SlimUser)),
     createdAt: t.Integer(),
-    text: t.String(),
+    content: t.String(),
     state: t.Integer(),
-    reactions: t.Array(Ref(Reaction)),
+    reactions: t.Optional(t.Array(Ref(Reaction))),
   },
-  { $id: 'SubReply', title: 'SubReply' },
+  { $id: 'ReplyBase', title: 'ReplyBase' },
 );
 
 export type IReply = Static<typeof Reply>;
 export const Reply = t.Intersect(
   [
-    Ref(SubReply),
+    Ref(ReplyBase),
     t.Object({
-      replies: t.Array(Ref(SubReply)),
+      replies: t.Array(Ref(ReplyBase)),
     }),
   ],
   { $id: 'Reply', title: 'Reply' },

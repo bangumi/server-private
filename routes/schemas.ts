@@ -46,6 +46,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Profile);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
+  app.addSchema(res.ReplyBase);
   app.addSchema(res.SimpleUser);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
@@ -75,7 +76,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectStaffPositionType);
   app.addSchema(res.SubjectTag);
   app.addSchema(res.SubjectTopic);
-  app.addSchema(res.SubReply);
   app.addSchema(res.Timeline);
   app.addSchema(res.TimelineCat);
   app.addSchema(res.TimelineMemo);

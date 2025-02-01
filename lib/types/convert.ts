@@ -650,26 +650,13 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
   };
 }
 
-export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReply {
+export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReplyBase {
   return {
     id: reply.id,
-    text: reply.content,
+    content: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
-    replies: [],
-    reactions: [],
-  };
-}
-
-export function toSubjectTopicSubReply(reply: orm.ISubjectPost): res.ISubReply {
-  return {
-    id: reply.id,
-    text: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-    reactions: [],
   };
 }
 
@@ -735,22 +722,10 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
   };
 }
 
-export function toGroupTopicReply(reply: orm.IGroupPost): res.IReply {
+export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
   return {
     id: reply.id,
-    text: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-    replies: [],
-    reactions: [],
-  };
-}
-
-export function toGroupTopicSubReply(reply: orm.IGroupPost): res.ISubReply {
-  return {
-    id: reply.id,
-    text: reply.content,
+    content: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,

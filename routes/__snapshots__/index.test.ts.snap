@@ -398,7 +398,6 @@ exports[`should build private api spec 1`] = `
         - content
         - state
         - user
-        - reactions
       type: object
     EpisodeComments:
       allOf:
@@ -432,7 +431,6 @@ exports[`should build private api spec 1`] = `
             - content
             - state
             - user
-            - reactions
           type: object
         - properties:
             replies:
@@ -1084,16 +1082,42 @@ exports[`should build private api spec 1`] = `
       type: object
     Reply:
       allOf:
-        - $ref: '#/components/schemas/SubReply'
+        - $ref: '#/components/schemas/ReplyBase'
         - properties:
             replies:
               items:
-                $ref: '#/components/schemas/SubReply'
+                $ref: '#/components/schemas/ReplyBase'
               type: array
           required:
             - replies
           type: object
       title: Reply
+    ReplyBase:
+      properties:
+        content:
+          type: string
+        createdAt:
+          type: integer
+        creator:
+          $ref: '#/components/schemas/SlimUser'
+        creatorID:
+          type: integer
+        id:
+          type: integer
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
+        state:
+          type: integer
+      required:
+        - id
+        - creatorID
+        - createdAt
+        - content
+        - state
+      title: ReplyBase
+      type: object
     SimpleUser:
       properties:
         id:
@@ -1344,33 +1368,6 @@ exports[`should build private api spec 1`] = `
         - sign
         - joinedAt
       title: SlimUser
-      type: object
-    SubReply:
-      properties:
-        createdAt:
-          type: integer
-        creator:
-          $ref: '#/components/schemas/SlimUser'
-        creatorID:
-          type: integer
-        id:
-          type: integer
-        reactions:
-          items:
-            $ref: '#/components/schemas/Reaction'
-          type: array
-        state:
-          type: integer
-        text:
-          type: string
-      required:
-        - id
-        - creatorID
-        - createdAt
-        - text
-        - state
-        - reactions
-      title: SubReply
       type: object
     Subject:
       example:
@@ -3419,7 +3416,6 @@ paths:
                         - content
                         - state
                         - user
-                        - reactions
                       type: object
                     - properties:
                         replies:

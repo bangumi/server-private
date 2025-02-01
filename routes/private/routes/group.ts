@@ -302,27 +302,29 @@ export async function setup(app: App) {
       }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
-      const subReplies: Record<number, res.ISubReply[]> = {};
+      const subReplies: Record<number, res.IReplyBase[]> = {};
       const reactions = await fetchTopicReactions(topicID, LikeType.GroupReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        const sub = convert.toGroupTopicSubReply(x);
+        const sub = convert.toGroupTopicReply(x);
         sub.creator = users[sub.creatorID];
         sub.reactions = reactions[x.id] ?? [];
         const subR = subReplies[x.related] ?? [];
         subR.push(sub);
         subReplies[x.related] = subR;
       }
-      const topLevelReplies = [];
+      const topLevelReplies: res.IReply[] = [];
       for (const x of replies.filter((x) => x.related === 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        const reply = convert.toGroupTopicReply(x);
-        reply.replies = subReplies[reply.id] ?? [];
-        reply.reactions = reactions[reply.id] ?? [];
+        const reply = {
+          ...convert.toGroupTopicReply(x),
+          replies: subReplies[x.id] ?? [],
+          reactions: reactions[x.id] ?? [],
+        };
         topLevelReplies.push(reply);
       }
 
