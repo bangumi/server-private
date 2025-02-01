@@ -104,14 +104,12 @@ export async function setup(app: App) {
 
       for (const d of data) {
         const u = users[d.uid];
-        if (!u) {
-          continue;
-        }
+        const comment = convert.toEpisodeComment(d);
         if (d.related === 0) {
-          comments.push(convert.toEpisodeComment(d, u));
+          comments.push({ ...comment, replies: [], user: u });
         } else {
           const rs = replies[d.related] ?? [];
-          rs.push(convert.toEpisodeCommentBase(d, u));
+          rs.push({ ...comment, user: u });
           replies[d.related] = rs;
         }
       }

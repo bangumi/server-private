@@ -12,7 +12,7 @@ import {
   NotFoundError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
-import { fetchSubjectCollectReactions } from '@app/lib/like';
+import { fetchSubjectCollectReactions, fetchTopicReactions, LikeType } from '@app/lib/like';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
@@ -911,7 +911,7 @@ export async function setup(app: App) {
           topicID: t.Integer(),
         }),
         response: {
-          200: res.Ref(res.TopicDetail),
+          200: res.Ref(res.SubjectTopic),
         },
       },
     },
@@ -945,37 +945,44 @@ export async function setup(app: App) {
       }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
-      const subReplies: Record<number, res.ISubReply[]> = {};
+      const subReplies: Record<number, res.IReplyBase[]> = {};
+      const reactions = await fetchTopicReactions(topicID, LikeType.SubjectReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        const sub = convert.toSubjectTopicSubReply(x);
+        const sub = convert.toSubjectTopicReply(x);
         sub.creator = users[sub.creatorID];
+        sub.reactions = reactions[x.id] ?? [];
         const subR = subReplies[x.related] ?? [];
         subR.push(sub);
         subReplies[x.related] = subR;
       }
-      const topLevelReplies = [];
+      const topLevelReplies: res.IReply[] = [];
       for (const x of replies.filter((x) => x.related === 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        const reply = convert.toSubjectTopicReply(x);
-        reply.replies = subReplies[reply.id] ?? [];
+        const reply = {
+          ...convert.toSubjectTopicReply(x),
+          replies: subReplies[x.id] ?? [],
+          reactions: reactions[x.id] ?? [],
+        };
         topLevelReplies.push(reply);
       }
       return {
         id: topic.id,
-        parent: subject,
+        parentID: subject.id,
+        subject,
+        creatorID: topic.uid,
         creator,
         title: topic.title,
         content: top.content,
         state: topic.state,
-        createdAt: topic.createdAt,
-        replies: topLevelReplies,
-        reactions: [],
         display: topic.display,
+        createdAt: topic.createdAt,
+        updatedAt: topic.updatedAt,
+        replies: topLevelReplies,
       };
     },
   );

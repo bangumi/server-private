@@ -457,10 +457,7 @@ export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
-export function toEpisodeCommentBase(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeCommentBase {
+export function toEpisodeComment(comment: orm.IEpisodeComment): res.IEpisodeCommentBase {
   return {
     id: comment.id,
     epID: comment.mid,
@@ -468,27 +465,7 @@ export function toEpisodeCommentBase(
     relatedID: comment.related,
     content: comment.content,
     createdAt: comment.createdAt,
-    user,
     state: comment.state,
-    reactions: [],
-  };
-}
-
-export function toEpisodeComment(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeComment {
-  return {
-    id: comment.id,
-    epID: comment.mid,
-    creatorID: comment.uid,
-    relatedID: comment.related,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    user,
-    state: comment.state,
-    reactions: [],
-    replies: [],
   };
 }
 
@@ -650,26 +627,13 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
   };
 }
 
-export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReply {
+export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReplyBase {
   return {
     id: reply.id,
-    text: reply.content,
+    content: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
-    replies: [],
-    reactions: [],
-  };
-}
-
-export function toSubjectTopicSubReply(reply: orm.ISubjectPost): res.ISubReply {
-  return {
-    id: reply.id,
-    text: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-    reactions: [],
   };
 }
 
@@ -735,25 +699,12 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
   };
 }
 
-export function toGroupTopicReply(reply: orm.IGroupPost): res.IReply {
+export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
   return {
     id: reply.id,
-    text: reply.content,
+    content: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
-    replies: [],
-    reactions: [],
-  };
-}
-
-export function toGroupTopicSubReply(reply: orm.IGroupPost): res.ISubReply {
-  return {
-    id: reply.id,
-    text: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-    reactions: [],
   };
 }
