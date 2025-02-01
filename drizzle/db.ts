@@ -33,7 +33,6 @@ export const db = drizzle(poolConnection, {
       : undefined,
 });
 
-export * as schema from './schema.ts';
 export * as op from 'drizzle-orm';
 
 export type Txn = MySqlTransaction<
