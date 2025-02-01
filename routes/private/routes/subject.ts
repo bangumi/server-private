@@ -980,7 +980,6 @@ export async function setup(app: App) {
         content: top.content,
         state: topic.state,
         display: topic.display,
-        replyCount: topic.replies,
         createdAt: topic.createdAt,
         updatedAt: topic.updatedAt,
         replies: topLevelReplies,

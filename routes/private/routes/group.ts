@@ -340,7 +340,6 @@ export async function setup(app: App) {
         display: topic.display,
         createdAt: topic.createdAt,
         updatedAt: topic.updatedAt,
-        replyCount: topic.replies,
         replies: topLevelReplies,
       };
     },
