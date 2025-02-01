@@ -457,10 +457,7 @@ export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
-export function toEpisodeCommentBase(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeCommentBase {
+export function toEpisodeComment(comment: orm.IEpisodeComment): res.IEpisodeCommentBase {
   return {
     id: comment.id,
     epID: comment.mid,
@@ -468,27 +465,7 @@ export function toEpisodeCommentBase(
     relatedID: comment.related,
     content: comment.content,
     createdAt: comment.createdAt,
-    user,
     state: comment.state,
-    reactions: [],
-  };
-}
-
-export function toEpisodeComment(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeComment {
-  return {
-    id: comment.id,
-    epID: comment.mid,
-    creatorID: comment.uid,
-    relatedID: comment.related,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    user,
-    state: comment.state,
-    reactions: [],
-    replies: [],
   };
 }
 
@@ -644,7 +621,7 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
     parentID: topic.subjectID,
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
-    replyCount: topic.replies,
+    replies: topic.replies,
     state: topic.state,
     display: topic.display,
   };
@@ -716,7 +693,7 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
     parentID: topic.gid,
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
-    replyCount: topic.replies,
+    replies: topic.replies,
     state: topic.state,
     display: topic.display,
   };
@@ -729,6 +706,5 @@ export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
-    reactions: [],
   };
 }

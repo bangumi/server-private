@@ -459,7 +459,7 @@ export const EpisodeCommentBase = t.Object(
     createdAt: t.Integer(),
     content: t.String(),
     state: t.Integer(),
-    user: Ref(SlimUser),
+    user: t.Optional(Ref(SlimUser)),
     reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   {
@@ -906,28 +906,39 @@ export const Reply = t.Intersect(
   { $id: 'Reply', title: 'Reply' },
 );
 
-export type ITopic = Static<typeof Topic>;
-export const Topic = t.Object(
+export type ITopicBase = Static<typeof TopicBase>;
+export const TopicBase = t.Object(
   {
     id: t.Integer(),
-    creatorID: t.Integer(),
-    creator: t.Optional(Ref(SlimUser)),
     title: t.String(),
+    creatorID: t.Integer(),
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
     updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
-    replyCount: t.Integer(),
     state: t.Integer(),
     display: t.Integer(),
   },
+  { $id: 'TopicBase', title: 'TopicBase' },
+);
+
+export type ITopic = Static<typeof Topic>;
+export const Topic = t.Intersect(
+  [
+    Ref(TopicBase),
+    t.Object({
+      creator: t.Optional(Ref(SlimUser)),
+      replies: t.Integer(),
+    }),
+  ],
   { $id: 'Topic', title: 'Topic' },
 );
 
 export type IGroupTopic = Static<typeof GroupTopic>;
 export const GroupTopic = t.Intersect(
   [
-    Ref(Topic),
+    Ref(TopicBase),
     t.Object({
+      creator: t.Optional(Ref(SlimUser)),
       group: Ref(SlimGroup),
       content: t.String(),
       replies: t.Array(Ref(Reply)),
@@ -939,8 +950,9 @@ export const GroupTopic = t.Intersect(
 export type ISubjectTopic = Static<typeof SubjectTopic>;
 export const SubjectTopic = t.Intersect(
   [
-    Ref(Topic),
+    Ref(TopicBase),
     t.Object({
+      creator: t.Optional(Ref(SlimUser)),
       subject: Ref(SlimSubject),
       content: t.String(),
       replies: t.Array(Ref(Reply)),
