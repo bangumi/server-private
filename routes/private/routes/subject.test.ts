@@ -250,6 +250,14 @@ describe('subject topics', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get subject post', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject(`/subjects/-/posts/${testPostID}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should create/edit/delete new post', async () => {
     const app = createTestServer({
       auth: {

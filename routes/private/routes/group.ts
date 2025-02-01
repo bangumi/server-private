@@ -418,6 +418,62 @@ export async function setup(app: App) {
     },
   );
 
+  app.get(
+    '/groups/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'getGroupPost',
+        summary: '获取小组帖子回复详情',
+        tags: [Tag.Topic],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        response: {
+          200: res.Ref(res.Post),
+        },
+      },
+    },
+    async ({ params: { postID } }) => {
+      const [post] = await db
+        .select()
+        .from(schema.chiiGroupPosts)
+        .where(op.eq(schema.chiiGroupPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+      const creator = await fetcher.fetchSlimUserByID(post.uid);
+      if (!creator) {
+        throw new UnexpectedNotFoundError(`user ${post.uid}`);
+      }
+      const [topic] = await db
+        .select()
+        .from(schema.chiiGroupTopics)
+        .where(op.eq(schema.chiiGroupTopics.id, post.mid))
+        .limit(1);
+      if (!topic) {
+        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
+      }
+      const topicCreator = await fetcher.fetchSlimUserByID(topic.uid);
+      if (!topicCreator) {
+        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
+      }
+      return {
+        id: post.id,
+        creatorID: post.uid,
+        creator,
+        createdAt: post.createdAt,
+        content: post.content,
+        state: post.state,
+        topic: {
+          ...convert.toGroupTopic(topic),
+          creator: topicCreator,
+          replies: topic.replies,
+        },
+      };
+    },
+  );
+
   app.put(
     '/groups/-/posts/:postID',
     {

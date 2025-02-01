@@ -933,6 +933,20 @@ export const Topic = t.Intersect(
   { $id: 'Topic', title: 'Topic' },
 );
 
+export type IPost = Static<typeof Post>;
+export const Post = t.Object(
+  {
+    id: t.Integer(),
+    creatorID: t.Integer(),
+    creator: Ref(SlimUser),
+    createdAt: t.Integer(),
+    content: t.String(),
+    state: t.Integer(),
+    topic: Ref(Topic),
+  },
+  { $id: 'Post', title: 'Post' },
+);
+
 export type IGroupTopic = Static<typeof GroupTopic>;
 export const GroupTopic = t.Intersect(
   [
