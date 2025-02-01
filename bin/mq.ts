@@ -1,10 +1,13 @@
 import { KafkaJS } from '@confluentinc/kafka-javascript';
 
+import { handle as handleBlogEvent } from '@app/event/blog';
 import { handle as handleCharacterEvent } from '@app/event/character';
+import { handle as handleGroupEvent } from '@app/event/group';
+import { handle as handleIndexEvent } from '@app/event/index';
 import { handle as handlePersonEvent } from '@app/event/person';
 import {
   handle as handleSubjectEvent,
-  handleEpisode as handleSubjectEpisodeEvent,
+  handleEpisode as handleEpisodeEvent,
   handleFields as handleSubjectFieldsEvent,
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
@@ -15,44 +18,60 @@ import { logger } from '@app/lib/logger';
 
 const TOPICS = [
   // 'debezium.chii.bangumi.chii_pms',
+  // 'debezium.chii.bangumi.chii_subject_revisions',
+  'debezium.chii.bangumi.chii_blog_entry',
   'debezium.chii.bangumi.chii_characters',
-  'debezium.chii.bangumi.chii_persons',
+  'debezium.chii.bangumi.chii_episodes',
+  'debezium.chii.bangumi.chii_groups',
+  'debezium.chii.bangumi.chii_index',
   'debezium.chii.bangumi.chii_members',
+  'debezium.chii.bangumi.chii_persons',
   'debezium.chii.bangumi.chii_subject_fields',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_timeline',
-  'debezium.chii.bangumi.chii_episodes',
 ];
 
 async function onMessage(key: string, value: string) {
   const payload = JSON.parse(value) as Payload;
   switch (payload.source.table) {
-    case 'chii_timeline': {
-      await handleTimelineEvent(key, value);
-      break;
-    }
-    case 'chii_subjects': {
-      await handleSubjectEvent(key, value);
-      break;
-    }
-    case 'chii_subject_fields': {
-      await handleSubjectFieldsEvent(key, value);
-      break;
-    }
-    case 'chii_episodes': {
-      await handleSubjectEpisodeEvent(key, value);
+    case 'chii_blog_entry': {
+      await handleBlogEvent(key, value);
       break;
     }
     case 'chii_characters': {
       await handleCharacterEvent(key, value);
       break;
     }
-    case 'chii_persons': {
-      await handlePersonEvent(key, value);
+    case 'chii_episodes': {
+      await handleEpisodeEvent(key, value);
+      break;
+    }
+    case 'chii_groups': {
+      await handleGroupEvent(key, value);
+      break;
+    }
+    case 'chii_index': {
+      await handleIndexEvent(key, value);
       break;
     }
     case 'chii_members': {
       await handleUserEvent(key, value);
+      break;
+    }
+    case 'chii_persons': {
+      await handlePersonEvent(key, value);
+      break;
+    }
+    case 'chii_subject_fields': {
+      await handleSubjectFieldsEvent(key, value);
+      break;
+    }
+    case 'chii_subjects': {
+      await handleSubjectEvent(key, value);
+      break;
+    }
+    case 'chii_timeline': {
+      await handleTimelineEvent(key, value);
       break;
     }
     default: {
