@@ -938,7 +938,7 @@ export const GroupTopic = t.Intersect(
   [
     Ref(TopicBase),
     t.Object({
-      creator: t.Optional(Ref(SlimUser)),
+      creator: Ref(SlimUser),
       group: Ref(SlimGroup),
       content: t.String(),
       replies: t.Array(Ref(Reply)),
@@ -952,7 +952,7 @@ export const SubjectTopic = t.Intersect(
   [
     Ref(TopicBase),
     t.Object({
-      creator: t.Optional(Ref(SlimUser)),
+      creator: Ref(SlimUser),
       subject: Ref(SlimSubject),
       content: t.String(),
       replies: t.Array(Ref(Reply)),
