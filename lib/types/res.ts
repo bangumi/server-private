@@ -896,17 +896,13 @@ export const SubReply = t.Object(
 );
 
 export type IReply = Static<typeof Reply>;
-export const Reply = t.Object(
-  {
-    id: t.Integer(),
-    replies: t.Array(Ref(SubReply)),
-    creatorID: t.Integer(),
-    creator: t.Optional(Ref(SlimUser)),
-    createdAt: t.Integer(),
-    text: t.String(),
-    state: t.Integer(),
-    reactions: t.Array(Ref(Reaction)),
-  },
+export const Reply = t.Intersect(
+  [
+    Ref(SubReply),
+    t.Object({
+      replies: t.Array(Ref(SubReply)),
+    }),
+  ],
   { $id: 'Reply', title: 'Reply' },
 );
 

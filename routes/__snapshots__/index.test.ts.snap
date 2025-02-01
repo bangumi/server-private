@@ -1083,37 +1083,17 @@ exports[`should build private api spec 1`] = `
         - persons
       type: object
     Reply:
-      properties:
-        createdAt:
-          type: integer
-        creator:
-          $ref: '#/components/schemas/SlimUser'
-        creatorID:
-          type: integer
-        id:
-          type: integer
-        reactions:
-          items:
-            $ref: '#/components/schemas/Reaction'
-          type: array
-        replies:
-          items:
-            $ref: '#/components/schemas/SubReply'
-          type: array
-        state:
-          type: integer
-        text:
-          type: string
-      required:
-        - id
-        - replies
-        - creatorID
-        - createdAt
-        - text
-        - state
-        - reactions
+      allOf:
+        - $ref: '#/components/schemas/SubReply'
+        - properties:
+            replies:
+              items:
+                $ref: '#/components/schemas/SubReply'
+              type: array
+          required:
+            - replies
+          type: object
       title: Reply
-      type: object
     SimpleUser:
       properties:
         id:
