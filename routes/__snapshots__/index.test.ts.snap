@@ -646,6 +646,24 @@ exports[`should build private api spec 1`] = `
         - joinedAt
       title: GroupMember
       type: object
+    GroupTopic:
+      allOf:
+        - $ref: '#/components/schemas/Topic'
+        - properties:
+            content:
+              type: string
+            group:
+              $ref: '#/components/schemas/SlimGroup'
+            replies:
+              items:
+                $ref: '#/components/schemas/Reply'
+              type: array
+          required:
+            - group
+            - content
+            - replies
+          type: object
+      title: GroupTopic
     HistorySummary:
       properties:
         commitMessage:
@@ -1972,6 +1990,24 @@ exports[`should build private api spec 1`] = `
         - count
       title: SubjectTag
       type: object
+    SubjectTopic:
+      allOf:
+        - $ref: '#/components/schemas/Topic'
+        - properties:
+            content:
+              type: string
+            replies:
+              items:
+                $ref: '#/components/schemas/Reply'
+              type: array
+            subject:
+              $ref: '#/components/schemas/SlimSubject'
+          required:
+            - subject
+            - content
+            - replies
+          type: object
+      title: SubjectTopic
     SubjectType:
       description: |-
         条目类型
@@ -2252,7 +2288,7 @@ exports[`should build private api spec 1`] = `
         parentID:
           description: 小组/条目ID
           type: integer
-        replies:
+        replyCount:
           type: integer
         state:
           type: integer
@@ -2268,51 +2304,10 @@ exports[`should build private api spec 1`] = `
         - parentID
         - createdAt
         - updatedAt
-        - replies
+        - replyCount
         - state
         - display
       title: Topic
-      type: object
-    TopicDetail:
-      properties:
-        content:
-          type: string
-        createdAt:
-          type: integer
-        creator:
-          $ref: '#/components/schemas/SlimUser'
-        display:
-          type: integer
-        id:
-          type: integer
-        parent:
-          anyOf:
-            - $ref: '#/components/schemas/SlimGroup'
-            - $ref: '#/components/schemas/SlimSubject'
-        reactions:
-          items:
-            $ref: '#/components/schemas/Reaction'
-          type: array
-        replies:
-          items:
-            $ref: '#/components/schemas/Reply'
-          type: array
-        state:
-          type: integer
-        title:
-          type: string
-      required:
-        - id
-        - parent
-        - creator
-        - title
-        - content
-        - state
-        - createdAt
-        - replies
-        - reactions
-        - display
-      title: TopicDetail
       type: object
     TrendingSubject:
       properties:
@@ -3689,7 +3684,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TopicDetail'
+                $ref: '#/components/schemas/GroupTopic'
           description: Default Response
         '500':
           content:
@@ -4681,7 +4676,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TopicDetail'
+                $ref: '#/components/schemas/SubjectTopic'
           description: Default Response
         '500':
           content:

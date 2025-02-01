@@ -114,7 +114,7 @@ Object {
       "display": 1,
       "id": 100,
       "parentID": 4215,
-      "replies": 1,
+      "replyCount": 1,
       "state": 0,
       "title": "Test Topic",
       "updatedAt": 1462335911,

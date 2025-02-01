@@ -920,28 +920,37 @@ export const Topic = t.Object(
     parentID: t.Integer({ description: '小组/条目ID' }),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
     updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
-    replies: t.Integer(),
+    replyCount: t.Integer(),
     state: t.Integer(),
     display: t.Integer(),
   },
   { $id: 'Topic', title: 'Topic' },
 );
 
-export type ITopicDetail = Static<typeof TopicDetail>;
-export const TopicDetail = t.Object(
-  {
-    id: t.Integer(),
-    parent: t.Union([Ref(SlimGroup), Ref(SlimSubject)]),
-    creator: Ref(SlimUser),
-    title: t.String(),
-    content: t.String(),
-    state: t.Integer(),
-    createdAt: t.Integer(),
-    replies: t.Array(Ref(Reply)),
-    reactions: t.Array(Ref(Reaction)),
-    display: t.Integer(),
-  },
-  { $id: 'TopicDetail', title: 'TopicDetail' },
+export type IGroupTopic = Static<typeof GroupTopic>;
+export const GroupTopic = t.Intersect(
+  [
+    Ref(Topic),
+    t.Object({
+      group: Ref(SlimGroup),
+      content: t.String(),
+      replies: t.Array(Ref(Reply)),
+    }),
+  ],
+  { $id: 'GroupTopic', title: 'GroupTopic' },
+);
+
+export type ISubjectTopic = Static<typeof SubjectTopic>;
+export const SubjectTopic = t.Intersect(
+  [
+    Ref(Topic),
+    t.Object({
+      subject: Ref(SlimSubject),
+      content: t.String(),
+      replies: t.Array(Ref(Reply)),
+    }),
+  ],
+  { $id: 'SubjectTopic', title: 'SubjectTopic' },
 );
 
 export type ITimelineMemo = Static<typeof TimelineMemo>;

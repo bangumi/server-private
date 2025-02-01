@@ -32,6 +32,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.Friend);
   app.addSchema(res.Group);
   app.addSchema(res.GroupMember);
+  app.addSchema(res.GroupTopic);
   app.addSchema(res.Index);
   app.addSchema(res.IndexStats);
   app.addSchema(res.Infobox);
@@ -73,13 +74,13 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.SubjectStaffPositionType);
   app.addSchema(res.SubjectTag);
+  app.addSchema(res.SubjectTopic);
   app.addSchema(res.SubReply);
   app.addSchema(res.Timeline);
   app.addSchema(res.TimelineCat);
   app.addSchema(res.TimelineMemo);
   app.addSchema(res.TimelineSource);
   app.addSchema(res.Topic);
-  app.addSchema(res.TopicDetail);
   app.addSchema(res.User);
   app.addSchema(res.UserHomepage);
   app.addSchema(res.UserHomepageSection);
