@@ -43,6 +43,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.PersonImages);
   app.addSchema(res.PersonRelation);
   app.addSchema(res.PersonWork);
+  app.addSchema(res.Post);
   app.addSchema(res.Profile);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);

@@ -1053,6 +1053,62 @@ export async function setup(app: App) {
     },
   );
 
+  app.get(
+    '/subjects/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'getSubjectPost',
+        summary: '获取条目讨论回复详情',
+        tags: [Tag.Topic],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        response: {
+          200: res.Ref(res.Post),
+        },
+      },
+    },
+    async ({ params: { postID } }) => {
+      const [post] = await db
+        .select()
+        .from(schema.chiiSubjectPosts)
+        .where(op.eq(schema.chiiSubjectPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+      const creator = await fetcher.fetchSlimUserByID(post.uid);
+      if (!creator) {
+        throw new UnexpectedNotFoundError(`user ${post.uid}`);
+      }
+      const [topic] = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .where(op.eq(schema.chiiSubjectTopics.id, post.mid))
+        .limit(1);
+      if (!topic) {
+        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
+      }
+      const topicCreator = await fetcher.fetchSlimUserByID(topic.uid);
+      if (!topicCreator) {
+        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
+      }
+      return {
+        id: post.id,
+        creatorID: post.uid,
+        creator,
+        createdAt: post.createdAt,
+        content: post.content,
+        state: post.state,
+        topic: {
+          ...convert.toSubjectTopic(topic),
+          creator: topicCreator,
+          replies: topic.replies,
+        },
+      };
+    },
+  );
+
   app.put(
     '/subjects/-/posts/:postID',
     {
