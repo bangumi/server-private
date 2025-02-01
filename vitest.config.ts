@@ -27,7 +27,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['lcov', 'text-summary'],
       include: ['**/*.ts'],
-      exclude: ['**/*.test.ts', ...coverageConfigDefaults.exclude],
+      exclude: ['**/*.test.ts', '**/*.spec.ts', ...coverageConfigDefaults.exclude],
     },
   },
 });
