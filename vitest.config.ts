@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { isCI } from 'std-env';
-import { defineConfig } from 'vitest/config';
+import { coverageConfigDefaults, defineConfig } from 'vitest/config';
 
 export default defineConfig({
   resolve: {
@@ -26,6 +26,8 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['lcov', 'text-summary'],
+      include: ['**/*.ts'],
+      exclude: ['**/*.test.ts', ...coverageConfigDefaults.exclude],
     },
   },
 });
