@@ -809,7 +809,6 @@ export async function setup(app: App) {
           privacy = CollectionPrivacy.Ban;
         }
       }
-
       tags = tags?.map((t) => t.trim().normalize('NFKC'));
       if (tags !== undefined) {
         if (tags.length > 10) {
