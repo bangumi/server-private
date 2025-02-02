@@ -796,10 +796,7 @@ export async function setup(app: App) {
       if (!slimSubject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      let privacy = CollectionPrivacy.Public;
-      if (priv !== undefined) {
-        privacy = priv ? CollectionPrivacy.Private : CollectionPrivacy.Public;
-      }
+      let privacy = priv ? CollectionPrivacy.Private : CollectionPrivacy.Public;
       if (comment) {
         if (!Dam.allCharacterPrintable(comment)) {
           throw new BadRequestError('comment contains invalid invisible character');
