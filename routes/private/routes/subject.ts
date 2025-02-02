@@ -834,7 +834,7 @@ export async function setup(app: App) {
           .where(op.eq(schema.chiiSubjects.id, subjectID))
           .limit(1);
         if (!subject) {
-          throw new NotFoundError(`subject ${subjectID}`);
+          throw new UnexpectedNotFoundError(`subject ${subjectID}`);
         }
         const [interest] = await t
           .select()
@@ -900,12 +900,16 @@ export async function setup(app: App) {
               .limit(1);
           }
         } else {
-          const [{ insertId }] = await t.insert(schema.chiiSubjectInterests).values({
+          if (!type) {
+            throw new BadRequestError('type is required on new subject interest');
+          }
+          const now = DateTime.now().toUnixInteger();
+          const toInsert: typeof schema.chiiSubjectInterests.$inferInsert = {
             uid: auth.userID,
             subjectID,
             subjectType: slimSubject.type,
             rate: rate ?? 0,
-            type: type ?? 0,
+            type,
             hasComment: comment ? 1 : 0,
             comment: comment ?? '',
             tag: tags?.join(' ') ?? '',
@@ -920,7 +924,9 @@ export async function setup(app: App) {
             updateIp: auth.ip,
             updatedAt: DateTime.now().toUnixInteger(),
             private: privacy,
-          });
+          };
+          toInsert[`${getCollectionTypeField(type)}Dateline`] = DateTime.now().toUnixInteger();
+          const [{ insertId }] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
           interestID = insertId;
           interestTypeUpdated = true;
           if (rate) {
