@@ -1,7 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
+import { db, decrement, increment, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
@@ -16,7 +16,12 @@ import { fetchSubjectCollectReactions, fetchTopicReactions, LikeType } from '@ap
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
-import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
+import {
+  CollectionPrivacy,
+  getCollectionTypeField,
+  type SubjectFilter,
+  type SubjectSort,
+} from '@app/lib/subject/type.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
@@ -673,7 +678,7 @@ export async function setup(app: App) {
       }
       const condition = op.and(
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
-        op.eq(schema.chiiSubjectInterests.private, false),
+        op.eq(schema.chiiSubjectInterests.private, CollectionPrivacy.Public),
         op.eq(schema.chiiSubjectInterests.hasComment, 1),
         type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
       );
@@ -787,12 +792,13 @@ export async function setup(app: App) {
       params: { subjectID },
       body: { type, rate, epStatus, volStatus, comment, priv, tags },
     }) => {
-      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
-      if (!subject) {
+      const slimSubject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!slimSubject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('collect subject');
+      let privacy = CollectionPrivacy.Public;
+      if (priv !== undefined) {
+        privacy = priv ? CollectionPrivacy.Private : CollectionPrivacy.Public;
       }
       if (comment) {
         if (!Dam.allCharacterPrintable(comment)) {
@@ -802,62 +808,152 @@ export async function setup(app: App) {
         if (comment.length > 380) {
           throw new BadRequestError('comment too long');
         }
+        if (dam.needReview(comment) || auth.permission.ban_post) {
+          privacy = CollectionPrivacy.Ban;
+        }
       }
-      await rateLimit(LimitAction.Subject, auth.userID);
-      const _ = {
-        uid: auth.userID,
-        subjectID,
-        subjectType: subject.type,
-        type,
-        rate,
-        epStatus,
-        volStatus,
-        comment,
-        private: priv,
-        tag: tags?.join(' '),
-      };
 
-      // await db.transaction(async (t) => {
-      //   const [interest] = await t
-      //     .select()
-      //     .from(schema.chiiSubjectInterests)
-      //     .where(
-      //       op.and(
-      //         op.eq(schema.chiiSubjectInterests.uid, auth.userID),
-      //         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
-      //       ),
-      //     )
-      //     .limit(1);
-      //   if (interest) {
-      //     await t
-      //       .update(schema.chiiSubjectInterests)
-      //       .set({
-      //         type,
-      //         rate,
-      //         epStatus,
-      //         volStatus,
-      //         comment,
-      //         private: priv,
-      //         tag: tags?.join(' '),
-      //       })
-      //       .where(op.eq(schema.chiiSubjectInterests.id, interest.id));
-      //   } else {
-      //     await t.insert(schema.chiiSubjectInterests).values({
-      //       uid: auth.userID,
-      //       subjectID,
-      //       subjectType: subject.type,
-      //       type,
-      //       rate,
-      //       epStatus,
-      //       volStatus,
-      //       comment,
-      //       private: priv,
-      //       tag: tags?.join(' '),
-      //     });
-      //   }
-      // });
-      // const interest = await fetcher.fetchSubjectInterest(auth.userID, subjectID);
-      // TODO:
+      await rateLimit(LimitAction.Subject, auth.userID);
+
+      // TODO: 插入 tag 并生成 tag 字符串
+      // if (Censor::isNeedReview($_POST['tags'])) {
+      //   $interest_tag = '';
+      // } else {
+      //   $interest_tag = TagCore::insertTagsNeue($uid, $_POST['tags'], TagCore::TAG_CAT_SUBJECT, $subject['subject_type_id'], $subject['subject_id']);
+      //   TagCore::UpdateSubjectTags($subject['subject_id']);
+      // }
+
+      let interestID = 0;
+      let interestTypeUpdated = false;
+      await db.transaction(async (t) => {
+        let needUpdateRate = false;
+
+        const [subject] = await t
+          .select()
+          .from(schema.chiiSubjects)
+          .where(op.eq(schema.chiiSubjects.id, subjectID))
+          .limit(1);
+        if (!subject) {
+          throw new NotFoundError(`subject ${subjectID}`);
+        }
+        const [interest] = await t
+          .select()
+          .from(schema.chiiSubjectInterests)
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+              op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+            ),
+          )
+          .limit(1);
+        if (interest) {
+          interestID = interest.id;
+          const oldType = interest.type;
+          const oldRate = interest.rate;
+          const oldPrivacy = interest.private;
+          const toUpdate: Partial<orm.ISubjectInterest> = {};
+          if (type && oldType !== type) {
+            interestTypeUpdated = true;
+            const now = DateTime.now().toUnixInteger();
+            toUpdate.type = type;
+            toUpdate.updatedAt = now;
+            toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
+            //若收藏类型改变,则更新数据
+            await t
+              .update(schema.chiiSubjects)
+              .set({
+                [getCollectionTypeField(type)]: increment(
+                  schema.chiiSubjects[getCollectionTypeField(type)],
+                ),
+                [getCollectionTypeField(oldType)]: decrement(
+                  schema.chiiSubjects[getCollectionTypeField(oldType)],
+                ),
+              })
+              .where(op.eq(schema.chiiSubjects.id, subjectID))
+              .limit(1);
+          }
+          if (rate && oldRate !== rate) {
+            needUpdateRate = true;
+            toUpdate.rate = rate;
+          }
+          if (epStatus !== undefined) {
+            toUpdate.epStatus = epStatus;
+          }
+          if (volStatus !== undefined) {
+            toUpdate.volStatus = volStatus;
+          }
+          if (comment !== undefined) {
+            toUpdate.comment = comment;
+          }
+          if (oldPrivacy !== privacy) {
+            needUpdateRate = true;
+            toUpdate.private = privacy;
+          }
+          if (tags !== undefined) {
+            toUpdate.tag = tags.join(' ');
+          }
+          if (Object.keys(toUpdate).length > 0) {
+            await t
+              .update(schema.chiiSubjectInterests)
+              .set(toUpdate)
+              .where(op.eq(schema.chiiSubjectInterests.id, interestID))
+              .limit(1);
+          }
+        } else {
+          const [{ insertId }] = await t.insert(schema.chiiSubjectInterests).values({
+            uid: auth.userID,
+            subjectID,
+            subjectType: slimSubject.type,
+            rate: rate ?? 0,
+            type: type ?? 0,
+            hasComment: comment ? 1 : 0,
+            comment: comment ?? '',
+            tag: tags?.join(' ') ?? '',
+            epStatus: epStatus ?? 0,
+            volStatus: volStatus ?? 0,
+            wishDateline: 0,
+            doingDateline: 0,
+            collectDateline: 0,
+            onHoldDateline: 0,
+            droppedDateline: 0,
+            createIp: auth.ip,
+            updateIp: auth.ip,
+            updatedAt: DateTime.now().toUnixInteger(),
+            private: privacy,
+          });
+          interestID = insertId;
+          interestTypeUpdated = true;
+          if (rate) {
+            needUpdateRate = true;
+          }
+          // 收藏计数＋1
+          if (type) {
+            const field = getCollectionTypeField(type) as keyof orm.ISubject;
+            await t
+              .update(schema.chiiSubjects)
+              .set({
+                [field]: increment(schema.chiiSubjects[field]),
+              })
+              .where(op.eq(schema.chiiSubjects.id, subjectID))
+              .limit(1);
+          }
+        }
+
+        if (needUpdateRate) {
+          // await updateSubjectRating();
+        }
+      });
+
+      // $db->memDelete(MC_SBJ_COLLECT . $subject['subject_id']); // 更新条目收藏缓存
+      // $db->memDelete(MC_COLLECT_PSN . $uid); //删除用户收藏统计缓存
+      // $db->memDelete(MC_USR_ALL_COLLECT . $uid);
+      // TagCore::cleanUserCollectTagCache($uid, $subject['subject_type_id'], $interest_type['id'], $interest_info['interest_type']);
+      // CacheCore::cleanWatchingListCache($uid);
+
+      // 插入时间线
+      if (interestTypeUpdated && privacy === CollectionPrivacy.Public) {
+        // TODO:
+      }
     },
   );
 

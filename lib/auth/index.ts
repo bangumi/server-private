@@ -62,6 +62,7 @@ export interface IAuth {
   /** Unix time seconds */
   regTime: number;
   groupID: UserGroup;
+  ip: string;
 }
 
 export async function byHeader(key: string | string[] | undefined): Promise<IAuth | null> {
@@ -157,6 +158,7 @@ export function emptyAuth(): IAuth {
     allowNsfw: false,
     regTime: 0,
     groupID: 0,
+    ip: '',
   };
 }
 
@@ -173,6 +175,7 @@ async function userToAuth(user: IUser): Promise<IAuth> {
       DateTime.now().toUnixInteger() - user.regTime >= 60 * 60 * 24 * 90,
     regTime: user.regTime,
     groupID: user.groupID,
+    ip: '',
   };
 }
 

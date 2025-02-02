@@ -348,7 +348,7 @@ export async function fetchSubjectIDsByFilter(
       break;
     }
     case SubjectSort.Collects: {
-      sorts.push(op.desc(schema.chiiSubjects.done));
+      sorts.push(op.desc(schema.chiiSubjects.collect));
       break;
     }
     case SubjectSort.Date: {

@@ -340,6 +340,20 @@ export const SubjectImages = t.Object(
   { $id: 'SubjectImages', title: 'SubjectImages' },
 );
 
+export const SubjectInterestPrivacy = t.Integer({
+  $id: 'SubjectInterestPrivacy',
+  enum: [0, 1, 2],
+  'x-ms-enum': {
+    name: 'SubjectInterestPrivacy',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['Public', 'Private', 'Ban'],
+  description: `条目收藏隐私
+  - 0 = 公开
+  - 1 = 仅自己可见
+  - 2 = 封禁`,
+});
+
 export type ISubjectInterest = Static<typeof SubjectInterest>;
 export const SubjectInterest = t.Object(
   {
@@ -349,7 +363,7 @@ export const SubjectInterest = t.Object(
     tags: t.Array(t.String()),
     epStatus: t.Integer(),
     volStatus: t.Integer(),
-    private: t.Boolean(),
+    privacy: Ref(SubjectInterestPrivacy),
     updatedAt: t.Integer(),
   },
   { $id: 'SubjectInterest', title: 'SubjectInterest' },
