@@ -55,7 +55,6 @@ Array [
     "creatorID": 382951,
     "epID": 1027,
     "id": 205402,
-    "reactions": Array [],
     "relatedID": 0,
     "replies": Array [
       Object {
@@ -64,7 +63,6 @@ Array [
         "creatorID": 382951,
         "epID": 1027,
         "id": 242518,
-        "reactions": Array [],
         "relatedID": 205402,
         "state": 0,
         "user": Object {
@@ -101,7 +99,6 @@ Array [
     "creatorID": 382951,
     "epID": 1027,
     "id": 215256,
-    "reactions": Array [],
     "relatedID": 0,
     "replies": Array [],
     "state": 0,

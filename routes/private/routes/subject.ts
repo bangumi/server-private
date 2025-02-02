@@ -12,6 +12,7 @@ import {
   NotFoundError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
+import { fetchSubjectCollectReactions, fetchTopicReactions, LikeType } from '@app/lib/like';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
@@ -84,7 +85,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { subjectID } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiSubjects)
         .innerJoin(
@@ -97,11 +98,17 @@ export async function setup(app: App) {
             op.ne(schema.chiiSubjects.ban, 1),
             auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
           ),
-        );
-      for (const d of data) {
-        return convert.toSubject(d.chii_subjects, d.chii_subject_fields);
+        )
+        .limit(1);
+      if (!data) {
+        throw new NotFoundError(`subject ${subjectID}`);
       }
-      throw new NotFoundError(`subject ${subjectID}`);
+      const subject = convert.toSubject(data.chii_subjects, data.chii_subject_fields);
+      if (auth.login) {
+        const interest = await fetcher.fetchSubjectInterest(auth.userID, subjectID);
+        subject.interest = interest;
+      }
+      return subject;
     },
   );
 
@@ -216,6 +223,12 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset);
       const episodes = data.map((d) => convert.toSlimEpisode(d));
+      if (auth.login) {
+        const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, subjectID);
+        for (const ep of episodes) {
+          ep.status = epStatus[ep.id]?.type;
+        }
+      }
       return {
         data: episodes,
         total: count,
@@ -680,6 +693,11 @@ export async function setup(app: App) {
       const comments = data.map((d) =>
         convert.toSubjectComment(d.chii_subject_interests, d.chii_members),
       );
+      const collectIDs = comments.map((c) => c.id);
+      const reactions = await fetchSubjectCollectReactions(collectIDs);
+      for (const comment of comments) {
+        comment.reactions = reactions[comment.id];
+      }
       return {
         data: comments,
         total: count,
@@ -920,12 +938,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a topic')],
     },
-    async ({
-      auth,
-      body: { title, content, 'cf-turnstile-response': cfCaptchaResponse },
-      params: { subjectID },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse ?? ''))) {
+    async ({ auth, body: { title, content, turnstileToken }, params: { subjectID } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {
@@ -991,7 +1005,7 @@ export async function setup(app: App) {
           topicID: t.Integer(),
         }),
         response: {
-          200: res.Ref(res.TopicDetail),
+          200: res.Ref(res.SubjectTopic),
         },
       },
     },
@@ -1025,37 +1039,44 @@ export async function setup(app: App) {
       }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
-      const subReplies: Record<number, res.ISubReply[]> = {};
+      const subReplies: Record<number, res.IReplyBase[]> = {};
+      const reactions = await fetchTopicReactions(topicID, LikeType.SubjectReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        const sub = convert.toSubjectTopicSubReply(x);
+        const sub = convert.toSubjectTopicReply(x);
         sub.creator = users[sub.creatorID];
+        sub.reactions = reactions[x.id] ?? [];
         const subR = subReplies[x.related] ?? [];
         subR.push(sub);
         subReplies[x.related] = subR;
       }
-      const topLevelReplies = [];
+      const topLevelReplies: res.IReply[] = [];
       for (const x of replies.filter((x) => x.related === 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
-        const reply = convert.toSubjectTopicReply(x);
-        reply.replies = subReplies[reply.id] ?? [];
+        const reply = {
+          ...convert.toSubjectTopicReply(x),
+          replies: subReplies[x.id] ?? [],
+          reactions: reactions[x.id] ?? [],
+        };
         topLevelReplies.push(reply);
       }
       return {
         id: topic.id,
-        parent: subject,
+        parentID: subject.id,
+        subject,
+        creatorID: topic.uid,
         creator,
         title: topic.title,
         content: top.content,
         state: topic.state,
-        createdAt: topic.createdAt,
-        replies: topLevelReplies,
-        reactions: [],
         display: topic.display,
+        createdAt: topic.createdAt,
+        updatedAt: topic.updatedAt,
+        replies: topLevelReplies,
       };
     },
   );
@@ -1072,6 +1093,9 @@ export async function setup(app: App) {
           topicID: t.Integer({ examples: [371602], minimum: 0 }),
         }),
         body: req.UpdateTopic,
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('updating a topic')],
     },
@@ -1123,6 +1147,62 @@ export async function setup(app: App) {
     },
   );
 
+  app.get(
+    '/subjects/-/posts/:postID',
+    {
+      schema: {
+        operationId: 'getSubjectPost',
+        summary: '获取条目讨论回复详情',
+        tags: [Tag.Topic],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        response: {
+          200: res.Ref(res.Post),
+        },
+      },
+    },
+    async ({ params: { postID } }) => {
+      const [post] = await db
+        .select()
+        .from(schema.chiiSubjectPosts)
+        .where(op.eq(schema.chiiSubjectPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+      const creator = await fetcher.fetchSlimUserByID(post.uid);
+      if (!creator) {
+        throw new UnexpectedNotFoundError(`user ${post.uid}`);
+      }
+      const [topic] = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .where(op.eq(schema.chiiSubjectTopics.id, post.mid))
+        .limit(1);
+      if (!topic) {
+        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
+      }
+      const topicCreator = await fetcher.fetchSlimUserByID(topic.uid);
+      if (!topicCreator) {
+        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
+      }
+      return {
+        id: post.id,
+        creatorID: post.uid,
+        creator,
+        createdAt: post.createdAt,
+        content: post.content,
+        state: post.state,
+        topic: {
+          ...convert.toSubjectTopic(topic),
+          creator: topicCreator,
+          replies: topic.replies,
+        },
+      };
+    },
+  );
+
   app.put(
     '/subjects/-/posts/:postID',
     {
@@ -1135,6 +1215,9 @@ export async function setup(app: App) {
           postID: t.Integer(),
         }),
         body: req.Ref(req.UpdatePost),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('editing a post')],
     },
@@ -1208,6 +1291,9 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('deleting a post')],
     },
@@ -1252,12 +1338,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a reply')],
     },
-    async ({
-      auth,
-      params: { topicID },
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, params: { topicID }, body: { turnstileToken, content, replyTo = 0 } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (auth.permission.ban_post) {

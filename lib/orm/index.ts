@@ -1,6 +1,5 @@
 import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
-import { DateTime } from 'luxon';
 import { DataSource, In } from 'typeorm';
 
 import { db, op } from '@app/drizzle/db.ts';
@@ -8,9 +7,7 @@ import * as schema from '@app/drizzle/schema.ts';
 import config, { production, stage } from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
-import type { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 
-import * as entity from './entity/index.ts';
 import {
   App,
   Cast,
@@ -40,8 +37,6 @@ import {
   User,
   UserField,
 } from './entity/index.ts';
-
-export * as entity from './entity/index.ts';
 
 export const AppDataSource = new DataSource({
   type: 'mysql',
@@ -179,26 +174,6 @@ export interface IUser {
   img: string;
   regTime: number;
   sign: string;
-}
-
-export async function fetchUserByUsername(username: string): Promise<IUser | null> {
-  const user = await UserRepo.findOne({
-    where: { username },
-  });
-
-  if (!user) {
-    return null;
-  }
-
-  return {
-    id: user.id,
-    nickname: user.nickname,
-    username: user.username,
-    img: user.avatar,
-    groupID: user.groupid,
-    regTime: user.regdate,
-    sign: user.sign,
-  };
 }
 
 export async function fetchUser(userID: number): Promise<IUser | null> {
@@ -346,96 +321,6 @@ export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUse
   );
 }
 
-export interface IGroup {
-  id: number;
-  name: string;
-  nsfw: boolean;
-  description: string;
-  title: string;
-  createdAt: number;
-  totalMembers: number;
-  icon: string;
-  accessible: boolean;
-}
-
-export async function fetchGroupByID(id: number): Promise<IGroup | undefined> {
-  const group = await GroupRepo.findOne({
-    where: { id },
-  });
-
-  if (!group) {
-    return;
-  }
-
-  return {
-    id: group.id,
-    name: group.name,
-    title: group.title,
-    nsfw: group.nsfw,
-    description: group.description,
-    createdAt: group.builddate,
-    icon: group.icon,
-    totalMembers: group.memberCount,
-    accessible: group.accessible,
-  } satisfies IGroup;
-}
-
-export async function fetchGroups(ids: number[]): Promise<Record<number, IGroup>> {
-  const groups = await GroupRepo.find({
-    where: { id: In(lo.uniq(ids)) },
-  });
-
-  return Object.fromEntries(
-    groups.map((group) => {
-      return [
-        group.id,
-        {
-          id: group.id,
-          name: group.name,
-          title: group.title,
-          nsfw: group.nsfw,
-          description: group.description,
-          icon: group.icon,
-          createdAt: group.builddate,
-          totalMembers: group.memberCount,
-          accessible: group.accessible,
-        },
-      ];
-    }),
-  );
-}
-
-export async function fetchGroup(name: string): Promise<IGroup | undefined> {
-  const group = await GroupRepo.findOne({
-    where: { name },
-  });
-
-  if (!group) {
-    return;
-  }
-
-  return {
-    id: group.id,
-    name: group.name,
-    title: group.title,
-    nsfw: group.nsfw,
-    description: group.description,
-    icon: group.icon,
-    createdAt: group.builddate,
-    totalMembers: group.memberCount,
-    accessible: group.accessible,
-  } satisfies IGroup;
-}
-
-export interface IBaseReply {
-  id: number;
-  text: string;
-  creatorID: number;
-  state: number;
-  createdAt: number;
-  repliedTo: number;
-}
-
 export interface ISubject {
   id: number;
   name: string;
@@ -481,67 +366,6 @@ export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
     locked: subject.locked(),
     image: subject.subjectImage,
   } satisfies ISubject;
-}
-
-export async function fetchSubjectTopicPosts(topicID: number) {
-  return await SubjectPostRepo.find({
-    where: { topicID: topicID, state: 0 },
-  });
-}
-
-interface PostCreation {
-  title: string;
-  content: string;
-  parentID: number;
-  userID: number;
-  display: TopicDisplay;
-  state: CommentState;
-  topicType: 'group' | 'subject';
-}
-
-export async function createPost(post: PostCreation): Promise<{ id: number }> {
-  const now = DateTime.now();
-
-  return await AppDataSource.transaction(async (t) => {
-    const postRepo =
-      post.topicType === 'group'
-        ? t.getRepository(entity.GroupPost)
-        : t.getRepository(entity.SubjectPost);
-    const topicRepo =
-      post.topicType === 'group'
-        ? t.getRepository(entity.GroupTopic)
-        : t.getRepository(entity.SubjectTopic);
-
-    const topic = await topicRepo.save({
-      title: post.title,
-      parentID: post.parentID,
-      creatorID: post.userID,
-      state: post.state,
-      updatedAt: now.toUnixInteger(),
-      createdAt: now.toUnixInteger(),
-      replies: 0,
-      display: post.display,
-    });
-
-    await postRepo.insert({
-      topicID: topic.id,
-      dateline: now.toUnixInteger(),
-      state: post.state,
-      uid: post.userID,
-      content: post.content,
-      related: 0,
-    });
-
-    return { id: topic.id };
-  });
-}
-
-export async function isMemberInGroup(gid: number, uid: number): Promise<boolean> {
-  const inGroup = await GroupMemberRepo.count({
-    where: { gmbGid: gid, gmbUid: uid },
-  });
-
-  return Boolean(inGroup);
 }
 
 export async function fetchUserX(id: number): Promise<IUser> {

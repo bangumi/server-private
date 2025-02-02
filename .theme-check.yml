@@ -1,0 +1,10 @@
+RemoteAsset:
+  enabled: false
+UndefinedObject:
+  enabled: false
+UnusedAssign:
+  enabled: false
+VariableName:
+  enabled: false
+ParserBlockingScript:
+  enabled: false

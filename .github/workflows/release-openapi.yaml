@@ -2,9 +2,13 @@ name: Release(openapi)
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - 'master'
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   openapi:

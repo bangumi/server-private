@@ -178,7 +178,7 @@ describe('subject topics', () => {
       payload: {
         title: 'New Topic',
         content: 'New Content',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
 
@@ -250,6 +250,14 @@ describe('subject topics', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get subject post', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject(`/subjects/-/posts/${testPostID}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should create/edit/delete new post', async () => {
     const app = createTestServer({
       auth: {
@@ -266,7 +274,7 @@ describe('subject topics', () => {
       method: 'post',
       payload: {
         content: 'New Reply',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
     expect(createRes.statusCode).toBe(200);

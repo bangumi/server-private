@@ -23,21 +23,6 @@ export const FilterMode = t.String({
   - friends = 好友`,
 });
 
-export const EpisodeCollectionStatus = t.Integer({
-  $id: 'EpisodeCollectionStatus',
-  enum: [0, 1, 2, 3],
-  'x-ms-enum': {
-    name: 'EpisodeCollectionStatus',
-    modelAsString: false,
-  },
-  'x-enum-varnames': ['None', 'Wish', 'Done', 'Dropped'],
-  description: `剧集收藏状态
-  - 0 = 撤消/删除
-  - 1 = 想看
-  - 2 = 看过
-  - 3 = 抛弃`,
-});
-
 export const SubjectSort = t.String({
   $id: 'SubjectSort',
   enum: ['rank', 'trends', 'collects', 'date', 'title'],
@@ -60,7 +45,7 @@ export const CreateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
     content: t.String({ minLength: 1, description: 'bbcode' }),
-    'cf-turnstile-response': t.String({ description: turnstileDescription }),
+    turnstileToken: t.String({ description: turnstileDescription }),
   },
   {
     $id: 'CreateTopic',
@@ -87,7 +72,7 @@ export const CreatePost = t.Object(
         description: '被回复的帖子 ID, `0` 代表回复楼主',
       }),
     ),
-    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
   { $id: 'CreatePost' },
 );
@@ -110,7 +95,7 @@ export const CreateEpisodeComment = t.Object(
         description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
       }),
     ),
-    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
   { $id: 'CreateEpisodeComment' },
 );
@@ -138,7 +123,7 @@ export type ICreateTimelineSay = Static<typeof CreateTimelineSay>;
 export const CreateTimelineSay = t.Object(
   {
     content: t.String({ minLength: 1 }),
-    'cf-turnstile-response': t.String({ minLength: 1, description: turnstileDescription }),
+    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
   { $id: 'CreateTimelineSay' },
 );

@@ -97,7 +97,7 @@ describe('group topics', () => {
       payload: {
         title: 'New Topic',
         content: 'New Content',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
 
@@ -169,6 +169,15 @@ describe('group topics', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get group post', async () => {
+    const app = await createTestServer();
+    await app.register(setup);
+
+    const res = await app.inject(`/groups/-/posts/${testPostID}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should create/edit/delete new post', async () => {
     const app = createTestServer({
       auth: {
@@ -185,7 +194,7 @@ describe('group topics', () => {
       method: 'post',
       payload: {
         content: 'New Reply',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
     expect(createRes.statusCode).toBe(200);

@@ -1,0 +1,516 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`character collection > should get character collections 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
+exports[`index collection > should get index collections 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
+exports[`person collection > should get person collections 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
+exports[`subject collection > should get subject collections 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "airtime": Object {
+        "date": "2004-03-19",
+        "month": 3,
+        "weekday": 5,
+        "year": 2004,
+      },
+      "collection": Object {
+        "1": 65,
+        "2": 572,
+        "3": 21,
+        "4": 9,
+        "5": 3,
+      },
+      "eps": 0,
+      "id": 20,
+      "images": Object {
+        "common": "https://lain.bgm.tv/pic/cover/c/98/f1/20_H2vb0.jpg",
+        "grid": "https://lain.bgm.tv/pic/cover/g/98/f1/20_H2vb0.jpg",
+        "large": "https://lain.bgm.tv/pic/cover/l/98/f1/20_H2vb0.jpg",
+        "medium": "https://lain.bgm.tv/pic/cover/m/98/f1/20_H2vb0.jpg",
+        "small": "https://lain.bgm.tv/pic/cover/s/98/f1/20_H2vb0.jpg",
+      },
+      "info": "2004-03-19 / Sound Horizon",
+      "infobox": Array [
+        Object {
+          "key": "中文名",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "别名",
+          "values": Array [],
+        },
+        Object {
+          "key": "版本特性",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "发售日期",
+          "values": Array [
+            Object {
+              "v": "2004-03-19",
+            },
+          ],
+        },
+        Object {
+          "key": "价格",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "播放时长",
+          "values": Array [
+            Object {
+              "v": "71 min",
+            },
+          ],
+        },
+        Object {
+          "key": "录音",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "碟片数量",
+          "values": Array [
+            Object {
+              "v": "1",
+            },
+          ],
+        },
+        Object {
+          "key": "Type",
+          "values": Array [
+            Object {
+              "v": "专辑",
+            },
+          ],
+        },
+        Object {
+          "key": "艺术家",
+          "values": Array [
+            Object {
+              "v": "Sound Horizon",
+            },
+          ],
+        },
+        Object {
+          "key": "作曲",
+          "values": Array [
+            Object {
+              "v": "Revo",
+            },
+          ],
+        },
+        Object {
+          "key": "Discs",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+      ],
+      "interest": Object {
+        "comment": "",
+        "epStatus": 0,
+        "private": false,
+        "rate": 0,
+        "tags": Array [],
+        "type": 3,
+        "updatedAt": 1639569656,
+        "volStatus": 0,
+      },
+      "locked": false,
+      "metaTags": Array [],
+      "name": "Chronicle 2nd",
+      "nameCN": "",
+      "nsfw": false,
+      "platform": Object {
+        "alias": "",
+        "id": 0,
+        "type": "",
+        "typeCN": "",
+      },
+      "rating": Object {
+        "count": Array [
+          0,
+          0,
+          0,
+          2,
+          3,
+          13,
+          36,
+          95,
+          126,
+          171,
+        ],
+        "rank": 48,
+        "score": 8.87,
+        "total": 446,
+      },
+      "redirect": 0,
+      "series": false,
+      "seriesEntry": 0,
+      "summary": "2003年11月,应希望「Chronicle」再次贩卖的呼声，「Chronicle 2nd」的制作发表.
+12月 ,在ComicMarket65上，「Chronicle 2nd」试听盘发布.
+直到2004年3月, 1st Story Renewal CD「Chronicle 2nd」终于正式发布.
+
+这张CD是作为SH首张CD 〈Chronicle〉的重制完整版,通过Aramary,霜月はるか, Jimang, Hazeri*,Yasrow*的声音,补完了当年CD没有声乐的空白,用唱词和旁白描述了SH音乐世界第一道地平线的故事,完整将苍红歌姬,蔷薇骑士团,诗人Ballad等等人物再现.作为SH音乐世界首个故事的完整版,这张CD具有非同一般的价值.",
+      "tags": Array [
+        Object {
+          "count": 244,
+          "name": "SoundHorizon",
+        },
+        Object {
+          "count": 73,
+          "name": "神作",
+        },
+        Object {
+          "count": 58,
+          "name": "Chronicle2nd",
+        },
+        Object {
+          "count": 44,
+          "name": "Aramary",
+        },
+        Object {
+          "count": 30,
+          "name": "REVO神",
+        },
+        Object {
+          "count": 29,
+          "name": "revo",
+        },
+        Object {
+          "count": 28,
+          "name": "SH",
+        },
+        Object {
+          "count": 27,
+          "name": "恨不能打更高分",
+        },
+        Object {
+          "count": 21,
+          "name": "SH最高作",
+        },
+        Object {
+          "count": 11,
+          "name": "2004",
+        },
+        Object {
+          "count": 9,
+          "name": "Sound_Horizon",
+        },
+        Object {
+          "count": 8,
+          "name": "同人音乐",
+        },
+        Object {
+          "count": 2,
+          "name": "史诗",
+        },
+        Object {
+          "count": 2,
+          "name": "~~",
+        },
+        Object {
+          "count": 2,
+          "name": "霜月はるか",
+        },
+        Object {
+          "count": 2,
+          "name": "同人",
+        },
+        Object {
+          "count": 1,
+          "name": "叙事史诗组曲",
+        },
+        Object {
+          "count": 1,
+          "name": "Sound.Horizon",
+        },
+        Object {
+          "count": 1,
+          "name": "伪中庸",
+        },
+        Object {
+          "count": 1,
+          "name": "物語音楽",
+        },
+        Object {
+          "count": 1,
+          "name": "2004年3月",
+        },
+        Object {
+          "count": 1,
+          "name": "中世纪",
+        },
+        Object {
+          "count": 1,
+          "name": "物语音乐",
+        },
+        Object {
+          "count": 1,
+          "name": "未观看原作",
+        },
+        Object {
+          "count": 1,
+          "name": "Sound·Horizon",
+        },
+        Object {
+          "count": 1,
+          "name": "あらまり",
+        },
+        Object {
+          "count": 1,
+          "name": "040319",
+        },
+        Object {
+          "count": 1,
+          "name": "∞",
+        },
+        Object {
+          "count": 1,
+          "name": "物语",
+        },
+        Object {
+          "count": 1,
+          "name": "JIMANG",
+        },
+      ],
+      "type": 3,
+      "volumes": 0,
+    },
+    Object {
+      "airtime": Object {
+        "date": "0000-00-00",
+        "month": 1,
+        "weekday": 2,
+        "year": 2003,
+      },
+      "collection": Object {
+        "1": 13,
+        "2": 41,
+        "3": 0,
+        "4": 0,
+        "5": 1,
+      },
+      "eps": 0,
+      "id": 10,
+      "images": Object {
+        "common": "https://lain.bgm.tv/pic/cover/c/d3/d9/10_mXv4D.jpg",
+        "grid": "https://lain.bgm.tv/pic/cover/g/d3/d9/10_mXv4D.jpg",
+        "large": "https://lain.bgm.tv/pic/cover/l/d3/d9/10_mXv4D.jpg",
+        "medium": "https://lain.bgm.tv/pic/cover/m/d3/d9/10_mXv4D.jpg",
+        "small": "https://lain.bgm.tv/pic/cover/s/d3/d9/10_mXv4D.jpg",
+      },
+      "info": "2003-01 / CLAMP / 講談社",
+      "infobox": Array [
+        Object {
+          "key": "中文名",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "别名",
+          "values": Array [],
+        },
+        Object {
+          "key": "出版社",
+          "values": Array [
+            Object {
+              "v": "講談社",
+            },
+          ],
+        },
+        Object {
+          "key": "价格",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "其他出版社",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "连载杂志",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "发售日",
+          "values": Array [
+            Object {
+              "v": "2003-01",
+            },
+          ],
+        },
+        Object {
+          "key": "页数",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "ISBN",
+          "values": Array [
+            Object {
+              "v": "9784063346701",
+            },
+          ],
+        },
+        Object {
+          "key": "其他",
+          "values": Array [
+            Object {
+              "v": "",
+            },
+          ],
+        },
+        Object {
+          "key": "作者",
+          "values": Array [
+            Object {
+              "v": "CLAMP",
+            },
+          ],
+        },
+      ],
+      "interest": Object {
+        "comment": "",
+        "epStatus": 0,
+        "private": false,
+        "rate": 0,
+        "tags": Array [],
+        "type": 4,
+        "updatedAt": 1639569433,
+        "volStatus": 0,
+      },
+      "locked": false,
+      "metaTags": Array [],
+      "name": "Your Eyes Only ちぃフォトグラフィクス",
+      "nameCN": "",
+      "nsfw": false,
+      "platform": Object {
+        "alias": "illustration",
+        "enableHeader": true,
+        "id": 1003,
+        "order": 2,
+        "type": "Illustration",
+        "typeCN": "画集",
+        "wikiTpl": "Book",
+      },
+      "rating": Object {
+        "count": Array [
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          7,
+          10,
+          7,
+          3,
+        ],
+        "rank": 1127,
+        "score": 8,
+        "total": 28,
+      },
+      "redirect": 0,
+      "series": false,
+      "seriesEntry": 0,
+      "summary": "ちぃのベストショット満載！！
+ファン待望の『ちょびっツ』原画集
+
+『ちょびっツ』連載開始から2年。
+ヤンマガはもとより、グッズやCD、DVD等に描きおろされたイラストの中から、フォトジェニックなちぃを集めて一冊の原画集にします！
+ちぃのかわいさがぎっしりつまった画集、買い逃し厳禁だ！",
+      "tags": Array [
+        Object {
+          "count": 22,
+          "name": "画集",
+        },
+        Object {
+          "count": 18,
+          "name": "CLAMP",
+        },
+        Object {
+          "count": 8,
+          "name": "chobits",
+        },
+        Object {
+          "count": 3,
+          "name": "讲谈社",
+        },
+        Object {
+          "count": 3,
+          "name": "晒命资本",
+        },
+        Object {
+          "count": 2,
+          "name": "少女系",
+        },
+        Object {
+          "count": 2,
+          "name": "CLMAP",
+        },
+        Object {
+          "count": 2,
+          "name": "叽",
+        },
+      ],
+      "type": 1,
+      "volumes": 0,
+    },
+  ],
+  "total": 25,
+}
+`;

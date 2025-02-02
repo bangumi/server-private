@@ -97,8 +97,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('posting a say')],
     },
-    async ({ auth, body: { content, 'cf-turnstile-response': cfCaptchaResponse } }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, body: { content, turnstileToken } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (!Dam.allCharacterPrintable(content)) {

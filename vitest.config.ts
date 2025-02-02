@@ -2,7 +2,6 @@ import 'dotenv/config';
 
 import { isCI } from 'std-env';
 import { defineConfig } from 'vitest/config';
-import GithubActionsReporter from 'vitest-github-actions-reporter';
 
 export default defineConfig({
   resolve: {
@@ -12,13 +11,16 @@ export default defineConfig({
     extensions: ['.js', '.ts'],
   },
   test: {
-    reporters: isCI ? ['default', new GithubActionsReporter()] : 'basic',
+    reporters: isCI
+      ? [['default' as const, { summary: false }], 'github-actions']
+      : [['default' as const, { summary: false }]],
     watch: false,
     environment: 'node',
     setupFiles: ['./tests/setup.ts'],
     snapshotFormat: {
       printBasicPrototype: true,
     },
+    ui: false,
     isolate: false,
     fileParallelism: false,
     coverage: {

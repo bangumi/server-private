@@ -98,7 +98,6 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     nickname: user.nickname,
     avatar: avatar(user.avatar),
     group: user.groupid,
-    user_group: user.groupid,
     joinedAt: user.regdate,
     sign: user.sign,
     site: fields.site,
@@ -406,6 +405,7 @@ export function toSubjectComment(
   user: orm.IUser,
 ): res.ISubjectComment {
   return {
+    id: interest.id,
     user: toSlimUser(user),
     type: interest.type,
     rate: interest.rate,
@@ -457,10 +457,7 @@ export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
-export function toEpisodeCommentBase(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeCommentBase {
+export function toEpisodeComment(comment: orm.IEpisodeComment): res.IEpisodeCommentBase {
   return {
     id: comment.id,
     epID: comment.mid,
@@ -468,27 +465,7 @@ export function toEpisodeCommentBase(
     relatedID: comment.related,
     content: comment.content,
     createdAt: comment.createdAt,
-    user,
     state: comment.state,
-    reactions: [],
-  };
-}
-
-export function toEpisodeComment(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeComment {
-  return {
-    id: comment.id,
-    epID: comment.mid,
-    creatorID: comment.uid,
-    relatedID: comment.related,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    user,
-    state: comment.state,
-    reactions: [],
-    replies: [],
   };
 }
 
@@ -610,7 +587,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
   };
 }
 
-export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
+export function toIndex(index: orm.IIndex): res.IIndex {
   return {
     id: index.id,
     type: index.type,
@@ -622,7 +599,6 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     stats: toIndexStats(index.stats),
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
-    creator: toSlimUser(user),
   };
 }
 
@@ -651,26 +627,13 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
   };
 }
 
-export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReply {
+export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReplyBase {
   return {
     id: reply.id,
-    text: reply.content,
+    content: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
-    replies: [],
-    reactions: [],
-  };
-}
-
-export function toSubjectTopicSubReply(reply: orm.ISubjectPost): res.ISubReply {
-  return {
-    id: reply.id,
-    text: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-    reactions: [],
   };
 }
 
@@ -736,25 +699,12 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
   };
 }
 
-export function toGroupTopicReply(reply: orm.IGroupPost): res.IReply {
+export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
   return {
     id: reply.id,
-    text: reply.content,
+    content: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
-    replies: [],
-    reactions: [],
-  };
-}
-
-export function toGroupTopicSubReply(reply: orm.IGroupPost): res.ISubReply {
-  return {
-    id: reply.id,
-    text: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-    reactions: [],
   };
 }
