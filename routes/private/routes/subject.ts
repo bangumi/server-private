@@ -922,10 +922,10 @@ export async function setup(app: App) {
             droppedDateline: 0,
             createIp: auth.ip,
             updateIp: auth.ip,
-            updatedAt: DateTime.now().toUnixInteger(),
+            updatedAt: now,
             private: privacy,
           };
-          toInsert[`${getCollectionTypeField(type)}Dateline`] = DateTime.now().toUnixInteger();
+          toInsert[`${getCollectionTypeField(type)}Dateline`] = now;
           const [{ insertId }] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
           interestID = insertId;
           interestTypeUpdated = true;
