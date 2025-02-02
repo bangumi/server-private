@@ -810,15 +810,25 @@ export async function setup(app: App) {
         }
       }
 
-      await rateLimit(LimitAction.Subject, auth.userID);
+      tags = tags?.map((t) => t.trim().normalize('NFKC'));
+      if (tags !== undefined) {
+        if (tags.length > 10) {
+          throw new BadRequestError('too many tags');
+        }
+        if (dam.needReview(tags.join(' '))) {
+          tags = undefined;
+        } else {
+          for (const tag of tags) {
+            if (tag.length < 2) {
+              throw new BadRequestError('tag too short');
+            }
+          }
+          // 插入 tag 并生成 tag 字符串
+          // tags = TagCore::insertTagsNeue($uid, $_POST['tags'], TagCore::TAG_CAT_SUBJECT, $subject['subject_type_id'], $subject['subject_id']);
+        }
+      }
 
-      // TODO: 插入 tag 并生成 tag 字符串
-      // if (Censor::isNeedReview($_POST['tags'])) {
-      //   $interest_tag = '';
-      // } else {
-      //   $interest_tag = TagCore::insertTagsNeue($uid, $_POST['tags'], TagCore::TAG_CAT_SUBJECT, $subject['subject_type_id'], $subject['subject_id']);
-      //   TagCore::UpdateSubjectTags($subject['subject_id']);
-      // }
+      await rateLimit(LimitAction.Subject, auth.userID);
 
       let interestID = 0;
       let interestTypeUpdated = false;
