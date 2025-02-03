@@ -590,7 +590,8 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'createEpisodes',
-        description: '为条目添加新章节',
+        summary: '为条目添加新章节',
+        description: '需要 `epEdit` 权限，一次最多可以添加 40 个章节',
         params: t.Object({
           subjectID: t.Integer({ examples: [363612], minimum: 0 }),
         }),
@@ -616,6 +617,9 @@ export async function setup(app: App) {
 
       if (episodes.length === 0) {
         return { episodeIDs: [] };
+      }
+      if (episodes.length > 40) {
+        throw new BadRequestError('too many episodes, max is 40');
       }
 
       const s = await orm.fetchSubjectByID(subjectID);
@@ -686,7 +690,8 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'patchEpisodes',
-        description: '批量编辑条目章节',
+        summary: '批量编辑条目章节',
+        description: '需要 `epEdit` 权限，一次最多可以编辑 20 个章节',
         params: t.Object({ subjectID: t.Integer({ examples: [363612], minimum: 0 }) }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: EpsisodesEdit,
@@ -719,6 +724,9 @@ export async function setup(app: App) {
 
       if (episodeEdits.length === 0) {
         throw new BadRequestError('no episodes to edit');
+      }
+      if (episodeEdits.length > 20) {
+        throw new BadRequestError('too many episodes, max is 20');
       }
       if (expectedRevision && expectedRevision.length !== episodeEdits.length) {
         throw new BadRequestError('expected revision length is not equal to episodes length');
