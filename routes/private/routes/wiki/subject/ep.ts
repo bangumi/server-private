@@ -41,7 +41,7 @@ export const EpisodeWikiInfo = t.Object(
   },
 );
 
-const EpisodeExpected = t.Optional(
+export const EpisodeExpected = t.Optional(
   t.Partial(
     t.Object(
       {

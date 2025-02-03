@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
-import { db } from '@app/drizzle/db.ts';
+import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
@@ -21,6 +21,7 @@ import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
@@ -141,22 +142,28 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
+const EpisodePartial = t.Partial(t.Omit(epRoutes.EpisodeWikiInfo, ['id', 'subjectID']));
+
 export const EpsisodesNew = t.Object(
   {
     episodes: t.Array(
-      t.Object({
-        name: t.Optional(t.String()),
-        nameCN: t.Optional(t.String()),
-        type: t.Optional(res.Ref(res.EpisodeType)),
-        disc: t.Optional(t.Number()),
-        ep: t.Number(),
-        duration: t.Optional(t.String()),
-        date: t.Optional(t.String()),
-        summary: t.Optional(t.String()),
-      }),
+      // EpisodePartial with required ep
+      t.Composite([t.Omit(EpisodePartial, ['ep']), t.Object({ ep: t.Number() })]),
     ),
   },
   { $id: 'EpsisodesNew' },
+);
+
+export const EpsisodesEdit = t.Object(
+  {
+    commitMessage: t.String(),
+    episodes: t.Array(
+      // EpisodePartial with required id
+      t.Composite([EpisodePartial, t.Object({ id: t.Integer() })]),
+    ),
+    expectedRevision: t.Optional(t.Array(epRoutes.EpisodeExpected)),
+  },
+  { $id: 'EpsisodesEdit' },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -668,6 +675,136 @@ export async function setup(app: App) {
       });
 
       return { episodeIDs };
+    },
+  );
+
+  app.addSchema(EpsisodesEdit);
+
+  app.patch(
+    '/subjects/:subjectID/ep',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'patchEpisodes',
+        description: '批量编辑条目章节',
+        params: t.Object({ subjectID: t.Integer({ examples: [363612], minimum: 0 }) }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: EpsisodesEdit,
+        response: {
+          200: t.Null(),
+          401: res.Ref(res.Error, {
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('editing episodes')],
+    },
+    async ({
+      auth,
+      body: { commitMessage, episodes: episodeEdits, expectedRevision },
+      params: { subjectID },
+    }): Promise<void> => {
+      if (!auth.permission.ep_edit) {
+        throw new NotAllowedError('edit episodes');
+      }
+
+      const s = await orm.fetchSubjectByID(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+
+      if (episodeEdits.length === 0) {
+        throw new BadRequestError('no episodes to edit');
+      }
+      if (expectedRevision && expectedRevision.length !== episodeEdits.length) {
+        throw new BadRequestError('expected revision length is not equal to episodes length');
+      }
+
+      const episodeIDs = episodeEdits.map((ep) => ep.id);
+      if (episodeIDs.length !== new Set(episodeIDs).size) {
+        throw new BadRequestError('episode ids are not unique');
+      }
+      await db.transaction(async (txn) => {
+        const eps = await txn
+          .select()
+          .from(schema.chiiEpisodes)
+          .where(op.inArray(schema.chiiEpisodes.id, episodeIDs));
+        const epsMap = new Map(eps.map((ep) => [ep.id, ep]));
+
+        const now = new Date();
+        for (const [index, epEdit] of episodeEdits.entries()) {
+          const ep = epsMap.get(epEdit.id);
+          if (!ep) {
+            throw new BadRequestError(`episode ${epEdit.id} not found`);
+          }
+          if (ep.subjectID !== subjectID) {
+            throw new BadRequestError(`episode ${epEdit.id} is not for subject ${subjectID}`);
+          }
+          if (expectedRevision?.[index] !== undefined) {
+            matchExpected(ep, expectedRevision[index]);
+          }
+
+          epRoutes.validateDateDuration(epEdit.date, epEdit.duration);
+          if (epEdit.date !== undefined) {
+            ep.airdate = epEdit.date;
+          }
+          if (epEdit.duration !== undefined) {
+            ep.duration = epEdit.duration;
+          }
+
+          if (epEdit.name !== undefined) {
+            ep.name = epEdit.name;
+          }
+
+          if (epEdit.nameCN !== undefined) {
+            ep.nameCN = epEdit.nameCN;
+          }
+
+          if (epEdit.summary !== undefined) {
+            ep.desc = epEdit.summary;
+          }
+
+          if (epEdit.ep !== undefined) {
+            ep.sort = epEdit.ep;
+          }
+
+          if (epEdit.disc !== undefined) {
+            ep.disc = epEdit.disc;
+          }
+
+          if (epEdit.type !== undefined) {
+            ep.type = epEdit.type;
+          }
+
+          ep.updatedAt = now.getTime() / 1000;
+        }
+
+        for (const ep of eps) {
+          await txn.update(schema.chiiEpisodes).set(ep).where(op.eq(schema.chiiEpisodes.id, ep.id));
+        }
+        await pushRev(txn, {
+          revisions: eps.map((ep) => ({
+            episodeID: ep.id,
+            rev: {
+              ep_sort: ep.sort.toString(),
+              ep_type: ep.type.toString(),
+              ep_disc: ep.disc.toString(),
+              ep_name: ep.name,
+              ep_name_cn: ep.nameCN,
+              ep_duration: ep.duration,
+              ep_airdate: ep.airdate,
+              ep_desc: ep.desc,
+            },
+          })),
+          creator: auth.userID,
+          now,
+          comment: commitMessage,
+        });
+      });
     },
   );
 }
