@@ -22,12 +22,13 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { validateDate } from '@app/lib/utils/date.ts';
+import { validateDuration } from '@app/lib/utils/index.ts';
 import { matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
 
-import * as epRoutes from './ep.ts';
 import * as imageRoutes from './image.ts';
 import * as manageRoutes from './mgr.ts';
 
@@ -635,7 +636,8 @@ export async function setup(app: App) {
       const now = DateTime.now().toUnixInteger();
       const discDefault = s.type === SubjectType.Music ? 1 : 0;
       const newEpisodes = episodes.map((ep) => {
-        epRoutes.validateDateDuration(ep.date, ep.duration);
+        validateDate(ep.date);
+        validateDuration(ep.duration);
         return {
           subjectID: subjectID,
           sort: ep.ep,
@@ -757,11 +759,12 @@ export async function setup(app: App) {
             matchExpected(ep, expectedRevision[index]);
           }
 
-          epRoutes.validateDateDuration(epEdit.date, epEdit.duration);
           if (epEdit.date !== undefined) {
+            validateDate(epEdit.date);
             ep.airdate = epEdit.date;
           }
           if (epEdit.duration !== undefined) {
+            validateDuration(epEdit.duration);
             ep.duration = epEdit.duration;
           }
 

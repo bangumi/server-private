@@ -10,15 +10,14 @@ import { pushRev } from '@app/lib/rev/ep.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { parseDuration } from '@app/lib/utils/index.ts';
+import { validateDate } from '@app/lib/utils/date.ts';
+import { validateDuration } from '@app/lib/utils/index.ts';
 import { matchExpected } from '@app/lib/wiki';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(res.EpisodeWikiInfo);
-
   app.get(
     '/ep/:episodeID',
     {
@@ -143,11 +142,12 @@ export async function setup(app: App) {
         matchExpected(ep, expected);
       }
 
-      validateDateDuration(body.date, body.duration);
       if (body.date) {
+        validateDate(body.date);
         ep.date = body.date;
       }
       if (body.duration) {
+        validateDuration(body.duration);
         ep.duration = body.duration;
       }
 
@@ -205,19 +205,4 @@ export async function setup(app: App) {
       return {};
     },
   );
-}
-
-export function validateDateDuration(date: string | undefined, duration: string | undefined) {
-  if (date && !req.datePattern.test(date)) {
-    throw new BadRequestError(`${date} is not valid date`);
-  }
-
-  if (duration) {
-    const durationN = parseDuration(duration);
-    if (Number.isNaN(durationN)) {
-      throw new BadRequestError(
-        `${duration} is not valid duration, use string like 'hh:mm:dd' or '1h10m20s'`,
-      );
-    }
-  }
 }
