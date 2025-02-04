@@ -340,15 +340,15 @@ export async function fetchSubjectIDsByFilter(
   const sorts = [];
   switch (sort) {
     case SubjectSort.Rank: {
-      conditions.push(op.ne(schema.chiiSubjectFields.fieldRank, 0));
-      sorts.push(op.asc(schema.chiiSubjectFields.fieldRank));
+      conditions.push(op.ne(schema.chiiSubjectFields.rank, 0));
+      sorts.push(op.asc(schema.chiiSubjectFields.rank));
       break;
     }
     case SubjectSort.Trends: {
       break;
     }
     case SubjectSort.Collects: {
-      sorts.push(op.desc(schema.chiiSubjects.done));
+      sorts.push(op.desc(schema.chiiSubjects.collect));
       break;
     }
     case SubjectSort.Date: {
@@ -418,7 +418,7 @@ export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
   const data = await db
     .select({
       id: schema.chiiSubjects.id,
-      weekday: schema.chiiSubjectFields.weekDay,
+      weekday: schema.chiiSubjectFields.weekday,
       watchers: schema.chiiSubjects.doing,
     })
     .from(schema.chiiSubjects)

@@ -6,7 +6,11 @@ import type * as orm from '@app/drizzle/orm.ts';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
-import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
+import {
+  CollectionPrivacy,
+  CollectionType,
+  type UserEpisodeCollection,
+} from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findNetworkService,
@@ -205,7 +209,7 @@ function toSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
   return {
     date: fields.date,
     month: fields.month,
-    weekday: fields.weekDay,
+    weekday: fields.weekday,
     year: fields.year,
   };
 }
@@ -213,7 +217,7 @@ function toSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
 function toSubjectCollection(subject: orm.ISubject): res.ISubjectCollection {
   return {
     [CollectionType.Wish]: subject.wish,
-    [CollectionType.Collect]: subject.done,
+    [CollectionType.Collect]: subject.collect,
     [CollectionType.Doing]: subject.doing,
     [CollectionType.OnHold]: subject.onHold,
     [CollectionType.Dropped]: subject.dropped,
@@ -239,21 +243,21 @@ function toSubjectPlatform(subject: orm.ISubject): res.ISubjectPlatform {
 
 function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
   const ratingCount = [
-    fields.fieldRate1,
-    fields.fieldRate2,
-    fields.fieldRate3,
-    fields.fieldRate4,
-    fields.fieldRate5,
-    fields.fieldRate6,
-    fields.fieldRate7,
-    fields.fieldRate8,
-    fields.fieldRate9,
-    fields.fieldRate10,
+    fields.rate1,
+    fields.rate2,
+    fields.rate3,
+    fields.rate4,
+    fields.rate5,
+    fields.rate6,
+    fields.rate7,
+    fields.rate8,
+    fields.rate9,
+    fields.rate10,
   ];
   const total = ratingCount.reduce((a, b) => a + b, 0);
   const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
   const rating = {
-    rank: fields.fieldRank,
+    rank: fields.rank,
     total: total,
     score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
@@ -293,13 +297,13 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     nsfw: subject.nsfw,
     platform: toSubjectPlatform(subject),
     rating: toSubjectRating(fields),
-    redirect: fields.fieldRedirect,
+    redirect: fields.redirect,
     series: subject.series,
     seriesEntry: subject.seriesEntry,
     summary: subject.summary,
     type: subject.typeID,
     volumes: subject.volumes,
-    tags: toSubjectTags(fields.fieldTags),
+    tags: toSubjectTags(fields.tags),
   };
 }
 
@@ -311,7 +315,7 @@ export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectI
     tags: splitTags(interest.tag),
     epStatus: interest.epStatus,
     volStatus: interest.volStatus,
-    private: interest.private,
+    private: interest.privacy !== CollectionPrivacy.Public,
     updatedAt: interest.updatedAt,
   };
 }

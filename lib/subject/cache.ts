@@ -9,11 +9,11 @@ export function getSlimCacheKey(id: number): string {
 }
 
 export function getItemCacheKey(id: number): string {
-  return `sbj:item:${id}`;
+  return `sbj:v2:item:${id}`;
 }
 
 export function getEpCacheKey(id: number): string {
-  return `sbj:ep:${id}`;
+  return `sbj:v2:ep:${id}`;
 }
 
 export function getListCacheKey(filter: SubjectFilter, sort: SubjectSort, page: number): string {
