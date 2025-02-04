@@ -27,8 +27,12 @@ jobs:
           password: ${{ github.token }}
 
       - run: echo "SHA=$(git show --no-patch --no-notes --date=short-local --pretty='%as-%h')" >> $GITHUB_ENV
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         env:
           TZ: UTC
+
+      - run: echo "SHA=${{github.ref_name}}" >> $GITHUB_ENV
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
 
       - name: Docker metadata
         id: meta

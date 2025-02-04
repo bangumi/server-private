@@ -27,7 +27,7 @@ export async function setup(app: App) {
         operationId: 'getEpisodeWikiInfo',
         description: [].join('\n\n'),
         params: t.Object({
-          episodeID: t.Integer({ examples: [1148124], minimum: 0 }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
@@ -82,7 +82,7 @@ export async function setup(app: App) {
         operationId: 'patchEpisodeWikiInfo',
         description: [].join('\n\n'),
         params: t.Object({
-          episodeID: t.Integer({ examples: [1148124], minimum: 0 }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(

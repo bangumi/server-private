@@ -2,7 +2,8 @@ import { DateTime } from 'luxon';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import * as Subject from './index.ts';
-import { db, op, schema } from '@app/drizzle/db.ts';
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
 
 describe('should update subject', () => {
   beforeEach(async () => {

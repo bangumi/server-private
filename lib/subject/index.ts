@@ -5,8 +5,9 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op, schema, type Txn } from '@app/drizzle/db.ts';
+import { db, op, type Txn } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
+import * as schema from '@app/drizzle/schema.ts';
 import { chiiLikes, chiiTagIndex, chiiTagList } from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
@@ -335,7 +336,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
     .from(chiiLikes)
     .where(
       op.and(
-        op.eq(chiiLikes.type, LikeType.subject_cover),
+        op.eq(chiiLikes.type, LikeType.SubjectCover),
         op.inArray(
           chiiLikes.relatedID,
           images.map((x) => x.id),

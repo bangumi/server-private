@@ -36,7 +36,7 @@ vi.spyOn(Subject, 'onSubjectVote').mockImplementation(() => Promise.resolve());
 
 describe('should vote for subject cover', () => {
   beforeAll(async () => {
-    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
+    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.SubjectCover));
     await SubjectImageRepo.upsert(
       {
         ban: 0,
@@ -52,7 +52,7 @@ describe('should vote for subject cover', () => {
   });
 
   afterAll(async () => {
-    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
+    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.SubjectCover));
     await SubjectImageRepo.delete({ id: 100 });
   });
 

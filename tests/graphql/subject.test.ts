@@ -160,31 +160,6 @@ describe('subject', () => {
     expect(res.data.subject.relations).toHaveLength(0);
   });
 
-  test('should reject nested subject relations', async () => {
-    const res = await testClient.query(gql`
-      query {
-        subject(id: 12) {
-          relations(limit: 1) {
-            relation
-            subject {
-              id
-              name
-              relations(limit: 1) {
-                relation
-                subject {
-                  id
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
-    `);
-
-    expect(res).toMatchSnapshot();
-  });
-
   test('should subject characters', async () => {
     const res = await testClient.query(gql`
       query {
@@ -234,7 +209,6 @@ describe('subject', () => {
               nickname
             }
             created_at
-            updated_at
             title
             replies
             state

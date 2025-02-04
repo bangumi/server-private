@@ -102,7 +102,7 @@ export function setup(app: App) {
                 chiiLikes.relatedID,
                 images.map((x) => x.id),
               ),
-              op.eq(chiiLikes.type, LikeType.subject_cover),
+              op.eq(chiiLikes.type, LikeType.SubjectCover),
               op.eq(chiiLikes.uid, auth.userID),
               op.eq(chiiLikes.deleted, 0),
             ),
@@ -236,8 +236,8 @@ export function setup(app: App) {
         description: `需要 \`subjectWikiEdit\` 权限`,
         summary: '为条目封面投票',
         params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
-          imageID: t.Integer({ exclusiveMinimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
+          imageID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({}),
@@ -255,7 +255,7 @@ export function setup(app: App) {
       }
 
       await db.insert(chiiLikes).values({
-        type: LikeType.subject_cover,
+        type: LikeType.SubjectCover,
         relatedID: imageID,
         uid: auth.userID,
         createdAt: DateTime.now().toUnixInteger(),
@@ -277,8 +277,8 @@ export function setup(app: App) {
         summary: '撤消条目封面投票',
         description: `需要 \`subjectWikiEdit\` 权限`,
         params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
-          imageID: t.Integer({ exclusiveMinimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
+          imageID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({}),
@@ -295,7 +295,7 @@ export function setup(app: App) {
         .set({ deleted: 1 })
         .where(
           op.and(
-            op.eq(chiiLikes.type, LikeType.subject_cover),
+            op.eq(chiiLikes.type, LikeType.SubjectCover),
             op.eq(chiiLikes.uid, auth.userID),
             op.eq(chiiLikes.relatedID, imageID),
             op.eq(chiiLikes.deleted, 0),

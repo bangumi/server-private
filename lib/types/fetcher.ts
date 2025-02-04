@@ -88,6 +88,22 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   return result;
 }
 
+export async function fetchSimpleUsersByIDs(
+  ids: number[],
+): Promise<Record<number, res.ISimpleUser>> {
+  const slims = await fetchSlimUsersByIDs(ids);
+  return Object.fromEntries(
+    Object.entries(slims).map(([id, slim]) => [
+      id,
+      {
+        id: slim.id,
+        username: slim.username,
+        nickname: slim.nickname,
+      },
+    ]),
+  );
+}
+
 export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
   const data = await db
     .select({ fid: schema.chiiFriends.fid })
@@ -428,6 +444,25 @@ export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
   return result;
 }
 
+export async function fetchSubjectInterest(
+  userID: number,
+  subjectID: number,
+): Promise<res.ISubjectInterest | undefined> {
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectInterests)
+    .where(
+      op.and(
+        op.eq(schema.chiiSubjectInterests.uid, userID),
+        op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+      ),
+    );
+  for (const d of data) {
+    return convert.toSubjectInterest(d);
+  }
+  return;
+}
+
 export async function fetchSubjectEpStatus(
   userID: number,
   subjectID: number,
@@ -747,6 +782,26 @@ export async function fetchSlimIndexByID(indexID: number): Promise<res.ISlimInde
   return item;
 }
 
+export async function fetchSlimGroupByName(
+  groupName: string,
+  allowNsfw = false,
+): Promise<res.ISlimGroup | undefined> {
+  const [data] = await db
+    .select()
+    .from(schema.chiiGroups)
+    .where(
+      op.and(
+        op.eq(schema.chiiGroups.name, groupName),
+        allowNsfw ? undefined : op.eq(schema.chiiGroups.nsfw, false),
+      ),
+    )
+    .limit(1);
+  if (!data) {
+    return;
+  }
+  return convert.toSlimGroup(data);
+}
+
 /** Cached */
 export async function fetchSlimGroupByID(
   groupID: number,
@@ -832,43 +887,4 @@ export async function fetchSlimBlogEntryByID(
   const slim = convert.toSlimBlogEntry(data);
   await redis.setex(getBlogSlimCacheKey(entryID), ONE_MONTH, JSON.stringify(slim));
   return slim;
-}
-
-export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | undefined> {
-  const data = await db
-    .select()
-    .from(schema.chiiSubjectTopics)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectTopics.id, topicID));
-  for (const d of data) {
-    return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
-  }
-  return;
-}
-
-export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promise<res.IReply[]> {
-  const data = await db
-    .select()
-    .from(schema.chiiSubjectPosts)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectPosts.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
-
-  const subReplies: Record<number, res.ISubReply[]> = {};
-  const topLevelReplies: res.IReply[] = [];
-  for (const d of data) {
-    const related = d.chii_subject_posts.related;
-    if (related == 0) {
-      const reply = convert.toSubjectTopicReply(d.chii_subject_posts, d.chii_members);
-      topLevelReplies.push(reply);
-    } else {
-      const subReply = convert.toSubjectTopicSubReply(d.chii_subject_posts, d.chii_members);
-      const list = subReplies[related] ?? [];
-      list.push(subReply);
-      subReplies[related] = list;
-    }
-  }
-  for (const reply of topLevelReplies) {
-    reply.replies = subReplies[reply.id] ?? [];
-  }
-  return topLevelReplies;
 }

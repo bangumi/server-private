@@ -9,11 +9,14 @@ export function addSchemas(app: App) {
   app.addSchema(common.SubjectType);
 
   app.addSchema(req.CreateEpisodeComment);
+  app.addSchema(req.CreatePost);
+  app.addSchema(req.CreateTimelineSay);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
   app.addSchema(req.UpdateEpisodeComment);
+  app.addSchema(req.UpdatePost);
   app.addSchema(req.UpdateTopic);
 
   app.addSchema(res.Avatar);
@@ -29,24 +32,30 @@ export function addSchemas(app: App) {
   app.addSchema(res.Friend);
   app.addSchema(res.Group);
   app.addSchema(res.GroupMember);
+  app.addSchema(res.GroupTopic);
   app.addSchema(res.Index);
   app.addSchema(res.IndexStats);
   app.addSchema(res.Infobox);
+  app.addSchema(res.Permissions);
   app.addSchema(res.Person);
   app.addSchema(res.PersonCharacter);
   app.addSchema(res.PersonCollect);
   app.addSchema(res.PersonImages);
   app.addSchema(res.PersonRelation);
   app.addSchema(res.PersonWork);
+  app.addSchema(res.Post);
+  app.addSchema(res.Profile);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
-  app.addSchema(res.SubReply);
+  app.addSchema(res.ReplyBase);
+  app.addSchema(res.SimpleUser);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
   app.addSchema(res.SlimGroup);
   app.addSchema(res.SlimIndex);
   app.addSchema(res.SlimPerson);
   app.addSchema(res.SlimSubject);
+  app.addSchema(res.SlimSubjectInterest);
   app.addSchema(res.SlimUser);
   app.addSchema(res.Subject);
   app.addSchema(res.SubjectAirtime);
@@ -54,7 +63,10 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectCollection);
   app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
+  app.addSchema(res.SubjectInterest);
   app.addSchema(res.SubjectPlatform);
+  app.addSchema(res.SubjectPosition);
+  app.addSchema(res.SubjectPositionStaff);
   app.addSchema(res.SubjectRating);
   app.addSchema(res.SubjectRec);
   app.addSchema(res.SubjectRelation);
@@ -64,17 +76,18 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectStaffPosition);
   app.addSchema(res.SubjectStaffPositionType);
   app.addSchema(res.SubjectTag);
+  app.addSchema(res.SubjectTopic);
   app.addSchema(res.Timeline);
   app.addSchema(res.TimelineCat);
   app.addSchema(res.TimelineMemo);
   app.addSchema(res.TimelineSource);
   app.addSchema(res.Topic);
-  app.addSchema(res.TopicDetail);
+  app.addSchema(res.TopicBase);
   app.addSchema(res.User);
   app.addSchema(res.UserHomepage);
   app.addSchema(res.UserHomepageSection);
-  app.addSchema(res.UserStats);
   app.addSchema(res.UserIndexStats);
   app.addSchema(res.UserMonoCollectionStats);
+  app.addSchema(res.UserStats);
   app.addSchema(res.UserSubjectCollectionStats);
 }

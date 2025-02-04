@@ -20,13 +20,36 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  // tmp backward compatibility
+  app.get('/subjects/-/episode/:episodeID', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}`, 307);
+  });
+  app.get('/subjects/-/episodes/:episodeID', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}`, 307);
+  });
+  app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
+  });
+  app.get('/subjects/-/episodes/:episodeID/comments', (req, reply) => {
+    const params = req.params as Record<string, string>;
+    const episodeID = params.episodeID ?? '';
+    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
+  });
+
   app.get(
-    '/subjects/-/episodes/:episodeID',
+    '/episodes/:episodeID',
     {
       schema: {
+        operationId: 'getSubjectEpisode',
         summary: '获取剧集信息',
         tags: [Tag.Episode],
-        operationId: 'getSubjectEpisode',
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
@@ -35,30 +58,28 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<res.IEpisode> => {
+    async ({ auth, params: { episodeID } }): Promise<res.IEpisode> => {
       const ep = await fetcher.fetchEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
+      }
+      if (auth.login) {
+        const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, ep.subjectID);
+        ep.status = epStatus[episodeID]?.type;
       }
       return ep;
     },
   );
 
-  app.get('/subjects/-/episode/:episodeID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}`, 307);
-  });
-
   app.get(
-    '/subjects/-/episodes/:episodeID/comments',
+    '/episodes/:episodeID/comments',
     {
       schema: {
+        operationId: 'getSubjectEpisodeComments',
         summary: '获取条目的剧集吐槽箱',
         tags: [Tag.Episode],
-        operationId: 'getSubjectEpisodeComments',
         params: t.Object({
-          episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Array(res.EpisodeComment),
@@ -75,22 +96,20 @@ export async function setup(app: App) {
         .from(schema.chiiEpComments)
         .where(op.eq(schema.chiiEpComments.mid, episodeID));
 
-      const userIDs = new Set(data.map((v) => v.uid));
-      const users = await fetcher.fetchSlimUsersByIDs([...userIDs]);
+      const uids = data.map((v) => v.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
 
       const comments: res.IEpisodeComment[] = [];
       const replies: Record<number, res.IEpisodeCommentBase[]> = {};
 
       for (const d of data) {
         const u = users[d.uid];
-        if (!u) {
-          continue;
-        }
+        const comment = convert.toEpisodeComment(d);
         if (d.related === 0) {
-          comments.push(convert.toEpisodeComment(d, u));
+          comments.push({ ...comment, replies: [], user: u });
         } else {
           const rs = replies[d.related] ?? [];
-          rs.push(convert.toEpisodeCommentBase(d, u));
+          rs.push({ ...comment, user: u });
           replies[d.related] = rs;
         }
       }
@@ -102,29 +121,23 @@ export async function setup(app: App) {
     },
   );
 
-  app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}/comments`, 307);
-  });
-
   app.post(
-    '/subjects/-/episodes/:episodeID/comments',
+    '/episodes/:episodeID/comments',
     {
       schema: {
-        summary: '创建条目的剧集吐槽',
         operationId: 'createSubjectEpComment',
+        summary: '创建条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
-        tags: [Tag.Episode],
+        body: req.Ref(req.CreateEpisodeComment),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new reply id' }),
           }),
         },
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: req.Ref(req.CreateEpisodeComment),
       },
       preHandler: [requireLogin('creating a comment')],
     },
@@ -134,12 +147,8 @@ export async function setup(app: App) {
      * @param relatedID - 子吐槽的父吐槽ID，默认为 `0` 代表发送顶层吐槽
      * @param episodeID - 剧集 ID
      */
-    async ({
-      auth,
-      body: { 'cf-turnstile-response': cfCaptchaResponse, content, replyTo = 0 },
-      params: { episodeID },
-    }) => {
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+    async ({ auth, body: { turnstileToken, content, replyTo = 0 }, params: { episodeID } }) => {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
       if (!Dam.allCharacterPrintable(content)) {
@@ -183,24 +192,21 @@ export async function setup(app: App) {
     },
   );
 
-  app.post('/subjects/-/episode/:episodeID/comments', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/${episodeID}/comments`, 307);
-  });
-
   app.put(
-    '/subjects/-/episodes/-/comments/:commentID',
+    '/episodes/-/comments/:commentID',
     {
       schema: {
-        summary: '编辑条目的剧集吐槽',
         operationId: 'updateSubjectEpComment',
+        summary: '编辑条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           commentID: t.Integer({ examples: [1075440] }),
         }),
-        tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: req.Ref(req.UpdateEpisodeComment),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('edit a comment')],
     },
@@ -237,23 +243,20 @@ export async function setup(app: App) {
     },
   );
 
-  app.put('/subjects/-/episode/-/comments/:commentID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const commentID = params.commentID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/-/comments/${commentID}`, 307);
-  });
-
   app.delete(
-    '/subjects/-/episodes/-/comments/:commentID',
+    '/episodes/-/comments/:commentID',
     {
       schema: {
-        summary: '删除条目的剧集吐槽',
         operationId: 'deleteSubjectEpComment',
+        summary: '删除条目的剧集吐槽',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           commentID: t.Integer({ examples: [1034989] }),
         }),
-        tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('delete a comment')],
     },
@@ -279,10 +282,4 @@ export async function setup(app: App) {
       return {};
     },
   );
-
-  app.delete('/subjects/-/episode/-/comments/:commentID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const commentID = params.commentID ?? '';
-    return reply.redirect(`/p1/subjects/-/episodes/-/comments/${commentID}`, 307);
-  });
 }

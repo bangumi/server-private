@@ -55,7 +55,7 @@ export function setup(app: App) {
         hide: true,
         body: t.Object({
           name: t.String({}),
-          duration_days: t.Integer({ exclusiveMinimum: 0 }),
+          days: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.String(),
@@ -63,12 +63,12 @@ export function setup(app: App) {
       },
       preHandler: [requireLogin('delete your token')],
     },
-    async ({ auth, body: { duration_days, name } }) => {
+    async ({ auth, body: { days, name } }) => {
       const token = await randomBase62String(40);
       await db.insert(chiiAccessToken).values({
         userID: auth.userID.toString(),
         expiredAt: DateTime.now()
-          .plus(Duration.fromObject({ day: duration_days }))
+          .plus(Duration.fromObject({ day: days }))
           .toJSDate(),
         type: TokenType.AccessToken,
         clientID: '',

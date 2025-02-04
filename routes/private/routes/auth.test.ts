@@ -23,7 +23,7 @@ describe('login', () => {
     const opt = {
       method: 'post',
       url: '/p1/login',
-      payload: { email: 'ee', password: 'eepp', 'cf-turnstile-response': 'fake-response' },
+      payload: { email: 'ee', password: 'eepp', turnstileToken: 'fake-response' },
     } as const;
 
     const login = () => app.inject(opt);
@@ -47,7 +47,7 @@ describe('login', () => {
       payload: {
         email: 'treeholechan@gmail.com',
         password: 'lovemeplease',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
 
