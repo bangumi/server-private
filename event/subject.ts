@@ -52,7 +52,7 @@ export async function handleFields(key: string, value: string) {
 }
 
 interface EpisodeKey {
-  episode_id: number;
+  ep_id: number;
 }
 
 export async function handleEpisode(key: string, value: string) {
@@ -64,7 +64,7 @@ export async function handleEpisode(key: string, value: string) {
     }
     case EventOp.Update:
     case EventOp.Delete: {
-      await redis.del(getEpCacheKey(idx.episode_id));
+      await redis.del(getEpCacheKey(idx.ep_id));
       break;
     }
     case EventOp.Snapshot: {
