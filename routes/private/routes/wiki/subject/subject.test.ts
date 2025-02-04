@@ -2,8 +2,10 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import { StatusCodes } from 'http-status-codes';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, beforeAll, describe, expect, test, vi } from 'vitest';
 
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
@@ -409,6 +411,7 @@ describe('create episodes', () => {
     });
 
   test('create new episodes', async () => {
+    await db.delete(schema.chiiEpisodes).where(op.eq(schema.chiiEpisodes.subjectID, subjectID));
     const app = await newEpisodeApp();
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
@@ -490,6 +493,196 @@ describe('create episodes', () => {
     expect(res.json()).toMatchObject({
       code: 'NOT_FOUND',
       message: expect.stringContaining('subject 999999'),
+    });
+  });
+});
+
+describe('patch episodes', () => {
+  const subjectID = 13;
+  let episodeIDs: number[];
+
+  beforeAll(async () => {
+    const episodes = await db
+      .select()
+      .from(schema.chiiEpisodes)
+      .where(op.eq(schema.chiiEpisodes.subjectID, subjectID))
+      .orderBy(schema.chiiEpisodes.sort);
+    episodeIDs = episodes.map((ep) => ep.id);
+    expect(episodeIDs).toHaveLength(2);
+  });
+
+  const patchEpisodesApp = () =>
+    testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: { ep_edit: true },
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+  test('successfully patch episodes', async () => {
+    const app = await patchEpisodesApp();
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [
+          {
+            id: episodeIDs[0],
+            name: 'Updated Episode 1',
+            nameCN: '更新第一话',
+            duration: '25:00',
+            date: '2024-01-02',
+            summary: 'Updated summary',
+          },
+          {
+            id: episodeIDs[1],
+            name: 'In fact, Episode 3',
+            ep: 3,
+          },
+        ],
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+  });
+
+  test('should require login', async () => {
+    const app = await testApp({});
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [{ id: episodeIDs[0], name: 'New Name' }],
+      },
+    });
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('should require ep_edit permission', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [{ id: episodeIDs[0], name: 'New Name' }],
+      },
+    });
+
+    expect(res.statusCode).toBe(401);
+    expect(res.json()).toMatchObject({
+      code: 'NOT_ALLOWED',
+      message: expect.stringContaining('edit episodes'),
+    });
+  });
+
+  test('should handle non-existent subject', async () => {
+    const app = await patchEpisodesApp();
+    const res = await app.inject({
+      url: '/subjects/999999/ep',
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [{ id: episodeIDs[0], name: 'New Name' }],
+      },
+    });
+
+    expect(res.statusCode).toBe(404);
+    expect(res.json()).toMatchObject({
+      code: 'NOT_FOUND',
+      message: expect.stringContaining('subject 999999'),
+    });
+  });
+
+  test('should reject empty episodes array', async () => {
+    const app = await patchEpisodesApp();
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [],
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toMatchObject({
+      code: 'BAD_REQUEST',
+      message: expect.stringContaining('no episodes to edit'),
+    });
+  });
+
+  test('should reject mismatched expected revision length', async () => {
+    const app = await patchEpisodesApp();
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [{ id: episodeIDs[0], name: 'New Name' }],
+        expectedRevision: [{ name: 'Old Name' }, { name: 'Extra Revision' }],
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toMatchObject({
+      code: 'BAD_REQUEST',
+      message: expect.stringContaining('expected revision length'),
+    });
+  });
+
+  test('should reject duplicate episode IDs', async () => {
+    const app = await patchEpisodesApp();
+    const res = await app.inject({
+      url: `/subjects/${subjectID}/ep`,
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [
+          { id: episodeIDs[0], name: 'New Name 1' },
+          { id: episodeIDs[0], name: 'New Name 2' },
+        ],
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toMatchObject({
+      code: 'BAD_REQUEST',
+      message: expect.stringContaining('episode ids are not unique'),
+    });
+  });
+
+  test('should reject episodes from different subject', async () => {
+    const app = await patchEpisodesApp();
+    const res = await app.inject({
+      url: `/subjects/${subjectID + 1}/ep`,
+      method: 'patch',
+      payload: {
+        commitMessage: 'Update episodes',
+        episodes: [{ id: episodeIDs[0], name: 'New Name' }],
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toMatchObject({
+      code: 'BAD_REQUEST',
+      message: expect.stringContaining('not for subject'),
     });
   });
 });

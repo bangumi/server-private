@@ -28,6 +28,7 @@ export function addSchemas(app: App) {
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.Episode);
   app.addSchema(res.EpisodeComment);
+  app.addSchema(res.EpisodeWikiInfo);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
   app.addSchema(res.Group);

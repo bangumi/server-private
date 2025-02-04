@@ -30,6 +30,7 @@ describe('edit subject ', () => {
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
         "date": "",
+        "disc": 0,
         "duration": "",
         "ep": 6,
         "id": 8,

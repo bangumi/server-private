@@ -1,6 +1,8 @@
 import type { Static, TRefUnsafe, TSchema, UnsafeOptions } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
+import { datePattern } from '@app/lib/utils/date.ts';
+
 export function Ref<T extends TSchema>(T: T, options?: UnsafeOptions): TRefUnsafe<T> {
   return t.Unsafe<Static<T>>({ $ref: T.$id, ...options });
 }
@@ -71,3 +73,28 @@ export const EpisodeCollectionStatus = t.Integer({
   - 2 = 看过
   - 3 = 抛弃`,
 });
+
+export type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
+export const EpisodeWikiInfo = t.Object(
+  {
+    id: t.Integer(),
+    subjectID: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
+    type: Ref(EpisodeType),
+    ep: t.Number(),
+    disc: t.Optional(t.Number()),
+    duration: t.String({ examples: ['24:53', '24m52s'] }),
+    date: t.Optional(
+      t.String({
+        description: 'YYYY-MM-DD',
+        pattern: datePattern.source,
+        examples: ['2022-02-02'],
+      }),
+    ),
+    summary: t.String(),
+  },
+  {
+    $id: 'EpisodeWikiInfo',
+  },
+);
