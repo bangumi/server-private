@@ -143,7 +143,7 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
-const EpisodePartial = t.Partial(t.Omit(epRoutes.EpisodeWikiInfo, ['id', 'subjectID']));
+const EpisodePartial = t.Partial(t.Omit(req.EpisodeWikiInfo, ['id', 'subjectID']));
 
 export const EpsisodesNew = t.Object(
   {
@@ -162,7 +162,7 @@ export const EpsisodesEdit = t.Object(
       // EpisodePartial with required id
       t.Composite([EpisodePartial, t.Object({ id: t.Integer() })]),
     ),
-    expectedRevision: t.Optional(t.Array(epRoutes.EpisodeExpected)),
+    expectedRevision: t.Optional(t.Array(req.EpisodeExpected)),
   },
   { $id: 'EpsisodesEdit' },
 );

@@ -1,4 +1,3 @@
-import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
@@ -8,6 +7,7 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { parseDuration } from '@app/lib/utils/index.ts';
@@ -15,54 +15,9 @@ import { matchExpected } from '@app/lib/wiki';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-
-type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
-export const EpisodeWikiInfo = t.Object(
-  {
-    id: t.Integer(),
-    subjectID: t.Integer(),
-    name: t.String(),
-    nameCN: t.String(),
-    type: res.Ref(res.EpisodeType),
-    ep: t.Number(),
-    disc: t.Optional(t.Number()),
-    duration: t.String({ examples: ['24:53', '24m52s'] }),
-    date: t.Optional(
-      t.String({
-        description: 'YYYY-MM-DD',
-        pattern: datePattern.source,
-        examples: ['2022-02-02'],
-      }),
-    ),
-    summary: t.String(),
-  },
-  {
-    $id: 'EpisodeWikiInfo',
-  },
-);
-
-export const EpisodeExpected = t.Optional(
-  t.Partial(
-    t.Object(
-      {
-        name: t.String(),
-        nameCN: t.String(),
-        duration: t.String(),
-        date: t.String(),
-        summary: t.String(),
-      },
-      {
-        description:
-          "a optional object to check if input is changed by others\nif some key is given, and current data in database doesn't match input, subject will not be changed",
-      },
-    ),
-  ),
-);
-
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(EpisodeWikiInfo);
+  app.addSchema(res.EpisodeWikiInfo);
 
   app.get(
     '/ep/:episodeID',
@@ -76,7 +31,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: res.Ref(EpisodeWikiInfo, {
+          200: res.Ref(res.EpisodeWikiInfo, {
             examples: [
               {
                 id: 1148124,
@@ -90,7 +45,7 @@ export async function setup(app: App) {
                 summary:
                   'ゴンとキルアはG.I.プレイヤー選考会にいよいよ挑戦する。審査を担当するツェズゲラから提示された合格の条件はただ一つ「練を見せる」こと。合格できる者は200人中32名という狭き門だが、ゴンとキルアはくぐり抜けることができるのか！？',
               },
-            ] satisfies IEpisodeWikiInfo[],
+            ] satisfies res.IEpisodeWikiInfo[],
           }),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('episode')),
@@ -98,7 +53,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<IEpisodeWikiInfo> => {
+    async ({ params: { episodeID } }): Promise<res.IEpisodeWikiInfo> => {
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
@@ -133,8 +88,8 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String(),
-            episode: t.Partial(t.Omit(EpisodeWikiInfo, ['id']), { $id: undefined }),
-            expectedRevision: EpisodeExpected,
+            episode: t.Partial(t.Omit(req.EpisodeWikiInfo, ['id']), { $id: undefined }),
+            expectedRevision: req.EpisodeExpected,
           },
           {
             examples: [
@@ -253,7 +208,7 @@ export async function setup(app: App) {
 }
 
 export function validateDateDuration(date: string | undefined, duration: string | undefined) {
-  if (date && !datePattern.test(date)) {
+  if (date && !req.datePattern.test(date)) {
     throw new BadRequestError(`${date} is not valid date`);
   }
 

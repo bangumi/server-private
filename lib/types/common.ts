@@ -56,3 +56,30 @@ export const CollectionType = t.Integer({
   - 4 = 搁置
   - 5 = 抛弃`,
 });
+
+export const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+export type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
+export const EpisodeWikiInfo = t.Object(
+  {
+    id: t.Integer(),
+    subjectID: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
+    type: Ref(EpisodeType),
+    ep: t.Number(),
+    disc: t.Optional(t.Number()),
+    duration: t.String({ examples: ['24:53', '24m52s'] }),
+    date: t.Optional(
+      t.String({
+        description: 'YYYY-MM-DD',
+        pattern: datePattern.source,
+        examples: ['2022-02-02'],
+      }),
+    ),
+    summary: t.String(),
+  },
+  {
+    $id: 'EpisodeWikiInfo',
+  },
+);
