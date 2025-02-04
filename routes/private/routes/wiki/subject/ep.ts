@@ -1,6 +1,7 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
+import { DateTime } from 'luxon';
 
 import { db } from '@app/drizzle/db.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
@@ -219,7 +220,7 @@ export async function setup(app: App) {
         ep.type = body.type;
       }
 
-      const now = new Date();
+      const now = DateTime.now().toUnixInteger();
 
       await db.transaction(async (t) => {
         await pushRev(t, {

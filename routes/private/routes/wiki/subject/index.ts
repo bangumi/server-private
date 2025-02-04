@@ -632,7 +632,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
-      const now = new Date();
+      const now = DateTime.now().toUnixInteger();
       const discDefault = s.type === SubjectType.Music ? 1 : 0;
       const newEpisodes = episodes.map((ep) => {
         epRoutes.validateDateDuration(ep.date, ep.duration);
@@ -650,8 +650,8 @@ export async function setup(app: App) {
           comment: 0,
           resources: 0,
           desc: ep.summary ?? '',
-          createdAt: now.getTime() / 1000,
-          updatedAt: now.getTime() / 1000,
+          createdAt: now,
+          updatedAt: now,
         };
       });
 
@@ -744,7 +744,7 @@ export async function setup(app: App) {
           .where(op.inArray(schema.chiiEpisodes.id, episodeIDs));
         const epsMap = new Map(eps.map((ep) => [ep.id, ep]));
 
-        const now = new Date();
+        const now = DateTime.now().toUnixInteger();
         for (const [index, epEdit] of episodeEdits.entries()) {
           const ep = epsMap.get(epEdit.id);
           if (!ep) {
@@ -789,7 +789,7 @@ export async function setup(app: App) {
             ep.type = epEdit.type;
           }
 
-          ep.updatedAt = now.getTime() / 1000;
+          ep.updatedAt = now;
         }
 
         for (const ep of eps) {

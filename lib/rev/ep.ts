@@ -15,7 +15,7 @@ export async function pushRev(
   }: {
     revisions: { episodeID: number; rev: EpTextRev }[];
     creator: number;
-    now: Date;
+    now: number;
     comment: string;
   },
 ) {
@@ -72,7 +72,7 @@ async function updatePreviousRevRecords({
   episodeID: number;
   rev: EpTextRev;
   creator: number;
-  now: Date;
+  now: number;
   comment: string;
 }) {
   const [revText] = await t
@@ -88,7 +88,7 @@ async function updatePreviousRevRecords({
     revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revText.revTextId,
-    createdAt: now.getTime() / 1000,
+    createdAt: now,
     revMid: episodeID,
     revEditSummary: comment,
   });
@@ -117,7 +117,7 @@ async function createRevRecords({
   episodeID: number;
   rev: EpTextRev;
   creator: number;
-  now: Date;
+  now: number;
   comment: string;
 }) {
   const [{ insertId: revTextId }] = await t.insert(schema.chiiRevText).values({
@@ -128,7 +128,7 @@ async function createRevRecords({
     revType: RevType.episodeEdit,
     revCreator: creator,
     revTextId: revTextId,
-    createdAt: now.getTime() / 1000,
+    createdAt: now,
     revMid: episodeID,
     revEditSummary: comment,
   });
