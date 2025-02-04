@@ -21,7 +21,7 @@ export async function setup(app: App) {
       schema: {
         hide: true,
         params: t.Object({
-          episodeID: t.Integer({ exclusiveMinimum: 0 }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
       },
     },

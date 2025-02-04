@@ -49,7 +49,7 @@ export async function setup(app: App) {
     {
       schema: {
         hide: true,
-        params: t.Object({ subjectID: t.Integer({ exclusiveMinimum: 0 }) }),
+        params: t.Object({ subjectID: t.Integer({ minimum: 1 }) }),
       },
       preHandler: [
         requirePermission('delete subject cover', (a) => a.permission.subject_cover_erase),
@@ -66,9 +66,9 @@ export async function setup(app: App) {
       schema: {
         hide: true,
         params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
-        body: t.Object({ imageID: t.Integer({ exclusiveMinimum: 0 }) }),
+        body: t.Object({ imageID: t.Integer({ minimum: 1 }) }),
       },
       preHandler: [
         requirePermission('delete subject cover', (a) => a.permission.subject_cover_erase),

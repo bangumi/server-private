@@ -833,7 +833,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         operationId: 'createSubjectTopic',
         params: t.Object({
-          subjectID: t.Integer({ examples: [114514], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({
@@ -997,7 +997,7 @@ export async function setup(app: App) {
         tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          topicID: t.Integer({ examples: [371602], minimum: 0 }),
+          topicID: t.Integer({ minimum: 1 }),
         }),
         body: req.UpdateTopic,
         response: {
