@@ -10,7 +10,7 @@ import { BadRequestError, CaptchaError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchPermission, UserRepo } from '@app/lib/orm/index.ts';
-import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
+import { turnstile } from '@app/lib/services/turnstile.ts';
 import * as res from '@app/lib/types/res.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -72,8 +72,6 @@ export async function setup(app: App) {
       void res.clearCookie(CookieKey);
     },
   );
-
-  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
 
   const loginRequestBody = t.Object(
     {
