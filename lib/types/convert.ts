@@ -213,7 +213,7 @@ function toSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
 function toSubjectCollection(subject: orm.ISubject): res.ISubjectCollection {
   return {
     [CollectionType.Wish]: subject.wish,
-    [CollectionType.Collect]: subject.done,
+    [CollectionType.Collect]: subject.collect,
     [CollectionType.Doing]: subject.doing,
     [CollectionType.OnHold]: subject.onHold,
     [CollectionType.Dropped]: subject.dropped,

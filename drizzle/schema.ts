@@ -498,7 +498,7 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   volumes: mediumint('field_volumes').notNull(),
   eps: mediumint('field_eps').notNull(),
   wish: mediumint('subject_wish').notNull(),
-  done: mediumint('subject_collect').notNull(),
+  collect: mediumint('subject_collect').notNull(),
   doing: mediumint('subject_doing').notNull(),
   onHold: mediumint('subject_on_hold').notNull(),
   dropped: mediumint('subject_dropped').notNull(),
