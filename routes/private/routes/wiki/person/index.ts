@@ -50,7 +50,7 @@ export async function setup(app: App) {
         operationId: 'getPersonWikiInfo',
         description: '获取当前的 wiki 信息',
         params: t.Object({
-          personID: t.Integer({ examples: [1], minimum: 0 }),
+          personID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
@@ -91,7 +91,7 @@ export async function setup(app: App) {
         tags: [Tag.Wiki],
         operationId: 'patchPersonInfo',
         params: t.Object({
-          personID: t.Integer({ examples: [1], minimum: 0 }),
+          personID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(

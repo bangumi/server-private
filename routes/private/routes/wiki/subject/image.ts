@@ -236,8 +236,8 @@ export function setup(app: App) {
         description: `需要 \`subjectWikiEdit\` 权限`,
         summary: '为条目封面投票',
         params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
-          imageID: t.Integer({ exclusiveMinimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
+          imageID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({}),
@@ -277,8 +277,8 @@ export function setup(app: App) {
         summary: '撤消条目封面投票',
         description: `需要 \`subjectWikiEdit\` 权限`,
         params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
-          imageID: t.Integer({ exclusiveMinimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
+          imageID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({}),

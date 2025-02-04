@@ -79,7 +79,7 @@ export async function setup(app: App) {
         summary: '获取条目的剧集吐槽箱',
         tags: [Tag.Episode],
         params: t.Object({
-          episodeID: t.Integer({ examples: [1075440], minimum: 0 }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Array(res.EpisodeComment),
