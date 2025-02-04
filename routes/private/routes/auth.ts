@@ -10,7 +10,7 @@ import { BadRequestError, CaptchaError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { fetchPermission, UserRepo } from '@app/lib/orm/index.ts';
-import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
+import { turnstile } from '@app/lib/services/turnstile.ts';
 import * as res from '@app/lib/types/res.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -30,7 +30,7 @@ const EmailOrPasswordError = createError(
 
 const UserBannedError = createError('USER_BANNED', 'user is banned', httpCodes.UNAUTHORIZED);
 
-const allowedRedirectUris: string[] = ['bangumi://', 'ani://bangumi-turnstile-callback'];
+const allowedRedirectUris: string[] = ['chii://', 'bangumi://', 'ani://bangumi-turnstile-callback'];
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -72,8 +72,6 @@ export async function setup(app: App) {
       void res.clearCookie(CookieKey);
     },
   );
-
-  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
 
   const loginRequestBody = t.Object(
     {
