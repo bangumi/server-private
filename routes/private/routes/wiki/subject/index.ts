@@ -174,7 +174,7 @@ export async function setup(app: App) {
         operationId: 'subjectInfo',
         description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
@@ -367,7 +367,7 @@ export async function setup(app: App) {
         operationId: 'subjectEditHistorySummary',
         description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
-          subjectID: t.Integer({ examples: [8], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
@@ -414,7 +414,7 @@ export async function setup(app: App) {
         operationId: 'putSubjectInfo',
         description: '需要 `subjectWikiEdit` 权限',
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
@@ -485,7 +485,7 @@ export async function setup(app: App) {
         tags: [Tag.Wiki],
         operationId: 'patchSubjectInfo',
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
@@ -584,7 +584,7 @@ export async function setup(app: App) {
         operationId: 'createEpisodes',
         description: '为条目添加新章节',
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: EpsisodesNew,
