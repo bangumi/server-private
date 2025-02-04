@@ -233,7 +233,7 @@ export async function setup(app: App) {
           ? op.eq(schema.chiiSubjectInterests.type, type)
           : op.ne(schema.chiiSubjectInterests.type, 0),
         op.ne(schema.chiiSubjects.ban, 1),
-        op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
+        op.eq(schema.chiiSubjectFields.redirect, 0),
         op.eq(schema.chiiSubjectInterests.private, CollectionPrivacy.Public),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );

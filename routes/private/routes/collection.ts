@@ -44,7 +44,7 @@ export async function setup(app: App) {
           : op.ne(schema.chiiSubjectInterests.type, 0),
         since ? op.gte(schema.chiiSubjectInterests.updatedAt, since) : undefined,
         op.ne(schema.chiiSubjects.ban, 1),
-        op.eq(schema.chiiSubjectFields.fieldRedirect, 0),
+        op.eq(schema.chiiSubjectFields.redirect, 0),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 
