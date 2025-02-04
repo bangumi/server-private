@@ -1,13 +1,21 @@
 import { Type as t } from '@sinclair/typebox';
+import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
+import { db, decrement, increment, op } from '@app/drizzle/db.ts';
+import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
+import { Dam, dam } from '@app/lib/dam';
+import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error';
+import { NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { PersonType } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, getCollectionTypeField, PersonType } from '@app/lib/subject/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -90,6 +98,203 @@ export async function setup(app: App) {
         data: collections,
         total: count,
       };
+    },
+  );
+
+  app.put(
+    '/collections/subjects/:subjectID',
+    {
+      schema: {
+        summary: '新增或修改条目收藏',
+        operationId: 'updateSubjectCollection',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        body: req.Ref(req.CollectSubject),
+      },
+      preHandler: [requireLogin('update subject collection')],
+    },
+    async ({
+      auth,
+      params: { subjectID },
+      body: { type, rate, epStatus, volStatus, comment, priv, tags },
+    }) => {
+      const slimSubject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!slimSubject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      let privacy = priv ? CollectionPrivacy.Private : CollectionPrivacy.Public;
+      if (comment) {
+        if (!Dam.allCharacterPrintable(comment)) {
+          throw new BadRequestError('comment contains invalid invisible character');
+        }
+        comment = comment.normalize('NFC');
+        if (comment.length > 380) {
+          throw new BadRequestError('comment too long');
+        }
+        if (dam.needReview(comment) || auth.permission.ban_post) {
+          privacy = CollectionPrivacy.Ban;
+        }
+      }
+      tags = tags?.map((t) => t.trim().normalize('NFKC'));
+      if (tags !== undefined) {
+        if (tags.length > 10) {
+          throw new BadRequestError('too many tags');
+        }
+        if (dam.needReview(tags.join(' '))) {
+          tags = undefined;
+        } else {
+          for (const tag of tags) {
+            if (tag.length < 2) {
+              throw new BadRequestError('tag too short');
+            }
+          }
+          // 插入 tag 并生成 tag 字符串
+          // tags = TagCore::insertTagsNeue($uid, $_POST['tags'], TagCore::TAG_CAT_SUBJECT, $subject['subject_type_id'], $subject['subject_id']);
+        }
+      }
+
+      await rateLimit(LimitAction.Subject, auth.userID);
+
+      let interestID = 0;
+      let interestTypeUpdated = false;
+      await db.transaction(async (t) => {
+        let needUpdateRate = false;
+
+        const [subject] = await t
+          .select()
+          .from(schema.chiiSubjects)
+          .where(op.eq(schema.chiiSubjects.id, subjectID))
+          .limit(1);
+        if (!subject) {
+          throw new UnexpectedNotFoundError(`subject ${subjectID}`);
+        }
+        const [interest] = await t
+          .select()
+          .from(schema.chiiSubjectInterests)
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+              op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+            ),
+          )
+          .limit(1);
+        if (interest) {
+          interestID = interest.id;
+          const oldType = interest.type;
+          const oldRate = interest.rate;
+          const oldPrivacy = interest.privacy;
+          const toUpdate: Partial<orm.ISubjectInterest> = {};
+          if (type && oldType !== type) {
+            interestTypeUpdated = true;
+            const now = DateTime.now().toUnixInteger();
+            toUpdate.type = type;
+            toUpdate.updatedAt = now;
+            toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
+            //若收藏类型改变,则更新数据
+            await t
+              .update(schema.chiiSubjects)
+              .set({
+                [getCollectionTypeField(type)]: increment(
+                  schema.chiiSubjects[getCollectionTypeField(type)],
+                ),
+                [getCollectionTypeField(oldType)]: decrement(
+                  schema.chiiSubjects[getCollectionTypeField(oldType)],
+                ),
+              })
+              .where(op.eq(schema.chiiSubjects.id, subjectID))
+              .limit(1);
+          }
+          if (rate && oldRate !== rate) {
+            needUpdateRate = true;
+            toUpdate.rate = rate;
+          }
+          if (epStatus !== undefined) {
+            toUpdate.epStatus = epStatus;
+          }
+          if (volStatus !== undefined) {
+            toUpdate.volStatus = volStatus;
+          }
+          if (comment !== undefined) {
+            toUpdate.comment = comment;
+          }
+          if (oldPrivacy !== privacy) {
+            needUpdateRate = true;
+            toUpdate.privacy = privacy;
+          }
+          if (tags !== undefined) {
+            toUpdate.tag = tags.join(' ');
+          }
+          if (Object.keys(toUpdate).length > 0) {
+            await t
+              .update(schema.chiiSubjectInterests)
+              .set(toUpdate)
+              .where(op.eq(schema.chiiSubjectInterests.id, interestID))
+              .limit(1);
+          }
+        } else {
+          if (!type) {
+            throw new BadRequestError('type is required on new subject interest');
+          }
+          const now = DateTime.now().toUnixInteger();
+          const toInsert: typeof schema.chiiSubjectInterests.$inferInsert = {
+            uid: auth.userID,
+            subjectID,
+            subjectType: slimSubject.type,
+            rate: rate ?? 0,
+            type,
+            hasComment: comment ? 1 : 0,
+            comment: comment ?? '',
+            tag: tags?.join(' ') ?? '',
+            epStatus: epStatus ?? 0,
+            volStatus: volStatus ?? 0,
+            wishDateline: 0,
+            doingDateline: 0,
+            collectDateline: 0,
+            onHoldDateline: 0,
+            droppedDateline: 0,
+            createIp: auth.ip,
+            updateIp: auth.ip,
+            updatedAt: now,
+            privacy: privacy,
+          };
+          toInsert[`${getCollectionTypeField(type)}Dateline`] = now;
+          const [{ insertId }] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
+          interestID = insertId;
+          interestTypeUpdated = true;
+          if (rate) {
+            needUpdateRate = true;
+          }
+          // 收藏计数＋1
+          if (type) {
+            const field = getCollectionTypeField(type) as keyof orm.ISubject;
+            await t
+              .update(schema.chiiSubjects)
+              .set({
+                [field]: increment(schema.chiiSubjects[field]),
+              })
+              .where(op.eq(schema.chiiSubjects.id, subjectID))
+              .limit(1);
+          }
+        }
+
+        if (needUpdateRate) {
+          // await updateSubjectRating();
+        }
+      });
+
+      // $db->memDelete(MC_SBJ_COLLECT . $subject['subject_id']); // 更新条目收藏缓存
+      // $db->memDelete(MC_COLLECT_PSN . $uid); //删除用户收藏统计缓存
+      // $db->memDelete(MC_USR_ALL_COLLECT . $uid);
+      // TagCore::cleanUserCollectTagCache($uid, $subject['subject_type_id'], $interest_type['id'], $interest_info['interest_type']);
+      // CacheCore::cleanWatchingListCache($uid);
+
+      // 插入时间线
+      if (interestTypeUpdated && privacy === CollectionPrivacy.Public) {
+        // TODO:
+      }
     },
   );
 
