@@ -4,7 +4,7 @@ import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { PersonType } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, PersonType } from '@app/lib/subject/type.ts';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { getTimelineUser } from '@app/lib/timeline/user';
 import * as convert from '@app/lib/types/convert.ts';
@@ -234,7 +234,7 @@ export async function setup(app: App) {
           : op.ne(schema.chiiSubjectInterests.type, 0),
         op.ne(schema.chiiSubjects.ban, 1),
         op.eq(schema.chiiSubjectFields.redirect, 0),
-        op.eq(schema.chiiSubjectInterests.private, false),
+        op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
 

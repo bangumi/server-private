@@ -572,7 +572,7 @@ export const chiiSubjectInterests = mysqlTable('chii_subject_interests', {
   createIp: char('interest_create_ip', { length: 15 }).notNull(),
   updateIp: char('interest_lasttouch_ip', { length: 15 }).notNull(),
   updatedAt: int('interest_lasttouch').default(0).notNull(),
-  private: customBoolean('interest_private').notNull(),
+  privacy: tinyint('interest_private').notNull(),
 });
 
 export const chiiSubjectRelatedBlogs = mysqlTable('chii_subject_related_blog', {

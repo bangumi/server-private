@@ -61,7 +61,7 @@ describe('should update subject', () => {
           "redirect": 0,
           "tags": "a:6:{i:0;a:2:{s:8:"tag_name";s:12:"开放世界";s:6:"result";s:1:"2";}i:1;a:2:{s:8:"tag_name";s:12:"2021年12月";s:6:"result";s:1:"2";}i:2;a:2:{s:8:"tag_name";s:6:"原创";s:6:"result";s:1:"2";}i:3;a:2:{s:8:"tag_name";s:10:"2021.12.26";s:6:"result";s:1:"1";}i:4;a:2:{s:8:"tag_name";s:6:"沙盒";s:6:"result";s:1:"1";}i:5;a:2:{s:8:"tag_name";s:2:"TV";s:6:"result";s:1:"1";}}",
           "tid": 2,
-          "weekDay": 5,
+          "weekday": 5,
           "year": 1997,
         },
         "chii_subjects": Object {
@@ -76,7 +76,7 @@ describe('should update subject', () => {
           "eps": 0,
           "field5": "",
           "id": 363612,
-          "idxCn": "s",
+          "idxCN": "s",
           "image": "82/15/363612_6uauA.jpg",
           "infobox": "{{Infobox q }}",
           "metaTags": "热血 短片",

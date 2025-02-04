@@ -311,7 +311,7 @@ export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectI
     tags: splitTags(interest.tag),
     epStatus: interest.epStatus,
     volStatus: interest.volStatus,
-    private: interest.private,
+    privacy: interest.privacy,
     updatedAt: interest.updatedAt,
   };
 }
