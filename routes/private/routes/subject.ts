@@ -17,6 +17,7 @@ import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy } from '@app/lib/subject/type.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
@@ -673,7 +674,7 @@ export async function setup(app: App) {
       }
       const condition = op.and(
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
-        op.eq(schema.chiiSubjectInterests.private, false),
+        op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
         op.eq(schema.chiiSubjectInterests.hasComment, 1),
         type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
       );

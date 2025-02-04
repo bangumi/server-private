@@ -504,7 +504,7 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   dropped: mediumint('subject_dropped').notNull(),
   series: customBoolean('subject_series').notNull(),
   seriesEntry: mediumint('subject_series_entry').notNull(),
-  idxCn: varchar('subject_idx_cn', { length: 1 }).notNull(),
+  idxCN: varchar('subject_idx_cn', { length: 1 }).notNull(),
   airtime: tinyint('subject_airtime').notNull(),
   nsfw: customBoolean('subject_nsfw').notNull(),
   ban: tinyint('subject_ban').default(0).notNull(),
@@ -528,7 +528,7 @@ export const chiiSubjectFields = mysqlTable('chii_subject_fields', {
   rank: int('field_rank').default(0).notNull(),
   year: year('field_year').notNull(),
   month: tinyint('field_mon').notNull(),
-  weekDay: tinyint('field_week_day').notNull(),
+  weekday: tinyint('field_week_day').notNull(),
   date: date('field_date', { mode: 'string' }).notNull(),
   redirect: mediumint('field_redirect').notNull(),
 });
@@ -572,7 +572,7 @@ export const chiiSubjectInterests = mysqlTable('chii_subject_interests', {
   createIp: char('interest_create_ip', { length: 15 }).notNull(),
   updateIp: char('interest_lasttouch_ip', { length: 15 }).notNull(),
   updatedAt: int('interest_lasttouch').default(0).notNull(),
-  private: customBoolean('interest_private').notNull(),
+  privacy: tinyint('interest_private').notNull(),
 });
 
 export const chiiSubjectRelatedBlogs = mysqlTable('chii_subject_related_blog', {
