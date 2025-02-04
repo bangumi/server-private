@@ -322,6 +322,7 @@ export async function setup(app: App) {
         }
         const reply = {
           ...convert.toGroupTopicReply(x),
+          creator: users[x.uid],
           replies: subReplies[x.id] ?? [],
           reactions: reactions[x.id] ?? [],
         };
