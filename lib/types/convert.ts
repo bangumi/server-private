@@ -205,7 +205,7 @@ function toSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
   return {
     date: fields.date,
     month: fields.month,
-    weekday: fields.weekDay,
+    weekday: fields.weekday,
     year: fields.year,
   };
 }
