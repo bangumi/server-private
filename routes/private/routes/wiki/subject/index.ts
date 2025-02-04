@@ -18,6 +18,7 @@ import { pushRev } from '@app/lib/rev/ep.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -458,7 +459,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
-      const s = await orm.fetchSubjectByID(subjectID);
+      const s = await fetcher.fetchSlimSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -622,7 +623,7 @@ export async function setup(app: App) {
         throw new BadRequestError('too many episodes, max is 40');
       }
 
-      const s = await orm.fetchSubjectByID(subjectID);
+      const s = await fetcher.fetchSlimSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -632,7 +633,7 @@ export async function setup(app: App) {
       }
 
       const now = new Date();
-      const discDefault = s.typeID === SubjectType.Music ? 1 : 0;
+      const discDefault = s.type === SubjectType.Music ? 1 : 0;
       const newEpisodes = episodes.map((ep) => {
         epRoutes.validateDateDuration(ep.date, ep.duration);
         return {
@@ -713,7 +714,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit episodes');
       }
 
-      const s = await orm.fetchSubjectByID(subjectID);
+      const s = await fetcher.fetchSlimSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
