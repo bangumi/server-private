@@ -1730,8 +1730,8 @@ exports[`should build private api spec 1`] = `
           type: string
         epStatus:
           type: integer
-        privacy:
-          $ref: '#/components/schemas/SubjectInterestPrivacy'
+        private:
+          type: boolean
         rate:
           type: integer
         tags:
@@ -1751,28 +1751,10 @@ exports[`should build private api spec 1`] = `
         - tags
         - epStatus
         - volStatus
-        - privacy
+        - private
         - updatedAt
       title: SubjectInterest
       type: object
-    SubjectInterestPrivacy:
-      description: |-
-        条目收藏隐私
-          - 0 = 公开
-          - 1 = 仅自己可见
-          - 2 = 封禁
-      enum:
-        - 0
-        - 1
-        - 2
-      type: integer
-      x-enum-varnames:
-        - Public
-        - Private
-        - Ban
-      x-ms-enum:
-        modelAsString: false
-        name: SubjectInterestPrivacy
     SubjectNew:
       properties:
         infobox:
