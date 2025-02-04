@@ -6,7 +6,11 @@ import type * as orm from '@app/drizzle/orm.ts';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
 import type * as ormold from '@app/lib/orm/index.ts';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
-import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
+import {
+  CollectionPrivacy,
+  CollectionType,
+  type UserEpisodeCollection,
+} from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findNetworkService,
@@ -205,7 +209,7 @@ function toSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
   return {
     date: fields.date,
     month: fields.month,
-    weekday: fields.weekDay,
+    weekday: fields.weekday,
     year: fields.year,
   };
 }
@@ -311,7 +315,7 @@ export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectI
     tags: splitTags(interest.tag),
     epStatus: interest.epStatus,
     volStatus: interest.volStatus,
-    privacy: interest.private,
+    private: interest.privacy !== CollectionPrivacy.Public,
     updatedAt: interest.updatedAt,
   };
 }

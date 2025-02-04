@@ -65,7 +65,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectInterest);
-  app.addSchema(res.SubjectInterestPrivacy);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectPosition);
   app.addSchema(res.SubjectPositionStaff);

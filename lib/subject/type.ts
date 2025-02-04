@@ -5,7 +5,6 @@ export enum SubjectType {
   Game = 4, // 游戏
   Real = 6, // 三次元
 }
-
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
 
 export enum EpisodeType {
