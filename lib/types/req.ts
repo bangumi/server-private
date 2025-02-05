@@ -84,8 +84,8 @@ export const UpdatePost = t.Object(
   { $id: 'UpdatePost' },
 );
 
-export type ICreateEpisodeComment = Static<typeof CreateEpisodeComment>;
-export const CreateEpisodeComment = t.Object(
+export type ICreateComment = Static<typeof CreateComment>;
+export const CreateComment = t.Object(
   {
     content: t.String({ minLength: 1 }),
     replyTo: t.Optional(
@@ -96,15 +96,15 @@ export const CreateEpisodeComment = t.Object(
     ),
     turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
-  { $id: 'CreateEpisodeComment' },
+  { $id: 'CreateComment' },
 );
 
-export type IUpdateEpisodeComment = Static<typeof UpdateEpisodeComment>;
-export const UpdateEpisodeComment = t.Object(
+export type IUpdateComment = Static<typeof UpdateComment>;
+export const UpdateComment = t.Object(
   {
     content: t.String({ minLength: 1 }),
   },
-  { $id: 'UpdateEpisodeComment' },
+  { $id: 'UpdateComment' },
 );
 
 export type ICreateTimelineSay = Static<typeof CreateTimelineSay>;

@@ -17,6 +17,7 @@ export const enum LimitAction {
   PrsnPost = 'prsn_post',
   Like = 'like',
   Timeline = 'timeline',
+  Comment = 'comment',
 }
 
 export interface Result {
