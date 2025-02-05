@@ -37,6 +37,7 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   crt_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   prsn_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   like: { limit: 2, durationMinutes: 1 },
+  comment: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
 };
 
 const limiter = createLimiter();

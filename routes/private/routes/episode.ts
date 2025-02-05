@@ -1,21 +1,16 @@
 import { Type as t } from '@sinclair/typebox';
-import { DateTime } from 'luxon';
 
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Comment, CommentTarget } from '@app/lib/comment';
-import { Dam } from '@app/lib/dam.ts';
-import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
+import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { turnstile } from '@app/lib/services/turnstile.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
-import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -95,54 +90,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a comment')],
     },
-    /**
-     * @param auth -
-     * @param content - 吐槽内容
-     * @param relatedID - 子吐槽的父吐槽ID，默认为 `0` 代表发送顶层吐槽
-     * @param episodeID - 剧集 ID
-     */
-    async ({ auth, body: { turnstileToken, content, replyTo = 0 }, params: { episodeID } }) => {
-      if (!(await turnstile.verify(turnstileToken))) {
-        throw new CaptchaError();
-      }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('text contains invalid invisible character');
-      }
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create comment');
-      }
-
+    async ({ auth, body, params: { episodeID } }) => {
       const ep = await fetcher.fetchSlimEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-
-      if (replyTo !== 0) {
-        const [parent] = await db
-          .select({ id: schema.chiiEpComments.id, state: schema.chiiEpComments.state })
-          .from(schema.chiiEpComments)
-          .where(op.eq(schema.chiiEpComments.id, replyTo));
-        if (!parent) {
-          throw new NotFoundError(`parent comment id ${replyTo}`);
-        }
-        if (parent.state !== CommentState.Normal) {
-          throw new NotAllowedError(`reply to a abnormal state comment`);
-        }
-      }
-
-      await rateLimit(LimitAction.Subject, auth.userID);
-
-      const reply: typeof schema.chiiEpComments.$inferInsert = {
-        mid: episodeID,
-        uid: auth.userID,
-        related: replyTo,
-        content: content,
-        createdAt: DateTime.now().toUnixInteger(),
-        state: CommentState.Normal,
-      };
-      const [result] = await db.insert(schema.chiiEpComments).values(reply);
-
-      return { id: result.insertId };
+      return await comment.create(episodeID, auth, body);
     },
   );
 
