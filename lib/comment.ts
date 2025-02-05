@@ -22,10 +22,6 @@ const commentTables = {
   [CommentType.Timeline]: schema.chiiTimelineComments,
 };
 
-function getCommentTable(type: CommentType) {
-  return commentTables[type];
-}
-
 export class Comment {
   private readonly type: CommentType;
 
@@ -34,7 +30,7 @@ export class Comment {
   }
 
   async getAll(mainID: number) {
-    const table = getCommentTable(this.type);
+    const table = commentTables[this.type];
     const data = await db.select().from(table).where(op.eq(table.mid, mainID));
     const uids = data.map((v) => v.uid);
     const users = await fetcher.fetchSlimUsersByIDs(uids);
