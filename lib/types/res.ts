@@ -449,11 +449,11 @@ export const Episode = t.Object(
   { $id: 'Episode', title: 'Episode' },
 );
 
-export type IEpisodeCommentBase = Static<typeof EpisodeCommentBase>;
-export const EpisodeCommentBase = t.Object(
+export type ICommentBase = Static<typeof CommentBase>;
+export const CommentBase = t.Object(
   {
     id: t.Integer(),
-    epID: t.Integer(),
+    mainID: t.Integer(),
     creatorID: t.Integer(),
     relatedID: t.Integer(),
     createdAt: t.Integer(),
@@ -463,19 +463,19 @@ export const EpisodeCommentBase = t.Object(
     reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   {
-    $id: 'EpisodeCommentBase',
+    $id: 'CommentBase',
   },
 );
 
-export type IEpisodeComment = Static<typeof EpisodeComment>;
-export const EpisodeComment = t.Intersect(
+export type IComment = Static<typeof Comment>;
+export const Comment = t.Intersect(
   [
-    EpisodeCommentBase,
+    CommentBase,
     t.Object({
-      replies: t.Array(Ref(EpisodeCommentBase)),
+      replies: t.Array(Ref(CommentBase)),
     }),
   ],
-  { $id: 'EpisodeComments' },
+  { $id: 'Comment' },
 );
 
 export type IPersonImages = Static<typeof PersonImages>;
@@ -629,8 +629,8 @@ export const BlogPhoto = t.Object(
   { $id: 'BlogPhoto', title: 'BlogPhoto' },
 );
 
-export type ISubjectComment = Static<typeof SubjectComment>;
-export const SubjectComment = t.Object(
+export type ISubjectInterestComment = Static<typeof SubjectInterestComment>;
+export const SubjectInterestComment = t.Object(
   {
     id: t.Integer(),
     user: Ref(SlimUser),
@@ -640,7 +640,7 @@ export const SubjectComment = t.Object(
     updatedAt: t.Integer(),
     reactions: t.Optional(t.Array(Ref(Reaction))),
   },
-  { $id: 'SubjectComment', title: 'SubjectComment' },
+  { $id: 'SubjectInterestComment', title: 'SubjectInterestComment' },
 );
 
 export type ISubjectReview = Static<typeof SubjectReview>;
