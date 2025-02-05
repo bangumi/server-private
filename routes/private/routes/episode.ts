@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { Comment, CommentType } from '@app/lib/comment';
 import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -19,6 +20,8 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  const comment = new Comment(CommentType.Episode);
+
   app.get(
     '/episodes/:episodeID',
     {
@@ -68,41 +71,7 @@ export async function setup(app: App) {
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-      const data = await db
-        .select()
-        .from(schema.chiiEpComments)
-        .where(op.eq(schema.chiiEpComments.mid, episodeID));
-
-      const uids = data.map((v) => v.uid);
-      const users = await fetcher.fetchSlimUsersByIDs(uids);
-
-      const comments: res.IComment[] = [];
-      const replies: Record<number, res.ICommentBase[]> = {};
-
-      for (const d of data) {
-        const u = users[d.uid];
-        const comment: res.ICommentBase = {
-          id: d.id,
-          mainID: d.mid,
-          creatorID: d.uid,
-          relatedID: d.related,
-          content: d.content,
-          createdAt: d.createdAt,
-          state: d.state,
-        };
-        if (d.related === 0) {
-          comments.push({ ...comment, replies: [], user: u });
-        } else {
-          const rs = replies[d.related] ?? [];
-          rs.push({ ...comment, user: u });
-          replies[d.related] = rs;
-        }
-      }
-      for (const comment of comments) {
-        comment.replies = replies[comment.id] ?? [];
-      }
-
-      return comments;
+      return await comment.getAll(episodeID);
     },
   );
 

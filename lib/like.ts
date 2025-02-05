@@ -12,6 +12,7 @@ export enum LikeType {
   GroupReply = 8,
 
   SubjectReply = 10,
+
   EpReply = 11,
 
   SubjectCollect = 40,
