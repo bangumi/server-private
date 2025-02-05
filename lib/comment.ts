@@ -83,9 +83,9 @@ export class Comment {
   }
 
   async create(
-    mainID: number,
     auth: Readonly<IAuth>,
-    body: req.ICreateEpisodeComment,
+    mainID: number,
+    body: req.ICreateComment,
   ): Promise<{ id: number }> {
     if (!(await turnstile.verify(body.turnstileToken))) {
       throw new CaptchaError();
@@ -125,5 +125,64 @@ export class Comment {
     };
     const [result] = await db.insert(this.table).values(reply);
     return { id: result.insertId };
+  }
+
+  async update(auth: Readonly<IAuth>, commentID: number, body: req.IUpdateComment) {
+    const [comment] = await db.select().from(this.table).where(op.eq(this.table.id, commentID));
+    if (!comment) {
+      throw new NotFoundError(`comment id ${commentID}`);
+    }
+    if (comment.uid !== auth.userID) {
+      throw new NotAllowedError('edit a comment which is not yours');
+    }
+    if (comment.state !== CommentState.Normal) {
+      throw new NotAllowedError(`edit to a abnormal state comment`);
+    }
+
+    const [reply] = await db
+      .select({ id: this.table.id })
+      .from(this.table)
+      .where(op.eq(this.table.id, commentID))
+      .limit(1);
+    if (reply) {
+      throw new NotAllowedError('cannot edit a comment with replies');
+    }
+
+    await db
+      .update(this.table)
+      .set({ content: body.content })
+      .where(op.eq(this.table.id, commentID));
+
+    return {};
+  }
+
+  async delete(auth: Readonly<IAuth>, commentID: number) {
+    const [comment] = await db.select().from(this.table).where(op.eq(this.table.id, commentID));
+    if (!comment) {
+      throw new NotFoundError(`comment id ${commentID}`);
+    }
+    if (comment.uid !== auth.userID) {
+      throw new NotAllowedError('delete a comment which is not yours');
+    }
+    if (comment.state !== CommentState.Normal) {
+      throw new NotAllowedError('delete a abnormal state comment');
+    }
+
+    switch (this.table) {
+      case schema.chiiEpComments:
+      case schema.chiiCrtComments:
+      case schema.chiiPrsnComments: {
+        await db
+          .update(this.table)
+          .set({ state: CommentState.UserDelete })
+          .where(op.eq(this.table.id, commentID));
+        break;
+      }
+      default: {
+        await db.delete(this.table).where(op.eq(this.table.id, commentID));
+      }
+    }
+
+    return {};
   }
 }

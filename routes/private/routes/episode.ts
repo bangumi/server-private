@@ -81,7 +81,7 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ examples: [1075440] }),
         }),
-        body: req.Ref(req.CreateEpisodeComment),
+        body: req.Ref(req.CreateComment),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new reply id' }),
@@ -95,7 +95,7 @@ export async function setup(app: App) {
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-      return await comment.create(episodeID, auth, body);
+      return await comment.create(auth, episodeID, body);
     },
   );
 
@@ -110,7 +110,7 @@ export async function setup(app: App) {
         params: t.Object({
           commentID: t.Integer({ examples: [1075440] }),
         }),
-        body: req.Ref(req.UpdateEpisodeComment),
+        body: req.Ref(req.UpdateComment),
         response: {
           200: t.Object({}),
         },
@@ -118,35 +118,8 @@ export async function setup(app: App) {
       preHandler: [requireLogin('edit a comment')],
     },
 
-    async ({ auth, body: { content }, params: { commentID } }) => {
-      const [comment] = await db
-        .select()
-        .from(schema.chiiEpComments)
-        .where(op.eq(schema.chiiEpComments.id, commentID));
-      if (!comment) {
-        throw new NotFoundError(`comment id ${commentID}`);
-      }
-      if (comment.uid !== auth.userID) {
-        throw new NotAllowedError('edit a comment which is not yours');
-      }
-      if (comment.state !== CommentState.Normal) {
-        throw new NotAllowedError(`edit to a abnormal state comment`);
-      }
-
-      const [{ replies = 0 } = {}] = await db
-        .select({ replies: op.count() })
-        .from(schema.chiiEpComments)
-        .where(op.eq(schema.chiiEpComments.related, commentID));
-      if (replies > 0) {
-        throw new NotAllowedError('cannot edit a comment with replies');
-      }
-
-      await db
-        .update(schema.chiiEpComments)
-        .set({ content: content })
-        .where(op.eq(schema.chiiEpComments.id, commentID));
-
-      return {};
+    async ({ auth, body, params: { commentID } }) => {
+      return await comment.update(auth, commentID, body);
     },
   );
 
