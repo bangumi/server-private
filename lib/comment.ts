@@ -4,7 +4,7 @@ import { fetchTopicReactions, LikeType } from '@app/lib/like.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
 
-export enum CommentType {
+export enum CommentTarget {
   Episode = 1,
   Character = 2,
   Person = 3,
@@ -14,23 +14,23 @@ export enum CommentType {
 }
 
 const commentTables = {
-  [CommentType.Episode]: schema.chiiEpComments,
-  [CommentType.Character]: schema.chiiCrtComments,
-  [CommentType.Person]: schema.chiiPrsnComments,
-  [CommentType.Index]: schema.chiiIndexComments,
-  [CommentType.Blog]: schema.chiiBlogComments,
-  [CommentType.Timeline]: schema.chiiTimelineComments,
+  [CommentTarget.Episode]: schema.chiiEpComments,
+  [CommentTarget.Character]: schema.chiiCrtComments,
+  [CommentTarget.Person]: schema.chiiPrsnComments,
+  [CommentTarget.Index]: schema.chiiIndexComments,
+  [CommentTarget.Blog]: schema.chiiBlogComments,
+  [CommentTarget.Timeline]: schema.chiiTimelineComments,
 };
 
 export class Comment {
-  private readonly type: CommentType;
+  private readonly target: CommentTarget;
 
-  constructor(type: CommentType) {
-    this.type = type;
+  constructor(target: CommentTarget) {
+    this.target = target;
   }
 
   async getAll(mainID: number) {
-    const table = commentTables[this.type];
+    const table = commentTables[this.target];
     const data = await db.select().from(table).where(op.eq(table.mid, mainID));
     const uids = data.map((v) => v.uid);
     const users = await fetcher.fetchSlimUsersByIDs(uids);
@@ -39,7 +39,7 @@ export class Comment {
     const replies: Record<number, res.ICommentBase[]> = {};
 
     let allReactions: Record<number, res.IReaction[]> = {};
-    if (this.type === CommentType.Episode) {
+    if (this.target === CommentTarget.Episode) {
       allReactions = await fetchTopicReactions(mainID, LikeType.EpReply);
     }
 

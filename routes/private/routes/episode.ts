@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { Comment, CommentType } from '@app/lib/comment';
+import { Comment, CommentTarget } from '@app/lib/comment';
 import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -20,7 +20,7 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  const comment = new Comment(CommentType.Episode);
+  const comment = new Comment(CommentTarget.Episode);
 
   app.get(
     '/episodes/:episodeID',
