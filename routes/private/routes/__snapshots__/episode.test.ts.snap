@@ -53,16 +53,16 @@ Array [
     "content": "設計師太紳士了(bgm38)",
     "createdAt": 1400517144,
     "creatorID": 382951,
-    "epID": 1027,
     "id": 205402,
+    "mainID": 1027,
     "relatedID": 0,
     "replies": Array [
       Object {
         "content": "结果现在再没有类似设定的了(?)。",
         "createdAt": 1413713418,
         "creatorID": 382951,
-        "epID": 1027,
         "id": 242518,
+        "mainID": 1027,
         "relatedID": 205402,
         "state": 0,
         "user": Object {
@@ -97,8 +97,8 @@ Array [
     "content": "op神曲~",
     "createdAt": 1404574453,
     "creatorID": 382951,
-    "epID": 1027,
     "id": 215256,
+    "mainID": 1027,
     "relatedID": 0,
     "replies": Array [],
     "state": 0,
