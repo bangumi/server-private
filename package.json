@@ -28,7 +28,7 @@
     "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.738.0",
+    "@aws-sdk/client-s3": "3.740.0",
     "@bgm38/wiki": "0.3.3",
     "@confluentinc/kafka-javascript": "1.2.0",
     "@fastify/cookie": "11.0.2",
