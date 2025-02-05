@@ -9,159 +9,159 @@ importers:
   .:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.738.0
+        specifier: 3.738.0
         version: 3.738.0
       '@bgm38/wiki':
-        specifier: ^0.3.3
+        specifier: 0.3.3
         version: 0.3.3
       '@confluentinc/kafka-javascript':
-        specifier: ^1.2.0
+        specifier: 1.2.0
         version: 1.2.0
       '@fastify/cookie':
-        specifier: ^11.0.2
+        specifier: 11.0.2
         version: 11.0.2
       '@fastify/error':
-        specifier: ^4.0.0
+        specifier: 4.0.0
         version: 4.0.0
       '@fastify/formbody':
-        specifier: ^8.0.2
+        specifier: 8.0.2
         version: 8.0.2
       '@fastify/request-context':
-        specifier: ^6.0.2
+        specifier: 6.0.2
         version: 6.0.2
       '@fastify/static':
-        specifier: ^8.0.4
+        specifier: 8.0.4
         version: 8.0.4
       '@fastify/swagger':
-        specifier: ^9.4.2
+        specifier: 9.4.2
         version: 9.4.2
       '@fastify/type-provider-typebox':
-        specifier: ^5.1.0
+        specifier: 5.1.0
         version: 5.1.0(@sinclair/typebox@0.34.15)
       '@fastify/view':
-        specifier: ^10.0.2
+        specifier: 10.0.2
         version: 10.0.2
       '@node-rs/bcrypt':
-        specifier: ^1.10.7
+        specifier: 1.10.7
         version: 1.10.7
       '@sentry/node':
-        specifier: ^8.53.0
+        specifier: 8.53.0
         version: 8.53.0
       '@sinclair/typebox':
-        specifier: ~0.34.15
+        specifier: 0.34.15
         version: 0.34.15
       '@trim21/php-serialize':
-        specifier: ^0.1.1
+        specifier: 0.1.1
         version: 0.1.1
       ajv:
-        specifier: ^8.17.1
+        specifier: 8.17.1
         version: 8.17.1
       ajv-formats:
-        specifier: ^3.0.1
+        specifier: 3.0.1
         version: 3.0.1(ajv@8.17.1)
       ajv-keywords:
-        specifier: ^5.1.0
+        specifier: 5.1.0
         version: 5.1.0(ajv@8.17.1)
       altair-static:
-        specifier: ^8.1.3
+        specifier: 8.1.3
         version: 8.1.3
       cron:
-        specifier: ^3.5.0
+        specifier: 3.5.0
         version: 3.5.0
       drizzle-orm:
-        specifier: ^0.39.1
+        specifier: 0.39.1
         version: 0.39.1(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(mysql2@3.12.0)
       fastify:
-        specifier: ^5.2.1
+        specifier: 5.2.1
         version: 5.2.1
       fastify-metrics:
-        specifier: ^12.1.0
+        specifier: 12.1.0
         version: 12.1.0(fastify@5.2.1)
       fastify-socket.io:
-        specifier: ^5.1.0
+        specifier: 5.1.0
         version: 5.1.0(fastify@5.2.1)(socket.io@4.8.1)
       got:
-        specifier: ^14.4.5
+        specifier: 14.4.5
         version: 14.4.5
       graphql:
-        specifier: ^16.10.0
+        specifier: 16.10.0
         version: 16.10.0
       http-proxy-agent:
-        specifier: ^7.0.2
+        specifier: 7.0.2
         version: 7.0.2
       http-status-codes:
-        specifier: ^2.3.0
+        specifier: 2.3.0
         version: 2.3.0
       https-proxy-agent:
-        specifier: ^7.0.6
+        specifier: 7.0.6
         version: 7.0.6
       ioredis:
-        specifier: ^5.4.2
+        specifier: 5.4.2
         version: 5.4.2
       js-yaml:
-        specifier: ^4.1.0
+        specifier: 4.1.0
         version: 4.1.0
       liquidjs:
-        specifier: ^10.20.2
+        specifier: 10.20.2
         version: 10.20.2
       lodash-es:
-        specifier: ^4.17.21
+        specifier: 4.17.21
         version: 4.17.21
       luxon:
-        specifier: ^3.5.0
+        specifier: 3.5.0
         version: 3.5.0
       mercurius:
-        specifier: ^16.0.1
+        specifier: 16.0.1
         version: 16.0.1(graphql@16.10.0)
       micromatch:
-        specifier: ^4.0.8
+        specifier: 4.0.8
         version: 4.0.8
       mime-types:
-        specifier: ^2.1.35
+        specifier: 2.1.35
         version: 2.1.35
       mysql2:
-        specifier: ^3.12.0
+        specifier: 3.12.0
         version: 3.12.0
       node-cache:
-        specifier: ^5.1.2
+        specifier: 5.1.2
         version: 5.1.2
       openapi-types:
-        specifier: ^12.1.3
+        specifier: 12.1.3
         version: 12.1.3
       parse-duration:
-        specifier: ^1.1.2
+        specifier: 1.1.2
         version: 1.1.2
       pino:
-        specifier: ^9.6.0
+        specifier: 9.6.0
         version: 9.6.0
       pino-pretty:
-        specifier: ^13.0.0
+        specifier: 13.0.0
         version: 13.0.0
       prom-client:
-        specifier: ^15.1.3
+        specifier: 15.1.3
         version: 15.1.3
       reflect-metadata:
-        specifier: ^0.2.1
+        specifier: 0.2.2
         version: 0.2.2
       socket.io:
-        specifier: ^4.8.1
+        specifier: 4.8.1
         version: 4.8.1
       socks-proxy-agent:
-        specifier: ^8.0.5
+        specifier: 8.0.5
         version: 8.0.5
       typeorm:
-        specifier: ^0.3.20
+        specifier: 0.3.20
         version: 0.3.20(ioredis@5.4.2)(mysql2@3.12.0)
       yaml:
-        specifier: ^2.7.0
+        specifier: 2.7.0
         version: 2.7.0
     devDependencies:
       '@eslint/js':
-        specifier: ^9.19.0
+        specifier: 9.19.0
         version: 9.19.0
       '@graphql-codegen/cli':
         specifier: 5.0.4
-        version: 5.0.4(@babel/core@7.26.7)(@types/node@22.12.0)(graphql@16.10.0)(typescript@5.7.3)
+        version: 5.0.4(@babel/core@7.26.7)(@types/node@22.13.0)(graphql@16.10.0)(typescript@5.7.3)
       '@graphql-codegen/introspection':
         specifier: 4.0.3
         version: 4.0.3(@babel/core@7.26.7)(graphql@16.10.0)
@@ -172,122 +172,122 @@ importers:
         specifier: 4.4.2
         version: 4.4.2(@babel/core@7.26.7)(graphql@16.10.0)
       '@shopify/prettier-plugin-liquid':
-        specifier: ^1.7.0
-        version: 1.7.0(prettier@3.4.2)
+        specifier: 1.7.2
+        version: 1.7.2(prettier@3.4.2)
       '@types/ioredis-mock':
-        specifier: ^8.2.5
+        specifier: 8.2.5
         version: 8.2.5
       '@types/js-yaml':
-        specifier: ^4.0.9
+        specifier: 4.0.9
         version: 4.0.9
       '@types/lodash-es':
-        specifier: ^4.17.12
+        specifier: 4.17.12
         version: 4.17.12
       '@types/luxon':
-        specifier: ^3.4.2
+        specifier: 3.4.2
         version: 3.4.2
       '@types/mime-types':
-        specifier: ^2.1.4
+        specifier: 2.1.4
         version: 2.1.4
       '@types/node':
-        specifier: ^22.12.0
-        version: 22.12.0
+        specifier: 22.13.0
+        version: 22.13.0
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.22.0
+        specifier: 8.22.0
         version: 8.22.0(@typescript-eslint/parser@8.22.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3))(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3)
       '@typescript-eslint/parser':
-        specifier: ^8.22.0
+        specifier: 8.22.0
         version: 8.22.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3)
       '@typescript-eslint/utils':
-        specifier: ^8.22.0
+        specifier: 8.22.0
         version: 8.22.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3)
       '@vitest/coverage-v8':
-        specifier: ^3.0.4
-        version: 3.0.4(vitest@3.0.5(@types/debug@4.1.12)(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))
+        specifier: 3.0.5
+        version: 3.0.5(vitest@3.0.5(@types/debug@4.1.12)(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))
       cheerio:
-        specifier: ^1.0.0
+        specifier: 1.0.0
         version: 1.0.0
       dotenv:
-        specifier: ^16.4.7
+        specifier: 16.4.7
         version: 16.4.7
       drizzle-kit:
-        specifier: ^0.30.4
+        specifier: 0.30.4
         version: 0.30.4
       esbuild:
-        specifier: ^0.24.2
+        specifier: 0.24.2
         version: 0.24.2
       esbuild-node-externals:
-        specifier: ^1.16.0
+        specifier: 1.16.0
         version: 1.16.0(esbuild@0.24.2)
       eslint:
         specifier: 9.19.0
         version: 9.19.0(jiti@2.4.2)
       eslint-config-prettier:
-        specifier: ^10.0.1
+        specifier: 10.0.1
         version: 10.0.1(eslint@9.19.0(jiti@2.4.2))
       eslint-import-resolver-typescript:
-        specifier: ^3.7.0
+        specifier: 3.7.0
         version: 3.7.0(eslint@9.19.0(jiti@2.4.2))
       eslint-plugin-promise:
         specifier: 7.2.1
         version: 7.2.1(eslint@9.19.0(jiti@2.4.2))
       eslint-plugin-simple-import-sort:
-        specifier: ^12.1.1
+        specifier: 12.1.1
         version: 12.1.1(eslint@9.19.0(jiti@2.4.2))
       eslint-plugin-tsdoc:
-        specifier: ^0.4.0
+        specifier: 0.4.0
         version: 0.4.0
       eslint-plugin-unicorn:
-        specifier: ^56.0.1
+        specifier: 56.0.1
         version: 56.0.1(eslint@9.19.0(jiti@2.4.2))
       eslint-plugin-unused-imports:
-        specifier: ^4.1.4
+        specifier: 4.1.4
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.22.0(@typescript-eslint/parser@8.22.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3))(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3))(eslint@9.19.0(jiti@2.4.2))
       graphql-tag:
-        specifier: ^2.12.6
+        specifier: 2.12.6
         version: 2.12.6(graphql@16.10.0)
       husky:
-        specifier: ^9.1.7
+        specifier: 9.1.7
         version: 9.1.7
       ioredis-mock:
-        specifier: ^8.9.0
+        specifier: 8.9.0
         version: 8.9.0(@types/ioredis-mock@8.2.5)(ioredis@5.4.2)
       lint-staged:
-        specifier: ^15.4.3
+        specifier: 15.4.3
         version: 15.4.3
       mercurius-integration-testing:
-        specifier: ^9.0.1
+        specifier: 9.0.1
         version: 9.0.1(fastify@5.2.1)(graphql@16.10.0)(mercurius@16.0.1(graphql@16.10.0))
       nodemon:
-        specifier: ^3.1.9
+        specifier: 3.1.9
         version: 3.1.9
       p-limit:
-        specifier: ^6.2.0
+        specifier: 6.2.0
         version: 6.2.0
       prettier:
-        specifier: ^3.4.2
+        specifier: 3.4.2
         version: 3.4.2
       prettier-plugin-jsdoc:
-        specifier: ^1.3.2
+        specifier: 1.3.2
         version: 1.3.2(prettier@3.4.2)
       std-env:
-        specifier: ^3.8.0
+        specifier: 3.8.0
         version: 3.8.0
       tsx:
-        specifier: ^4.19.2
+        specifier: 4.19.2
         version: 4.19.2
       typescript:
-        specifier: ~5.7.3
+        specifier: 5.7.3
         version: 5.7.3
       typescript-eslint:
-        specifier: ^8.22.0
+        specifier: 8.22.0
         version: 8.22.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3)
       vite:
-        specifier: ^6.0.11
-        version: 6.0.11(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+        specifier: 6.0.11
+        version: 6.0.11(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
       vitest:
-        specifier: ^3.0.4
-        version: 3.0.5(@types/debug@4.1.12)(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+        specifier: 3.0.5
+        version: 3.0.5(@types/debug@4.1.12)(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
 
 packages:
 
@@ -2158,11 +2158,11 @@ packages:
       '@opentelemetry/sdk-trace-base': ^1.29.0
       '@opentelemetry/semantic-conventions': ^1.28.0
 
-  '@shopify/liquid-html-parser@2.3.0':
-    resolution: {integrity: sha512-n8oTg/G5z27Qm+fXhIe5b1jXmfnhLgwjeakctGFu6tqIg3RJlJlUugknJD9hN4n9AWl1KzkXpG0JVD6Im1t7Xw==}
+  '@shopify/liquid-html-parser@2.3.2':
+    resolution: {integrity: sha512-qpSX21tAGmMGOjwWJhbIY0/nLOYJv5W8FLOWNErN/tGkLGOrsJcI+Co+rphhnzl0VfOvgMn8eywU8ityG1e8YA==}
 
-  '@shopify/prettier-plugin-liquid@1.7.0':
-    resolution: {integrity: sha512-k1NcKgO1mMulw4KTJ2yQru5h6DFz8M9SnmfWU/KqOdWvuFFpqeqb/EiEaY+1nBGNHVyLhGrMmEJamqQ/9cFiVg==}
+  '@shopify/prettier-plugin-liquid@1.7.2':
+    resolution: {integrity: sha512-WtIyFNAsKZqTJXZ6IA+lRw8QX2kzMpW5RgWusXtgiGoD8rix9KkeiwsH6tUdlfWRjE6E7hLw46pvz2cr+LAAMw==}
     peerDependencies:
       prettier: ^2.0.0 || ^3.0.0
 
@@ -2447,8 +2447,8 @@ packages:
   '@types/mysql@2.15.26':
     resolution: {integrity: sha512-DSLCOXhkvfS5WNNPbfn2KdICAmk8lLc+/PNvnPnF7gOdMZCxopXduqv0OQ13y/yA/zXTSikZZqVgybUxOEg6YQ==}
 
-  '@types/node@22.12.0':
-    resolution: {integrity: sha512-Fll2FZ1riMjNmlmJOdAyY5pUbkftXslB5DgEzlIuNaiWhXd00FhWxVC/r4yV/4wBb9JfImTu+jiSvXTkJ7F/gA==}
+  '@types/node@22.13.0':
+    resolution: {integrity: sha512-ClIbNe36lawluuvq3+YYhnIN2CELi+6q8NpnM7PYp4hBn/TatfboPgVSm2rwKRfnV2M+Ty9GWDFI64KEe+kysA==}
 
   '@types/normalize-package-data@2.4.4':
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
@@ -2518,11 +2518,11 @@ packages:
     resolution: {integrity: sha512-AWpYAXnUgvLNabGTy3uBylkgZoosva/miNd1I8Bz3SjotmQPbVqhO4Cczo8AsZ44XVErEBPr/CRSgaj8sG7g0w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@vitest/coverage-v8@3.0.4':
-    resolution: {integrity: sha512-f0twgRCHgbs24Dp8cLWagzcObXMcuKtAwgxjJV/nnysPAJJk1JiKu/W0gIehZLmkljhJXU/E0/dmuQzsA/4jhA==}
+  '@vitest/coverage-v8@3.0.5':
+    resolution: {integrity: sha512-zOOWIsj5fHh3jjGwQg+P+J1FW3s4jBu1Zqga0qW60yutsBtqEqNEJKWYh7cYn1yGD+1bdPsPdC/eL4eVK56xMg==}
     peerDependencies:
-      '@vitest/browser': 3.0.4
-      vitest: 3.0.4
+      '@vitest/browser': 3.0.5
+      vitest: 3.0.5
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -6891,7 +6891,7 @@ snapshots:
       graphql: 16.10.0
       tslib: 2.6.3
 
-  '@graphql-codegen/cli@5.0.4(@babel/core@7.26.7)(@types/node@22.12.0)(graphql@16.10.0)(typescript@5.7.3)':
+  '@graphql-codegen/cli@5.0.4(@babel/core@7.26.7)(@types/node@22.13.0)(graphql@16.10.0)(typescript@5.7.3)':
     dependencies:
       '@babel/generator': 7.26.5
       '@babel/template': 7.25.9
@@ -6902,12 +6902,12 @@ snapshots:
       '@graphql-tools/apollo-engine-loader': 8.0.13(graphql@16.10.0)
       '@graphql-tools/code-file-loader': 8.1.13(graphql@16.10.0)
       '@graphql-tools/git-loader': 8.0.17(graphql@16.10.0)
-      '@graphql-tools/github-loader': 8.0.13(@types/node@22.12.0)(graphql@16.10.0)
+      '@graphql-tools/github-loader': 8.0.13(@types/node@22.13.0)(graphql@16.10.0)
       '@graphql-tools/graphql-file-loader': 8.0.12(graphql@16.10.0)
       '@graphql-tools/json-file-loader': 8.0.11(graphql@16.10.0)
       '@graphql-tools/load': 8.0.12(graphql@16.10.0)
-      '@graphql-tools/prisma-loader': 8.0.17(@types/node@22.12.0)(graphql@16.10.0)
-      '@graphql-tools/url-loader': 8.0.24(@types/node@22.12.0)(graphql@16.10.0)
+      '@graphql-tools/prisma-loader': 8.0.17(@types/node@22.13.0)(graphql@16.10.0)
+      '@graphql-tools/url-loader': 8.0.24(@types/node@22.13.0)(graphql@16.10.0)
       '@graphql-tools/utils': 10.7.2(graphql@16.10.0)
       '@whatwg-node/fetch': 0.10.3
       chalk: 4.1.2
@@ -6915,7 +6915,7 @@ snapshots:
       debounce: 1.2.1
       detect-indent: 6.1.0
       graphql: 16.10.0
-      graphql-config: 5.1.3(@types/node@22.12.0)(graphql@16.10.0)(typescript@5.7.3)
+      graphql-config: 5.1.3(@types/node@22.13.0)(graphql@16.10.0)(typescript@5.7.3)
       inquirer: 8.2.6
       is-glob: 4.0.3
       jiti: 1.21.7
@@ -7151,7 +7151,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@graphql-tools/executor-http@1.2.5(@types/node@22.12.0)(graphql@16.10.0)':
+  '@graphql-tools/executor-http@1.2.5(@types/node@22.13.0)(graphql@16.10.0)':
     dependencies:
       '@graphql-hive/gateway-abort-signal-any': 0.0.3(graphql@16.10.0)
       '@graphql-tools/executor-common': 0.0.1(graphql@16.10.0)
@@ -7161,7 +7161,7 @@ snapshots:
       '@whatwg-node/fetch': 0.10.3
       extract-files: 11.0.0
       graphql: 16.10.0
-      meros: 1.3.0(@types/node@22.12.0)
+      meros: 1.3.0(@types/node@22.13.0)
       tslib: 2.8.1
       value-or-promise: 1.0.12
     transitivePeerDependencies:
@@ -7201,9 +7201,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@graphql-tools/github-loader@8.0.13(@types/node@22.12.0)(graphql@16.10.0)':
+  '@graphql-tools/github-loader@8.0.13(@types/node@22.13.0)(graphql@16.10.0)':
     dependencies:
-      '@graphql-tools/executor-http': 1.2.5(@types/node@22.12.0)(graphql@16.10.0)
+      '@graphql-tools/executor-http': 1.2.5(@types/node@22.13.0)(graphql@16.10.0)
       '@graphql-tools/graphql-tag-pluck': 8.3.12(graphql@16.10.0)
       '@graphql-tools/utils': 10.7.2(graphql@16.10.0)
       '@whatwg-node/fetch': 0.10.3
@@ -7271,9 +7271,9 @@ snapshots:
       graphql: 16.10.0
       tslib: 2.8.1
 
-  '@graphql-tools/prisma-loader@8.0.17(@types/node@22.12.0)(graphql@16.10.0)':
+  '@graphql-tools/prisma-loader@8.0.17(@types/node@22.13.0)(graphql@16.10.0)':
     dependencies:
-      '@graphql-tools/url-loader': 8.0.24(@types/node@22.12.0)(graphql@16.10.0)
+      '@graphql-tools/url-loader': 8.0.24(@types/node@22.13.0)(graphql@16.10.0)
       '@graphql-tools/utils': 10.7.2(graphql@16.10.0)
       '@types/js-yaml': 4.0.9
       '@whatwg-node/fetch': 0.10.3
@@ -7316,10 +7316,10 @@ snapshots:
       tslib: 2.8.1
       value-or-promise: 1.0.12
 
-  '@graphql-tools/url-loader@8.0.24(@types/node@22.12.0)(graphql@16.10.0)':
+  '@graphql-tools/url-loader@8.0.24(@types/node@22.13.0)(graphql@16.10.0)':
     dependencies:
       '@graphql-tools/executor-graphql-ws': 1.3.7(graphql@16.10.0)
-      '@graphql-tools/executor-http': 1.2.5(@types/node@22.12.0)(graphql@16.10.0)
+      '@graphql-tools/executor-http': 1.2.5(@types/node@22.13.0)(graphql@16.10.0)
       '@graphql-tools/executor-legacy-ws': 1.1.10(graphql@16.10.0)
       '@graphql-tools/utils': 10.7.2(graphql@16.10.0)
       '@graphql-tools/wrap': 10.0.29(graphql@16.10.0)
@@ -7912,14 +7912,14 @@ snapshots:
       '@opentelemetry/semantic-conventions': 1.28.0
       '@sentry/core': 8.53.0
 
-  '@shopify/liquid-html-parser@2.3.0':
+  '@shopify/liquid-html-parser@2.3.2':
     dependencies:
       line-column: 1.0.2
       ohm-js: 16.6.0
 
-  '@shopify/prettier-plugin-liquid@1.7.0(prettier@3.4.2)':
+  '@shopify/prettier-plugin-liquid@1.7.2(prettier@3.4.2)':
     dependencies:
-      '@shopify/liquid-html-parser': 2.3.0
+      '@shopify/liquid-html-parser': 2.3.2
       html-styles: 1.0.0
       prettier: 3.4.2
 
@@ -8275,11 +8275,11 @@ snapshots:
 
   '@types/connect@3.4.36':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   '@types/cors@2.8.17':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   '@types/debug@4.1.12':
     dependencies:
@@ -8291,7 +8291,7 @@ snapshots:
 
   '@types/ioredis-mock@8.2.5':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
       ioredis: 5.4.2
     transitivePeerDependencies:
       - supports-color
@@ -8318,9 +8318,9 @@ snapshots:
 
   '@types/mysql@2.15.26':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
-  '@types/node@22.12.0':
+  '@types/node@22.13.0':
     dependencies:
       undici-types: 6.20.0
 
@@ -8332,7 +8332,7 @@ snapshots:
 
   '@types/pg@8.6.1':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
       pg-protocol: 1.7.0
       pg-types: 2.2.0
 
@@ -8340,13 +8340,13 @@ snapshots:
 
   '@types/tedious@4.0.14':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   '@types/unist@3.0.3': {}
 
   '@types/ws@8.5.14':
     dependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   '@typescript-eslint/eslint-plugin@8.22.0(@typescript-eslint/parser@8.22.0(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3))(eslint@9.19.0(jiti@2.4.2))(typescript@5.7.3)':
     dependencies:
@@ -8425,7 +8425,7 @@ snapshots:
       '@typescript-eslint/types': 8.22.0
       eslint-visitor-keys: 4.2.0
 
-  '@vitest/coverage-v8@3.0.4(vitest@3.0.5(@types/debug@4.1.12)(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))':
+  '@vitest/coverage-v8@3.0.5(vitest@3.0.5(@types/debug@4.1.12)(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 1.0.2
@@ -8439,7 +8439,7 @@ snapshots:
       std-env: 3.8.0
       test-exclude: 7.0.1
       tinyrainbow: 2.0.0
-      vitest: 3.0.5(@types/debug@4.1.12)(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+      vitest: 3.0.5(@types/debug@4.1.12)(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -8450,13 +8450,13 @@ snapshots:
       chai: 5.1.2
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.0.5(vite@6.0.11(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))':
+  '@vitest/mocker@3.0.5(vite@6.0.11(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))':
     dependencies:
       '@vitest/spy': 3.0.5
       estree-walker: 3.0.3
       magic-string: 0.30.17
     optionalDependencies:
-      vite: 6.0.11(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+      vite: 6.0.11(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
 
   '@vitest/pretty-format@3.0.5':
     dependencies:
@@ -9118,7 +9118,7 @@ snapshots:
   engine.io@6.6.4:
     dependencies:
       '@types/cors': 2.8.17
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
       accepts: 1.3.8
       base64id: 2.0.0
       cookie: 0.7.2
@@ -9723,13 +9723,13 @@ snapshots:
 
   graphemer@1.4.0: {}
 
-  graphql-config@5.1.3(@types/node@22.12.0)(graphql@16.10.0)(typescript@5.7.3):
+  graphql-config@5.1.3(@types/node@22.13.0)(graphql@16.10.0)(typescript@5.7.3):
     dependencies:
       '@graphql-tools/graphql-file-loader': 8.0.12(graphql@16.10.0)
       '@graphql-tools/json-file-loader': 8.0.11(graphql@16.10.0)
       '@graphql-tools/load': 8.0.12(graphql@16.10.0)
       '@graphql-tools/merge': 9.0.17(graphql@16.10.0)
-      '@graphql-tools/url-loader': 8.0.24(@types/node@22.12.0)(graphql@16.10.0)
+      '@graphql-tools/url-loader': 8.0.24(@types/node@22.13.0)(graphql@16.10.0)
       '@graphql-tools/utils': 10.7.2(graphql@16.10.0)
       cosmiconfig: 8.3.6(typescript@5.7.3)
       graphql: 16.10.0
@@ -10322,9 +10322,9 @@ snapshots:
 
   merge2@1.4.1: {}
 
-  meros@1.3.0(@types/node@22.12.0):
+  meros@1.3.0(@types/node@22.13.0):
     optionalDependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
 
   micromark-core-commonmark@2.0.2:
     dependencies:
@@ -11503,13 +11503,13 @@ snapshots:
 
   vary@1.1.2: {}
 
-  vite-node@3.0.5(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0):
+  vite-node@3.0.5(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0):
     dependencies:
       cac: 6.7.14
       debug: 4.4.0(supports-color@5.5.0)
       es-module-lexer: 1.6.0
       pathe: 2.0.2
-      vite: 6.0.11(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+      vite: 6.0.11(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -11524,22 +11524,22 @@ snapshots:
       - tsx
       - yaml
 
-  vite@6.0.11(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0):
+  vite@6.0.11(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0):
     dependencies:
       esbuild: 0.24.2
       postcss: 8.5.1
       rollup: 4.32.1
     optionalDependencies:
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
       fsevents: 2.3.3
       jiti: 2.4.2
       tsx: 4.19.2
       yaml: 2.7.0
 
-  vitest@3.0.5(@types/debug@4.1.12)(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0):
+  vitest@3.0.5(@types/debug@4.1.12)(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0):
     dependencies:
       '@vitest/expect': 3.0.5
-      '@vitest/mocker': 3.0.5(vite@6.0.11(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))
+      '@vitest/mocker': 3.0.5(vite@6.0.11(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0))
       '@vitest/pretty-format': 3.0.5
       '@vitest/runner': 3.0.5
       '@vitest/snapshot': 3.0.5
@@ -11555,12 +11555,12 @@ snapshots:
       tinyexec: 0.3.2
       tinypool: 1.0.2
       tinyrainbow: 2.0.0
-      vite: 6.0.11(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
-      vite-node: 3.0.5(@types/node@22.12.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+      vite: 6.0.11(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
+      vite-node: 3.0.5(@types/node@22.13.0)(jiti@2.4.2)(tsx@4.19.2)(yaml@2.7.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@types/debug': 4.1.12
-      '@types/node': 22.12.0
+      '@types/node': 22.13.0
     transitivePeerDependencies:
       - jiti
       - less
