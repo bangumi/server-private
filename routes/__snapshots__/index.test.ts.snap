@@ -285,7 +285,7 @@ exports[`should build private api spec 1`] = `
         - content
         - state
       type: object
-    CreateEpisodeComment:
+    CreateComment:
       properties:
         content:
           minLength: 1
@@ -2396,7 +2396,7 @@ exports[`should build private api spec 1`] = `
         - subject
         - count
       type: object
-    UpdateEpisodeComment:
+    UpdateComment:
       properties:
         content:
           minLength: 1
@@ -3416,7 +3416,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateEpisodeComment'
+              $ref: '#/components/schemas/UpdateComment'
       responses:
         '200':
           content:
@@ -3549,7 +3549,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateEpisodeComment'
+              $ref: '#/components/schemas/CreateComment'
       responses:
         '200':
           content:

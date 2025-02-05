@@ -142,7 +142,7 @@ export class Comment {
     const [reply] = await db
       .select({ id: this.table.id })
       .from(this.table)
-      .where(op.eq(this.table.id, commentID))
+      .where(op.and(op.eq(this.table.mid, comment.mid), op.eq(this.table.related, comment.id)))
       .limit(1);
     if (reply) {
       throw new NotAllowedError('cannot edit a comment with replies');
