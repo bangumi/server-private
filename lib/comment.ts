@@ -168,6 +168,7 @@ export class Comment {
       throw new NotAllowedError('delete a abnormal state comment');
     }
 
+    // 其它表暂时没有 state 字段
     switch (this.table) {
       case schema.chiiEpComments:
       case schema.chiiCrtComments:
