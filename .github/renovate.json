@@ -8,7 +8,7 @@
   ],
   "assignees": [],
   "postUpdateOptions": ["pnpmDedupe"],
-  "rangeStrategy": "bump",
+  "rangeStrategy": "pin",
   "dockerfile": {
     "fileMatch": [".*dockerfile$"],
     "enabled": true
