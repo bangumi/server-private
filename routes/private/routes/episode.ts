@@ -1,12 +1,8 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
-import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Comment, CommentTarget } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { CommentState } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -141,25 +137,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('delete a comment')],
     },
     async ({ auth, params: { commentID } }) => {
-      const [comment] = await db
-        .select()
-        .from(schema.chiiEpComments)
-        .where(op.eq(schema.chiiEpComments.id, commentID));
-      if (!comment) {
-        throw new NotFoundError(`comment id ${commentID}`);
-      }
-      if (comment.uid !== auth.userID) {
-        throw new NotAllowedError('delete a comment which is not yours');
-      }
-      if (comment.state !== CommentState.Normal) {
-        throw new NotAllowedError('delete a abnormal state comment');
-      }
-      await db
-        .update(schema.chiiEpComments)
-        .set({ state: CommentState.UserDelete })
-        .where(op.eq(schema.chiiEpComments.id, commentID));
-
-      return {};
+      return await comment.delete(auth, commentID);
     },
   );
 }
