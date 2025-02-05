@@ -213,6 +213,78 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: CollectionType
+    Comment:
+      allOf:
+        - properties:
+            content:
+              type: string
+            createdAt:
+              type: integer
+            creatorID:
+              type: integer
+            id:
+              type: integer
+            mainID:
+              type: integer
+            reactions:
+              items:
+                $ref: '#/components/schemas/Reaction'
+              type: array
+            relatedID:
+              type: integer
+            state:
+              type: integer
+            user:
+              $ref: '#/components/schemas/SlimUser'
+          required:
+            - id
+            - mainID
+            - creatorID
+            - relatedID
+            - createdAt
+            - content
+            - state
+          type: object
+        - properties:
+            replies:
+              items:
+                $ref: '#/components/schemas/CommentBase'
+              type: array
+          required:
+            - replies
+          type: object
+      type: object
+    CommentBase:
+      properties:
+        content:
+          type: string
+        createdAt:
+          type: integer
+        creatorID:
+          type: integer
+        id:
+          type: integer
+        mainID:
+          type: integer
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
+        relatedID:
+          type: integer
+        state:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - id
+        - mainID
+        - creatorID
+        - relatedID
+        - createdAt
+        - content
+        - state
+      type: object
     CreateEpisodeComment:
       properties:
         content:
@@ -367,78 +439,6 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: EpisodeCollectionStatus
-    EpisodeCommentBase:
-      properties:
-        content:
-          type: string
-        createdAt:
-          type: integer
-        creatorID:
-          type: integer
-        epID:
-          type: integer
-        id:
-          type: integer
-        reactions:
-          items:
-            $ref: '#/components/schemas/Reaction'
-          type: array
-        relatedID:
-          type: integer
-        state:
-          type: integer
-        user:
-          $ref: '#/components/schemas/SlimUser'
-      required:
-        - id
-        - epID
-        - creatorID
-        - relatedID
-        - createdAt
-        - content
-        - state
-      type: object
-    EpisodeComments:
-      allOf:
-        - properties:
-            content:
-              type: string
-            createdAt:
-              type: integer
-            creatorID:
-              type: integer
-            epID:
-              type: integer
-            id:
-              type: integer
-            reactions:
-              items:
-                $ref: '#/components/schemas/Reaction'
-              type: array
-            relatedID:
-              type: integer
-            state:
-              type: integer
-            user:
-              $ref: '#/components/schemas/SlimUser'
-          required:
-            - id
-            - epID
-            - creatorID
-            - relatedID
-            - createdAt
-            - content
-            - state
-          type: object
-        - properties:
-            replies:
-              items:
-                $ref: '#/components/schemas/EpisodeCommentBase'
-              type: array
-          required:
-            - replies
-          type: object
-      type: object
     EpisodeType:
       description: |-
         话数类型
@@ -1677,33 +1677,6 @@ exports[`should build private api spec 1`] = `
         type: integer
       title: SubjectCollection
       type: object
-    SubjectComment:
-      properties:
-        comment:
-          type: string
-        id:
-          type: integer
-        rate:
-          type: integer
-        reactions:
-          items:
-            $ref: '#/components/schemas/Reaction'
-          type: array
-        type:
-          $ref: '#/components/schemas/CollectionType'
-        updatedAt:
-          type: integer
-        user:
-          $ref: '#/components/schemas/SlimUser'
-      required:
-        - id
-        - user
-        - type
-        - rate
-        - comment
-        - updatedAt
-      title: SubjectComment
-      type: object
     SubjectEdit:
       example:
         infobox: |-
@@ -1817,6 +1790,33 @@ exports[`should build private api spec 1`] = `
         - private
         - updatedAt
       title: SubjectInterest
+      type: object
+    SubjectInterestComment:
+      properties:
+        comment:
+          type: string
+        id:
+          type: integer
+        rate:
+          type: integer
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
+        type:
+          $ref: '#/components/schemas/CollectionType'
+        updatedAt:
+          type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - id
+        - user
+        - type
+        - rate
+        - comment
+        - updatedAt
+      title: SubjectInterestComment
       type: object
     SubjectNew:
       properties:
@@ -3492,9 +3492,9 @@ paths:
                           type: integer
                         creatorID:
                           type: integer
-                        epID:
-                          type: integer
                         id:
+                          type: integer
+                        mainID:
                           type: integer
                         reactions:
                           items:
@@ -3508,7 +3508,7 @@ paths:
                           $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
-                        - epID
+                        - mainID
                         - creatorID
                         - relatedID
                         - createdAt
@@ -3518,7 +3518,7 @@ paths:
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/EpisodeCommentBase'
+                            $ref: '#/components/schemas/CommentBase'
                           type: array
                       required:
                         - replies
@@ -4653,50 +4653,6 @@ paths:
       summary: 获取条目列表
       tags:
         - subject
-  /p1/subjects/-/episode/{episodeID}:
-    get:
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-  /p1/subjects/-/episode/{episodeID}/comments:
-    get:
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-  /p1/subjects/-/episodes/{episodeID}:
-    get:
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
-  /p1/subjects/-/episodes/{episodeID}/comments:
-    get:
-      parameters:
-        - in: path
-          name: episodeID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Default Response
   /p1/subjects/-/posts/{postID}:
     delete:
       operationId: deleteSubjectPost
@@ -5032,7 +4988,7 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectComment'
+                      $ref: '#/components/schemas/SubjectInterestComment'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数

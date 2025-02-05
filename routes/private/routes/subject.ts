@@ -663,7 +663,7 @@ export async function setup(app: App) {
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
         response: {
-          200: res.Paged(res.Ref(res.SubjectComment)),
+          200: res.Paged(res.Ref(res.SubjectInterestComment)),
         },
       },
     },
@@ -692,7 +692,7 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset);
       const comments = data.map((d) =>
-        convert.toSubjectComment(d.chii_subject_interests, d.chii_members),
+        convert.toSubjectInterestComment(d.chii_subject_interests, d.chii_members),
       );
       const collectIDs = comments.map((c) => c.id);
       const reactions = await fetchSubjectCollectReactions(collectIDs);

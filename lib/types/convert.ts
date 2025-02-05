@@ -404,10 +404,10 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
   };
 }
 
-export function toSubjectComment(
+export function toSubjectInterestComment(
   interest: orm.ISubjectInterest,
   user: orm.IUser,
-): res.ISubjectComment {
+): res.ISubjectInterestComment {
   return {
     id: interest.id,
     user: toSlimUser(user),
@@ -458,18 +458,6 @@ export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
     airdate: episode.airdate,
     comment: episode.comment,
     subjectID: episode.subjectID,
-  };
-}
-
-export function toEpisodeComment(comment: orm.IEpisodeComment): res.IEpisodeCommentBase {
-  return {
-    id: comment.id,
-    epID: comment.mid,
-    creatorID: comment.uid,
-    relatedID: comment.related,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    state: comment.state,
   };
 }
 

@@ -26,8 +26,8 @@ export function addSchemas(app: App) {
   app.addSchema(res.CharacterRelation);
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);
+  app.addSchema(res.Comment);
   app.addSchema(res.Episode);
-  app.addSchema(res.EpisodeComment);
   app.addSchema(res.EpisodeWikiInfo);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
@@ -62,9 +62,9 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectAirtime);
   app.addSchema(res.SubjectCharacter);
   app.addSchema(res.SubjectCollection);
-  app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectInterest);
+  app.addSchema(res.SubjectInterestComment);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectPosition);
   app.addSchema(res.SubjectPositionStaff);
