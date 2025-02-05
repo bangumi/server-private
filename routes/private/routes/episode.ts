@@ -9,7 +9,6 @@ import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts'
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
-import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -20,28 +19,6 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  // tmp backward compatibility
-  app.get('/subjects/-/episode/:episodeID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/episodes/${episodeID}`, 307);
-  });
-  app.get('/subjects/-/episodes/:episodeID', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/episodes/${episodeID}`, 307);
-  });
-  app.get('/subjects/-/episode/:episodeID/comments', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
-  });
-  app.get('/subjects/-/episodes/:episodeID/comments', (req, reply) => {
-    const params = req.params as Record<string, string>;
-    const episodeID = params.episodeID ?? '';
-    return reply.redirect(`/p1/episodes/${episodeID}/comments`, 307);
-  });
-
   app.get(
     '/episodes/:episodeID',
     {
@@ -82,11 +59,11 @@ export async function setup(app: App) {
           episodeID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Array(res.EpisodeComment),
+          200: t.Array(res.Comment),
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<res.IEpisodeComment[]> => {
+    async ({ params: { episodeID } }): Promise<res.IComment[]> => {
       const ep = await fetcher.fetchSlimEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
@@ -99,12 +76,20 @@ export async function setup(app: App) {
       const uids = data.map((v) => v.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
 
-      const comments: res.IEpisodeComment[] = [];
-      const replies: Record<number, res.IEpisodeCommentBase[]> = {};
+      const comments: res.IComment[] = [];
+      const replies: Record<number, res.ICommentBase[]> = {};
 
       for (const d of data) {
         const u = users[d.uid];
-        const comment = convert.toEpisodeComment(d);
+        const comment: res.ICommentBase = {
+          id: d.id,
+          mainID: d.mid,
+          creatorID: d.uid,
+          relatedID: d.related,
+          content: d.content,
+          createdAt: d.createdAt,
+          state: d.state,
+        };
         if (d.related === 0) {
           comments.push({ ...comment, replies: [], user: u });
         } else {
