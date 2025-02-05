@@ -128,21 +128,21 @@ export class Comment {
   }
 
   async update(auth: Readonly<IAuth>, commentID: number, body: req.IUpdateComment) {
-    const [comment] = await db.select().from(this.table).where(op.eq(this.table.id, commentID));
-    if (!comment) {
+    const [current] = await db.select().from(this.table).where(op.eq(this.table.id, commentID));
+    if (!current) {
       throw new NotFoundError(`comment id ${commentID}`);
     }
-    if (comment.uid !== auth.userID) {
+    if (current.uid !== auth.userID) {
       throw new NotAllowedError('edit a comment which is not yours');
     }
-    if (comment.state !== CommentState.Normal) {
+    if (current.state !== CommentState.Normal) {
       throw new NotAllowedError(`edit to a abnormal state comment`);
     }
 
     const [reply] = await db
       .select({ id: this.table.id })
       .from(this.table)
-      .where(op.and(op.eq(this.table.mid, comment.mid), op.eq(this.table.related, comment.id)))
+      .where(op.and(op.eq(this.table.mid, current.mid), op.eq(this.table.related, current.id)))
       .limit(1);
     if (reply) {
       throw new NotAllowedError('cannot edit a comment with replies');
