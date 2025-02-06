@@ -22,7 +22,7 @@ export async function setup(app: App) {
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          episodeID: t.Integer({ examples: [1075440] }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: res.Ref(res.Episode),
@@ -75,7 +75,7 @@ export async function setup(app: App) {
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          episodeID: t.Integer({ examples: [1075440] }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
         body: req.Ref(req.CreateComment),
         response: {
@@ -104,7 +104,7 @@ export async function setup(app: App) {
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          commentID: t.Integer({ examples: [1075440] }),
+          commentID: t.Integer({ minimum: 1 }),
         }),
         body: req.Ref(req.UpdateComment),
         response: {
@@ -128,7 +128,7 @@ export async function setup(app: App) {
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
-          commentID: t.Integer({ examples: [1034989] }),
+          commentID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({}),

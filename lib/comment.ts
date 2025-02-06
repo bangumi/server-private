@@ -104,7 +104,8 @@ export class Comment {
       const [parent] = await db
         .select({ id: this.table.id, state: this.table.state })
         .from(this.table)
-        .where(op.eq(this.table.id, body.replyTo));
+        .where(op.eq(this.table.id, body.replyTo))
+        .limit(1);
       if (!parent) {
         throw new NotFoundError(`parent comment id ${body.replyTo}`);
       }
@@ -128,7 +129,11 @@ export class Comment {
   }
 
   async update(auth: Readonly<IAuth>, commentID: number, body: req.IUpdateComment) {
-    const [current] = await db.select().from(this.table).where(op.eq(this.table.id, commentID));
+    const [current] = await db
+      .select()
+      .from(this.table)
+      .where(op.eq(this.table.id, commentID))
+      .limit(1);
     if (!current) {
       throw new NotFoundError(`comment id ${commentID}`);
     }
@@ -157,7 +162,11 @@ export class Comment {
   }
 
   async delete(auth: Readonly<IAuth>, commentID: number) {
-    const [comment] = await db.select().from(this.table).where(op.eq(this.table.id, commentID));
+    const [comment] = await db
+      .select()
+      .from(this.table)
+      .where(op.eq(this.table.id, commentID))
+      .limit(1);
     if (!comment) {
       throw new NotFoundError(`comment id ${commentID}`);
     }
@@ -176,11 +185,12 @@ export class Comment {
         await db
           .update(this.table)
           .set({ state: CommentState.UserDelete })
-          .where(op.eq(this.table.id, commentID));
+          .where(op.eq(this.table.id, commentID))
+          .limit(1);
         break;
       }
       default: {
-        await db.delete(this.table).where(op.eq(this.table.id, commentID));
+        await db.delete(this.table).where(op.eq(this.table.id, commentID)).limit(1);
       }
     }
 
