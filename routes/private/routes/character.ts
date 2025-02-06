@@ -47,7 +47,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { characterID } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiCharacters)
         .where(
@@ -56,11 +56,12 @@ export async function setup(app: App) {
             op.ne(schema.chiiCharacters.ban, 1),
             auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
           ),
-        );
-      for (const d of data) {
-        return convert.toCharacter(d);
+        )
+        .limit(1);
+      if (!data) {
+        throw new NotFoundError(`character ${characterID}`);
       }
-      throw new NotFoundError(`character ${characterID}`);
+      return convert.toCharacter(data);
     },
   );
 
