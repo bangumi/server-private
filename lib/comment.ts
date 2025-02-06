@@ -5,9 +5,8 @@ import * as schema from '@app/drizzle/schema';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam } from '@app/lib/dam.ts';
-import { BadRequestError, CaptchaError, NotFoundError } from '@app/lib/error.ts';
+import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { fetchTopicReactions, LikeType } from '@app/lib/like.ts';
-import { turnstile } from '@app/lib/services/turnstile.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as req from '@app/lib/types/req.ts';
@@ -87,9 +86,6 @@ export class Comment {
     mainID: number,
     body: req.ICreateComment,
   ): Promise<{ id: number }> {
-    if (!(await turnstile.verify(body.turnstileToken))) {
-      throw new CaptchaError();
-    }
     if (!Dam.allCharacterPrintable(body.content)) {
       throw new BadRequestError('text contains invalid invisible character');
     }

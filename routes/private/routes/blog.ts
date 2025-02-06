@@ -11,7 +11,7 @@ import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { isFriends } from '@app/lib/user/utils.ts';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -184,14 +184,14 @@ export async function setup(app: App) {
         params: t.Object({
           entryID: t.Integer(),
         }),
-        body: req.Ref(req.CreateComment),
+        body: t.Intersect([req.Ref(req.CreateComment), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new comment id' }),
           }),
         },
       },
-      preHandler: [requireLogin('creating a comment')],
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
     },
     async ({ auth, body, params: { entryID } }) => {
       const entry = await fetcher.fetchSlimBlogEntryByID(entryID, auth.userID);

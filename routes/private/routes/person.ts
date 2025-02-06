@@ -11,7 +11,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
 function toPersonWork(
@@ -371,14 +371,14 @@ export async function setup(app: App) {
         params: t.Object({
           personID: t.Integer(),
         }),
-        body: req.Ref(req.CreateComment),
+        body: t.Intersect([req.Ref(req.CreateComment), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new comment id' }),
           }),
         },
       },
-      preHandler: [requireLogin('creating a comment')],
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
     },
     async ({ auth, body, params: { personID } }) => {
       return await comment.create(auth, personID, body);

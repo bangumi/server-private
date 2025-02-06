@@ -99,7 +99,6 @@ export const CreateComment = t.Object(
         description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
       }),
     ),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
   { $id: 'CreateComment' },
 );
@@ -116,7 +115,6 @@ export type ICreateTimelineSay = Static<typeof CreateTimelineSay>;
 export const CreateTimelineSay = t.Object(
   {
     content: t.String({ minLength: 1 }),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
   { $id: 'CreateTimelineSay' },
 );

@@ -294,19 +294,8 @@ exports[`should build private api spec 1`] = `
           default: 0
           description: 被回复的吐槽 ID, \`0\` 代表发送顶层吐槽
           type: integer
-        turnstileToken:
-          description: >-
-            需要
-            [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
-
-            next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
-
-            dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\`
-          minLength: 1
-          type: string
       required:
         - content
-        - turnstileToken
       type: object
     CreatePost:
       properties:
@@ -2924,7 +2913,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateComment'
+              allOf:
+                - $ref: '#/components/schemas/CreateComment'
+                - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -3412,7 +3403,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateComment'
+              allOf:
+                - $ref: '#/components/schemas/CreateComment'
+                - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -3914,7 +3907,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateComment'
+              allOf:
+                - $ref: '#/components/schemas/CreateComment'
+                - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -5013,7 +5008,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateComment'
+              allOf:
+                - $ref: '#/components/schemas/CreateComment'
+                - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
