@@ -255,7 +255,7 @@ export async function setup(app: App) {
         params: t.Object({
           characterID: t.Integer(),
         }),
-        body: t.Intersect([req.Ref(req.CreateComment), req.Ref(req.TurnstileToken)]),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new comment id' }),
@@ -264,8 +264,8 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
     },
-    async ({ auth, body, params: { characterID } }) => {
-      return await comment.create(auth, characterID, body);
+    async ({ auth, body: { content, replyTo = 0 }, params: { characterID } }) => {
+      return await comment.create(auth, characterID, content, replyTo);
     },
   );
 
@@ -280,15 +280,15 @@ export async function setup(app: App) {
         params: t.Object({
           commentID: t.Integer(),
         }),
-        body: req.Ref(req.UpdateComment),
+        body: req.Ref(req.UpdateContent),
         response: {
           200: t.Object({}),
         },
       },
       preHandler: [requireLogin('edit a comment')],
     },
-    async ({ auth, body, params: { commentID } }) => {
-      return await comment.update(auth, commentID, body);
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
     },
   );
 

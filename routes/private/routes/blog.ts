@@ -184,7 +184,7 @@ export async function setup(app: App) {
         params: t.Object({
           entryID: t.Integer(),
         }),
-        body: t.Intersect([req.Ref(req.CreateComment), req.Ref(req.TurnstileToken)]),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new comment id' }),
@@ -193,12 +193,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
     },
-    async ({ auth, body, params: { entryID } }) => {
+    async ({ auth, body: { content, replyTo = 0 }, params: { entryID } }) => {
       const entry = await fetcher.fetchSlimBlogEntryByID(entryID, auth.userID);
       if (!entry) {
         throw new NotFoundError('Blog entry not found');
       }
-      return await comment.create(auth, entryID, body);
+      return await comment.create(auth, entryID, content, replyTo);
     },
   );
 
@@ -213,15 +213,15 @@ export async function setup(app: App) {
         params: t.Object({
           commentID: t.Integer(),
         }),
-        body: req.Ref(req.UpdateComment),
+        body: req.Ref(req.UpdateContent),
         response: {
           200: t.Object({}),
         },
       },
       preHandler: [requireLogin('edit a comment')],
     },
-    async ({ auth, body, params: { commentID } }) => {
-      return await comment.update(auth, commentID, body);
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
     },
   );
 

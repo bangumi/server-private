@@ -77,7 +77,7 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
-        body: t.Intersect([req.Ref(req.CreateComment), req.Ref(req.TurnstileToken)]),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new comment id' }),
@@ -86,12 +86,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
     },
-    async ({ auth, body, params: { episodeID } }) => {
+    async ({ auth, body: { content, replyTo = 0 }, params: { episodeID } }) => {
       const ep = await fetcher.fetchSlimEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-      return await comment.create(auth, episodeID, body);
+      return await comment.create(auth, episodeID, content, replyTo);
     },
   );
 
@@ -106,7 +106,7 @@ export async function setup(app: App) {
         params: t.Object({
           commentID: t.Integer({ minimum: 1 }),
         }),
-        body: req.Ref(req.UpdateComment),
+        body: req.Ref(req.UpdateContent),
         response: {
           200: t.Object({}),
         },
@@ -114,8 +114,8 @@ export async function setup(app: App) {
       preHandler: [requireLogin('edit a comment')],
     },
 
-    async ({ auth, body, params: { commentID } }) => {
-      return await comment.update(auth, commentID, body);
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
     },
   );
 

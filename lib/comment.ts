@@ -9,7 +9,6 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { fetchTopicReactions, LikeType } from '@app/lib/like.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
-import type * as req from '@app/lib/types/req.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -84,26 +83,24 @@ export class Comment {
   async create(
     auth: Readonly<IAuth>,
     mainID: number,
-    body: req.ICreateComment,
+    content: string,
+    replyTo: number,
   ): Promise<{ id: number }> {
-    if (!Dam.allCharacterPrintable(body.content)) {
+    if (!Dam.allCharacterPrintable(content)) {
       throw new BadRequestError('text contains invalid invisible character');
     }
     if (auth.permission.ban_post) {
       throw new NotAllowedError('create comment');
     }
 
-    if (body.replyTo === undefined) {
-      body.replyTo = 0;
-    }
-    if (body.replyTo !== 0) {
+    if (replyTo !== 0) {
       const [parent] = await db
         .select({ id: this.table.id, state: this.table.state })
         .from(this.table)
-        .where(op.eq(this.table.id, body.replyTo))
+        .where(op.eq(this.table.id, replyTo))
         .limit(1);
       if (!parent) {
-        throw new NotFoundError(`parent comment id ${body.replyTo}`);
+        throw new NotFoundError(`parent comment id ${replyTo}`);
       }
       if (parent.state !== CommentState.Normal) {
         throw new NotAllowedError(`reply to a abnormal state comment`);
@@ -115,8 +112,8 @@ export class Comment {
     const reply: typeof this.table.$inferInsert = {
       mid: mainID,
       uid: auth.userID,
-      related: body.replyTo,
-      content: body.content,
+      related: replyTo,
+      content,
       createdAt: DateTime.now().toUnixInteger(),
       state: CommentState.Normal,
     };
@@ -124,7 +121,7 @@ export class Comment {
     return { id: result.insertId };
   }
 
-  async update(auth: Readonly<IAuth>, commentID: number, body: req.IUpdateComment) {
+  async update(auth: Readonly<IAuth>, commentID: number, content: string) {
     const [current] = await db
       .select()
       .from(this.table)
@@ -149,10 +146,7 @@ export class Comment {
       throw new NotAllowedError('cannot edit a comment with replies');
     }
 
-    await db
-      .update(this.table)
-      .set({ content: body.content })
-      .where(op.eq(this.table.id, commentID));
+    await db.update(this.table).set({ content }).where(op.eq(this.table.id, commentID));
 
     return {};
   }

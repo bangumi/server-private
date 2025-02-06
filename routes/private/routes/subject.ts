@@ -1113,7 +1113,7 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
-        body: req.Ref(req.UpdatePost),
+        body: req.Ref(req.UpdateContent),
         response: {
           200: t.Object({}),
         },
@@ -1230,7 +1230,7 @@ export async function setup(app: App) {
         params: t.Object({
           topicID: t.Integer(),
         }),
-        body: t.Intersect([req.Ref(req.CreatePost), req.Ref(req.TurnstileToken)]),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({ id: t.Integer() }),
         },
