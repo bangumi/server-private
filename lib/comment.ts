@@ -43,7 +43,7 @@ export class Comment {
   }
 
   async getAll(mainID: number) {
-    const data = await db.select().from(this.table).where(op.eq(this.table.mid, mainID)).limit(1);
+    const data = await db.select().from(this.table).where(op.eq(this.table.mid, mainID));
     const uids = data.map((v) => v.uid);
     const users = await fetcher.fetchSlimUsersByIDs(uids);
 
