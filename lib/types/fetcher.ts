@@ -26,6 +26,7 @@ import {
 import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
+import { isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -102,22 +103,6 @@ export async function fetchSimpleUsersByIDs(
       },
     ]),
   );
-}
-
-export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
-  const data = await db
-    .select({ fid: schema.chiiFriends.fid })
-    .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.uid, userID));
-  return data.map((d) => d.fid);
-}
-
-export async function fetchFollowerIDsByUserID(userID: number): Promise<number[]> {
-  const data = await db
-    .select({ uid: schema.chiiFriends.uid })
-    .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.fid, userID));
-  return data.map((d) => d.uid);
 }
 
 /** Cached */
@@ -872,10 +857,16 @@ export async function fetchSlimGroupsByIDs(
 /** Cached */
 export async function fetchSlimBlogEntryByID(
   entryID: number,
+  uid: number,
 ): Promise<res.ISlimBlogEntry | undefined> {
   const cached = await redis.get(getBlogSlimCacheKey(entryID));
   if (cached) {
-    return JSON.parse(cached) as res.ISlimBlogEntry;
+    const slim = JSON.parse(cached) as res.ISlimBlogEntry;
+    const isFriend = await isFriends(slim.uid, uid);
+    if (!slim.public && slim.uid !== uid && !isFriend) {
+      return;
+    }
+    return slim;
   }
   const [data] = await db
     .select()
@@ -886,5 +877,9 @@ export async function fetchSlimBlogEntryByID(
   }
   const slim = convert.toSlimBlogEntry(data);
   await redis.setex(getBlogSlimCacheKey(entryID), ONE_MONTH, JSON.stringify(slim));
+  const isFriend = await isFriends(slim.uid, uid);
+  if (!slim.public && slim.uid !== uid && !isFriend) {
+    return;
+  }
   return slim;
 }

@@ -17,7 +17,7 @@ export async function setup(app: App) {
     '/episodes/:episodeID',
     {
       schema: {
-        operationId: 'getSubjectEpisode',
+        operationId: 'getEpisode',
         summary: '获取剧集信息',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -46,7 +46,7 @@ export async function setup(app: App) {
     '/episodes/:episodeID/comments',
     {
       schema: {
-        operationId: 'getSubjectEpisodeComments',
+        operationId: 'getEpisodeComments',
         summary: '获取条目的剧集吐槽箱',
         tags: [Tag.Episode],
         params: t.Object({
@@ -70,7 +70,7 @@ export async function setup(app: App) {
     '/episodes/:episodeID/comments',
     {
       schema: {
-        operationId: 'createSubjectEpComment',
+        operationId: 'createEpisodeComment',
         summary: '创建条目的剧集吐槽',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -80,7 +80,7 @@ export async function setup(app: App) {
         body: req.Ref(req.CreateComment),
         response: {
           200: t.Object({
-            id: t.Integer({ description: 'new reply id' }),
+            id: t.Integer({ description: 'new comment id' }),
           }),
         },
       },
@@ -99,7 +99,7 @@ export async function setup(app: App) {
     '/episodes/-/comments/:commentID',
     {
       schema: {
-        operationId: 'updateSubjectEpComment',
+        operationId: 'updateEpisodeComment',
         summary: '编辑条目的剧集吐槽',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -123,7 +123,7 @@ export async function setup(app: App) {
     '/episodes/-/comments/:commentID',
     {
       schema: {
-        operationId: 'deleteSubjectEpComment',
+        operationId: 'deleteEpisodeComment',
         summary: '删除条目的剧集吐槽',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],

@@ -2,16 +2,22 @@ import { Type as t } from '@sinclair/typebox';
 
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
+import { Comment, CommentTarget } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { formatErrors } from '@app/lib/types/res.ts';
 import { isFriends } from '@app/lib/user/utils.ts';
+import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  const comment = new Comment(CommentTarget.Blog);
+
   app.get(
     '/blogs/:entryID',
     {
@@ -63,15 +69,10 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { entryID } }) => {
-      const entry = await fetcher.fetchSlimBlogEntryByID(entryID);
+      const entry = await fetcher.fetchSlimBlogEntryByID(entryID, auth.userID);
       if (!entry) {
         throw new NotFoundError('Blog entry not found');
       }
-      const isFriend = await isFriends(entry.uid, auth.userID);
-      if (!entry.public && entry.uid !== auth.userID && !isFriend) {
-        throw new NotFoundError('Blog entry not found');
-      }
-
       const data = await db
         .select({ id: schema.chiiSubjectRelatedBlogs.subjectID })
         .from(schema.chiiSubjectRelatedBlogs)
@@ -117,12 +118,8 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { entryID }, query: { limit = 20, offset = 0 } }) => {
-      const entry = await fetcher.fetchSlimBlogEntryByID(entryID);
+      const entry = await fetcher.fetchSlimBlogEntryByID(entryID, auth.userID);
       if (!entry) {
-        throw new NotFoundError('Blog entry not found');
-      }
-      // 只允许查看自己的日志图片
-      if (entry.uid !== auth.userID) {
         throw new NotFoundError('Blog entry not found');
       }
 
@@ -145,6 +142,108 @@ export async function setup(app: App) {
         data: photos,
         total: count,
       };
+    },
+  );
+
+  app.get(
+    '/blogs/:entryID/comments',
+    {
+      schema: {
+        summary: '获取日志的吐槽箱',
+        operationId: 'getBlogComments',
+        tags: [Tag.Blog],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          entryID: t.Integer(),
+        }),
+        response: {
+          200: t.Array(res.Comment),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('blog entry')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { entryID } }) => {
+      const entry = await fetcher.fetchSlimBlogEntryByID(entryID, auth.userID);
+      if (!entry) {
+        throw new NotFoundError('Blog entry not found');
+      }
+      return await comment.getAll(entryID);
+    },
+  );
+
+  app.post(
+    '/blogs/:entryID/comments',
+    {
+      schema: {
+        summary: '创建日志的吐槽',
+        operationId: 'createBlogComment',
+        tags: [Tag.Blog],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          entryID: t.Integer(),
+        }),
+        body: req.Ref(req.CreateComment),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+        },
+      },
+      preHandler: [requireLogin('creating a comment')],
+    },
+    async ({ auth, body, params: { entryID } }) => {
+      const entry = await fetcher.fetchSlimBlogEntryByID(entryID, auth.userID);
+      if (!entry) {
+        throw new NotFoundError('Blog entry not found');
+      }
+      return await comment.create(auth, entryID, body);
+    },
+  );
+
+  app.put(
+    '/blogs/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑日志的吐槽',
+        operationId: 'updateBlogComment',
+        tags: [Tag.Blog],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateComment),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('edit a comment')],
+    },
+    async ({ auth, body, params: { commentID } }) => {
+      return await comment.update(auth, commentID, body);
+    },
+  );
+
+  app.delete(
+    '/blogs/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除日志的吐槽',
+        operationId: 'deleteBlogComment',
+        tags: [Tag.Blog],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete a comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      return await comment.delete(auth, commentID);
     },
   );
 }

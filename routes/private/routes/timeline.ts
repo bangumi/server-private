@@ -65,7 +65,7 @@ export async function setup(app: App) {
           break;
         }
       }
-      const result = await fetchTimelineByIDs(ids, auth.allowNsfw);
+      const result = await fetchTimelineByIDs(auth, ids);
       const items = [];
       for (const tid of ids) {
         const item = result[tid];
