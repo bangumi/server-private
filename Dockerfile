@@ -8,8 +8,10 @@ FROM base AS builder
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches/
 
-RUN corepack enable && corepack prepare --activate \
-  && pnpm install --frozen-lockfile
+RUN npm i -g corepack &&\
+  corepack enable &&\
+  corepack prepare --activate &&\
+  pnpm install --frozen-lockfile
 
 COPY . ./
 
