@@ -65,7 +65,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { personID } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiPersons)
         .where(
@@ -75,10 +75,10 @@ export async function setup(app: App) {
             auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
           ),
         );
-      for (const d of data) {
-        return convert.toPerson(d);
+      if (!data) {
+        throw new NotFoundError(`person ${personID}`);
       }
-      throw new NotFoundError(`person ${personID}`);
+      return convert.toPerson(data);
     },
   );
 
