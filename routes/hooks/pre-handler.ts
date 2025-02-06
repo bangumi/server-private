@@ -9,7 +9,9 @@ import * as session from '@app/lib/auth/session.ts';
 import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session.ts';
 import { TypedCache } from '@app/lib/cache.ts';
 import config from '@app/lib/config.ts';
+import { CaptchaError } from '@app/lib/error';
 import { UserRepo } from '@app/lib/orm/index.ts';
+import { turnstile } from '@app/lib/services/turnstile';
 import { md5 } from '@app/lib/utils/index.ts';
 
 export const requireLogin = (s: string) => async (req: { auth: IAuth }) => {
@@ -22,6 +24,14 @@ export function requirePermission(s: string, allowed: (auth: IAuth) => boolean |
   return async ({ auth }: { auth: IAuth }) => {
     if (!allowed(auth)) {
       throw new NotAllowedError(s);
+    }
+  };
+}
+
+export function requireTurnstileToken() {
+  return async ({ body }: { body: { turnstileToken: string } }) => {
+    if (!(await turnstile.verify(body.turnstileToken))) {
+      throw new CaptchaError();
     }
   };
 }

@@ -6,9 +6,8 @@ import { db } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth';
 import { Dam } from '@app/lib/dam';
-import { BadRequestError, CaptchaError } from '@app/lib/error';
+import { BadRequestError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { turnstile } from '@app/lib/services/turnstile';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import {
@@ -21,7 +20,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -90,17 +89,14 @@ export async function setup(app: App) {
         operationId: 'createTimelineSay',
         tags: [Tag.Timeline],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: req.Ref(req.CreateTimelineSay),
+        body: t.Intersect([req.Ref(req.CreateContent), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({ id: t.Integer() }),
         },
       },
-      preHandler: [requireLogin('posting a say')],
+      preHandler: [requireLogin('posting a say'), requireTurnstileToken()],
     },
-    async ({ auth, body: { content, turnstileToken } }) => {
-      if (!(await turnstile.verify(turnstileToken))) {
-        throw new CaptchaError();
-      }
+    async ({ auth, body: { content } }) => {
       if (!Dam.allCharacterPrintable(content)) {
         throw new BadRequestError('text contains invalid invisible character');
       }

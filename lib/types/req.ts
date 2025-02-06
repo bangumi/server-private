@@ -1,8 +1,6 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import * as examples from '@app/lib/types/examples.ts';
-
 export * from '@app/lib/types/common.ts';
 
 const turnstileDescription = `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
@@ -39,17 +37,20 @@ export const SubjectSort = t.String({
   - title = 标题`,
 });
 
+export const TurnstileToken = t.Object(
+  {
+    turnstileToken: t.String({ description: turnstileDescription }),
+  },
+  { $id: 'TurnstileToken' },
+);
+
 export type ICreateTopic = Static<typeof CreateTopic>;
 export const CreateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
     content: t.String({ minLength: 1, description: 'bbcode' }),
-    turnstileToken: t.String({ description: turnstileDescription }),
   },
-  {
-    $id: 'CreateTopic',
-    examples: [examples.createTopic],
-  },
+  { $id: 'CreateTopic' },
 );
 
 export type IUpdateTopic = Static<typeof UpdateTopic>;
@@ -61,59 +62,34 @@ export const UpdateTopic = t.Object(
   { $id: 'UpdateTopic' },
 );
 
-export type ICreatePost = Static<typeof CreatePost>;
-export const CreatePost = t.Object(
+export type ICreateReply = Static<typeof CreateReply>;
+export const CreateReply = t.Object(
   {
     content: t.String({ minLength: 1 }),
     replyTo: t.Optional(
       t.Integer({
         default: 0,
-        description: '被回复的帖子 ID, `0` 代表回复楼主',
+        description: '被回复的回复 ID, `0` 代表发送顶层回复',
       }),
     ),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
-  { $id: 'CreatePost' },
+  { $id: 'CreateReply' },
 );
 
-export type IUpdatePost = Static<typeof UpdatePost>;
-export const UpdatePost = t.Object(
-  {
-    content: t.String({ minLength: 1, description: 'bbcode' }),
-  },
-  { $id: 'UpdatePost' },
-);
-
-export type ICreateComment = Static<typeof CreateComment>;
-export const CreateComment = t.Object(
-  {
-    content: t.String({ minLength: 1 }),
-    replyTo: t.Optional(
-      t.Integer({
-        default: 0,
-        description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
-      }),
-    ),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
-  },
-  { $id: 'CreateComment' },
-);
-
-export type IUpdateComment = Static<typeof UpdateComment>;
-export const UpdateComment = t.Object(
+export type ICreateContent = Static<typeof CreateContent>;
+export const CreateContent = t.Object(
   {
     content: t.String({ minLength: 1 }),
   },
-  { $id: 'UpdateComment' },
+  { $id: 'CreateContent' },
 );
 
-export type ICreateTimelineSay = Static<typeof CreateTimelineSay>;
-export const CreateTimelineSay = t.Object(
+export type IUpdateContent = Static<typeof UpdateContent>;
+export const UpdateContent = t.Object(
   {
     content: t.String({ minLength: 1 }),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
-  { $id: 'CreateTimelineSay' },
+  { $id: 'UpdateContent' },
 );
 
 export const EpisodeExpected = t.Optional(

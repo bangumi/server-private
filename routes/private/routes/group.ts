@@ -7,7 +7,6 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import {
   BadRequestError,
-  CaptchaError,
   NotFoundError,
   NotJoinPrivateGroupError,
   UnexpectedNotFoundError,
@@ -17,7 +16,6 @@ import { fetchTopicReactions } from '@app/lib/like';
 import { LikeType } from '@app/lib/like';
 import * as Notify from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { turnstile } from '@app/lib/services/turnstile';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
@@ -26,7 +24,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -190,19 +188,16 @@ export async function setup(app: App) {
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
-        body: res.Ref(req.CreateTopic),
+        body: t.Intersect([req.Ref(req.CreateTopic), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new topic id' }),
           }),
         },
       },
-      preHandler: [requireLogin('creating a topic')],
+      preHandler: [requireLogin('creating a topic'), requireTurnstileToken()],
     },
-    async ({ auth, body: { title, content, turnstileToken }, params: { groupName } }) => {
-      if (!(await turnstile.verify(turnstileToken))) {
-        throw new CaptchaError();
-      }
+    async ({ auth, body: { title, content }, params: { groupName } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create topic');
       }
@@ -486,7 +481,7 @@ export async function setup(app: App) {
         params: t.Object({
           postID: t.Integer(),
         }),
-        body: req.Ref(req.UpdatePost),
+        body: req.Ref(req.UpdateContent),
         response: {
           200: t.Object({}),
         },
@@ -603,17 +598,14 @@ export async function setup(app: App) {
         params: t.Object({
           topicID: t.Integer(),
         }),
-        body: req.Ref(req.CreatePost),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({ id: t.Integer() }),
         },
       },
-      preHandler: [requireLogin('creating a reply')],
+      preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
     },
-    async ({ auth, params: { topicID }, body: { turnstileToken, content, replyTo = 0 } }) => {
-      if (!(await turnstile.verify(turnstileToken))) {
-        throw new CaptchaError();
-      }
+    async ({ auth, params: { topicID }, body: { content, replyTo = 0 } }) => {
       if (auth.permission.ban_post) {
         throw new NotAllowedError('create reply');
       }
