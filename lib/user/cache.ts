@@ -10,6 +10,10 @@ export function getFriendsCacheKey(uid: number): string {
   return `user:friends:${uid}`;
 }
 
+export function getFollowersCacheKey(uid: number): string {
+  return `user:followers:${uid}`;
+}
+
 export function getRelationCacheKey(uid: number, fid: number): string {
   return `user:relation:${uid}:${fid}`;
 }
