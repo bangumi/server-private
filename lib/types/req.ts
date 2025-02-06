@@ -51,7 +51,6 @@ export const CreateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
     content: t.String({ minLength: 1, description: 'bbcode' }),
-    turnstileToken: t.String({ description: turnstileDescription }),
   },
   {
     $id: 'CreateTopic',
