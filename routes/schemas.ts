@@ -15,6 +15,7 @@ export function addSchemas(app: App) {
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
+  app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateComment);
   app.addSchema(req.UpdatePost);
   app.addSchema(req.UpdateTopic);

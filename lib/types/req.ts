@@ -39,6 +39,13 @@ export const SubjectSort = t.String({
   - title = 标题`,
 });
 
+export const TurnstileToken = t.Object(
+  {
+    turnstileToken: t.String({ description: turnstileDescription }),
+  },
+  { $id: 'TurnstileToken' },
+);
+
 export type ICreateTopic = Static<typeof CreateTopic>;
 export const CreateTopic = t.Object(
   {
@@ -71,7 +78,6 @@ export const CreatePost = t.Object(
         description: '被回复的帖子 ID, `0` 代表回复楼主',
       }),
     ),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
   { $id: 'CreatePost' },
 );
