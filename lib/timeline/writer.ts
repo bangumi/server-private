@@ -58,6 +58,7 @@ export class TimelineWriter {
 
     const detail: memo.Subject = {
       subject_id: sid,
+      subject_type_id: subject.typeID,
       collect_id: interest.id,
       collect_comment: lo.escape(interest.comment),
       collect_rate: interest.rate,
