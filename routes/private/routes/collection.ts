@@ -9,6 +9,7 @@ import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error';
 import { NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CollectionPrivacy, getCollectionTypeField, PersonType } from '@app/lib/subject/type.ts';
+import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -293,7 +294,9 @@ export async function setup(app: App) {
 
       // 插入时间线
       if (interestTypeUpdated && privacy === CollectionPrivacy.Public) {
-        // TODO:
+        await TimelineWriter.subject(auth.userID, subjectID);
+      } else if (epStatus !== undefined || volStatus !== undefined) {
+        await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
       }
     },
   );
