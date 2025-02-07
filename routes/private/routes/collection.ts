@@ -147,6 +147,7 @@ export async function setup(app: App) {
       if (Object.keys(toUpdate).length === 0) {
         throw new BadRequestError('no update');
       }
+      toUpdate.updatedAt = DateTime.now().toUnixInteger();
       await db
         .update(schema.chiiSubjectInterests)
         .set(toUpdate)
