@@ -59,4 +59,4 @@ jobs:
       - run: docker run tmp --help
 
       # test mq native module
-      - run: docker run --entrypoint  "/nodejs/bin/node --enable-source-maps dist/mq.mjs" tmp  --help
+      - run: docker run --entrypoint  '[ "/nodejs/bin/node", "--enable-source-maps", "dist/mq.mjs" ]' tmp  --help

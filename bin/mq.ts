@@ -82,8 +82,9 @@ async function onMessage(key: string, value: string) {
 
 async function main() {
   if (process.argv.includes('--help')) {
-    console.log("hello from mq");
-    return
+    //eslint-disable-next-line no-console
+    console.log("mq doesn't have help message");
+    return;
   }
 
   if (!config.kafkaBrokers) {
