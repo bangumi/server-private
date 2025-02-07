@@ -129,8 +129,8 @@ importers:
         specifier: 12.1.3
         version: 12.1.3
       parse-duration:
-        specifier: 1.1.2
-        version: 1.1.2
+        specifier: 2.1.2
+        version: 2.1.2
       pino:
         specifier: 9.6.0
         version: 9.6.0
@@ -4566,8 +4566,8 @@ packages:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
 
-  parse-duration@1.1.2:
-    resolution: {integrity: sha512-p8EIONG8L0u7f8GFgfVlL4n8rnChTt8O5FSxgxMz2tjc9FMP199wxVKVB6IbKx11uTbKHACSvaLVIKNnoeNR/A==}
+  parse-duration@2.1.2:
+    resolution: {integrity: sha512-XGWdREkk2jn40JKcGpNvUBoPd7PZ5HIQmidTSYj3tkXzbnqqeN4oG172tUHmRuUo6agyQy5DY3ddu6mDXyoqqg==}
 
   parse-filepath@1.0.2:
     resolution: {integrity: sha512-FwdRXKCohSVeXqwtYonZTXtbGJKrn+HNyWDYVcp5yuJlesTwNH4rsmRZ+GrKAPJ5bLpRxESMeS+Rl0VCHRvB2Q==}
@@ -10716,7 +10716,7 @@ snapshots:
     dependencies:
       callsites: 3.1.0
 
-  parse-duration@1.1.2: {}
+  parse-duration@2.1.2: {}
 
   parse-filepath@1.0.2:
     dependencies:
