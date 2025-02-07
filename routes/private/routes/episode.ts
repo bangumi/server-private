@@ -6,7 +6,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -77,21 +77,21 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
-        body: req.Ref(req.CreateComment),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
             id: t.Integer({ description: 'new comment id' }),
           }),
         },
       },
-      preHandler: [requireLogin('creating a comment')],
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
     },
-    async ({ auth, body, params: { episodeID } }) => {
+    async ({ auth, body: { content, replyTo = 0 }, params: { episodeID } }) => {
       const ep = await fetcher.fetchSlimEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-      return await comment.create(auth, episodeID, body);
+      return await comment.create(auth, episodeID, content, replyTo);
     },
   );
 
@@ -106,7 +106,7 @@ export async function setup(app: App) {
         params: t.Object({
           commentID: t.Integer({ minimum: 1 }),
         }),
-        body: req.Ref(req.UpdateComment),
+        body: req.Ref(req.UpdateContent),
         response: {
           200: t.Object({}),
         },
@@ -114,8 +114,8 @@ export async function setup(app: App) {
       preHandler: [requireLogin('edit a comment')],
     },
 
-    async ({ auth, body, params: { commentID } }) => {
-      return await comment.update(auth, commentID, body);
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
     },
   );
 
