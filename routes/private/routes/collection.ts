@@ -126,7 +126,10 @@ export async function setup(app: App) {
       if (!slimSubject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      let privacy = priv ? CollectionPrivacy.Private : CollectionPrivacy.Public;
+      let privacy: CollectionPrivacy | undefined;
+      if (priv !== undefined) {
+        privacy = priv ? CollectionPrivacy.Private : CollectionPrivacy.Public;
+      }
       if (comment) {
         if (!Dam.allCharacterPrintable(comment)) {
           throw new BadRequestError('comment contains invalid invisible character');
@@ -187,6 +190,9 @@ export async function setup(app: App) {
           const oldType = interest.type;
           const oldRate = interest.rate;
           const oldPrivacy = interest.privacy;
+          if (privacy === undefined) {
+            privacy = oldPrivacy;
+          }
           const toUpdate: Partial<orm.ISubjectInterest> = {};
           if (type && oldType !== type) {
             interestTypeUpdated = true;
@@ -238,6 +244,9 @@ export async function setup(app: App) {
         } else {
           if (!type) {
             throw new BadRequestError('type is required on new subject interest');
+          }
+          if (privacy === undefined) {
+            privacy = CollectionPrivacy.Public;
           }
           const now = DateTime.now().toUnixInteger();
           const toInsert: typeof schema.chiiSubjectInterests.$inferInsert = {
@@ -293,10 +302,12 @@ export async function setup(app: App) {
       // CacheCore::cleanWatchingListCache($uid);
 
       // 插入时间线
-      if (interestTypeUpdated && privacy === CollectionPrivacy.Public) {
-        await TimelineWriter.subject(auth.userID, subjectID);
-      } else if (epStatus !== undefined || volStatus !== undefined) {
-        await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
+      if (privacy === CollectionPrivacy.Public) {
+        if (interestTypeUpdated) {
+          await TimelineWriter.subject(auth.userID, subjectID);
+        } else if (epStatus !== undefined || volStatus !== undefined) {
+          await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
+        }
       }
     },
   );
