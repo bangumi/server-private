@@ -22,11 +22,7 @@ export interface NewSubject {
 }
 
 export interface Subject {
-  subject_id: string;
-  subject_type_id: string;
-  subject_name: string;
-  subject_name_cn: string;
-  subject_series: string;
+  subject_id: number;
   collect_id: number;
   collect_comment: string;
   collect_rate: number;
