@@ -320,21 +320,21 @@ export const chiiUserNetworkServices = mysqlTable('chii_network_services', {
 });
 
 export const chiiNotify = mysqlTable('chii_notify', {
-  ntId: mediumint('nt_id').autoincrement().notNull(),
-  ntUid: mediumint('nt_uid').notNull(),
-  ntFromUid: mediumint('nt_from_uid').notNull(),
-  ntStatus: tinyint('nt_status').default(1).notNull(),
-  ntType: tinyint('nt_type').default(0).notNull(),
-  ntMid: mediumint('nt_mid').notNull(),
-  ntRelatedId: int('nt_related_id').notNull(),
-  ntDateline: int('nt_dateline').notNull(),
+  id: mediumint('nt_id').autoincrement().notNull(),
+  uid: mediumint('nt_uid').notNull(),
+  fromUID: mediumint('nt_from_uid').notNull(),
+  status: tinyint('nt_status').default(1).notNull(),
+  type: tinyint('nt_type').default(0).notNull(),
+  mid: mediumint('nt_mid').notNull(),
+  related: int('nt_related_id').notNull(),
+  createdAt: int('nt_dateline').notNull(),
 });
 
 export const chiiNotifyField = mysqlTable('chii_notify_field', {
-  ntfId: mediumint('ntf_id').autoincrement().notNull(),
-  ntfHash: tinyint('ntf_hash').default(0).notNull(),
-  ntfRid: int('ntf_rid').notNull(),
-  ntfTitle: varchar('ntf_title', { length: 255 }).notNull(),
+  id: mediumint('ntf_id').autoincrement().notNull(),
+  hash: tinyint('ntf_hash').default(0).notNull(),
+  rid: int('ntf_rid').notNull(),
+  title: varchar('ntf_title', { length: 255 }).notNull(),
 });
 
 export const chiiAccessToken = mysqlTable('chii_oauth_access_tokens', {
