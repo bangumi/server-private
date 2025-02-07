@@ -19,8 +19,6 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  const writer = new TimelineWriter();
-
   app.get(
     '/timeline',
     {
@@ -104,7 +102,7 @@ export async function setup(app: App) {
       }
 
       await rateLimit(LimitAction.Timeline, auth.userID);
-      const id = await writer.statusTsukkomi(auth.userID, text);
+      const id = await TimelineWriter.statusTsukkomi(auth.userID, text);
       return { id };
     },
   );
