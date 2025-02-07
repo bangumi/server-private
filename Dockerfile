@@ -32,7 +32,7 @@ FROM gcr.io/distroless/nodejs22-debian12@sha256:e36aabe0394465699ebdb68544f6f3b6
 
 WORKDIR /app
 
-ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps", "./dist/index.mjs"]
+ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps"]
 
 ENV NODE_ENV=production
 

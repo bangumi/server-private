@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t tmp -f Dockerfile .
-      - run: docker run tmp --help
+      - run: docker run tmp ./dist/index.mjs --help
 
       # test mq native module
-      - run: docker run --entrypoint  '[ "/nodejs/bin/node", "--enable-source-maps", "dist/mq.mjs" ]' tmp  --help
+      - run: docker run tmp ./dist/mq.mjs --help
