@@ -10,7 +10,7 @@ import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/s
 import type * as memo from './memo';
 import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
 
-export class TimelineWriter {
+export const TimelineWriter = {
   /**
    * 收藏条目
    *
@@ -100,7 +100,7 @@ export class TimelineWriter {
       });
       return result.insertId;
     }
-  }
+  },
 
   /**
    * 进度 - 剧集
@@ -175,7 +175,7 @@ export class TimelineWriter {
       });
       return result.insertId;
     }
-  }
+  },
 
   /**
    * 进度 - 条目
@@ -239,7 +239,7 @@ export class TimelineWriter {
       });
       return result.insertId;
     }
-  }
+  },
 
   /**
    * 状态 - 吐槽
@@ -262,8 +262,8 @@ export class TimelineWriter {
       createdAt: DateTime.now().toUnixInteger(),
     });
     return result.insertId;
-  }
-}
+  },
+};
 
 function switchSubjectType(ctype: CollectionType, stype: SubjectType): number {
   switch (stype) {
