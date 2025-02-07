@@ -57,7 +57,7 @@ export class TimelineWriter {
       .limit(1);
 
     const detail: memo.Subject = {
-      subject_id: sid.toString(),
+      subject_id: sid,
       collect_id: interest.id,
       collect_comment: lo.escape(interest.comment),
       collect_rate: interest.rate,
@@ -129,8 +129,8 @@ export class TimelineWriter {
       throw new UnexpectedNotFoundError('subject not found');
     }
     const detail: memo.ProgressSingle = {
-      subject_id: sid.toString(),
-      subject_type_id: subject.typeID.toString(),
+      subject_id: sid,
+      subject_type_id: subject.typeID,
       ep_id: eid,
     };
     const [previous] = await db
@@ -196,8 +196,8 @@ export class TimelineWriter {
       throw new UnexpectedNotFoundError('subject not found');
     }
     const detail: memo.ProgressBatch = {
-      subject_id: sid.toString(),
-      subject_type_id: subject.typeID.toString(),
+      subject_id: sid,
+      subject_type_id: subject.typeID,
       eps_total: subject.eps === 0 ? '??' : subject.eps.toString(),
       eps_update: epsUpdate,
       vols_total: subject.volumes === 0 ? '??' : subject.volumes.toString(),
