@@ -22,8 +22,7 @@ export interface NewSubject {
 }
 
 export interface Subject {
-  subject_id: number;
-  subject_type_id: number;
+  subject_id: string;
   collect_id: number;
   collect_comment: string;
   collect_rate: number;
@@ -32,8 +31,8 @@ export interface Subject {
 export type SubjectBatch = Record<number, Subject>;
 
 export interface ProgressBatch {
-  subject_id?: number;
-  subject_type_id?: number;
+  subject_id?: string;
+  subject_type_id?: string;
   eps_total: string;
   eps_update?: number;
   vols_total: string;
@@ -41,8 +40,8 @@ export interface ProgressBatch {
 }
 
 export interface ProgressSingle {
-  subject_id: number;
-  subject_type_id: number;
+  subject_id: string;
+  subject_type_id: string;
   ep_id: number;
 }
 
