@@ -3,7 +3,6 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
 import { db, op } from '@app/drizzle/db';
-import type * as orm from '@app/drizzle/orm';
 import * as schema from '@app/drizzle/schema';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { CollectionType, SubjectType } from '@app/lib/subject/type';
@@ -65,54 +64,41 @@ export class TimelineWriter {
     };
 
     if (previous && previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger()) {
-      return await this.subjectBatch(previous, detail);
-    } else {
-      return await this.subjectSingle(uid, sid, type, detail);
-    }
-  }
-
-  private async subjectSingle(
-    uid: number,
-    sid: number,
-    type: number,
-    detail: memo.Subject,
-  ): Promise<number> {
-    const [result] = await db.insert(schema.chiiTimeline).values({
-      uid,
-      cat: TimelineCat.Subject,
-      type,
-      related: sid.toString(),
-      memo: php.stringify(detail),
-      img: '',
-      batch: false,
-      source: TimelineSource.API,
-      replies: 0,
-      createdAt: DateTime.now().toUnixInteger(),
-    });
-    return result.insertId;
-  }
-
-  private async subjectBatch(previous: orm.ITimeline, detail: memo.Subject): Promise<number> {
-    const details: memo.SubjectBatch = {};
-    if (previous.batch) {
-      const info = php.parse(previous.memo) as memo.SubjectBatch;
-      for (const [id, subject] of Object.entries(info)) {
-        details[Number(id)] = subject;
+      const details: memo.SubjectBatch = {};
+      if (previous.batch) {
+        const info = php.parse(previous.memo) as memo.SubjectBatch;
+        for (const [id, subject] of Object.entries(info)) {
+          details[Number(id)] = subject;
+        }
+      } else {
+        const info = php.parse(previous.memo) as memo.Subject;
+        details[Number(info.subject_id)] = info;
       }
+      details[detail.subject_id] = detail;
+      await db
+        .update(schema.chiiTimeline)
+        .set({
+          batch: true,
+          memo: php.stringify(details),
+        })
+        .where(op.eq(schema.chiiTimeline.id, previous.id))
+        .limit(1);
+      return previous.id;
     } else {
-      const info = php.parse(previous.memo) as memo.Subject;
-      details[Number(info.subject_id)] = info;
+      const [result] = await db.insert(schema.chiiTimeline).values({
+        uid,
+        cat: TimelineCat.Subject,
+        type,
+        related: sid.toString(),
+        memo: php.stringify(detail),
+        img: '',
+        batch: false,
+        source: TimelineSource.API,
+        replies: 0,
+        createdAt: DateTime.now().toUnixInteger(),
+      });
+      return result.insertId;
     }
-    details[detail.subject_id] = detail;
-    await db
-      .update(schema.chiiTimeline)
-      .set({
-        batch: true,
-        memo: php.stringify(details),
-      })
-      .where(op.eq(schema.chiiTimeline.id, previous.id))
-      .limit(1);
-    return previous.id;
   }
 
   progressEpisode(uid: number, eid: number, sid: number) {
