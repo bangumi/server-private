@@ -433,7 +433,7 @@ export async function fetchSubjectInterest(
   userID: number,
   subjectID: number,
 ): Promise<res.ISubjectInterest | undefined> {
-  const data = await db
+  const [data] = await db
     .select()
     .from(schema.chiiSubjectInterests)
     .where(
@@ -441,11 +441,12 @@ export async function fetchSubjectInterest(
         op.eq(schema.chiiSubjectInterests.uid, userID),
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
       ),
-    );
-  for (const d of data) {
-    return convert.toSubjectInterest(d);
+    )
+    .limit(1);
+  if (!data) {
+    return;
   }
-  return;
+  return convert.toSubjectInterest(data);
 }
 
 export async function fetchSubjectEpStatus(

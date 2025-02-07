@@ -1,7 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
-import { db, decrement, increment, op } from '@app/drizzle/db.ts';
+import { db, decr, incr, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { Dam, dam } from '@app/lib/dam';
@@ -197,10 +197,10 @@ export async function setup(app: App) {
             await t
               .update(schema.chiiSubjects)
               .set({
-                [getCollectionTypeField(type)]: increment(
+                [getCollectionTypeField(type)]: incr(
                   schema.chiiSubjects[getCollectionTypeField(type)],
                 ),
-                [getCollectionTypeField(oldType)]: decrement(
+                [getCollectionTypeField(oldType)]: decr(
                   schema.chiiSubjects[getCollectionTypeField(oldType)],
                 ),
               })
@@ -273,7 +273,7 @@ export async function setup(app: App) {
             await t
               .update(schema.chiiSubjects)
               .set({
-                [field]: increment(schema.chiiSubjects[field]),
+                [field]: incr(schema.chiiSubjects[field]),
               })
               .where(op.eq(schema.chiiSubjects.id, subjectID))
               .limit(1);
