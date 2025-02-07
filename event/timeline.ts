@@ -90,7 +90,6 @@ export async function handle(key: string, value: string) {
       break;
     }
     case EventOp.Update: {
-      logger.info(`process timeline update event: ${idx.tml_id}`);
       await redis.del(getItemCacheKey(idx.tml_id));
       break;
     }
