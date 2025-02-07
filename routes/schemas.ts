@@ -18,6 +18,7 @@ export function addSchemas(app: App) {
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateTopic);
+  app.addSchema(req.UpdateSubjectProgress);
 
   app.addSchema(res.Avatar);
   app.addSchema(res.BlogEntry);

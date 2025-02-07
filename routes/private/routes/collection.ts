@@ -8,7 +8,12 @@ import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error';
 import { NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { CollectionPrivacy, getCollectionTypeField, PersonType } from '@app/lib/subject/type.ts';
+import {
+  CollectionPrivacy,
+  getCollectionTypeField,
+  PersonType,
+  SubjectType,
+} from '@app/lib/subject/type.ts';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -102,6 +107,55 @@ export async function setup(app: App) {
     },
   );
 
+  app.patch(
+    '/collections/subjects/:subjectID',
+    {
+      schema: {
+        summary: '修改条目进度',
+        operationId: 'updateSubjectProgress',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateSubjectProgress),
+      },
+      preHandler: [requireLogin('update subject progress')],
+    },
+    async ({ auth, params: { subjectID }, body: { epStatus, volStatus } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      switch (subject.type) {
+        case SubjectType.Book:
+        case SubjectType.Anime:
+        case SubjectType.Real: {
+          break;
+        }
+        default: {
+          throw new BadRequestError(`subject not supported for progress`);
+        }
+      }
+      const toUpdate: Partial<orm.ISubjectInterest> = {};
+      if (epStatus !== undefined) {
+        toUpdate.epStatus = epStatus;
+      }
+      if (volStatus !== undefined) {
+        toUpdate.volStatus = volStatus;
+      }
+      if (Object.keys(toUpdate).length === 0) {
+        throw new BadRequestError('no update');
+      }
+      await db
+        .update(schema.chiiSubjectInterests)
+        .set(toUpdate)
+        .where(op.eq(schema.chiiSubjectInterests.subjectID, subjectID))
+        .limit(1);
+      await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
+    },
+  );
+
   app.put(
     '/collections/subjects/:subjectID',
     {
@@ -117,11 +171,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('update subject collection')],
     },
-    async ({
-      auth,
-      params: { subjectID },
-      body: { type, rate, epStatus, volStatus, comment, priv, tags },
-    }) => {
+    async ({ auth, params: { subjectID }, body: { type, rate, comment, priv, tags } }) => {
       const slimSubject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!slimSubject) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -218,12 +268,6 @@ export async function setup(app: App) {
             needUpdateRate = true;
             toUpdate.rate = rate;
           }
-          if (epStatus !== undefined) {
-            toUpdate.epStatus = epStatus;
-          }
-          if (volStatus !== undefined) {
-            toUpdate.volStatus = volStatus;
-          }
           if (comment !== undefined) {
             toUpdate.comment = comment;
           }
@@ -258,8 +302,8 @@ export async function setup(app: App) {
             hasComment: comment ? 1 : 0,
             comment: comment ?? '',
             tag: tags?.join(' ') ?? '',
-            epStatus: epStatus ?? 0,
-            volStatus: volStatus ?? 0,
+            epStatus: 0,
+            volStatus: 0,
             wishDateline: 0,
             doingDateline: 0,
             collectDateline: 0,
@@ -268,7 +312,7 @@ export async function setup(app: App) {
             createIp: auth.ip,
             updateIp: auth.ip,
             updatedAt: now,
-            privacy: privacy,
+            privacy,
           };
           toInsert[`${getCollectionTypeField(type)}Dateline`] = now;
           const [{ insertId }] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
@@ -302,12 +346,8 @@ export async function setup(app: App) {
       // CacheCore::cleanWatchingListCache($uid);
 
       // 插入时间线
-      if (privacy === CollectionPrivacy.Public) {
-        if (interestTypeUpdated) {
-          await TimelineWriter.subject(auth.userID, subjectID);
-        } else if (epStatus !== undefined || volStatus !== undefined) {
-          await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
-        }
+      if (privacy === CollectionPrivacy.Public && interestTypeUpdated) {
+        await TimelineWriter.subject(auth.userID, subjectID);
       }
     },
   );
