@@ -5,20 +5,28 @@ import { DateTime } from 'luxon';
 import { db, op } from '@app/drizzle/db';
 import type * as orm from '@app/drizzle/orm';
 import * as schema from '@app/drizzle/schema';
+import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { CollectionType, SubjectType } from '@app/lib/subject/type';
 
 import type * as memo from './memo';
-import { TimelineCat, TimelineSource } from './type';
+import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
 
 export class TimelineWriter {
-  async subject(uid: number, sid: number) {
+  /**
+   * 收藏条目
+   *
+   * @param uid - 用户ID
+   * @param sid - 条目ID
+   * @returns 时间线 ID
+   */
+  async subject(uid: number, sid: number): Promise<number> {
     const [subject] = await db
       .select()
       .from(schema.chiiSubjects)
       .where(op.eq(schema.chiiSubjects.id, sid))
       .limit(1);
     if (!subject) {
-      return;
+      throw new UnexpectedNotFoundError('subject not found');
     }
     const [interest] = await db
       .select()
@@ -32,7 +40,7 @@ export class TimelineWriter {
       )
       .limit(1);
     if (!interest) {
-      return;
+      throw new UnexpectedNotFoundError('interest not found');
     }
 
     const type = switchSubjectType(interest.type, subject.typeID);
@@ -57,14 +65,19 @@ export class TimelineWriter {
     };
 
     if (previous && previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger()) {
-      await this.subjectBatch(previous, detail);
+      return await this.subjectBatch(previous, detail);
     } else {
-      await this.subjectSingle(uid, sid, type, detail);
+      return await this.subjectSingle(uid, sid, type, detail);
     }
   }
 
-  private async subjectSingle(uid: number, sid: number, type: number, detail: memo.Subject) {
-    await db.insert(schema.chiiTimeline).values({
+  private async subjectSingle(
+    uid: number,
+    sid: number,
+    type: number,
+    detail: memo.Subject,
+  ): Promise<number> {
+    const [result] = await db.insert(schema.chiiTimeline).values({
       uid,
       cat: TimelineCat.Subject,
       type,
@@ -76,9 +89,10 @@ export class TimelineWriter {
       replies: 0,
       createdAt: DateTime.now().toUnixInteger(),
     });
+    return result.insertId;
   }
 
-  private async subjectBatch(previous: orm.ITimeline, detail: memo.Subject) {
+  private async subjectBatch(previous: orm.ITimeline, detail: memo.Subject): Promise<number> {
     const details: memo.SubjectBatch = {};
     if (previous.batch) {
       const info = php.parse(previous.memo) as memo.SubjectBatch;
@@ -98,6 +112,52 @@ export class TimelineWriter {
       })
       .where(op.eq(schema.chiiTimeline.id, previous.id))
       .limit(1);
+    return previous.id;
+  }
+
+  progressEpisode(uid: number, eid: number, sid: number) {
+    const _uid = uid;
+    const _eid = eid;
+    const _sid = sid;
+    // message EpisodeCollectRequest {
+    //   uint64 user_id = 1;
+    //   Episode last = 2;
+    //   Subject subject = 3;
+    // }
+  }
+
+  progressSubject(uid: number, sid: number) {
+    const _uid = uid;
+    const _sid = sid;
+    // message SubjectProgressRequest {
+    //   uint64 user_id = 1;
+    //   Subject subject = 2;
+    //   uint32 eps_update = 3;
+    //   uint32 vols_update = 4;
+    // }
+  }
+
+  /**
+   * 状态 - 吐槽
+   *
+   * @param uid - 用户ID
+   * @param text - 吐槽内容
+   * @returns 时间线 ID
+   */
+  async statusTsukkomi(uid: number, text: string) {
+    const [result] = await db.insert(schema.chiiTimeline).values({
+      uid,
+      cat: TimelineCat.Status,
+      type: TimelineStatusType.Tsukkomi,
+      related: '',
+      memo: text,
+      img: '',
+      batch: false,
+      source: TimelineSource.Next,
+      replies: 0,
+      createdAt: DateTime.now().toUnixInteger(),
+    });
+    return result.insertId;
   }
 }
 
