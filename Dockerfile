@@ -8,8 +8,10 @@ FROM base AS builder
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches/
 
-RUN corepack enable && corepack prepare --activate \
-  && pnpm install --frozen-lockfile
+RUN npm i -g corepack &&\
+  corepack enable &&\
+  corepack prepare --activate &&\
+  pnpm install --frozen-lockfile
 
 COPY . ./
 
@@ -20,9 +22,11 @@ FROM base AS prod-deps
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches/
 
-RUN corepack enable && corepack prepare --activate \
-  && npm pkg delete scripts.prepare \
-  && pnpm install --prod --frozen-lockfile
+RUN npm i -g corepack &&\
+  corepack enable &&\
+  corepack prepare --activate &&\
+  npm pkg delete scripts.prepare &&\
+  pnpm install --prod --frozen-lockfile
 
 FROM gcr.io/distroless/nodejs22-debian12@sha256:e36aabe0394465699ebdb68544f6f3b618a654af85f6fa1b55e8fc4e567b3250
 
