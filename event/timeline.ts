@@ -40,7 +40,6 @@ export async function handle(key: string, value: string) {
         return;
       }
       const tml = payload.after;
-      logger.info(`process timeline create event: ${tml.tml_id}`);
       // 始终写入全站时间线
       await redis.zadd(getInboxCacheKey(0), tml.tml_id, tml.tml_id);
 
