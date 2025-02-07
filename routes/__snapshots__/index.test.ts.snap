@@ -189,6 +189,27 @@ exports[`should build private api spec 1`] = `
         - subject
         - type
       type: object
+    CollectSubject:
+      properties:
+        comment:
+          description: 评价
+          type: string
+        priv:
+          description: 仅自己可见
+          type: boolean
+        rate:
+          description: 评分，0 表示删除评分
+          maximum: 10
+          minimum: 0
+          type: integer
+        tags:
+          items:
+            description: 标签, 不能包含空格
+            type: string
+          type: array
+        type:
+          $ref: '#/components/schemas/CollectionType'
+      type: object
     CollectionType:
       description: |-
         条目收藏状态
@@ -2359,6 +2380,17 @@ exports[`should build private api spec 1`] = `
       required:
         - content
       type: object
+    UpdateSubjectProgress:
+      properties:
+        epStatus:
+          description: 书籍条目章节进度
+          minimum: 0
+          type: integer
+        volStatus:
+          description: 书籍条目卷数进度
+          minimum: 0
+          type: integer
+      type: object
     UpdateTopic:
       properties:
         content:
@@ -3674,6 +3706,61 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取当前用户的条目收藏
+      tags:
+        - collection
+  /p1/collections/subjects/{subjectID}:
+    patch:
+      operationId: updateSubjectProgress
+      parameters:
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSubjectProgress'
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 修改条目进度
+      tags:
+        - collection
+    put:
+      operationId: updateSubjectCollection
+      parameters:
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CollectSubject'
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 新增或修改条目收藏
       tags:
         - collection
   /p1/debug:
