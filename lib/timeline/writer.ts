@@ -4,8 +4,8 @@ import { DateTime } from 'luxon';
 
 import { db, op } from '@app/drizzle/db';
 import * as schema from '@app/drizzle/schema';
-import { UnexpectedNotFoundError } from '@app/lib/error.ts';
-import { CollectionType, SubjectType } from '@app/lib/subject/type';
+import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 
 import type * as memo from './memo';
 import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
@@ -93,7 +93,7 @@ export class TimelineWriter {
         memo: php.stringify(detail),
         img: '',
         batch: false,
-        source: TimelineSource.API,
+        source: TimelineSource.Next,
         replies: 0,
         createdAt: DateTime.now().toUnixInteger(),
       });
@@ -101,26 +101,140 @@ export class TimelineWriter {
     }
   }
 
-  progressEpisode(uid: number, eid: number, sid: number) {
-    const _uid = uid;
-    const _eid = eid;
-    const _sid = sid;
-    // message EpisodeCollectRequest {
-    //   uint64 user_id = 1;
-    //   Episode last = 2;
-    //   Subject subject = 3;
-    // }
+  /**
+   * 进度 - 剧集
+   *
+   * @param uid - 用户ID
+   * @param sid - 条目ID
+   * @param eid - 集数ID
+   * @param status - 状态
+   * @returns 时间线 ID
+   */
+  async progressEpisode(
+    uid: number,
+    sid: number,
+    eid: number,
+    status: EpisodeCollectionStatus,
+  ): Promise<number> {
+    if (status === EpisodeCollectionStatus.None) {
+      throw new BadRequestError('episode status is none');
+    }
+    const [subject] = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.eq(schema.chiiSubjects.id, sid))
+      .limit(1);
+    if (!subject) {
+      throw new UnexpectedNotFoundError('subject not found');
+    }
+    const detail: memo.ProgressSingle = {
+      subject_id: sid,
+      subject_type_id: subject.typeID,
+      ep_id: eid,
+    };
+    const [previous] = await db
+      .select()
+      .from(schema.chiiTimeline)
+      .where(
+        op.and(
+          op.eq(schema.chiiTimeline.uid, uid),
+          op.eq(schema.chiiTimeline.cat, TimelineCat.Progress),
+        ),
+      )
+      .orderBy(op.desc(schema.chiiTimeline.id))
+      .limit(1);
+    if (
+      previous &&
+      previous.createdAt > DateTime.now().minus({ minutes: 15 }).toUnixInteger() &&
+      Number(previous.related) === sid &&
+      !previous.batch &&
+      previous.type === status
+    ) {
+      await db
+        .update(schema.chiiTimeline)
+        .set({
+          memo: php.stringify(detail),
+          source: TimelineSource.Next,
+        })
+        .where(op.eq(schema.chiiTimeline.id, previous.id))
+        .limit(1);
+      return previous.id;
+    } else {
+      const [result] = await db.insert(schema.chiiTimeline).values({
+        uid,
+        cat: TimelineCat.Progress,
+        type: status,
+        related: sid.toString(),
+        memo: php.stringify(detail),
+        img: '',
+        batch: false,
+        source: TimelineSource.Next,
+        replies: 0,
+        createdAt: DateTime.now().toUnixInteger(),
+      });
+      return result.insertId;
+    }
   }
 
-  progressSubject(uid: number, sid: number) {
-    const _uid = uid;
-    const _sid = sid;
-    // message SubjectProgressRequest {
-    //   uint64 user_id = 1;
-    //   Subject subject = 2;
-    //   uint32 eps_update = 3;
-    //   uint32 vols_update = 4;
-    // }
+  /**
+   * 进度 - 条目
+   *
+   * @param uid - 用户ID
+   * @param sid - 条目ID
+   * @param epsUpdate - 话数更新
+   * @param volsUpdate - 卷数更新
+   * @returns 时间线 ID
+   */
+  async progressSubject(uid: number, sid: number, epsUpdate?: number, volsUpdate?: number) {
+    const [subject] = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.eq(schema.chiiSubjects.id, sid))
+      .limit(1);
+    if (!subject) {
+      throw new UnexpectedNotFoundError('subject not found');
+    }
+    const detail: memo.ProgressBatch = {
+      subject_id: sid,
+      subject_type_id: subject.typeID,
+      eps_total: subject.eps === 0 ? '??' : subject.eps.toString(),
+      eps_update: epsUpdate,
+      vols_total: subject.volumes === 0 ? '??' : subject.volumes.toString(),
+      vols_update: volsUpdate,
+    };
+    const [previous] = await db
+      .select()
+      .from(schema.chiiTimeline)
+      .where(
+        op.and(
+          op.eq(schema.chiiTimeline.uid, uid),
+          op.eq(schema.chiiTimeline.cat, TimelineCat.Progress),
+          op.eq(schema.chiiTimeline.type, 0),
+        ),
+      )
+      .limit(1);
+    if (previous) {
+      await db
+        .update(schema.chiiTimeline)
+        .set({ memo: php.stringify(detail), source: TimelineSource.Next })
+        .where(op.eq(schema.chiiTimeline.id, previous.id))
+        .limit(1);
+      return previous.id;
+    } else {
+      const [result] = await db.insert(schema.chiiTimeline).values({
+        uid,
+        cat: TimelineCat.Progress,
+        type: 0,
+        related: sid.toString(),
+        memo: php.stringify(detail),
+        img: '',
+        batch: false,
+        source: TimelineSource.Next,
+        replies: 0,
+        createdAt: DateTime.now().toUnixInteger(),
+      });
+      return result.insertId;
+    }
   }
 
   /**

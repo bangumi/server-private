@@ -31,21 +31,18 @@ export interface Subject {
 export type SubjectBatch = Record<number, Subject>;
 
 export interface ProgressBatch {
+  subject_id: number;
+  subject_type_id: number;
   eps_total: string;
   eps_update?: number;
   vols_total: string;
   vols_update?: number;
-  subject_id?: string;
-  subject_name: string;
-  subject_type_id?: number;
 }
 
 export interface ProgressSingle {
-  ep_id: string;
-  ep_name: string;
-  ep_sort: string;
-  subject_id: string;
-  subject_name: string;
+  subject_id: number;
+  subject_type_id: number;
+  ep_id: number;
 }
 
 export interface Nickname {
