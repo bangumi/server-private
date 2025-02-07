@@ -81,6 +81,7 @@ export class TimelineWriter {
         .set({
           batch: true,
           memo: php.stringify(details),
+          source: TimelineSource.Next,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
         .limit(1);
@@ -217,7 +218,10 @@ export class TimelineWriter {
     if (previous && previous.createdAt > DateTime.now().minus({ minutes: 15 }).toUnixInteger()) {
       await db
         .update(schema.chiiTimeline)
-        .set({ memo: php.stringify(detail), source: TimelineSource.Next })
+        .set({
+          memo: php.stringify(detail),
+          source: TimelineSource.Next,
+        })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
         .limit(1);
       return previous.id;
