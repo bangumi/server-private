@@ -32,8 +32,8 @@ export interface Subject {
 export type SubjectBatch = Record<number, Subject>;
 
 export interface ProgressBatch {
-  subject_id: number;
-  subject_type_id: number;
+  subject_id?: number;
+  subject_type_id?: number;
   eps_total: string;
   eps_update?: number;
   vols_total: string;
