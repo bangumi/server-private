@@ -14,6 +14,7 @@ import {
   PersonType,
   SubjectType,
 } from '@app/lib/subject/type.ts';
+import { updateSubjectRating } from '@app/lib/subject/utils.ts';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -236,10 +237,14 @@ export async function setup(app: App) {
             ),
           )
           .limit(1);
+        let oldRate = 0;
+        if (rate !== undefined) {
+          rate = 0;
+        }
         if (interest) {
           interestID = interest.id;
+          oldRate = interest.rate;
           const oldType = interest.type;
-          const oldRate = interest.rate;
           const oldPrivacy = interest.privacy;
           if (privacy === undefined) {
             privacy = oldPrivacy;
@@ -265,7 +270,7 @@ export async function setup(app: App) {
               .where(op.eq(schema.chiiSubjects.id, subjectID))
               .limit(1);
           }
-          if (rate && oldRate !== rate) {
+          if (oldRate !== rate) {
             needUpdateRate = true;
             toUpdate.rate = rate;
           }
@@ -298,7 +303,7 @@ export async function setup(app: App) {
             uid: auth.userID,
             subjectID,
             subjectType: slimSubject.type,
-            rate: rate ?? 0,
+            rate,
             type,
             hasComment: comment ? 1 : 0,
             comment: comment ?? '',
@@ -335,8 +340,9 @@ export async function setup(app: App) {
           }
         }
 
+        // 更新评分
         if (needUpdateRate) {
-          // await updateSubjectRating();
+          await updateSubjectRating(t, subjectID, oldRate, rate ?? 0);
         }
       });
 
