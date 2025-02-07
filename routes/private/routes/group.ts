@@ -14,7 +14,7 @@ import {
 import { isMemberInGroup } from '@app/lib/group/utils.ts';
 import { fetchTopicReactions } from '@app/lib/like';
 import { LikeType } from '@app/lib/like';
-import * as Notify from '@app/lib/notify.ts';
+import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state.ts';
@@ -692,7 +692,7 @@ export async function setup(app: App) {
         destUserID: notifyUserID,
         sourceUserID: auth.userID,
         now,
-        type: replyTo === 0 ? Notify.Type.GroupTopicReply : Notify.Type.GroupPostReply,
+        type: replyTo === 0 ? NotifyType.GroupTopicReply : NotifyType.GroupPostReply,
         postID,
         topicID: topic.id,
         title: topic.title,

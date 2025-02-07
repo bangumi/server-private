@@ -8,7 +8,7 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { fetchSubjectCollectReactions, fetchTopicReactions, LikeType } from '@app/lib/like';
-import * as Notify from '@app/lib/notify.ts';
+import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
 import { CollectionPrivacy } from '@app/lib/subject/type.ts';
@@ -1312,7 +1312,7 @@ export async function setup(app: App) {
         destUserID: notifyUserID,
         sourceUserID: auth.userID,
         now,
-        type: replyTo === 0 ? Notify.Type.SubjectTopicReply : Notify.Type.SubjectPostReply,
+        type: replyTo === 0 ? NotifyType.SubjectTopicReply : NotifyType.SubjectPostReply,
         postID,
         topicID: topic.id,
         title: topic.title,

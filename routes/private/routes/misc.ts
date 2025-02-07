@@ -9,7 +9,7 @@ import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
-import * as Notify from '@app/lib/notify.ts';
+import { Notify } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
