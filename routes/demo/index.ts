@@ -5,7 +5,7 @@ import { fastifyStatic } from '@fastify/static';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { projectRoot } from '@app/lib/config.ts';
-import * as Notify from '@app/lib/notify.ts';
+import { type INotify, Notify } from '@app/lib/notify.ts';
 import { fetchUserX } from '@app/lib/orm/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -56,7 +56,7 @@ async function userDemoRoutes(app: App) {
     if (req.auth.login) {
       const notifyCount = await Notify.count(req.auth.userID);
 
-      let notify: Notify.INotify[] = [];
+      let notify: INotify[] = [];
       if (notifyCount) {
         notify = await Notify.list(req.auth.userID, { unread: true, limit: 20 });
       }

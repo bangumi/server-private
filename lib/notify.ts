@@ -1,22 +1,13 @@
 import * as php from '@trim21/php-serialize';
 import * as lodash from 'lodash-es';
 import type { DateTime } from 'luxon';
-import type { Repository } from 'typeorm';
 
+import { db, incr, op } from '@app/drizzle/db';
+import * as schema from '@app/drizzle/schema';
 import { siteUrl } from '@app/lib/config.ts';
 import { isFriends } from '@app/lib/user/utils.ts';
 
-import { UnreachableError } from './error.ts';
-import type { Notify } from './orm/entity/index.ts';
-import * as entity from './orm/entity/index.ts';
-import * as orm from './orm/index.ts';
-import {
-  AppDataSource,
-  NotifyFieldRepo,
-  NotifyRepo,
-  UserFieldRepo,
-  UserRepo,
-} from './orm/index.ts';
+import { NotFoundError, UnreachableError } from './error.ts';
 import { intval } from './utils/index.ts';
 
 /**
@@ -24,7 +15,7 @@ import { intval } from './utils/index.ts';
  *
  * Todo 参照下面的 `_settings`
  */
-export const enum Type {
+export const enum NotifyType {
   Unknown = 0,
   GroupTopicReply = 1,
   GroupPostReply = 2,
@@ -62,11 +53,17 @@ export const enum Type {
   _34,
 }
 
+const enum PrivacyFilter {
+  All = 0,
+  Friends = 1,
+  None = 2,
+}
+
 interface Creation {
   destUserID: number;
   sourceUserID: number;
   now: DateTime;
-  type: Type;
+  type: NotifyType;
   /** 对应回帖所对应 post id */
   postID: number;
   /** 帖子 id, 章节 id ... */
@@ -74,99 +71,20 @@ interface Creation {
   title: string;
 }
 
-/** Used in transaction */
-export async function create({
-  destUserID,
-  sourceUserID,
-  now,
-  type,
-  postID,
-  topicID,
-  title,
-}: Creation): Promise<void> {
-  if (destUserID === sourceUserID) {
-    return;
-  }
-
-  const setting = await userNotifySetting(destUserID);
-
-  if (setting.blockedUsers.includes(sourceUserID)) {
-    return;
-  }
-
-  if (setting.CommentNotification === PrivacyFilter.None) {
-    return;
-  }
-
-  if (setting.CommentNotification === PrivacyFilter.Friends) {
-    const isFriend = await isFriends(destUserID, sourceUserID);
-
-    if (!isFriend) {
-      return;
-    }
-  }
-
-  const hash = hashType(type);
-  let notifyField = await NotifyFieldRepo.findOne({ where: { hash, topicID } });
-
-  if (!notifyField) {
-    notifyField = await NotifyFieldRepo.save({
-      title: title,
-      hash,
-      topicID,
-    });
-  }
-
-  await NotifyRepo.save({
-    uid: destUserID,
-    from_uid: sourceUserID,
-    unread: true,
-    dateline: now.toUnixInteger(),
-    type,
-    notify_field_id: notifyField.id,
-    postID,
-  });
-
-  const unread = await countNotifyRecord(NotifyRepo, destUserID);
-
-  await UserRepo.update({ id: destUserID }, { newNotify: unread });
+export interface INotify {
+  id: number;
+  type: NotifyType;
+  createdAt: number;
+  fromUid: number;
+  title: string;
+  topicID: number;
+  postID: number;
+  unread: boolean;
 }
 
-/** @internal 从 notify 表中读取真正的未读通知数量 */
-async function countNotifyRecord(repo: Repository<entity.Notify>, userID: number): Promise<number> {
-  return repo.count({ where: { uid: userID, unread: true } });
-}
-
-/** 从用户表的 new_notify 读取未读通知缓存。 */
-export async function count(userID: number): Promise<number> {
-  const u = await UserRepo.findOne({ where: { id: userID } });
-
-  return u?.newNotify ?? 0;
-}
-
-export async function markAllAsRead(userID: number, id: number[] | undefined): Promise<void> {
-  await AppDataSource.transaction(async (t) => {
-    const notifyRepo = t.getRepository(entity.Notify);
-    const memberRepo = t.getRepository(entity.User);
-    await notifyRepo.update(
-      {
-        uid: userID,
-        unread: true,
-        id: id ? orm.In(id) : undefined,
-      },
-      { unread: false },
-    );
-
-    const c = await countNotifyRecord(notifyRepo, userID);
-
-    await memberRepo.update({ id: userID }, { newNotify: c });
-  });
-}
-
-const enum PrivacyFilter {
-  All = 0,
-  Friends = 1,
-  None = 2,
+interface Filter {
+  unread?: boolean;
+  limit: number;
 }
 
 type UserPrivacySettingsField = number;
@@ -185,78 +103,163 @@ interface PrivacySetting {
   blockedUsers: number[];
 }
 
-async function userNotifySetting(userID: number): Promise<PrivacySetting> {
-  const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
+export const Notify = {
+  async create({
+    destUserID,
+    sourceUserID,
+    now,
+    type,
+    postID,
+    topicID,
+    title,
+  }: Creation): Promise<void> {
+    if (destUserID === sourceUserID) {
+      return;
+    }
+    const setting = await getUserNotifySetting(destUserID);
+    if (setting.blockedUsers.includes(sourceUserID)) {
+      return;
+    }
+    if (setting.CommentNotification === PrivacyFilter.None) {
+      return;
+    }
+    if (setting.CommentNotification === PrivacyFilter.Friends) {
+      const isFriend = await isFriends(destUserID, sourceUserID);
+      if (!isFriend) {
+        return;
+      }
+    }
+    const hash = hashType(type);
+    let fieldID = 0;
+    const [field] = await db
+      .select()
+      .from(schema.chiiNotifyField)
+      .where(
+        op.and(
+          op.eq(schema.chiiNotifyField.hash, hash),
+          op.eq(schema.chiiNotifyField.rid, topicID),
+        ),
+      )
+      .limit(1);
+    if (field) {
+      fieldID = field.id;
+    } else {
+      const [result] = await db.insert(schema.chiiNotifyField).values({
+        title,
+        hash,
+        rid: topicID,
+      });
+      fieldID = result.insertId;
+    }
+    await db.transaction(async (t) => {
+      await t.insert(schema.chiiNotify).values({
+        uid: destUserID,
+        fromUID: sourceUserID,
+        unread: true,
+        createdAt: now.toUnixInteger(),
+        type,
+        mid: fieldID,
+        related: postID,
+      });
+      await t
+        .update(schema.chiiUsers)
+        .set({ newNotify: incr(schema.chiiUsers.newNotify) })
+        .where(op.eq(schema.chiiUsers.id, destUserID));
+    });
+  },
 
-  const field = php.parse(f.privacy) as Record<number, number>;
+  async markAllAsRead(userID: number, ids?: number[]): Promise<void> {
+    await db.transaction(async (t) => {
+      await t
+        .update(schema.chiiNotify)
+        .set({ unread: false })
+        .where(
+          op.and(
+            op.eq(schema.chiiNotify.uid, userID),
+            op.eq(schema.chiiNotify.unread, true),
+            ids ? op.inArray(schema.chiiNotify.id, ids) : undefined,
+          ),
+        );
+      const [{ count = 0 } = {}] = await t
+        .select({ count: op.count(schema.chiiNotify.id) })
+        .from(schema.chiiNotify)
+        .where(op.and(op.eq(schema.chiiNotify.uid, userID), op.eq(schema.chiiNotify.unread, true)));
+      await t
+        .update(schema.chiiUsers)
+        .set({ newNotify: count })
+        .where(op.eq(schema.chiiUsers.id, userID));
+    });
+  },
+
+  async count(userID: number): Promise<number> {
+    const [user] = await db
+      .select()
+      .from(schema.chiiUsers)
+      .where(op.eq(schema.chiiUsers.id, userID));
+    return user?.newNotify ?? 0;
+  },
+
+  async list(userID: number, { unread, limit = 30 }: Filter): Promise<INotify[]> {
+    const conditions = [op.eq(schema.chiiNotify.uid, userID)];
+    if (unread !== undefined) {
+      conditions.push(op.eq(schema.chiiNotify.unread, unread));
+    }
+    const notifications = await db
+      .select()
+      .from(schema.chiiNotify)
+      .where(op.and(...conditions))
+      .orderBy(op.desc(schema.chiiNotify.createdAt))
+      .limit(limit);
+    if (notifications.length === 0) {
+      return [];
+    }
+    const fieldIDs = lodash.uniq(notifications.map((x) => x.mid));
+    const fields = await db
+      .select()
+      .from(schema.chiiNotifyField)
+      .where(op.inArray(schema.chiiNotifyField.id, fieldIDs));
+    const fieldMap = Object.fromEntries(fields.map((x) => [x.id, x]));
+    return notifications.map((x) => {
+      const field = fieldMap[x.mid];
+      return {
+        id: x.id,
+        type: x.type,
+        createdAt: x.createdAt,
+        fromUid: x.fromUID,
+        title: field?.title ?? '',
+        topicID: field?.rid ?? 0,
+        postID: x.related,
+        unread: x.unread,
+      } satisfies INotify;
+    });
+  },
+};
+
+async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
+  const [uf] = await db
+    .select()
+    .from(schema.chiiUserFields)
+    .where(op.eq(schema.chiiUserFields.uid, userID));
+  if (!uf) {
+    throw new NotFoundError('user not found');
+  }
+
+  const field = php.parse(uf.privacy) as Record<number, number>;
 
   return {
     PrivateMessage: field[UserPrivacyReceivePrivateMessage] as PrivacyFilter,
     TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,
     MentionNotification: field[UserPrivacyReceiveMentionNotification] as PrivacyFilter,
     CommentNotification: field[UserPrivacyReceiveCommentNotification] as PrivacyFilter,
-    blockedUsers: f.blocklist
+    blockedUsers: uf.blocklist
       .split(',')
       .map((x) => x.trim())
       .map((x) => intval(x)),
   };
 }
 
-export interface INotify {
-  id: number;
-  type: Type;
-  createdAt: number;
-  fromUid: number;
-  title: string;
-  topicID: number;
-  postID: number;
-  unread: boolean;
-}
-
-interface Filter {
-  unread?: boolean;
-  limit: number;
-}
-
-/** 返回通知 */
-export async function list(userID: number, { unread, limit = 30 }: Filter): Promise<INotify[]> {
-  const notifications: Notify[] = await NotifyRepo.find({
-    where: { uid: userID, unread },
-    order: { dateline: 'desc' },
-    take: limit,
-  });
-
-  if (notifications.length === 0) {
-    return [];
-  }
-
-  const fieldIds = lodash.uniq(notifications.map((x) => x.notify_field_id));
-
-  const fields = await NotifyFieldRepo.find({
-    where: {
-      id: orm.In(fieldIds),
-    },
-  });
-
-  const fieldMap = Object.fromEntries(fields.map((x) => [x.id, x]));
-
-  return notifications.map((x) => {
-    const field = fieldMap[x.notify_field_id];
-    return {
-      id: x.id,
-      type: x.type,
-      createdAt: x.dateline,
-      fromUid: x.from_uid,
-      title: field?.title ?? '',
-      topicID: field?.topicID ?? 0,
-      postID: x.postID,
-      unread: x.unread,
-    } satisfies INotify;
-  });
-}
-
 /** 计算 notifyField 的 hash 字段，参照 settings */
-function hashType(t: Type): number {
+function hashType(t: NotifyType): number {
   const setting = _settings[t];
   if (!setting) {
     throw new UnreachableError(`missing setting for notify type ${t}`);

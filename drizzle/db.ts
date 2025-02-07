@@ -1,4 +1,4 @@
-import type { ExtractTablesWithRelations } from 'drizzle-orm';
+import { type AnyColumn, type ExtractTablesWithRelations, sql } from 'drizzle-orm';
 import type { MySqlTransaction } from 'drizzle-orm/mysql-core';
 import {
   drizzle,
@@ -32,6 +32,14 @@ export const db = drizzle(poolConnection, {
         }
       : undefined,
 });
+
+export const incr = (column: AnyColumn, value = 1) => {
+  return sql`${column} + ${value}`;
+};
+
+export const decr = (column: AnyColumn, value = 1) => {
+  return sql`${column} - ${value}`;
+};
 
 export * as op from 'drizzle-orm';
 

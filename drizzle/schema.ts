@@ -310,6 +310,8 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   location: varchar('location', { length: 30 }).default('').notNull(),
   bio: text('bio').notNull(),
   homepage: mediumtext('homepage').notNull(),
+  privacy: mediumtext('privacy').notNull(),
+  blocklist: mediumtext('blocklist').notNull(),
 });
 
 export const chiiUserNetworkServices = mysqlTable('chii_network_services', {
@@ -323,9 +325,9 @@ export const chiiNotify = mysqlTable('chii_notify', {
   id: mediumint('nt_id').autoincrement().notNull(),
   uid: mediumint('nt_uid').notNull(),
   fromUID: mediumint('nt_from_uid').notNull(),
-  status: tinyint('nt_status').default(1).notNull(),
+  unread: customBoolean('nt_status').default(true).notNull(),
   type: tinyint('nt_type').default(0).notNull(),
-  mid: mediumint('nt_mid').notNull(),
+  mid: mediumint('nt_mid').notNull(), // ID in notify_field
   related: int('nt_related_id').notNull(),
   createdAt: int('nt_dateline').notNull(),
 });

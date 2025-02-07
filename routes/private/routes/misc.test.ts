@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { emptyAuth } from '@app/lib/auth/index.ts';
-import * as Notify from '@app/lib/notify.ts';
+import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -25,7 +25,7 @@ describe('notify', () => {
       sourceUserID: 382951,
       topicID: 2,
       now: DateTime.now(),
-      type: Notify.Type.GroupTopicReply,
+      type: NotifyType.GroupTopicReply,
       title: 'tt',
       postID: 1,
     });
