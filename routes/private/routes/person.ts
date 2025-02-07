@@ -3,6 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
+import { Comment, CommentTarget } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -10,6 +11,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
 function toPersonWork(
@@ -41,6 +43,8 @@ function toPersonCharacter(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  const comment = new Comment(CommentTarget.Person);
+
   app.get(
     '/persons/:personID',
     {
@@ -61,7 +65,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { personID } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiPersons)
         .where(
@@ -71,10 +75,10 @@ export async function setup(app: App) {
             auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
           ),
         );
-      for (const d of data) {
-        return convert.toPerson(d);
+      if (!data) {
+        throw new NotFoundError(`person ${personID}`);
       }
-      throw new NotFoundError(`person ${personID}`);
+      return convert.toPerson(data);
     },
   );
 
@@ -325,6 +329,104 @@ export async function setup(app: App) {
         total: count,
         data: users,
       };
+    },
+  );
+
+  app.get(
+    '/persons/:personID/comments',
+    {
+      schema: {
+        summary: '获取人物的吐槽箱',
+        operationId: 'getPersonComments',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        response: {
+          200: t.Array(res.Comment),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('person')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { personID } }) => {
+      const person = await fetcher.fetchSlimPersonByID(personID, auth.allowNsfw);
+      if (!person) {
+        throw new NotFoundError(`person ${personID}`);
+      }
+      return await comment.getAll(personID);
+    },
+  );
+
+  app.post(
+    '/persons/:personID/comments',
+    {
+      schema: {
+        summary: '创建人物的吐槽',
+        operationId: 'createPersonComment',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+        },
+      },
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+    },
+    async ({ auth, body: { content, replyTo = 0 }, params: { personID } }) => {
+      return await comment.create(auth, personID, content, replyTo);
+    },
+  );
+
+  app.put(
+    '/persons/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑人物的吐槽',
+        operationId: 'updatePersonComment',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateContent),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('edit a comment')],
+    },
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
+    },
+  );
+
+  app.delete(
+    '/persons/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除人物的吐槽',
+        operationId: 'deletePersonComment',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete a comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      return await comment.delete(auth, commentID);
     },
   );
 }

@@ -1,8 +1,7 @@
 import type { Static } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import { Ref, Type as t } from '@sinclair/typebox';
 
-import { CollectionType, Ref } from '@app/lib/types/common.ts';
-import * as examples from '@app/lib/types/examples.ts';
+import { CollectionType } from '@app/lib/types/common.ts';
 
 export * from '@app/lib/types/common.ts';
 
@@ -40,17 +39,20 @@ export const SubjectSort = t.String({
   - title = 标题`,
 });
 
+export const TurnstileToken = t.Object(
+  {
+    turnstileToken: t.String({ description: turnstileDescription }),
+  },
+  { $id: 'TurnstileToken' },
+);
+
 export type ICreateTopic = Static<typeof CreateTopic>;
 export const CreateTopic = t.Object(
   {
     title: t.String({ minLength: 1 }),
     content: t.String({ minLength: 1, description: 'bbcode' }),
-    turnstileToken: t.String({ description: turnstileDescription }),
   },
-  {
-    $id: 'CreateTopic',
-    examples: [examples.createTopic],
-  },
+  { $id: 'CreateTopic' },
 );
 
 export type IUpdateTopic = Static<typeof UpdateTopic>;
@@ -62,50 +64,52 @@ export const UpdateTopic = t.Object(
   { $id: 'UpdateTopic' },
 );
 
-export type ICreatePost = Static<typeof CreatePost>;
-export const CreatePost = t.Object(
+export type ICreateReply = Static<typeof CreateReply>;
+export const CreateReply = t.Object(
   {
     content: t.String({ minLength: 1 }),
     replyTo: t.Optional(
       t.Integer({
         default: 0,
-        description: '被回复的帖子 ID, `0` 代表回复楼主',
+        description: '被回复的回复 ID, `0` 代表发送顶层回复',
       }),
     ),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
   },
-  { $id: 'CreatePost' },
+  { $id: 'CreateReply' },
 );
 
-export type IUpdatePost = Static<typeof UpdatePost>;
-export const UpdatePost = t.Object(
-  {
-    content: t.String({ minLength: 1, description: 'bbcode' }),
-  },
-  { $id: 'UpdatePost' },
-);
-
-export type ICreateEpisodeComment = Static<typeof CreateEpisodeComment>;
-export const CreateEpisodeComment = t.Object(
-  {
-    content: t.String({ minLength: 1 }),
-    replyTo: t.Optional(
-      t.Integer({
-        default: 0,
-        description: '被回复的吐槽 ID, `0` 代表发送顶层吐槽',
-      }),
-    ),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
-  },
-  { $id: 'CreateEpisodeComment' },
-);
-
-export type IUpdateEpisodeComment = Static<typeof UpdateEpisodeComment>;
-export const UpdateEpisodeComment = t.Object(
+export type ICreateContent = Static<typeof CreateContent>;
+export const CreateContent = t.Object(
   {
     content: t.String({ minLength: 1 }),
   },
-  { $id: 'UpdateEpisodeComment' },
+  { $id: 'CreateContent' },
+);
+
+export type IUpdateContent = Static<typeof UpdateContent>;
+export const UpdateContent = t.Object(
+  {
+    content: t.String({ minLength: 1 }),
+  },
+  { $id: 'UpdateContent' },
+);
+
+export const EpisodeExpected = t.Optional(
+  t.Partial(
+    t.Object(
+      {
+        name: t.String(),
+        nameCN: t.String(),
+        duration: t.String(),
+        date: t.String(),
+        summary: t.String(),
+      },
+      {
+        description:
+          "a optional object to check if input is changed by others\nif some key is given, and current data in database doesn't match input, subject will not be changed",
+      },
+    ),
+  ),
 );
 
 export type ICollectSubject = Static<typeof CollectSubject>;
@@ -120,13 +124,4 @@ export const CollectSubject = t.Object(
     tags: t.Optional(t.Array(t.String({ description: '标签, 不能包含空格' }))),
   },
   { $id: 'CollectSubject' },
-);
-
-export type ICreateTimelineSay = Static<typeof CreateTimelineSay>;
-export const CreateTimelineSay = t.Object(
-  {
-    content: t.String({ minLength: 1 }),
-    turnstileToken: t.String({ minLength: 1, description: turnstileDescription }),
-  },
-  { $id: 'CreateTimelineSay' },
 );

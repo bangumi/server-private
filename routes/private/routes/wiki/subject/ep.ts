@@ -1,67 +1,23 @@
-import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
+import { DateTime } from 'luxon';
 
 import { db } from '@app/drizzle/db.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { parseDuration } from '@app/lib/utils/index.ts';
+import { validateDate } from '@app/lib/utils/date.ts';
+import { validateDuration } from '@app/lib/utils/index.ts';
 import { matchExpected } from '@app/lib/wiki';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
-const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-
-type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
-export const EpisodeWikiInfo = t.Object(
-  {
-    id: t.Integer(),
-    subjectID: t.Integer(),
-    name: t.String(),
-    nameCN: t.String(),
-    type: res.Ref(res.EpisodeType),
-    ep: t.Number(),
-    duration: t.String({ examples: ['24:53', '24m52s'] }),
-    date: t.Optional(
-      t.String({
-        description: 'YYYY-MM-DD',
-        pattern: datePattern.source,
-        examples: ['2022-02-02'],
-      }),
-    ),
-    summary: t.String(),
-  },
-  {
-    $id: 'EpisodeWikiInfo',
-  },
-);
-
-const EpisodeExpected = t.Optional(
-  t.Partial(
-    t.Object(
-      {
-        name: t.String(),
-        nameCN: t.String(),
-        duration: t.String(),
-        date: t.String(),
-        summary: t.String(),
-      },
-      {
-        description:
-          "a optional object to check if input is changed by others\nif some key is given, and current data in database doesn't match input, subject will not be changed",
-      },
-    ),
-  ),
-);
-
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(EpisodeWikiInfo);
-
   app.get(
     '/ep/:episodeID',
     {
@@ -74,7 +30,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: res.Ref(EpisodeWikiInfo, {
+          200: res.Ref(res.EpisodeWikiInfo, {
             examples: [
               {
                 id: 1148124,
@@ -88,7 +44,7 @@ export async function setup(app: App) {
                 summary:
                   'ゴンとキルアはG.I.プレイヤー選考会にいよいよ挑戦する。審査を担当するツェズゲラから提示された合格の条件はただ一つ「練を見せる」こと。合格できる者は200人中32名という狭き門だが、ゴンとキルアはくぐり抜けることができるのか！？',
               },
-            ] satisfies IEpisodeWikiInfo[],
+            ] satisfies res.IEpisodeWikiInfo[],
           }),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('episode')),
@@ -96,7 +52,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<IEpisodeWikiInfo> => {
+    async ({ params: { episodeID } }): Promise<res.IEpisodeWikiInfo> => {
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
@@ -108,8 +64,9 @@ export async function setup(app: App) {
         name: lo.unescape(ep.name),
         nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,
+        disc: ep.epDisc,
         date: ep.date,
-        type: 0,
+        type: ep.type,
         duration: ep.duration,
         summary: ep.summary,
       };
@@ -130,8 +87,8 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String(),
-            episode: t.Partial(t.Omit(EpisodeWikiInfo, ['id']), { $id: undefined }),
-            expectedRevision: EpisodeExpected,
+            episode: t.Partial(t.Omit(req.EpisodeWikiInfo, ['id']), { $id: undefined }),
+            expectedRevision: req.EpisodeExpected,
           },
           {
             examples: [
@@ -186,21 +143,11 @@ export async function setup(app: App) {
       }
 
       if (body.date) {
-        if (!datePattern.test(body.date)) {
-          throw new BadRequestError(`${body.date} is not valid date`);
-        }
-
+        validateDate(body.date);
         ep.date = body.date;
       }
-
       if (body.duration) {
-        const duration = parseDuration(body.duration);
-        if (Number.isNaN(duration)) {
-          throw new BadRequestError(
-            `${body.duration} is not valid duration, use string like 'hh:mm:dd' or '1h10m20s'`,
-          );
-        }
-
+        validateDuration(body.duration);
         ep.duration = body.duration;
       }
 
@@ -216,7 +163,19 @@ export async function setup(app: App) {
         ep.summary = body.summary;
       }
 
-      const now = new Date();
+      if (body.ep !== undefined) {
+        ep.sort = body.ep;
+      }
+
+      if (body.disc !== undefined) {
+        ep.epDisc = body.disc;
+      }
+
+      if (body.type !== undefined) {
+        ep.type = body.type;
+      }
+
+      const now = DateTime.now().toUnixInteger();
 
       await db.transaction(async (t) => {
         await pushRev(t, {
@@ -229,9 +188,9 @@ export async function setup(app: App) {
                 ep_duration: ep.duration,
                 ep_name: ep.name,
                 ep_name_cn: ep.nameCN,
-                ep_sort: '0',
-                ep_disc: '0',
-                ep_type: '0',
+                ep_sort: ep.sort.toString(),
+                ep_disc: ep.epDisc.toString(),
+                ep_type: ep.type.toString(),
               },
             },
           ],

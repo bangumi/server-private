@@ -112,6 +112,7 @@ export const chiiCrtComments = mysqlTable('chii_crt_comments', {
   related: mediumint('crt_pst_related').notNull(),
   createdAt: int('crt_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('crt_pst_content').notNull(),
+  state: tinyint('crt_pst_state').notNull(),
 });
 
 export const chiiCharacterSubjects = mysqlTable('chii_crt_subject_index', {
@@ -256,6 +257,8 @@ export const chiiIndexComments = mysqlTable('chii_index_comments', {
   related: mediumint('idx_pst_related').notNull(),
   createdAt: int('idx_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('idx_pst_content').notNull(),
+  // NOTE: 目前没有这列, 默认是 0
+  state: tinyint('idx_pst_state').generatedAlwaysAs(0).notNull(),
 });
 
 export const chiiIndexRelated = mysqlTable('chii_index_related', {
@@ -464,6 +467,7 @@ export const chiiPrsnComments = mysqlTable('chii_prsn_comments', {
   related: mediumint('prsn_pst_related').notNull(),
   createdAt: int('prsn_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('prsn_pst_content').notNull(),
+  state: tinyint('prsn_pst_state').notNull(),
 });
 
 export const chiiRevHistory = mysqlTable('chii_rev_history', {
@@ -691,13 +695,15 @@ export const chiiTimelineComments = mysqlTable('chii_timeline_comments', {
   related: mediumint('tml_pst_related').notNull(),
   createdAt: int('tml_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('tml_pst_content').notNull(),
+  // NOTE: 目前没有这列, 默认是 0
+  state: tinyint('tml_pst_state').generatedAlwaysAs(0).notNull(),
 });
 
 export const chiiUsergroup = mysqlTable('chii_usergroup', {
   id: mediumint('usr_grp_id').autoincrement().notNull(),
   name: varchar('usr_grp_name', { length: 255 }).notNull(),
   perm: mediumtext('usr_grp_perm').notNull(),
-  updatedAt: int('usr_grp_dateline').notNull(),
+  createdAt: int('usr_grp_dateline').notNull(),
 });
 
 export const chiiBlogComments = mysqlTable('chii_blog_comments', {
@@ -705,8 +711,10 @@ export const chiiBlogComments = mysqlTable('chii_blog_comments', {
   mid: mediumint('blg_pst_mid').notNull(),
   uid: mediumint('blg_pst_uid').notNull(),
   related: mediumint('blg_pst_related').notNull(),
-  updatedAt: int('blg_pst_dateline').notNull(),
+  createdAt: int('blg_pst_dateline').notNull(),
   content: mediumtext('blg_pst_content').notNull(),
+  // NOTE: 目前没有这列, 默认是 0
+  state: tinyint('blg_pst_state').generatedAlwaysAs(0).notNull(),
 });
 
 export const chiiBlogEntries = mysqlTable('chii_blog_entry', {

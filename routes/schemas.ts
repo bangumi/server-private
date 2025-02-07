@@ -9,15 +9,14 @@ export function addSchemas(app: App) {
   app.addSchema(common.SubjectType);
 
   app.addSchema(req.CollectSubject);
-  app.addSchema(req.CreateEpisodeComment);
-  app.addSchema(req.CreatePost);
-  app.addSchema(req.CreateTimelineSay);
+  app.addSchema(req.CreateContent);
+  app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
   app.addSchema(req.SubjectSort);
-  app.addSchema(req.UpdateEpisodeComment);
-  app.addSchema(req.UpdatePost);
+  app.addSchema(req.TurnstileToken);
+  app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateTopic);
 
   app.addSchema(res.Avatar);
@@ -27,8 +26,9 @@ export function addSchemas(app: App) {
   app.addSchema(res.CharacterRelation);
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);
+  app.addSchema(res.Comment);
   app.addSchema(res.Episode);
-  app.addSchema(res.EpisodeComment);
+  app.addSchema(res.EpisodeWikiInfo);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
   app.addSchema(res.Group);
@@ -62,9 +62,9 @@ export function addSchemas(app: App) {
   app.addSchema(res.SubjectAirtime);
   app.addSchema(res.SubjectCharacter);
   app.addSchema(res.SubjectCollection);
-  app.addSchema(res.SubjectComment);
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectInterest);
+  app.addSchema(res.SubjectInterestComment);
   app.addSchema(res.SubjectPlatform);
   app.addSchema(res.SubjectPosition);
   app.addSchema(res.SubjectPositionStaff);

@@ -4,6 +4,7 @@ import * as lo from 'lodash-es';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
+import type { IAuth } from '@app/lib/auth/index.ts';
 import { fetchSubjectCollectReactions } from '@app/lib/like.ts';
 import redis from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -14,12 +15,12 @@ import type * as memo from './memo';
 import { TimelineCat, TimelineStatusType } from './type';
 
 export async function parseTimelineMemo(
+  auth: Readonly<IAuth>,
   cat: TimelineCat,
   type: number,
   related: string,
   batch: boolean,
   data: string,
-  allowNsfw = false,
 ): Promise<res.ITimelineMemo> {
   if (data === '') {
     return {};
@@ -56,7 +57,10 @@ export async function parseTimelineMemo(
           const groups = [];
           if (batch) {
             const info = php.parse(data) as memo.GroupBatch;
-            const gs = await fetcher.fetchSlimGroupsByIDs(Object.keys(info).map(Number), allowNsfw);
+            const gs = await fetcher.fetchSlimGroupsByIDs(
+              Object.keys(info).map(Number),
+              auth.allowNsfw,
+            );
             for (const id of Object.keys(info).map(Number).sort()) {
               const group = gs[id];
               if (group) {
@@ -83,7 +87,7 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Wiki: {
       const info = php.parse(data) as memo.NewSubject;
-      const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
+      const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
       return {
         wiki: {
           subject,
@@ -94,7 +98,10 @@ export async function parseTimelineMemo(
       const subjects = [];
       if (batch) {
         const info = php.parse(data) as memo.SubjectBatch;
-        const ss = await fetcher.fetchSlimSubjectsByIDs(Object.keys(info).map(Number), allowNsfw);
+        const ss = await fetcher.fetchSlimSubjectsByIDs(
+          Object.keys(info).map(Number),
+          auth.allowNsfw,
+        );
         for (const id of Object.keys(info).map(Number).sort()) {
           const subject = ss[id];
           const v = info[id];
@@ -113,7 +120,7 @@ export async function parseTimelineMemo(
         }
       } else {
         const info = php.parse(data) as memo.Subject;
-        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
+        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
         if (subject) {
           subjects.push({
             subject,
@@ -140,7 +147,7 @@ export async function parseTimelineMemo(
             progress: {},
           };
         }
-        const subject = await fetcher.fetchSlimSubjectByID(subjectID, allowNsfw);
+        const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
         if (!subject) {
           return {
             progress: {},
@@ -159,7 +166,7 @@ export async function parseTimelineMemo(
         };
       } else {
         const info = php.parse(data) as memo.ProgressSingle;
-        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), allowNsfw);
+        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
         const episode = await fetcher.fetchSlimEpisodeByID(Number(info.ep_id));
         if (!subject || !episode) {
           return {
@@ -210,7 +217,7 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Blog: {
       const info = php.parse(data) as memo.Blog;
-      const blog = await fetcher.fetchSlimBlogEntryByID(Number(info.entry_id));
+      const blog = await fetcher.fetchSlimBlogEntryByID(Number(info.entry_id), auth.userID);
       return {
         blog,
       };
@@ -234,8 +241,8 @@ export async function parseTimelineMemo(
             personIDs.push(value.id);
           }
         }
-        const cs = await fetcher.fetchSlimCharactersByIDs(characterIDs, allowNsfw);
-        const ps = await fetcher.fetchSlimPersonsByIDs(personIDs);
+        const cs = await fetcher.fetchSlimCharactersByIDs(characterIDs, auth.allowNsfw);
+        const ps = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
         return {
           mono: {
             characters: Object.entries(cs).map(([_, v]) => v),
@@ -247,12 +254,12 @@ export async function parseTimelineMemo(
         const characters = [];
         const persons = [];
         if (info.cat === 1) {
-          const character = await fetcher.fetchSlimCharacterByID(Number(info.id), allowNsfw);
+          const character = await fetcher.fetchSlimCharacterByID(Number(info.id), auth.allowNsfw);
           if (character) {
             characters.push(character);
           }
         } else if (info.cat === 2) {
-          const person = await fetcher.fetchSlimPersonByID(Number(info.id));
+          const person = await fetcher.fetchSlimPersonByID(Number(info.id), auth.allowNsfw);
           if (person) {
             persons.push(person);
           }
@@ -271,13 +278,16 @@ export async function parseTimelineMemo(
   }
 }
 
-export async function toTimeline(tml: orm.ITimeline, allowNsfw = false): Promise<res.ITimeline> {
+export async function toTimeline(
+  auth: Readonly<IAuth>,
+  tml: orm.ITimeline,
+): Promise<res.ITimeline> {
   return {
     id: tml.id,
     uid: tml.uid,
     cat: tml.cat,
     type: tml.type,
-    memo: await parseTimelineMemo(tml.cat, tml.type, tml.related, tml.batch, tml.memo, allowNsfw),
+    memo: await parseTimelineMemo(auth, tml.cat, tml.type, tml.related, tml.batch, tml.memo),
     batch: tml.batch,
     replies: tml.replies,
     source: tml.source,
@@ -287,8 +297,8 @@ export async function toTimeline(tml: orm.ITimeline, allowNsfw = false): Promise
 
 /** Cached */
 export async function fetchTimelineByIDs(
+  auth: Readonly<IAuth>,
   ids: number[],
-  allowNsfw = false,
 ): Promise<Record<number, res.ITimeline>> {
   if (ids.length === 0) {
     return {};
@@ -310,7 +320,7 @@ export async function fetchTimelineByIDs(
       .from(schema.chiiTimeline)
       .where(op.inArray(schema.chiiTimeline.id, missing));
     for (const d of data) {
-      const item = await toTimeline(d, allowNsfw);
+      const item = await toTimeline(auth, d);
       result[d.id] = item;
       await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));
     }

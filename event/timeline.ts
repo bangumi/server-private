@@ -9,7 +9,7 @@ import {
   getUserCacheKey,
   getUserVisitCacheKey,
 } from '@app/lib/timeline/cache';
-import * as fetcher from '@app/lib/types/fetcher.ts';
+import { fetchFollowers } from '@app/lib/user/utils';
 
 import { EventOp } from './type';
 
@@ -52,7 +52,7 @@ export async function handle(key: string, value: string) {
         // 将 cache key 的过期时间设置为与 visit key 一致
         await redis.expire(userCacheKey, ttlUser - now);
       }
-      const followerIDs = await fetcher.fetchFollowerIDsByUserID(tml.tml_uid);
+      const followerIDs = await fetchFollowers(tml.tml_uid);
       if (followerIDs.length > 0) {
         // 写入自己的首页时间线
         followerIDs.push(tml.tml_uid);
@@ -79,7 +79,7 @@ export async function handle(key: string, value: string) {
       await redis.zrem(getInboxCacheKey(0), tml.tml_id);
 
       await redis.zrem(getUserCacheKey(tml.tml_uid), tml.tml_id);
-      const followerIDs = await fetcher.fetchFollowerIDsByUserID(tml.tml_uid);
+      const followerIDs = await fetchFollowers(tml.tml_uid);
       if (followerIDs.length > 0) {
         // 也从自己的首页时间线中删除
         followerIDs.push(tml.tml_uid);

@@ -3,6 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
+import { Comment, CommentTarget } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -10,6 +11,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
 function toCharacterSubject(
@@ -27,6 +29,8 @@ function toCharacterSubject(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  const comment = new Comment(CommentTarget.Character);
+
   app.get(
     '/characters/:characterID',
     {
@@ -47,7 +51,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { characterID } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiCharacters)
         .where(
@@ -56,11 +60,12 @@ export async function setup(app: App) {
             op.ne(schema.chiiCharacters.ban, 1),
             auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
           ),
-        );
-      for (const d of data) {
-        return convert.toCharacter(d);
+        )
+        .limit(1);
+      if (!data) {
+        throw new NotFoundError(`character ${characterID}`);
       }
-      throw new NotFoundError(`character ${characterID}`);
+      return convert.toCharacter(data);
     },
   );
 
@@ -208,6 +213,104 @@ export async function setup(app: App) {
         total: count,
         data: users,
       };
+    },
+  );
+
+  app.get(
+    '/characters/:characterID/comments',
+    {
+      schema: {
+        summary: '获取角色的吐槽箱',
+        operationId: 'getCharacterComments',
+        tags: [Tag.Character],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          characterID: t.Integer(),
+        }),
+        response: {
+          200: t.Array(res.Comment),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('character')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { characterID } }) => {
+      const character = await fetcher.fetchSlimCharacterByID(characterID, auth.allowNsfw);
+      if (!character) {
+        throw new NotFoundError(`character ${characterID}`);
+      }
+      return await comment.getAll(characterID);
+    },
+  );
+
+  app.post(
+    '/characters/:characterID/comments',
+    {
+      schema: {
+        summary: '创建角色的吐槽',
+        operationId: 'createCharacterComment',
+        tags: [Tag.Character],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          characterID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+        },
+      },
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+    },
+    async ({ auth, body: { content, replyTo = 0 }, params: { characterID } }) => {
+      return await comment.create(auth, characterID, content, replyTo);
+    },
+  );
+
+  app.put(
+    '/characters/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑角色的吐槽',
+        operationId: 'updateCharacterComment',
+        tags: [Tag.Character],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateContent),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('edit a comment')],
+    },
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
+    },
+  );
+
+  app.delete(
+    '/characters/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除角色的吐槽',
+        operationId: 'deleteCharacterComment',
+        tags: [Tag.Character],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete a comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      return await comment.delete(auth, commentID);
     },
   );
 }

@@ -105,13 +105,13 @@ describe('blog', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: testUID + 1, // different user
+        userID: testUID + 1, // other user
       },
     });
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: `/blogs/${publicEntryID}/photos`,
+      url: `/blogs/${privateEntryID}/photos`,
     });
     expect(res.statusCode).toBe(404);
   });

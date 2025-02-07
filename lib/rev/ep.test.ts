@@ -1,4 +1,5 @@
 import { expect, test } from 'vitest';
+import { DateTime } from 'luxon';
 
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
@@ -38,7 +39,7 @@ test('get episode rev', async () => {
           },
         ],
         creator: 1,
-        now: new Date(),
+        now: DateTime.now().toUnixInteger(),
         comment: 'test',
       }),
     ).resolves.toMatchInlineSnapshot('undefined');
