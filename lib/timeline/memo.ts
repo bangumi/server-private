@@ -1,5 +1,5 @@
 export interface User {
-  uid: string;
+  uid: number;
   username: string;
   nickname: string;
 }
@@ -7,7 +7,7 @@ export interface User {
 export type UserBatch = Record<number, User>;
 
 export interface Group {
-  grp_id: string;
+  grp_id: number;
   grp_name: string;
   grp_title: string;
   grp_desc: string;
@@ -22,11 +22,7 @@ export interface NewSubject {
 }
 
 export interface Subject {
-  subject_id: string;
-  subject_type_id: string;
-  subject_name: string;
-  subject_name_cn: string;
-  subject_series: string;
+  subject_id: number;
   collect_id: number;
   collect_comment: string;
   collect_rate: number;
@@ -35,21 +31,18 @@ export interface Subject {
 export type SubjectBatch = Record<number, Subject>;
 
 export interface ProgressBatch {
+  subject_id?: number;
+  subject_type_id?: number;
   eps_total: string;
   eps_update?: number;
   vols_total: string;
   vols_update?: number;
-  subject_id?: string;
-  subject_name: string;
-  subject_type_id?: number;
 }
 
 export interface ProgressSingle {
-  ep_id: string;
-  ep_name: string;
-  ep_sort: string;
-  subject_id: string;
-  subject_name: string;
+  subject_id: number;
+  subject_type_id: number;
+  ep_id: number;
 }
 
 export interface Nickname {
@@ -58,13 +51,13 @@ export interface Nickname {
 }
 
 export interface Blog {
-  entry_id: string;
+  entry_id: number;
   entry_title: string;
   entry_desc: string;
 }
 
 export interface Index {
-  idx_id: string;
+  idx_id: number;
   idx_title: string;
   idx_desc: string;
 }
