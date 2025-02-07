@@ -81,6 +81,11 @@ async function onMessage(key: string, value: string) {
 }
 
 async function main() {
+  if (process.argv.includes('--help')) {
+    console.log("hello from mq");
+    return
+  }
+
   if (!config.kafkaBrokers) {
     logger.error('KAFKA_BROKERS is not set');
     return;

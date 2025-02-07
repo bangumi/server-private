@@ -160,6 +160,9 @@
     "trailingComma": "all"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "@confluentinc/kafka-javascript"
+    ],
     "patchedDependencies": {}
   }
 }
