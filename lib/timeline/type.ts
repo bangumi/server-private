@@ -5,6 +5,7 @@ export enum TimelineSource {
   InTouch = 3,
   WP = 4,
   API = 5,
+  Next = 6,
 }
 
 export enum TimelineMode {

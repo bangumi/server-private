@@ -118,7 +118,7 @@ export async function setup(app: App) {
         memo: text,
         img: '',
         batch: false,
-        source: TimelineSource.API,
+        source: TimelineSource.Next,
         replies: 0,
         createdAt: DateTime.now().toUnixInteger(),
       });
