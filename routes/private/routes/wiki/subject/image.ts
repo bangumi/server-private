@@ -18,7 +18,7 @@ import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { errorResponses } from '@app/lib/types/res.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
@@ -91,7 +91,7 @@ export function setup(app: App) {
         };
       }
 
-      const users = await orm.fetchUsers(images.map((x) => x.uid));
+      const users = await fetcher.fetchSlimUsersByIDs(images.map((x) => x.uid));
       const likes = lo.groupBy(
         await db
           .select()
@@ -125,8 +125,8 @@ export function setup(app: App) {
             }
           : undefined,
         covers: images.map((x) => {
-          const u = users[x.uid];
-          if (!u) {
+          const creator = users[x.uid];
+          if (!creator) {
             throw new UnexpectedNotFoundError(`user ${x.uid}`);
           }
 
@@ -134,7 +134,7 @@ export function setup(app: App) {
             id: x.id,
             thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${x.target}`,
             raw: `https://${imageDomain}/pic/cover/l/${x.target}`,
-            creator: convert.oldToUser(u),
+            creator,
             voted: x.id in likes,
           };
         }),

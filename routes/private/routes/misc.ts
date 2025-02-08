@@ -11,9 +11,9 @@ import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
 import { Notify } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
+import { UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
-import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchFriends } from '@app/lib/user/utils';
 import { intval } from '@app/lib/utils';
@@ -121,19 +121,18 @@ export async function setup(app: App) {
         return { total: 0, data: [] };
       }
 
-      const users = await fetchUsers(data.map((x) => x.fromUid));
+      const users = await fetcher.fetchSlimUsersByIDs(data.map((x) => x.fromUid));
 
       return {
         total: await Notify.count(userID),
         data: data.map((x) => {
-          const u = users[x.fromUid];
-          if (!u) {
+          const sender = users[x.fromUid];
+          if (!sender) {
             throw new UnexpectedNotFoundError(`user ${x.fromUid}`);
           }
-
           return {
             ...x,
-            sender: convert.oldToUser(u),
+            sender,
           };
         }),
       };

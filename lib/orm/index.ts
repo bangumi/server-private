@@ -1,5 +1,4 @@
-import * as lo from 'lodash-es';
-import { DataSource, In } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 import config, { production, stage } from '@app/lib/config.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
@@ -171,32 +170,6 @@ export interface IUser {
   img: string;
   regTime: number;
   sign: string;
-}
-
-export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUser>> {
-  if (userIDs.length === 0) {
-    return {};
-  }
-
-  const users = await UserRepo.find({
-    where: { id: In(lo.uniq(userIDs)) },
-  });
-
-  return Object.fromEntries(
-    users.map((user) => [
-      user.id,
-      {
-        id: user.id,
-        nickname: user.nickname,
-        username: user.username,
-        img: user.avatar,
-        groupID: user.groupid,
-        regTime: user.regdate,
-        sign: user.sign,
-        user_group: user.groupid,
-      },
-    ]),
-  );
 }
 
 export interface ISubject {
