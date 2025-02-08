@@ -3,8 +3,7 @@ import { describe, expect, test } from 'vitest';
 
 import { db, op } from '@app/drizzle/db';
 import { chiiAccessToken, chiiOAuthRefreshToken } from '@app/drizzle/schema';
-import { fetchUserX } from '@app/lib/orm';
-import * as convert from '@app/lib/types/convert.ts';
+import { fetchUserX } from '@app/lib/user/utils.ts';
 import { userOauthRoutes } from '@app/routes/oauth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 import fastifyCookie from '@fastify/cookie';
@@ -16,7 +15,7 @@ const createApp = async () => {
   });
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {
-      const user = convert.oldToUser(await fetchUserX(req.auth.userID));
+      const user = await fetchUserX(req.auth.userID);
       reply.locals = { user };
     }
   });

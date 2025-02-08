@@ -16,13 +16,13 @@ import {
   CastRepo,
   CharacterRepo,
   CharacterSubjectsRepo,
-  fetchUser,
   PersonRepo,
   PersonSubjectsRepo,
   SubjectRelationRepo,
   SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { ListTopicDisplays } from '@app/lib/topic/display.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 
 import type * as types from './__generated__/resolvers.ts';
 
@@ -42,14 +42,14 @@ export const resolvers = {
         return null;
       }
 
-      const user = await fetchUser(auth.userID);
+      const user = await fetcher.fetchSlimUserByID(auth.userID);
       if (!user) {
         return null;
       }
 
       return {
         id: user.id,
-        avatar: avatar(user.img),
+        avatar: user.avatar,
         nickname: user.nickname,
         username: user.username,
       };

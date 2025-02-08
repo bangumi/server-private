@@ -108,7 +108,6 @@ export async function setup(app: App) {
               };
             }),
           ].sort((a, b) => a.revDateline - b.revDateline),
-          { ghostUser: true },
         ),
       });
     },

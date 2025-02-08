@@ -181,6 +181,7 @@ export const SlimUser = t.Object(
     username: t.String({ examples: ['sai'] }),
     nickname: t.String({ examples: ['Sai🖖'] }),
     avatar: Ref(Avatar),
+    group: t.Integer(),
     sign: t.String(),
     joinedAt: t.Integer(),
   },
