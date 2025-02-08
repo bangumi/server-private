@@ -349,7 +349,8 @@ export async function setup(app: App) {
             updatedAt: now,
             privacy,
           };
-          toInsert[`${getCollectionTypeField(type)}Dateline`] = now;
+          const field = getCollectionTypeField(type);
+          toInsert[`${field}Dateline`] = now;
           await t.insert(schema.chiiSubjectInterests).values(toInsert);
           interestTypeUpdated = true;
           if (rate) {
@@ -357,7 +358,6 @@ export async function setup(app: App) {
           }
           // 收藏计数＋1
           if (type) {
-            const field = getCollectionTypeField(type) as keyof orm.ISubject;
             await t
               .update(schema.chiiSubjects)
               .set({
