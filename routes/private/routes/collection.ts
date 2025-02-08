@@ -240,7 +240,7 @@ export async function setup(app: App) {
 
       await rateLimit(LimitAction.Subject, auth.userID);
 
-      let interestTypeUpdated = false;
+      let needTimeline = false;
       await db.transaction(async (t) => {
         let needUpdateRate = false;
 
@@ -275,7 +275,7 @@ export async function setup(app: App) {
           }
           const toUpdate: Partial<orm.ISubjectInterest> = {};
           if (type && oldType !== type) {
-            interestTypeUpdated = true;
+            needTimeline = true;
             const now = DateTime.now().toUnixInteger();
             toUpdate.type = type;
             toUpdate.updatedAt = now;
@@ -342,7 +342,7 @@ export async function setup(app: App) {
           const field = getCollectionTypeField(type);
           toInsert[`${field}Dateline`] = now;
           await t.insert(schema.chiiSubjectInterests).values(toInsert);
-          interestTypeUpdated = true;
+          needTimeline = true;
           if (rate) {
             needUpdateRate = true;
           }
@@ -359,7 +359,7 @@ export async function setup(app: App) {
       });
 
       // 插入时间线
-      if (privacy === CollectionPrivacy.Public && interestTypeUpdated) {
+      if (privacy === CollectionPrivacy.Public && needTimeline) {
         try {
           await TimelineWriter.subject(auth.userID, subjectID);
         } catch (error) {
