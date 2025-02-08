@@ -7,6 +7,7 @@ import * as schema from '@app/drizzle/schema';
 import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error';
 import { NotFoundError } from '@app/lib/error';
+import { logger } from '@app/lib/logger';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import {
   CollectionPrivacy,
@@ -154,7 +155,14 @@ export async function setup(app: App) {
         .set(toUpdate)
         .where(op.eq(schema.chiiSubjectInterests.subjectID, subjectID))
         .limit(1);
-      await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
+      try {
+        await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
+      } catch (error) {
+        logger.error(`failed to write timeline for subject ${subjectID}`, {
+          error,
+          userID: auth.userID,
+        });
+      }
     },
   );
 
@@ -348,7 +356,14 @@ export async function setup(app: App) {
 
       // 插入时间线
       if (privacy === CollectionPrivacy.Public && interestTypeUpdated) {
-        await TimelineWriter.subject(auth.userID, subjectID);
+        try {
+          await TimelineWriter.subject(auth.userID, subjectID);
+        } catch (error) {
+          logger.error(`failed to write timeline for subject ${subjectID}`, {
+            error,
+            userID: auth.userID,
+          });
+        }
       }
     },
   );
