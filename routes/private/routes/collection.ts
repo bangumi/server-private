@@ -1,7 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
-import { db, decr, incr, op } from '@app/drizzle/db.ts';
+import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { Dam, dam } from '@app/lib/dam';
@@ -15,7 +15,7 @@ import {
   PersonType,
   SubjectType,
 } from '@app/lib/subject/type.ts';
-import { updateSubjectRating } from '@app/lib/subject/utils.ts';
+import { updateSubjectCollection, updateSubjectRating } from '@app/lib/subject/utils.ts';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -282,18 +282,7 @@ export async function setup(app: App) {
             toUpdate.updateIp = auth.ip;
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
-            await t
-              .update(schema.chiiSubjects)
-              .set({
-                [getCollectionTypeField(type)]: incr(
-                  schema.chiiSubjects[getCollectionTypeField(type)],
-                ),
-                [getCollectionTypeField(oldType)]: decr(
-                  schema.chiiSubjects[getCollectionTypeField(oldType)],
-                ),
-              })
-              .where(op.eq(schema.chiiSubjects.id, subjectID))
-              .limit(1);
+            await updateSubjectCollection(t, subjectID, type, oldType);
           }
           if (oldRate !== rate) {
             needUpdateRate = true;
@@ -357,15 +346,9 @@ export async function setup(app: App) {
           if (rate) {
             needUpdateRate = true;
           }
-          // 收藏计数＋1
           if (type) {
-            await t
-              .update(schema.chiiSubjects)
-              .set({
-                [field]: incr(schema.chiiSubjects[field]),
-              })
-              .where(op.eq(schema.chiiSubjects.id, subjectID))
-              .limit(1);
+            // 收藏计数＋1
+            await updateSubjectCollection(t, subjectID, type);
           }
         }
 

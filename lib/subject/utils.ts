@@ -2,7 +2,36 @@ import { decr, incr, op, type Txn } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 
-function getField(rate: number) {
+import type { CollectionType } from './type';
+import { getCollectionTypeField } from './type';
+
+/** 更新条目收藏计数，需要在事务中执行 */
+export async function updateSubjectCollection(
+  t: Txn,
+  subjectID: number,
+  newType: CollectionType,
+  oldType?: CollectionType,
+) {
+  if (oldType && oldType === newType) {
+    return;
+  }
+  const toUpdate: Record<string, op.SQL> = {};
+  toUpdate[getCollectionTypeField(newType)] = incr(
+    schema.chiiSubjects[getCollectionTypeField(newType)],
+  );
+  if (oldType) {
+    toUpdate[getCollectionTypeField(oldType)] = decr(
+      schema.chiiSubjects[getCollectionTypeField(oldType)],
+    );
+  }
+  await t
+    .update(schema.chiiSubjects)
+    .set(toUpdate)
+    .where(op.eq(schema.chiiSubjects.id, subjectID))
+    .limit(1);
+}
+
+function getRatingField(rate: number) {
   return [
     undefined,
     'rate1',
@@ -28,8 +57,8 @@ export async function updateSubjectRating(
   if (oldRate === newRate) {
     return;
   }
-  const newField = getField(newRate);
-  const oldField = getField(oldRate);
+  const newField = getRatingField(newRate);
+  const oldField = getRatingField(oldRate);
   const toUpdate: Record<string, op.SQL> = {};
   if (newField) {
     const field = newField as keyof orm.ISubjectFields;
