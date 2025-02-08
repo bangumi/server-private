@@ -279,6 +279,7 @@ export async function setup(app: App) {
             const now = DateTime.now().toUnixInteger();
             toUpdate.type = type;
             toUpdate.updatedAt = now;
+            toUpdate.updateIp = auth.ip;
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
             await t
