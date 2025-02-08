@@ -113,7 +113,7 @@ export async function setup(app: App) {
     '/collections/subjects/:subjectID',
     {
       schema: {
-        summary: '修改条目进度',
+        summary: '更新条目进度',
         operationId: 'updateSubjectProgress',
         tags: [Tag.Collection],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],

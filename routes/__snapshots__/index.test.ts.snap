@@ -3733,7 +3733,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 修改条目进度
+      summary: 更新条目进度
       tags:
         - collection
     put:
