@@ -4,7 +4,6 @@ import * as php from '@trim21/php-serialize';
 
 import type * as orm from '@app/drizzle/orm.ts';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
-import type * as ormold from '@app/lib/orm/index.ts';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import {
   CollectionPrivacy,
@@ -56,18 +55,6 @@ export function toSubjectTags(tags: string): res.ISubjectTag[] {
     .filter((x) => x.tag_name !== undefined)
     .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))
     .filter((x) => !Number.isNaN(x.count));
-}
-
-// for backward compatibility
-export function oldToUser(user: ormold.IUser): res.ISlimUser {
-  return {
-    avatar: avatar(user.img),
-    username: user.username,
-    nickname: user.nickname,
-    id: user.id,
-    sign: user.sign,
-    joinedAt: 0,
-  };
 }
 
 export function toUserHomepage(homepage: string): res.IUserHomepage {
@@ -132,6 +119,7 @@ export function toSlimUser(user: orm.IUser): res.ISlimUser {
     username: user.username,
     nickname: user.nickname,
     avatar: avatar(user.avatar),
+    group: user.groupid,
     sign: user.sign,
     joinedAt: user.regdate,
   };

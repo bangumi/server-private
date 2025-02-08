@@ -20,11 +20,10 @@ import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { redisOauthPrefix } from '@app/lib/config.ts';
 import { BadRequestError } from '@app/lib/error.ts';
-import { fetchUserX } from '@app/lib/orm/index.ts';
 import redis from '@app/lib/redis.ts';
 import { EpochDefaultScope, type IScope, Scope, scopeMessage } from '@app/lib/scope.ts';
-import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import { fetchUserX } from '@app/lib/user/utils.ts';
 import { randomBase64url } from '@app/lib/utils/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App, Reply, Request } from '@app/routes/type.ts';
@@ -122,7 +121,7 @@ export async function setup(app: App) {
   app.addHook('preHandler', Auth);
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {
-      const user = convert.oldToUser(await fetchUserX(req.auth.userID));
+      const user = await fetchUserX(req.auth.userID);
       reply.locals = { user };
     }
   });

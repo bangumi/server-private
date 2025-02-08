@@ -841,6 +841,8 @@ exports[`should build private api spec 1`] = `
           properties:
             avatar:
               $ref: '#/components/schemas/Avatar'
+            group:
+              type: integer
             id:
               example: 1
               type: integer
@@ -859,6 +861,7 @@ exports[`should build private api spec 1`] = `
             - username
             - nickname
             - avatar
+            - group
             - sign
             - joinedAt
           title: SlimUser
@@ -1399,6 +1402,8 @@ exports[`should build private api spec 1`] = `
       properties:
         avatar:
           $ref: '#/components/schemas/Avatar'
+        group:
+          type: integer
         id:
           example: 1
           type: integer
@@ -1417,6 +1422,7 @@ exports[`should build private api spec 1`] = `
         - username
         - nickname
         - avatar
+        - group
         - sign
         - joinedAt
       title: SlimUser
@@ -7651,6 +7657,8 @@ paths:
                           properties:
                             avatar:
                               $ref: '#/components/schemas/Avatar'
+                            group:
+                              type: integer
                             id:
                               example: 1
                               type: integer
@@ -7669,6 +7677,7 @@ paths:
                             - username
                             - nickname
                             - avatar
+                            - group
                             - sign
                             - joinedAt
                           title: SlimUser
