@@ -399,14 +399,12 @@ export async function setup(app: App) {
         return [];
       }
 
-      const users = await orm.fetchUsers(history.map((x) => x.creatorID));
+      const users = await fetcher.fetchSlimUsersByIDs(history.map((x) => x.creatorID));
 
       return history.map((x) => {
-        const u = users[x.creatorID];
-
         return {
           creator: {
-            username: u?.username ?? '',
+            username: users[x.creatorID]?.username ?? '',
           },
           type: x.type,
           createdAt: x.createdAt,
