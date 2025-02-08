@@ -173,29 +173,6 @@ export interface IUser {
   sign: string;
 }
 
-export async function fetchUser(userID: number): Promise<IUser | null> {
-  if (!userID) {
-    throw new Error(`undefined user id ${userID}`);
-  }
-  const user = await UserRepo.findOne({
-    where: { id: userID },
-  });
-
-  if (!user) {
-    return null;
-  }
-
-  return {
-    id: user.id,
-    nickname: user.nickname,
-    username: user.username,
-    img: user.avatar,
-    groupID: user.groupid,
-    regTime: user.regdate,
-    sign: user.sign,
-  };
-}
-
 export async function addCreator<T extends { creatorID: number }>(
   arr: T[],
 ): Promise<(T & { creator: IUser })[]> {
