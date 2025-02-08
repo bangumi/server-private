@@ -346,12 +346,6 @@ export async function setup(app: App) {
         }
       });
 
-      // $db->memDelete(MC_SBJ_COLLECT . $subject['subject_id']); // 更新条目收藏缓存
-      // $db->memDelete(MC_COLLECT_PSN . $uid); //删除用户收藏统计缓存
-      // $db->memDelete(MC_USR_ALL_COLLECT . $uid);
-      // TagCore::cleanUserCollectTagCache($uid, $subject['subject_type_id'], $interest_type['id'], $interest_info['interest_type']);
-      // CacheCore::cleanWatchingListCache($uid);
-
       // 插入时间线
       if (privacy === CollectionPrivacy.Public && interestTypeUpdated) {
         await TimelineWriter.subject(auth.userID, subjectID);
