@@ -9,7 +9,7 @@ import * as schema from '@app/drizzle/schema.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
-import type { Permission } from '@app/lib/orm/index.ts';
+import type { Permission } from '@app/lib/user/perm.ts';
 import { SubjectRepo } from '@app/lib/orm/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';

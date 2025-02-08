@@ -1,6 +1,9 @@
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
+import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import redis from '@app/lib/redis.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
+import type * as res from '@app/lib/types/res.ts';
 import {
   getFollowersCacheKey,
   getFriendsCacheKey,
@@ -62,4 +65,29 @@ export async function isFriends(uid: number, another: number): Promise<boolean> 
   const result = d ? 1 : 0;
   await redis.setex(getRelationCacheKey(uid, another), 3600, result);
   return result === 1;
+}
+
+export function ghostUser(uid: number): res.ISlimUser {
+  return {
+    id: 0,
+    username: uid.toString(),
+    nickname: `deleted or missing user ${uid}`,
+    avatar: {
+      small: '',
+      medium: '',
+      large: '',
+    },
+    group: 0,
+    sign: '',
+    joinedAt: 0,
+  };
+}
+
+/** Cached */
+export async function fetchUserX(uid: number): Promise<res.ISlimUser> {
+  const user = await fetcher.fetchSlimUserByID(uid);
+  if (!user) {
+    throw new UnexpectedNotFoundError(`user ${uid} not found`);
+  }
+  return user;
 }

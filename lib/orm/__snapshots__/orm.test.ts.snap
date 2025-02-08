@@ -11,22 +11,3 @@ Object {
   "username": "382951",
 }
 `;
-
-exports[`should not fallback to empty permission 1`] = `
-Object {
-  "app_erase": true,
-  "doujin_subject_lock": true,
-  "ep_edit": true,
-  "ep_move": true,
-  "manage_user": true,
-  "manage_user_group": true,
-  "mono_erase": true,
-  "mono_merge": true,
-  "report": true,
-  "subject_edit": true,
-  "subject_lock": true,
-  "subject_refresh": true,
-  "subject_related": true,
-  "user_list": true,
-}
-`;

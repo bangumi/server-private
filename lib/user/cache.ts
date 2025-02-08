@@ -1,5 +1,5 @@
 export function getSlimCacheKey(uid: number): string {
-  return `user:slim:${uid}`;
+  return `user:v2:slim:${uid}`;
 }
 
 export function getStatsCacheKey(uid: number, section: string): string {
