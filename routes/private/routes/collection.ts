@@ -139,6 +139,19 @@ export async function setup(app: App) {
           throw new BadRequestError(`subject not supported for progress`);
         }
       }
+      const [interest] = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .where(
+          op.and(
+            op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+            op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+          ),
+        )
+        .limit(1);
+      if (!interest) {
+        throw new NotFoundError(`subject not collected`);
+      }
       const toUpdate: Partial<orm.ISubjectInterest> = {};
       if (epStatus !== undefined) {
         toUpdate.epStatus = epStatus;
@@ -153,7 +166,12 @@ export async function setup(app: App) {
       await db
         .update(schema.chiiSubjectInterests)
         .set(toUpdate)
-        .where(op.eq(schema.chiiSubjectInterests.subjectID, subjectID))
+        .where(
+          op.and(
+            op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+            op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+          ),
+        )
         .limit(1);
       try {
         await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
@@ -222,7 +240,6 @@ export async function setup(app: App) {
 
       await rateLimit(LimitAction.Subject, auth.userID);
 
-      let interestID = 0;
       let interestTypeUpdated = false;
       await db.transaction(async (t) => {
         let needUpdateRate = false;
@@ -250,7 +267,6 @@ export async function setup(app: App) {
           rate = 0;
         }
         if (interest) {
-          interestID = interest.id;
           oldRate = interest.rate;
           const oldType = interest.type;
           const oldPrivacy = interest.privacy;
@@ -296,7 +312,12 @@ export async function setup(app: App) {
             await t
               .update(schema.chiiSubjectInterests)
               .set(toUpdate)
-              .where(op.eq(schema.chiiSubjectInterests.id, interestID))
+              .where(
+                op.and(
+                  op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+                  op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+                ),
+              )
               .limit(1);
           }
         } else {
@@ -329,8 +350,7 @@ export async function setup(app: App) {
             privacy,
           };
           toInsert[`${getCollectionTypeField(type)}Dateline`] = now;
-          const [{ insertId }] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
-          interestID = insertId;
+          await t.insert(schema.chiiSubjectInterests).values(toInsert);
           interestTypeUpdated = true;
           if (rate) {
             needUpdateRate = true;
