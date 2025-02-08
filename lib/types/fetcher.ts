@@ -1,3 +1,4 @@
+import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
 import { db, op } from '@app/drizzle/db.ts';
@@ -67,6 +68,8 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
+
   const cached = await redis.mget(ids.map((id) => getUserSlimCacheKey(id)));
   const result: Record<number, res.ISlimUser> = {};
   const missing = [];
@@ -143,6 +146,7 @@ export async function fetchSlimSubjectsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getSubjectSlimCacheKey(id)));
   const result: Record<number, res.ISlimSubject> = {};
   const missing = [];
@@ -221,6 +225,7 @@ export async function fetchSubjectsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getSubjectItemCacheKey(id)));
   const result: Record<number, res.ISubject> = {};
   const missing = [];
@@ -543,6 +548,7 @@ export async function fetchSlimCharactersByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getCharacterSlimCacheKey(id)));
   const result: Record<number, res.ISlimCharacter> = {};
   const missing = [];
@@ -610,6 +616,7 @@ export async function fetchSlimPersonsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getPersonSlimCacheKey(id)));
   const result: Record<number, res.ISlimPerson> = {};
   const missing = [];
@@ -824,6 +831,7 @@ export async function fetchSlimGroupsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getGroupSlimCacheKey(id)));
   const result: Record<number, res.ISlimGroup> = {};
   const missing = [];

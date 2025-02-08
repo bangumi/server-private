@@ -173,32 +173,6 @@ export interface IUser {
   sign: string;
 }
 
-export async function addCreator<T extends { creatorID: number }>(
-  arr: T[],
-): Promise<(T & { creator: IUser })[]> {
-  const users = await fetchUsers(arr.map((x) => x.creatorID));
-
-  return arr.map((o) => {
-    const user = users[o.creatorID];
-    if (!user) {
-      return { ...o, creator: ghost(o.creatorID) };
-    }
-    return { ...o, creator: user };
-  });
-}
-
-function ghost(id: number): IUser {
-  return {
-    id: 0,
-    img: '',
-    username: id.toString(),
-    nickname: `deleted or missing user ${id}`,
-    groupID: 0,
-    regTime: 0,
-    sign: '',
-  };
-}
-
 export async function fetchUsers(userIDs: number[]): Promise<Record<number, IUser>> {
   if (userIDs.length === 0) {
     return {};
