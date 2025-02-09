@@ -1,6 +1,6 @@
 import { KafkaJS } from '@confluentinc/kafka-javascript';
 
-import config, { production } from '@app/lib/config.ts';
+import config, { production, stage } from '@app/lib/config.ts';
 
 class Producer {
   private producer: KafkaJS.Producer | null = null;
@@ -46,7 +46,7 @@ class MockProducer {
   }
 }
 
-export const producer = production ? new Producer() : new MockProducer();
+export const producer = production || stage ? new Producer() : new MockProducer();
 
 export async function newConsumer(topics: string[]) {
   const { Kafka, logLevel } = KafkaJS;
