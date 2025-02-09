@@ -66,12 +66,12 @@ export interface TimelineMessage {
   };
 }
 
-type TimelineSender = {
+type TimelineKafkaSender = {
   [T in keyof TimelineMessage]: (message: TimelineMessage[T]) => Promise<void>;
 };
 
 /** 写入时间轴的 Kafka Topic */
-export const AsyncTimelineWriter: TimelineSender = new Proxy({} as TimelineSender, {
+export const AsyncTimelineWriter: TimelineKafkaSender = new Proxy({} as TimelineKafkaSender, {
   get: (_, op: keyof TimelineMessage) => {
     return async (message: TimelineMessage[typeof op]) => {
       const value = JSON.stringify({ op, message });
@@ -80,8 +80,12 @@ export const AsyncTimelineWriter: TimelineSender = new Proxy({} as TimelineSende
   },
 });
 
+type TimelineDatabaseWriter = {
+  [T in keyof TimelineMessage]: (message: TimelineMessage[T]) => Promise<number>;
+};
+
 /** 写入时间轴的 MySQL 数据库表 */
-export const TimelineWriter = {
+export const TimelineWriter: TimelineDatabaseWriter = {
   /** 收藏条目 */
   async subject(payload: TimelineMessage['subject']): Promise<number> {
     const type = switchSubjectType(payload.collect.type, payload.subject.type);
