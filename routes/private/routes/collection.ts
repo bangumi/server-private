@@ -5,8 +5,8 @@ import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { Dam, dam } from '@app/lib/dam';
-import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error';
-import { NotFoundError } from '@app/lib/error';
+import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
+import { producer } from '@app/lib/kafka';
 import { logger } from '@app/lib/logger';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import {
@@ -16,7 +16,6 @@ import {
   SubjectType,
 } from '@app/lib/subject/type.ts';
 import { updateSubjectCollection, updateSubjectRating } from '@app/lib/subject/utils.ts';
-import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -174,14 +173,24 @@ export async function setup(app: App) {
           ),
         )
         .limit(1);
-      try {
-        await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
-      } catch (error) {
-        logger.error(`failed to write timeline for subject ${subjectID}`, {
-          error,
+      await producer.send(
+        'timeline',
+        'progressSubject',
+        JSON.stringify({
           userID: auth.userID,
-        });
-      }
+          subjectID,
+          epsUpdate: epStatus,
+          volsUpdate: volStatus,
+        }),
+      );
+      // try {
+      //   await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus);
+      // } catch (error) {
+      //   logger.error(`failed to write timeline for subject ${subjectID}`, {
+      //     error,
+      //     userID: auth.userID,
+      //   });
+      // }
     },
   );
 
@@ -367,7 +376,14 @@ export async function setup(app: App) {
       // 插入时间线
       if (privacy === CollectionPrivacy.Public && needTimeline) {
         try {
-          await TimelineWriter.subject(auth.userID, subjectID);
+          await producer.send(
+            'timeline',
+            'subject',
+            JSON.stringify({
+              userID: auth.userID,
+              subjectID,
+            }),
+          );
         } catch (error) {
           logger.error(`failed to write timeline for subject ${subjectID}`, {
             error,
