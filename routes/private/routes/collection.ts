@@ -124,7 +124,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('update subject progress')],
     },
-    async ({ auth, params: { subjectID }, body: { epStatus, volStatus } }) => {
+    async ({ ip, auth, params: { subjectID }, body: { epStatus, volStatus } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -163,6 +163,7 @@ export async function setup(app: App) {
         throw new BadRequestError('no update');
       }
       toUpdate.updatedAt = DateTime.now().toUnixInteger();
+      toUpdate.updateIp = ip;
       await db
         .update(schema.chiiSubjectInterests)
         .set(toUpdate)
