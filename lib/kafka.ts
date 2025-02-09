@@ -1,6 +1,6 @@
 import { KafkaJS } from '@confluentinc/kafka-javascript';
 
-import config from '@app/lib/config.ts';
+import config, { production } from '@app/lib/config.ts';
 
 class Producer {
   private producer: KafkaJS.Producer | null = null;
@@ -40,7 +40,14 @@ class Producer {
   }
 }
 
-export const producer = new Producer();
+class MockProducer {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  send(topic: string, key: string, value: string): Promise<void> {
+    return Promise.resolve();
+  }
+}
+
+export const producer = production ? new Producer() : new MockProducer();
 
 export async function newConsumer(topics: string[]) {
   const { Kafka, logLevel } = KafkaJS;

@@ -1,3 +1,4 @@
+import { producer } from '@app/lib/kafka';
 import { logger } from '@app/lib/logger';
 
 import { type TimelineMessage, TimelineWriter } from './writer';
@@ -30,3 +31,14 @@ export async function handleTimelineMessage(op: string, details: string) {
     }
   }
 }
+
+interface TimelineEmitter<Events extends TimelineMessage = TimelineMessage> {
+  emit<E extends keyof Events>(op: E, details: Events[E]): Promise<void>;
+}
+
+export const TimelineEmitter = {
+  async emit<E extends keyof TimelineMessage>(op: E, details: TimelineMessage[E]): Promise<void> {
+    const value = JSON.stringify(details);
+    await producer.send('timeline', op, value);
+  },
+};
