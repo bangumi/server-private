@@ -118,7 +118,7 @@ export const CollectSubject = t.Object(
     type: t.Optional(Ref(CollectionType)),
     rate: t.Optional(t.Integer({ minimum: 0, maximum: 10, description: '评分，0 表示删除评分' })),
     comment: t.Optional(t.String({ description: '评价' })),
-    priv: t.Optional(t.Boolean({ description: '仅自己可见' })),
+    private: t.Optional(t.Boolean({ description: '仅自己可见' })),
     tags: t.Optional(t.Array(t.String({ description: '标签, 不能包含空格' }))),
   },
   { $id: 'CollectSubject' },

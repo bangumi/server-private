@@ -199,7 +199,12 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('update subject collection')],
     },
-    async ({ auth, params: { subjectID }, body: { type, rate, comment, priv, tags } }) => {
+    async ({
+      ip,
+      auth,
+      params: { subjectID },
+      body: { type, rate, comment, private: priv, tags },
+    }) => {
       const slimSubject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!slimSubject) {
         throw new NotFoundError(`subject ${subjectID}`);
@@ -279,7 +284,7 @@ export async function setup(app: App) {
             const now = DateTime.now().toUnixInteger();
             toUpdate.type = type;
             toUpdate.updatedAt = now;
-            toUpdate.updateIp = auth.ip;
+            toUpdate.updateIp = ip;
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
             await updateSubjectCollection(t, subjectID, type, oldType);
@@ -334,8 +339,8 @@ export async function setup(app: App) {
             collectDateline: 0,
             onHoldDateline: 0,
             droppedDateline: 0,
-            createIp: auth.ip,
-            updateIp: auth.ip,
+            createIp: ip,
+            updateIp: ip,
             updatedAt: now,
             privacy,
           };
