@@ -1,22 +1,23 @@
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
+import { db } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
-import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './misc.ts';
 
 describe('notify', () => {
   beforeEach(async () => {
-    await NotifyRepo.delete({});
-    await NotifyFieldRepo.delete({});
+    await db.delete(schema.chiiNotify);
+    await db.delete(schema.chiiNotifyField);
   });
 
   afterEach(async () => {
-    await NotifyRepo.delete({});
-    await NotifyFieldRepo.delete({});
+    await db.delete(schema.chiiNotify);
+    await db.delete(schema.chiiNotifyField);
   });
 
   test('should list notify', async () => {
