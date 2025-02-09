@@ -194,7 +194,7 @@ exports[`should build private api spec 1`] = `
         comment:
           description: 评价
           type: string
-        priv:
+        private:
           description: 仅自己可见
           type: boolean
         rate:
