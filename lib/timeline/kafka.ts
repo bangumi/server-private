@@ -1,54 +1,28 @@
+import { producer } from '@app/lib/kafka';
 import { logger } from '@app/lib/logger';
-import type { EpisodeCollectionStatus } from '@app/lib/subject/type';
 
-import { TimelineWriter } from './writer';
+import { type TimelineMessage, TimelineWriter } from './writer';
 
 export async function handleTimelineMessage(op: string, details: string) {
   switch (op) {
     case 'subject': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        subjectID: number;
-      };
-      await TimelineWriter.subject(payload.userID, payload.subjectID);
+      const payload = JSON.parse(details) as TimelineMessage['subject'];
+      await TimelineWriter.subject(payload);
       break;
     }
     case 'progressEpisode': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        subjectID: number;
-        episodeID: number;
-        status: EpisodeCollectionStatus;
-      };
-      await TimelineWriter.progressEpisode(
-        payload.userID,
-        payload.subjectID,
-        payload.episodeID,
-        payload.status,
-      );
+      const payload = JSON.parse(details) as TimelineMessage['progressEpisode'];
+      await TimelineWriter.progressEpisode(payload);
       break;
     }
     case 'progressSubject': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        subjectID: number;
-        epsUpdate?: number;
-        volsUpdate?: number;
-      };
-      await TimelineWriter.progressSubject(
-        payload.userID,
-        payload.subjectID,
-        payload.epsUpdate,
-        payload.volsUpdate,
-      );
+      const payload = JSON.parse(details) as TimelineMessage['progressSubject'];
+      await TimelineWriter.progressSubject(payload);
       break;
     }
     case 'statusTsukkomi': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        text: string;
-      };
-      await TimelineWriter.statusTsukkomi(payload.userID, payload.text);
+      const payload = JSON.parse(details) as TimelineMessage['statusTsukkomi'];
+      await TimelineWriter.statusTsukkomi(payload);
       break;
     }
     default: {
@@ -57,3 +31,10 @@ export async function handleTimelineMessage(op: string, details: string) {
     }
   }
 }
+
+export const TimelineEmitter = {
+  async emit<E extends keyof TimelineMessage>(op: E, details: TimelineMessage[E]): Promise<void> {
+    const value = JSON.stringify(details);
+    await producer.send('timeline', op, value);
+  },
+};
