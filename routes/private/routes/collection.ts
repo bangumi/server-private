@@ -14,7 +14,7 @@ import {
   SubjectType,
 } from '@app/lib/subject/type.ts';
 import { updateSubjectCollection, updateSubjectRating } from '@app/lib/subject/utils.ts';
-import { TimelineEmitter } from '@app/lib/timeline/kafka';
+import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -119,11 +119,14 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         body: req.Ref(req.UpdateSubjectProgress),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('update subject progress')],
     },
     async ({ ip, auth, params: { subjectID }, body: { epStatus, volStatus } }) => {
-      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      const subject = await fetcher.fetchSubjectByID(subjectID, auth.allowNsfw);
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -173,12 +176,21 @@ export async function setup(app: App) {
         )
         .limit(1);
 
-      await TimelineEmitter.emit('progressSubject', {
-        userID: auth.userID,
-        subjectID,
-        epsUpdate: epStatus,
-        volsUpdate: volStatus,
+      await AsyncTimelineWriter.progressSubject({
+        uid: auth.userID,
+        subject: {
+          id: subjectID,
+          type: subject.type,
+          eps: subject.eps,
+          volumes: subject.volumes,
+        },
+        collect: {
+          epsUpdate: epStatus,
+          volsUpdate: volStatus,
+        },
+        createdAt: DateTime.now().toUnixInteger(),
       });
+      return {};
     },
   );
 
@@ -194,6 +206,9 @@ export async function setup(app: App) {
           subjectID: t.Integer(),
         }),
         body: req.Ref(req.CollectSubject),
+        response: {
+          200: t.Object({}),
+        },
       },
       preHandler: [requireLogin('update subject collection')],
     },
@@ -362,12 +377,23 @@ export async function setup(app: App) {
       });
 
       // 插入时间线
-      if (privacy === CollectionPrivacy.Public && needTimeline) {
-        await TimelineEmitter.emit('subject', {
-          userID: auth.userID,
-          subjectID,
+      if (privacy === CollectionPrivacy.Public && needTimeline && type) {
+        await AsyncTimelineWriter.subject({
+          uid: auth.userID,
+          subject: {
+            id: subjectID,
+            type: slimSubject.type,
+          },
+          collect: {
+            id: subjectID,
+            type,
+            rate: rate ?? 0,
+            comment: comment ?? '',
+          },
+          createdAt: DateTime.now().toUnixInteger(),
         });
       }
+      return {};
     },
   );
 
