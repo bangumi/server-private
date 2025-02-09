@@ -130,16 +130,6 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      switch (subject.type) {
-        case SubjectType.Book:
-        case SubjectType.Anime:
-        case SubjectType.Real: {
-          break;
-        }
-        default: {
-          throw new BadRequestError(`subject not supported for progress`);
-        }
-      }
       const [interest] = await db
         .select()
         .from(schema.chiiSubjectInterests)
@@ -153,28 +143,71 @@ export async function setup(app: App) {
       if (!interest) {
         throw new NotFoundError(`subject not collected`);
       }
-      const toUpdate: Partial<orm.ISubjectInterest> = {};
-      if (epStatus !== undefined) {
-        toUpdate.epStatus = epStatus;
-      }
-      if (volStatus !== undefined) {
-        toUpdate.volStatus = volStatus;
-      }
-      if (Object.keys(toUpdate).length === 0) {
-        throw new BadRequestError('no update');
-      }
-      toUpdate.updatedAt = DateTime.now().toUnixInteger();
-      toUpdate.updateIp = ip;
-      await db
-        .update(schema.chiiSubjectInterests)
-        .set(toUpdate)
-        .where(
-          op.and(
-            op.eq(schema.chiiSubjectInterests.uid, auth.userID),
-            op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
-          ),
-        )
-        .limit(1);
+
+      await db.transaction(async (t) => {
+        const toUpdate: Partial<orm.ISubjectInterest> = {};
+        switch (subject.type) {
+          case SubjectType.Anime:
+          case SubjectType.Real: {
+            if (epStatus === undefined) {
+              break;
+            }
+            toUpdate.epStatus = epStatus;
+            const episodes = await t
+              .select({ id: schema.chiiEpisodes.id })
+              .from(schema.chiiEpisodes)
+              .where(
+                op.and(
+                  op.eq(schema.chiiEpisodes.subjectID, subjectID),
+                  // 只更新 main 类型的剧集
+                  op.eq(schema.chiiEpisodes.type, 0),
+                  op.eq(schema.chiiEpisodes.ban, 0),
+                ),
+              )
+              .orderBy(
+                op.asc(schema.chiiEpisodes.disc),
+                op.asc(schema.chiiEpisodes.type),
+                op.asc(schema.chiiEpisodes.sort),
+              )
+              .limit(epStatus);
+            const episodeIDs = episodes.map((e) => e.id);
+            if (episodeIDs.length === 0) {
+              break;
+            }
+            // TODO: mark episodes as watched
+
+            break;
+          }
+          case SubjectType.Book: {
+            if (epStatus !== undefined) {
+              toUpdate.epStatus = epStatus;
+            }
+            if (volStatus !== undefined) {
+              toUpdate.volStatus = volStatus;
+            }
+            break;
+          }
+          default: {
+            throw new BadRequestError(`subject not supported for progress`);
+          }
+        }
+
+        if (Object.keys(toUpdate).length === 0) {
+          throw new BadRequestError('no update');
+        }
+        toUpdate.updatedAt = DateTime.now().toUnixInteger();
+        toUpdate.updateIp = ip;
+        await t
+          .update(schema.chiiSubjectInterests)
+          .set(toUpdate)
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+              op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+            ),
+          )
+          .limit(1);
+      });
 
       await AsyncTimelineWriter.progressSubject({
         uid: auth.userID,
