@@ -14,7 +14,6 @@ class Producer {
 
     const kafka = new Kafka({
       log_level: logLevel.WARN,
-      'client.id': 'server-private',
     });
 
     if (!config.kafkaBrokers) {
@@ -54,7 +53,6 @@ export async function newConsumer(topics: string[]) {
 
   const kafka = new Kafka({
     log_level: logLevel.WARN,
-    'client.id': 'server-private',
   });
   if (!config.kafkaBrokers) {
     throw new Error('KAFKA_BROKERS is not set');
