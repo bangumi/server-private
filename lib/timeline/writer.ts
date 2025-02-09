@@ -70,6 +70,7 @@ type TimelineSender = {
   [T in keyof TimelineMessage]: (message: TimelineMessage[T]) => Promise<void>;
 };
 
+/** 写入时间轴的 Kafka Topic */
 export const AsyncTimelineWriter: TimelineSender = new Proxy({} as TimelineSender, {
   get: (_, op: keyof TimelineMessage) => {
     return async (message: TimelineMessage[typeof op]) => {
@@ -79,6 +80,7 @@ export const AsyncTimelineWriter: TimelineSender = new Proxy({} as TimelineSende
   },
 });
 
+/** 写入时间轴的 MySQL 数据库表 */
 export const TimelineWriter = {
   /** 收藏条目 */
   async subject(payload: TimelineMessage['subject']): Promise<number> {
