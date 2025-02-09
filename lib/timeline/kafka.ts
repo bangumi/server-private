@@ -1,40 +1,35 @@
-import { producer } from '@app/lib/kafka';
 import { logger } from '@app/lib/logger';
 
 import { type TimelineMessage, TimelineWriter } from './writer';
 
-export async function handleTimelineMessage(op: string, details: string) {
-  switch (op) {
+interface Payload {
+  op: string;
+  details: TimelineMessage[keyof TimelineMessage];
+}
+
+export async function handleTimelineMessage(_: string, value: string) {
+  const payload = JSON.parse(value) as Payload;
+
+  switch (payload.op) {
     case 'subject': {
-      const payload = JSON.parse(details) as TimelineMessage['subject'];
-      await TimelineWriter.subject(payload);
+      await TimelineWriter.subject(payload.details as TimelineMessage['subject']);
       break;
     }
     case 'progressEpisode': {
-      const payload = JSON.parse(details) as TimelineMessage['progressEpisode'];
-      await TimelineWriter.progressEpisode(payload);
+      await TimelineWriter.progressEpisode(payload.details as TimelineMessage['progressEpisode']);
       break;
     }
     case 'progressSubject': {
-      const payload = JSON.parse(details) as TimelineMessage['progressSubject'];
-      await TimelineWriter.progressSubject(payload);
+      await TimelineWriter.progressSubject(payload.details as TimelineMessage['progressSubject']);
       break;
     }
     case 'statusTsukkomi': {
-      const payload = JSON.parse(details) as TimelineMessage['statusTsukkomi'];
-      await TimelineWriter.statusTsukkomi(payload);
+      await TimelineWriter.statusTsukkomi(payload.details as TimelineMessage['statusTsukkomi']);
       break;
     }
     default: {
-      logger.error(`Unknown timeline operation: ${op}`);
+      logger.error(`Unknown timeline operation: ${payload.op}`);
       break;
     }
   }
 }
-
-export const TimelineEmitter = {
-  async emit<E extends keyof TimelineMessage>(op: E, details: TimelineMessage[E]): Promise<void> {
-    const value = JSON.stringify(details);
-    await producer.send('timeline', op, value);
-  },
-};

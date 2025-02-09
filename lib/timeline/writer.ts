@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { db, op } from '@app/drizzle/db';
 import * as schema from '@app/drizzle/schema';
 import { BadRequestError } from '@app/lib/error.ts';
+import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 
 import type * as memo from './memo';
@@ -64,6 +65,19 @@ export interface TimelineMessage {
     createdAt: number;
   };
 }
+
+type TimelineSender = {
+  [T in keyof TimelineMessage]: (message: TimelineMessage[T]) => Promise<void>;
+};
+
+export const AsyncTimelineWriter: TimelineSender = new Proxy({} as TimelineSender, {
+  get: (_, op: keyof TimelineMessage) => {
+    return async (message: TimelineMessage[typeof op]) => {
+      const value = JSON.stringify({ op, message });
+      await producer.send('timeline', message.uid.toString(), value);
+    };
+  },
+});
 
 export const TimelineWriter = {
   /** 收藏条目 */
