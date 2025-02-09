@@ -6,7 +6,7 @@ import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
-import { producer } from '@app/lib/kafka';
+import { logger } from '@app/lib/logger';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import {
   CollectionPrivacy,
@@ -15,6 +15,7 @@ import {
   SubjectType,
 } from '@app/lib/subject/type.ts';
 import { updateSubjectCollection, updateSubjectRating } from '@app/lib/subject/utils.ts';
+import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -172,15 +173,14 @@ export async function setup(app: App) {
           ),
         )
         .limit(1);
-      await producer.send(
-        'timeline',
-        'progressSubject',
-        JSON.stringify({
-          userID: auth.userID,
-          subjectID,
-          epsUpdate: epStatus,
-          volsUpdate: volStatus,
-        }),
+
+      await TimelineWriter.progressSubject(auth.userID, subjectID, epStatus, volStatus).catch(
+        (error: unknown) => {
+          logger.error(`failed to write timeline for subject ${subjectID}`, {
+            error: error as Error,
+            userID: auth.userID,
+          });
+        },
       );
     },
   );
@@ -366,14 +366,12 @@ export async function setup(app: App) {
 
       // 插入时间线
       if (privacy === CollectionPrivacy.Public && needTimeline) {
-        await producer.send(
-          'timeline',
-          'subject',
-          JSON.stringify({
+        await TimelineWriter.subject(auth.userID, subjectID).catch((error: unknown) => {
+          logger.error(`failed to write timeline for subject ${subjectID}`, {
+            error: error as Error,
             userID: auth.userID,
-            subjectID,
-          }),
-        );
+          });
+        });
       }
     },
   );
