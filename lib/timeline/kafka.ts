@@ -1,54 +1,27 @@
 import { logger } from '@app/lib/logger';
-import type { EpisodeCollectionStatus } from '@app/lib/subject/type';
 
-import { TimelineWriter } from './writer';
+import { type TimelineMessage, TimelineWriter } from './writer';
 
 export async function handleTimelineMessage(op: string, details: string) {
   switch (op) {
     case 'subject': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        subjectID: number;
-      };
-      await TimelineWriter.subject(payload.userID, payload.subjectID);
+      await TimelineWriter.subject(JSON.parse(details) as TimelineMessage['subject']);
       break;
     }
     case 'progressEpisode': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        subjectID: number;
-        episodeID: number;
-        status: EpisodeCollectionStatus;
-      };
       await TimelineWriter.progressEpisode(
-        payload.userID,
-        payload.subjectID,
-        payload.episodeID,
-        payload.status,
+        JSON.parse(details) as TimelineMessage['progressEpisode'],
       );
       break;
     }
     case 'progressSubject': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        subjectID: number;
-        epsUpdate?: number;
-        volsUpdate?: number;
-      };
       await TimelineWriter.progressSubject(
-        payload.userID,
-        payload.subjectID,
-        payload.epsUpdate,
-        payload.volsUpdate,
+        JSON.parse(details) as TimelineMessage['progressSubject'],
       );
       break;
     }
     case 'statusTsukkomi': {
-      const payload = JSON.parse(details) as {
-        userID: number;
-        text: string;
-      };
-      await TimelineWriter.statusTsukkomi(payload.userID, payload.text);
+      await TimelineWriter.statusTsukkomi(JSON.parse(details) as TimelineMessage['statusTsukkomi']);
       break;
     }
     default: {

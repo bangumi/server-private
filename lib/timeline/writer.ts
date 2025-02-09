@@ -10,19 +10,36 @@ import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/s
 import type * as memo from './memo';
 import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
 
+export interface TimelineMessage {
+  subject: {
+    userID: number;
+    subjectID: number;
+  };
+  progressEpisode: {
+    userID: number;
+    subjectID: number;
+    episodeID: number;
+    status: EpisodeCollectionStatus;
+  };
+  progressSubject: {
+    userID: number;
+    subjectID: number;
+    epsUpdate?: number;
+    volsUpdate?: number;
+  };
+  statusTsukkomi: {
+    userID: number;
+    text: string;
+  };
+}
+
 export const TimelineWriter = {
-  /**
-   * 收藏条目
-   *
-   * @param uid - 用户ID
-   * @param sid - 条目ID
-   * @returns 时间线 ID
-   */
-  async subject(uid: number, sid: number): Promise<number> {
+  /** 收藏条目 */
+  async subject(payload: TimelineMessage['subject']): Promise<number> {
     const [subject] = await db
       .select()
       .from(schema.chiiSubjects)
-      .where(op.eq(schema.chiiSubjects.id, sid))
+      .where(op.eq(schema.chiiSubjects.id, payload.subjectID))
       .limit(1);
     if (!subject) {
       throw new UnexpectedNotFoundError('subject not found');
@@ -32,8 +49,8 @@ export const TimelineWriter = {
       .from(schema.chiiSubjectInterests)
       .where(
         op.and(
-          op.eq(schema.chiiSubjectInterests.uid, uid),
-          op.eq(schema.chiiSubjectInterests.subjectID, sid),
+          op.eq(schema.chiiSubjectInterests.uid, payload.userID),
+          op.eq(schema.chiiSubjectInterests.subjectID, payload.subjectID),
           op.ne(schema.chiiSubjectInterests.type, 0),
         ),
       )
@@ -48,7 +65,7 @@ export const TimelineWriter = {
       .from(schema.chiiTimeline)
       .where(
         op.and(
-          op.eq(schema.chiiTimeline.uid, uid),
+          op.eq(schema.chiiTimeline.uid, payload.userID),
           op.eq(schema.chiiTimeline.cat, TimelineCat.Subject),
           op.eq(schema.chiiTimeline.type, type),
         ),
@@ -57,7 +74,7 @@ export const TimelineWriter = {
       .limit(1);
 
     const detail: memo.Subject = {
-      subject_id: sid,
+      subject_id: payload.subjectID,
       collect_id: interest.id,
       collect_comment: lo.escape(interest.comment),
       collect_rate: interest.rate,
@@ -87,10 +104,10 @@ export const TimelineWriter = {
       return previous.id;
     } else {
       const [result] = await db.insert(schema.chiiTimeline).values({
-        uid,
+        uid: payload.userID,
         cat: TimelineCat.Subject,
         type,
-        related: sid.toString(),
+        related: payload.subjectID.toString(),
         memo: php.stringify(detail),
         img: '',
         batch: false,
@@ -102,43 +119,30 @@ export const TimelineWriter = {
     }
   },
 
-  /**
-   * 进度 - 剧集
-   *
-   * @param uid - 用户ID
-   * @param sid - 条目ID
-   * @param eid - 集数ID
-   * @param status - 状态
-   * @returns 时间线 ID
-   */
-  async progressEpisode(
-    uid: number,
-    sid: number,
-    eid: number,
-    status: EpisodeCollectionStatus,
-  ): Promise<number> {
-    if (status === EpisodeCollectionStatus.None) {
+  /** 进度 - 剧集 */
+  async progressEpisode(payload: TimelineMessage['progressEpisode']): Promise<number> {
+    if (payload.status === EpisodeCollectionStatus.None) {
       throw new BadRequestError('episode status is none');
     }
     const [subject] = await db
       .select()
       .from(schema.chiiSubjects)
-      .where(op.eq(schema.chiiSubjects.id, sid))
+      .where(op.eq(schema.chiiSubjects.id, payload.subjectID))
       .limit(1);
     if (!subject) {
       throw new UnexpectedNotFoundError('subject not found');
     }
     const detail: memo.ProgressSingle = {
-      subject_id: sid,
+      subject_id: payload.subjectID,
       subject_type_id: subject.typeID,
-      ep_id: eid,
+      ep_id: payload.episodeID,
     };
     const [previous] = await db
       .select()
       .from(schema.chiiTimeline)
       .where(
         op.and(
-          op.eq(schema.chiiTimeline.uid, uid),
+          op.eq(schema.chiiTimeline.uid, payload.userID),
           op.eq(schema.chiiTimeline.cat, TimelineCat.Progress),
         ),
       )
@@ -147,9 +151,9 @@ export const TimelineWriter = {
     if (
       previous &&
       previous.createdAt > DateTime.now().minus({ minutes: 15 }).toUnixInteger() &&
-      Number(previous.related) === sid &&
+      Number(previous.related) === payload.subjectID &&
       !previous.batch &&
-      previous.type === status
+      previous.type === payload.status
     ) {
       await db
         .update(schema.chiiTimeline)
@@ -162,10 +166,10 @@ export const TimelineWriter = {
       return previous.id;
     } else {
       const [result] = await db.insert(schema.chiiTimeline).values({
-        uid,
+        uid: payload.userID,
         cat: TimelineCat.Progress,
-        type: status,
-        related: sid.toString(),
+        type: payload.status,
+        related: payload.subjectID.toString(),
         memo: php.stringify(detail),
         img: '',
         batch: false,
@@ -177,38 +181,30 @@ export const TimelineWriter = {
     }
   },
 
-  /**
-   * 进度 - 条目
-   *
-   * @param uid - 用户ID
-   * @param sid - 条目ID
-   * @param epsUpdate - 话数更新
-   * @param volsUpdate - 卷数更新
-   * @returns 时间线 ID
-   */
-  async progressSubject(uid: number, sid: number, epsUpdate?: number, volsUpdate?: number) {
+  /** 进度 - 条目 */
+  async progressSubject(payload: TimelineMessage['progressSubject']) {
     const [subject] = await db
       .select()
       .from(schema.chiiSubjects)
-      .where(op.eq(schema.chiiSubjects.id, sid))
+      .where(op.eq(schema.chiiSubjects.id, payload.subjectID))
       .limit(1);
     if (!subject) {
       throw new UnexpectedNotFoundError('subject not found');
     }
     const detail: memo.ProgressBatch = {
-      subject_id: sid,
+      subject_id: payload.subjectID,
       subject_type_id: subject.typeID,
       eps_total: subject.eps === 0 ? '??' : subject.eps.toString(),
-      eps_update: epsUpdate,
+      eps_update: payload.epsUpdate,
       vols_total: subject.volumes === 0 ? '??' : subject.volumes.toString(),
-      vols_update: volsUpdate,
+      vols_update: payload.volsUpdate,
     };
     const [previous] = await db
       .select()
       .from(schema.chiiTimeline)
       .where(
         op.and(
-          op.eq(schema.chiiTimeline.uid, uid),
+          op.eq(schema.chiiTimeline.uid, payload.userID),
           op.eq(schema.chiiTimeline.cat, TimelineCat.Progress),
           op.eq(schema.chiiTimeline.type, 0),
         ),
@@ -226,10 +222,10 @@ export const TimelineWriter = {
       return previous.id;
     } else {
       const [result] = await db.insert(schema.chiiTimeline).values({
-        uid,
+        uid: payload.userID,
         cat: TimelineCat.Progress,
         type: 0,
-        related: sid.toString(),
+        related: payload.subjectID.toString(),
         memo: php.stringify(detail),
         img: '',
         batch: false,
@@ -241,20 +237,14 @@ export const TimelineWriter = {
     }
   },
 
-  /**
-   * 状态 - 吐槽
-   *
-   * @param uid - 用户ID
-   * @param text - 吐槽内容
-   * @returns 时间线 ID
-   */
-  async statusTsukkomi(uid: number, text: string) {
+  /** 状态 - 吐槽 */
+  async statusTsukkomi(payload: TimelineMessage['statusTsukkomi']) {
     const [result] = await db.insert(schema.chiiTimeline).values({
-      uid,
+      uid: payload.userID,
       cat: TimelineCat.Status,
       type: TimelineStatusType.Tsukkomi,
       related: '',
-      memo: text,
+      memo: payload.text,
       img: '',
       batch: false,
       source: TimelineSource.Next,
