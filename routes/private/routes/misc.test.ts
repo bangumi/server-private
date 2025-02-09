@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
-import { db, op } from '@app/drizzle/db.ts';
+import { db } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
