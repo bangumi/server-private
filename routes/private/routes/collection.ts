@@ -179,7 +179,7 @@ export async function setup(app: App) {
       await AsyncTimelineWriter.progressSubject({
         uid: auth.userID,
         subject: {
-          id: subjectID,
+          id: subject.id,
           type: subject.type,
           eps: subject.eps,
           volumes: subject.volumes,
@@ -259,6 +259,7 @@ export async function setup(app: App) {
       await rateLimit(LimitAction.Subject, auth.userID);
 
       let needTimeline = false;
+      let interestID = 0;
       await db.transaction(async (t) => {
         let needUpdateRate = false;
 
@@ -285,6 +286,7 @@ export async function setup(app: App) {
           rate = 0;
         }
         if (interest) {
+          interestID = interest.id;
           oldRate = interest.rate;
           const oldType = interest.type;
           const oldPrivacy = interest.privacy;
@@ -359,7 +361,8 @@ export async function setup(app: App) {
           };
           const field = getCollectionTypeField(type);
           toInsert[`${field}Dateline`] = now;
-          await t.insert(schema.chiiSubjectInterests).values(toInsert);
+          const [result] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
+          interestID = result.insertId;
           needTimeline = true;
           if (rate) {
             needUpdateRate = true;
@@ -381,11 +384,11 @@ export async function setup(app: App) {
         await AsyncTimelineWriter.subject({
           uid: auth.userID,
           subject: {
-            id: subjectID,
+            id: slimSubject.id,
             type: slimSubject.type,
           },
           collect: {
-            id: subjectID,
+            id: interestID,
             type,
             rate: rate ?? 0,
             comment: comment ?? '',
