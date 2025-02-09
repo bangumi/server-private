@@ -4,7 +4,7 @@ import { type TimelineMessage, TimelineWriter } from './writer';
 
 interface Payload {
   op: string;
-  details: TimelineMessage[keyof TimelineMessage];
+  message: TimelineMessage[keyof TimelineMessage];
 }
 
 export async function handleTimelineMessage(_: string, value: string) {
@@ -12,19 +12,19 @@ export async function handleTimelineMessage(_: string, value: string) {
 
   switch (payload.op) {
     case 'subject': {
-      await TimelineWriter.subject(payload.details as TimelineMessage['subject']);
+      await TimelineWriter.subject(payload.message as TimelineMessage['subject']);
       break;
     }
     case 'progressEpisode': {
-      await TimelineWriter.progressEpisode(payload.details as TimelineMessage['progressEpisode']);
+      await TimelineWriter.progressEpisode(payload.message as TimelineMessage['progressEpisode']);
       break;
     }
     case 'progressSubject': {
-      await TimelineWriter.progressSubject(payload.details as TimelineMessage['progressSubject']);
+      await TimelineWriter.progressSubject(payload.message as TimelineMessage['progressSubject']);
       break;
     }
     case 'statusTsukkomi': {
-      await TimelineWriter.statusTsukkomi(payload.details as TimelineMessage['statusTsukkomi']);
+      await TimelineWriter.statusTsukkomi(payload.message as TimelineMessage['statusTsukkomi']);
       break;
     }
     default: {
