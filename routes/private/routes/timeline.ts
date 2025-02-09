@@ -102,7 +102,7 @@ export async function setup(app: App) {
       }
 
       await rateLimit(LimitAction.Timeline, auth.userID);
-      const id = await TimelineWriter.statusTsukkomi(auth.userID, text);
+      const id = await TimelineWriter.statusTsukkomi({ userID: auth.userID, text });
       return { id };
     },
   );

@@ -1,5 +1,3 @@
-import { KafkaJS } from '@confluentinc/kafka-javascript';
-
 import { handle as handleBlogEvent } from '@app/event/blog';
 import { handle as handleCharacterEvent } from '@app/event/character';
 import { handle as handleGroupEvent } from '@app/event/group';
@@ -13,10 +11,13 @@ import {
 import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { Payload } from '@app/event/type';
 import { handle as handleUserEvent } from '@app/event/user';
-import config from '@app/lib/config.ts';
+import { newConsumer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
+import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
 const TOPICS = [
+  'timeline',
+
   // 'debezium.chii.bangumi.chii_pms',
   // 'debezium.chii.bangumi.chii_subject_revisions',
   'debezium.chii.bangumi.chii_blog_entry',
@@ -31,53 +32,40 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_timeline',
 ];
 
-async function onMessage(key: string, value: string) {
+type Handler = (key: string, value: string) => Promise<void>;
+
+const binlogHandlers: Record<string, Handler> = {
+  chii_blog_entry: handleBlogEvent,
+  chii_characters: handleCharacterEvent,
+  chii_episodes: handleEpisodeEvent,
+  chii_groups: handleGroupEvent,
+  chii_index: handleIndexEvent,
+  chii_members: handleUserEvent,
+  chii_persons: handlePersonEvent,
+  chii_subject_fields: handleSubjectFieldsEvent,
+  chii_subjects: handleSubjectEvent,
+  chii_timeline: handleTimelineEvent,
+};
+
+async function onBinlogMessage(key: string, value: string) {
   const payload = JSON.parse(value) as Payload;
-  switch (payload.source.table) {
-    case 'chii_blog_entry': {
-      await handleBlogEvent(key, value);
-      break;
-    }
-    case 'chii_characters': {
-      await handleCharacterEvent(key, value);
-      break;
-    }
-    case 'chii_episodes': {
-      await handleEpisodeEvent(key, value);
-      break;
-    }
-    case 'chii_groups': {
-      await handleGroupEvent(key, value);
-      break;
-    }
-    case 'chii_index': {
-      await handleIndexEvent(key, value);
-      break;
-    }
-    case 'chii_members': {
-      await handleUserEvent(key, value);
-      break;
-    }
-    case 'chii_persons': {
-      await handlePersonEvent(key, value);
-      break;
-    }
-    case 'chii_subject_fields': {
-      await handleSubjectFieldsEvent(key, value);
-      break;
-    }
-    case 'chii_subjects': {
-      await handleSubjectEvent(key, value);
-      break;
-    }
-    case 'chii_timeline': {
-      await handleTimelineEvent(key, value);
-      break;
-    }
-    default: {
-      break;
-    }
+  const handler = binlogHandlers[payload.source.table];
+  if (!handler) {
+    return;
   }
+  await handler(key, value);
+}
+
+const serviceHandlers: Record<string, Handler> = {
+  timeline: handleTimelineMessage,
+};
+
+async function onServiceMessage(topic: string, key: string, value: string) {
+  const handler = serviceHandlers[topic];
+  if (!handler) {
+    return;
+  }
+  await handler(key, value);
 }
 
 async function main() {
@@ -87,25 +75,9 @@ async function main() {
     return;
   }
 
-  if (!config.kafkaBrokers) {
-    logger.error('KAFKA_BROKERS is not set');
-    return;
-  }
-  const { Kafka, logLevel } = KafkaJS;
-
-  const kafka = new Kafka({
-    log_level: logLevel.WARN,
-    'client.id': 'server-private',
-  });
-  const consumer = kafka.consumer({
-    'bootstrap.servers': config.kafkaBrokers,
-    'group.id': 'server-private',
-  });
-  await consumer.connect();
-  await consumer.subscribe({ topics: TOPICS });
-
+  const consumer = await newConsumer(TOPICS);
   await consumer.run({
-    eachMessage: async ({ message }) => {
+    eachMessage: async ({ topic, message }) => {
       if (!message.key) {
         return;
       }
@@ -113,7 +85,11 @@ async function main() {
         return;
       }
       try {
-        await onMessage(message.key.toString(), message.value.toString());
+        if (topic.startsWith('debezium.')) {
+          await onBinlogMessage(message.key.toString(), message.value.toString());
+        } else {
+          await onServiceMessage(topic, message.key.toString(), message.value.toString());
+        }
       } catch (error) {
         logger.error(`Error processing message ${message.key.toString()}: ${error}`);
       }
