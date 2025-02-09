@@ -1,5 +1,6 @@
 import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
+import { DateTime } from 'luxon';
 
 import { NotAllowedError } from '@app/lib/auth';
 import { Dam } from '@app/lib/dam';
@@ -102,7 +103,11 @@ export async function setup(app: App) {
       }
 
       await rateLimit(LimitAction.Timeline, auth.userID);
-      const id = await TimelineWriter.statusTsukkomi({ userID: auth.userID, text });
+      const id = await TimelineWriter.statusTsukkomi({
+        uid: auth.userID,
+        text,
+        createdAt: DateTime.now().toUnixInteger(),
+      });
       return { id };
     },
   );
