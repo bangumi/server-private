@@ -10,6 +10,13 @@ import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/s
 import type * as memo from './memo';
 import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
 
+/**
+ * 时间轴消息
+ *
+ * Key 为 操作类型，是 TimelineCat 的枚举值，或者 append 一个对应 cat 的详细 type
+ *
+ * Value 为 操作参数
+ */
 export interface TimelineMessage {
   subject: {
     userID: number;
