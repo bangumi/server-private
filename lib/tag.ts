@@ -4,7 +4,6 @@ import type { Txn } from '@app/drizzle/db.ts';
 import { op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema.ts';
 import { dam } from '@app/lib/dam';
-import type { SubjectType } from '@app/lib/subject/type.ts';
 
 export enum TagCat {
   /** 条目, 对应的 type: 条目类型 */
@@ -43,16 +42,18 @@ export function validateTags(tags: string[]): string[] {
  *
  * @param t - 事务
  * @param uid - 用户ID
- * @param sid - 条目ID
- * @param stype - 条目类型
+ * @param cat - 标签分类
+ * @param type - 标签类型
+ * @param mid - 条目 ID 等
  * @param tags - 输入的标签
  * @returns 清理后的标签
  */
-export async function insertUserSubjectTags(
+export async function insertUserTags(
   t: Txn,
   uid: number,
-  sid: number,
-  stype: SubjectType,
+  cat: TagCat,
+  type: number,
+  mid: number,
   tags: string[],
 ): Promise<string[]> {
   tags = validateTags(tags);
@@ -61,13 +62,13 @@ export async function insertUserSubjectTags(
     .where(
       op.and(
         op.eq(schema.chiiTagList.userID, uid),
-        op.eq(schema.chiiTagList.cat, TagCat.Subject),
-        op.eq(schema.chiiTagList.type, stype),
-        op.eq(schema.chiiTagList.mainID, sid),
+        op.eq(schema.chiiTagList.cat, cat),
+        op.eq(schema.chiiTagList.type, type),
+        op.eq(schema.chiiTagList.mainID, mid),
       ),
     );
 
-  const tagIDs = await ensureTags(t, TagCat.Subject, stype, tags);
+  const tagIDs = await ensureTags(t, cat, type, tags);
   const tids = Object.values(tagIDs).sort();
 
   if (tids.length > 0) {
@@ -76,9 +77,9 @@ export async function insertUserSubjectTags(
       tids.map((id) => ({
         tagID: id,
         userID: uid,
-        cat: TagCat.Subject,
-        type: stype,
-        mainID: sid,
+        cat,
+        type,
+        mainID: mid,
         createdAt: now,
       })),
     );

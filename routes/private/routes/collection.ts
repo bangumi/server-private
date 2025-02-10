@@ -18,7 +18,7 @@ import {
   updateSubjectCollection,
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
-import { insertUserSubjectTags } from '@app/lib/tag';
+import { insertUserTags, TagCat } from '@app/lib/tag';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -280,7 +280,14 @@ export async function setup(app: App) {
         let needUpdateRate = false;
 
         if (tags !== undefined) {
-          tags = await insertUserSubjectTags(t, auth.userID, subjectID, slimSubject.type, tags);
+          tags = await insertUserTags(
+            t,
+            auth.userID,
+            TagCat.Subject,
+            slimSubject.type,
+            subjectID,
+            tags,
+          );
         }
 
         const [subject] = await t
