@@ -64,7 +64,7 @@ export enum EpisodeCollectionStatus {
   Dropped = 3, // 抛弃
 }
 
-export interface UserEpisodeCollection {
+export interface UserEpisodeStatusItem {
   eid: number;
   type: EpisodeCollectionStatus;
 }

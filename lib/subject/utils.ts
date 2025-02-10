@@ -5,7 +5,7 @@ import { db, decr, incr, op, type Txn } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 
-import type { CollectionType, UserEpisodeCollection } from './type';
+import type { CollectionType, UserEpisodeStatusItem } from './type';
 import { EpisodeCollectionStatus, getCollectionTypeField } from './type';
 
 /** 更新条目收藏计数，需要在事务中执行 */
@@ -88,7 +88,7 @@ export async function markEpisodesAsWatched(
   subjectID: number,
   episodeIDs: number[],
 ) {
-  const epStatusList: Record<number, UserEpisodeCollection> = {};
+  const epStatusList: Record<number, UserEpisodeStatusItem> = {};
   for (const episodeID of episodeIDs) {
     epStatusList[episodeID] = {
       eid: episodeID,
@@ -125,12 +125,12 @@ export async function markEpisodesAsWatched(
   }
 }
 
-export function parseSubjectEpStatus(status: string): Record<number, UserEpisodeCollection> {
-  const result: Record<number, UserEpisodeCollection> = {};
+export function parseSubjectEpStatus(status: string): Record<number, UserEpisodeStatusItem> {
+  const result: Record<number, UserEpisodeStatusItem> = {};
   if (!status) {
     return result;
   }
-  const epStatusList = php.parse(status) as Record<number, UserEpisodeCollection>;
+  const epStatusList = php.parse(status) as Record<number, UserEpisodeStatusItem>;
   for (const x of Object.values(epStatusList)) {
     result[x.eid] = x;
   }
@@ -140,7 +140,7 @@ export function parseSubjectEpStatus(status: string): Record<number, UserEpisode
 export async function getEpStatus(
   userID: number,
   subjectID: number,
-): Promise<Record<number, UserEpisodeCollection>> {
+): Promise<Record<number, UserEpisodeStatusItem>> {
   const [data] = await db
     .select()
     .from(schema.chiiEpStatus)
