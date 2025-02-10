@@ -95,16 +95,19 @@ export async function insertUserSubjectTags(
     tagIDs.push(...insertResult.map((r) => r.id));
   }
 
-  await t.insert(schema.chiiTagList).values(
-    tagIDs.map((id) => ({
-      tagID: id,
-      userID: uid,
-      cat: TagCat.Subject,
-      type: stype,
-      mainID: sid,
-      createdAt: now,
-    })),
-  );
+  if (tagIDs.length > 0) {
+    await t.insert(schema.chiiTagList).values(
+      tagIDs.map((id) => ({
+        tagID: id,
+        userID: uid,
+        cat: TagCat.Subject,
+        type: stype,
+        mainID: sid,
+        createdAt: now,
+      })),
+    );
+  }
+
   const counts = await t
     .select({
       tagID: schema.chiiTagList.tagID,
