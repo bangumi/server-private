@@ -88,10 +88,10 @@ export async function markEpisodesAsWatched(
   subjectID: number,
   episodeIDs: number[],
 ) {
-  const epStatusList: Record<number, { eid: string; type: number }> = {};
+  const epStatusList: Record<number, UserEpisodeCollection> = {};
   for (const episodeID of episodeIDs) {
     epStatusList[episodeID] = {
-      eid: episodeID.toString(),
+      eid: episodeID,
       type: EpisodeCollectionStatus.Done,
     };
   }
@@ -101,17 +101,11 @@ export async function markEpisodesAsWatched(
     .where(
       op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
     );
-  if (current) {
-    if (current.status) {
-      const oldList = php.parse(current.status) as Record<number, { eid: string; type: number }>;
-      for (const [eid, x] of Object.entries(oldList)) {
-        const episodeID = Number.parseInt(eid);
-        if (Number.isNaN(episodeID)) {
-          continue;
-        }
-        if (!episodeIDs.includes(episodeID)) {
-          epStatusList[episodeID] = x;
-        }
+  if (current?.status) {
+    const oldList = parseSubjectEpStatus(current.status);
+    for (const x of Object.values(oldList)) {
+      if (!episodeIDs.includes(x.eid)) {
+        epStatusList[x.eid] = x;
       }
     }
     const newStatus = php.stringify(epStatusList);
@@ -136,13 +130,9 @@ export function parseSubjectEpStatus(status: string): Record<number, UserEpisode
   if (!status) {
     return result;
   }
-  const epStatusList = php.parse(status) as Record<number, { eid: string; type: number }>;
-  for (const [eid, x] of Object.entries(epStatusList)) {
-    const episodeId = Number.parseInt(eid);
-    if (Number.isNaN(episodeId)) {
-      continue;
-    }
-    result[episodeId] = { id: episodeId, type: x.type };
+  const epStatusList = php.parse(status) as Record<number, UserEpisodeCollection>;
+  for (const x of Object.values(epStatusList)) {
+    result[x.eid] = x;
   }
   return result;
 }

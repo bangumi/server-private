@@ -65,7 +65,7 @@ export enum EpisodeCollectionStatus {
 }
 
 export interface UserEpisodeCollection {
-  id: number;
+  eid: number;
   type: EpisodeCollectionStatus;
 }
 
