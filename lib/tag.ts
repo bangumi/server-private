@@ -45,7 +45,6 @@ export async function insertUserSubjectTags(
   stype: SubjectType,
   tags: string[],
 ): Promise<string[]> {
-  const now = DateTime.now().toUnixInteger();
   tags = validateTags(tags);
   await t
     .delete(schema.chiiTagList)
@@ -62,6 +61,7 @@ export async function insertUserSubjectTags(
   const tids = Object.values(tagIDs).sort();
 
   if (tids.length > 0) {
+    const now = DateTime.now().toUnixInteger();
     await t.insert(schema.chiiTagList).values(
       tids.map((id) => ({
         tagID: id,
