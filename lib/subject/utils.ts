@@ -84,8 +84,8 @@ export async function updateSubjectRating(
 /** 标记条目剧集为已观看，需要在事务中执行 */
 export async function markEpisodesAsWatched(
   t: Txn,
-  uid: number,
-  sid: number,
+  userID: number,
+  subjectID: number,
   episodeIDs: number[],
 ) {
   const epStatusList: Record<number, { eid: string; type: number }> = {};
@@ -98,7 +98,9 @@ export async function markEpisodesAsWatched(
   const [current] = await t
     .select()
     .from(schema.chiiEpStatus)
-    .where(op.and(op.eq(schema.chiiEpStatus.uid, uid), op.eq(schema.chiiEpStatus.sid, sid)));
+    .where(
+      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
+    );
   if (current) {
     if (current.status) {
       const oldList = php.parse(current.status) as Record<number, { eid: string; type: number }>;
@@ -121,8 +123,8 @@ export async function markEpisodesAsWatched(
   } else {
     const newStatus = php.stringify(epStatusList);
     await t.insert(schema.chiiEpStatus).values({
-      uid,
-      sid,
+      uid: userID,
+      sid: subjectID,
       status: newStatus,
       updatedAt: DateTime.now().toUnixInteger(),
     });
