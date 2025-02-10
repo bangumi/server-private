@@ -13,7 +13,11 @@ import {
   PersonType,
   SubjectType,
 } from '@app/lib/subject/type.ts';
-import { updateSubjectCollection, updateSubjectRating } from '@app/lib/subject/utils.ts';
+import {
+  markEpisodesAsWatched,
+  updateSubjectCollection,
+  updateSubjectRating,
+} from '@app/lib/subject/utils.ts';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -170,8 +174,7 @@ export async function setup(app: App) {
             if (episodeIDs.length === 0) {
               break;
             }
-            // TODO: mark episodes as watched
-
+            await markEpisodesAsWatched(t, auth.userID, subjectID, episodeIDs);
             break;
           }
           case SubjectType.Book: {
