@@ -1,11 +1,11 @@
 import * as php from '@trim21/php-serialize';
 import { DateTime } from 'luxon';
 
-import { decr, incr, op, type Txn } from '@app/drizzle/db.ts';
+import { db, decr, incr, op, type Txn } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
 
-import type { CollectionType } from './type';
+import type { CollectionType, UserEpisodeCollection } from './type';
 import { EpisodeCollectionStatus, getCollectionTypeField } from './type';
 
 /** 更新条目收藏计数，需要在事务中执行 */
@@ -127,4 +127,39 @@ export async function markEpisodesAsWatched(
       updatedAt: DateTime.now().toUnixInteger(),
     });
   }
+}
+
+export function parseSubjectEpStatus(
+  status: orm.ISubjectEpStatus,
+): Record<number, UserEpisodeCollection> {
+  const result: Record<number, UserEpisodeCollection> = {};
+  if (!status.status) {
+    return result;
+  }
+  const epStatusList = php.parse(status.status) as Record<number, { eid: string; type: number }>;
+  for (const [eid, x] of Object.entries(epStatusList)) {
+    const episodeId = Number.parseInt(eid);
+    if (Number.isNaN(episodeId)) {
+      continue;
+    }
+    result[episodeId] = { id: episodeId, type: x.type };
+  }
+  return result;
+}
+
+export async function getEpStatus(
+  userID: number,
+  subjectID: number,
+): Promise<Record<number, UserEpisodeCollection>> {
+  const [data] = await db
+    .select()
+    .from(schema.chiiEpStatus)
+    .where(
+      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
+    )
+    .limit(1);
+  if (!data) {
+    return {};
+  }
+  return parseSubjectEpStatus(data);
 }

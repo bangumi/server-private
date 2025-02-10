@@ -3,6 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { Comment, CommentTarget } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { getEpStatus } from '@app/lib/subject/utils';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -35,7 +36,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
       if (auth.login) {
-        const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, ep.subjectID);
+        const epStatus = await getEpStatus(auth.userID, ep.subjectID);
         ep.status = epStatus[episodeID]?.type;
       }
       return ep;

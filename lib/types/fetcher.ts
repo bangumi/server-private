@@ -22,7 +22,6 @@ import {
   SubjectSort,
   SubjectType,
   TagCat,
-  type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
 import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
@@ -452,22 +451,6 @@ export async function fetchSubjectInterest(
     return;
   }
   return convert.toSubjectInterest(data);
-}
-
-export async function fetchSubjectEpStatus(
-  userID: number,
-  subjectID: number,
-): Promise<Record<number, UserEpisodeCollection>> {
-  const [data] = await db
-    .select()
-    .from(schema.chiiEpStatus)
-    .where(
-      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
-    );
-  if (!data) {
-    return {};
-  }
-  return convert.toSubjectEpStatus(data);
 }
 
 /** Cached */
