@@ -76,6 +76,8 @@ export enum PersonType {
 
 export enum TagCat {
   Subject = 0,
+  Blog = 1,
+  Doujin = 2,
   Meta = 3,
 }
 
