@@ -75,9 +75,16 @@ export enum PersonType {
 }
 
 export enum TagCat {
+  /** 条目, 对应的 type: 条目类型 */
   Subject = 0,
-  Blog = 1,
+
+  /** 入口, 对应的 type: blog = 1 */
+  Entry = 1,
+
+  /** 同人, 对应的 type: dounin = 1 和 club = 2 */
   Doujin = 2,
+
+  /** 条目 wiki, 对应的 type: 条目类型 */
   Meta = 3,
 }
 
