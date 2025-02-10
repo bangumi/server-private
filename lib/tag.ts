@@ -1,4 +1,3 @@
-import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
 import type { Txn } from '@app/drizzle/db.ts';
@@ -9,7 +8,7 @@ import type { SubjectType } from '@app/lib/subject/type.ts';
 import { TagCat } from '@app/lib/subject/type.ts';
 
 export function validateTags(tags: string[]): string[] {
-  const result: string[] = [];
+  const result = new Set<string>();
   for (const tag of tags) {
     const t = tag.trim().normalize('NFKC');
     if (t.length < 2) {
@@ -18,12 +17,12 @@ export function validateTags(tags: string[]): string[] {
     if (dam.needReview(t)) {
       continue;
     }
-    result.push(t);
-    if (result.length >= 10) {
+    result.add(t);
+    if (result.size >= 10) {
       break;
     }
   }
-  return lo.uniq(result).sort();
+  return [...result].sort();
 }
 
 /**
