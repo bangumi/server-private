@@ -78,6 +78,7 @@ export async function insertUserSubjectTags(
 }
 
 export async function updateTagResult(t: Txn, tagIDs: number[]) {
+  const now = DateTime.now().toUnixInteger();
   const counts = await t
     .select({
       tagID: schema.chiiTagList.tagID,
@@ -91,6 +92,7 @@ export async function updateTagResult(t: Txn, tagIDs: number[]) {
       .update(schema.chiiTagIndex)
       .set({
         count: item.count,
+        updatedAt: now,
       })
       .where(op.eq(schema.chiiTagIndex.id, item.tagID))
       .limit(1);
