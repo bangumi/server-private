@@ -45,6 +45,7 @@ export async function insertUserSubjectTags(
   stype: SubjectType,
   tags: string[],
 ): Promise<string[]> {
+  const now = DateTime.now().toUnixInteger();
   tags = validateTags(tags);
   await t
     .delete(schema.chiiTagList)
@@ -56,38 +57,44 @@ export async function insertUserSubjectTags(
         op.eq(schema.chiiTagList.mainID, sid),
       ),
     );
-  const existTags = await t
-    .select()
-    .from(schema.chiiTagIndex)
-    .where(
-      op.and(
-        op.eq(schema.chiiTagIndex.cat, TagCat.Subject),
-        op.eq(schema.chiiTagIndex.type, stype),
-        op.inArray(schema.chiiTagIndex.name, tags),
-      ),
-    );
   const tagIDs: number[] = [];
   const tagMap = new Map<string, number>();
-  for (const tag of existTags) {
-    tagMap.set(tag.name, tag.id);
-    tagIDs.push(tag.id);
+
+  if (tags.length > 0) {
+    const existTags = await t
+      .select()
+      .from(schema.chiiTagIndex)
+      .where(
+        op.and(
+          op.eq(schema.chiiTagIndex.cat, TagCat.Subject),
+          op.eq(schema.chiiTagIndex.type, stype),
+          op.inArray(schema.chiiTagIndex.name, tags),
+        ),
+      );
+    for (const tag of existTags) {
+      tagMap.set(tag.name, tag.id);
+      tagIDs.push(tag.id);
+    }
   }
+
   const insertTags = tags.filter((tag) => !tagMap.has(tag));
-  const now = DateTime.now().toUnixInteger();
-  const insertResult = await t
-    .insert(schema.chiiTagIndex)
-    .values(
-      insertTags.map((tag) => ({
-        name: tag,
-        cat: TagCat.Subject,
-        type: stype,
-        count: 0,
-        createdAt: now,
-        updatedAt: now,
-      })),
-    )
-    .$returningId();
-  tagIDs.push(...insertResult.map((r) => r.id));
+  if (insertTags.length > 0) {
+    const insertResult = await t
+      .insert(schema.chiiTagIndex)
+      .values(
+        insertTags.map((tag) => ({
+          name: tag,
+          cat: TagCat.Subject,
+          type: stype,
+          count: 0,
+          createdAt: now,
+          updatedAt: now,
+        })),
+      )
+      .$returningId();
+    tagIDs.push(...insertResult.map((r) => r.id));
+  }
+
   await t.insert(schema.chiiTagList).values(
     tagIDs.map((id) => ({
       tagID: id,
