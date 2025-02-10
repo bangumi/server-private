@@ -81,6 +81,7 @@ export async function updateSubjectRating(
     .limit(1);
 }
 
+/** 标记条目剧集为已观看，需要在事务中执行 */
 export async function markEpisodesAsWatched(
   t: Txn,
   uid: number,
