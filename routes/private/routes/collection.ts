@@ -18,6 +18,7 @@ import {
   updateSubjectCollection,
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
+import { insertUserSubjectTags } from '@app/lib/tag';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -270,23 +271,6 @@ export async function setup(app: App) {
           privacy = CollectionPrivacy.Ban;
         }
       }
-      tags = tags?.map((t) => t.trim().normalize('NFKC'));
-      if (tags !== undefined) {
-        if (tags.length > 10) {
-          throw new BadRequestError('too many tags');
-        }
-        if (dam.needReview(tags.join(' '))) {
-          tags = undefined;
-        } else {
-          for (const tag of tags) {
-            if (tag.length < 2) {
-              throw new BadRequestError('tag too short');
-            }
-          }
-          // 插入 tag 并生成 tag 字符串
-          // tags = TagCore::insertTagsNeue($uid, $_POST['tags'], TagCore::TAG_CAT_SUBJECT, $subject['subject_type_id'], $subject['subject_id']);
-        }
-      }
 
       await rateLimit(LimitAction.Subject, auth.userID);
 
@@ -294,6 +278,10 @@ export async function setup(app: App) {
       let interestID = 0;
       await db.transaction(async (t) => {
         let needUpdateRate = false;
+
+        if (tags !== undefined) {
+          tags = await insertUserSubjectTags(t, auth.userID, subjectID, slimSubject.type, tags);
+        }
 
         const [subject] = await t
           .select()
