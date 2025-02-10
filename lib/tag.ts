@@ -57,47 +57,13 @@ export async function insertUserSubjectTags(
         op.eq(schema.chiiTagList.mainID, sid),
       ),
     );
-  const tagIDs: number[] = [];
-  const tagMap = new Map<string, number>();
 
-  if (tags.length > 0) {
-    const existTags = await t
-      .select()
-      .from(schema.chiiTagIndex)
-      .where(
-        op.and(
-          op.eq(schema.chiiTagIndex.cat, TagCat.Subject),
-          op.eq(schema.chiiTagIndex.type, stype),
-          op.inArray(schema.chiiTagIndex.name, tags),
-        ),
-      );
-    for (const tag of existTags) {
-      tagMap.set(tag.name, tag.id);
-      tagIDs.push(tag.id);
-    }
-  }
+  const tagIDs = await ensureTags(t, TagCat.Subject, stype, tags);
+  const tids = Object.values(tagIDs).sort();
 
-  const insertTags = tags.filter((tag) => !tagMap.has(tag));
-  if (insertTags.length > 0) {
-    const insertResult = await t
-      .insert(schema.chiiTagIndex)
-      .values(
-        insertTags.map((tag) => ({
-          name: tag,
-          cat: TagCat.Subject,
-          type: stype,
-          count: 0,
-          createdAt: now,
-          updatedAt: now,
-        })),
-      )
-      .$returningId();
-    tagIDs.push(...insertResult.map((r) => r.id));
-  }
-
-  if (tagIDs.length > 0) {
+  if (tids.length > 0) {
     await t.insert(schema.chiiTagList).values(
-      tagIDs.map((id) => ({
+      tids.map((id) => ({
         tagID: id,
         userID: uid,
         cat: TagCat.Subject,
@@ -108,6 +74,11 @@ export async function insertUserSubjectTags(
     );
   }
 
+  await updateTagResult(t, tids);
+  return tags;
+}
+
+export async function updateTagResult(t: Txn, tagIDs: number[]) {
   const counts = await t
     .select({
       tagID: schema.chiiTagList.tagID,
@@ -116,14 +87,64 @@ export async function insertUserSubjectTags(
     .from(schema.chiiTagList)
     .where(op.inArray(schema.chiiTagList.tagID, tagIDs))
     .groupBy(schema.chiiTagList.tagID);
-  for (const count of counts) {
+  for (const item of counts) {
     await t
       .update(schema.chiiTagIndex)
       .set({
-        count: count.count,
+        count: item.count,
       })
-      .where(op.eq(schema.chiiTagIndex.id, count.tagID))
+      .where(op.eq(schema.chiiTagIndex.id, item.tagID))
       .limit(1);
   }
-  return tags;
+}
+
+export async function ensureTags(
+  t: Txn,
+  cat: TagCat,
+  type: number,
+  tags: string[],
+): Promise<Record<string, number>> {
+  const tagIDs: Record<string, number> = {};
+  if (tags.length === 0) {
+    return tagIDs;
+  }
+
+  const existTags = await t
+    .select()
+    .from(schema.chiiTagIndex)
+    .where(
+      op.and(
+        op.eq(schema.chiiTagIndex.cat, cat),
+        op.eq(schema.chiiTagIndex.type, type),
+        op.inArray(schema.chiiTagIndex.name, tags),
+      ),
+    );
+  for (const tag of existTags) {
+    tagIDs[tag.name] = tag.id;
+  }
+
+  const now = DateTime.now().toUnixInteger();
+  const insertTags = tags.filter((tag) => !tagIDs[tag]);
+  if (insertTags.length > 0) {
+    const insertResult = await t
+      .insert(schema.chiiTagIndex)
+      .values(
+        insertTags.map((tag) => ({
+          name: tag,
+          cat: cat,
+          type: type,
+          count: 0,
+          createdAt: now,
+          updatedAt: now,
+        })),
+      )
+      .$returningId();
+    for (const [idx, r] of insertResult.entries()) {
+      const tag = insertTags[idx];
+      if (tag) {
+        tagIDs[tag] = r.id;
+      }
+    }
+  }
+  return tagIDs;
 }
