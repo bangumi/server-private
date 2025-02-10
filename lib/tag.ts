@@ -72,9 +72,8 @@ export async function insertUserSubjectTags(
         createdAt: now,
       })),
     );
+    await updateTagResult(t, tids);
   }
-
-  await updateTagResult(t, tids);
   return tags;
 }
 
