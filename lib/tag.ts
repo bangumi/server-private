@@ -9,7 +9,6 @@ import type { SubjectType } from '@app/lib/subject/type.ts';
 import { TagCat } from '@app/lib/subject/type.ts';
 
 export function validateTags(tags: string[]): string[] {
-  let count = 0;
   const result: string[] = [];
   for (const tag of tags) {
     const t = tag.trim().normalize('NFKC');
@@ -20,8 +19,7 @@ export function validateTags(tags: string[]): string[] {
       continue;
     }
     result.push(t);
-    count++;
-    if (count >= 10) {
+    if (result.length >= 10) {
       break;
     }
   }
