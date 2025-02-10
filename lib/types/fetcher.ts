@@ -21,8 +21,8 @@ import {
   type SubjectFilter,
   SubjectSort,
   SubjectType,
-  TagCat,
 } from '@app/lib/subject/type.ts';
+import { TagCat } from '@app/lib/tag.ts';
 import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
