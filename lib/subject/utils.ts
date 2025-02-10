@@ -131,14 +131,12 @@ export async function markEpisodesAsWatched(
   }
 }
 
-export function parseSubjectEpStatus(
-  status: orm.ISubjectEpStatus,
-): Record<number, UserEpisodeCollection> {
+export function parseSubjectEpStatus(status: string): Record<number, UserEpisodeCollection> {
   const result: Record<number, UserEpisodeCollection> = {};
-  if (!status.status) {
+  if (!status) {
     return result;
   }
-  const epStatusList = php.parse(status.status) as Record<number, { eid: string; type: number }>;
+  const epStatusList = php.parse(status) as Record<number, { eid: string; type: number }>;
   for (const [eid, x] of Object.entries(epStatusList)) {
     const episodeId = Number.parseInt(eid);
     if (Number.isNaN(episodeId)) {
@@ -163,5 +161,5 @@ export async function getEpStatus(
   if (!data) {
     return {};
   }
-  return parseSubjectEpStatus(data);
+  return parseSubjectEpStatus(data.status);
 }
