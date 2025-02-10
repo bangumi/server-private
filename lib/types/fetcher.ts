@@ -458,16 +458,16 @@ export async function fetchSubjectEpStatus(
   userID: number,
   subjectID: number,
 ): Promise<Record<number, UserEpisodeCollection>> {
-  const data = await db
+  const [data] = await db
     .select()
     .from(schema.chiiEpStatus)
     .where(
       op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
     );
-  for (const d of data) {
-    return convert.toSubjectEpStatus(d);
+  if (!data) {
+    return {};
   }
-  return {};
+  return convert.toSubjectEpStatus(data);
 }
 
 /** Cached */

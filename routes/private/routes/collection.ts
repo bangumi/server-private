@@ -164,11 +164,7 @@ export async function setup(app: App) {
                   op.eq(schema.chiiEpisodes.ban, 0),
                 ),
               )
-              .orderBy(
-                op.asc(schema.chiiEpisodes.disc),
-                op.asc(schema.chiiEpisodes.type),
-                op.asc(schema.chiiEpisodes.sort),
-              )
+              .orderBy(op.asc(schema.chiiEpisodes.type), op.asc(schema.chiiEpisodes.sort))
               .limit(epStatus);
             const episodeIDs = episodes.map((e) => e.id);
             if (episodeIDs.length === 0) {
