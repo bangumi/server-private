@@ -15,7 +15,7 @@ export enum TagCat {
   /** 同人, 对应的 type: doujin = 1 和 club = 2 */
   Doujin = 2,
 
-  /** 条目 wiki, 对应的 type: 条目类型 */
+  /** Wiki, 对应的 type: 条目类型 */
   Meta = 3,
 }
 
