@@ -2,6 +2,8 @@ import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
+import { db, op } from '@app/drizzle/db';
+import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth';
 import { Comment, CommentTarget } from '@app/lib/comment';
 import { Dam } from '@app/lib/dam';
@@ -113,6 +115,39 @@ export async function setup(app: App) {
         createdAt: DateTime.now().toUnixInteger(),
       });
       return { id };
+    },
+  );
+
+  app.delete(
+    '/timeline/:timelineID',
+    {
+      schema: {
+        summary: '删除时间线',
+        operationId: 'deleteTimeline',
+        tags: [Tag.Timeline],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          timelineID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('deleting a timeline')],
+    },
+    async ({ auth, params: { timelineID } }) => {
+      const timeline = await fetchTimelineByID(auth, timelineID);
+      if (!timeline) {
+        throw new NotFoundError('timeline');
+      }
+      if (timeline.uid !== auth.userID) {
+        throw new NotAllowedError('delete timeline');
+      }
+      await db
+        .delete(schema.chiiTimeline)
+        .where(op.eq(schema.chiiTimeline.id, timelineID))
+        .limit(1);
+      return {};
     },
   );
 
