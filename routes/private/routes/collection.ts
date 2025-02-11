@@ -451,26 +451,22 @@ export async function setup(app: App) {
       if (!episode) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
+      const subject = await fetcher.fetchSubjectByID(episode.subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${episode.subjectID}`);
+      }
+      switch (subject.type) {
+        case SubjectType.Anime:
+        case SubjectType.Real: {
+          break;
+        }
+        default: {
+          throw new BadRequestError('subject not supported for progress');
+        }
+      }
 
       const now = DateTime.now().toUnixInteger();
       await db.transaction(async (t) => {
-        const [subject] = await t
-          .select()
-          .from(schema.chiiSubjects)
-          .where(op.eq(schema.chiiSubjects.id, episode.subjectID))
-          .limit(1);
-        if (!subject) {
-          throw new UnexpectedNotFoundError(`subject ${episode.subjectID}`);
-        }
-        switch (subject.typeID) {
-          case SubjectType.Anime:
-          case SubjectType.Real: {
-            break;
-          }
-          default: {
-            throw new BadRequestError('subject not supported for progress');
-          }
-        }
         const [interest] = await t
           .select()
           .from(schema.chiiSubjectInterests)
@@ -542,7 +538,7 @@ export async function setup(app: App) {
             uid: auth.userID,
             subject: {
               id: subject.id,
-              type: subject.typeID,
+              type: subject.type,
               eps: subject.eps,
               volumes: subject.volumes,
             },
@@ -559,7 +555,7 @@ export async function setup(app: App) {
             uid: auth.userID,
             subject: {
               id: subject.id,
-              type: subject.typeID,
+              type: subject.type,
             },
             episode: {
               id: episode.id,
