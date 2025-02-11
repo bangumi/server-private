@@ -5,11 +5,7 @@ import * as php from '@trim21/php-serialize';
 import type * as orm from '@app/drizzle/orm.ts';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
-import {
-  CollectionPrivacy,
-  CollectionType,
-  type UserEpisodeCollection,
-} from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findNetworkService,
@@ -447,24 +443,6 @@ export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
     comment: episode.comment,
     subjectID: episode.subjectID,
   };
-}
-
-export function toSubjectEpStatus(
-  status: orm.ISubjectEpStatus,
-): Record<number, UserEpisodeCollection> {
-  const result: Record<number, UserEpisodeCollection> = {};
-  if (!status.status) {
-    return result;
-  }
-  const epStatusList = php.parse(status.status) as Record<number, { eid: string; type: number }>;
-  for (const [eid, x] of Object.entries(epStatusList)) {
-    const episodeId = Number.parseInt(eid);
-    if (Number.isNaN(episodeId)) {
-      continue;
-    }
-    result[episodeId] = { id: episodeId, type: x.type };
-  }
-  return result;
 }
 
 export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {

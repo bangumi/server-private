@@ -8,6 +8,7 @@ export function addSchemas(app: App) {
   app.addSchema(common.EpisodeType);
   app.addSchema(common.SubjectType);
 
+  app.addSchema(req.CollectSubject);
   app.addSchema(req.CreateContent);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
@@ -17,6 +18,7 @@ export function addSchemas(app: App) {
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateTopic);
+  app.addSchema(req.UpdateSubjectProgress);
 
   app.addSchema(res.Avatar);
   app.addSchema(res.BlogEntry);

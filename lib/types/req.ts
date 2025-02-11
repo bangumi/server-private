@@ -1,6 +1,8 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
+import { CollectionType, Ref } from '@app/lib/types/common.ts';
+
 export * from '@app/lib/types/common.ts';
 
 const turnstileDescription = `需要 [turnstile](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/)
@@ -108,4 +110,25 @@ export const EpisodeExpected = t.Optional(
       },
     ),
   ),
+);
+
+export type ICollectSubject = Static<typeof CollectSubject>;
+export const CollectSubject = t.Object(
+  {
+    type: t.Optional(Ref(CollectionType)),
+    rate: t.Optional(t.Integer({ minimum: 0, maximum: 10, description: '评分，0 表示删除评分' })),
+    comment: t.Optional(t.String({ description: '评价' })),
+    private: t.Optional(t.Boolean({ description: '仅自己可见' })),
+    tags: t.Optional(t.Array(t.String({ description: '标签, 不能包含空格' }))),
+  },
+  { $id: 'CollectSubject' },
+);
+
+export type IUpdateSubjectProgress = Static<typeof UpdateSubjectProgress>;
+export const UpdateSubjectProgress = t.Object(
+  {
+    epStatus: t.Optional(t.Integer({ minimum: 0, description: '书籍条目章节进度' })),
+    volStatus: t.Optional(t.Integer({ minimum: 0, description: '书籍条目卷数进度' })),
+  },
+  { $id: 'UpdateSubjectProgress' },
 );

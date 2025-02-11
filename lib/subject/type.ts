@@ -64,19 +64,14 @@ export enum EpisodeCollectionStatus {
   Dropped = 3, // 抛弃
 }
 
-export interface UserEpisodeCollection {
-  id: number;
+export interface UserEpisodeStatusItem {
+  eid: number;
   type: EpisodeCollectionStatus;
 }
 
 export enum PersonType {
   Character = 'crt',
   Person = 'prsn',
-}
-
-export enum TagCat {
-  Subject = 0,
-  Meta = 3,
 }
 
 export enum SubjectSort {
