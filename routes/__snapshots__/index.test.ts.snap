@@ -2386,6 +2386,14 @@ exports[`should build private api spec 1`] = `
       required:
         - content
       type: object
+    UpdateEpisodeProgress:
+      properties:
+        batch:
+          description: 是否批量更新(看到当前章节), 批量更新时 type 无效
+          type: boolean
+        type:
+          $ref: '#/components/schemas/EpisodeCollectionStatus'
+      type: object
     UpdateSubjectProgress:
       properties:
         epStatus:
@@ -3539,6 +3547,41 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取当前用户的角色收藏
+      tags:
+        - collection
+  /p1/collections/episodes/{episodeID}:
+    patch:
+      operationId: updateEpisodeProgress
+      parameters:
+        - in: path
+          name: episodeID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEpisodeProgress'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 更新章节进度
       tags:
         - collection
   /p1/collections/indexes:

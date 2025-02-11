@@ -16,6 +16,7 @@ import {
 import {
   markEpisodesAsWatched,
   updateSubjectCollection,
+  updateSubjectEpisodeProgress,
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
 import { insertUserTags, TagCat } from '@app/lib/tag';
@@ -423,6 +424,147 @@ export async function setup(app: App) {
           createdAt: DateTime.now().toUnixInteger(),
         });
       }
+      return {};
+    },
+  );
+
+  app.patch(
+    '/collections/episodes/:episodeID',
+    {
+      schema: {
+        summary: '更新章节进度',
+        operationId: 'updateEpisodeProgress',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          episodeID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateEpisodeProgress),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('update episode progress')],
+    },
+    async ({ auth, params: { episodeID }, body: { type, batch } }) => {
+      const episode = await fetcher.fetchEpisodeByID(episodeID);
+      if (!episode) {
+        throw new NotFoundError(`episode ${episodeID}`);
+      }
+      const subject = await fetcher.fetchSubjectByID(episode.subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${episode.subjectID}`);
+      }
+      switch (subject.type) {
+        case SubjectType.Anime:
+        case SubjectType.Real: {
+          break;
+        }
+        default: {
+          throw new BadRequestError('subject not supported for progress');
+        }
+      }
+
+      const now = DateTime.now().toUnixInteger();
+      await db.transaction(async (t) => {
+        const [interest] = await t
+          .select()
+          .from(schema.chiiSubjectInterests)
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+              op.eq(schema.chiiSubjectInterests.subjectID, episode.subjectID),
+            ),
+          )
+          .limit(1);
+        if (!interest) {
+          throw new BadRequestError(`subject not collected`);
+        }
+        let watchedEpisodes = 0;
+        if (batch) {
+          const episodes = await t
+            .select({ id: schema.chiiEpisodes.id })
+            .from(schema.chiiEpisodes)
+            .where(
+              op.and(
+                op.eq(schema.chiiEpisodes.subjectID, episode.subjectID),
+                op.eq(schema.chiiEpisodes.type, 0),
+                op.lte(schema.chiiEpisodes.sort, episode.sort),
+              ),
+            )
+            .orderBy(op.asc(schema.chiiEpisodes.type), op.asc(schema.chiiEpisodes.sort));
+          const episodeIDs = episodes.map((e) => e.id);
+          if (episodeIDs.length === 0) {
+            throw new BadRequestError('no episodes to update');
+          }
+          watchedEpisodes = await markEpisodesAsWatched(
+            t,
+            auth.userID,
+            episode.subjectID,
+            episodeIDs,
+            false,
+          );
+        } else {
+          if (type === undefined) {
+            throw new BadRequestError('type is required on single update');
+          }
+          watchedEpisodes = await updateSubjectEpisodeProgress(
+            t,
+            auth.userID,
+            episode.subjectID,
+            episodeID,
+            type,
+          );
+        }
+        await t
+          .update(schema.chiiSubjectInterests)
+          .set({
+            epStatus: watchedEpisodes,
+            updatedAt: now,
+          })
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+              op.eq(schema.chiiSubjectInterests.subjectID, episode.subjectID),
+            ),
+          )
+          .limit(1);
+
+        if (interest.privacy !== CollectionPrivacy.Public) {
+          return;
+        }
+        if (batch) {
+          await AsyncTimelineWriter.progressSubject({
+            uid: auth.userID,
+            subject: {
+              id: subject.id,
+              type: subject.type,
+              eps: subject.eps,
+              volumes: subject.volumes,
+            },
+            collect: {
+              epsUpdate: watchedEpisodes,
+            },
+            createdAt: now,
+          });
+        } else {
+          if (!type) {
+            throw new BadRequestError('type is required on single update');
+          }
+          await AsyncTimelineWriter.progressEpisode({
+            uid: auth.userID,
+            subject: {
+              id: subject.id,
+              type: subject.type,
+            },
+            episode: {
+              id: episode.id,
+              status: type,
+            },
+            createdAt: now,
+          });
+        }
+      });
       return {};
     },
   );
