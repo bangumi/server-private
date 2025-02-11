@@ -1,7 +1,7 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { CollectionType, Ref } from '@app/lib/types/common.ts';
+import { CollectionType, EpisodeCollectionStatus, Ref } from '@app/lib/types/common.ts';
 
 export * from '@app/lib/types/common.ts';
 
@@ -131,4 +131,15 @@ export const UpdateSubjectProgress = t.Object(
     volStatus: t.Optional(t.Integer({ minimum: 0, description: '书籍条目卷数进度' })),
   },
   { $id: 'UpdateSubjectProgress' },
+);
+
+export type IUpdateEpisodeProgress = Static<typeof UpdateEpisodeProgress>;
+export const UpdateEpisodeProgress = t.Object(
+  {
+    type: t.Optional(Ref(EpisodeCollectionStatus)),
+    batch: t.Optional(
+      t.Boolean({ description: '是否批量更新(看到当前章节), 批量更新时 type 无效' }),
+    ),
+  },
+  { $id: 'UpdateEpisodeProgress' },
 );

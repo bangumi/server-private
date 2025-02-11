@@ -81,6 +81,56 @@ export async function updateSubjectRating(
     .limit(1);
 }
 
+/** 更新条目剧集进度，需要在事务中执行 */
+export async function updateSubjectEpisodeProgress(
+  t: Txn,
+  userID: number,
+  subjectID: number,
+  episodeID: number,
+  type: EpisodeCollectionStatus,
+): Promise<number> {
+  const [current] = await t
+    .select()
+    .from(schema.chiiEpStatus)
+    .where(
+      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
+    );
+  let watchedEpisodes = 0;
+  if (current?.status) {
+    const epStatusList = parseSubjectEpStatus(current.status);
+    epStatusList[episodeID] = {
+      eid: episodeID,
+      type,
+    };
+    watchedEpisodes = Object.values(epStatusList).filter(
+      (x) => x.type === EpisodeCollectionStatus.Done,
+    ).length;
+    const newStatus = php.stringify(epStatusList);
+    await t
+      .update(schema.chiiEpStatus)
+      .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
+      .where(op.eq(schema.chiiEpStatus.id, current.id))
+      .limit(1);
+  } else {
+    const epStatusList: Record<number, UserEpisodeStatusItem> = {};
+    epStatusList[episodeID] = {
+      eid: episodeID,
+      type,
+    };
+    watchedEpisodes = Object.values(epStatusList).filter(
+      (x) => x.type === EpisodeCollectionStatus.Done,
+    ).length;
+    const newStatus = php.stringify(epStatusList);
+    await t.insert(schema.chiiEpStatus).values({
+      uid: userID,
+      sid: subjectID,
+      status: newStatus,
+      updatedAt: DateTime.now().toUnixInteger(),
+    });
+  }
+  return watchedEpisodes;
+}
+
 /** 标记条目剧集为已观看，需要在事务中执行 */
 export async function markEpisodesAsWatched(
   t: Txn,
@@ -88,7 +138,7 @@ export async function markEpisodesAsWatched(
   subjectID: number,
   episodeIDs: number[],
   revertOthers = false,
-) {
+): Promise<number> {
   const epStatusList: Record<number, UserEpisodeStatusItem> = {};
   for (const episodeID of episodeIDs) {
     epStatusList[episodeID] = {
@@ -102,6 +152,7 @@ export async function markEpisodesAsWatched(
     .where(
       op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
     );
+  let watchedEpisodes = 0;
   if (current?.status) {
     const oldList = parseSubjectEpStatus(current.status);
     for (const x of Object.values(oldList)) {
@@ -117,6 +168,9 @@ export async function markEpisodesAsWatched(
         epStatusList[x.eid] = x;
       }
     }
+    watchedEpisodes = Object.values(epStatusList).filter(
+      (x) => x.type === EpisodeCollectionStatus.Done,
+    ).length;
     const newStatus = php.stringify(epStatusList);
     await t
       .update(schema.chiiEpStatus)
@@ -124,6 +178,9 @@ export async function markEpisodesAsWatched(
       .where(op.eq(schema.chiiEpStatus.id, current.id))
       .limit(1);
   } else {
+    watchedEpisodes = Object.values(epStatusList).filter(
+      (x) => x.type === EpisodeCollectionStatus.Done,
+    ).length;
     const newStatus = php.stringify(epStatusList);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
@@ -132,6 +189,7 @@ export async function markEpisodesAsWatched(
       updatedAt: DateTime.now().toUnixInteger(),
     });
   }
+  return watchedEpisodes;
 }
 
 export function parseSubjectEpStatus(status: string): Record<number, UserEpisodeStatusItem> {
