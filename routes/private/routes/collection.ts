@@ -175,7 +175,7 @@ export async function setup(app: App) {
             if (episodeIDs.length === 0) {
               break;
             }
-            await markEpisodesAsWatched(t, auth.userID, subjectID, episodeIDs);
+            await markEpisodesAsWatched(t, auth.userID, subjectID, episodeIDs, true);
             break;
           }
           case SubjectType.Book: {

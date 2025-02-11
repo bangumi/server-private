@@ -87,6 +87,7 @@ export async function markEpisodesAsWatched(
   userID: number,
   subjectID: number,
   episodeIDs: number[],
+  revertOthers = false,
 ) {
   const epStatusList: Record<number, UserEpisodeStatusItem> = {};
   for (const episodeID of episodeIDs) {
@@ -104,7 +105,15 @@ export async function markEpisodesAsWatched(
   if (current?.status) {
     const oldList = parseSubjectEpStatus(current.status);
     for (const x of Object.values(oldList)) {
-      if (!episodeIDs.includes(x.eid)) {
+      if (episodeIDs.includes(x.eid)) {
+        continue;
+      }
+      if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
+        epStatusList[x.eid] = {
+          eid: x.eid,
+          type: EpisodeCollectionStatus.None,
+        };
+      } else {
         epStatusList[x.eid] = x;
       }
     }
