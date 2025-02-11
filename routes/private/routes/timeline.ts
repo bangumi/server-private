@@ -143,10 +143,15 @@ export async function setup(app: App) {
       if (timeline.uid !== auth.userID) {
         throw new NotAllowedError('delete timeline');
       }
-      await db
-        .delete(schema.chiiTimeline)
-        .where(op.eq(schema.chiiTimeline.id, timelineID))
-        .limit(1);
+      await db.transaction(async (tx) => {
+        await tx
+          .delete(schema.chiiTimeline)
+          .where(op.eq(schema.chiiTimeline.id, timelineID))
+          .limit(1);
+        await tx
+          .delete(schema.chiiTimelineComments)
+          .where(op.eq(schema.chiiTimelineComments.mid, timelineID));
+      });
       return {};
     },
   );
