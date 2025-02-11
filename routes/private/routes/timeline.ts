@@ -2,17 +2,21 @@ import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
+import { db, op } from '@app/drizzle/db';
+import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth';
+import { Comment, CommentTarget } from '@app/lib/comment';
 import { Dam } from '@app/lib/dam';
-import { BadRequestError } from '@app/lib/error';
+import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
-import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
+import { fetchTimelineByID, fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { TimelineMode } from '@app/lib/timeline/type.ts';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { formatErrors } from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -20,6 +24,8 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  const comment = new Comment(CommentTarget.Timeline);
+
   app.get(
     '/timeline',
     {
@@ -109,6 +115,95 @@ export async function setup(app: App) {
         createdAt: DateTime.now().toUnixInteger(),
       });
       return { id };
+    },
+  );
+
+  app.delete(
+    '/timeline/:timelineID',
+    {
+      schema: {
+        summary: '删除时间线',
+        operationId: 'deleteTimeline',
+        tags: [Tag.Timeline],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          timelineID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('deleting a timeline')],
+    },
+    async ({ auth, params: { timelineID } }) => {
+      const timeline = await fetchTimelineByID(auth, timelineID);
+      if (!timeline) {
+        throw new NotFoundError('timeline');
+      }
+      if (timeline.uid !== auth.userID) {
+        throw new NotAllowedError('delete timeline');
+      }
+      await db.transaction(async (tx) => {
+        await tx
+          .delete(schema.chiiTimeline)
+          .where(op.eq(schema.chiiTimeline.id, timelineID))
+          .limit(1);
+        await tx
+          .delete(schema.chiiTimelineComments)
+          .where(op.eq(schema.chiiTimelineComments.mid, timelineID));
+      });
+      return {};
+    },
+  );
+
+  app.get(
+    '/timeline/:timelineID/replies',
+    {
+      schema: {
+        summary: '获取时间线回复',
+        operationId: 'getTimelineReplies',
+        tags: [Tag.Timeline],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          timelineID: t.Integer(),
+        }),
+        response: {
+          200: t.Array(res.Comment),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('timeline')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { timelineID } }) => {
+      const timeline = await fetchTimelineByID(auth, timelineID);
+      if (!timeline) {
+        throw new NotFoundError('timeline');
+      }
+      return await comment.getAll(timelineID);
+    },
+  );
+
+  app.post(
+    '/timeline/:timelineID/replies',
+    {
+      schema: {
+        summary: '创建时间线回复',
+        operationId: 'createTimelineReply',
+        tags: [Tag.Timeline],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          timelineID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({ id: t.Integer() }),
+        },
+      },
+      preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
+    },
+    async ({ auth, body: { content, replyTo = 0 }, params: { timelineID } }) => {
+      return await comment.create(auth, timelineID, content, replyTo);
     },
   );
 }
