@@ -296,6 +296,28 @@ export async function toTimeline(
 }
 
 /** Cached */
+export async function fetchTimelineByID(
+  auth: Readonly<IAuth>,
+  id: number,
+): Promise<res.ITimeline | undefined> {
+  const cached = await redis.get(getItemCacheKey(id));
+  if (cached) {
+    return JSON.parse(cached) as res.ITimeline;
+  }
+  const [data] = await db
+    .select()
+    .from(schema.chiiTimeline)
+    .where(op.eq(schema.chiiTimeline.id, id))
+    .limit(1);
+  if (!data) {
+    return;
+  }
+  const item = await toTimeline(auth, data);
+  await redis.setex(getItemCacheKey(id), 604800, JSON.stringify(item));
+  return item;
+}
+
+/** Cached */
 export async function fetchTimelineByIDs(
   auth: Readonly<IAuth>,
   ids: number[],
