@@ -18,12 +18,13 @@ import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as ormold from '@app/lib/orm/index.ts';
 import { SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { extractDate } from '@app/lib/subject/date.ts';
+import { TagCat } from '@app/lib/tag.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import { DATE } from '@app/lib/utils/date.ts';
 import { matchExpected } from '@app/lib/wiki.ts';
 import { getSubjectPlatforms } from '@app/vendor';
 
-import { SubjectType, TagCat } from './type.ts';
+import { SubjectType } from './type.ts';
 
 export const InvalidWikiSyntaxError = createError(
   'INVALID_SYNTAX_ERROR',

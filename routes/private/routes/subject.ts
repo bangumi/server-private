@@ -12,6 +12,7 @@ import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
 import { CollectionPrivacy } from '@app/lib/subject/type.ts';
+import { getEpStatus } from '@app/lib/subject/utils';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
@@ -219,7 +220,7 @@ export async function setup(app: App) {
         .offset(offset);
       const episodes = data.map((d) => convert.toSlimEpisode(d));
       if (auth.login) {
-        const epStatus = await fetcher.fetchSubjectEpStatus(auth.userID, subjectID);
+        const epStatus = await getEpStatus(auth.userID, subjectID);
         for (const ep of episodes) {
           ep.status = epStatus[ep.id]?.type;
         }

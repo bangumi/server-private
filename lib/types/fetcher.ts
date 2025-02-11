@@ -21,9 +21,8 @@ import {
   type SubjectFilter,
   SubjectSort,
   SubjectType,
-  TagCat,
-  type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
+import { TagCat } from '@app/lib/tag.ts';
 import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
@@ -452,22 +451,6 @@ export async function fetchSubjectInterest(
     return;
   }
   return convert.toSubjectInterest(data);
-}
-
-export async function fetchSubjectEpStatus(
-  userID: number,
-  subjectID: number,
-): Promise<Record<number, UserEpisodeCollection>> {
-  const data = await db
-    .select()
-    .from(schema.chiiEpStatus)
-    .where(
-      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
-    );
-  for (const d of data) {
-    return convert.toSubjectEpStatus(d);
-  }
-  return {};
 }
 
 /** Cached */

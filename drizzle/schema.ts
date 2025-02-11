@@ -559,7 +559,7 @@ export const chiiSubjectImgs = mysqlTable('chii_subject_imgs', {
 });
 
 export const chiiSubjectInterests = mysqlTable('chii_subject_interests', {
-  id: int('interest_id').autoincrement().notNull(),
+  id: int('interest_id').autoincrement().notNull().primaryKey(),
   uid: mediumint('interest_uid').notNull(),
   subjectID: mediumint('interest_subject_id').notNull(),
   subjectType: smallint('interest_subject_type').notNull(),
@@ -650,11 +650,11 @@ export const chiiSubjectPosts = mysqlTable('chii_subject_posts', {
 });
 
 export const chiiTagIndex = mysqlTable('chii_tag_neue_index', {
-  id: mediumint('tag_id').autoincrement().notNull(),
+  id: mediumint('tag_id').autoincrement().notNull().primaryKey(),
   name: varchar('tag_name', { length: 30 }).notNull(),
   cat: tinyint('tag_cat').notNull(),
   type: tinyint('tag_type').notNull(),
-  totalCount: mediumint('tag_results').notNull(),
+  count: mediumint('tag_results').notNull(),
   createdAt: int('tag_dateline').notNull(),
   updatedAt: int('tag_lasttouch').notNull(),
 });
