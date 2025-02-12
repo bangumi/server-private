@@ -7,6 +7,7 @@ import * as process from 'node:process';
 import * as Sentry from '@sentry/node';
 
 import config, { production, stage } from '@app/lib/config.ts';
+import { producer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger.ts';
 import { AppDataSource } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
@@ -35,6 +36,8 @@ async function main() {
   if (config.sentryDSN) {
     Sentry.setupFastifyErrorHandler(server);
   }
+
+  await producer.initialize();
 
   server.addHook('onReady', async () => {
     await Promise.all([Subscriber.psubscribe(`event-user-notify-*`), AppDataSource.initialize()]);
