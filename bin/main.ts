@@ -38,8 +38,11 @@ async function main() {
   }
 
   server.addHook('onReady', async () => {
-    await producer.initialize();
-    await Promise.all([Subscriber.psubscribe(`event-user-notify-*`), AppDataSource.initialize()]);
+    await Promise.all([
+      producer.initialize(),
+      Subscriber.psubscribe(`event-user-notify-*`),
+      AppDataSource.initialize(),
+    ]);
   });
 
   const { host, port } = config.server;
