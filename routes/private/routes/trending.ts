@@ -13,7 +13,7 @@ import type { App } from '@app/routes/type.ts';
 export type ITrendingSubject = Static<typeof TrendingSubject>;
 const TrendingSubject = t.Object(
   {
-    subject: res.Ref(res.Subject),
+    subject: res.Ref(res.SlimSubject),
     count: t.Integer(),
   },
   { $id: 'TrendingSubject' },
@@ -51,7 +51,7 @@ export async function setup(app: App) {
       }
       const ids = JSON.parse(cached) as TrendingItem[];
       const items = ids.slice(offset, offset + limit);
-      const subjects = await fetcher.fetchSubjectsByIDs(
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(
         items.map((item) => item.id),
         auth.allowNsfw,
       );
