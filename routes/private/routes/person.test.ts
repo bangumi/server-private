@@ -54,38 +54,38 @@ describe('person', () => {
 
 describe('person comments', () => {
   beforeEach(async () => {
-    await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 3862));
+    await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 1));
     await db.insert(schema.chiiPrsnComments).values({
       id: 205402,
-      mid: 3862,
-      content: '这肖像图……我喷了',
+      mid: 1,
+      content: '7月7日 77结婚',
       state: 0,
       createdAt: 1400517144,
-      uid: 382951,
+      uid: 287622,
       related: 0,
     });
     await db.insert(schema.chiiPrsnComments).values({
       id: 205403,
-      mid: 3862,
-      content: '+1',
+      mid: 1,
+      content: '是6号结的',
       state: 0,
       createdAt: 1400517144,
-      uid: 382951,
+      uid: 287622,
       related: 205402,
     });
     await db.insert(schema.chiiPrsnComments).values({
       id: 205404,
-      mid: 3862,
-      content: '这头像，带就不？',
+      mid: 1,
+      content: '生日快乐！',
       state: 0,
       createdAt: 1400517144,
-      uid: 382951,
+      uid: 287622,
       related: 0,
     });
   });
 
   afterEach(async () => {
-    await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 3862));
+    await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 1));
   });
 
   test('should get person comments', async () => {
@@ -93,7 +93,7 @@ describe('person comments', () => {
     await app.register(setup);
     const res = await app.inject({
       method: 'get',
-      url: '/persons/3862/comments',
+      url: '/persons/1/comments',
     });
     expect(res.json()).toMatchSnapshot();
   });
@@ -103,14 +103,14 @@ describe('person comments', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 382951,
+        userID: 287622,
       },
     });
     await app.register(setup);
     const res = await app.inject({
       method: 'post',
-      url: '/persons/3862/comments',
-      payload: { content: '这照片碉堡了', turnstileToken: 'fake-response' },
+      url: '/persons/1/comments',
+      payload: { content: '恭喜恭喜', turnstileToken: 'fake-response' },
     });
     expect(res.statusCode).toBe(200);
     const pstID: number = res.json().id;
@@ -118,7 +118,7 @@ describe('person comments', () => {
       .select()
       .from(schema.chiiPrsnComments)
       .where(op.eq(schema.chiiPrsnComments.id, pstID));
-    expect(pst?.content).toBe('这照片碉堡了');
+    expect(pst?.content).toBe('恭喜恭喜');
   });
 
   test('should not allow create person comment', async () => {
@@ -126,8 +126,8 @@ describe('person comments', () => {
     await app.register(setup);
     const res = await app.inject({
       method: 'post',
-      url: '/persons/3862/comments',
-      payload: { content: '这照片碉堡了', turnstileToken: 'fake-response' },
+      url: '/persons/1/comments',
+      payload: { content: '恭喜恭喜', turnstileToken: 'fake-response' },
     });
     expect(res.statusCode).toBe(401);
     expect(res.json()).toMatchSnapshot();
