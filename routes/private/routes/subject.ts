@@ -134,7 +134,7 @@ export async function setup(app: App) {
           ),
         }),
         response: {
-          200: res.Paged(res.Ref(res.Subject)),
+          200: res.Paged(res.Ref(res.SlimSubject)),
         },
       },
     },
@@ -155,7 +155,7 @@ export async function setup(app: App) {
           total: result.total,
         };
       }
-      const subjects = await fetcher.fetchSubjectsByIDs(result.data);
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(result.data);
       const data = [];
       for (const subjectID of result.data) {
         const subject = subjects[subjectID];
