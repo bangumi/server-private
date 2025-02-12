@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
+import { emptyAuth } from '@app/lib/auth/index.ts';
+import { db, op } from '@app/drizzle/db.ts';
+import * as schema from '@app/drizzle/schema.ts';
+import redis from '@app/lib/redis.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './person.ts';
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
-import { emptyAuth } from '@app/lib/auth/index.ts';
 
 describe('person', () => {
   test('should get person', async () => {
@@ -54,9 +55,10 @@ describe('person', () => {
 
 describe('person comments', () => {
   beforeEach(async () => {
+    await redis.flushdb();
     await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 1));
     await db.insert(schema.chiiPrsnComments).values({
-      id: 205402,
+      id: 12345670,
       mid: 1,
       content: '7月7日 77结婚',
       state: 0,
@@ -65,16 +67,16 @@ describe('person comments', () => {
       related: 0,
     });
     await db.insert(schema.chiiPrsnComments).values({
-      id: 205403,
+      id: 12345671,
       mid: 1,
       content: '是6号结的',
       state: 0,
       createdAt: 1400517144,
       uid: 287622,
-      related: 205402,
+      related: 12345670,
     });
     await db.insert(schema.chiiPrsnComments).values({
-      id: 205404,
+      id: 12345672,
       mid: 1,
       content: '生日快乐！',
       state: 0,
@@ -85,6 +87,7 @@ describe('person comments', () => {
   });
 
   afterEach(async () => {
+    await redis.flushdb();
     await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 1));
   });
 

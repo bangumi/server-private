@@ -387,7 +387,7 @@ Array [
     "content": "7月7日 77结婚",
     "createdAt": 1400517144,
     "creatorID": 287622,
-    "id": 205402,
+    "id": 12345670,
     "mainID": 1,
     "relatedID": 0,
     "replies": Array [
@@ -395,9 +395,9 @@ Array [
         "content": "是6号结的",
         "createdAt": 1400517144,
         "creatorID": 287622,
-        "id": 205403,
+        "id": 12345671,
         "mainID": 1,
-        "relatedID": 205402,
+        "relatedID": 12345670,
         "state": 0,
         "user": Object {
           "avatar": Object {
@@ -433,7 +433,7 @@ Array [
     "content": "生日快乐！",
     "createdAt": 1400517144,
     "creatorID": 287622,
-    "id": 205404,
+    "id": 12345672,
     "mainID": 1,
     "relatedID": 0,
     "replies": Array [],
