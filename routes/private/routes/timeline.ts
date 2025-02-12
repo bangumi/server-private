@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { db, op } from '@app/drizzle/db';
 import * as schema from '@app/drizzle/schema';
 import { NotAllowedError } from '@app/lib/auth';
-import { Comment, CommentTarget } from '@app/lib/comment';
+import { CommentWithoutState } from '@app/lib/comment';
 import { Dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -24,7 +24,7 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  const comment = new Comment(CommentTarget.Timeline);
+  const comment = new CommentWithoutState(schema.chiiTimelineComments);
 
   app.get(
     '/timeline',

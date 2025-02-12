@@ -1,6 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { Comment, CommentTarget } from '@app/lib/comment';
+import * as schema from '@app/drizzle/schema';
+import { CommentWithState } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/utils';
@@ -12,7 +13,7 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  const comment = new Comment(CommentTarget.Episode);
+  const comment = new CommentWithState(schema.chiiEpComments);
 
   app.get(
     '/episodes/:episodeID',

@@ -146,3 +146,112 @@ Object {
   "views": 0,
 }
 `;
+
+exports[`blog comments > should get blog comments 1`] = `
+Array [
+  Object {
+    "content": "测试评论",
+    "createdAt": 1718275200,
+    "creatorID": 287622,
+    "id": 12345670,
+    "mainID": 345911,
+    "relatedID": 0,
+    "replies": Array [
+      Object {
+        "content": "测试评论2",
+        "createdAt": 1718275200,
+        "creatorID": 287622,
+        "id": 12345671,
+        "mainID": 345911,
+        "relatedID": 12345670,
+        "state": 0,
+        "user": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "group": 0,
+          "id": 287622,
+          "joinedAt": 0,
+          "nickname": "nickname 287622",
+          "sign": "sing 287622",
+          "username": "287622",
+        },
+      },
+      Object {
+        "content": "测试评论3",
+        "createdAt": 1718275200,
+        "creatorID": 287622,
+        "id": 12345672,
+        "mainID": 345911,
+        "relatedID": 12345670,
+        "state": 0,
+        "user": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "group": 0,
+          "id": 287622,
+          "joinedAt": 0,
+          "nickname": "nickname 287622",
+          "sign": "sing 287622",
+          "username": "287622",
+        },
+      },
+    ],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "group": 0,
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+]
+`;
+
+exports[`blog comments > should not allow create blog comment 1`] = `
+Object {
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before creating a comment",
+  "statusCode": 401,
+}
+`;
+
+exports[`blog comments > should not delete blog comment not owned 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to delete a comment which is not yours",
+  "statusCode": 401,
+}
+`;
+
+exports[`blog comments > should not edit blog comment not owned 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to edit a comment which is not yours",
+  "statusCode": 401,
+}
+`;
+
+exports[`blog comments > should not edit blog comment with reply 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Unauthorized",
+  "message": "you don't have permission to cannot edit a comment with replies",
+  "statusCode": 401,
+}
+`;

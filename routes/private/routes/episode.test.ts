@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
@@ -36,6 +36,10 @@ beforeEach(async () => {
     uid: 382951,
     related: 0,
   });
+});
+
+afterEach(async () => {
+  await db.delete(schema.chiiEpComments).where(op.eq(schema.chiiEpComments.mid, 1027));
 });
 
 describe('get episode', () => {

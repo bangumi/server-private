@@ -3,7 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op } from '@app/drizzle/db.ts';
 import type * as orm from '@app/drizzle/orm.ts';
 import * as schema from '@app/drizzle/schema';
-import { Comment, CommentTarget } from '@app/lib/comment.ts';
+import { CommentWithState } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -29,7 +29,7 @@ function toCharacterSubject(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  const comment = new Comment(CommentTarget.Character);
+  const comment = new CommentWithState(schema.chiiCrtComments);
 
   app.get(
     '/characters/:characterID',
