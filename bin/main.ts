@@ -37,10 +37,12 @@ async function main() {
     Sentry.setupFastifyErrorHandler(server);
   }
 
-  await producer.initialize();
-
   server.addHook('onReady', async () => {
-    await Promise.all([Subscriber.psubscribe(`event-user-notify-*`), AppDataSource.initialize()]);
+    await Promise.all([
+      producer.initialize(),
+      Subscriber.psubscribe(`event-user-notify-*`),
+      AppDataSource.initialize(),
+    ]);
   });
 
   const { host, port } = config.server;
