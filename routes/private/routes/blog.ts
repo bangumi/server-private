@@ -2,7 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { db, op } from '@app/drizzle/db.ts';
 import * as schema from '@app/drizzle/schema';
-import { Comment, CommentTarget } from '@app/lib/comment';
+import { CommentWithoutState } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -16,7 +16,7 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  const comment = new Comment(CommentTarget.Blog);
+  const comment = new CommentWithoutState(schema.chiiBlogComments);
 
   app.get(
     '/blogs/:entryID',
