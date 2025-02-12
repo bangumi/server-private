@@ -167,7 +167,11 @@ export class CommentWithoutState {
   }
 
   async getAll(mainID: number) {
-    const data = await db.select().from(this.table).where(op.eq(this.table.mid, mainID));
+    const data = await db
+      .select()
+      .from(this.table)
+      .where(op.eq(this.table.mid, mainID))
+      .orderBy(op.asc(this.table.id));
     const uids = data.map((v) => v.uid);
     const users = await fetcher.fetchSlimUsersByIDs(uids);
     const comments: res.IComment[] = [];
