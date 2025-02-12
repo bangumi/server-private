@@ -200,4 +200,100 @@ describe('blog comments', () => {
     expect(res.statusCode).toBe(401);
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should edit blog comment', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: `/blogs/-/comments/12345672`,
+      payload: { content: '测试评论6' },
+    });
+    expect(res.statusCode).toBe(200);
+    const [comment] = await db
+      .select()
+      .from(schema.chiiBlogComments)
+      .where(op.eq(schema.chiiBlogComments.id, 12345672));
+    expect(comment?.content).toBe('测试评论6');
+  });
+
+  test('should not edit blog comment with reply', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: `/blogs/-/comments/12345670`,
+      payload: { content: '测试评论7' },
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should not edit blog comment not owned', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622 + 1, // different user
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: `/blogs/-/comments/12345670`,
+      payload: { content: '测试评论8' },
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should delete blog comment', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'delete',
+      url: `/blogs/-/comments/12345670`,
+    });
+    expect(res.statusCode).toBe(200);
+    const [comment] = await db
+      .select()
+      .from(schema.chiiBlogComments)
+      .where(op.eq(schema.chiiBlogComments.id, 12345670));
+    expect(comment).toBeUndefined();
+  });
+
+  test('should not delete blog comment not owned', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622 + 1, // different user
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'delete',
+      url: `/blogs/-/comments/12345670`,
+    });
+    expect(res.statusCode).toBe(401);
+    expect(res.json()).toMatchSnapshot();
+  });
 });
