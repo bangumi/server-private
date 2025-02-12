@@ -20,6 +20,7 @@ import {
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
 import { insertUserTags, TagCat } from '@app/lib/tag';
+import { TimelineSource } from '@app/lib/timeline/type';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -223,6 +224,7 @@ export async function setup(app: App) {
           volsUpdate: volStatus,
         },
         createdAt: DateTime.now().toUnixInteger(),
+        source: TimelineSource.Next,
       });
       return {};
     },
@@ -422,6 +424,7 @@ export async function setup(app: App) {
             comment: comment ?? '',
           },
           createdAt: DateTime.now().toUnixInteger(),
+          source: TimelineSource.Next,
         });
       }
       return {};
@@ -546,6 +549,7 @@ export async function setup(app: App) {
               epsUpdate: watchedEpisodes,
             },
             createdAt: now,
+            source: TimelineSource.Next,
           });
         } else {
           if (!type) {
@@ -562,6 +566,7 @@ export async function setup(app: App) {
               status: type,
             },
             createdAt: now,
+            source: TimelineSource.Next,
           });
         }
       });
