@@ -8,56 +8,40 @@ import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 
 import { setup } from './collection.ts';
 
+async function resetSubjectInterest() {
+  await db
+    .delete(schema.chiiSubjectInterests)
+    .where(
+      op.and(
+        op.eq(schema.chiiSubjectInterests.uid, 382951),
+        op.eq(schema.chiiSubjectInterests.subjectID, 12),
+      ),
+    );
+  // reset collection count
+  await db
+    .update(schema.chiiSubjects)
+    .set({
+      doing: 215,
+    })
+    .where(op.eq(schema.chiiSubjects.id, 12));
+  // reset rating count
+  await db
+    .update(schema.chiiSubjectFields)
+    .set({
+      rate10: 168,
+    })
+    .where(op.eq(schema.chiiSubjectFields.id, 12));
+}
+
 describe('subject collection', () => {
   beforeEach(async () => {
-    await db
-      .delete(schema.chiiSubjectInterests)
-      .where(
-        op.and(
-          op.eq(schema.chiiSubjectInterests.uid, 382951),
-          op.eq(schema.chiiSubjectInterests.subjectID, 12),
-        ),
-      );
-    // reset collection count
-    await db
-      .update(schema.chiiSubjects)
-      .set({
-        doing: 215,
-      })
-      .where(op.eq(schema.chiiSubjects.id, 12));
-    // reset rating count
-    await db
-      .update(schema.chiiSubjectFields)
-      .set({
-        rate10: 168,
-      })
-      .where(op.eq(schema.chiiSubjectFields.id, 12));
+    await resetSubjectInterest();
   });
 
   afterEach(async () => {
-    await db
-      .delete(schema.chiiSubjectInterests)
-      .where(
-        op.and(
-          op.eq(schema.chiiSubjectInterests.uid, 382951),
-          op.eq(schema.chiiSubjectInterests.subjectID, 12),
-        ),
-      );
-    // reset collection count
-    await db
-      .update(schema.chiiSubjects)
-      .set({
-        doing: 215,
-      })
-      .where(op.eq(schema.chiiSubjects.id, 12));
-    // reset rating count
-    await db
-      .update(schema.chiiSubjectFields)
-      .set({
-        rate10: 168,
-      })
-      .where(op.eq(schema.chiiSubjectFields.id, 12));
+    await resetSubjectInterest();
   });
+
   test('should get subject collections', async () => {
     const app = createTestServer({
       auth: {
