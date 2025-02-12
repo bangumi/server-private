@@ -384,29 +384,6 @@ Object {
 exports[`person comments > should get person comments 1`] = `
 Array [
   Object {
-    "content": "生日快乐！",
-    "createdAt": 1400517144,
-    "creatorID": 287622,
-    "id": 205404,
-    "mainID": 1,
-    "relatedID": 0,
-    "replies": Array [],
-    "state": 0,
-    "user": Object {
-      "avatar": Object {
-        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-      },
-      "group": 0,
-      "id": 287622,
-      "joinedAt": 0,
-      "nickname": "nickname 287622",
-      "sign": "sing 287622",
-      "username": "287622",
-    },
-  },
-  Object {
     "content": "7月7日 77结婚",
     "createdAt": 1400517144,
     "creatorID": 287622,
@@ -437,6 +414,29 @@ Array [
         },
       },
     ],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "group": 0,
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "content": "生日快乐！",
+    "createdAt": 1400517144,
+    "creatorID": 287622,
+    "id": 205404,
+    "mainID": 1,
+    "relatedID": 0,
+    "replies": Array [],
     "state": 0,
     "user": Object {
       "avatar": Object {
