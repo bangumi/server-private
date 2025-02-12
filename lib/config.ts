@@ -103,6 +103,11 @@ export const schema = Obj({
 
   kafkaBrokers: t.String({ default: '127.0.0.1:9092', env: 'KAFKA_BROKERS' }),
 
+  meilisearch: Obj({
+    url: t.String({ default: 'http://127.0.0.1:7700/', env: 'MEILISEARCH_URL' }),
+    key: t.String({ default: 'meilisearch-api-key', env: 'MEILISEARCH_KEY' }),
+  }),
+
   image: Obj({
     gatewayDomain: t.String({ default: 'lain.bgm.tv' }),
     provider: t.Enum(Image, { default: Image.FileSystem, env: 'CHII_IMAGE_PROVIDER' }),
