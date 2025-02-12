@@ -9,7 +9,8 @@ import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 
 import type * as memo from './memo';
-import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
+import type { TimelineSource } from './type';
+import { TimelineCat, TimelineStatusType } from './type';
 
 /**
  * 时间轴消息
@@ -32,6 +33,7 @@ export interface TimelineMessage {
       comment: string;
     };
     createdAt: number;
+    source: TimelineSource;
   };
   progressEpisode: {
     uid: number;
@@ -44,6 +46,7 @@ export interface TimelineMessage {
       status: EpisodeCollectionStatus;
     };
     createdAt: number;
+    source: TimelineSource;
   };
   progressSubject: {
     uid: number;
@@ -58,11 +61,13 @@ export interface TimelineMessage {
       volsUpdate?: number;
     };
     createdAt: number;
+    source: TimelineSource;
   };
   statusTsukkomi: {
     uid: number;
     text: string;
     createdAt: number;
+    source: TimelineSource;
   };
 }
 
@@ -126,7 +131,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         .set({
           batch: true,
           memo: php.stringify(details),
-          source: TimelineSource.Next,
+          source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
         .limit(1);
@@ -140,7 +145,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         memo: php.stringify(detail),
         img: '',
         batch: false,
-        source: TimelineSource.Next,
+        source: payload.source,
         replies: 0,
         createdAt: payload.createdAt,
       });
@@ -181,7 +186,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         .update(schema.chiiTimeline)
         .set({
           memo: php.stringify(detail),
-          source: TimelineSource.Next,
+          source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
         .limit(1);
@@ -195,7 +200,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         memo: php.stringify(detail),
         img: '',
         batch: false,
-        source: TimelineSource.Next,
+        source: payload.source,
         replies: 0,
         createdAt: payload.createdAt,
       });
@@ -229,7 +234,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         .update(schema.chiiTimeline)
         .set({
           memo: php.stringify(detail),
-          source: TimelineSource.Next,
+          source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
         .limit(1);
@@ -243,7 +248,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         memo: php.stringify(detail),
         img: '',
         batch: false,
-        source: TimelineSource.Next,
+        source: payload.source,
         replies: 0,
         createdAt: payload.createdAt,
       });
@@ -261,7 +266,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       memo: payload.text,
       img: '',
       batch: false,
-      source: TimelineSource.Next,
+      source: payload.source,
       replies: 0,
       createdAt: payload.createdAt,
     });
