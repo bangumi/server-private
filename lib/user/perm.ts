@@ -1,7 +1,6 @@
 import * as php from '@trim21/php-serialize';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { logger } from '@app/lib/logger.ts';
 import NodeCache from '@app/vendor/node-cache.ts';
 

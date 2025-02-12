@@ -2,7 +2,7 @@ import type { WikiMap } from '@bgm38/wiki';
 import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import * as php from '@trim21/php-serialize';
 
-import type * as orm from '@app/drizzle/orm.ts';
+import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
 import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';

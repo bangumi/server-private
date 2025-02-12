@@ -2,8 +2,7 @@ import * as php from '@trim21/php-serialize';
 import * as lodash from 'lodash-es';
 import type { DateTime } from 'luxon';
 
-import { db, incr, op } from '@app/drizzle/db';
-import * as schema from '@app/drizzle/schema';
+import { db, incr, op, schema } from '@app/drizzle';
 import { siteUrl } from '@app/lib/config.ts';
 import { isFriends } from '@app/lib/user/utils.ts';
 

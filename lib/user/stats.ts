@@ -1,5 +1,4 @@
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import redis from '@app/lib/redis';
 import { CollectionPrivacy, CollectionType, SubjectType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';

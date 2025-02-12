@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { emptyAuth } from '@app/lib/auth/index.ts';
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import redis from '@app/lib/redis.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 

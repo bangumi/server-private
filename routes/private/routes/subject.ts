@@ -1,9 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import type * as orm from '@app/drizzle/orm.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, type orm, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';

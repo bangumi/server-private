@@ -5,8 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';

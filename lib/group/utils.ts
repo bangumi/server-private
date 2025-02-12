@@ -1,5 +1,4 @@
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 
 /** Is user member of group */
 export async function isMemberInGroup(userID: number, groupID: number): Promise<boolean> {

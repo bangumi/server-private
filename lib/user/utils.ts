@@ -1,5 +1,4 @@
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import redis from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
