@@ -310,7 +310,7 @@ export async function setup(app: App) {
           )
           .limit(1);
         let oldRate = 0;
-        if (rate !== undefined) {
+        if (rate === undefined) {
           rate = 0;
         }
         if (interest) {
@@ -403,7 +403,7 @@ export async function setup(app: App) {
 
         // 更新评分
         if (needUpdateRate) {
-          await updateSubjectRating(t, subjectID, oldRate, rate ?? 0);
+          await updateSubjectRating(t, subjectID, oldRate, rate);
         }
       });
 

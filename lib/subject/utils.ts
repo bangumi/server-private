@@ -75,9 +75,9 @@ export async function updateSubjectRating(
     return;
   }
   await t
-    .update(schema.chiiSubjects)
+    .update(schema.chiiSubjectFields)
     .set(toUpdate)
-    .where(op.eq(schema.chiiSubjects.id, subjectID))
+    .where(op.eq(schema.chiiSubjectFields.id, subjectID))
     .limit(1);
 }
 
