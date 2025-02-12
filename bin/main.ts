@@ -37,9 +37,8 @@ async function main() {
     Sentry.setupFastifyErrorHandler(server);
   }
 
-  await producer.initialize();
-
   server.addHook('onReady', async () => {
+    await producer.initialize();
     await Promise.all([Subscriber.psubscribe(`event-user-notify-*`), AppDataSource.initialize()]);
   });
 
