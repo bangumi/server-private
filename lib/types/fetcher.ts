@@ -1,8 +1,7 @@
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import { getSlimCacheKey as getBlogSlimCacheKey } from '@app/lib/blog/cache.ts';
 import { getSlimCacheKey as getCharacterSlimCacheKey } from '@app/lib/character/cache.ts';
 import { getSlimCacheKey as getGroupSlimCacheKey } from '@app/lib/group/cache.ts';

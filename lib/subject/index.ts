@@ -5,10 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op, type Txn } from '@app/drizzle/db.ts';
-import type * as orm from '@app/drizzle/orm.ts';
-import * as schema from '@app/drizzle/schema.ts';
-import { chiiLikes, chiiTagIndex, chiiTagList } from '@app/drizzle/schema.ts';
+import { db, op, type orm, schema, type Txn } from '@app/drizzle';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { LikeType } from '@app/lib/like.ts';
@@ -250,7 +247,7 @@ export function extractBookProgress(w: Wiki): [number, number] {
 
 async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, number>> {
   const metaRows = await t
-    .select({ id: chiiTagIndex.id })
+    .select({ id: schema.chiiTagIndex.id })
     .from(schema.chiiTagIndex)
     .innerJoin(schema.chiiTagFields, op.eq(schema.chiiTagFields.tagID, schema.chiiTagIndex.id))
     .where(
@@ -264,17 +261,17 @@ async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, nu
 
   const rows = await db
     .select({
-      name: chiiTagIndex.name,
-      id: chiiTagIndex.id,
+      name: schema.chiiTagIndex.name,
+      id: schema.chiiTagIndex.id,
     })
-    .from(chiiTagIndex)
-    .innerJoin(chiiTagList, op.eq(chiiTagList.tagID, chiiTagIndex.id))
+    .from(schema.chiiTagIndex)
+    .innerJoin(schema.chiiTagList, op.eq(schema.chiiTagList.tagID, schema.chiiTagIndex.id))
     .where(
       op.and(
-        op.eq(chiiTagList.userID, 0),
-        op.eq(chiiTagList.cat, TagCat.Meta),
+        op.eq(schema.chiiTagList.userID, 0),
+        op.eq(schema.chiiTagList.cat, TagCat.Meta),
         op.inArray(
-          chiiTagList.mainID,
+          schema.chiiTagList.mainID,
           metaRows.map((item) => item.id),
         ),
       ),
@@ -335,15 +332,15 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
 
   const likes = await db
     .select()
-    .from(chiiLikes)
+    .from(schema.chiiLikes)
     .where(
       op.and(
-        op.eq(chiiLikes.type, LikeType.SubjectCover),
+        op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
         op.inArray(
-          chiiLikes.relatedID,
+          schema.chiiLikes.relatedID,
           images.map((x) => x.id),
         ),
-        op.eq(chiiLikes.deleted, 0),
+        op.eq(schema.chiiLikes.deleted, 0),
       ),
     );
 

@@ -2,8 +2,7 @@ import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import { BadRequestError } from '@app/lib/error.ts';
 import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';

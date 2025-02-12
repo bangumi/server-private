@@ -1,9 +1,7 @@
 import * as php from '@trim21/php-serialize';
 import { DateTime } from 'luxon';
 
-import { db, decr, incr, op, type Txn } from '@app/drizzle/db.ts';
-import type * as orm from '@app/drizzle/orm.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, decr, incr, op, type orm, schema, type Txn } from '@app/drizzle';
 
 import type { CollectionType, UserEpisodeStatusItem } from './type';
 import { EpisodeCollectionStatus, getCollectionTypeField } from './type';

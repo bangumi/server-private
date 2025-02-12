@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam } from '@app/lib/dam.ts';

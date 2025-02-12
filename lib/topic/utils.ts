@@ -1,4 +1,4 @@
-import type * as orm from '@app/drizzle/orm.ts';
+import { type orm } from '@app/drizzle';
 import { HotGroups } from '@app/lib/group/consts.ts';
 
 export function scoredUpdateTime(timestamp: number, topic: orm.IGroupTopic): number {

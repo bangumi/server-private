@@ -1,7 +1,6 @@
 import * as lo from 'lodash-es';
 
-import { db, op } from '@app/drizzle/db.ts';
-import { chiiLikes } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
 
@@ -55,8 +54,8 @@ export async function fetchTopicReactions(
 ): Promise<Record<number, res.IReaction[]>> {
   const data = await db
     .select()
-    .from(chiiLikes)
-    .where(op.and(op.eq(chiiLikes.mainID, topicID), op.eq(chiiLikes.type, type)));
+    .from(schema.chiiLikes)
+    .where(op.and(op.eq(schema.chiiLikes.mainID, topicID), op.eq(schema.chiiLikes.type, type)));
 
   const uids = data.map((x) => x.uid);
   const users = await fetcher.fetchSimpleUsersByIDs(uids);
@@ -81,11 +80,11 @@ export async function fetchSubjectCollectReactions(
 ): Promise<Record<number, res.IReaction[]>> {
   const data = await db
     .select()
-    .from(chiiLikes)
+    .from(schema.chiiLikes)
     .where(
       op.and(
-        op.eq(chiiLikes.type, LikeType.SubjectCollect),
-        op.inArray(chiiLikes.relatedID, collectIDs),
+        op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
+        op.inArray(schema.chiiLikes.relatedID, collectIDs),
       ),
     );
 

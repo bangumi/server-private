@@ -1,9 +1,7 @@
 import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 
-import { db, op } from '@app/drizzle/db.ts';
-import type * as orm from '@app/drizzle/orm.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, type orm, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { fetchSubjectCollectReactions } from '@app/lib/like.ts';
 import redis from '@app/lib/redis.ts';

@@ -4,8 +4,7 @@ import * as path from 'node:path';
 import { StatusCodes } from 'http-status-codes';
 import { afterEach, beforeEach, beforeAll, describe, expect, test, vi } from 'vitest';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';

@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import redis from '@app/lib/redis.ts';
 
 import { getInboxCacheKey, getInboxVisitCacheKey } from './cache.ts';

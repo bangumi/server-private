@@ -2,12 +2,9 @@ import * as crypto from 'node:crypto';
 
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
-import * as op from 'drizzle-orm';
-import { sql } from 'drizzle-orm';
 import { DateTime } from 'luxon';
 
-import { db } from '@app/drizzle/db.ts';
-import { chiiAccessToken } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { TypedCache } from '@app/lib/cache.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { fetchPermission, type Permission } from '@app/lib/user/perm';
@@ -95,8 +92,8 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
 
   const token = await db.query.chiiAccessToken.findFirst({
     where: op.and(
-      sql`access_token = ${accessToken} collate utf8mb4_bin`,
-      op.gt(chiiAccessToken.expiredAt, new Date()),
+      op.sql`access_token = ${accessToken} collate utf8mb4_bin`,
+      op.gt(schema.chiiAccessToken.expiredAt, new Date()),
     ),
   });
 

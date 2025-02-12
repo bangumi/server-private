@@ -1,7 +1,6 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CollectionPrivacy, PersonType } from '@app/lib/subject/type.ts';
