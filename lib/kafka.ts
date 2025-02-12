@@ -28,7 +28,6 @@ class Producer {
   }
 
   async send(topic: string, key: string, value: string) {
-    await this.initialize();
     if (!this.producer) {
       throw new Error('Producer not initialized');
     }
@@ -40,6 +39,9 @@ class Producer {
 }
 
 class MockProducer {
+  initialize(): Promise<void> {
+    return Promise.resolve();
+  }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   send(topic: string, key: string, value: string): Promise<void> {
     return Promise.resolve();

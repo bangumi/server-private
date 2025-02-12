@@ -31,9 +31,22 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   doujin: { limit: 3, durationMinutes: 30 },
   event: { limit: 1, durationMinutes: 60 },
   event_topics: { limit: 3, durationMinutes: 30 },
-  subject: { limit: 3, durationMinutes: 30 },
-  timeline: { limit: 3, durationMinutes: 30 },
   club_topics: { limit: 1, durationMinutes: 30 },
+
+  /**
+   * 修改/添加条目收藏
+   *
+   * 1分钟 3次
+   */
+  subject: { limit: 3, durationMinutes: 1 },
+
+  /**
+   * 发送时间线吐槽
+   *
+   * 1分钟 3次
+   */
+  timeline: { limit: 3, durationMinutes: 1 },
+
   crt_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   prsn_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   like: { limit: 2, durationMinutes: 1 },
