@@ -34,7 +34,7 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   club_topics: { limit: 1, durationMinutes: 30 },
 
   /**
-   * 修改/收藏条目
+   * 修改/添加条目收藏
    *
    * 1分钟 3次
    */
