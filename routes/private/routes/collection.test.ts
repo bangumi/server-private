@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { createTestServer } from '@app/tests/utils.ts';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';

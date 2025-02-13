@@ -1,6 +1,6 @@
 import { Type as t } from '@sinclair/typebox';
 
-import * as schema from '@app/drizzle/schema';
+import { schema } from '@app/drizzle';
 import { CommentWithState } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';

@@ -2,7 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db } from '@app/drizzle/db.ts';
+import { db } from '@app/drizzle';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { EpisodeRepo } from '@app/lib/orm/index.ts';

@@ -1,6 +1,4 @@
-import type { Txn } from '@app/drizzle/db.ts';
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema, type Txn } from '@app/drizzle';
 import type { EpTextRev, RevHistory } from '@app/lib/orm/entity/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';

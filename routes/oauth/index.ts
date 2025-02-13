@@ -8,14 +8,7 @@ import type { FastifySchema } from 'fastify';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime, Duration } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import {
-  chiiAccessToken,
-  chiiApp,
-  chiiOauthClients,
-  chiiOAuthRefreshToken,
-  chiiUsers,
-} from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { redisOauthPrefix } from '@app/lib/config.ts';
@@ -227,10 +220,10 @@ export async function userOauthRoutes(app: App) {
         } = {},
       ] = await db
         .select()
-        .from(chiiOauthClients)
-        .innerJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
-        .innerJoin(chiiUsers, op.eq(chiiApp.creator, chiiUsers.id))
-        .where(op.eq(chiiOauthClients.clientID, req.query.client_id))
+        .from(schema.chiiOauthClients)
+        .innerJoin(schema.chiiApp, op.eq(schema.chiiApp.id, schema.chiiOauthClients.appID))
+        .innerJoin(schema.chiiUsers, op.eq(schema.chiiApp.creator, schema.chiiUsers.id))
+        .where(op.eq(schema.chiiOauthClients.clientID, req.query.client_id))
         .limit(1);
 
       if (!client) {
@@ -296,8 +289,8 @@ export async function userOauthRoutes(app: App) {
 
       const [client] = await db
         .select()
-        .from(chiiOauthClients)
-        .where(op.eq(chiiOauthClients.clientID, req.body.client_id))
+        .from(schema.chiiOauthClients)
+        .where(op.eq(schema.chiiOauthClients.clientID, req.body.client_id))
         .limit(1);
       if (!client) {
         throw new AppNonexistenceError();
@@ -384,9 +377,9 @@ async function tokenFromCode(req: {
 }): Promise<ITokenResponse> {
   const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await db
     .select()
-    .from(chiiOauthClients)
-    .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
-    .where(op.eq(chiiOauthClients.clientID, req.clientID))
+    .from(schema.chiiOauthClients)
+    .innerJoin(schema.chiiApp, op.eq(schema.chiiOauthClients.appID, schema.chiiApp.id))
+    .where(op.eq(schema.chiiOauthClients.clientID, req.clientID))
     .limit(1);
 
   if (!client || !app) {
@@ -415,7 +408,7 @@ async function tokenFromCode(req: {
 
   const rawScope = JSON.stringify(scope);
 
-  const token: typeof chiiAccessToken.$inferInsert = {
+  const token: typeof schema.chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
     userID: userID,
     clientID: client.clientID,
@@ -427,7 +420,7 @@ async function tokenFromCode(req: {
     info: tokenInfo,
   };
 
-  const refresh: typeof chiiOAuthRefreshToken.$inferInsert = {
+  const refresh: typeof schema.chiiOAuthRefreshToken.$inferInsert = {
     userID: userID,
     clientID: client.clientID,
     refreshToken: await randomBase64url(30),
@@ -438,8 +431,8 @@ async function tokenFromCode(req: {
   };
 
   await db.transaction(async (t) => {
-    await t.insert(chiiAccessToken).values(token);
-    await t.insert(chiiOAuthRefreshToken).values(refresh);
+    await t.insert(schema.chiiAccessToken).values(token);
+    await t.insert(schema.chiiOAuthRefreshToken).values(refresh);
   });
 
   return {
@@ -462,11 +455,11 @@ async function tokenFromRefresh(req: {
   const [accessToken, refreshToken, userID] = await db.transaction(async (t) => {
     const [refresh] = await t
       .select()
-      .from(chiiOAuthRefreshToken)
+      .from(schema.chiiOAuthRefreshToken)
       .where(
         op.and(
           sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`,
-          op.gt(chiiOAuthRefreshToken.expiredAt, now.toJSDate()),
+          op.gt(schema.chiiOAuthRefreshToken.expiredAt, now.toJSDate()),
         ),
       )
       .limit(1)
@@ -477,9 +470,9 @@ async function tokenFromRefresh(req: {
 
     const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await t
       .select()
-      .from(chiiOauthClients)
-      .innerJoin(chiiApp, op.eq(chiiOauthClients.appID, chiiApp.id))
-      .where(op.eq(chiiOauthClients.clientID, req.clientID))
+      .from(schema.chiiOauthClients)
+      .innerJoin(schema.chiiApp, op.eq(schema.chiiOauthClients.appID, schema.chiiApp.id))
+      .where(op.eq(schema.chiiOauthClients.clientID, req.clientID))
       .limit(1);
     if (!client || !app) {
       throw new InvalidClientIDError();
@@ -491,7 +484,7 @@ async function tokenFromRefresh(req: {
       throw new InvalidClientSecretError();
     }
 
-    const token: typeof chiiAccessToken.$inferInsert = {
+    const token: typeof schema.chiiAccessToken.$inferInsert = {
       type: TokenType.AccessToken,
       userID: refresh.userID,
       clientID: client.clientID,
@@ -504,7 +497,7 @@ async function tokenFromRefresh(req: {
       } satisfies TokenInfo),
     };
 
-    const newRefresh: typeof chiiOAuthRefreshToken.$inferInsert = {
+    const newRefresh: typeof schema.chiiOAuthRefreshToken.$inferInsert = {
       userID: refresh.userID,
       clientID: client.clientID,
       refreshToken: await randomBase64url(30),
@@ -512,11 +505,11 @@ async function tokenFromRefresh(req: {
       scope: refresh.scope,
     };
 
-    await t.insert(chiiAccessToken).values(token);
-    await t.insert(chiiOAuthRefreshToken).values(newRefresh);
+    await t.insert(schema.chiiAccessToken).values(token);
+    await t.insert(schema.chiiOAuthRefreshToken).values(newRefresh);
 
     await t
-      .update(chiiOAuthRefreshToken)
+      .update(schema.chiiOAuthRefreshToken)
       .set({ expiredAt: now.toJSDate() })
       .where(sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`);
 

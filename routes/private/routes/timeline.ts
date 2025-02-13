@@ -2,8 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth';
 import { CommentWithoutState } from '@app/lib/comment';
 import { Dam } from '@app/lib/dam';

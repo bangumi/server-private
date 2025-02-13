@@ -41,8 +41,6 @@ export const decr = (column: AnyColumn, value = 1) => {
   return sql`${column} - ${value}`;
 };
 
-export * as op from 'drizzle-orm';
-
 export type Txn = MySqlTransaction<
   MySql2QueryResultHKT,
   MySql2PreparedQueryHKT,

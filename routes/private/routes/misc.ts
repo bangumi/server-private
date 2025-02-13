@@ -2,8 +2,7 @@ import { type Static, Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
 
-import { db, op } from '@app/drizzle/db';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';

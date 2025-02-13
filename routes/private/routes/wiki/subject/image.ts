@@ -6,8 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import { chiiLikes } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { imageDomain } from '@app/lib/config.ts';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
@@ -95,16 +94,16 @@ export function setup(app: App) {
       const likes = lo.groupBy(
         await db
           .select()
-          .from(chiiLikes)
+          .from(schema.chiiLikes)
           .where(
             op.and(
               op.inArray(
-                chiiLikes.relatedID,
+                schema.chiiLikes.relatedID,
                 images.map((x) => x.id),
               ),
-              op.eq(chiiLikes.type, LikeType.SubjectCover),
-              op.eq(chiiLikes.uid, auth.userID),
-              op.eq(chiiLikes.deleted, 0),
+              op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
+              op.eq(schema.chiiLikes.uid, auth.userID),
+              op.eq(schema.chiiLikes.deleted, 0),
             ),
           ),
         (x) => x.relatedID,
@@ -254,7 +253,7 @@ export function setup(app: App) {
         throw new NotFoundError(`image(id=${imageID}, subjectID=${subjectID})`);
       }
 
-      await db.insert(chiiLikes).values({
+      await db.insert(schema.chiiLikes).values({
         type: LikeType.SubjectCover,
         relatedID: imageID,
         uid: auth.userID,
@@ -291,14 +290,14 @@ export function setup(app: App) {
     },
     async ({ params: { subjectID, imageID }, auth }) => {
       const [result] = await db
-        .update(chiiLikes)
+        .update(schema.chiiLikes)
         .set({ deleted: 1 })
         .where(
           op.and(
-            op.eq(chiiLikes.type, LikeType.SubjectCover),
-            op.eq(chiiLikes.uid, auth.userID),
-            op.eq(chiiLikes.relatedID, imageID),
-            op.eq(chiiLikes.deleted, 0),
+            op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
+            op.eq(schema.chiiLikes.uid, auth.userID),
+            op.eq(schema.chiiLikes.relatedID, imageID),
+            op.eq(schema.chiiLikes.deleted, 0),
           ),
         );
 

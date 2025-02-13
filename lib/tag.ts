@@ -1,8 +1,6 @@
 import { DateTime } from 'luxon';
 
-import type { Txn } from '@app/drizzle/db.ts';
-import { op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { op, schema, type Txn } from '@app/drizzle';
 import { dam } from '@app/lib/dam';
 
 export enum TagCat {

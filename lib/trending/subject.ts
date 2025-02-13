@@ -1,5 +1,4 @@
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import { logger } from '@app/lib/logger';
 import redis from '@app/lib/redis.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
