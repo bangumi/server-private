@@ -10,6 +10,7 @@ export const Tag = {
   Friend: 'friend',
   Group: 'group',
   Person: 'person',
+  Search: 'search',
   Subject: 'subject',
   Topic: 'topic',
   Timeline: 'timeline',
