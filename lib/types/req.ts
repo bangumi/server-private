@@ -67,70 +67,77 @@ export const SubjectSearchSort = t.String({
 });
 
 export type ISubjectSearchFilter = Static<typeof SubjectSearchFilter>;
-export const SubjectSearchFilter = t.Object({
-  type: t.Optional(
-    t.Array(
-      Ref(SubjectType, {
-        description: '条目类型, 可以多次出现。多值之间为 `或` 关系。',
-        examples: [2],
-      }),
+export const SubjectSearchFilter = t.Object(
+  {
+    type: t.Optional(
+      t.Array(
+        Ref(SubjectType, {
+          description: '条目类型, 可以多次出现。多值之间为 `或` 关系。',
+          examples: [2],
+        }),
+      ),
     ),
-  ),
-  tags: t.Optional(
-    t.Array(
-      t.String({
-        description: '标签，可以多次出现。多值之间为 `且` 关系。',
-        examples: ['童年', '原创'],
-      }),
+    tags: t.Optional(
+      t.Array(
+        t.String({
+          description: '标签，可以多次出现。多值之间为 `且` 关系。',
+          examples: ['童年', '原创'],
+        }),
+      ),
     ),
-  ),
-  metaTags: t.Optional(
-    t.Array(
-      t.String({
-        description:
-          '公共标签。多个值之间为 `且` 关系。可以用 `-` 排除标签。比如 `-科幻` 可以排除科幻标签。',
-        examples: ['童年', '原创'],
-      }),
+    metaTags: t.Optional(
+      t.Array(
+        t.String({
+          description:
+            '公共标签。多个值之间为 `且` 关系。可以用 `-` 排除标签。比如 `-科幻` 可以排除科幻标签。',
+          examples: ['童年', '原创'],
+        }),
+      ),
     ),
-  ),
-  date: t.Optional(
-    t.Array(
-      t.String({
-        description: '播出日期/发售日期，日期必需为 YYYY-MM-DD 格式。多值之间为 `且` 关系。',
-        examples: ['>=2020-07-01', '<2020-10-01'],
-      }),
+    date: t.Optional(
+      t.Array(
+        t.String({
+          description: '播出日期/发售日期，日期必需为 YYYY-MM-DD 格式。多值之间为 `且` 关系。',
+          examples: ['>=2020-07-01', '<2020-10-01'],
+        }),
+      ),
     ),
-  ),
-  rating: t.Optional(
-    t.Array(
-      t.String({
-        description: '用于搜索指定评分的条目，多值之间为 `且` 关系。',
-        examples: ['>=6', '<8'],
-      }),
+    rating: t.Optional(
+      t.Array(
+        t.String({
+          description: '用于搜索指定评分的条目，多值之间为 `且` 关系。',
+          examples: ['>=6', '<8'],
+        }),
+      ),
     ),
-  ),
-  rank: t.Optional(
-    t.Array(
-      t.String({
-        description: '用于搜索指定排名的条目，多值之间为 `且` 关系。',
-        examples: ['>10', '<=18'],
-      }),
+    rank: t.Optional(
+      t.Array(
+        t.String({
+          description: '用于搜索指定排名的条目，多值之间为 `且` 关系。',
+          examples: ['>10', '<=18'],
+        }),
+      ),
     ),
-  ),
-  nsfw: t.Optional(t.Boolean({ description: nsfwDescription })),
-});
+    nsfw: t.Optional(t.Boolean({ description: nsfwDescription })),
+  },
+  { $id: 'SubjectSearchFilter' },
+);
 
 export type ICharacterSearchFilter = Static<typeof CharacterSearchFilter>;
-export const CharacterSearchFilter = t.Object({
-  nsfw: t.Optional(t.Boolean({ description: nsfwDescription })),
-});
+export const CharacterSearchFilter = t.Object(
+  {
+    nsfw: t.Optional(t.Boolean({ description: nsfwDescription })),
+  },
+  { $id: 'CharacterSearchFilter' },
+);
 
 export type IPersonSearchFilter = Static<typeof PersonSearchFilter>;
-export const PersonSearchFilter = t.Object({
-  career: t.Optional(
-    t.Array(
-      t.String({
-        description: `职业, 可以多次出现。多值之间为 \`且\` 关系，用 \`-\` 排除职业。
+export const PersonSearchFilter = t.Object(
+  {
+    career: t.Optional(
+      t.Array(
+        t.String({
+          description: `职业, 可以多次出现。多值之间为 \`且\` 关系，用 \`-\` 排除职业。
         支持的职业有：
         - producer: 制作人
         - mangaka: 漫画家
@@ -140,11 +147,13 @@ export const PersonSearchFilter = t.Object({
         - writer: 编剧
         - actor: 演员
         `,
-        examples: ['seiyu', 'mangaka', '-illustrator'],
-      }),
+          examples: ['seiyu', 'mangaka', '-illustrator'],
+        }),
+      ),
     ),
-  ),
-});
+  },
+  { $id: 'PersonSearchFilter' },
+);
 
 export const TurnstileToken = t.Object(
   {

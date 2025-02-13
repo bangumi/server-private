@@ -1173,6 +1173,38 @@ exports[`should build private api spec 1`] = `
         - state
       title: ReplyBase
       type: object
+    SearchCharacter:
+      properties:
+        filter:
+          $ref: CharacterSearchFilter
+        keyword:
+          description: 搜索关键词
+          type: string
+      required:
+        - keyword
+      type: object
+    SearchPerson:
+      properties:
+        filter:
+          $ref: PersonSearchFilter
+        keyword:
+          description: 搜索关键词
+          type: string
+      required:
+        - keyword
+      type: object
+    SearchSubject:
+      properties:
+        filter:
+          $ref: SubjectSearchFilter
+        keyword:
+          description: 搜索关键词
+          type: string
+        sort:
+          $ref: SubjectSearchSort
+      required:
+        - keyword
+      type: object
     SimpleUser:
       properties:
         id:
@@ -1622,6 +1654,31 @@ exports[`should build private api spec 1`] = `
         - year
       title: SubjectAirtime
       type: object
+    SubjectBrowseSort:
+      default: rank
+      description: |-
+        条目浏览排序方式
+          - rank = 排名
+          - trends = 热度
+          - collects = 收藏数
+          - date = 发布日期
+          - title = 标题
+      enum:
+        - rank
+        - trends
+        - collects
+        - date
+        - title
+      type: string
+      x-enum-varnames:
+        - Rank
+        - Trends
+        - Collects
+        - Date
+        - Title
+      x-ms-enum:
+        modelAsString: true
+        name: SubjectBrowseSort
     SubjectCharacter:
       properties:
         actors:
@@ -1948,31 +2005,6 @@ exports[`should build private api spec 1`] = `
         - entry
       title: SubjectReview
       type: object
-    SubjectSort:
-      default: rank
-      description: |-
-        条目排序方式
-          - rank = 排名
-          - trends = 热度
-          - collects = 收藏数
-          - date = 发布日期
-          - title = 标题
-      enum:
-        - rank
-        - trends
-        - collects
-        - date
-        - title
-      type: string
-      x-enum-varnames:
-        - Rank
-        - Trends
-        - Collects
-        - Date
-        - Title
-      x-ms-enum:
-        modelAsString: true
-        name: SubjectSort
     SubjectStaff:
       properties:
         positions:
@@ -5245,7 +5277,7 @@ paths:
           name: sort
           required: true
           schema:
-            $ref: '#/components/schemas/SubjectSort'
+            $ref: '#/components/schemas/SubjectBrowseSort'
         - description: min 1
           in: query
           name: page
