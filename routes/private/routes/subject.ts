@@ -116,7 +116,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           type: req.Ref(req.SubjectType),
-          sort: req.Ref(req.SubjectSort),
+          sort: req.Ref(req.SubjectBrowseSort),
           page: t.Optional(t.Integer({ default: 1, minimum: 1, description: 'min 1' })),
           cat: t.Optional(
             t.Integer({

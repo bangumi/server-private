@@ -1,7 +1,12 @@
 import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
-import { CollectionType, EpisodeCollectionStatus, Ref } from '@app/lib/types/common.ts';
+import {
+  CollectionType,
+  EpisodeCollectionStatus,
+  Ref,
+  SubjectType,
+} from '@app/lib/types/common.ts';
 
 export * from '@app/lib/types/common.ts';
 
@@ -22,21 +27,97 @@ export const FilterMode = t.String({
   - friends = 好友`,
 });
 
-export const SubjectSort = t.String({
-  $id: 'SubjectSort',
+export const SubjectBrowseSort = t.String({
+  $id: 'SubjectBrowseSort',
   enum: ['rank', 'trends', 'collects', 'date', 'title'],
   default: 'rank',
   'x-ms-enum': {
-    name: 'SubjectSort',
+    name: 'SubjectBrowseSort',
     modelAsString: true,
   },
   'x-enum-varnames': ['Rank', 'Trends', 'Collects', 'Date', 'Title'],
-  description: `条目排序方式
+  description: `条目浏览排序方式
   - rank = 排名
   - trends = 热度
   - collects = 收藏数
   - date = 发布日期
   - title = 标题`,
+});
+
+export type ISubjectSearchSort = Static<typeof SubjectSearchSort>;
+export const SubjectSearchSort = t.String({
+  $id: 'SubjectSearchSort',
+  enum: ['match', 'heat', 'rank', 'score'],
+  default: 'match',
+  'x-ms-enum': {
+    name: 'SubjectSearchSort',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['Match', 'Heat', 'Rank', 'Score'],
+  description: `条目搜索排序方式
+  - match = 匹配程度
+  - heat = 收藏人数
+  - rank = 排名由高到低
+  - score = 评分`,
+});
+
+export type ISubjectSearchFilter = Static<typeof SubjectSearchFilter>;
+export const SubjectSearchFilter = t.Object({
+  type: t.Optional(
+    t.Array(
+      Ref(SubjectType, {
+        description: '条目类型, 可以多次出现。多值之间为 `或` 关系。',
+        examples: [2],
+      }),
+    ),
+  ),
+  tags: t.Optional(
+    t.Array(
+      t.String({
+        description: '标签，可以多次出现。多值之间为 `且` 关系。',
+        examples: ['童年', '原创'],
+      }),
+    ),
+  ),
+  metaTags: t.Optional(
+    t.Array(
+      t.String({
+        description:
+          '公共标签。多个值之间为 `且` 关系。可以用 `-` 排除标签。比如 `-科幻` 可以排除科幻标签。',
+        examples: ['童年', '原创'],
+      }),
+    ),
+  ),
+  date: t.Optional(
+    t.Array(
+      t.String({
+        description: '播出日期/发售日期，日期必需为 YYYY-MM-DD 格式。多值之间为 `且` 关系。',
+        examples: ['>=2020-07-01', '<2020-10-01'],
+      }),
+    ),
+  ),
+  rating: t.Optional(
+    t.Array(
+      t.String({
+        description: '用于搜索指定评分的条目，多值之间为 `且` 关系。',
+        examples: ['>=6', '<8'],
+      }),
+    ),
+  ),
+  rank: t.Optional(
+    t.Array(
+      t.String({
+        description: '用于搜索指定排名的条目，多值之间为 `且` 关系。',
+        examples: ['>10', '<=18'],
+      }),
+    ),
+  ),
+  nsfw: t.Optional(
+    t.Boolean({
+      description:
+        '无权限的用户会直接忽略此字段，不会返回 R18 条目。\n默认或者 `null` 会返回包含 R18 的所有搜索结果。\n`true` 只会返回 R18 条目。\n`false` 只会返回非 R18 条目。',
+    }),
+  ),
 });
 
 export const TurnstileToken = t.Object(
@@ -142,4 +223,14 @@ export const UpdateEpisodeProgress = t.Object(
     ),
   },
   { $id: 'UpdateEpisodeProgress' },
+);
+
+export type ISubjectSearch = Static<typeof SubjectSearch>;
+export const SubjectSearch = t.Object(
+  {
+    keyword: t.String({ description: '搜索关键词' }),
+    sort: t.Optional(Ref(SubjectSearchSort)),
+    filter: t.Optional(Ref(SubjectSearchFilter)),
+  },
+  { $id: 'SubjectSearch' },
 );

@@ -1,10 +1,9 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import client from '@app/lib/search/client';
-import * as convert from '@app/lib/types/convert.ts';
+import { search as searchSubject } from '@app/lib/search/subject';
+import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -17,20 +16,44 @@ export async function setup(app: App) {
         summary: '搜索条目',
         operationId: 'searchSubjects',
         tags: [Tag.Search],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
-          keyword: t.String({ description: '搜索关键词' }),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
+        body: req.Ref(req.SubjectSearch),
         response: {
           200: res.Paged(res.Ref(res.SlimSubject)),
         },
       },
     },
-    async ({ query: { keyword } }) => {
-      const results = await client.search(keyword).limit(10).execute();
+    async ({ auth, body, query: { limit = 20, offset = 0 } }) => {
+      if (!auth.allowNsfw) {
+        body.filter = {
+          ...body.filter,
+          nsfw: false,
+        };
+      }
+      const resp = await searchSubject({
+        keyword: body.keyword,
+        sort: body.sort,
+        filter: body.filter,
+        limit,
+        offset,
+      });
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(resp.ids, auth.allowNsfw);
+      const result = [];
+      for (const sid of resp.ids) {
+        if (subjects[sid]) {
+          result.push(subjects[sid]);
+        }
+      }
+      return {
+        data: result,
+        total: resp.hits,
+      };
     },
   );
 }
