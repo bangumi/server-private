@@ -62,7 +62,7 @@
     "liquidjs": "10.20.2",
     "lodash-es": "4.17.21",
     "luxon": "3.5.0",
-    "meilisearch": "^0.48.2",
+    "meilisearch": "0.48.2",
     "mercurius": "16.0.1",
     "micromatch": "4.0.8",
     "mime-types": "2.1.35",
