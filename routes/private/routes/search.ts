@@ -11,7 +11,7 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.get(
+  app.post(
     '/search/subjects',
     {
       schema: {
@@ -59,7 +59,7 @@ export async function setup(app: App) {
     },
   );
 
-  app.get(
+  app.post(
     '/search/characters',
     {
       schema: {
@@ -100,7 +100,7 @@ export async function setup(app: App) {
     },
   );
 
-  app.get(
+  app.post(
     '/search/persons',
     {
       schema: {
