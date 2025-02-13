@@ -9,5 +9,5 @@ export const client = new MeiliSearch({
 
 export interface SearchResult {
   ids: number[];
-  hits: number;
+  total: number;
 }

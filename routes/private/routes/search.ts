@@ -52,7 +52,7 @@ export async function setup(app: App) {
       }
       return {
         data: result,
-        total: resp.hits,
+        total: resp.total,
       };
     },
   );

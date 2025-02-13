@@ -86,6 +86,6 @@ export async function search(request: SearchRequest): Promise<SearchResult> {
   });
   return {
     ids: results.hits.map((hit) => hit.id as number),
-    hits: results.estimatedTotalHits,
+    total: results.estimatedTotalHits,
   };
 }
