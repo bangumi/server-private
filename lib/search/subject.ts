@@ -3,7 +3,7 @@ import type * as req from '@app/lib/types/req.ts';
 
 const index = client.index('subjects');
 
-export interface SearchRequest {
+interface SearchRequest {
   keyword: string;
   sort?: string;
   filter?: req.ISubjectSearchFilter;
