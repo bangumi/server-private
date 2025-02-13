@@ -164,6 +164,16 @@ exports[`should build private api spec 1`] = `
         - character
         - relation
       type: object
+    CharacterSearchFilter:
+      properties:
+        nsfw:
+          description: |-
+            无权限的用户会直接忽略此字段，不会返回 R18 条目。
+            默认或者 \`null\` 会返回包含 R18 的所有搜索结果。
+            \`true\` 只会返回 R18 条目。
+            \`false\` 只会返回非 R18 条目。
+          type: boolean
+      type: object
     CharacterSubject:
       properties:
         actors:
@@ -992,6 +1002,24 @@ exports[`should build private api spec 1`] = `
         - person
         - relation
       type: object
+    PersonSearchFilter:
+      properties:
+        career:
+          items:
+            description: |-
+              职业, 可以多次出现。多值之间为 \`且\` 关系，用 \`-\` 排除职业。
+                      支持的职业有：
+                      - producer: 制作人
+                      - mangaka: 漫画家
+                      - artist: 艺术家
+                      - illustrator: 插画家
+                      - seiyu: 声优
+                      - writer: 编剧
+                      - actor: 演员
+            example: seiyu
+            type: string
+          type: array
+      type: object
     PersonWikiInfo:
       properties:
         id:
@@ -1176,7 +1204,7 @@ exports[`should build private api spec 1`] = `
     SearchCharacter:
       properties:
         filter:
-          $ref: CharacterSearchFilter
+          $ref: '#/components/schemas/CharacterSearchFilter'
         keyword:
           description: 搜索关键词
           type: string
@@ -1186,7 +1214,7 @@ exports[`should build private api spec 1`] = `
     SearchPerson:
       properties:
         filter:
-          $ref: PersonSearchFilter
+          $ref: '#/components/schemas/PersonSearchFilter'
         keyword:
           description: 搜索关键词
           type: string
@@ -1196,12 +1224,12 @@ exports[`should build private api spec 1`] = `
     SearchSubject:
       properties:
         filter:
-          $ref: SubjectSearchFilter
+          $ref: '#/components/schemas/SubjectSearchFilter'
         keyword:
           description: 搜索关键词
           type: string
         sort:
-          $ref: SubjectSearchSort
+          $ref: '#/components/schemas/SubjectSearchSort'
       required:
         - keyword
       type: object
@@ -2005,6 +2033,74 @@ exports[`should build private api spec 1`] = `
         - entry
       title: SubjectReview
       type: object
+    SubjectSearchFilter:
+      properties:
+        date:
+          items:
+            description: 播出日期/发售日期，日期必需为 YYYY-MM-DD 格式。多值之间为 \`且\` 关系。
+            example: '>=2020-07-01'
+            type: string
+          type: array
+        metaTags:
+          items:
+            description: 公共标签。多个值之间为 \`且\` 关系。可以用 \`-\` 排除标签。比如 \`-科幻\` 可以排除科幻标签。
+            example: 童年
+            type: string
+          type: array
+        nsfw:
+          description: |-
+            无权限的用户会直接忽略此字段，不会返回 R18 条目。
+            默认或者 \`null\` 会返回包含 R18 的所有搜索结果。
+            \`true\` 只会返回 R18 条目。
+            \`false\` 只会返回非 R18 条目。
+          type: boolean
+        rank:
+          items:
+            description: 用于搜索指定排名的条目，多值之间为 \`且\` 关系。
+            example: '>10'
+            type: string
+          type: array
+        rating:
+          items:
+            description: 用于搜索指定评分的条目，多值之间为 \`且\` 关系。
+            example: '>=6'
+            type: string
+          type: array
+        tags:
+          items:
+            description: 标签，可以多次出现。多值之间为 \`且\` 关系。
+            example: 童年
+            type: string
+          type: array
+        type:
+          items:
+            $ref: '#/components/schemas/SubjectType'
+            description: 条目类型, 可以多次出现。多值之间为 \`或\` 关系。
+            example: 2
+          type: array
+      type: object
+    SubjectSearchSort:
+      default: match
+      description: |-
+        条目搜索排序方式
+          - match = 匹配程度
+          - heat = 收藏人数
+          - rank = 排名由高到低
+          - score = 评分
+      enum:
+        - match
+        - heat
+        - rank
+        - score
+      type: string
+      x-enum-varnames:
+        - Match
+        - Heat
+        - Rank
+        - Score
+      x-ms-enum:
+        modelAsString: true
+        name: SubjectSearchSort
     SubjectStaff:
       properties:
         positions:

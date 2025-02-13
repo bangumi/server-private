@@ -8,16 +8,20 @@ export function addSchemas(app: App) {
   app.addSchema(common.EpisodeType);
   app.addSchema(common.SubjectType);
 
+  app.addSchema(req.CharacterSearchFilter);
   app.addSchema(req.CollectSubject);
   app.addSchema(req.CreateContent);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.FilterMode);
+  app.addSchema(req.PersonSearchFilter);
   app.addSchema(req.SearchCharacter);
   app.addSchema(req.SearchPerson);
   app.addSchema(req.SearchSubject);
   app.addSchema(req.SubjectBrowseSort);
+  app.addSchema(req.SubjectSearchFilter);
+  app.addSchema(req.SubjectSearchSort);
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateEpisodeProgress);

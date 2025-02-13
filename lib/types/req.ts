@@ -145,8 +145,7 @@ export const PersonSearchFilter = t.Object(
         - illustrator: 插画家
         - seiyu: 声优
         - writer: 编剧
-        - actor: 演员
-        `,
+        - actor: 演员`,
           examples: ['seiyu', 'mangaka', '-illustrator'],
         }),
       ),
