@@ -80,6 +80,12 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, body, query: { limit = 20, offset = 0 } }) => {
+      if (!auth.allowNsfw) {
+        body.filter = {
+          ...body.filter,
+          nsfw: false,
+        };
+      }
       const resp = await searchCharacter({
         keyword: body.keyword,
         filter: body.filter,

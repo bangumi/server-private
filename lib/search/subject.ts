@@ -22,8 +22,8 @@ function convertFilter(filter?: req.ISubjectSearchFilter): string[][] {
   if (filter.type && filter.type.length > 0) {
     filters.push(filter.type.map((type) => `type = ${type}`));
   }
-  if (filter.nsfw !== undefined) {
-    filters.push([`nsfw = ${filter.nsfw}`]);
+  if (filter.nsfw === false) {
+    filters.push([`nsfw = false`]);
   }
   if (filter.metaTags && filter.metaTags.length > 0) {
     filters.push(...filter.metaTags.map((tag) => [`meta_tag = ${tag}`]));

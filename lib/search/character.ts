@@ -15,8 +15,8 @@ function convertFilter(filter?: req.ICharacterSearchFilter): string[][] {
   if (!filter) {
     return filters;
   }
-  if (filter.nsfw !== undefined) {
-    filters.push([`nsfw = ${filter.nsfw}`]);
+  if (filter.nsfw === false) {
+    filters.push([`nsfw = false`]);
   }
   return filters;
 }

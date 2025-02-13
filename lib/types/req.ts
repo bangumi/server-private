@@ -15,8 +15,7 @@ next.bgm.tv 域名对应的 site-key 为 \`0x4AAAAAAABkMYinukE8nzYS\`
 dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``;
 
 const nsfwDescription = `无权限的用户会直接忽略此字段，不会返回 R18 条目。
-默认或者 \`null\` 会返回包含 R18 的所有搜索结果。
-\`true\` 只会返回 R18 条目。
+\`null\` 或者 \`true\` 会返回包含 R18 的所有搜索结果。
 \`false\` 只会返回非 R18 条目。`;
 
 export const FilterMode = t.String({
