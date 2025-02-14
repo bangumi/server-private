@@ -227,6 +227,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
           op.eq(schema.chiiTimeline.type, 0),
         ),
       )
+      .orderBy(op.desc(schema.chiiTimeline.id))
       .limit(1);
     if (previous && previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger()) {
       await db
