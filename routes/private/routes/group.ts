@@ -145,10 +145,6 @@ export async function setup(app: App) {
         throw new NotFoundError('group');
       }
 
-      if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
-        throw new NotJoinPrivateGroupError(group.name);
-      }
-
       const conditions = [op.eq(schema.chiiGroupTopics.gid, group.id)];
       if (!auth.permission.manage_topic_state) {
         conditions.push(op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal));
