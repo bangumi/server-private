@@ -32,7 +32,7 @@ function newCronJob(
     try {
       await func();
     } catch (error) {
-      logger.error(`Cronjob ${name} failed: ${error}`);
+      logger.child({ job: name }).error(error);
     }
   };
   return CronJob.from({
