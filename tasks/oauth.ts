@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
 import { logger } from '@app/lib/logger';
+import { sleep } from '@app/lib/utils';
 
 const CLEANUP_BATCH_LIMIT = 1000;
 
@@ -17,7 +18,7 @@ export async function cleanupExpiredAccessTokens() {
       break;
     }
     logger.info(`Deleted ${deleted.affectedRows} expired access tokens`);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await sleep(1000);
   }
 }
 
@@ -33,6 +34,6 @@ export async function cleanupExpiredRefreshTokens() {
       break;
     }
     logger.info(`Deleted ${deleted.affectedRows} expired refresh tokens`);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await sleep(1000);
   }
 }
