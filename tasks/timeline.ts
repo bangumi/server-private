@@ -5,7 +5,7 @@ import { getInboxCacheKey, getUserCacheKey } from '@app/lib/timeline/cache';
 export async function truncateGlobalCache() {
   logger.info('Truncating global timeline cache...');
   const cacheKey = getInboxCacheKey(0);
-  const [lastMember] = await redis.zrevrange(cacheKey, -1000, -1000, 'WITHSCORES');
+  const [lastMember] = await redis.zrevrangebyscore(cacheKey, -1000, -1000);
   if (!lastMember) {
     return;
   }
@@ -16,7 +16,7 @@ export async function truncateUserCache() {
   logger.info('Truncating user timeline cache...');
   const keys = redis.scanStream({ match: getUserCacheKey('*'), type: 'zset' });
   for await (const key of keys) {
-    const [lastMember] = await redis.zrevrange(key as string, -200, -200, 'WITHSCORES');
+    const [lastMember] = await redis.zrevrangebyscore(key as string, -200, -200);
     if (!lastMember) {
       continue;
     }
@@ -28,7 +28,7 @@ export async function truncateInboxCache() {
   logger.info('Truncating inbox timeline cache...');
   const keys = redis.scanStream({ match: getInboxCacheKey('*'), type: 'zset' });
   for await (const key of keys) {
-    const [lastMember] = await redis.zrevrange(key as string, -200, -200, 'WITHSCORES');
+    const [lastMember] = await redis.zrevrangebyscore(key as string, -200, -200);
     if (!lastMember) {
       continue;
     }
