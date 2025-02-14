@@ -104,6 +104,7 @@ export async function setup(app: App) {
         .select()
         .from(schema.chiiGroupMembers)
         .where(op.and(...conditions))
+        .orderBy(op.desc(schema.chiiGroupMembers.createdAt))
         .limit(limit)
         .offset(offset);
       const members = data.map((d) => convert.toGroupMember(d));
@@ -159,6 +160,7 @@ export async function setup(app: App) {
         .select()
         .from(schema.chiiGroupTopics)
         .where(op.and(...conditions))
+        .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
         .limit(limit)
         .offset(offset);
 
@@ -285,7 +287,8 @@ export async function setup(app: App) {
       const replies = await db
         .select()
         .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.mid, topicID));
+        .where(op.eq(schema.chiiGroupPosts.mid, topicID))
+        .orderBy(op.asc(schema.chiiGroupPosts.id));
       const top = replies.shift();
       if (!top || top.related !== 0) {
         throw new UnexpectedNotFoundError(`top reply of topic ${topicID}`);
