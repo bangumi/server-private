@@ -2,6 +2,7 @@ import { CronJob } from 'cron';
 
 import { logger } from '@app/lib/logger';
 import { heartbeat } from '@app/tasks/heartbeat';
+import { cleanupExpiredAccessTokens, cleanupExpiredRefreshTokens } from '@app/tasks/oauth';
 import {
   truncateGlobalCache as truncateTimelineGlobalCache,
   truncateInboxCache as truncateTimelineInboxCache,
@@ -26,6 +27,8 @@ async function main() {
     truncateTimelineGlobalCache: new CronJob('*/10 * * * *', truncateTimelineGlobalCache),
     truncateTimelineInboxCache: new CronJob('0 0 20 * * *', truncateTimelineInboxCache),
     truncateTimelineUserCache: new CronJob('0 0 21 * * *', truncateTimelineUserCache),
+    cleanupExpiredAccessTokens: new CronJob('0 0 22 * * *', cleanupExpiredAccessTokens),
+    cleanupExpiredRefreshTokens: new CronJob('0 0 23 * * *', cleanupExpiredRefreshTokens),
   };
 
   for (const [name, job] of Object.entries(jobs)) {
