@@ -19,8 +19,19 @@ import { trendingSubjects } from '@app/tasks/trending';
 // month          1-12 (or names, see below)
 // day of week    0-7 (0 or 7 is Sunday, or use names)
 
-function newCronJob(name: string, cronTime: string, onTick: () => Promise<void>): CronJob {
+interface CronJobContext {
+  name: string;
+}
+
+function newCronJob(
+  name: string,
+  cronTime: string,
+  onTick: () => Promise<void>,
+): CronJob<null, CronJobContext> {
   return CronJob.from({
+    context: {
+      name,
+    },
     cronTime,
     onTick,
     timeZone: 'Asia/Shanghai',
@@ -31,37 +42,17 @@ function newCronJob(name: string, cronTime: string, onTick: () => Promise<void>)
 }
 
 function main() {
-  const jobs: Record<string, CronJob> = {
-    heartbeat: newCronJob('heartbeat', '*/10 * * * * *', heartbeat),
-    trendingSubjects: newCronJob('trendingSubjects', '0 0 3 * * *', trendingSubjects),
-    truncateTimelineGlobalCache: newCronJob(
-      'truncateTimelineGlobalCache',
-      '*/10 * * * *',
-      truncateTimelineGlobalCache,
-    ),
-    truncateTimelineInboxCache: newCronJob(
-      'truncateTimelineInboxCache',
-      '0 0 4 * * *',
-      truncateTimelineInboxCache,
-    ),
-    truncateTimelineUserCache: newCronJob(
-      'truncateTimelineUserCache',
-      '0 0 5 * * *',
-      truncateTimelineUserCache,
-    ),
-    cleanupExpiredAccessTokens: newCronJob(
-      'cleanupExpiredAccessTokens',
-      '0 0 6 * * *',
-      cleanupExpiredAccessTokens,
-    ),
-    cleanupExpiredRefreshTokens: newCronJob(
-      'cleanupExpiredRefreshTokens',
-      '0 0 7 * * *',
-      cleanupExpiredRefreshTokens,
-    ),
-  };
-  for (const [name, job] of Object.entries(jobs)) {
-    logger.info(`Cronjob: ${name} @ ${job.cronTime.source}`);
+  const jobs: CronJob<null, CronJobContext>[] = [
+    newCronJob('heartbeat', '*/10 * * * * *', heartbeat),
+    newCronJob('trendingSubjects', '0 0 3 * * *', trendingSubjects),
+    newCronJob('truncateTimelineGlobalCache', '*/10 * * * *', truncateTimelineGlobalCache),
+    newCronJob('truncateTimelineInboxCache', '0 0 4 * * *', truncateTimelineInboxCache),
+    newCronJob('truncateTimelineUserCache', '0 0 5 * * *', truncateTimelineUserCache),
+    newCronJob('cleanupExpiredAccessTokens', '0 0 6 * * *', cleanupExpiredAccessTokens),
+    newCronJob('cleanupExpiredRefreshTokens', '0 0 7 * * *', cleanupExpiredRefreshTokens),
+  ];
+  for (const job of jobs) {
+    logger.info(`Cronjob: ${job.context.name} @ ${job.cronTime.source}`);
     job.start();
   }
 }
