@@ -6,5 +6,8 @@ ignore:
 coverage:
   status:
     patch: false
+    project:
+      default:
+        only_pulls: true
 
 github_checks: false
