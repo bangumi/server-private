@@ -93,6 +93,12 @@ export const TimelineWriter: TimelineDatabaseWriter = {
   /** 收藏条目 */
   async subject(payload: TimelineMessage['subject']): Promise<number> {
     const type = switchSubjectType(payload.collect.type, payload.subject.type);
+    const detail: memo.Subject = {
+      subject_id: payload.subject.id,
+      collect_id: payload.collect.id,
+      collect_comment: lo.escape(payload.collect.comment),
+      collect_rate: payload.collect.rate,
+    };
     const [previous] = await db
       .select()
       .from(schema.chiiTimeline)
@@ -105,14 +111,6 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       )
       .orderBy(op.desc(schema.chiiTimeline.id))
       .limit(1);
-
-    const detail: memo.Subject = {
-      subject_id: payload.subject.id,
-      collect_id: payload.collect.id,
-      collect_comment: lo.escape(payload.collect.comment),
-      collect_rate: payload.collect.rate,
-    };
-
     if (previous && previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger()) {
       const details: memo.SubjectBatch = {};
       if (previous.batch) {
@@ -227,6 +225,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
           op.eq(schema.chiiTimeline.type, 0),
         ),
       )
+      .orderBy(op.desc(schema.chiiTimeline.id))
       .limit(1);
     if (previous && previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger()) {
       await db
