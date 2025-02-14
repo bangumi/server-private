@@ -26,8 +26,15 @@ interface CronJobContext {
 function newCronJob(
   name: string,
   cronTime: string,
-  onTick: () => Promise<void>,
+  func: () => Promise<void>,
 ): CronJob<null, CronJobContext> {
+  const onTick = async () => {
+    try {
+      await func();
+    } catch (error) {
+      logger.error(`Cronjob ${name} failed: ${error}`);
+    }
+  };
   return CronJob.from({
     context: {
       name,
@@ -35,9 +42,6 @@ function newCronJob(
     cronTime,
     onTick,
     timeZone: 'Asia/Shanghai',
-    errorHandler: (error) => {
-      logger.error(`Cronjob ${name} failed: ${error}`);
-    },
   });
 }
 
