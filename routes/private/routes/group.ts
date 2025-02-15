@@ -371,7 +371,13 @@ export async function setup(app: App) {
       const [post] = await db
         .select()
         .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.mid, topicID))
+        .where(
+          op.and(
+            op.eq(schema.chiiGroupPosts.mid, topicID),
+            op.eq(schema.chiiGroupPosts.related, 0),
+          ),
+        )
+        .orderBy(op.asc(schema.chiiGroupPosts.id))
         .limit(1);
       if (!post) {
         throw new UnexpectedNotFoundError(`top post of topic ${topicID}`);
@@ -383,13 +389,16 @@ export async function setup(app: App) {
       if (topic.uid !== auth.userID) {
         throw new NotAllowedError('edit this topic');
       }
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('edit this topic content');
+      }
 
       let display = topic.display;
       if (dam.needReview(title) || dam.needReview(content)) {
         if (display === TopicDisplay.Normal) {
           display = TopicDisplay.Review;
         } else {
-          return {};
+          throw new BadRequestError('topic is already in review');
         }
       }
 

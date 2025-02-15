@@ -1010,6 +1010,20 @@ export async function setup(app: App) {
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
+      const [post] = await db
+        .select()
+        .from(schema.chiiSubjectPosts)
+        .where(
+          op.and(
+            op.eq(schema.chiiSubjectPosts.mid, topicID),
+            op.eq(schema.chiiSubjectPosts.related, 0),
+          ),
+        )
+        .orderBy(op.asc(schema.chiiSubjectPosts.id))
+        .limit(1);
+      if (!post) {
+        throw new UnexpectedNotFoundError(`top post of topic ${topicID}`);
+      }
 
       if (!canEditTopic(topic.state)) {
         throw new NotAllowedError('edit this topic');
@@ -1017,13 +1031,16 @@ export async function setup(app: App) {
       if (topic.uid !== auth.userID) {
         throw new NotAllowedError('update topic');
       }
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('update topic content');
+      }
 
       let display = topic.display;
       if (dam.needReview(title) || dam.needReview(content)) {
         if (display === TopicDisplay.Normal) {
           display = TopicDisplay.Review;
         } else {
-          return {};
+          throw new BadRequestError('topic is already in review');
         }
       }
 
@@ -1031,11 +1048,11 @@ export async function setup(app: App) {
         await t
           .update(schema.chiiSubjectTopics)
           .set({ title, display })
-          .where(op.eq(schema.chiiSubjectTopics.id, topicID));
+          .where(op.eq(schema.chiiSubjectTopics.id, topic.id));
         await t
           .update(schema.chiiSubjectPosts)
           .set({ content })
-          .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
+          .where(op.eq(schema.chiiSubjectPosts.id, post.id));
       });
 
       return {};
