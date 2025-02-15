@@ -17,3 +17,7 @@ export function getFollowersCacheKey(uid: number): string {
 export function getRelationCacheKey(uid: number, fid: number): string {
   return `user:relation:${uid}:${fid}`;
 }
+
+export function getJoinedGroupsCacheKey(uid: number): string {
+  return `user:groups:${uid}`;
+}
