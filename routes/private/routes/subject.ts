@@ -936,7 +936,7 @@ export async function setup(app: App) {
         throw new UnexpectedNotFoundError(`top reply of topic ${topicID}`);
       }
       if (top.related !== 0 || top.uid !== topic.uid) {
-        throw new Error(`top reply of topic ${topicID} invalid`);
+        throw new Error(`top reply of topic ${topicID} invalid: ${top.id}`);
       }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
