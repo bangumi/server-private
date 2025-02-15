@@ -176,7 +176,6 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       previous &&
       previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger() &&
       Number(previous.related) === payload.subject.id &&
-      !previous.batch &&
       previous.type === payload.episode.status
     ) {
       await db
@@ -227,7 +226,11 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       )
       .orderBy(op.desc(schema.chiiTimeline.id))
       .limit(1);
-    if (previous && previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger()) {
+    if (
+      previous &&
+      previous.createdAt > DateTime.now().minus({ minutes: 10 }).toUnixInteger() &&
+      Number(previous.related) === payload.subject.id
+    ) {
       await db
         .update(schema.chiiTimeline)
         .set({
