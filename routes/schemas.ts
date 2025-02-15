@@ -14,7 +14,7 @@ export function addSchemas(app: App) {
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
-  app.addSchema(req.FilterMode);
+  app.addSchema(req.TimelineFilterMode);
   app.addSchema(req.PersonSearchFilter);
   app.addSchema(req.SearchCharacter);
   app.addSchema(req.SearchPerson);
