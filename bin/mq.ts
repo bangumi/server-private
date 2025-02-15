@@ -1,6 +1,9 @@
 import { handle as handleBlogEvent } from '@app/event/blog';
 import { handle as handleCharacterEvent } from '@app/event/character';
-import { handle as handleGroupEvent } from '@app/event/group';
+import {
+  handle as handleGroupEvent,
+  handleMember as handleGroupMemberEvent,
+} from '@app/event/group';
 import { handle as handleIndexEvent } from '@app/event/index';
 import { handle as handlePersonEvent } from '@app/event/person';
 import {
@@ -10,7 +13,7 @@ import {
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { Payload } from '@app/event/type';
-import { handle as handleUserEvent } from '@app/event/user';
+import { handle as handleUserEvent, handleFriend as handleFriendEvent } from '@app/event/user';
 import { newConsumer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
 import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
@@ -24,8 +27,10 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_characters',
   'debezium.chii.bangumi.chii_episodes',
   'debezium.chii.bangumi.chii_groups',
+  'debezium.chii.bangumi.chii_group_members',
   'debezium.chii.bangumi.chii_index',
   'debezium.chii.bangumi.chii_members',
+  'debezium.chii.bangumi.chii_friends',
   'debezium.chii.bangumi.chii_persons',
   'debezium.chii.bangumi.chii_subject_fields',
   'debezium.chii.bangumi.chii_subjects',
@@ -39,8 +44,10 @@ const binlogHandlers: Record<string, Handler> = {
   chii_characters: handleCharacterEvent,
   chii_episodes: handleEpisodeEvent,
   chii_groups: handleGroupEvent,
+  chii_group_members: handleGroupMemberEvent,
   chii_index: handleIndexEvent,
   chii_members: handleUserEvent,
+  chii_friends: handleFriendEvent,
   chii_persons: handlePersonEvent,
   chii_subject_fields: handleSubjectFieldsEvent,
   chii_subjects: handleSubjectEvent,

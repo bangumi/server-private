@@ -6,6 +6,7 @@ import type * as res from '@app/lib/types/res.ts';
 import {
   getFollowersCacheKey,
   getFriendsCacheKey,
+  getJoinedGroupsCacheKey,
   getRelationCacheKey,
 } from '@app/lib/user/cache.ts';
 
@@ -89,4 +90,24 @@ export async function fetchUserX(uid: number): Promise<res.ISlimUser> {
     throw new UnexpectedNotFoundError(`user ${uid} not found`);
   }
   return user;
+}
+
+/** Cached: Get group ids that user(uid) has joined */
+export async function fetchJoinedGroups(uid?: number): Promise<number[]> {
+  if (!uid) {
+    return [];
+  }
+
+  const cached = await redis.get(getJoinedGroupsCacheKey(uid));
+  if (cached) {
+    return JSON.parse(cached) as number[];
+  }
+
+  const groups = await db
+    .select({ gid: schema.chiiGroupMembers.gid })
+    .from(schema.chiiGroupMembers)
+    .where(op.eq(schema.chiiGroupMembers.uid, uid));
+  const result = groups.map((x) => x.gid);
+  await redis.setex(getJoinedGroupsCacheKey(uid), 3600, JSON.stringify(result));
+  return result;
 }
