@@ -929,10 +929,14 @@ export async function setup(app: App) {
       const replies = await db
         .select()
         .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
+        .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
+        .orderBy(op.asc(schema.chiiSubjectPosts.id));
       const top = replies.shift();
-      if (!top || top.related !== 0) {
+      if (!top) {
         throw new UnexpectedNotFoundError(`top reply of topic ${topicID}`);
+      }
+      if (top.related !== 0 || top.uid !== topic.uid) {
+        throw new Error(`top reply of topic ${topicID} invalid`);
       }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);

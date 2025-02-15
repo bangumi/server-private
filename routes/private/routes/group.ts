@@ -290,8 +290,11 @@ export async function setup(app: App) {
         .where(op.eq(schema.chiiGroupPosts.mid, topicID))
         .orderBy(op.asc(schema.chiiGroupPosts.id));
       const top = replies.shift();
-      if (!top || top.related !== 0) {
+      if (!top) {
         throw new UnexpectedNotFoundError(`top reply of topic ${topicID}`);
+      }
+      if (top.related !== 0 || top.uid !== topic.uid) {
+        throw new Error(`top reply of topic ${topicID} invalid`);
       }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
