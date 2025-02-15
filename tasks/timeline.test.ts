@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { getInboxCacheKey } from '@app/lib/timeline/cache';
 import redis from '@app/lib/redis.ts';
 
-import { truncateGlobalCache } from './timeline.ts';
+import { truncateGlobalCache, truncateInboxCache } from './timeline.ts';
 
 describe('truncate global cache', () => {
   beforeEach(async () => {
@@ -37,5 +37,40 @@ describe('truncate global cache', () => {
 
     const trailingMembers = await redis.zrange(cacheKey, 0, 10);
     expect(trailingMembers).toEqual(members.slice(500, 511).map(String));
+  });
+});
+
+describe('truncate user cache', () => {
+  beforeEach(async () => {
+    await redis.flushall();
+  });
+
+  afterEach(async () => {
+    await redis.flushall();
+  });
+
+  test('should truncate user inbox cache', async () => {
+    const cacheKey = getInboxCacheKey(1);
+    // generate 400 members
+    const members = Array.from({ length: 400 }, (_, i) => i + 1);
+    await redis.zadd(cacheKey, ...members.map((m) => [m, m]).flat());
+    const countBefore = await redis.zcard(cacheKey);
+    expect(countBefore).toBe(400);
+
+    await truncateInboxCache();
+
+    const countAfter = await redis.zcard(cacheKey);
+    expect(countAfter).toBe(200);
+
+    const leadingMembers = await redis.zrevrangebyscore(cacheKey, '+inf', '-inf', 'LIMIT', 0, 10);
+    expect(leadingMembers).toEqual(
+      members
+        .slice(400 - 10, 400)
+        .reverse()
+        .map(String),
+    );
+
+    const trailingMembers = await redis.zrange(cacheKey, 0, 10);
+    expect(trailingMembers).toEqual(members.slice(200, 211).map(String));
   });
 });
