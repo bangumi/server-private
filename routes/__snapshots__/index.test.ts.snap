@@ -681,6 +681,7 @@ exports[`should build private api spec 1`] = `
         - $ref: '#/components/schemas/TopicBase'
         - properties:
             content:
+              description: 已废弃
               type: string
             creator:
               $ref: '#/components/schemas/SlimUser'
@@ -693,7 +694,6 @@ exports[`should build private api spec 1`] = `
           required:
             - creator
             - group
-            - content
             - replies
           type: object
       title: GroupTopic
@@ -2156,6 +2156,7 @@ exports[`should build private api spec 1`] = `
         - $ref: '#/components/schemas/TopicBase'
         - properties:
             content:
+              description: 已废弃
               type: string
             creator:
               $ref: '#/components/schemas/SlimUser'
@@ -2168,7 +2169,6 @@ exports[`should build private api spec 1`] = `
           required:
             - creator
             - subject
-            - content
             - replies
           type: object
       title: SubjectTopic

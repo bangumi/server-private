@@ -289,10 +289,6 @@ export async function setup(app: App) {
         .from(schema.chiiGroupPosts)
         .where(op.eq(schema.chiiGroupPosts.mid, topicID))
         .orderBy(op.asc(schema.chiiGroupPosts.id));
-      const top = replies.shift();
-      if (!top || top.related !== 0) {
-        throw new UnexpectedNotFoundError(`top reply of topic ${topicID}`);
-      }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
@@ -329,7 +325,7 @@ export async function setup(app: App) {
         creatorID: topic.uid,
         creator,
         title: topic.title,
-        content: top.content,
+        content: '',
         state: topic.state,
         display: topic.display,
         createdAt: topic.createdAt,
@@ -375,7 +371,13 @@ export async function setup(app: App) {
       const [post] = await db
         .select()
         .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.mid, topicID))
+        .where(
+          op.and(
+            op.eq(schema.chiiGroupPosts.mid, topicID),
+            op.eq(schema.chiiGroupPosts.related, 0),
+          ),
+        )
+        .orderBy(op.asc(schema.chiiGroupPosts.id))
         .limit(1);
       if (!post) {
         throw new UnexpectedNotFoundError(`top post of topic ${topicID}`);
@@ -387,13 +389,16 @@ export async function setup(app: App) {
       if (topic.uid !== auth.userID) {
         throw new NotAllowedError('edit this topic');
       }
+      if (post.uid !== auth.userID) {
+        throw new NotAllowedError('edit this topic content');
+      }
 
       let display = topic.display;
       if (dam.needReview(title) || dam.needReview(content)) {
         if (display === TopicDisplay.Normal) {
           display = TopicDisplay.Review;
         } else {
-          return {};
+          throw new BadRequestError('topic is already in review');
         }
       }
 
