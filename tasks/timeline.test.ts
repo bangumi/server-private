@@ -7,11 +7,11 @@ import { truncateGlobalCache, truncateInboxCache } from './timeline.ts';
 
 describe('truncate timeline cache', () => {
   beforeEach(async () => {
-    await redis.flushall();
+    await redis.flushdb();
   });
 
   afterEach(async () => {
-    await redis.flushall();
+    await redis.flushdb();
   });
 
   test('should truncate global cache', async () => {
