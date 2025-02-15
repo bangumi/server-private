@@ -289,13 +289,6 @@ export async function setup(app: App) {
         .from(schema.chiiGroupPosts)
         .where(op.eq(schema.chiiGroupPosts.mid, topicID))
         .orderBy(op.asc(schema.chiiGroupPosts.id));
-      const top = replies.shift();
-      if (!top) {
-        throw new UnexpectedNotFoundError(`top reply of topic ${topicID}`);
-      }
-      if (top.related !== 0 || top.uid !== topic.uid) {
-        throw new Error(`top reply of topic ${topicID} invalid: ${top.id}`);
-      }
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
@@ -332,7 +325,7 @@ export async function setup(app: App) {
         creatorID: topic.uid,
         creator,
         title: topic.title,
-        content: top.content,
+        content: '',
         state: topic.state,
         display: topic.display,
         createdAt: topic.createdAt,
