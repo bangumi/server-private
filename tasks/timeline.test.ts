@@ -5,7 +5,7 @@ import redis from '@app/lib/redis.ts';
 
 import { truncateGlobalCache, truncateInboxCache } from './timeline.ts';
 
-describe('truncate global cache', () => {
+describe('truncate timeline cache', () => {
   beforeEach(async () => {
     await redis.flushall();
   });
@@ -37,16 +37,6 @@ describe('truncate global cache', () => {
 
     const trailingMembers = await redis.zrange(cacheKey, 0, 10);
     expect(trailingMembers).toEqual(members.slice(500, 511).map(String));
-  });
-});
-
-describe('truncate user cache', () => {
-  beforeEach(async () => {
-    await redis.flushall();
-  });
-
-  afterEach(async () => {
-    await redis.flushall();
   });
 
   test('should truncate user inbox cache', async () => {
