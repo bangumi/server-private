@@ -8,7 +8,7 @@ import {
 
 import { EventOp } from './type';
 
-interface Payload {
+interface UserPayload {
   op: EventOp;
 }
 
@@ -16,14 +16,9 @@ interface UserKey {
   uid: number;
 }
 
-interface FriendKey {
-  uid: number;
-  fid: number;
-}
-
 export async function handle(key: string, value: string) {
   const idx = JSON.parse(key) as UserKey;
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value) as UserPayload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
@@ -39,21 +34,34 @@ export async function handle(key: string, value: string) {
   }
 }
 
-export async function handleFriend(key: string, value: string) {
-  const idx = JSON.parse(key) as FriendKey;
-  const payload = JSON.parse(value) as Payload;
+interface FriendPayload {
+  op: EventOp;
+  before?: {
+    frd_uid: number;
+    frd_fid: number;
+  };
+  after?: {
+    frd_uid: number;
+    frd_fid: number;
+  };
+}
+
+export async function handleFriend(_: string, value: string) {
+  const payload = JSON.parse(value) as FriendPayload;
+  const uid = payload.before?.frd_uid ?? payload.after?.frd_uid;
+  const fid = payload.before?.frd_fid ?? payload.after?.frd_fid;
+
+  if (!uid || !fid) {
+    return;
+  }
   switch (payload.op) {
-    case EventOp.Create: {
-      break;
-    }
-    case EventOp.Update: {
-      break;
-    }
+    case EventOp.Create:
+    case EventOp.Update:
     case EventOp.Delete: {
       await redis.del(
-        getFriendsCacheKey(idx.uid),
-        getFollowersCacheKey(idx.fid),
-        getRelationCacheKey(idx.uid, idx.fid),
+        getFriendsCacheKey(uid),
+        getFollowersCacheKey(fid),
+        getRelationCacheKey(uid, fid),
       );
       break;
     }
