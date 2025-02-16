@@ -189,7 +189,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'getGroupTopics',
-        summary: '获取小组帖子列表',
+        summary: '获取小组话题列表',
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -243,7 +243,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'getRecentGroupTopics',
-        summary: '获取小组的最新话题',
+        summary: '获取最新的小组话题',
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
@@ -374,7 +374,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'createGroupTopic',
-        summary: '创建小组帖子',
+        summary: '创建小组话题',
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -449,7 +449,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'getGroupTopic',
-        summary: '获取小组帖子详情',
+        summary: '获取小组话题详情',
         tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -535,7 +535,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'editGroupTopic',
-        description: '编辑小组帖子',
+        description: '编辑小组话题',
         tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -617,7 +617,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'getGroupPost',
-        summary: '获取小组帖子回复详情',
+        summary: '获取小组话题回复详情',
         tags: [Tag.Topic],
         params: t.Object({
           postID: t.Integer(),
@@ -673,7 +673,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'editGroupPost',
-        summary: '编辑小组帖子回复',
+        summary: '编辑小组话题回复',
         tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -750,7 +750,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'deleteGroupPost',
-        summary: '删除小组帖子回复',
+        summary: '删除小组话题回复',
         tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -790,7 +790,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'createGroupReply',
-        summary: '创建小组帖子回复',
+        summary: '创建小组话题回复',
         tags: [Tag.Topic],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
