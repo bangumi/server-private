@@ -1,3 +1,3 @@
 export function getSlimCacheKey(id: number): string {
-  return `crt:slim:${id}`;
+  return `crt:v2:slim:${id}`;
 }
