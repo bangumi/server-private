@@ -256,43 +256,116 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, query: { mode = GroupTopicMode.Joined, limit = 20, offset = 0 } }) => {
-      const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
-      if (mode === GroupTopicMode.Joined) {
-        const gids = await fetchJoinedGroups(auth.userID);
-        if (gids.length > 0) {
-          conditions.push(op.inArray(schema.chiiGroupTopics.gid, gids));
+      let total = 0;
+      const tids = [];
+      if (!auth.login) {
+        mode = GroupTopicMode.All;
+      }
+      switch (mode) {
+        case GroupTopicMode.All: {
+          const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
+          const [{ count = 0 } = {}] = await db
+            .select({ count: op.count() })
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions));
+          total = count;
+          const data = await db
+            .select()
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions))
+            .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
+            .limit(limit)
+            .offset(offset);
+          tids.push(...data.map((x) => x.id));
+          break;
+        }
+        case GroupTopicMode.Joined: {
+          const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
+          const gids = await fetchJoinedGroups(auth.userID);
+          if (gids.length > 0) {
+            conditions.push(op.inArray(schema.chiiGroupTopics.gid, gids));
+          }
+          const [{ count = 0 } = {}] = await db
+            .select({ count: op.count() })
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions));
+          total = count;
+          const data = await db
+            .select({ id: schema.chiiGroupTopics.id })
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions))
+            .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
+            .limit(limit)
+            .offset(offset);
+          tids.push(...data.map((x) => x.id));
+          break;
+        }
+        case GroupTopicMode.Created: {
+          const conditions = [op.eq(schema.chiiGroupTopics.uid, auth.userID)];
+          const [{ count = 0 } = {}] = await db
+            .select({ count: op.count() })
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions));
+          total = count;
+          const data = await db
+            .select({ id: schema.chiiGroupTopics.id })
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions))
+            .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
+            .limit(limit)
+            .offset(offset);
+          tids.push(...data.map((x) => x.id));
+          break;
+        }
+        case GroupTopicMode.Replied: {
+          const conditions = [op.eq(schema.chiiGroupPosts.uid, auth.userID)];
+          const [{ count = 0 } = {}] = await db
+            .select({ count: op.countDistinct(schema.chiiGroupPosts.mid) })
+            .from(schema.chiiGroupPosts)
+            .where(op.and(...conditions));
+          total = count;
+          const data = await db
+            .select({ mid: schema.chiiGroupPosts.mid })
+            .from(schema.chiiGroupPosts)
+            .where(op.and(...conditions))
+            .groupBy(schema.chiiGroupPosts.mid)
+            .orderBy(op.desc(schema.chiiGroupPosts.createdAt))
+            .limit(limit)
+            .offset(offset);
+          tids.push(...data.map((x) => x.mid));
+          break;
         }
       }
-      const data = await db
-        .select()
-        .from(schema.chiiGroupTopics)
-        .where(op.and(...conditions))
-        .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
-        .limit(limit)
-        .offset(offset);
-      const uids = data.map((d) => d.uid);
+      if (tids.length === 0) {
+        return { total: 0, data: [] };
+      }
+      const topics = await fetcher.fetchGroupTopicsByIDs(tids);
+      const uids = Object.values(topics).map((d) => d.creatorID);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
-      const gids = data.map((d) => d.gid);
+      const gids = Object.values(topics).map((d) => d.parentID);
       const groups = await fetcher.fetchSlimGroupsByIDs(gids, auth.allowNsfw);
-      const topics: res.IGroupTopic[] = [];
-      for (const d of data) {
-        const group = groups[d.gid];
-        if (!group) {
+      const data: res.IGroupTopic[] = [];
+      for (const tid of tids) {
+        const topic = topics[tid];
+        if (!topic) {
           continue;
         }
-        const creator = users[d.uid];
+        const creator = users[topic.creatorID];
         if (!creator) {
           continue;
         }
-        const topic = {
-          ...convert.toGroupTopic(d),
+        const group = groups[topic.parentID];
+        if (!group) {
+          continue;
+        }
+        data.push({
+          ...topic,
           creator,
           group,
           replies: [],
-        };
-        topics.push(topic);
+        });
       }
-      return { total: 1000, data: topics };
+      return { total, data };
     },
   );
 

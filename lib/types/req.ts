@@ -33,15 +33,17 @@ export const TimelineFilterMode = t.String({
 
 export const GroupTopicFilterMode = t.String({
   $id: 'GroupTopicFilterMode',
-  enum: ['all', 'joined'],
+  enum: ['all', 'joined', 'created', 'replied'],
   'x-ms-enum': {
     name: 'GroupTopicFilterMode',
     modelAsString: true,
   },
-  'x-enum-varnames': ['All', 'Joined'],
-  description: `小组帖子过滤模式
+  'x-enum-varnames': ['All', 'Joined', 'Created', 'Replied'],
+  description: `小组话题过滤模式
   - all = 全站
-  - joined = 已加入`,
+  - joined = 已加入
+  - created = 我创建的
+  - replied = 我回复的`,
 });
 
 export const GroupSort = t.String({

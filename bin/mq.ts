@@ -3,6 +3,7 @@ import { handle as handleCharacterEvent } from '@app/event/character';
 import {
   handle as handleGroupEvent,
   handleMember as handleGroupMemberEvent,
+  handleTopic as handleGroupTopicEvent,
 } from '@app/event/group';
 import { handle as handleIndexEvent } from '@app/event/index';
 import { handle as handlePersonEvent } from '@app/event/person';
@@ -29,6 +30,7 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_episodes',
   'debezium.chii.bangumi.chii_groups',
   'debezium.chii.bangumi.chii_group_members',
+  'debezium.chii.bangumi.chii_group_topics',
   'debezium.chii.bangumi.chii_index',
   'debezium.chii.bangumi.chii_members',
   'debezium.chii.bangumi.chii_friends',
@@ -47,6 +49,7 @@ const binlogHandlers: Record<string, Handler> = {
   chii_episodes: handleEpisodeEvent,
   chii_groups: handleGroupEvent,
   chii_group_members: handleGroupMemberEvent,
+  chii_group_topics: handleGroupTopicEvent,
   chii_index: handleIndexEvent,
   chii_members: handleUserEvent,
   chii_friends: handleFriendEvent,

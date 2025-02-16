@@ -4,7 +4,10 @@ import { DateTime } from 'luxon';
 import { db, op, schema } from '@app/drizzle';
 import { getSlimCacheKey as getBlogSlimCacheKey } from '@app/lib/blog/cache.ts';
 import { getSlimCacheKey as getCharacterSlimCacheKey } from '@app/lib/character/cache.ts';
-import { getSlimCacheKey as getGroupSlimCacheKey } from '@app/lib/group/cache.ts';
+import {
+  getSlimCacheKey as getGroupSlimCacheKey,
+  getTopicCacheKey as getGroupTopicCacheKey,
+} from '@app/lib/group/cache.ts';
 import { getSlimCacheKey as getIndexSlimCacheKey } from '@app/lib/index/cache.ts';
 import { getSlimCacheKey as getPersonSlimCacheKey } from '@app/lib/person/cache.ts';
 import redis from '@app/lib/redis.ts';
@@ -453,6 +456,7 @@ export async function fetchSubjectInterest(
   return convert.toSubjectInterest(data);
 }
 
+/** Cached */
 export async function fetchSubjectTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
   const cached = await redis.mget(ids.map((id) => getSubjectTopicCacheKey(id)));
   const result: Record<number, res.ITopic> = {};
@@ -866,6 +870,32 @@ export async function fetchSlimGroupsByIDs(
         continue;
       }
       result[d.id] = slim;
+    }
+  }
+  return result;
+}
+
+/** Cached */
+export async function fetchGroupTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  const cached = await redis.mget(ids.map((id) => getGroupTopicCacheKey(id)));
+  const result: Record<number, res.ITopic> = {};
+  const missing = [];
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      result[id] = JSON.parse(cached[idx]) as res.ITopic;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiGroupTopics)
+      .where(op.inArray(schema.chiiGroupTopics.id, missing));
+    for (const d of data) {
+      const topic = convert.toGroupTopic(d);
+      result[d.id] = topic;
+      await redis.setex(getGroupTopicCacheKey(d.id), 86400, JSON.stringify(topic));
     }
   }
   return result;
