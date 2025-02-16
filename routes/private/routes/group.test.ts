@@ -44,6 +44,50 @@ describe('group info', () => {
   });
 });
 
+describe('recent topics', () => {
+  test('should get recent topics of joined group', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'joined',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get recent topics of all group', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'all',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+});
+
 describe('group topics', () => {
   const testGroupID = 4215;
   const testTopicID = 100;
