@@ -14,6 +14,7 @@ import {
   getItemCacheKey as getSubjectItemCacheKey,
   getListCacheKey as getSubjectListCacheKey,
   getSlimCacheKey as getSubjectSlimCacheKey,
+  getTopicCacheKey as getSubjectTopicCacheKey,
 } from '@app/lib/subject/cache.ts';
 import {
   type CalendarItem,
@@ -22,7 +23,7 @@ import {
   SubjectType,
 } from '@app/lib/subject/type.ts';
 import { TagCat } from '@app/lib/tag.ts';
-import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
+import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
 import { isFriends } from '@app/lib/user/utils.ts';
@@ -276,7 +277,7 @@ export async function fetchSubjectIDsByFilter(
     return JSON.parse(cached) as res.IPaged<number>;
   }
   if (sort === SubjectSort.Trends) {
-    const trendingKey = getSubjectTrendingKey(filter.type, TrendingPeriod.Month);
+    const trendingKey = getTrendingSubjectKey(filter.type, TrendingPeriod.Month);
     const data = await redis.get(trendingKey);
     if (!data) {
       return { data: [], total: 0 };
@@ -450,6 +451,31 @@ export async function fetchSubjectInterest(
     return;
   }
   return convert.toSubjectInterest(data);
+}
+
+export async function fetchSubjectTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  const cached = await redis.mget(ids.map((id) => getSubjectTopicCacheKey(id)));
+  const result: Record<number, res.ITopic> = {};
+  const missing = [];
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      result[id] = JSON.parse(cached[idx]) as res.ITopic;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiSubjectTopics)
+      .where(op.inArray(schema.chiiSubjectTopics.id, missing));
+    for (const d of data) {
+      const topic = convert.toSubjectTopic(d);
+      result[d.id] = topic;
+      await redis.setex(getSubjectTopicCacheKey(d.id), 86400, JSON.stringify(topic));
+    }
+  }
+  return result;
 }
 
 /** Cached */
