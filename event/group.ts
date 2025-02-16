@@ -1,15 +1,15 @@
-import { getSlimCacheKey } from '@app/lib/group/cache';
+import { getSlimCacheKey, getTopicCacheKey } from '@app/lib/group/cache.ts';
 import redis from '@app/lib/redis.ts';
 import { getJoinedGroupsCacheKey } from '@app/lib/user/cache.ts';
 
 import { EventOp } from './type';
 
-interface GroupPayload {
-  op: EventOp;
-}
-
 interface GroupKey {
   grp_id: number;
+}
+
+interface GroupPayload {
+  op: EventOp;
 }
 
 export async function handle(key: string, value: string) {
@@ -57,6 +57,29 @@ export async function handleMember(_: string, value: string) {
       break;
     }
     case EventOp.Snapshot: {
+      break;
+    }
+  }
+}
+
+interface GroupTopicKey {
+  grp_tpc_id: number;
+}
+
+interface GroupTopicPayload {
+  op: EventOp;
+}
+
+export async function handleTopic(key: string, value: string) {
+  const idx = JSON.parse(key) as GroupTopicKey;
+  const payload = JSON.parse(value) as GroupTopicPayload;
+  switch (payload.op) {
+    case EventOp.Create: {
+      break;
+    }
+    case EventOp.Update:
+    case EventOp.Delete: {
+      await redis.del(getTopicCacheKey(idx.grp_tpc_id));
       break;
     }
   }
