@@ -10,7 +10,7 @@ import {
   NotJoinPrivateGroupError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
-import { GroupTopicMode } from '@app/lib/group/type';
+import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
 import { isMemberInGroup } from '@app/lib/group/utils.ts';
 import { fetchTopicReactions } from '@app/lib/like';
 import { LikeType } from '@app/lib/like';
@@ -40,6 +40,7 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
+          sort: req.Ref(req.GroupSort),
           limit: t.Optional(t.Integer({ default: 20, maximum: 100 })),
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
@@ -48,8 +49,39 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { limit = 20, offset = 0 } }) => {
-      // TODO: 获取小组列表
+    async ({ auth, query: { sort = GroupSort.Created, limit = 20, offset = 0 } }) => {
+      const conditions = [];
+      if (!auth.allowNsfw) {
+        conditions.push(op.eq(schema.chiiGroups.nsfw, false));
+      }
+      const orderBy = [];
+      switch (sort) {
+        case GroupSort.Trends: {
+          orderBy.push(op.desc(schema.chiiGroups.posts));
+          break;
+        }
+        case GroupSort.Created: {
+          orderBy.push(op.desc(schema.chiiGroups.createdAt));
+          break;
+        }
+        case GroupSort.Updated: {
+          orderBy.push(op.desc(schema.chiiGroups.updatedAt));
+          break;
+        }
+      }
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiGroups)
+        .where(op.and(...conditions));
+      const data = await db
+        .select()
+        .from(schema.chiiGroups)
+        .where(op.and(...conditions))
+        .orderBy(...orderBy)
+        .limit(limit)
+        .offset(offset);
+      const groups = data.map((d) => convert.toSlimGroup(d));
+      return { total: count, data: groups };
     },
   );
 

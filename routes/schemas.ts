@@ -14,7 +14,8 @@ export function addSchemas(app: App) {
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.EpisodeCollectionStatus);
-  app.addSchema(req.TimelineFilterMode);
+  app.addSchema(req.GroupSort);
+  app.addSchema(req.GroupTopicFilterMode);
   app.addSchema(req.PersonSearchFilter);
   app.addSchema(req.SearchCharacter);
   app.addSchema(req.SearchPerson);
@@ -22,6 +23,7 @@ export function addSchemas(app: App) {
   app.addSchema(req.SubjectBrowseSort);
   app.addSchema(req.SubjectSearchFilter);
   app.addSchema(req.SubjectSearchSort);
+  app.addSchema(req.TimelineFilterMode);
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateEpisodeProgress);

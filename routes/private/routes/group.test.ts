@@ -7,6 +7,23 @@ import { createTestServer } from '@app/tests/utils.ts';
 import { setup } from './group.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 
+describe('group list', () => {
+  test('should get group list', async () => {
+    const app = await createTestServer();
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups',
+      query: {
+        sort: 'created',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+});
+
 describe('group info', () => {
   test('should get group info', async () => {
     const app = await createTestServer();

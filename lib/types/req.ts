@@ -44,6 +44,16 @@ export const GroupTopicFilterMode = t.String({
   - joined = 已加入`,
 });
 
+export const GroupSort = t.String({
+  $id: 'GroupSort',
+  enum: ['trends', 'created', 'updated'],
+  default: 'created',
+  description: `小组排序方式
+  - trends = 热度
+  - created = 创建时间
+  - updated = 最新讨论`,
+});
+
 export const SubjectBrowseSort = t.String({
   $id: 'SubjectBrowseSort',
   enum: ['rank', 'trends', 'collects', 'date', 'title'],
