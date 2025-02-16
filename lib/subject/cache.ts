@@ -36,3 +36,7 @@ export function getListCacheKey(filter: SubjectFilter, sort: SubjectSort, page: 
   key += `:page:${page}`;
   return key;
 }
+
+export function getTopicCacheKey(id: number): string {
+  return `sbj:topic:${id}`;
+}

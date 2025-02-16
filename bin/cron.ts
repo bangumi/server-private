@@ -8,7 +8,7 @@ import {
   truncateInboxCache as truncateTimelineInboxCache,
   truncateUserCache as truncateTimelineUserCache,
 } from '@app/tasks/timeline';
-import { trendingSubjects } from '@app/tasks/trending';
+import { trendingSubjects, trendingSubjectTopics } from '@app/tasks/trending';
 
 // field          allowed values
 // -----          --------------
@@ -49,6 +49,7 @@ function main() {
   const jobs: CronJob<null, CronJobContext>[] = [
     newCronJob('heartbeat', '*/10 * * * * *', heartbeat),
     newCronJob('trendingSubjects', '0 0 3 * * *', trendingSubjects),
+    newCronJob('trendingSubjectTopics', '0 */10 * * * *', trendingSubjectTopics),
     newCronJob('truncateTimelineGlobalCache', '*/10 * * * *', truncateTimelineGlobalCache),
     newCronJob('truncateTimelineInboxCache', '0 0 4 * * *', truncateTimelineInboxCache),
     newCronJob('truncateTimelineUserCache', '0 0 5 * * *', truncateTimelineUserCache),

@@ -665,11 +665,15 @@ exports[`should build private api spec 1`] = `
       default: created
       description: |-
         小组排序方式
-          - trends = 热度
+          - posts = 帖子数
+          - topics = 主题数
+          - members = 成员数
           - created = 创建时间
           - updated = 最新讨论
       enum:
-        - trends
+        - posts
+        - topics
+        - members
         - created
         - updated
       type: string
@@ -6840,6 +6844,58 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取热门条目
+      tags:
+        - trending
+  /p1/trending/subjects/topics:
+    get:
+      operationId: getTrendingSubjectTopics
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/SubjectTopic'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取热门条目讨论
       tags:
         - trending
   /p1/turnstile:

@@ -4,7 +4,9 @@ export enum GroupTopicMode {
 }
 
 export enum GroupSort {
-  Trends = 'trends',
+  Members = 'members',
+  Posts = 'posts',
+  Topics = 'topics',
   Created = 'created',
   Updated = 'updated',
 }

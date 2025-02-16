@@ -10,6 +10,7 @@ import {
   handle as handleSubjectEvent,
   handleEpisode as handleEpisodeEvent,
   handleFields as handleSubjectFieldsEvent,
+  handleTopic as handleSubjectTopicEvent,
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { Payload } from '@app/event/type';
@@ -33,6 +34,7 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_friends',
   'debezium.chii.bangumi.chii_persons',
   'debezium.chii.bangumi.chii_subject_fields',
+  'debezium.chii.bangumi.chii_subject_topics',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_timeline',
 ];
@@ -50,6 +52,7 @@ const binlogHandlers: Record<string, Handler> = {
   chii_friends: handleFriendEvent,
   chii_persons: handlePersonEvent,
   chii_subject_fields: handleSubjectFieldsEvent,
+  chii_subject_topics: handleSubjectTopicEvent,
   chii_subjects: handleSubjectEvent,
   chii_timeline: handleTimelineEvent,
 };

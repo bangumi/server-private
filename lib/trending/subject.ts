@@ -5,16 +5,14 @@ import { SubjectType } from '@app/lib/subject/type.ts';
 import type { TrendingItem } from '@app/lib/trending/type.ts';
 import { getTrendingDateline, TrendingPeriod } from '@app/lib/trending/type.ts';
 
-export function getSubjectTrendingKey(type: SubjectType, period: TrendingPeriod) {
-  return `trending:subjects:${type}:${period}`;
-}
+import { getTrendingSubjectKey } from './cache';
 
 export async function updateTrendingSubjects(
   subjectType: SubjectType,
   period = TrendingPeriod.Month,
   flush = false,
 ) {
-  const trendingKey = getSubjectTrendingKey(subjectType, period);
+  const trendingKey = getTrendingSubjectKey(subjectType, period);
   const lockKey = `lock:${trendingKey}`;
   if (flush) {
     await redis.del(lockKey);

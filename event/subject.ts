@@ -1,5 +1,10 @@
 import redis from '@app/lib/redis.ts';
-import { getEpCacheKey, getItemCacheKey, getSlimCacheKey } from '@app/lib/subject/cache';
+import {
+  getEpCacheKey,
+  getItemCacheKey,
+  getSlimCacheKey,
+  getTopicCacheKey,
+} from '@app/lib/subject/cache';
 
 import { EventOp } from './type';
 
@@ -43,6 +48,28 @@ export async function handleFields(key: string, value: string) {
     case EventOp.Update:
     case EventOp.Delete: {
       await redis.del(getItemCacheKey(idx.field_sid), getSlimCacheKey(idx.field_sid));
+      break;
+    }
+    case EventOp.Snapshot: {
+      break;
+    }
+  }
+}
+
+interface TopicKey {
+  sbj_tpc_id: number;
+}
+
+export async function handleTopic(key: string, value: string) {
+  const idx = JSON.parse(key) as TopicKey;
+  const payload = JSON.parse(value) as Payload;
+  switch (payload.op) {
+    case EventOp.Create: {
+      break;
+    }
+    case EventOp.Update:
+    case EventOp.Delete: {
+      await redis.del(getTopicCacheKey(idx.sbj_tpc_id));
       break;
     }
     case EventOp.Snapshot: {

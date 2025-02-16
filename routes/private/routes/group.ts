@@ -56,8 +56,16 @@ export async function setup(app: App) {
       }
       const orderBy = [];
       switch (sort) {
-        case GroupSort.Trends: {
+        case GroupSort.Members: {
+          orderBy.push(op.desc(schema.chiiGroups.members));
+          break;
+        }
+        case GroupSort.Posts: {
           orderBy.push(op.desc(schema.chiiGroups.posts));
+          break;
+        }
+        case GroupSort.Topics: {
+          orderBy.push(op.desc(schema.chiiGroups.topics));
           break;
         }
         case GroupSort.Created: {
