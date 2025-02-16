@@ -697,7 +697,7 @@ exports[`should build private api spec 1`] = `
       title: GroupTopic
     GroupTopicFilterMode:
       description: |-
-        小组帖子过滤模式
+        小组话题过滤模式
           - all = 全站
           - joined = 已加入
           - created = 我创建的

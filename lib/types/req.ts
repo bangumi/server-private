@@ -39,7 +39,7 @@ export const GroupTopicFilterMode = t.String({
     modelAsString: true,
   },
   'x-enum-varnames': ['All', 'Joined', 'Created', 'Replied'],
-  description: `小组帖子过滤模式
+  description: `小组话题过滤模式
   - all = 全站
   - joined = 已加入
   - created = 我创建的
