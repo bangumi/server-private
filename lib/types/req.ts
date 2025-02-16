@@ -18,17 +18,40 @@ const nsfwDescription = `无权限的用户会直接忽略此字段，不会返�
 \`null\` 或者 \`true\` 会返回包含 R18 的所有搜索结果。
 \`false\` 只会返回非 R18 条目。`;
 
-export const FilterMode = t.String({
-  $id: 'FilterMode',
+export const TimelineFilterMode = t.String({
+  $id: 'TimelineFilterMode',
   enum: ['all', 'friends'],
   'x-ms-enum': {
-    name: 'FilterMode',
+    name: 'TimelineFilterMode',
     modelAsString: true,
   },
   'x-enum-varnames': ['All', 'Friends'],
-  description: `过滤模式
+  description: `时间线过滤模式
   - all = 全站
   - friends = 好友`,
+});
+
+export const GroupTopicFilterMode = t.String({
+  $id: 'GroupTopicFilterMode',
+  enum: ['all', 'joined'],
+  'x-ms-enum': {
+    name: 'GroupTopicFilterMode',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['All', 'Joined'],
+  description: `小组帖子过滤模式
+  - all = 全站
+  - joined = 已加入`,
+});
+
+export const GroupSort = t.String({
+  $id: 'GroupSort',
+  enum: ['trends', 'created', 'updated'],
+  default: 'created',
+  description: `小组排序方式
+  - trends = 热度
+  - created = 创建时间
+  - updated = 最新讨论`,
 });
 
 export const SubjectBrowseSort = t.String({

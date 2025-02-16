@@ -10,6 +10,7 @@ import {
   NotJoinPrivateGroupError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
+import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
 import { isMemberInGroup } from '@app/lib/group/utils.ts';
 import { fetchTopicReactions } from '@app/lib/like';
 import { LikeType } from '@app/lib/like';
@@ -22,6 +23,7 @@ import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { fetchJoinedGroups } from '@app/lib/user/utils';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -29,6 +31,60 @@ import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  app.get(
+    '/groups',
+    {
+      schema: {
+        operationId: 'getGroups',
+        summary: '获取小组列表',
+        tags: [Tag.Group],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          sort: req.Ref(req.GroupSort),
+          limit: t.Optional(t.Integer({ default: 20, maximum: 100 })),
+          offset: t.Optional(t.Integer({ default: 0 })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.SlimGroup)),
+        },
+      },
+    },
+    async ({ auth, query: { sort = GroupSort.Created, limit = 20, offset = 0 } }) => {
+      const conditions = [];
+      if (!auth.allowNsfw) {
+        conditions.push(op.eq(schema.chiiGroups.nsfw, false));
+      }
+      const orderBy = [];
+      switch (sort) {
+        case GroupSort.Trends: {
+          orderBy.push(op.desc(schema.chiiGroups.posts));
+          break;
+        }
+        case GroupSort.Created: {
+          orderBy.push(op.desc(schema.chiiGroups.createdAt));
+          break;
+        }
+        case GroupSort.Updated: {
+          orderBy.push(op.desc(schema.chiiGroups.updatedAt));
+          break;
+        }
+      }
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiGroups)
+        .where(op.and(...conditions));
+      const data = await db
+        .select()
+        .from(schema.chiiGroups)
+        .where(op.and(...conditions))
+        .orderBy(...orderBy)
+        .limit(limit)
+        .offset(offset);
+      const groups = data.map((d) => convert.toSlimGroup(d));
+      return { total: count, data: groups };
+    },
+  );
+
   app.get(
     '/groups/:groupName',
     {
@@ -171,6 +227,64 @@ export async function setup(app: App) {
         topic.creator = users[topic.creatorID];
       }
       return { total: count, data: topics };
+    },
+  );
+
+  app.get(
+    '/groups/-/topics',
+    {
+      schema: {
+        operationId: 'getRecentGroupTopics',
+        summary: '获取小组的最新话题',
+        tags: [Tag.Group],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          mode: req.Ref(req.GroupTopicFilterMode, {
+            description: '登录时默认为 joined, 未登录或没有加入小组时始终为 all',
+          }),
+          limit: t.Optional(t.Integer({ default: 20, maximum: 100 })),
+          offset: t.Optional(t.Integer({ default: 0 })),
+        }),
+      },
+    },
+    async ({ auth, query: { mode = GroupTopicMode.Joined, limit = 20, offset = 0 } }) => {
+      const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
+      if (mode === GroupTopicMode.Joined) {
+        const gids = await fetchJoinedGroups(auth.userID);
+        if (gids.length > 0) {
+          conditions.push(op.inArray(schema.chiiGroupTopics.gid, gids));
+        }
+      }
+      const data = await db
+        .select()
+        .from(schema.chiiGroupTopics)
+        .where(op.and(...conditions))
+        .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
+        .limit(limit)
+        .offset(offset);
+      const uids = data.map((d) => d.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const gids = data.map((d) => d.gid);
+      const groups = await fetcher.fetchSlimGroupsByIDs(gids, auth.allowNsfw);
+      const topics: res.IGroupTopic[] = [];
+      for (const d of data) {
+        const group = groups[d.gid];
+        if (!group) {
+          continue;
+        }
+        const creator = users[d.uid];
+        if (!creator) {
+          continue;
+        }
+        const topic = {
+          ...convert.toGroupTopic(d),
+          creator,
+          group,
+          replies: [],
+        };
+        topics.push(topic);
+      }
+      return { total: 1000, data: topics };
     },
   );
 

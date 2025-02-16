@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
@@ -6,6 +6,23 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './group.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
+
+describe('group list', () => {
+  test('should get group list', async () => {
+    const app = await createTestServer();
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups',
+      query: {
+        sort: 'created',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+});
 
 describe('group info', () => {
   test('should get group info', async () => {
@@ -66,6 +83,53 @@ describe('group topics', () => {
       state: 0,
       createdAt: 1462335911,
     });
+  });
+
+  afterEach(async () => {
+    await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
+    await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.mid, testTopicID));
+  });
+
+  test('should get recent topics of joined group', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'joined',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get recent topics of all group', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'all',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
   });
 
   test('should get group topics', async () => {

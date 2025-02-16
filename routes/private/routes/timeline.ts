@@ -36,7 +36,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           mode: t.Optional(
-            req.Ref(req.FilterMode, {
+            req.Ref(req.TimelineFilterMode, {
               description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
             }),
           ),

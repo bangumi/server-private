@@ -582,21 +582,6 @@ exports[`should build private api spec 1`] = `
         - message
         - statusCode
       type: object
-    FilterMode:
-      description: |-
-        过滤模式
-          - all = 全站
-          - friends = 好友
-      enum:
-        - all
-        - friends
-      type: string
-      x-enum-varnames:
-        - All
-        - Friends
-      x-ms-enum:
-        modelAsString: true
-        name: FilterMode
     Friend:
       properties:
         createdAt:
@@ -676,13 +661,22 @@ exports[`should build private api spec 1`] = `
         - joinedAt
       title: GroupMember
       type: object
+    GroupSort:
+      default: created
+      description: |-
+        小组排序方式
+          - trends = 热度
+          - created = 创建时间
+          - updated = 最新讨论
+      enum:
+        - trends
+        - created
+        - updated
+      type: string
     GroupTopic:
       allOf:
         - $ref: '#/components/schemas/TopicBase'
         - properties:
-            content:
-              description: 已废弃
-              type: string
             creator:
               $ref: '#/components/schemas/SlimUser'
             group:
@@ -692,10 +686,26 @@ exports[`should build private api spec 1`] = `
                 $ref: '#/components/schemas/Reply'
               type: array
           required:
+            - creator
             - group
             - replies
           type: object
       title: GroupTopic
+    GroupTopicFilterMode:
+      description: |-
+        小组帖子过滤模式
+          - all = 全站
+          - joined = 已加入
+      enum:
+        - all
+        - joined
+      type: string
+      x-enum-varnames:
+        - All
+        - Joined
+      x-ms-enum:
+        modelAsString: true
+        name: GroupTopicFilterMode
     HistorySummary:
       properties:
         commitMessage:
@@ -2154,9 +2164,6 @@ exports[`should build private api spec 1`] = `
       allOf:
         - $ref: '#/components/schemas/TopicBase'
         - properties:
-            content:
-              description: 已废弃
-              type: string
             creator:
               $ref: '#/components/schemas/SlimUser'
             replies:
@@ -2166,6 +2173,7 @@ exports[`should build private api spec 1`] = `
             subject:
               $ref: '#/components/schemas/SlimSubject'
           required:
+            - creator
             - subject
             - replies
           type: object
@@ -2301,6 +2309,21 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: TimelineCat
+    TimelineFilterMode:
+      description: |-
+        时间线过滤模式
+          - all = 全站
+          - friends = 好友
+      enum:
+        - all
+        - friends
+      type: string
+      x-enum-varnames:
+        - All
+        - Friends
+      x-ms-enum:
+        modelAsString: true
+        name: TimelineFilterMode
     TimelineMemo:
       properties:
         blog:
@@ -4278,6 +4301,59 @@ paths:
       summary: 获取当前用户的好友列表
       tags:
         - friend
+  /p1/groups:
+    get:
+      operationId: getGroups
+      parameters:
+        - in: query
+          name: sort
+          required: true
+          schema:
+            $ref: '#/components/schemas/GroupSort'
+        - in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            type: integer
+        - in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/SlimGroup'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取小组列表
+      tags:
+        - group
   /p1/groups/-/posts/{postID}:
     delete:
       operationId: deleteGroupPost
@@ -4367,6 +4443,43 @@ paths:
       summary: 编辑小组帖子回复
       tags:
         - topic
+  /p1/groups/-/topics:
+    get:
+      operationId: getRecentGroupTopics
+      parameters:
+        - description: 登录时默认为 joined, 未登录或没有加入小组时始终为 all
+          in: query
+          name: mode
+          required: true
+          schema:
+            $ref: '#/components/schemas/GroupTopicFilterMode'
+        - in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            type: integer
+        - in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            type: integer
+      responses:
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取小组的最新话题
+      tags:
+        - group
   /p1/groups/-/topics/{topicID}:
     get:
       operationId: getGroupTopic
@@ -6447,7 +6560,7 @@ paths:
           name: mode
           required: false
           schema:
-            $ref: '#/components/schemas/FilterMode'
+            $ref: '#/components/schemas/TimelineFilterMode'
         - description: min 1, max 20
           in: query
           name: limit
