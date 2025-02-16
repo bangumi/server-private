@@ -95,7 +95,7 @@ describe('group topics', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 287622,
+        userID: testUserID,
       },
     });
     await app.register(setup);
@@ -116,7 +116,7 @@ describe('group topics', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: 287622,
+        userID: testUserID,
       },
     });
     await app.register(setup);
@@ -125,6 +125,48 @@ describe('group topics', () => {
       url: '/groups/-/topics',
       query: {
         mode: 'all',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get recent topics of mine', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'created',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get recent topics of replied', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'replied',
         limit: '2',
       },
     });

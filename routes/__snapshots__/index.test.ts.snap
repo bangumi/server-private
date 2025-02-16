@@ -700,13 +700,19 @@ exports[`should build private api spec 1`] = `
         小组帖子过滤模式
           - all = 全站
           - joined = 已加入
+          - created = 我创建的
+          - replied = 我回复的
       enum:
         - all
         - joined
+        - created
+        - replied
       type: string
       x-enum-varnames:
         - All
         - Joined
+        - Created
+        - Replied
       x-ms-enum:
         modelAsString: true
         name: GroupTopicFilterMode
