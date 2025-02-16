@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
@@ -39,50 +39,6 @@ describe('group info', () => {
     await app.register(setup);
 
     const res = await app.inject('/groups/sandbox/members');
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toMatchSnapshot();
-  });
-});
-
-describe('recent topics', () => {
-  test('should get recent topics of joined group', async () => {
-    const app = await createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
-
-    const res = await app.inject({
-      url: '/groups/-/topics',
-      query: {
-        mode: 'joined',
-        limit: '2',
-      },
-    });
-    expect(res.statusCode).toBe(200);
-    expect(res.json()).toMatchSnapshot();
-  });
-
-  test('should get recent topics of all group', async () => {
-    const app = await createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
-
-    const res = await app.inject({
-      url: '/groups/-/topics',
-      query: {
-        mode: 'all',
-        limit: '2',
-      },
-    });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
@@ -132,6 +88,48 @@ describe('group topics', () => {
   afterEach(async () => {
     await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
     await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.mid, testTopicID));
+  });
+
+  test('should get recent topics of joined group', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'joined',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get recent topics of all group', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups/-/topics',
+      query: {
+        mode: 'all',
+        limit: '2',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
   });
 
   test('should get group topics', async () => {
