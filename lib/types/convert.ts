@@ -643,7 +643,7 @@ export function toGroup(group: orm.IGroup, user: orm.IUser): res.IGroup {
 export function toGroupMember(member: orm.IGroupMember): res.IGroupMember {
   return {
     uid: member.uid,
-    moderator: member.moderator,
+    role: member.role,
     joinedAt: member.createdAt,
   };
 }

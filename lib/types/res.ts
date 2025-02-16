@@ -8,6 +8,7 @@ import {
   CollectionType,
   EpisodeCollectionStatus,
   EpisodeType,
+  GroupMemberRole,
   Ref,
   SubjectType,
 } from '@app/lib/types/common.ts';
@@ -880,7 +881,7 @@ export const GroupMember = t.Object(
   {
     uid: t.Integer(),
     user: t.Optional(Ref(SlimUser)),
-    moderator: t.Boolean(),
+    role: Ref(GroupMemberRole),
     joinedAt: t.Integer(),
   },
   { $id: 'GroupMember', title: 'GroupMember' },
