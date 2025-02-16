@@ -4,7 +4,8 @@ import * as php from '@trim21/php-serialize';
 
 import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
-import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
+import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
+import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 import {
@@ -257,7 +258,7 @@ export function toSlimSubject(subject: orm.ISubject, fields: orm.ISubjectFields)
     nameCN: subject.nameCN,
     type: subject.typeID,
     images: subjectCover(subject.image),
-    info: getInfoboxSummary(infobox, subject.typeID, subject.eps),
+    info: getSubjectInfoboxSummary(infobox, subject.typeID, subject.eps),
     rating: toSubjectRating(fields),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
@@ -273,7 +274,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     id: subject.id,
     images: subjectCover(subject.image),
     infobox: infobox,
-    info: getInfoboxSummary(infobox, subject.typeID, subject.eps),
+    info: getSubjectInfoboxSummary(infobox, subject.typeID, subject.eps),
     metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     name: subject.name,
@@ -452,6 +453,7 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
     name: character.name,
     nameCN: extractNameCN(infobox),
     role: character.role,
+    info: getPersonInfoboxSummary(infobox),
     images: personImages(character.img),
     comment: character.comment,
     nsfw: character.nsfw,
@@ -467,6 +469,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
     nameCN: extractNameCN(infobox),
     role: character.role,
     infobox: infobox,
+    info: getPersonInfoboxSummary(infobox),
     summary: character.summary,
     images: personImages(character.img),
     comment: character.comment,
@@ -484,6 +487,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     name: person.name,
     nameCN: extractNameCN(infobox),
     type: person.type,
+    info: getPersonInfoboxSummary(infobox),
     images: personImages(person.img),
     comment: person.comment,
     nsfw: person.nsfw,
@@ -526,6 +530,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
     infobox: infobox,
     career,
     summary: person.summary,
+    info: getPersonInfoboxSummary(infobox),
     images: personImages(person.img),
     comment: person.comment,
     collects: person.collects,

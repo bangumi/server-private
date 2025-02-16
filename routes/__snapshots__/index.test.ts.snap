@@ -123,6 +123,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/PersonImages'
+        info:
+          type: string
         infobox:
           $ref: '#/components/schemas/Infobox'
         lock:
@@ -145,6 +147,7 @@ exports[`should build private api spec 1`] = `
         - nameCN
         - role
         - infobox
+        - info
         - summary
         - comment
         - collects
@@ -939,6 +942,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/PersonImages'
+        info:
+          type: string
         infobox:
           $ref: '#/components/schemas/Infobox'
         lock:
@@ -961,6 +966,7 @@ exports[`should build private api spec 1`] = `
         - nameCN
         - type
         - infobox
+        - info
         - career
         - summary
         - comment
@@ -1308,6 +1314,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/PersonImages'
+        info:
+          type: string
         lock:
           type: boolean
         name:
@@ -1323,6 +1331,7 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - role
+        - info
         - comment
         - lock
         - nsfw
@@ -1388,6 +1397,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         images:
           $ref: '#/components/schemas/PersonImages'
+        info:
+          type: string
         lock:
           type: boolean
         name:
@@ -1403,6 +1414,7 @@ exports[`should build private api spec 1`] = `
         - name
         - nameCN
         - type
+        - info
         - comment
         - lock
         - nsfw
