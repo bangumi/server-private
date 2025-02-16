@@ -74,6 +74,23 @@ export const EpisodeCollectionStatus = t.Integer({
   - 3 = 抛弃`,
 });
 
+export const GroupMemberRole = t.Integer({
+  $id: 'GroupMemberRole',
+  enum: [-2, -1, 0, 1, 2, 3],
+  'x-ms-enum': {
+    name: 'GroupMemberRole',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['Visitor', 'Guest', 'Member', 'Creator', 'Moderator', 'Blocked'],
+  description: `小组成员角色
+  - -2 = 访客
+  - -1 = 游客
+  - 0 = 小组成员
+  - 1 = 小组长
+  - 2 = 小组管理员
+  - 3 = 禁言成员`,
+});
+
 export type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
 export const EpisodeWikiInfo = t.Object(
   {

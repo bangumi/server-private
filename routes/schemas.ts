@@ -4,16 +4,26 @@ import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
 export function addSchemas(app: App) {
+  addCommonSchemas(app);
+  addRequestSchemas(app);
+  addResponseSchemas(app);
+}
+
+function addCommonSchemas(app: App) {
   app.addSchema(common.CollectionType);
   app.addSchema(common.EpisodeType);
   app.addSchema(common.SubjectType);
+  app.addSchema(common.GroupMemberRole);
+  app.addSchema(common.EpisodeCollectionStatus);
+  app.addSchema(common.EpisodeWikiInfo);
+}
 
+function addRequestSchemas(app: App) {
   app.addSchema(req.CharacterSearchFilter);
   app.addSchema(req.CollectSubject);
   app.addSchema(req.CreateContent);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
-  app.addSchema(req.EpisodeCollectionStatus);
   app.addSchema(req.GroupSort);
   app.addSchema(req.GroupTopicFilterMode);
   app.addSchema(req.PersonSearchFilter);
@@ -29,7 +39,9 @@ export function addSchemas(app: App) {
   app.addSchema(req.UpdateEpisodeProgress);
   app.addSchema(req.UpdateSubjectProgress);
   app.addSchema(req.UpdateTopic);
+}
 
+function addResponseSchemas(app: App) {
   app.addSchema(res.Avatar);
   app.addSchema(res.BlogEntry);
   app.addSchema(res.BlogPhoto);
@@ -39,7 +51,6 @@ export function addSchemas(app: App) {
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.Comment);
   app.addSchema(res.Episode);
-  app.addSchema(res.EpisodeWikiInfo);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
   app.addSchema(res.Group);

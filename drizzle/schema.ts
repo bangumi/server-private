@@ -202,7 +202,7 @@ export const chiiGroups = mysqlTable('chii_groups', {
 export const chiiGroupMembers = mysqlTable('chii_group_members', {
   uid: mediumint('gmb_uid').notNull(),
   gid: smallint('gmb_gid').notNull(),
-  moderator: customBoolean('gmb_moderator').default(false).notNull(),
+  role: tinyint('gmb_moderator').default(0).notNull(),
   createdAt: int('gmb_dateline').default(0).notNull(),
 });
 

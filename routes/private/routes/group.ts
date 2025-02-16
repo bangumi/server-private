@@ -139,7 +139,7 @@ export async function setup(app: App) {
           groupName: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
-          moderator: t.Optional(t.Boolean({ default: false })),
+          role: t.Optional(req.Ref(req.GroupMemberRole)),
           limit: t.Optional(t.Integer({ default: 20, maximum: 100 })),
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
@@ -148,15 +148,15 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { groupName }, query: { moderator, limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { groupName }, query: { role, limit = 20, offset = 0 } }) => {
       const group = await fetcher.fetchSlimGroupByName(groupName, auth.allowNsfw);
       if (!group) {
         throw new NotFoundError('group');
       }
 
       const conditions = [op.eq(schema.chiiGroupMembers.gid, group.id)];
-      if (moderator !== undefined) {
-        conditions.push(op.eq(schema.chiiGroupMembers.moderator, moderator));
+      if (role !== undefined) {
+        conditions.push(op.eq(schema.chiiGroupMembers.role, role));
       }
 
       const [{ count = 0 } = {}] = await db
