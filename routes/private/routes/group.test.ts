@@ -53,7 +53,7 @@ describe('group topics', () => {
 
   beforeEach(async () => {
     await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
-    await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.mid, testTopicID));
+    await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.uid, testUserID));
     await db.insert(schema.chiiGroupTopics).values({
       id: testTopicID,
       gid: testGroupID,
@@ -87,7 +87,7 @@ describe('group topics', () => {
 
   afterEach(async () => {
     await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
-    await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.mid, testTopicID));
+    await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.uid, testUserID));
   });
 
   test('should get recent topics of joined group', async () => {

@@ -262,6 +262,23 @@ export async function setup(app: App) {
         mode = GroupTopicMode.All;
       }
       switch (mode) {
+        case GroupTopicMode.All: {
+          const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
+          const [{ count = 0 } = {}] = await db
+            .select({ count: op.count() })
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions));
+          total = count;
+          const data = await db
+            .select()
+            .from(schema.chiiGroupTopics)
+            .where(op.and(...conditions))
+            .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
+            .limit(limit)
+            .offset(offset);
+          tids.push(...data.map((x) => x.id));
+          break;
+        }
         case GroupTopicMode.Joined: {
           const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
           const gids = await fetchJoinedGroups(auth.userID);
@@ -316,23 +333,6 @@ export async function setup(app: App) {
             .limit(limit)
             .offset(offset);
           tids.push(...data.map((x) => x.mid));
-          break;
-        }
-        default: {
-          const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
-          const [{ count = 0 } = {}] = await db
-            .select({ count: op.count() })
-            .from(schema.chiiGroupTopics)
-            .where(op.and(...conditions));
-          total = count;
-          const data = await db
-            .select()
-            .from(schema.chiiGroupTopics)
-            .where(op.and(...conditions))
-            .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
-            .limit(limit)
-            .offset(offset);
-          tids.push(...data.map((x) => x.id));
           break;
         }
       }
