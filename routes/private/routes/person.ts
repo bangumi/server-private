@@ -12,16 +12,11 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
-function toPersonWork(subject: res.ISlimSubject, relations: orm.IPersonSubject[]): res.IPersonWork {
+function toPersonSubjectRelation(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
   return {
-    subject,
-    positions: relations.map((r) => {
-      return {
-        summary: r.summary,
-        appearEps: r.appearEps,
-        type: convert.toSubjectStaffPositionType(r.subjectType, r.position),
-      };
-    }),
+    summary: relation.summary,
+    appearEps: relation.appearEps,
+    type: convert.toSubjectStaffPositionType(relation.subjectType, relation.position),
   };
 }
 
@@ -145,20 +140,20 @@ export async function setup(app: App) {
             position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
           ),
         );
-      const relationsMap = new Map<number, orm.IPersonSubject[]>();
+      const relationsMap = new Map<number, res.ISubjectStaffPosition[]>();
       for (const r of relations) {
         const relations = relationsMap.get(r.subjectID) || [];
-        relations.push(r);
+        relations.push(toPersonSubjectRelation(r));
         relationsMap.set(r.subjectID, relations);
       }
       const works: res.IPersonWork[] = [];
       for (const sid of subjectIDs) {
         const subject = subjects[sid];
-        const relations = relationsMap.get(sid) || [];
+        const positions = relationsMap.get(sid) || [];
         if (!subject) {
           continue;
         }
-        works.push(toPersonWork(subject, relations));
+        works.push({ subject, positions });
       }
       return {
         total: count,
