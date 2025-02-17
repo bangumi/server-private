@@ -152,9 +152,9 @@ export async function setup(app: App) {
         relationsMap.set(r.subjectID, relations);
       }
       const works: res.IPersonWork[] = [];
-      for (const d of data) {
-        const subject = subjects[d.sid];
-        const relations = relationsMap.get(d.sid) || [];
+      for (const sid of subjectIDs) {
+        const subject = subjects[sid];
+        const relations = relationsMap.get(sid) || [];
         if (!subject) {
           continue;
         }
