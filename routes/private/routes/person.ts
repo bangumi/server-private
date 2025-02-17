@@ -12,13 +12,9 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
-function toPersonWork(
-  subject: orm.ISubject,
-  fields: orm.ISubjectFields,
-  relations: orm.IPersonSubject[],
-): res.IPersonWork {
+function toPersonWork(subject: res.ISlimSubject, relations: orm.IPersonSubject[]): res.IPersonWork {
   return {
-    subject: convert.toSlimSubject(subject, fields),
+    subject,
     positions: relations.map((r) => {
       return {
         summary: r.summary,
@@ -120,34 +116,29 @@ export async function setup(app: App) {
         op.eq(schema.chiiPersonSubjects.personID, personID),
         subjectType ? op.eq(schema.chiiPersonSubjects.subjectType, subjectType) : undefined,
         position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
-        op.ne(schema.chiiSubjects.ban, 1),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.countDistinct(schema.chiiPersonSubjects.subjectID) })
         .from(schema.chiiPersonSubjects)
-        .innerJoin(
-          schema.chiiSubjects,
-          op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
-        )
         .where(condition);
       const data = await db
-        .select()
+        .select({
+          sid: schema.chiiPersonSubjects.subjectID,
+          subject: schema.chiiSubjects,
+          fields: schema.chiiSubjectFields,
+        })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
-          schema.chiiSubjects,
-          op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
-        )
-        .innerJoin(
           schema.chiiSubjectFields,
-          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+          op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjectFields.id),
         )
         .where(condition)
         .groupBy(schema.chiiPersonSubjects.subjectID)
-        .orderBy(op.desc(schema.chiiPersonSubjects.subjectID))
+        .orderBy(op.desc(schema.chiiSubjectFields.date))
         .limit(limit)
         .offset(offset);
-      const subjectIDs = data.map((d) => d.chii_person_cs_index.subjectID);
+      const subjectIDs = data.map((d) => d.sid);
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, auth.allowNsfw);
       const relations = await db
         .select()
         .from(schema.chiiPersonSubjects)
@@ -164,16 +155,18 @@ export async function setup(app: App) {
         relations.push(r);
         relationsMap.set(r.subjectID, relations);
       }
-      const subjects = data.map((d) =>
-        toPersonWork(
-          d.chii_subjects,
-          d.chii_subject_fields,
-          relationsMap.get(d.chii_subjects.id) || [],
-        ),
-      );
+      const works: res.IPersonWork[] = [];
+      for (const d of data) {
+        const subject = subjects[d.sid];
+        const relations = relationsMap.get(d.sid) || [];
+        if (!subject) {
+          continue;
+        }
+        works.push(toPersonWork(subject, relations));
+      }
       return {
         total: count,
-        data: subjects,
+        data: works,
       };
     },
   );
