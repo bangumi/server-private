@@ -122,11 +122,7 @@ export async function setup(app: App) {
         .from(schema.chiiPersonSubjects)
         .where(condition);
       const data = await db
-        .select({
-          sid: schema.chiiPersonSubjects.subjectID,
-          subject: schema.chiiSubjects,
-          fields: schema.chiiSubjectFields,
-        })
+        .select({ sid: schema.chiiPersonSubjects.subjectID })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
           schema.chiiSubjectFields,
