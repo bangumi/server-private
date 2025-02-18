@@ -9,6 +9,14 @@ import {
   getJoinedGroupsCacheKey,
   getRelationCacheKey,
 } from '@app/lib/user/cache.ts';
+import { intval } from '@app/lib/utils/index.ts';
+
+export function parseBlocklist(blocklist: string): number[] {
+  return blocklist
+    .split(',')
+    .map((x) => x.trim())
+    .map((x) => intval(x));
+}
 
 /** Cached: Get friend ids of user(uid) */
 export async function fetchFriends(uid?: number): Promise<number[]> {

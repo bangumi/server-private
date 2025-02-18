@@ -4,10 +4,9 @@ import type { DateTime } from 'luxon';
 
 import { db, incr, op, schema } from '@app/drizzle';
 import { siteUrl } from '@app/lib/config.ts';
-import { isFriends } from '@app/lib/user/utils.ts';
+import { isFriends, parseBlocklist } from '@app/lib/user/utils.ts';
 
 import { NotFoundError, UnreachableError } from './error.ts';
-import { intval } from './utils/index.ts';
 
 /**
  * `nt_type`
@@ -250,10 +249,7 @@ async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
     TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,
     MentionNotification: field[UserPrivacyReceiveMentionNotification] as PrivacyFilter,
     CommentNotification: field[UserPrivacyReceiveCommentNotification] as PrivacyFilter,
-    blockedUsers: uf.blocklist
-      .split(',')
-      .map((x) => x.trim())
-      .map((x) => intval(x)),
+    blockedUsers: parseBlocklist(uf.blocklist),
   };
 }
 
