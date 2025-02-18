@@ -1,3 +1,4 @@
+import { BadRequestError } from '@app/lib/error';
 import { client, type SearchResult } from '@app/lib/search/client.ts';
 import type * as req from '@app/lib/types/req.ts';
 
@@ -32,10 +33,10 @@ function convertFilter(filter?: req.ISubjectSearchFilter): string[][] {
     filters.push(...filter.tags.map((tag) => [`tag = ${tag}`]));
   }
   if (filter.rank) {
-    filters.push([`rank ${filter.rank}`]);
+    filters.push(...parseRankFilter(filter.rank));
   }
   if (filter.rating) {
-    filters.push(...filter.rating.map((rating) => [`score ${rating}`]));
+    filters.push(...parseRatingFilter(filter.rating));
   }
   return filters;
 }
@@ -46,10 +47,38 @@ function parseDateFilter(filters: string[]): string[][] {
   for (const value of filters) {
     const match = regex.exec(value);
     if (!match) {
-      continue;
+      throw new BadRequestError(`Invalid date filter: ${value}`);
     }
     const [_, operator, date] = match;
     result.push([`date ${operator} ${date}`]);
+  }
+  return result;
+}
+
+function parseRankFilter(rank: string[]): string[][] {
+  const result: string[][] = [];
+  const regex = /^(>|>=|<|<=)(\d+)$/;
+  for (const value of rank) {
+    const match = regex.exec(value);
+    if (!match) {
+      throw new BadRequestError(`Invalid rank filter: ${value}`);
+    }
+    const [_, operator, number] = match;
+    result.push([`rank ${operator} ${number}`]);
+  }
+  return result;
+}
+
+function parseRatingFilter(rating: string[]): string[][] {
+  const result: string[][] = [];
+  const regex = /^(>|>=|<|<=)([\d+.])$/;
+  for (const value of rating) {
+    const match = regex.exec(value);
+    if (!match) {
+      throw new BadRequestError(`Invalid rating filter: ${value}`);
+    }
+    const [_, operator, number] = match;
+    result.push([`score ${operator} ${number}`]);
   }
   return result;
 }
