@@ -141,6 +141,8 @@ export async function createServer(
       req: {
         id: req.id,
         url: req.url,
+        agent: req.headers['user-agent'],
+        method: req.method,
       },
     }),
   });
