@@ -14,7 +14,7 @@ import { UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
-import { fetchFriends } from '@app/lib/user/utils';
+import { fetchFriends, parseBlocklist } from '@app/lib/user/utils';
 import { intval } from '@app/lib/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
@@ -77,6 +77,7 @@ export async function setup(app: App) {
         group: u.chii_members.groupid,
         joinedAt: u.chii_members.regdate,
         friendIDs,
+        blocklist: parseBlocklist(u.chii_memberfields.blocklist),
         site: u.chii_memberfields.site,
         location: u.chii_memberfields.location,
         bio: u.chii_memberfields.bio,

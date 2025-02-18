@@ -1134,6 +1134,10 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/Avatar'
         bio:
           type: string
+        blocklist:
+          items:
+            type: integer
+          type: array
         friendIDs:
           items:
             type: integer
@@ -1168,6 +1172,7 @@ exports[`should build private api spec 1`] = `
         - location
         - bio
         - friendIDs
+        - blocklist
         - permissions
       title: Profile
       type: object

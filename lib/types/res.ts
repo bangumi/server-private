@@ -231,6 +231,7 @@ export const Profile = t.Object(
     location: t.String(),
     bio: t.String(),
     friendIDs: t.Array(t.Integer()),
+    blocklist: t.Array(t.Integer()),
     permissions: Ref(Permissions),
   },
   { $id: 'Profile', title: 'Profile' },
