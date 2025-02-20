@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 
-import { db, op, schema } from '@app/drizzle';
+import { db, incr, op, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam } from '@app/lib/dam.ts';
@@ -94,17 +94,57 @@ export class CommentWithState {
         throw new NotAllowedError(`reply to a abnormal state comment`);
       }
     }
+    const now = DateTime.now().toUnixInteger();
     await rateLimit(LimitAction.Comment, auth.userID);
     const reply: typeof this.table.$inferInsert = {
       mid: mainID,
       uid: auth.userID,
       related: replyTo,
       content,
-      createdAt: DateTime.now().toUnixInteger(),
+      createdAt: now,
       state: CommentState.Normal,
     };
-    const [result] = await db.insert(this.table).values(reply);
-    return { id: result.insertId };
+    let insertId = 0;
+    await db.transaction(async (tx) => {
+      const [result] = await tx.insert(this.table).values(reply);
+      insertId = result.insertId;
+      switch (this.table) {
+        case schema.chiiEpComments: {
+          await tx
+            .update(schema.chiiEpisodes)
+            .set({
+              comment: incr(schema.chiiEpisodes.comment),
+              updatedAt: now,
+            })
+            .where(op.eq(schema.chiiEpisodes.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiCrtComments: {
+          await tx
+            .update(schema.chiiCharacters)
+            .set({
+              comment: incr(schema.chiiCharacters.comment),
+              updatedAt: now,
+            })
+            .where(op.eq(schema.chiiCharacters.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiPrsnComments: {
+          await tx
+            .update(schema.chiiPersons)
+            .set({
+              comment: incr(schema.chiiPersons.comment),
+              updatedAt: now,
+            })
+            .where(op.eq(schema.chiiPersons.id, mainID))
+            .limit(1);
+          break;
+        }
+      }
+    });
+    return { id: insertId };
   }
 
   async update(auth: Readonly<IAuth>, commentID: number, content: string) {
@@ -222,16 +262,55 @@ export class CommentWithoutState {
         throw new NotFoundError(`parent comment id ${replyTo}`);
       }
     }
+    const now = DateTime.now().toUnixInteger();
     await rateLimit(LimitAction.Comment, auth.userID);
     const reply: typeof this.table.$inferInsert = {
       mid: mainID,
       uid: auth.userID,
       related: replyTo,
       content,
-      createdAt: DateTime.now().toUnixInteger(),
+      createdAt: now,
     };
-    const [result] = await db.insert(this.table).values(reply);
-    return { id: result.insertId };
+    let insertId = 0;
+    await db.transaction(async (tx) => {
+      const [result] = await tx.insert(this.table).values(reply);
+      insertId = result.insertId;
+      switch (this.table) {
+        case schema.chiiIndexComments: {
+          await tx
+            .update(schema.chiiIndexes)
+            .set({
+              replies: incr(schema.chiiIndexes.replies),
+              updatedAt: now,
+            })
+            .where(op.eq(schema.chiiIndexes.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiBlogComments: {
+          await tx
+            .update(schema.chiiBlogEntries)
+            .set({
+              replies: incr(schema.chiiBlogEntries.replies),
+              updatedAt: now,
+            })
+            .where(op.eq(schema.chiiBlogEntries.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiTimelineComments: {
+          await tx
+            .update(schema.chiiTimeline)
+            .set({
+              replies: incr(schema.chiiTimeline.replies),
+            })
+            .where(op.eq(schema.chiiTimeline.id, mainID))
+            .limit(1);
+          break;
+        }
+      }
+    });
+    return { id: insertId };
   }
 
   async update(auth: Readonly<IAuth>, commentID: number, content: string) {
