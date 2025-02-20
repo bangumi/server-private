@@ -94,13 +94,14 @@ export class CommentWithState {
         throw new NotAllowedError(`reply to a abnormal state comment`);
       }
     }
+    const now = DateTime.now().toUnixInteger();
     await rateLimit(LimitAction.Comment, auth.userID);
     const reply: typeof this.table.$inferInsert = {
       mid: mainID,
       uid: auth.userID,
       related: replyTo,
       content,
-      createdAt: DateTime.now().toUnixInteger(),
+      createdAt: now,
       state: CommentState.Normal,
     };
     let insertId = 0;
@@ -113,6 +114,7 @@ export class CommentWithState {
             .update(schema.chiiEpisodes)
             .set({
               comment: incr(schema.chiiEpisodes.comment),
+              updatedAt: now,
             })
             .where(op.eq(schema.chiiEpisodes.id, mainID))
             .limit(1);
@@ -120,21 +122,23 @@ export class CommentWithState {
         }
         case schema.chiiCrtComments: {
           await tx
-            .update(schema.chiiEpisodes)
+            .update(schema.chiiCharacters)
             .set({
-              comment: incr(schema.chiiEpisodes.comment),
+              comment: incr(schema.chiiCharacters.comment),
+              updatedAt: now,
             })
-            .where(op.eq(schema.chiiEpisodes.id, mainID))
+            .where(op.eq(schema.chiiCharacters.id, mainID))
             .limit(1);
           break;
         }
         case schema.chiiPrsnComments: {
           await tx
-            .update(schema.chiiEpisodes)
+            .update(schema.chiiPersons)
             .set({
-              comment: incr(schema.chiiEpisodes.comment),
+              comment: incr(schema.chiiPersons.comment),
+              updatedAt: now,
             })
-            .where(op.eq(schema.chiiEpisodes.id, mainID))
+            .where(op.eq(schema.chiiPersons.id, mainID))
             .limit(1);
           break;
         }
@@ -258,13 +262,14 @@ export class CommentWithoutState {
         throw new NotFoundError(`parent comment id ${replyTo}`);
       }
     }
+    const now = DateTime.now().toUnixInteger();
     await rateLimit(LimitAction.Comment, auth.userID);
     const reply: typeof this.table.$inferInsert = {
       mid: mainID,
       uid: auth.userID,
       related: replyTo,
       content,
-      createdAt: DateTime.now().toUnixInteger(),
+      createdAt: now,
     };
     let insertId = 0;
     await db.transaction(async (tx) => {
@@ -276,6 +281,7 @@ export class CommentWithoutState {
             .update(schema.chiiIndexes)
             .set({
               replies: incr(schema.chiiIndexes.replies),
+              updatedAt: now,
             })
             .where(op.eq(schema.chiiIndexes.id, mainID))
             .limit(1);
@@ -286,6 +292,7 @@ export class CommentWithoutState {
             .update(schema.chiiBlogEntries)
             .set({
               replies: incr(schema.chiiBlogEntries.replies),
+              updatedAt: now,
             })
             .where(op.eq(schema.chiiBlogEntries.id, mainID))
             .limit(1);
