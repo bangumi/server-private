@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 
-import { db, op, schema } from '@app/drizzle';
+import { db, incr, op, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam } from '@app/lib/dam.ts';
@@ -103,8 +103,44 @@ export class CommentWithState {
       createdAt: DateTime.now().toUnixInteger(),
       state: CommentState.Normal,
     };
-    const [result] = await db.insert(this.table).values(reply);
-    return { id: result.insertId };
+    let insertId = 0;
+    await db.transaction(async (tx) => {
+      const [result] = await tx.insert(this.table).values(reply);
+      insertId = result.insertId;
+      switch (this.table) {
+        case schema.chiiEpComments: {
+          await tx
+            .update(schema.chiiEpisodes)
+            .set({
+              comment: incr(schema.chiiEpisodes.comment),
+            })
+            .where(op.eq(schema.chiiEpisodes.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiCrtComments: {
+          await tx
+            .update(schema.chiiEpisodes)
+            .set({
+              comment: incr(schema.chiiEpisodes.comment),
+            })
+            .where(op.eq(schema.chiiEpisodes.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiPrsnComments: {
+          await tx
+            .update(schema.chiiEpisodes)
+            .set({
+              comment: incr(schema.chiiEpisodes.comment),
+            })
+            .where(op.eq(schema.chiiEpisodes.id, mainID))
+            .limit(1);
+          break;
+        }
+      }
+    });
+    return { id: insertId };
   }
 
   async update(auth: Readonly<IAuth>, commentID: number, content: string) {
@@ -230,8 +266,44 @@ export class CommentWithoutState {
       content,
       createdAt: DateTime.now().toUnixInteger(),
     };
-    const [result] = await db.insert(this.table).values(reply);
-    return { id: result.insertId };
+    let insertId = 0;
+    await db.transaction(async (tx) => {
+      const [result] = await tx.insert(this.table).values(reply);
+      insertId = result.insertId;
+      switch (this.table) {
+        case schema.chiiIndexComments: {
+          await tx
+            .update(schema.chiiIndexes)
+            .set({
+              replies: incr(schema.chiiIndexes.replies),
+            })
+            .where(op.eq(schema.chiiIndexes.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiBlogComments: {
+          await tx
+            .update(schema.chiiBlogEntries)
+            .set({
+              replies: incr(schema.chiiBlogEntries.replies),
+            })
+            .where(op.eq(schema.chiiBlogEntries.id, mainID))
+            .limit(1);
+          break;
+        }
+        case schema.chiiTimelineComments: {
+          await tx
+            .update(schema.chiiTimeline)
+            .set({
+              replies: incr(schema.chiiTimeline.replies),
+            })
+            .where(op.eq(schema.chiiTimeline.id, mainID))
+            .limit(1);
+          break;
+        }
+      }
+    });
+    return { id: insertId };
   }
 
   async update(auth: Readonly<IAuth>, commentID: number, content: string) {
