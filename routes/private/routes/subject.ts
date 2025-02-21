@@ -818,6 +818,79 @@ export async function setup(app: App) {
     },
   );
 
+  app.get(
+    '/subjects/-/topics',
+    {
+      schema: {
+        operationId: 'getRecentSubjectTopics',
+        summary: '获取最新的条目讨论',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.SubjectTopic)),
+        },
+      },
+    },
+    async ({ auth, query: { limit = 20, offset = 0 } }) => {
+      const conditions = [op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal)];
+      if (!auth.allowNsfw) {
+        conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
+      }
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectTopics)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectTopics.subjectID, schema.chiiSubjects.id),
+        )
+        .where(op.and(...conditions));
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectTopics)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectTopics.subjectID, schema.chiiSubjects.id),
+        )
+        .where(op.and(...conditions))
+        .orderBy(op.desc(schema.chiiSubjectTopics.updatedAt))
+        .limit(limit)
+        .offset(offset);
+      const uids = data.map((d) => d.chii_subject_topics.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const subjectIDs = data.map((d) => d.chii_subject_topics.subjectID);
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(subjectIDs);
+      const topics: res.ISubjectTopic[] = [];
+      for (const d of data) {
+        const subject = subjects[d.chii_subject_topics.subjectID];
+        if (!subject) {
+          continue;
+        }
+        const creator = users[d.chii_subject_topics.uid];
+        if (!creator) {
+          continue;
+        }
+        const topic = convert.toSubjectTopic(d.chii_subject_topics);
+        topic.creator = creator;
+        topics.push({
+          ...topic,
+          subject,
+          creator,
+          replies: [],
+        });
+      }
+      return {
+        data: topics,
+        total: count,
+      };
+    },
+  );
+
   app.post(
     '/subjects/:subjectID/topics',
     {
