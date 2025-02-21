@@ -4508,6 +4508,23 @@ paths:
             default: 0
             type: integer
       responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/GroupTopic'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:

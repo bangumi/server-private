@@ -253,6 +253,9 @@ export async function setup(app: App) {
           limit: t.Optional(t.Integer({ default: 20, maximum: 100 })),
           offset: t.Optional(t.Integer({ default: 0 })),
         }),
+        response: {
+          200: res.Paged(res.Ref(res.GroupTopic)),
+        },
       },
     },
     async ({ auth, query: { mode = GroupTopicMode.Joined, limit = 20, offset = 0 } }) => {
