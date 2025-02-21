@@ -39,6 +39,12 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await db.delete(schema.chiiEpComments).where(op.eq(schema.chiiEpComments.mid, 1027));
+  await db
+    .update(schema.chiiEpisodes)
+    .set({
+      comment: 16,
+    })
+    .where(op.eq(schema.chiiEpisodes.id, 1027));
 });
 
 describe('get episode', () => {

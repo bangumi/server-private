@@ -88,6 +88,12 @@ describe('person comments', () => {
   afterEach(async () => {
     await redis.flushdb();
     await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 1));
+    await db
+      .update(schema.chiiPersons)
+      .set({
+        comment: 110,
+      })
+      .where(op.eq(schema.chiiPersons.id, 1));
   });
 
   test('should get person comments', async () => {

@@ -718,6 +718,130 @@ Object {
 }
 `;
 
+exports[`subject topics > should get recent subject topics 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "createdAt": 1216020847,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "group": 11,
+        "id": 2,
+        "joinedAt": 0,
+        "nickname": "nickname 2",
+        "sign": "sing 2",
+        "username": "2",
+      },
+      "creatorID": 2,
+      "display": 1,
+      "id": 1,
+      "parentID": 1,
+      "replies": Array [],
+      "replyCount": 76,
+      "state": 0,
+      "subject": Object {
+        "id": 1,
+        "images": Object {
+          "common": "https://lain.bgm.tv/pic/cover/c/c4/ca/1_EcYzQ.jpg",
+          "grid": "https://lain.bgm.tv/pic/cover/g/c4/ca/1_EcYzQ.jpg",
+          "large": "https://lain.bgm.tv/pic/cover/l/c4/ca/1_EcYzQ.jpg",
+          "medium": "https://lain.bgm.tv/pic/cover/m/c4/ca/1_EcYzQ.jpg",
+          "small": "https://lain.bgm.tv/pic/cover/s/c4/ca/1_EcYzQ.jpg",
+        },
+        "info": "1998-09-25 / 蔡智恒 / 紅色文化、知识出版社 / 188",
+        "locked": false,
+        "name": "第一次的親密接觸",
+        "nameCN": "第一次的亲密接触",
+        "nsfw": false,
+        "rating": Object {
+          "count": Array [
+            0,
+            0,
+            1,
+            0,
+            0,
+            9,
+            16,
+            31,
+            8,
+            4,
+          ],
+          "rank": 1573,
+          "score": 7.67,
+          "total": 69,
+        },
+        "type": 1,
+      },
+      "title": "拿这个来测试",
+      "updatedAt": 1639999129,
+    },
+    Object {
+      "createdAt": 1628589969,
+      "creator": Object {
+        "avatar": Object {
+          "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+          "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+          "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        },
+        "group": 0,
+        "id": 617229,
+        "joinedAt": 0,
+        "nickname": "nickname 617229",
+        "sign": "sing 617229",
+        "username": "617229",
+      },
+      "creatorID": 617229,
+      "display": 1,
+      "id": 19887,
+      "parentID": 8,
+      "replies": Array [],
+      "replyCount": 19,
+      "state": 0,
+      "subject": Object {
+        "id": 8,
+        "images": Object {
+          "common": "https://lain.bgm.tv/pic/cover/c/c9/f0/8_wK0z3.jpg",
+          "grid": "https://lain.bgm.tv/pic/cover/g/c9/f0/8_wK0z3.jpg",
+          "large": "https://lain.bgm.tv/pic/cover/l/c9/f0/8_wK0z3.jpg",
+          "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
+          "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
+        },
+        "info": "25话 / 2008年4月6日 / 谷口悟朗 / 木村貴宏",
+        "locked": false,
+        "name": "コードギアス 反逆のルルーシュR2",
+        "nameCN": "Code Geass 反叛的鲁路修R2",
+        "nsfw": false,
+        "rating": Object {
+          "count": Array [
+            44,
+            15,
+            32,
+            66,
+            145,
+            457,
+            1472,
+            3190,
+            2640,
+            1377,
+          ],
+          "rank": 121,
+          "score": 8.19,
+          "total": 9438,
+        },
+        "type": 2,
+      },
+      "title": "请教大神R2为什么节奏没有R1好",
+      "updatedAt": 1639381921,
+    },
+  ],
+  "total": 34,
+}
+`;
+
 exports[`subject topics > should get subject post 1`] = `
 Object {
   "content": "Test Reply",

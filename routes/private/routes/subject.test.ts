@@ -161,6 +161,17 @@ describe('subject topics', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get recent subject topics', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: `/subjects/-/topics`,
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should create new topic', async () => {
     const app = createTestServer({
       auth: {
