@@ -709,10 +709,8 @@ exports[`should build private api spec 1`] = `
       type: string
     GroupTopic:
       allOf:
-        - $ref: '#/components/schemas/TopicBase'
+        - $ref: '#/components/schemas/Topic'
         - properties:
-            creator:
-              $ref: '#/components/schemas/SlimUser'
             group:
               $ref: '#/components/schemas/SlimGroup'
             replies:
@@ -720,7 +718,6 @@ exports[`should build private api spec 1`] = `
                 $ref: '#/components/schemas/Reply'
               type: array
           required:
-            - creator
             - group
             - replies
           type: object
@@ -2216,10 +2213,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SubjectTopic:
       allOf:
-        - $ref: '#/components/schemas/TopicBase'
+        - $ref: '#/components/schemas/Topic'
         - properties:
-            creator:
-              $ref: '#/components/schemas/SlimUser'
             replies:
               items:
                 $ref: '#/components/schemas/Reply'
@@ -2227,7 +2222,6 @@ exports[`should build private api spec 1`] = `
             subject:
               $ref: '#/components/schemas/SlimSubject'
           required:
-            - creator
             - subject
             - replies
           type: object
@@ -2512,22 +2506,12 @@ exports[`should build private api spec 1`] = `
         modelAsString: false
         name: TimelineSource
     Topic:
-      allOf:
-        - $ref: '#/components/schemas/TopicBase'
-        - properties:
-            creator:
-              $ref: '#/components/schemas/SlimUser'
-            replies:
-              type: integer
-          required:
-            - replies
-          type: object
-      title: Topic
-    TopicBase:
       properties:
         createdAt:
           description: 发帖时间，unix time stamp in seconds
           type: integer
+        creator:
+          $ref: '#/components/schemas/SlimUser'
         creatorID:
           type: integer
         display:
@@ -2536,6 +2520,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         parentID:
           description: 小组/条目ID
+          type: integer
+        replyCount:
           type: integer
         state:
           type: integer
@@ -2549,11 +2535,12 @@ exports[`should build private api spec 1`] = `
         - title
         - creatorID
         - parentID
+        - replyCount
         - createdAt
         - updatedAt
         - state
         - display
-      title: TopicBase
+      title: Topic
       type: object
     TrendingSubject:
       properties:

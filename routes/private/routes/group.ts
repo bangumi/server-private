@@ -514,17 +514,9 @@ export async function setup(app: App) {
       }
 
       return {
-        id: topic.id,
-        parentID: group.id,
+        ...convert.toGroupTopic(topic),
         group,
-        creatorID: topic.uid,
         creator,
-        title: topic.title,
-        content: '',
-        state: topic.state,
-        display: topic.display,
-        createdAt: topic.createdAt,
-        updatedAt: topic.updatedAt,
         replies: topLevelReplies,
       };
     },

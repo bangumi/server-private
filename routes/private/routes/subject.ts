@@ -960,17 +960,9 @@ export async function setup(app: App) {
         topLevelReplies.push(reply);
       }
       return {
-        id: topic.id,
-        parentID: subject.id,
+        ...convert.toSubjectTopic(topic),
         subject,
-        creatorID: topic.uid,
         creator,
-        title: topic.title,
-        content: '',
-        state: topic.state,
-        display: topic.display,
-        createdAt: topic.createdAt,
-        updatedAt: topic.updatedAt,
         replies: topLevelReplies,
       };
     },

@@ -913,30 +913,20 @@ export const Reply = t.Intersect(
   { $id: 'Reply', title: 'Reply' },
 );
 
-export type ITopicBase = Static<typeof TopicBase>;
-export const TopicBase = t.Object(
+export type ITopic = Static<typeof Topic>;
+export const Topic = t.Object(
   {
     id: t.Integer(),
     title: t.String(),
     creatorID: t.Integer(),
+    creator: t.Optional(Ref(SlimUser)),
     parentID: t.Integer({ description: '小组/条目ID' }),
+    replyCount: t.Integer(),
     createdAt: t.Integer({ description: '发帖时间，unix time stamp in seconds' }),
     updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
     state: t.Integer(),
     display: t.Integer(),
   },
-  { $id: 'TopicBase', title: 'TopicBase' },
-);
-
-export type ITopic = Static<typeof Topic>;
-export const Topic = t.Intersect(
-  [
-    Ref(TopicBase),
-    t.Object({
-      creator: t.Optional(Ref(SlimUser)),
-      replies: t.Integer(),
-    }),
-  ],
   { $id: 'Topic', title: 'Topic' },
 );
 
@@ -957,9 +947,8 @@ export const Post = t.Object(
 export type IGroupTopic = Static<typeof GroupTopic>;
 export const GroupTopic = t.Intersect(
   [
-    Ref(TopicBase),
+    Ref(Topic),
     t.Object({
-      creator: Ref(SlimUser),
       group: Ref(SlimGroup),
       replies: t.Array(Ref(Reply)),
     }),
@@ -970,9 +959,8 @@ export const GroupTopic = t.Intersect(
 export type ISubjectTopic = Static<typeof SubjectTopic>;
 export const SubjectTopic = t.Intersect(
   [
-    Ref(TopicBase),
+    Ref(Topic),
     t.Object({
-      creator: Ref(SlimUser),
       subject: Ref(SlimSubject),
       replies: t.Array(Ref(Reply)),
     }),
