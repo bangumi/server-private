@@ -584,7 +584,7 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
     parentID: topic.subjectID,
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
-    replies: topic.replies,
+    replyCount: topic.replies,
     state: topic.state,
     display: topic.display,
   };
@@ -656,7 +656,7 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
     parentID: topic.gid,
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
-    replies: topic.replies,
+    replyCount: topic.replies,
     state: topic.state,
     display: topic.display,
   };

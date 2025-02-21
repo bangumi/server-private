@@ -105,7 +105,6 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.TimelineMemo);
   app.addSchema(res.TimelineSource);
   app.addSchema(res.Topic);
-  app.addSchema(res.TopicBase);
   app.addSchema(res.User);
   app.addSchema(res.UserHomepage);
   app.addSchema(res.UserHomepageSection);
