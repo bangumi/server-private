@@ -1,9 +1,13 @@
 import { db, op, schema } from '@app/drizzle';
+import * as convert from '@app/lib/types/convert';
+import type * as res from '@app/lib/types/res';
 
-/** Is user member of group */
-export async function isMemberInGroup(userID: number, groupID: number): Promise<boolean> {
+export async function getGroupMember(
+  userID: number,
+  groupID: number,
+): Promise<res.IGroupMember | null> {
   const [d] = await db
-    .select({ uid: schema.chiiGroupMembers.uid, gid: schema.chiiGroupMembers.gid })
+    .select()
     .from(schema.chiiGroupMembers)
     .where(
       op.and(
@@ -12,6 +16,14 @@ export async function isMemberInGroup(userID: number, groupID: number): Promise<
       ),
     )
     .limit(1);
+  if (!d) {
+    return null;
+  }
+  return convert.toGroupMember(d);
+}
 
-  return Boolean(d);
+/** Is user member of group */
+export async function isMemberInGroup(userID: number, groupID: number): Promise<boolean> {
+  const member = await getGroupMember(userID, groupID);
+  return Boolean(member);
 }

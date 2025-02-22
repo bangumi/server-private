@@ -840,6 +840,17 @@ export const SlimIndex = t.Object(
   { $id: 'SlimIndex', title: 'SlimIndex' },
 );
 
+export type IGroupMember = Static<typeof GroupMember>;
+export const GroupMember = t.Object(
+  {
+    uid: t.Integer(),
+    user: t.Optional(Ref(SlimUser)),
+    role: Ref(GroupMemberRole),
+    joinedAt: t.Integer(),
+  },
+  { $id: 'GroupMember', title: 'GroupMember' },
+);
+
 export type IGroup = Static<typeof Group>;
 export const Group = t.Object(
   {
@@ -857,6 +868,7 @@ export const Group = t.Object(
     description: t.String(),
     accessible: t.Boolean(),
     createdAt: t.Integer(),
+    membership: t.Optional(Ref(GroupMember)),
   },
   { $id: 'Group', title: 'Group' },
 );
@@ -875,17 +887,6 @@ export const SlimGroup = t.Object(
     createdAt: t.Integer(),
   },
   { $id: 'SlimGroup', title: 'SlimGroup' },
-);
-
-export type IGroupMember = Static<typeof GroupMember>;
-export const GroupMember = t.Object(
-  {
-    uid: t.Integer(),
-    user: t.Optional(Ref(SlimUser)),
-    role: Ref(GroupMemberRole),
-    joinedAt: t.Integer(),
-  },
-  { $id: 'GroupMember', title: 'GroupMember' },
 );
 
 export type IReplyBase = Static<typeof ReplyBase>;

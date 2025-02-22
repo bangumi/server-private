@@ -34,6 +34,21 @@ describe('group info', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get group info with membership', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject('/groups/sandbox');
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get group members', async () => {
     const app = await createTestServer();
     await app.register(setup);

@@ -622,6 +622,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         members:
           type: integer
+        membership:
+          $ref: '#/components/schemas/GroupMember'
         name:
           type: string
         nsfw:
