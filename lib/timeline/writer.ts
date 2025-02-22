@@ -7,7 +7,7 @@ import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 
 import type * as memo from './memo';
-import type { TimelineMonoCat, TimelineSource } from './type';
+import type { TimelineMonoCat, TimelineMonoType, TimelineSource } from './type';
 import { TimelineCat, TimelineStatusType } from './type';
 
 /**
@@ -70,6 +70,7 @@ export interface TimelineMessage {
   mono: {
     uid: number;
     cat: TimelineMonoCat;
+    type: TimelineMonoType;
     id: number;
     createdAt: number;
     source: TimelineSource;
@@ -293,6 +294,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         op.and(
           op.eq(schema.chiiTimeline.uid, payload.uid),
           op.eq(schema.chiiTimeline.cat, TimelineCat.Mono),
+          op.eq(schema.chiiTimeline.type, payload.type),
         ),
       )
       .orderBy(op.desc(schema.chiiTimeline.id))
@@ -323,7 +325,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       const [result] = await db.insert(schema.chiiTimeline).values({
         uid: payload.uid,
         cat: TimelineCat.Mono,
-        type: 0,
+        type: payload.type,
         related: payload.id.toString(),
         memo: php.stringify(detail),
         img: '',

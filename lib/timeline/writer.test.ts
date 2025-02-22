@@ -4,7 +4,7 @@ import * as php from '@trim21/php-serialize';
 
 import { db, op, schema } from '@app/drizzle';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
-import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
+import { TimelineCat, TimelineMonoType, TimelineSource, TimelineStatusType } from './type';
 import { TimelineWriter } from './writer';
 import { TimelineMonoCat } from './type';
 
@@ -320,6 +320,7 @@ describe('TimelineWriter', () => {
       const payload = {
         uid: 1,
         cat: TimelineMonoCat.Person,
+        type: TimelineMonoType.Collected,
         id: 100,
         createdAt: DateTime.now().toUnixInteger(),
         source: TimelineSource.Web,
@@ -338,7 +339,7 @@ describe('TimelineWriter', () => {
       }
 
       expect(entry.cat).toBe(TimelineCat.Mono);
-      expect(entry.type).toBe(0);
+      expect(entry.type).toBe(payload.type);
       expect(entry.related).toBe(payload.id.toString());
 
       const memo = php.parse(entry.memo);
@@ -353,6 +354,7 @@ describe('TimelineWriter', () => {
       const payload1 = {
         uid: 1,
         cat: TimelineMonoCat.Person,
+        type: TimelineMonoType.Collected,
         id: 100,
         createdAt: now.toUnixInteger(),
         source: TimelineSource.Web,
