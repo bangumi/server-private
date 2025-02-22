@@ -236,7 +236,7 @@ describe('blog comments', () => {
       url: `/blogs/-/comments/12345670`,
       payload: { content: '测试评论7' },
     });
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchSnapshot();
   });
 
@@ -254,7 +254,7 @@ describe('blog comments', () => {
       url: `/blogs/-/comments/12345670`,
       payload: { content: '测试评论8' },
     });
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchSnapshot();
   });
 
@@ -292,7 +292,7 @@ describe('blog comments', () => {
       method: 'delete',
       url: `/blogs/-/comments/12345670`,
     });
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchSnapshot();
   });
 });

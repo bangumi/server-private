@@ -12,22 +12,25 @@ import { fetchUserX } from '@app/lib/user/utils.ts';
 import { intval } from '@app/lib/utils/index.ts';
 
 const tokenPrefix = 'Bearer ';
+
 export const NeedLoginError = createError<[string]>(
   'NEED_LOGIN',
   'you need to login before %s',
   401,
 );
-export const NotAllowedError = createError<[string]>(
-  'NOT_ALLOWED',
-  `you don't have permission to %s`,
-  401,
-);
+
 const HeaderInvalidError = createError<[string]>('AUTHORIZATION_INVALID', '%s', 401);
 
 const TokenNotValidError = createError<[]>(
   'TOKEN_INVALID',
   "can't find access token or it has been expired",
   401,
+);
+
+export const NotAllowedError = createError<[string]>(
+  'NOT_ALLOWED',
+  `you don't have permission to %s`,
+  403,
 );
 
 export const enum UserGroup {

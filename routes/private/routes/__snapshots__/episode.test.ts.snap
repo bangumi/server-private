@@ -21,9 +21,9 @@ Object {
 exports[`delete ep comment > not allowed wrong user 1`] = `
 Object {
   "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
+  "error": "Forbidden",
   "message": "you don't have permission to delete a comment which is not yours",
-  "statusCode": 401,
+  "statusCode": 403,
 }
 `;
 
@@ -32,18 +32,18 @@ exports[`delete ep comment > ok 1`] = `Object {}`;
 exports[`edit ep comment > should not edit ep comment not owned 1`] = `
 Object {
   "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
+  "error": "Forbidden",
   "message": "you don't have permission to edit a comment which is not yours",
-  "statusCode": 401,
+  "statusCode": 403,
 }
 `;
 
 exports[`edit ep comment > should not edit ep comment with replies 1`] = `
 Object {
   "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
-  "message": "you don't have permission to cannot edit a comment with replies",
-  "statusCode": 401,
+  "error": "Forbidden",
+  "message": "you don't have permission to edit a comment with replies",
+  "statusCode": 403,
 }
 `;
 

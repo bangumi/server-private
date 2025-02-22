@@ -92,12 +92,12 @@ describe('edit person ', () => {
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
         "code": "NOT_ALLOWED",
-        "error": "Unauthorized",
+        "error": "Forbidden",
         "message": "you don't have permission to edit person",
-        "statusCode": 401,
+        "statusCode": 403,
       }
     `);
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
   });
 
   test('should need authorization', async () => {
@@ -128,12 +128,12 @@ describe('edit person ', () => {
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
         "code": "NOT_ALLOWED",
-        "error": "Unauthorized",
+        "error": "Forbidden",
         "message": "you don't have permission to edit person",
-        "statusCode": 401,
+        "statusCode": 403,
       }
     `);
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
   });
 
   test('should update person', async () => {

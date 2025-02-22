@@ -232,26 +232,26 @@ Object {
 exports[`blog comments > should not delete blog comment not owned 1`] = `
 Object {
   "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
+  "error": "Forbidden",
   "message": "you don't have permission to delete a comment which is not yours",
-  "statusCode": 401,
+  "statusCode": 403,
 }
 `;
 
 exports[`blog comments > should not edit blog comment not owned 1`] = `
 Object {
   "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
+  "error": "Forbidden",
   "message": "you don't have permission to edit a comment which is not yours",
-  "statusCode": 401,
+  "statusCode": 403,
 }
 `;
 
 exports[`blog comments > should not edit blog comment with reply 1`] = `
 Object {
   "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
-  "message": "you don't have permission to cannot edit a comment with replies",
-  "statusCode": 401,
+  "error": "Forbidden",
+  "message": "you don't have permission to edit a comment with replies",
+  "statusCode": 403,
 }
 `;

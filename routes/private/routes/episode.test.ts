@@ -151,7 +151,7 @@ describe('edit ep comment', () => {
       payload: { content: 'new comment again' },
     });
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchSnapshot();
   });
 
@@ -171,7 +171,7 @@ describe('edit ep comment', () => {
       payload: { content: 'new comment again' },
     });
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchSnapshot();
   });
 });
@@ -204,7 +204,7 @@ describe('delete ep comment', () => {
     });
 
     expect(res.json()).toMatchSnapshot();
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
   });
 
   test('ok', async () => {
