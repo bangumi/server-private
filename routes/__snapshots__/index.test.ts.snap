@@ -8554,16 +8554,16 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
-        '401':
+        '403':
           content:
             application/json:
               examples:
                 NOT_ALLOWED:
                   value:
                     code: NOT_ALLOWED
-                    error: Unauthorized
+                    error: Forbidden
                     message: you don't have permission to non sandbox subject
-                    statusCode: 401
+                    statusCode: 403
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type

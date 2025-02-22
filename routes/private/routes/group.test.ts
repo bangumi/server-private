@@ -285,7 +285,7 @@ describe('group topics', () => {
       },
     });
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchSnapshot();
   });
 

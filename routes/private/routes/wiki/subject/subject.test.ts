@@ -184,12 +184,12 @@ describe('edit subject ', () => {
     expect(res.json()).toMatchInlineSnapshot(`
       Object {
         "code": "NOT_ALLOWED",
-        "error": "Unauthorized",
+        "error": "Forbidden",
         "message": "you don't have permission to edit subject",
-        "statusCode": 401,
+        "statusCode": 403,
       }
     `);
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
   });
 
   test('should update subject', async () => {
@@ -471,7 +471,7 @@ describe('create episodes', () => {
       },
     });
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchObject({
       code: 'NOT_ALLOWED',
       message: expect.stringContaining('create episodes'),
@@ -584,7 +584,7 @@ describe('patch episodes', () => {
       },
     });
 
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(403);
     expect(res.json()).toMatchObject({
       code: 'NOT_ALLOWED',
       message: expect.stringContaining('edit episodes'),

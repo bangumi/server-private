@@ -924,8 +924,8 @@ Object {
 exports[`subject topics > should not edit topic by non-owner 1`] = `
 Object {
   "code": "NOT_ALLOWED",
-  "error": "Unauthorized",
+  "error": "Forbidden",
   "message": "you don't have permission to update topic",
-  "statusCode": 401,
+  "statusCode": 403,
 }
 `;
