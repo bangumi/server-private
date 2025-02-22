@@ -20,7 +20,7 @@ export const NeedLoginError = createError<[string]>(
 export const NotAllowedError = createError<[string]>(
   'NOT_ALLOWED',
   `you don't have permission to %s`,
-  401,
+  403,
 );
 const HeaderInvalidError = createError<[string]>('AUTHORIZATION_INVALID', '%s', 401);
 
