@@ -69,11 +69,6 @@ export interface UserEpisodeStatusItem {
   type: EpisodeCollectionStatus;
 }
 
-export enum PersonType {
-  Character = 'crt',
-  Person = 'prsn',
-}
-
 export enum SubjectSort {
   Rank = 'rank',
   Trends = 'trends',

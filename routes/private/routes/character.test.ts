@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './character.ts';
+import { emptyAuth } from '@app/lib/auth/index.ts';
 
 describe('character', () => {
   test('should get character', async () => {
@@ -13,6 +14,24 @@ describe('character', () => {
       url: '/characters/32',
     });
     expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get character with collectedAt', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 6162,
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/characters/32',
+    });
+    expect(res.statusCode).toBe(200);
+    const character = res.json();
+    expect(character.collectedAt).toEqual(1296496277);
   });
 
   test('should get character casts', async () => {

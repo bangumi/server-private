@@ -3,7 +3,8 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { CollectionPrivacy, PersonType } from '@app/lib/subject/type.ts';
+import { PersonCat } from '@app/lib/person/type.ts';
+import { CollectionPrivacy } from '@app/lib/subject/type.ts';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { getTimelineUser } from '@app/lib/timeline/user';
 import * as convert from '@app/lib/types/convert.ts';
@@ -311,7 +312,7 @@ export async function setup(app: App) {
       }
 
       const conditions = op.and(
-        op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
+        op.eq(schema.chiiPersonCollects.cat, PersonCat.Character),
         op.eq(schema.chiiPersonCollects.uid, user.id),
         op.ne(schema.chiiCharacters.ban, 1),
         op.eq(schema.chiiCharacters.redirect, 0),
@@ -376,7 +377,7 @@ export async function setup(app: App) {
       }
 
       const conditions = op.and(
-        op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
+        op.eq(schema.chiiPersonCollects.cat, PersonCat.Person),
         op.eq(schema.chiiPersonCollects.uid, user.id),
         op.ne(schema.chiiPersons.ban, 1),
         op.eq(schema.chiiPersons.redirect, 0),
