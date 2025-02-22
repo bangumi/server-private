@@ -1,3 +1,5 @@
+import type { TimelineMonoCat } from './type';
+
 export interface User {
   uid: number;
   username: string;
@@ -63,9 +65,8 @@ export interface Index {
 }
 
 export interface MonoSingle {
-  cat: number;
+  cat: TimelineMonoCat;
   id: number;
-  name: string;
 }
 
 export type MonoBatch = Record<number, MonoSingle>;

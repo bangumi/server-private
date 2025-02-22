@@ -7,7 +7,7 @@ import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 
 import type * as memo from './memo';
-import type { TimelineSource } from './type';
+import type { TimelineMonoCat, TimelineMonoType, TimelineSource } from './type';
 import { TimelineCat, TimelineStatusType } from './type';
 
 /**
@@ -64,6 +64,14 @@ export interface TimelineMessage {
   statusTsukkomi: {
     uid: number;
     text: string;
+    createdAt: number;
+    source: TimelineSource;
+  };
+  mono: {
+    uid: number;
+    cat: TimelineMonoCat;
+    type: TimelineMonoType;
+    id: number;
     createdAt: number;
     source: TimelineSource;
   };
@@ -271,6 +279,63 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       createdAt: payload.createdAt,
     });
     return result.insertId;
+  },
+
+  /** 人物 */
+  async mono(payload: TimelineMessage['mono']) {
+    const detail: memo.MonoSingle = {
+      cat: payload.cat,
+      id: payload.id,
+    };
+    const [previous] = await db
+      .select()
+      .from(schema.chiiTimeline)
+      .where(
+        op.and(
+          op.eq(schema.chiiTimeline.uid, payload.uid),
+          op.eq(schema.chiiTimeline.cat, TimelineCat.Mono),
+          op.eq(schema.chiiTimeline.type, payload.type),
+        ),
+      )
+      .orderBy(op.desc(schema.chiiTimeline.id))
+      .limit(1);
+    if (previous && previous.createdAt > payload.createdAt - 10 * 60) {
+      const details: memo.MonoBatch = {};
+      if (previous.batch) {
+        const info = php.parse(previous.memo) as memo.MonoBatch;
+        for (const [id, mono] of Object.entries(info)) {
+          details[Number(id)] = mono;
+        }
+      } else {
+        const info = php.parse(previous.memo) as memo.MonoSingle;
+        details[Number(info.id)] = info;
+      }
+      details[Number(detail.id)] = detail;
+      await db
+        .update(schema.chiiTimeline)
+        .set({
+          batch: true,
+          memo: php.stringify(details),
+          source: payload.source,
+        })
+        .where(op.eq(schema.chiiTimeline.id, previous.id))
+        .limit(1);
+      return previous.id;
+    } else {
+      const [result] = await db.insert(schema.chiiTimeline).values({
+        uid: payload.uid,
+        cat: TimelineCat.Mono,
+        type: payload.type,
+        related: payload.id.toString(),
+        memo: php.stringify(detail),
+        img: '',
+        batch: false,
+        source: payload.source,
+        replies: 0,
+        createdAt: payload.createdAt,
+      });
+      return result.insertId;
+    }
   },
 };
 

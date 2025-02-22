@@ -4,8 +4,9 @@ import * as php from '@trim21/php-serialize';
 
 import { db, op, schema } from '@app/drizzle';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
-import { TimelineCat, TimelineSource, TimelineStatusType } from './type';
+import { TimelineCat, TimelineMonoType, TimelineSource, TimelineStatusType } from './type';
 import { TimelineWriter } from './writer';
+import { TimelineMonoCat } from './type';
 
 describe('TimelineWriter', () => {
   beforeEach(async () => {
@@ -311,6 +312,81 @@ describe('TimelineWriter', () => {
       expect(entry.cat).toBe(TimelineCat.Status);
       expect(entry.type).toBe(TimelineStatusType.Tsukkomi);
       expect(entry.memo).toBe(payload.text);
+    });
+  });
+
+  describe('mono', () => {
+    test('should create new mono entry', async () => {
+      const payload = {
+        uid: 1,
+        cat: TimelineMonoCat.Person,
+        type: TimelineMonoType.Collected,
+        id: 100,
+        createdAt: DateTime.now().toUnixInteger(),
+        source: TimelineSource.Web,
+      };
+
+      const id = await TimelineWriter.mono(payload);
+      expect(id).toBeGreaterThan(0);
+
+      const [entry] = await db
+        .select()
+        .from(schema.chiiTimeline)
+        .where(op.eq(schema.chiiTimeline.id, id));
+
+      if (!entry) {
+        throw new Error('Entry not found');
+      }
+
+      expect(entry.cat).toBe(TimelineCat.Mono);
+      expect(entry.type).toBe(payload.type);
+      expect(entry.related).toBe(payload.id.toString());
+
+      const memo = php.parse(entry.memo);
+      expect(memo).toEqual({
+        cat: payload.cat,
+        id: payload.id,
+      });
+    });
+
+    test('should update previous entry if within 10 minutes', async () => {
+      const now = DateTime.now();
+      const payload1 = {
+        uid: 1,
+        cat: TimelineMonoCat.Person,
+        type: TimelineMonoType.Collected,
+        id: 100,
+        createdAt: now.toUnixInteger(),
+        source: TimelineSource.Web,
+      };
+
+      const firstId = await TimelineWriter.mono(payload1);
+
+      const payload2 = {
+        ...payload1,
+        id: 101,
+        createdAt: now.plus({ minutes: 5 }).toUnixInteger(),
+      };
+
+      const secondId = await TimelineWriter.mono(payload2);
+      expect(secondId).toBe(firstId);
+
+      const [entry] = await db
+        .select()
+        .from(schema.chiiTimeline)
+        .where(op.eq(schema.chiiTimeline.id, firstId));
+
+      if (!entry) {
+        throw new Error('Entry not found');
+      }
+
+      expect(entry.batch).toBe(true);
+
+      const memo = php.parse(entry.memo);
+      expect(memo).toHaveProperty('100');
+      expect(memo).toHaveProperty('101');
+      expect(memo['100'].cat).toBe(TimelineMonoCat.Person);
+      expect(memo['101'].cat).toBe(TimelineMonoCat.Person);
     });
   });
 });

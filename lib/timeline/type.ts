@@ -86,3 +86,21 @@ export enum TimelineStatusType {
   /** 修改昵称 */
   Nickname = 2,
 }
+
+/** 时间线 `cat = TimelineCat.Mono` 时的 `type` */
+export enum TimelineMonoType {
+  /** 创建 */
+  Created = 0,
+
+  /** 收藏 */
+  Collected = 1,
+}
+
+/** 时间线 `cat = TimelineCat.Mono` 时 memo 里的 `cat` */
+export enum TimelineMonoCat {
+  /** 角色 */
+  Character = 1,
+
+  /** 人物 */
+  Person = 2,
+}
