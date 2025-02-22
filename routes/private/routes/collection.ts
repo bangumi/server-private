@@ -5,12 +5,8 @@ import { db, op, type orm, schema } from '@app/drizzle';
 import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import {
-  CollectionPrivacy,
-  getCollectionTypeField,
-  PersonType,
-  SubjectType,
-} from '@app/lib/subject/type.ts';
+import { PersonCat } from '@app/lib/person/type.ts';
+import { CollectionPrivacy, getCollectionTypeField, SubjectType } from '@app/lib/subject/type.ts';
 import {
   markEpisodesAsWatched,
   updateSubjectCollection,
@@ -594,7 +590,7 @@ export async function setup(app: App) {
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
-        op.eq(schema.chiiPersonCollects.cat, PersonType.Character),
+        op.eq(schema.chiiPersonCollects.cat, PersonCat.Character),
         op.eq(schema.chiiPersonCollects.uid, auth.userID),
         op.ne(schema.chiiCharacters.ban, 1),
         op.eq(schema.chiiCharacters.redirect, 0),
@@ -658,7 +654,7 @@ export async function setup(app: App) {
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
-        op.eq(schema.chiiPersonCollects.cat, PersonType.Person),
+        op.eq(schema.chiiPersonCollects.cat, PersonCat.Person),
         op.eq(schema.chiiPersonCollects.uid, auth.userID),
         op.ne(schema.chiiPersons.ban, 1),
         op.eq(schema.chiiPersons.redirect, 0),

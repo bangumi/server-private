@@ -4,6 +4,8 @@ import { db, op, type orm, schema } from '@app/drizzle';
 import { CommentWithState } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { PersonCat } from '@app/lib/person/type';
+import { getPersonCollects } from '@app/lib/person/utils';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -63,7 +65,14 @@ export async function setup(app: App) {
       if (!data) {
         throw new NotFoundError(`character ${characterID}`);
       }
-      return convert.toCharacter(data);
+      const character = convert.toCharacter(data);
+      if (auth.login) {
+        const collectedAt = await getPersonCollects(PersonCat.Character, auth.userID, characterID);
+        if (collectedAt) {
+          character.collectedAt = collectedAt;
+        }
+      }
+      return character;
     },
   );
 

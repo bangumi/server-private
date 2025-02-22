@@ -18,6 +18,22 @@ describe('person', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get person with collectedAt', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 14459,
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/persons/1',
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should get person works', async () => {
     const app = createTestServer();
     await app.register(setup);
