@@ -10,7 +10,7 @@ import type * as res from '@app/lib/types/res.ts';
 
 import { getItemCacheKey } from './cache.ts';
 import type * as memo from './memo';
-import { TimelineCat, TimelineStatusType } from './type';
+import { TimelineCat, TimelineMonoCat, TimelineStatusType } from './type';
 
 export async function parseTimelineMemo(
   auth: Readonly<IAuth>,
@@ -233,33 +233,57 @@ export async function parseTimelineMemo(
         const characterIDs = [];
         const personIDs = [];
         for (const value of Object.values(info)) {
-          if (value.cat === 1) {
-            characterIDs.push(value.id);
-          } else if (value.cat === 2) {
-            personIDs.push(value.id);
+          switch (value.cat) {
+            case TimelineMonoCat.Character: {
+              characterIDs.push(value.id);
+              break;
+            }
+            case TimelineMonoCat.Person: {
+              personIDs.push(value.id);
+              break;
+            }
           }
         }
         const cs = await fetcher.fetchSlimCharactersByIDs(characterIDs, auth.allowNsfw);
         const ps = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
+        const characters = [];
+        const persons = [];
+        for (const characterID of characterIDs) {
+          const character = cs[characterID];
+          if (character) {
+            characters.push(character);
+          }
+        }
+        for (const personID of personIDs) {
+          const person = ps[personID];
+          if (person) {
+            persons.push(person);
+          }
+        }
         return {
           mono: {
-            characters: Object.entries(cs).map(([_, v]) => v),
-            persons: Object.entries(ps).map(([_, v]) => v),
+            characters,
+            persons,
           },
         };
       } else {
         const info = php.parse(data) as memo.MonoSingle;
         const characters = [];
         const persons = [];
-        if (info.cat === 1) {
-          const character = await fetcher.fetchSlimCharacterByID(Number(info.id), auth.allowNsfw);
-          if (character) {
-            characters.push(character);
+        switch (info.cat) {
+          case TimelineMonoCat.Character: {
+            const character = await fetcher.fetchSlimCharacterByID(Number(info.id), auth.allowNsfw);
+            if (character) {
+              characters.push(character);
+            }
+            break;
           }
-        } else if (info.cat === 2) {
-          const person = await fetcher.fetchSlimPersonByID(Number(info.id), auth.allowNsfw);
-          if (person) {
-            persons.push(person);
+          case TimelineMonoCat.Person: {
+            const person = await fetcher.fetchSlimPersonByID(Number(info.id), auth.allowNsfw);
+            if (person) {
+              persons.push(person);
+            }
+            break;
           }
         }
         return {
