@@ -168,7 +168,7 @@ export class CommentWithState {
       .where(op.and(op.eq(this.table.mid, current.mid), op.eq(this.table.related, current.id)))
       .limit(1);
     if (reply) {
-      throw new NotAllowedError('cannot edit a comment with replies');
+      throw new NotAllowedError('edit a comment with replies');
     }
     await db.update(this.table).set({ content }).where(op.eq(this.table.id, commentID));
     return {};
@@ -332,7 +332,7 @@ export class CommentWithoutState {
       .where(op.and(op.eq(this.table.mid, current.mid), op.eq(this.table.related, current.id)))
       .limit(1);
     if (reply) {
-      throw new NotAllowedError('cannot edit a comment with replies');
+      throw new NotAllowedError('edit a comment with replies');
     }
     await db.update(this.table).set({ content }).where(op.eq(this.table.id, commentID));
     return {};

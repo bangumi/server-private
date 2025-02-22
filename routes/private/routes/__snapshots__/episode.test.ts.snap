@@ -42,7 +42,7 @@ exports[`edit ep comment > should not edit ep comment with replies 1`] = `
 Object {
   "code": "NOT_ALLOWED",
   "error": "Unauthorized",
-  "message": "you don't have permission to cannot edit a comment with replies",
+  "message": "you don't have permission to edit a comment with replies",
   "statusCode": 401,
 }
 `;

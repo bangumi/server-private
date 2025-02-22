@@ -251,7 +251,7 @@ exports[`blog comments > should not edit blog comment with reply 1`] = `
 Object {
   "code": "NOT_ALLOWED",
   "error": "Unauthorized",
-  "message": "you don't have permission to cannot edit a comment with replies",
+  "message": "you don't have permission to edit a comment with replies",
   "statusCode": 401,
 }
 `;
