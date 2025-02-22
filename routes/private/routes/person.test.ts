@@ -32,7 +32,8 @@ describe('person', () => {
       url: '/persons/1',
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().collectedAt).toEqual(1296496832);
+    const person = res.json();
+    expect(person.collectedAt).toEqual(1296496832);
   });
 
   test('should get person works', async () => {

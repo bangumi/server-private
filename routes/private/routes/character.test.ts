@@ -30,7 +30,8 @@ describe('character', () => {
       url: '/characters/32',
     });
     expect(res.statusCode).toBe(200);
-    expect(res.json().collectedAt).toEqual(1296496277);
+    const character = res.json();
+    expect(character.collectedAt).toEqual(1296496277);
   });
 
   test('should get character casts', async () => {
