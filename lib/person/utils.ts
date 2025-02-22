@@ -2,7 +2,7 @@ import { db, op, schema } from '@app/drizzle';
 
 import type { PersonCat } from './type';
 
-export async function getPersonCollects(
+export async function getPersonCollect(
   cat: PersonCat,
   userID: number,
   personID: number,
