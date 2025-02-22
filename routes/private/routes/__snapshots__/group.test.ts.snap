@@ -35,6 +35,46 @@ Object {
 }
 `;
 
+exports[`group info > should get group info with membership 1`] = `
+Object {
+  "accessible": true,
+  "cat": 32,
+  "createdAt": 1531631310,
+  "creator": Object {
+    "avatar": Object {
+      "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+      "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+      "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+    },
+    "group": 0,
+    "id": 287622,
+    "joinedAt": 0,
+    "nickname": "nickname 287622",
+    "sign": "sing 287622",
+    "username": "287622",
+  },
+  "creatorID": 287622,
+  "description": "[s]非[/s]官方沙盒",
+  "icon": Object {
+    "large": "https://lain.bgm.tv/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
+    "medium": "https://lain.bgm.tv/pic/icon/m/000/00/42/4215.jpg?r=1531631345",
+    "small": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+  },
+  "id": 4215,
+  "members": 3,
+  "membership": Object {
+    "joinedAt": 1531631310,
+    "role": 1,
+    "uid": 287622,
+  },
+  "name": "sandbox",
+  "nsfw": false,
+  "posts": 0,
+  "title": "沙盒",
+  "topics": 1,
+}
+`;
+
 exports[`group info > should get group members 1`] = `
 Object {
   "data": Array [

@@ -11,7 +11,7 @@ import {
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
 import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
-import { isMemberInGroup } from '@app/lib/group/utils.ts';
+import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
 import { fetchTopicReactions } from '@app/lib/like';
 import { LikeType } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
@@ -123,7 +123,14 @@ export async function setup(app: App) {
       if (!data) {
         throw new NotFoundError(`group ${groupName}`);
       }
-      return convert.toGroup(data.chii_groups, data.chii_members);
+      const group = convert.toGroup(data.chii_groups, data.chii_members);
+      if (auth.login) {
+        const member = await getGroupMember(auth.userID, group.id);
+        if (member) {
+          group.membership = member;
+        }
+      }
+      return group;
     },
   );
 
