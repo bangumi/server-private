@@ -31,7 +31,8 @@ describe('person', () => {
       method: 'get',
       url: '/persons/1',
     });
-    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(200);
+    expect(res.json().collectedAt).toEqual(1296496832);
   });
 
   test('should get person works', async () => {

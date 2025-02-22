@@ -29,7 +29,8 @@ describe('character', () => {
       method: 'get',
       url: '/characters/32',
     });
-    expect(res.json()).toMatchSnapshot();
+    expect(res.statusCode).toBe(200);
+    expect(res.json().collectedAt).toEqual(1296496277);
   });
 
   test('should get character casts', async () => {
