@@ -9,6 +9,7 @@ import {
   EpisodeCollectionStatus,
   EpisodeType,
   GroupMemberRole,
+  IndexRelatedType,
   IndexType,
   Ref,
   SubjectType,
@@ -815,7 +816,7 @@ export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
     id: t.Integer(),
-    type: t.Integer(),
+    type: Ref(IndexType),
     title: t.String(),
     desc: t.String(),
     replies: t.Integer(),
@@ -847,7 +848,7 @@ export const IndexRelated = t.Object(
     id: t.Integer(),
     cat: t.Integer(),
     rid: t.Integer(),
-    type: Ref(IndexType),
+    type: Ref(IndexRelatedType),
     sid: t.Integer(),
     order: t.Integer(),
     comment: t.String(),

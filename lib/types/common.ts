@@ -120,6 +120,21 @@ export const IndexType = t.Integer({
   - 2 = TBA`,
 });
 
+export const IndexRelatedType = t.Integer({
+  $id: 'IndexRelatedType',
+  enum: [0, 1, 2, 3],
+  'x-ms-enum': {
+    name: 'IndexRelatedType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['Subject', 'Character', 'Person', 'Episode'],
+  description: `目录关联类型
+  - 0 = 条目
+  - 1 = 角色
+  - 2 = 人物
+  - 3 = 剧集`,
+});
+
 export type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
 export const EpisodeWikiInfo = t.Object(
   {
