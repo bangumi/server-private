@@ -233,7 +233,7 @@ export async function completeSubjectProgress(
   if (subject.volumes > 0) {
     interest.volStatus = subject.volumes;
   }
-  if (subject.typeID === SubjectType.Anime || subject.typeID === SubjectType.Real) {
+  if ([SubjectType.Anime, SubjectType.Real].includes(subject.typeID)) {
     const episodes = await t
       .select({ id: schema.chiiEpisodes.id })
       .from(schema.chiiEpisodes)
