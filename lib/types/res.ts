@@ -9,6 +9,7 @@ import {
   EpisodeCollectionStatus,
   EpisodeType,
   GroupMemberRole,
+  IndexType,
   Ref,
   SubjectType,
 } from '@app/lib/types/common.ts';
@@ -846,12 +847,11 @@ export const IndexRelated = t.Object(
     id: t.Integer(),
     cat: t.Integer(),
     rid: t.Integer(),
-    type: t.Integer(),
+    type: Ref(IndexType),
     sid: t.Integer(),
     order: t.Integer(),
     comment: t.String(),
     createdAt: t.Integer(),
-
     subject: t.Optional(Ref(SlimSubject)),
     character: t.Optional(Ref(SlimCharacter)),
     person: t.Optional(Ref(SlimPerson)),

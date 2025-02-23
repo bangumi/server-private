@@ -106,6 +106,20 @@ export const GroupMemberRole = t.Integer({
   - 3 = 禁言成员`,
 });
 
+export const IndexType = t.Integer({
+  $id: 'IndexType',
+  enum: [0, 1, 2],
+  'x-ms-enum': {
+    name: 'IndexType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['User', 'Public', 'Award'],
+  description: `目录类型
+  - 0 = 用户
+  - 1 = 公共
+  - 2 = TBA`,
+});
+
 export type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
 export const EpisodeWikiInfo = t.Object(
   {
