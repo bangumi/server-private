@@ -37,6 +37,10 @@ export async function setup(app: App) {
         throw new NotFoundError('index');
       }
       const index = convert.toIndex(data);
+      const user = await fetcher.fetchSlimUserByID(index.uid);
+      if (user) {
+        index.user = user;
+      }
       return index;
     },
   );

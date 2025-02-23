@@ -827,6 +827,7 @@ export const Index = t.Object(
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
     collectedAt: t.Optional(t.Integer()),
+    user: t.Optional(Ref(SlimUser)),
   },
   { $id: 'Index', title: 'Index' },
 );
