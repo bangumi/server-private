@@ -1,22 +1,22 @@
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
+import { db, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
-import * as Notify from '@app/lib/notify.ts';
-import { NotifyFieldRepo, NotifyRepo } from '@app/lib/orm/index.ts';
+import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './misc.ts';
 
 describe('notify', () => {
   beforeEach(async () => {
-    await NotifyRepo.delete({});
-    await NotifyFieldRepo.delete({});
+    await db.delete(schema.chiiNotify);
+    await db.delete(schema.chiiNotifyField);
   });
 
   afterEach(async () => {
-    await NotifyRepo.delete({});
-    await NotifyFieldRepo.delete({});
+    await db.delete(schema.chiiNotify);
+    await db.delete(schema.chiiNotifyField);
   });
 
   test('should list notify', async () => {
@@ -25,7 +25,7 @@ describe('notify', () => {
       sourceUserID: 382951,
       topicID: 2,
       now: DateTime.now(),
-      type: Notify.Type.GroupTopicReply,
+      type: NotifyType.GroupTopicReply,
       title: 'tt',
       postID: 1,
     });

@@ -1,8 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime, Duration } from 'luxon';
 
-import { db, op } from '@app/drizzle/db';
-import { chiiAccessToken, chiiApp, chiiOauthClients } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { randomBase62String } from '@app/lib/utils/index.ts';
 import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -30,7 +29,7 @@ export function setup(app: App) {
     },
     async ({ auth, body }) => {
       const token = await db.query.chiiAccessToken.findFirst({
-        where: op.eq(chiiAccessToken.id, body.id),
+        where: op.eq(schema.chiiAccessToken.id, body.id),
       });
 
       if (!token) {
@@ -42,9 +41,9 @@ export function setup(app: App) {
       }
 
       await db
-        .update(chiiAccessToken)
+        .update(schema.chiiAccessToken)
         .set({ expiredAt: new Date() })
-        .where(op.eq(chiiAccessToken.id, body.id));
+        .where(op.eq(schema.chiiAccessToken.id, body.id));
     },
   );
 
@@ -55,7 +54,7 @@ export function setup(app: App) {
         hide: true,
         body: t.Object({
           name: t.String({}),
-          duration_days: t.Integer({ exclusiveMinimum: 0 }),
+          days: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.String(),
@@ -63,12 +62,12 @@ export function setup(app: App) {
       },
       preHandler: [requireLogin('delete your token')],
     },
-    async ({ auth, body: { duration_days, name } }) => {
+    async ({ auth, body: { days, name } }) => {
       const token = await randomBase62String(40);
-      await db.insert(chiiAccessToken).values({
+      await db.insert(schema.chiiAccessToken).values({
         userID: auth.userID.toString(),
         expiredAt: DateTime.now()
-          .plus(Duration.fromObject({ day: duration_days }))
+          .plus(Duration.fromObject({ day: days }))
           .toJSDate(),
         type: TokenType.AccessToken,
         clientID: '',
@@ -92,13 +91,16 @@ export function setup(app: App) {
     async (req, reply) => {
       const tokens = await db
         .select()
-        .from(chiiAccessToken)
-        .leftJoin(chiiOauthClients, op.eq(chiiOauthClients.clientID, chiiAccessToken.clientID))
-        .leftJoin(chiiApp, op.eq(chiiApp.id, chiiOauthClients.appID))
+        .from(schema.chiiAccessToken)
+        .leftJoin(
+          schema.chiiOauthClients,
+          op.eq(schema.chiiOauthClients.clientID, schema.chiiAccessToken.clientID),
+        )
+        .leftJoin(schema.chiiApp, op.eq(schema.chiiApp.id, schema.chiiOauthClients.appID))
         .where(
           op.and(
-            op.eq(chiiAccessToken.userID, req.auth.userID.toString()),
-            op.gt(chiiAccessToken.expiredAt, new Date()),
+            op.eq(schema.chiiAccessToken.userID, req.auth.userID.toString()),
+            op.gt(schema.chiiAccessToken.expiredAt, new Date()),
           ),
         );
 

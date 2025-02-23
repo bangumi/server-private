@@ -15,6 +15,7 @@ Object {
     "medium": "https://lain.bgm.tv/pic/crt/m/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
     "small": "https://lain.bgm.tv/pic/crt/s/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
   },
+  "info": "性别 女 / 生日 1980年1月21日 / 血型 O型 / 身高 153cm",
   "infobox": Array [
     Object {
       "key": "简体中文名",
@@ -288,26 +289,26 @@ Object {
           "appearEps": "",
           "summary": "",
           "type": Object {
-            "cn": "插入歌演出",
-            "en": "Inserted Song Performance",
-            "id": 34,
-            "jp": "",
+            "cn": "开发",
+            "en": "Developer",
+            "id": 1001,
+            "jp": "開発元",
           },
         },
       ],
       "subject": Object {
-        "id": 19,
+        "id": 4,
         "images": Object {
-          "common": "https://lain.bgm.tv/pic/cover/c/1f/0e/19_GVzJ9.jpg",
-          "grid": "https://lain.bgm.tv/pic/cover/g/1f/0e/19_GVzJ9.jpg",
-          "large": "https://lain.bgm.tv/pic/cover/l/1f/0e/19_GVzJ9.jpg",
-          "medium": "https://lain.bgm.tv/pic/cover/m/1f/0e/19_GVzJ9.jpg",
-          "small": "https://lain.bgm.tv/pic/cover/s/1f/0e/19_GVzJ9.jpg",
+          "common": "https://lain.bgm.tv/pic/cover/c/a8/7f/4_cMMK5.jpg",
+          "grid": "https://lain.bgm.tv/pic/cover/g/a8/7f/4_cMMK5.jpg",
+          "large": "https://lain.bgm.tv/pic/cover/l/a8/7f/4_cMMK5.jpg",
+          "medium": "https://lain.bgm.tv/pic/cover/m/a8/7f/4_cMMK5.jpg",
+          "small": "https://lain.bgm.tv/pic/cover/s/a8/7f/4_cMMK5.jpg",
         },
-        "info": "2003-08-17 / Sound Horizon",
+        "info": "2008-07-17 / NDS / ACT / SNKプレイモア",
         "locked": false,
-        "name": "Pico Magic Reloaded",
-        "nameCN": "",
+        "name": "メタルスラッグ7",
+        "nameCN": "合金弹头7",
         "nsfw": false,
         "rating": Object {
           "count": Array [
@@ -315,18 +316,18 @@ Object {
             0,
             0,
             1,
-            1,
-            5,
+            8,
+            47,
+            43,
             39,
-            66,
-            36,
-            25,
+            3,
+            2,
           ],
-          "rank": 603,
-          "score": 8.17,
-          "total": 173,
+          "rank": 3560,
+          "score": 6.9,
+          "total": 143,
         },
-        "type": 3,
+        "type": 4,
       },
     },
     Object {
@@ -377,6 +378,89 @@ Object {
       },
     },
   ],
-  "total": 3,
+  "total": 247,
+}
+`;
+
+exports[`person comments > should get person comments 1`] = `
+Array [
+  Object {
+    "content": "7月7日 77结婚",
+    "createdAt": 1400517144,
+    "creatorID": 287622,
+    "id": 12345670,
+    "mainID": 1,
+    "relatedID": 0,
+    "replies": Array [
+      Object {
+        "content": "是6号结的",
+        "createdAt": 1400517144,
+        "creatorID": 287622,
+        "id": 12345671,
+        "mainID": 1,
+        "relatedID": 12345670,
+        "state": 0,
+        "user": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "group": 0,
+          "id": 287622,
+          "joinedAt": 0,
+          "nickname": "nickname 287622",
+          "sign": "sing 287622",
+          "username": "287622",
+        },
+      },
+    ],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "group": 0,
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+  Object {
+    "content": "生日快乐！",
+    "createdAt": 1400517144,
+    "creatorID": 287622,
+    "id": 12345672,
+    "mainID": 1,
+    "relatedID": 0,
+    "replies": Array [],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "group": 0,
+      "id": 287622,
+      "joinedAt": 0,
+      "nickname": "nickname 287622",
+      "sign": "sing 287622",
+      "username": "287622",
+    },
+  },
+]
+`;
+
+exports[`person comments > should not allow create person comment 1`] = `
+Object {
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before creating a comment",
+  "statusCode": 401,
 }
 `;

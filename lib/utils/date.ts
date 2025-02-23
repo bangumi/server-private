@@ -1,3 +1,5 @@
+import { BadRequestError } from '@app/lib/error.ts';
+
 export class DATE {
   constructor(
     readonly year: number,
@@ -34,5 +36,13 @@ export class DATE {
     s += `-${this.day.toString().padStart(2, '0')}`;
 
     return s;
+  }
+}
+
+export const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+
+export function validateDate(date: string | undefined) {
+  if (date && !datePattern.test(date)) {
+    throw new BadRequestError(`${date} is not valid date`);
   }
 }

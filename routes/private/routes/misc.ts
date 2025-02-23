@@ -2,17 +2,19 @@ import { type Static, Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
 
+import { db, op, schema } from '@app/drizzle';
 import { NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import { UnexpectedNotFoundError } from '@app/lib/error.ts';
-import * as Notify from '@app/lib/notify.ts';
+import { avatar } from '@app/lib/images';
+import { Notify } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { fetchUsers, UserFieldRepo } from '@app/lib/orm/index.ts';
+import { UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
-import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
+import { fetchFriends, parseBlocklist } from '@app/lib/user/utils';
 import { intval } from '@app/lib/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
@@ -31,17 +33,6 @@ const NoticeRes = t.Object(
   { $id: 'Notice' },
 );
 
-const clientPermission = t.Object(
-  {
-    subjectWikiEdit: t.Boolean(),
-  },
-  { $id: 'Permission' },
-);
-
-const currentUser = t.Intersect([res.SlimUser, t.Object({ permission: clientPermission })], {
-  $id: 'CurrentUser',
-});
-
 declare module 'fastify' {
   interface FastifyInstance {
     io: Server;
@@ -49,9 +40,6 @@ declare module 'fastify' {
 }
 
 export async function setup(app: App) {
-  app.addSchema(clientPermission);
-  app.addSchema(currentUser);
-
   app.get(
     '/me',
     {
@@ -61,7 +49,7 @@ export async function setup(app: App) {
         tags: [Tag.Misc],
         security: [{ [Security.CookiesSession]: [] }],
         response: {
-          200: res.Ref(currentUser),
+          200: res.Ref(res.Profile),
           401: res.Ref(res.Error, {
             examples: [res.formatError(new NeedLoginError('get current user'))],
           }),
@@ -69,14 +57,31 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('get current user')],
     },
-    async function ({ auth }): Promise<Static<typeof currentUser>> {
-      const u = await fetcher.fetchSlimUserByID(auth.userID);
+    async function ({ auth }): Promise<Static<typeof res.Profile>> {
+      const [u] = await db
+        .select()
+        .from(schema.chiiUsers)
+        .innerJoin(schema.chiiUserFields, op.eq(schema.chiiUsers.id, schema.chiiUserFields.uid))
+        .where(op.eq(schema.chiiUsers.id, auth.userID))
+        .limit(1);
       if (!u) {
         throw new UnexpectedNotFoundError(`user ${auth.userID}`);
       }
+      const friendIDs = await fetchFriends(auth.userID);
       return {
-        ...u,
-        permission: {
+        id: u.chii_members.id,
+        username: u.chii_members.username,
+        nickname: u.chii_members.nickname,
+        avatar: avatar(u.chii_members.avatar),
+        sign: u.chii_members.sign,
+        group: u.chii_members.groupid,
+        joinedAt: u.chii_members.regdate,
+        friendIDs,
+        blocklist: parseBlocklist(u.chii_memberfields.blocklist),
+        site: u.chii_memberfields.site,
+        location: u.chii_memberfields.location,
+        bio: u.chii_memberfields.bio,
+        permissions: {
           subjectWikiEdit: auth.permission.subject_edit ?? false,
         },
       };
@@ -116,19 +121,18 @@ export async function setup(app: App) {
         return { total: 0, data: [] };
       }
 
-      const users = await fetchUsers(data.map((x) => x.fromUid));
+      const users = await fetcher.fetchSlimUsersByIDs(data.map((x) => x.fromUid));
 
       return {
         total: await Notify.count(userID),
         data: data.map((x) => {
-          const u = users[x.fromUid];
-          if (!u) {
+          const sender = users[x.fromUid];
+          if (!sender) {
             throw new UnexpectedNotFoundError(`user ${x.fromUid}`);
           }
-
           return {
             ...x,
-            sender: convert.oldToUser(u),
+            sender,
           };
         }),
       };

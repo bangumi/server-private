@@ -5,9 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op, schema, type Txn } from '@app/drizzle/db.ts';
-import type * as orm from '@app/drizzle/orm.ts';
-import { chiiLikes, chiiTagIndex, chiiTagList } from '@app/drizzle/schema.ts';
+import { db, op, type orm, schema, type Txn } from '@app/drizzle';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { LikeType } from '@app/lib/like.ts';
@@ -15,13 +13,15 @@ import { logger } from '@app/lib/logger.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as ormold from '@app/lib/orm/index.ts';
-import { fetchUsers, SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
+import { SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { extractDate } from '@app/lib/subject/date.ts';
+import { TagCat } from '@app/lib/tag.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import { DATE } from '@app/lib/utils/date.ts';
 import { matchExpected } from '@app/lib/wiki.ts';
 import { getSubjectPlatforms } from '@app/vendor';
 
-import { SubjectType, TagCat } from './type.ts';
+import { SubjectType } from './type.ts';
 
 export const InvalidWikiSyntaxError = createError(
   'INVALID_SYNTAX_ERROR',
@@ -247,7 +247,7 @@ export function extractBookProgress(w: Wiki): [number, number] {
 
 async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, number>> {
   const metaRows = await t
-    .select({ id: chiiTagIndex.id })
+    .select({ id: schema.chiiTagIndex.id })
     .from(schema.chiiTagIndex)
     .innerJoin(schema.chiiTagFields, op.eq(schema.chiiTagFields.tagID, schema.chiiTagIndex.id))
     .where(
@@ -261,17 +261,17 @@ async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, nu
 
   const rows = await db
     .select({
-      name: chiiTagIndex.name,
-      id: chiiTagIndex.id,
+      name: schema.chiiTagIndex.name,
+      id: schema.chiiTagIndex.id,
     })
-    .from(chiiTagIndex)
-    .innerJoin(chiiTagList, op.eq(chiiTagList.tagID, chiiTagIndex.id))
+    .from(schema.chiiTagIndex)
+    .innerJoin(schema.chiiTagList, op.eq(schema.chiiTagList.tagID, schema.chiiTagIndex.id))
     .where(
       op.and(
-        op.eq(chiiTagList.userID, 0),
-        op.eq(chiiTagList.cat, TagCat.Meta),
+        op.eq(schema.chiiTagList.userID, 0),
+        op.eq(schema.chiiTagList.cat, TagCat.Meta),
         op.inArray(
-          chiiTagList.mainID,
+          schema.chiiTagList.mainID,
           metaRows.map((item) => item.id),
         ),
       ),
@@ -332,19 +332,19 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
 
   const likes = await db
     .select()
-    .from(chiiLikes)
+    .from(schema.chiiLikes)
     .where(
       op.and(
-        op.eq(chiiLikes.type, LikeType.subject_cover),
+        op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
         op.inArray(
-          chiiLikes.relatedID,
+          schema.chiiLikes.relatedID,
           images.map((x) => x.id),
         ),
-        op.eq(chiiLikes.deleted, 0),
+        op.eq(schema.chiiLikes.deleted, 0),
       ),
     );
 
-  const users = await fetchUsers(likes.map((x) => x.uid));
+  const users = await fetcher.fetchSlimUsersByIDs(likes.map((x) => x.uid));
 
   /*
    * 按照投票数量多少进行排序，高权限用户会覆盖低权限用户的投票。
@@ -357,7 +357,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
       return {
         like,
         user: users[like.uid] ?? {
-          groupID: 0,
+          group: 0,
         },
       };
     }),
@@ -393,12 +393,12 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
   }
 }
 
-function toRank(users: { groupID: number }[]): number[] {
+function toRank(users: { group: number }[]): number[] {
   return [
     ...subjectImageVoteOrder.map((x) => {
-      return users.filter((u) => u.groupID === x).length;
+      return users.filter((u) => u.group === x).length;
     }),
-    users.filter((x) => !subjectImageVoteOrder.includes(x.groupID)).length,
+    users.filter((x) => !subjectImageVoteOrder.includes(x.group)).length,
   ];
 }
 

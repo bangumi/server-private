@@ -2,6 +2,8 @@ import * as crypto from 'node:crypto';
 
 import _parseDuration from 'parse-duration';
 
+import { BadRequestError } from '@app/lib/error.ts';
+
 const base62Chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 if (base62Chars.length !== 62) {
   throw new TypeError('characters is not 62 length');
@@ -97,6 +99,18 @@ export function parseDuration(durationString: string): number {
   return _parseDuration(durationString, 's') ?? Number.NaN;
 }
 
+export function validateDuration(duration: string | undefined) {
+  if (!duration) {
+    return;
+  }
+  const durationN = parseDuration(duration);
+  if (Number.isNaN(durationN)) {
+    throw new BadRequestError(
+      `${duration} is not valid duration, use string like 'hh:mm:dd' or '1h10m20s'`,
+    );
+  }
+}
+
 function pad(s: number, n = 2): string {
   return s.toString().padStart(n, '0');
 }
@@ -154,4 +168,8 @@ function formatLongDuration(durationSeconds: number) {
   }
 
   return s.join('');
+}
+
+export async function sleep(ms: number) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
 }

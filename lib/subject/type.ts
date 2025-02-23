@@ -5,7 +5,6 @@ export enum SubjectType {
   Game = 4, // 游戏
   Real = 6, // 三次元
 }
-
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
 
 export enum EpisodeType {
@@ -28,9 +27,35 @@ export enum CollectionType {
   OnHold = 4,
   Dropped = 5,
 }
-
 export const CollectionTypeValues = new Set([1, 2, 3, 4, 5]);
 export const CollectionTypeProfileValues = new Set([1, 2]);
+
+export function getCollectionTypeField(type: CollectionType) {
+  switch (type) {
+    case CollectionType.Wish: {
+      return 'wish';
+    }
+    case CollectionType.Collect: {
+      return 'collect';
+    }
+    case CollectionType.Doing: {
+      return 'doing';
+    }
+    case CollectionType.OnHold: {
+      return 'onHold';
+    }
+    case CollectionType.Dropped: {
+      return 'dropped';
+    }
+  }
+}
+
+export enum CollectionPrivacy {
+  Public = 0,
+  Private = 1,
+  Ban = 2,
+}
+export const SubjectInterestPrivacyValues = new Set([0, 1, 2]);
 
 export enum EpisodeCollectionStatus {
   None = 0, // 撤消/删除
@@ -39,19 +64,9 @@ export enum EpisodeCollectionStatus {
   Dropped = 3, // 抛弃
 }
 
-export interface UserEpisodeCollection {
-  id: number;
+export interface UserEpisodeStatusItem {
+  eid: number;
   type: EpisodeCollectionStatus;
-}
-
-export enum PersonType {
-  Character = 'crt',
-  Person = 'prsn',
-}
-
-export enum TagCat {
-  Subject = 0,
-  Meta = 3,
 }
 
 export enum SubjectSort {

@@ -40,3 +40,5 @@ export type ITimelineComment = typeof schema.chiiTimelineComments.$inferSelect;
 
 export type IGroup = typeof schema.chiiGroups.$inferSelect;
 export type IGroupMember = typeof schema.chiiGroupMembers.$inferSelect;
+export type IGroupTopic = typeof schema.chiiGroupTopics.$inferSelect;
+export type IGroupPost = typeof schema.chiiGroupPosts.$inferSelect;

@@ -9,9 +9,10 @@ import config, { redisPrefix } from '@app/lib/config.ts';
 import { BadRequestError, CaptchaError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
 import { Tag } from '@app/lib/openapi/index.ts';
-import { fetchPermission, UserRepo } from '@app/lib/orm/index.ts';
-import { createTurnstileDriver } from '@app/lib/services/turnstile.ts';
+import { UserRepo } from '@app/lib/orm/index.ts';
+import { turnstile } from '@app/lib/services/turnstile.ts';
 import * as res from '@app/lib/types/res.ts';
+import { fetchPermission } from '@app/lib/user/perm.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -30,7 +31,7 @@ const EmailOrPasswordError = createError(
 
 const UserBannedError = createError('USER_BANNED', 'user is banned', httpCodes.UNAUTHORIZED);
 
-const allowedRedirectUris: string[] = ['bangumi://', 'ani://bangumi-turnstile-callback'];
+const allowedRedirectUris: string[] = ['chii://', 'bangumi://', 'ani://bangumi-turnstile-callback'];
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -73,13 +74,11 @@ export async function setup(app: App) {
     },
   );
 
-  const turnstile = createTurnstileDriver(config.turnstile.secretKey);
-
   const loginRequestBody = t.Object(
     {
       email: t.String({ minLength: 1 }),
       password: t.String({ minLength: 1 }),
-      'cf-turnstile-response': t.String({ minLength: 1 }),
+      turnstileToken: t.String({ minLength: 1 }),
     },
     {
       $id: 'LoginRequestBody',
@@ -87,7 +86,7 @@ export async function setup(app: App) {
         {
           email: 'treeholechan@gmail.com',
           password: 'lovemeplease',
-          'cf-turnstile-response': '10000000-aaaa-bbbb-cccc-000000000001',
+          turnstileToken: '10000000-aaaa-bbbb-cccc-000000000001',
         },
       ],
     },
@@ -136,7 +135,7 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       },
     },
     async function loginHandler(
-      { body: { email, password, 'cf-turnstile-response': cfCaptchaResponse }, ip },
+      { body: { email, password, turnstileToken }, ip },
       reply,
     ): Promise<res.ISlimUser> {
       const limitKey = `${redisPrefix}-login-rate-limit-${ip}`;
@@ -150,7 +149,7 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new TooManyRequestsError();
       }
 
-      if (!(await turnstile.verify(cfCaptchaResponse))) {
+      if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
 
@@ -178,6 +177,7 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
 
       return {
         ...user,
+        group: user.groupid,
         avatar: avatar(user.avatar),
         joinedAt: user.regdate,
       };

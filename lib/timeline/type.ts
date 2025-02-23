@@ -5,6 +5,7 @@ export enum TimelineSource {
   InTouch = 3,
   WP = 4,
   API = 5,
+  Next = 6,
 }
 
 export enum TimelineMode {
@@ -12,6 +13,7 @@ export enum TimelineMode {
   Friends = 'friends',
 }
 
+/** 时间线分类 */
 export enum TimelineCat {
   /**
    * 日常行为
@@ -71,4 +73,34 @@ export enum TimelineCat {
    * 0 = 添加作品, 1 = 收藏作品, 2 = 创建社团, 3 = 关注社团, 4 = 关注活动, 5 = 参加活动
    */
   Doujin = 9,
+}
+
+/** 时间线 `cat = TimelineCat.status` 时的 `type` */
+export enum TimelineStatusType {
+  /** 更新签名 */
+  Sign = 0,
+
+  /** 吐槽 */
+  Tsukkomi = 1,
+
+  /** 修改昵称 */
+  Nickname = 2,
+}
+
+/** 时间线 `cat = TimelineCat.Mono` 时的 `type` */
+export enum TimelineMonoType {
+  /** 创建 */
+  Created = 0,
+
+  /** 收藏 */
+  Collected = 1,
+}
+
+/** 时间线 `cat = TimelineCat.Mono` 时 memo 里的 `cat` */
+export enum TimelineMonoCat {
+  /** 角色 */
+  Character = 1,
+
+  /** 人物 */
+  Person = 2,
 }

@@ -2,11 +2,11 @@ import type { WikiMap } from '@bgm38/wiki';
 import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import * as php from '@trim21/php-serialize';
 
-import type * as orm from '@app/drizzle/orm.ts';
+import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
-import type * as ormold from '@app/lib/orm/index.ts';
-import { getInfoboxSummary } from '@app/lib/subject/infobox.ts';
-import { CollectionType, type UserEpisodeCollection } from '@app/lib/subject/type.ts';
+import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
+import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
+import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 import {
   findNetworkService,
@@ -54,18 +54,6 @@ export function toSubjectTags(tags: string): res.ISubjectTag[] {
     .filter((x) => !Number.isNaN(x.count));
 }
 
-// for backward compatibility
-export function oldToUser(user: ormold.IUser): res.ISlimUser {
-  return {
-    avatar: avatar(user.img),
-    username: user.username,
-    nickname: user.nickname,
-    id: user.id,
-    sign: user.sign,
-    joinedAt: 0,
-  };
-}
-
 export function toUserHomepage(homepage: string): res.IUserHomepage {
   if (!homepage) {
     // 默认布局
@@ -98,7 +86,6 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     nickname: user.nickname,
     avatar: avatar(user.avatar),
     group: user.groupid,
-    user_group: user.groupid,
     joinedAt: user.regdate,
     sign: user.sign,
     site: fields.site,
@@ -129,6 +116,7 @@ export function toSlimUser(user: orm.IUser): res.ISlimUser {
     username: user.username,
     nickname: user.nickname,
     avatar: avatar(user.avatar),
+    group: user.groupid,
     sign: user.sign,
     joinedAt: user.regdate,
   };
@@ -206,7 +194,7 @@ function toSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
   return {
     date: fields.date,
     month: fields.month,
-    weekday: fields.weekDay,
+    weekday: fields.weekday,
     year: fields.year,
   };
 }
@@ -214,7 +202,7 @@ function toSubjectAirtime(fields: orm.ISubjectFields): res.ISubjectAirtime {
 function toSubjectCollection(subject: orm.ISubject): res.ISubjectCollection {
   return {
     [CollectionType.Wish]: subject.wish,
-    [CollectionType.Collect]: subject.done,
+    [CollectionType.Collect]: subject.collect,
     [CollectionType.Doing]: subject.doing,
     [CollectionType.OnHold]: subject.onHold,
     [CollectionType.Dropped]: subject.dropped,
@@ -240,21 +228,21 @@ function toSubjectPlatform(subject: orm.ISubject): res.ISubjectPlatform {
 
 function toSubjectRating(fields: orm.ISubjectFields): res.ISubjectRating {
   const ratingCount = [
-    fields.fieldRate1,
-    fields.fieldRate2,
-    fields.fieldRate3,
-    fields.fieldRate4,
-    fields.fieldRate5,
-    fields.fieldRate6,
-    fields.fieldRate7,
-    fields.fieldRate8,
-    fields.fieldRate9,
-    fields.fieldRate10,
+    fields.rate1,
+    fields.rate2,
+    fields.rate3,
+    fields.rate4,
+    fields.rate5,
+    fields.rate6,
+    fields.rate7,
+    fields.rate8,
+    fields.rate9,
+    fields.rate10,
   ];
   const total = ratingCount.reduce((a, b) => a + b, 0);
   const totalScore = ratingCount.reduce((a, b, i) => a + b * (i + 1), 0);
   const rating = {
-    rank: fields.fieldRank,
+    rank: fields.rank,
     total: total,
     score: total === 0 ? 0 : Math.round((totalScore * 100) / total) / 100,
     count: ratingCount,
@@ -270,7 +258,7 @@ export function toSlimSubject(subject: orm.ISubject, fields: orm.ISubjectFields)
     nameCN: subject.nameCN,
     type: subject.typeID,
     images: subjectCover(subject.image),
-    info: getInfoboxSummary(infobox, subject.typeID, subject.eps),
+    info: getSubjectInfoboxSummary(infobox, subject.typeID, subject.eps),
     rating: toSubjectRating(fields),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
@@ -286,7 +274,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     id: subject.id,
     images: subjectCover(subject.image),
     infobox: infobox,
-    info: getInfoboxSummary(infobox, subject.typeID, subject.eps),
+    info: getSubjectInfoboxSummary(infobox, subject.typeID, subject.eps),
     metaTags: splitTags(subject.metaTags),
     locked: subject.ban === 2,
     name: subject.name,
@@ -294,13 +282,36 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
     nsfw: subject.nsfw,
     platform: toSubjectPlatform(subject),
     rating: toSubjectRating(fields),
-    redirect: fields.fieldRedirect,
+    redirect: fields.redirect,
     series: subject.series,
     seriesEntry: subject.seriesEntry,
     summary: subject.summary,
     type: subject.typeID,
     volumes: subject.volumes,
-    tags: toSubjectTags(fields.fieldTags),
+    tags: toSubjectTags(fields.tags),
+  };
+}
+
+export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    epStatus: interest.epStatus,
+    volStatus: interest.volStatus,
+    private: interest.privacy !== CollectionPrivacy.Public,
+    updatedAt: interest.updatedAt,
+  };
+}
+
+export function toSlimSubjectInterest(interest: orm.ISubjectInterest): res.ISlimSubjectInterest {
+  return {
+    rate: interest.rate,
+    type: interest.type,
+    comment: interest.comment,
+    tags: splitTags(interest.tag),
+    updatedAt: interest.updatedAt,
   };
 }
 
@@ -378,11 +389,12 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
   };
 }
 
-export function toSubjectComment(
+export function toSubjectInterestComment(
   interest: orm.ISubjectInterest,
   user: orm.IUser,
-): res.ISubjectComment {
+): res.ISubjectInterestComment {
   return {
+    id: interest.id,
     user: toSlimUser(user),
     type: interest.type,
     rate: interest.rate,
@@ -434,59 +446,6 @@ export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
-export function toEpisodeCommentBase(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeCommentBase {
-  return {
-    id: comment.id,
-    epID: comment.mid,
-    creatorID: comment.uid,
-    relatedID: comment.related,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    user,
-    state: comment.state,
-    reactions: [],
-  };
-}
-
-export function toEpisodeComment(
-  comment: orm.IEpisodeComment,
-  user: res.ISlimUser,
-): res.IEpisodeComment {
-  return {
-    id: comment.id,
-    epID: comment.mid,
-    creatorID: comment.uid,
-    relatedID: comment.related,
-    content: comment.content,
-    createdAt: comment.createdAt,
-    user,
-    state: comment.state,
-    reactions: [],
-    replies: [],
-  };
-}
-
-export function toSubjectEpStatus(
-  status: orm.ISubjectEpStatus,
-): Record<number, UserEpisodeCollection> {
-  const result: Record<number, UserEpisodeCollection> = {};
-  if (!status.status) {
-    return result;
-  }
-  const epStatusList = php.parse(status.status) as Record<number, { eid: string; type: number }>;
-  for (const [eid, x] of Object.entries(epStatusList)) {
-    const episodeId = Number.parseInt(eid);
-    if (Number.isNaN(episodeId)) {
-      continue;
-    }
-    result[episodeId] = { id: episodeId, type: x.type };
-  }
-  return result;
-}
-
 export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
   const infobox = toInfobox(character.infobox);
   return {
@@ -494,6 +453,7 @@ export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
     name: character.name,
     nameCN: extractNameCN(infobox),
     role: character.role,
+    info: getPersonInfoboxSummary(infobox),
     images: personImages(character.img),
     comment: character.comment,
     nsfw: character.nsfw,
@@ -509,6 +469,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
     nameCN: extractNameCN(infobox),
     role: character.role,
     infobox: infobox,
+    info: getPersonInfoboxSummary(infobox),
     summary: character.summary,
     images: personImages(character.img),
     comment: character.comment,
@@ -526,6 +487,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     name: person.name,
     nameCN: extractNameCN(infobox),
     type: person.type,
+    info: getPersonInfoboxSummary(infobox),
     images: personImages(person.img),
     comment: person.comment,
     nsfw: person.nsfw,
@@ -568,6 +530,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
     infobox: infobox,
     career,
     summary: person.summary,
+    info: getPersonInfoboxSummary(infobox),
     images: personImages(person.img),
     comment: person.comment,
     collects: person.collects,
@@ -587,7 +550,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
   };
 }
 
-export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
+export function toIndex(index: orm.IIndex): res.IIndex {
   return {
     id: index.id,
     type: index.type,
@@ -599,7 +562,6 @@ export function toIndex(index: orm.IIndex, user: orm.IUser): res.IIndex {
     stats: toIndexStats(index.stats),
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
-    creator: toSlimUser(user),
   };
 }
 
@@ -627,40 +589,27 @@ export function toCharacterSubjectRelation(
   };
 }
 
-export function toSubjectTopic(topic: orm.ISubjectTopic, user: orm.IUser): res.ITopic {
+export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
   return {
     id: topic.id,
-    creator: toSlimUser(user),
+    creatorID: topic.uid,
     title: topic.title,
     parentID: topic.subjectID,
     createdAt: topic.createdAt,
     updatedAt: topic.updatedAt,
-    repliesCount: topic.replies,
+    replyCount: topic.replies,
     state: topic.state,
     display: topic.display,
   };
 }
 
-export function toSubjectTopicReply(reply: orm.ISubjectPost, user: orm.IUser): res.IReply {
+export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReplyBase {
   return {
     id: reply.id,
-    text: reply.content,
+    content: reply.content,
     state: reply.state,
     createdAt: reply.createdAt,
-    creator: toSlimUser(user),
-    replies: [],
-    reactions: [],
-  };
-}
-
-export function toSubjectTopicSubReply(reply: orm.ISubjectPost, user: orm.IUser): res.ISubReply {
-  return {
-    id: reply.id,
-    text: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creator: toSlimUser(user),
-    reactions: [],
+    creatorID: reply.uid,
   };
 }
 
@@ -679,7 +628,59 @@ export function toSlimGroup(group: orm.IGroup): res.ISlimGroup {
     title: group.title,
     icon: groupIcon(group.icon),
     creatorID: group.creator,
-    totalMembers: group.members,
+    members: group.members,
+    accessible: group.accessible,
     createdAt: group.createdAt,
+  };
+}
+
+export function toGroup(group: orm.IGroup, user: orm.IUser): res.IGroup {
+  return {
+    id: group.id,
+    cat: group.cat,
+    name: group.name,
+    nsfw: group.nsfw,
+    title: group.title,
+    icon: groupIcon(group.icon),
+    creatorID: group.creator,
+    creator: toSlimUser(user),
+    topics: group.topics,
+    posts: group.posts,
+    members: group.members,
+    description: group.desc,
+    accessible: group.accessible,
+    createdAt: group.createdAt,
+  };
+}
+
+export function toGroupMember(member: orm.IGroupMember): res.IGroupMember {
+  return {
+    uid: member.uid,
+    role: member.role,
+    joinedAt: member.createdAt,
+  };
+}
+
+export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
+  return {
+    id: topic.id,
+    creatorID: topic.uid,
+    title: topic.title,
+    parentID: topic.gid,
+    createdAt: topic.createdAt,
+    updatedAt: topic.updatedAt,
+    replyCount: topic.replies,
+    state: topic.state,
+    display: topic.display,
+  };
+}
+
+export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
+  return {
+    id: reply.id,
+    content: reply.content,
+    state: reply.state,
+    createdAt: reply.createdAt,
+    creatorID: reply.uid,
   };
 }

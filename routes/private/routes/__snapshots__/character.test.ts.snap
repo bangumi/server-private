@@ -11,6 +11,7 @@ Object {
     "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
     "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
   },
+  "info": "性别 女 / 生日 4月13日 / 身高 152cm",
   "infobox": Array [
     Object {
       "key": "生日",
@@ -176,6 +177,7 @@ Object {
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
         },
+        "group": 0,
         "id": 1,
         "joinedAt": 0,
         "nickname": "nickname 1",
@@ -191,6 +193,7 @@ Object {
           "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
           "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
         },
+        "group": 0,
         "id": 6162,
         "joinedAt": 0,
         "nickname": "nickname 6162",

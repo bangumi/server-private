@@ -4,13 +4,9 @@ import * as lo from 'lodash-es';
 import type { EpTextRev } from '@app/lib/orm/entity/index.ts';
 import { RevHistory, RevText } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
-import {
-  addCreator,
-  EpisodeRepo,
-  EpRevRepo,
-  RevHistoryRepo,
-  RevTextRepo,
-} from '@app/lib/orm/index.ts';
+import { EpisodeRepo, EpRevRepo, RevHistoryRepo, RevTextRepo } from '@app/lib/orm/index.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
+import { ghostUser } from '@app/lib/user/utils';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -21,7 +17,7 @@ export async function setup(app: App) {
       schema: {
         hide: true,
         params: t.Object({
-          episodeID: t.Integer({ exclusiveMinimum: 0 }),
+          episodeID: t.Integer({ minimum: 1 }),
         }),
       },
     },
@@ -72,44 +68,41 @@ export async function setup(app: App) {
       const revText = await RevText.parse<EpTextRev>(revTexts);
       const revData = Object.fromEntries(revText.map((x) => [x.id, x.data]));
 
+      const uids = o.map((x) => x.revCreator);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+
+      const histories = [];
+      for (const rev of o) {
+        const data: EpTextRev | undefined = revData[rev.revTextId]?.[rev.revId];
+        if (!data) {
+          continue;
+        }
+        histories.push({
+          revDateline: rev.createdAt,
+          creatorID: rev.revCreator,
+          creator: users[rev.revCreator] ?? ghostUser(rev.revCreator),
+          airdate: data.ep_airdate,
+          desc: data.ep_desc,
+          name: data.ep_name,
+          type: data.ep_type,
+          sort: data.ep_sort,
+          duration: data.ep_duration,
+          name_cn: data.ep_name_cn,
+        } as { revDateline: number; creatorID: number });
+      }
+
+      for (const rev of batchRevs) {
+        histories.push({
+          revDateline: rev.revDateline,
+          creatorID: rev.revCreator,
+          creator: users[rev.revCreator] ?? ghostUser(rev.revCreator),
+          batch: rev.revEpInfobox,
+        });
+      }
+
       return await res.view('admin/episode-history', {
         ep,
-        histories: await addCreator(
-          [
-            ...o
-              .map((x) => {
-                const data: EpTextRev | undefined = revData[x.revTextId]?.[x.revId];
-                if (!data) {
-                  return null;
-                }
-
-                return {
-                  revDateline: x.createdAt,
-                  creatorID: x.revCreator,
-                  airdate: data.ep_airdate,
-                  desc: data.ep_desc,
-                  name: data.ep_name,
-                  type: data.ep_type,
-                  sort: data.ep_sort,
-                  duration: data.ep_duration,
-                  name_cn: data.ep_name_cn,
-                } as { revDateline: number; creatorID: number };
-              })
-              .filter(function <T>(t: T | null): t is T {
-                return t !== null;
-              }),
-
-            ...batchRevs.map((x) => {
-              return {
-                revDateline: x.revDateline,
-                creatorID: x.revCreator,
-                eids: x.eids,
-                batch: x.revEpInfobox,
-              };
-            }),
-          ].sort((a, b) => a.revDateline - b.revDateline),
-          { ghostUser: true },
-        ),
+        histories: histories.sort((a, b) => a.revDateline - b.revDateline),
       });
     },
   );

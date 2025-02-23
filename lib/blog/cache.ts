@@ -1,3 +1,3 @@
 export function getSlimCacheKey(id: number): string {
-  return `blog:v2:slim:${id}`;
+  return `blog:v3:slim:${id}`;
 }

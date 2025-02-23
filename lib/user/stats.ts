@@ -1,7 +1,6 @@
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import redis from '@app/lib/redis';
-import { CollectionType, SubjectType } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, CollectionType, SubjectType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 
 import { getStatsCacheKey } from './cache.ts';
@@ -121,7 +120,7 @@ export async function countUserSubjectCollection(
     .where(
       op.and(
         op.eq(schema.chiiSubjectInterests.uid, uid),
-        op.eq(schema.chiiSubjectInterests.private, false),
+        op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
         op.ne(schema.chiiSubjectInterests.type, 0),
       ),
     )

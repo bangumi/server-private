@@ -112,6 +112,7 @@ export const chiiCrtComments = mysqlTable('chii_crt_comments', {
   related: mediumint('crt_pst_related').notNull(),
   createdAt: int('crt_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('crt_pst_content').notNull(),
+  state: tinyint('crt_pst_state').notNull(),
 });
 
 export const chiiCharacterSubjects = mysqlTable('chii_crt_subject_index', {
@@ -201,7 +202,7 @@ export const chiiGroups = mysqlTable('chii_groups', {
 export const chiiGroupMembers = mysqlTable('chii_group_members', {
   uid: mediumint('gmb_uid').notNull(),
   gid: smallint('gmb_gid').notNull(),
-  moderator: tinyint('gmb_moderator').default(0).notNull(),
+  role: tinyint('gmb_moderator').default(0).notNull(),
   createdAt: int('gmb_dateline').default(0).notNull(),
 });
 
@@ -307,6 +308,8 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   location: varchar('location', { length: 30 }).default('').notNull(),
   bio: text('bio').notNull(),
   homepage: mediumtext('homepage').notNull(),
+  privacy: mediumtext('privacy').notNull(),
+  blocklist: mediumtext('blocklist').notNull(),
 });
 
 export const chiiUserNetworkServices = mysqlTable('chii_network_services', {
@@ -317,21 +320,21 @@ export const chiiUserNetworkServices = mysqlTable('chii_network_services', {
 });
 
 export const chiiNotify = mysqlTable('chii_notify', {
-  ntId: mediumint('nt_id').autoincrement().notNull(),
-  ntUid: mediumint('nt_uid').notNull(),
-  ntFromUid: mediumint('nt_from_uid').notNull(),
-  ntStatus: tinyint('nt_status').default(1).notNull(),
-  ntType: tinyint('nt_type').default(0).notNull(),
-  ntMid: mediumint('nt_mid').notNull(),
-  ntRelatedId: int('nt_related_id').notNull(),
-  ntDateline: int('nt_dateline').notNull(),
+  id: mediumint('nt_id').autoincrement().notNull(),
+  uid: mediumint('nt_uid').notNull(),
+  fromUID: mediumint('nt_from_uid').notNull(),
+  unread: customBoolean('nt_status').default(true).notNull(),
+  type: tinyint('nt_type').default(0).notNull(),
+  mid: mediumint('nt_mid').notNull(), // ID in notify_field
+  related: int('nt_related_id').notNull(),
+  createdAt: int('nt_dateline').notNull(),
 });
 
 export const chiiNotifyField = mysqlTable('chii_notify_field', {
-  ntfId: mediumint('ntf_id').autoincrement().notNull(),
-  ntfHash: tinyint('ntf_hash').default(0).notNull(),
-  ntfRid: int('ntf_rid').notNull(),
-  ntfTitle: varchar('ntf_title', { length: 255 }).notNull(),
+  id: mediumint('ntf_id').autoincrement().notNull(),
+  hash: tinyint('ntf_hash').default(0).notNull(),
+  rid: int('ntf_rid').notNull(),
+  title: varchar('ntf_title', { length: 255 }).notNull(),
 });
 
 export const chiiAccessToken = mysqlTable('chii_oauth_access_tokens', {
@@ -464,6 +467,7 @@ export const chiiPrsnComments = mysqlTable('chii_prsn_comments', {
   related: mediumint('prsn_pst_related').notNull(),
   createdAt: int('prsn_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('prsn_pst_content').notNull(),
+  state: tinyint('prsn_pst_state').notNull(),
 });
 
 export const chiiRevHistory = mysqlTable('chii_rev_history', {
@@ -498,13 +502,13 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   volumes: mediumint('field_volumes').notNull(),
   eps: mediumint('field_eps').notNull(),
   wish: mediumint('subject_wish').notNull(),
-  done: mediumint('subject_collect').notNull(),
+  collect: mediumint('subject_collect').notNull(),
   doing: mediumint('subject_doing').notNull(),
   onHold: mediumint('subject_on_hold').notNull(),
   dropped: mediumint('subject_dropped').notNull(),
   series: customBoolean('subject_series').notNull(),
   seriesEntry: mediumint('subject_series_entry').notNull(),
-  idxCn: varchar('subject_idx_cn', { length: 1 }).notNull(),
+  idxCN: varchar('subject_idx_cn', { length: 1 }).notNull(),
   airtime: tinyint('subject_airtime').notNull(),
   nsfw: customBoolean('subject_nsfw').notNull(),
   ban: tinyint('subject_ban').default(0).notNull(),
@@ -512,25 +516,25 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
 
 export const chiiSubjectFields = mysqlTable('chii_subject_fields', {
   id: mediumint('field_sid').autoincrement().notNull(),
-  fieldTid: smallint('field_tid').notNull(),
-  fieldTags: mediumtext('field_tags').notNull(),
-  fieldRate1: mediumint('field_rate_1').notNull(),
-  fieldRate2: mediumint('field_rate_2').notNull(),
-  fieldRate3: mediumint('field_rate_3').notNull(),
-  fieldRate4: mediumint('field_rate_4').notNull(),
-  fieldRate5: mediumint('field_rate_5').notNull(),
-  fieldRate6: mediumint('field_rate_6').notNull(),
-  fieldRate7: mediumint('field_rate_7').notNull(),
-  fieldRate8: mediumint('field_rate_8').notNull(),
-  fieldRate9: mediumint('field_rate_9').notNull(),
-  fieldRate10: mediumint('field_rate_10').notNull(),
-  fieldAirtime: tinyint('field_airtime').notNull(),
-  fieldRank: int('field_rank').default(0).notNull(),
+  tid: smallint('field_tid').notNull(),
+  tags: mediumtext('field_tags').notNull(),
+  rate1: mediumint('field_rate_1').notNull(),
+  rate2: mediumint('field_rate_2').notNull(),
+  rate3: mediumint('field_rate_3').notNull(),
+  rate4: mediumint('field_rate_4').notNull(),
+  rate5: mediumint('field_rate_5').notNull(),
+  rate6: mediumint('field_rate_6').notNull(),
+  rate7: mediumint('field_rate_7').notNull(),
+  rate8: mediumint('field_rate_8').notNull(),
+  rate9: mediumint('field_rate_9').notNull(),
+  rate10: mediumint('field_rate_10').notNull(),
+  airtime: tinyint('field_airtime').notNull(),
+  rank: int('field_rank').default(0).notNull(),
   year: year('field_year').notNull(),
   month: tinyint('field_mon').notNull(),
-  weekDay: tinyint('field_week_day').notNull(),
+  weekday: tinyint('field_week_day').notNull(),
   date: date('field_date', { mode: 'string' }).notNull(),
-  fieldRedirect: mediumint('field_redirect').notNull(),
+  redirect: mediumint('field_redirect').notNull(),
 });
 
 export const chiiSubjectAlias = mysqlTable('chii_subject_alias', {
@@ -553,7 +557,7 @@ export const chiiSubjectImgs = mysqlTable('chii_subject_imgs', {
 });
 
 export const chiiSubjectInterests = mysqlTable('chii_subject_interests', {
-  id: int('interest_id').autoincrement().notNull(),
+  id: int('interest_id').autoincrement().notNull().primaryKey(),
   uid: mediumint('interest_uid').notNull(),
   subjectID: mediumint('interest_subject_id').notNull(),
   subjectType: smallint('interest_subject_type').notNull(),
@@ -572,7 +576,7 @@ export const chiiSubjectInterests = mysqlTable('chii_subject_interests', {
   createIp: char('interest_create_ip', { length: 15 }).notNull(),
   updateIp: char('interest_lasttouch_ip', { length: 15 }).notNull(),
   updatedAt: int('interest_lasttouch').default(0).notNull(),
-  private: customBoolean('interest_private').notNull(),
+  privacy: tinyint('interest_private').notNull(),
 });
 
 export const chiiSubjectRelatedBlogs = mysqlTable('chii_subject_related_blog', {
@@ -644,11 +648,11 @@ export const chiiSubjectPosts = mysqlTable('chii_subject_posts', {
 });
 
 export const chiiTagIndex = mysqlTable('chii_tag_neue_index', {
-  id: mediumint('tag_id').autoincrement().notNull(),
+  id: mediumint('tag_id').autoincrement().notNull().primaryKey(),
   name: varchar('tag_name', { length: 30 }).notNull(),
   cat: tinyint('tag_cat').notNull(),
   type: tinyint('tag_type').notNull(),
-  totalCount: mediumint('tag_results').notNull(),
+  count: mediumint('tag_results').notNull(),
   createdAt: int('tag_dateline').notNull(),
   updatedAt: int('tag_lasttouch').notNull(),
 });
@@ -697,7 +701,7 @@ export const chiiUsergroup = mysqlTable('chii_usergroup', {
   id: mediumint('usr_grp_id').autoincrement().notNull(),
   name: varchar('usr_grp_name', { length: 255 }).notNull(),
   perm: mediumtext('usr_grp_perm').notNull(),
-  updatedAt: int('usr_grp_dateline').notNull(),
+  createdAt: int('usr_grp_dateline').notNull(),
 });
 
 export const chiiBlogComments = mysqlTable('chii_blog_comments', {
@@ -705,7 +709,7 @@ export const chiiBlogComments = mysqlTable('chii_blog_comments', {
   mid: mediumint('blg_pst_mid').notNull(),
   uid: mediumint('blg_pst_uid').notNull(),
   related: mediumint('blg_pst_related').notNull(),
-  updatedAt: int('blg_pst_dateline').notNull(),
+  createdAt: int('blg_pst_dateline').notNull(),
   content: mediumtext('blg_pst_content').notNull(),
 });
 

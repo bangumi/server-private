@@ -1,3 +1,6 @@
+import { getInfoboxValue } from '@app/lib/infobox.ts';
+import type * as res from '@app/lib/types/res.ts';
+
 import { SubjectType } from './type';
 
 function getDisplayFields(type: SubjectType): string[][] {
@@ -21,36 +24,7 @@ function getDisplayFields(type: SubjectType): string[][] {
   }
 }
 
-interface InfoboxValue {
-  k?: string;
-  v: string;
-}
-
-interface InfoboxItem {
-  key: string;
-  values: InfoboxValue[];
-}
-
-function getInfoboxValue(infobox: InfoboxItem[], keys: string[], limit = 5): string {
-  const item = infobox.find((i) => keys.includes(i.key) && i.values.length > 0);
-  if (!item) {
-    return '';
-  }
-  const list: string[] = [];
-  for (const value of item.values) {
-    if (!value.v) {
-      continue;
-    }
-    list.push(value.v);
-  }
-  let rt = list.slice(0, limit).join('、');
-  if (list.length > limit) {
-    rt += '等';
-  }
-  return rt;
-}
-
-export function getInfoboxSummary(infobox: InfoboxItem[], type: SubjectType, eps = 0): string {
+export function getInfoboxSummary(infobox: res.IInfoboxItem[], type: SubjectType, eps = 0): string {
   const displayFields = getDisplayFields(type);
   const list: string[] = [];
   if (eps > 0) {

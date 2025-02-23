@@ -6,8 +6,7 @@ import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import { chiiLikes } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { imageDomain } from '@app/lib/config.ts';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
@@ -18,7 +17,7 @@ import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import * as convert from '@app/lib/types/convert.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { errorResponses } from '@app/lib/types/res.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
@@ -91,20 +90,20 @@ export function setup(app: App) {
         };
       }
 
-      const users = await orm.fetchUsers(images.map((x) => x.uid));
+      const users = await fetcher.fetchSlimUsersByIDs(images.map((x) => x.uid));
       const likes = lo.groupBy(
         await db
           .select()
-          .from(chiiLikes)
+          .from(schema.chiiLikes)
           .where(
             op.and(
               op.inArray(
-                chiiLikes.relatedID,
+                schema.chiiLikes.relatedID,
                 images.map((x) => x.id),
               ),
-              op.eq(chiiLikes.type, LikeType.subject_cover),
-              op.eq(chiiLikes.uid, auth.userID),
-              op.eq(chiiLikes.deleted, 0),
+              op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
+              op.eq(schema.chiiLikes.uid, auth.userID),
+              op.eq(schema.chiiLikes.deleted, 0),
             ),
           ),
         (x) => x.relatedID,
@@ -125,8 +124,8 @@ export function setup(app: App) {
             }
           : undefined,
         covers: images.map((x) => {
-          const u = users[x.uid];
-          if (!u) {
+          const creator = users[x.uid];
+          if (!creator) {
             throw new UnexpectedNotFoundError(`user ${x.uid}`);
           }
 
@@ -134,7 +133,7 @@ export function setup(app: App) {
             id: x.id,
             thumbnail: `https://${imageDomain}/r/400/pic/cover/l/${x.target}`,
             raw: `https://${imageDomain}/pic/cover/l/${x.target}`,
-            creator: convert.oldToUser(u),
+            creator,
             voted: x.id in likes,
           };
         }),
@@ -236,8 +235,8 @@ export function setup(app: App) {
         description: `需要 \`subjectWikiEdit\` 权限`,
         summary: '为条目封面投票',
         params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
-          imageID: t.Integer({ exclusiveMinimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
+          imageID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({}),
@@ -254,8 +253,8 @@ export function setup(app: App) {
         throw new NotFoundError(`image(id=${imageID}, subjectID=${subjectID})`);
       }
 
-      await db.insert(chiiLikes).values({
-        type: LikeType.subject_cover,
+      await db.insert(schema.chiiLikes).values({
+        type: LikeType.SubjectCover,
         relatedID: imageID,
         uid: auth.userID,
         createdAt: DateTime.now().toUnixInteger(),
@@ -277,8 +276,8 @@ export function setup(app: App) {
         summary: '撤消条目封面投票',
         description: `需要 \`subjectWikiEdit\` 权限`,
         params: t.Object({
-          subjectID: t.Integer({ exclusiveMinimum: 0 }),
-          imageID: t.Integer({ exclusiveMinimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
+          imageID: t.Integer({ minimum: 1 }),
         }),
         response: {
           200: t.Object({}),
@@ -291,14 +290,14 @@ export function setup(app: App) {
     },
     async ({ params: { subjectID, imageID }, auth }) => {
       const [result] = await db
-        .update(chiiLikes)
+        .update(schema.chiiLikes)
         .set({ deleted: 1 })
         .where(
           op.and(
-            op.eq(chiiLikes.type, LikeType.subject_cover),
-            op.eq(chiiLikes.uid, auth.userID),
-            op.eq(chiiLikes.relatedID, imageID),
-            op.eq(chiiLikes.deleted, 0),
+            op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
+            op.eq(schema.chiiLikes.uid, auth.userID),
+            op.eq(schema.chiiLikes.relatedID, imageID),
+            op.eq(schema.chiiLikes.deleted, 0),
           ),
         );
 

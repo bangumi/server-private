@@ -17,6 +17,10 @@ redisUri: 'redis://:redis-pass@127.0.0.1:6379/0' # REDIS_URI
 
 kafkaBrokers: 127.0.0.1:29092
 
+meilisearch:
+  url: 'http://127.0.0.1:7700/'
+  key: 'meilisearch-api-key'
+
 turnstile:
   secretKey: '1x0000000000000000000000000000000AA' # TURNSTILE_SECRET_KEY
   siteKey: '1x00000000000000000000AA' # TURNSTILE_SITE_KEY

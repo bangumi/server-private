@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
-import { db } from '@app/drizzle/db.ts';
-import { chiiOsWebSessions } from '@app/drizzle/schema.ts';
+import { db, schema } from '@app/drizzle';
 import * as session from '@app/lib/auth/session.ts';
 import redis from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
@@ -9,12 +8,12 @@ import { createServer } from '@app/lib/server.ts';
 describe('login', () => {
   beforeEach(async () => {
     await redis.flushdb('SYNC');
-    await db.delete(chiiOsWebSessions);
+    await db.delete(schema.chiiOsWebSessions);
   });
 
   afterEach(async () => {
     await redis.flushdb('SYNC');
-    await db.delete(chiiOsWebSessions);
+    await db.delete(schema.chiiOsWebSessions);
   });
 
   test('should failed on too many requests', async () => {
@@ -23,7 +22,7 @@ describe('login', () => {
     const opt = {
       method: 'post',
       url: '/p1/login',
-      payload: { email: 'ee', password: 'eepp', 'cf-turnstile-response': 'fake-response' },
+      payload: { email: 'ee', password: 'eepp', turnstileToken: 'fake-response' },
     } as const;
 
     const login = () => app.inject(opt);
@@ -47,7 +46,7 @@ describe('login', () => {
       payload: {
         email: 'treeholechan@gmail.com',
         password: 'lovemeplease',
-        'cf-turnstile-response': 'fake-response',
+        turnstileToken: 'fake-response',
       },
     });
 

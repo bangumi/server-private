@@ -1,20 +1,16 @@
-import { setTimeout } from 'timers/promises';
-
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
-import { db, op } from '@app/drizzle/db.ts';
-import { chiiOsWebSessions } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 
 import { create, get, revoke } from './session.ts';
-import { sql } from 'drizzle-orm';
 
 beforeEach(async () => {
-  await db.delete(chiiOsWebSessions);
+  await db.delete(schema.chiiOsWebSessions);
 });
 
 afterEach(async () => {
-  await db.delete(chiiOsWebSessions);
+  await db.delete(schema.chiiOsWebSessions);
 });
 
 test('should create and get session', async () => {
@@ -24,7 +20,7 @@ test('should create and get session', async () => {
   });
 
   const session = await db.query.chiiOsWebSessions.findFirst({
-    where: sql`\`key\` = ${token} collate utf8mb4_bin`,
+    where: op.sql`\`key\` = ${token} collate utf8mb4_bin`,
   });
 
   expect(session).toBeDefined();
@@ -41,7 +37,7 @@ test('should create and get session', async () => {
 
 test('should revoke session', async () => {
   const token = 'fake-random-session-token';
-  await db.insert(chiiOsWebSessions).values({
+  await db.insert(schema.chiiOsWebSessions).values({
     key: token,
     value: Buffer.from(''),
     userID: 0,
@@ -51,7 +47,7 @@ test('should revoke session', async () => {
 
   await revoke(token);
   const session = await db.query.chiiOsWebSessions.findFirst({
-    where: op.eq(chiiOsWebSessions.key, token),
+    where: op.eq(schema.chiiOsWebSessions.key, token),
   });
 
   expect(session).toBeDefined();

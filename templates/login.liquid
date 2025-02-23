@@ -36,6 +36,7 @@
         <div
           class='cf-turnstile'
           data-action='login'
+          data-response-field-name='turnstileToken'
           data-sitekey='{{ TURNSTILE_SITE_KEY }}'
           data-theme='light'
         ></div>
@@ -55,7 +56,7 @@
         data[name] = value;
       });
 
-      if (!('cf-turnstile-response' in data)) {
+      if (!('turnstileToken' in data)) {
         return;
       }
 

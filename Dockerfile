@@ -1,4 +1,4 @@
-FROM node:22.13.0-slim@sha256:f5a0871ab03b035c58bdb3007c3d177b001c2145c18e81817b71624dcf7d8bff AS base
+FROM node:22.14.0-slim@sha256:91be66fb4214c9449836550cf4c3524489816fcc29455bf42d968e8e87cfa5f2 AS base
 
 WORKDIR /app
 
@@ -8,8 +8,10 @@ FROM base AS builder
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches/
 
-RUN corepack enable && corepack prepare --activate \
-  && pnpm install --frozen-lockfile
+RUN npm i -g corepack &&\
+  corepack enable &&\
+  corepack prepare --activate &&\
+  pnpm install --frozen-lockfile
 
 COPY . ./
 
@@ -20,15 +22,17 @@ FROM base AS prod-deps
 COPY package.json pnpm-lock.yaml ./
 COPY patches ./patches/
 
-RUN corepack enable && corepack prepare --activate \
-  && npm pkg delete scripts.prepare \
-  && pnpm install --prod --frozen-lockfile
+RUN npm i -g corepack &&\
+  corepack enable &&\
+  corepack prepare --activate &&\
+  npm pkg delete scripts.prepare &&\
+  pnpm install --prod --frozen-lockfile
 
-FROM gcr.io/distroless/nodejs22-debian12@sha256:d00edbf864c5b989f1b69951a13c5c902bf369cca572de59b5ec972552848e33
+FROM gcr.io/distroless/nodejs22-debian12@sha256:881157f8399d3ab71c54068f148c25296f7f9bee6d36279febad5a6f46f41c2b
 
 WORKDIR /app
 
-ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps", "./dist/index.mjs"]
+ENTRYPOINT ["/nodejs/bin/node", "--enable-source-maps"]
 
 ENV NODE_ENV=production
 

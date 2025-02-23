@@ -1,7 +1,6 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -33,12 +32,11 @@ export async function setup(app: App) {
       const [data] = await db
         .select()
         .from(schema.chiiIndexes)
-        .innerJoin(schema.chiiUsers, op.eq(schema.chiiIndexes.uid, schema.chiiUsers.id))
         .where(op.eq(schema.chiiIndexes.id, indexID));
       if (!data) {
         throw new NotFoundError('index');
       }
-      const index = convert.toIndex(data.chii_index, data.chii_members);
+      const index = convert.toIndex(data);
       return index;
     },
   );

@@ -5,8 +5,7 @@ import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
-import { db } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -18,9 +17,13 @@ import { pushRev } from '@app/lib/rev/ep.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { validateDate } from '@app/lib/utils/date.ts';
+import { validateDuration } from '@app/lib/utils/index.ts';
+import { matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
@@ -140,22 +143,28 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
+const EpisodePartial = t.Partial(t.Omit(req.EpisodeWikiInfo, ['id', 'subjectID']));
+
 export const EpsisodesNew = t.Object(
   {
     episodes: t.Array(
-      t.Object({
-        name: t.Optional(t.String()),
-        nameCN: t.Optional(t.String()),
-        type: t.Optional(res.Ref(res.EpisodeType)),
-        disc: t.Optional(t.Number()),
-        ep: t.Number(),
-        duration: t.Optional(t.String()),
-        date: t.Optional(t.String()),
-        summary: t.Optional(t.String()),
-      }),
+      // EpisodePartial with required ep
+      t.Composite([t.Omit(EpisodePartial, ['ep']), t.Object({ ep: t.Number() })]),
     ),
   },
   { $id: 'EpsisodesNew' },
+);
+
+export const EpsisodesEdit = t.Object(
+  {
+    commitMessage: t.String(),
+    episodes: t.Array(
+      // EpisodePartial with required id
+      t.Composite([EpisodePartial, t.Object({ id: t.Integer() })]),
+    ),
+    expectedRevision: t.Optional(t.Array(req.EpisodeExpected)),
+  },
+  { $id: 'EpsisodesEdit' },
 );
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -174,7 +183,7 @@ export async function setup(app: App) {
         operationId: 'subjectInfo',
         description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
@@ -367,7 +376,7 @@ export async function setup(app: App) {
         operationId: 'subjectEditHistorySummary',
         description: ['获取当前的 wiki 信息'].join('\n\n'),
         params: t.Object({
-          subjectID: t.Integer({ examples: [8], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         response: {
@@ -389,14 +398,12 @@ export async function setup(app: App) {
         return [];
       }
 
-      const users = await orm.fetchUsers(history.map((x) => x.creatorID));
+      const users = await fetcher.fetchSlimUsersByIDs(history.map((x) => x.creatorID));
 
       return history.map((x) => {
-        const u = users[x.creatorID];
-
         return {
           creator: {
-            username: u?.username ?? '',
+            username: users[x.creatorID]?.username ?? '',
           },
           type: x.type,
           createdAt: x.createdAt,
@@ -414,7 +421,7 @@ export async function setup(app: App) {
         operationId: 'putSubjectInfo',
         description: '需要 `subjectWikiEdit` 权限',
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
@@ -450,7 +457,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
-      const s = await orm.fetchSubjectByID(subjectID);
+      const s = await fetcher.fetchSlimSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -485,7 +492,7 @@ export async function setup(app: App) {
         tags: [Tag.Wiki],
         operationId: 'patchSubjectInfo',
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [] }],
         body: t.Object(
@@ -582,9 +589,10 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'createEpisodes',
-        description: '为条目添加新章节',
+        summary: '为条目添加新章节',
+        description: '需要 `epEdit` 权限，一次最多可以添加 40 个章节',
         params: t.Object({
-          subjectID: t.Integer({ examples: [363612], minimum: 0 }),
+          subjectID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: EpsisodesNew,
@@ -609,8 +617,11 @@ export async function setup(app: App) {
       if (episodes.length === 0) {
         return { episodeIDs: [] };
       }
+      if (episodes.length > 40) {
+        throw new BadRequestError('too many episodes, max is 40');
+      }
 
-      const s = await orm.fetchSubjectByID(subjectID);
+      const s = await fetcher.fetchSlimSubjectByID(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -619,25 +630,29 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked subject');
       }
 
-      const now = new Date();
-      const discDefault = s.typeID === SubjectType.Music ? 1 : 0;
-      const newEpisodes = episodes.map((ep) => ({
-        subjectID: subjectID,
-        sort: ep.ep,
-        type: ep.type ?? 0,
-        disc: ep.disc ?? discDefault,
-        name: ep.name ?? '',
-        nameCN: ep.nameCN ?? '',
-        rate: 0,
-        duration: ep.duration ?? '',
-        airdate: ep.date ?? '',
-        online: '',
-        comment: 0,
-        resources: 0,
-        desc: ep.summary ?? '',
-        createdAt: now.getTime() / 1000,
-        updatedAt: now.getTime() / 1000,
-      }));
+      const now = DateTime.now().toUnixInteger();
+      const discDefault = s.type === SubjectType.Music ? 1 : 0;
+      const newEpisodes = episodes.map((ep) => {
+        validateDate(ep.date);
+        validateDuration(ep.duration);
+        return {
+          subjectID: subjectID,
+          sort: ep.ep,
+          type: ep.type ?? 0,
+          disc: ep.disc ?? discDefault,
+          name: ep.name ?? '',
+          nameCN: ep.nameCN ?? '',
+          rate: 0,
+          duration: ep.duration ?? '',
+          airdate: ep.date ?? '',
+          online: '',
+          comment: 0,
+          resources: 0,
+          desc: ep.summary ?? '',
+          createdAt: now,
+          updatedAt: now,
+        };
+      });
 
       const episodeIDs = await db.transaction(async (txn) => {
         const [{ insertId: firstEpID }] = await txn.insert(schema.chiiEpisodes).values(newEpisodes);
@@ -664,6 +679,141 @@ export async function setup(app: App) {
       });
 
       return { episodeIDs };
+    },
+  );
+
+  app.addSchema(EpsisodesEdit);
+
+  app.patch(
+    '/subjects/:subjectID/ep',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'patchEpisodes',
+        summary: '批量编辑条目章节',
+        description: '需要 `epEdit` 权限，一次最多可以编辑 20 个章节',
+        params: t.Object({ subjectID: t.Integer({ examples: [363612], minimum: 0 }) }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: EpsisodesEdit,
+        response: {
+          200: t.Null(),
+          401: res.Ref(res.Error, {
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('editing episodes')],
+    },
+    async ({
+      auth,
+      body: { commitMessage, episodes: episodeEdits, expectedRevision },
+      params: { subjectID },
+    }): Promise<void> => {
+      if (!auth.permission.ep_edit) {
+        throw new NotAllowedError('edit episodes');
+      }
+
+      const s = await fetcher.fetchSlimSubjectByID(subjectID);
+      if (!s) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      if (s.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+
+      if (episodeEdits.length === 0) {
+        throw new BadRequestError('no episodes to edit');
+      }
+      if (episodeEdits.length > 20) {
+        throw new BadRequestError('too many episodes, max is 20');
+      }
+      if (expectedRevision && expectedRevision.length !== episodeEdits.length) {
+        throw new BadRequestError('expected revision length is not equal to episodes length');
+      }
+
+      const episodeIDs = episodeEdits.map((ep) => ep.id);
+      if (episodeIDs.length !== new Set(episodeIDs).size) {
+        throw new BadRequestError('episode ids are not unique');
+      }
+      await db.transaction(async (txn) => {
+        const eps = await txn
+          .select()
+          .from(schema.chiiEpisodes)
+          .where(op.inArray(schema.chiiEpisodes.id, episodeIDs));
+        const epsMap = new Map(eps.map((ep) => [ep.id, ep]));
+
+        const now = DateTime.now().toUnixInteger();
+        for (const [index, epEdit] of episodeEdits.entries()) {
+          const ep = epsMap.get(epEdit.id);
+          if (!ep) {
+            throw new BadRequestError(`episode ${epEdit.id} not found`);
+          }
+          if (ep.subjectID !== subjectID) {
+            throw new BadRequestError(`episode ${epEdit.id} is not for subject ${subjectID}`);
+          }
+          if (expectedRevision?.[index] !== undefined) {
+            matchExpected(ep, expectedRevision[index]);
+          }
+
+          if (epEdit.date !== undefined) {
+            validateDate(epEdit.date);
+            ep.airdate = epEdit.date;
+          }
+          if (epEdit.duration !== undefined) {
+            validateDuration(epEdit.duration);
+            ep.duration = epEdit.duration;
+          }
+
+          if (epEdit.name !== undefined) {
+            ep.name = epEdit.name;
+          }
+
+          if (epEdit.nameCN !== undefined) {
+            ep.nameCN = epEdit.nameCN;
+          }
+
+          if (epEdit.summary !== undefined) {
+            ep.desc = epEdit.summary;
+          }
+
+          if (epEdit.ep !== undefined) {
+            ep.sort = epEdit.ep;
+          }
+
+          if (epEdit.disc !== undefined) {
+            ep.disc = epEdit.disc;
+          }
+
+          if (epEdit.type !== undefined) {
+            ep.type = epEdit.type;
+          }
+
+          ep.updatedAt = now;
+        }
+
+        for (const ep of eps) {
+          await txn.update(schema.chiiEpisodes).set(ep).where(op.eq(schema.chiiEpisodes.id, ep.id));
+        }
+        await pushRev(txn, {
+          revisions: eps.map((ep) => ({
+            episodeID: ep.id,
+            rev: {
+              ep_sort: ep.sort.toString(),
+              ep_type: ep.type.toString(),
+              ep_disc: ep.disc.toString(),
+              ep_name: ep.name,
+              ep_name_cn: ep.nameCN,
+              ep_duration: ep.duration,
+              ep_airdate: ep.airdate,
+              ep_desc: ep.desc,
+            },
+          })),
+          creator: auth.userID,
+          now,
+          comment: commitMessage,
+        });
+      });
     },
   );
 }

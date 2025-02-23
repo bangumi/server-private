@@ -48,4 +48,4 @@ export class Turnstile extends BaseExternalHttpSrv {
   }
 }
 
-export const turnstile = createTurnstileDriver(config.turnstile.siteKey);
+export const turnstile = createTurnstileDriver(config.turnstile.secretKey);

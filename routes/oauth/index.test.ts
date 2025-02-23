@@ -1,10 +1,8 @@
 import formBody from '@fastify/formbody';
 import { describe, expect, test } from 'vitest';
 
-import { db, op } from '@app/drizzle/db';
-import { chiiAccessToken, chiiOAuthRefreshToken } from '@app/drizzle/schema';
-import { fetchUserX } from '@app/lib/orm';
-import * as convert from '@app/lib/types/convert.ts';
+import { db, op, schema } from '@app/drizzle';
+import { fetchUserX } from '@app/lib/user/utils.ts';
 import { userOauthRoutes } from '@app/routes/oauth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 import fastifyCookie from '@fastify/cookie';
@@ -16,7 +14,7 @@ const createApp = async () => {
   });
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {
-      const user = convert.oldToUser(await fetchUserX(req.auth.userID));
+      const user = await fetchUserX(req.auth.userID);
       reply.locals = { user };
     }
   });
@@ -102,22 +100,22 @@ describe('oauth', () => {
 
     const tokens = await db
       .select()
-      .from(chiiAccessToken)
+      .from(schema.chiiAccessToken)
       .where(
         op.and(
-          op.eq(chiiAccessToken.accessToken, data.access_token),
-          op.gt(chiiAccessToken.expiredAt, new Date()),
+          op.eq(schema.chiiAccessToken.accessToken, data.access_token),
+          op.gt(schema.chiiAccessToken.expiredAt, new Date()),
         ),
       );
     expect(tokens.length).toBe(1);
 
     const refreshTokens = await db
       .select()
-      .from(chiiOAuthRefreshToken)
+      .from(schema.chiiOAuthRefreshToken)
       .where(
         op.and(
-          op.eq(chiiOAuthRefreshToken.refreshToken, data.refresh_token),
-          op.gt(chiiOAuthRefreshToken.expiredAt, new Date()),
+          op.eq(schema.chiiOAuthRefreshToken.refreshToken, data.refresh_token),
+          op.gt(schema.chiiOAuthRefreshToken.expiredAt, new Date()),
         ),
       );
 
@@ -148,11 +146,14 @@ describe('oauth', () => {
     await expect(
       db
         .select()
-        .from(chiiAccessToken)
+        .from(schema.chiiAccessToken)
         .where(
           op.and(
-            op.eq(chiiAccessToken.accessToken, refreshTokenResult.json().access_token as string),
-            op.gt(chiiAccessToken.expiredAt, new Date()),
+            op.eq(
+              schema.chiiAccessToken.accessToken,
+              refreshTokenResult.json().access_token as string,
+            ),
+            op.gt(schema.chiiAccessToken.expiredAt, new Date()),
           ),
         ),
     ).resolves.toHaveLength(1);

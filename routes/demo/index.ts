@@ -5,10 +5,9 @@ import { fastifyStatic } from '@fastify/static';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { projectRoot } from '@app/lib/config.ts';
-import * as Notify from '@app/lib/notify.ts';
-import { fetchUserX } from '@app/lib/orm/index.ts';
-import * as convert from '@app/lib/types/convert.ts';
+import { type INotify, Notify } from '@app/lib/notify.ts';
 import type * as res from '@app/lib/types/res.ts';
+import { fetchUserX } from '@app/lib/user/utils.ts';
 import * as admin from '@app/routes/admin/index.ts';
 import { Auth } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -35,7 +34,7 @@ export async function setup(app: App) {
 
   app.addHook('preHandler', async function (req, reply) {
     if (req.auth.login) {
-      const user = convert.oldToUser(await fetchUserX(req.auth.userID));
+      const user = await fetchUserX(req.auth.userID);
       reply.locals = { user };
     }
   });
@@ -56,7 +55,7 @@ async function userDemoRoutes(app: App) {
     if (req.auth.login) {
       const notifyCount = await Notify.count(req.auth.userID);
 
-      let notify: Notify.INotify[] = [];
+      let notify: INotify[] = [];
       if (notifyCount) {
         notify = await Notify.list(req.auth.userID, { unread: true, limit: 20 });
       }

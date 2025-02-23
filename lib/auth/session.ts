@@ -1,9 +1,7 @@
 import type { CookieSerializeOptions } from '@fastify/cookie';
-import { sql } from 'drizzle-orm';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import { chiiOsWebSessions } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import { TypedCache } from '@app/lib/cache.ts';
 import { randomBytes } from '@app/lib/utils/index.ts';
 
@@ -31,7 +29,7 @@ export async function create(user: { id: number; regTime: number }): Promise<str
     expired_at: now + 60 * 60 * 24 * 7,
   };
 
-  await db.insert(chiiOsWebSessions).values({
+  await db.insert(schema.chiiOsWebSessions).values({
     value: Buffer.from(JSON.stringify(value)),
     userID: user.id,
     createdAt: value.created_at,
@@ -57,8 +55,8 @@ export async function get(sessionID: string): Promise<IAuth | null> {
 
   const session = await db.query.chiiOsWebSessions.findFirst({
     where: op.and(
-      sql`\`key\` = ${sessionID} collate utf8mb4_bin`,
-      op.gt(chiiOsWebSessions.expiredAt, DateTime.now().toUnixInteger()),
+      op.sql`\`key\` = ${sessionID} collate utf8mb4_bin`,
+      op.gt(schema.chiiOsWebSessions.expiredAt, DateTime.now().toUnixInteger()),
     ),
   });
   if (!session) {
@@ -72,9 +70,9 @@ export async function get(sessionID: string): Promise<IAuth | null> {
 
 export async function revoke(sessionID: string) {
   await db
-    .update(chiiOsWebSessions)
+    .update(schema.chiiOsWebSessions)
     .set({ expiredAt: DateTime.now().toUnixInteger() })
-    .where(op.eq(chiiOsWebSessions.key, sessionID));
+    .where(op.eq(schema.chiiOsWebSessions.key, sessionID));
 
   await sessionCache.del(sessionID);
 }

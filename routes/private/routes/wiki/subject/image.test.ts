@@ -2,8 +2,7 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 
-import { db, op } from '@app/drizzle/db.ts';
-import { chiiLikes } from '@app/drizzle/schema.ts';
+import { db, op, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { LikeType } from '@app/lib/like.ts';
@@ -36,7 +35,7 @@ vi.spyOn(Subject, 'onSubjectVote').mockImplementation(() => Promise.resolve());
 
 describe('should vote for subject cover', () => {
   beforeAll(async () => {
-    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
+    await db.delete(schema.chiiLikes).where(op.eq(schema.chiiLikes.type, LikeType.SubjectCover));
     await SubjectImageRepo.upsert(
       {
         ban: 0,
@@ -52,7 +51,7 @@ describe('should vote for subject cover', () => {
   });
 
   afterAll(async () => {
-    await db.delete(chiiLikes).where(op.eq(chiiLikes.type, LikeType.subject_cover));
+    await db.delete(schema.chiiLikes).where(op.eq(schema.chiiLikes.type, LikeType.SubjectCover));
     await SubjectImageRepo.delete({ id: 100 });
   });
 
@@ -66,7 +65,10 @@ describe('should vote for subject cover', () => {
       });
 
       expect(res.statusCode).toBe(200);
-      const likes = await db.select().from(chiiLikes).where(op.eq(chiiLikes.deleted, 0));
+      const likes = await db
+        .select()
+        .from(schema.chiiLikes)
+        .where(op.eq(schema.chiiLikes.deleted, 0));
       expect(likes).not.toHaveLength(0);
     }
 
@@ -78,7 +80,10 @@ describe('should vote for subject cover', () => {
       });
 
       expect(res.statusCode).toBe(200);
-      const likes = await db.select().from(chiiLikes).where(op.eq(chiiLikes.deleted, 1));
+      const likes = await db
+        .select()
+        .from(schema.chiiLikes)
+        .where(op.eq(schema.chiiLikes.deleted, 1));
       expect(likes).not.toHaveLength(0);
     }
   });

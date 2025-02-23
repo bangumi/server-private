@@ -1,31 +1,24 @@
 import { Type as t } from '@sinclair/typebox';
 
-import { db, op } from '@app/drizzle/db.ts';
-import type * as orm from '@app/drizzle/orm.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, type orm, schema } from '@app/drizzle';
+import { CommentWithState } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { PersonCat } from '@app/lib/person/type.ts';
+import { getPersonCollect } from '@app/lib/person/utils.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
-function toPersonWork(
-  subject: orm.ISubject,
-  fields: orm.ISubjectFields,
-  relations: orm.IPersonSubject[],
-): res.IPersonWork {
+function toPersonSubjectRelation(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
   return {
-    subject: convert.toSlimSubject(subject, fields),
-    positions: relations.map((r) => {
-      return {
-        summary: r.summary,
-        appearEps: r.appearEps,
-        type: convert.toSubjectStaffPositionType(r.subjectType, r.position),
-      };
-    }),
+    summary: relation.summary,
+    appearEps: relation.appearEps,
+    type: convert.toSubjectStaffPositionType(relation.subjectType, relation.position),
   };
 }
 
@@ -41,6 +34,8 @@ function toPersonCharacter(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  const comment = new CommentWithState(schema.chiiPrsnComments);
+
   app.get(
     '/persons/:personID',
     {
@@ -61,7 +56,7 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { personID } }) => {
-      const data = await db
+      const [data] = await db
         .select()
         .from(schema.chiiPersons)
         .where(
@@ -71,10 +66,17 @@ export async function setup(app: App) {
             auth.allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
           ),
         );
-      for (const d of data) {
-        return convert.toPerson(d);
+      if (!data) {
+        throw new NotFoundError(`person ${personID}`);
       }
-      throw new NotFoundError(`person ${personID}`);
+      const person = convert.toPerson(data);
+      if (auth.login) {
+        const collectedAt = await getPersonCollect(PersonCat.Person, auth.userID, personID);
+        if (collectedAt) {
+          person.collectedAt = collectedAt;
+        }
+      }
+      return person;
     },
   );
 
@@ -118,34 +120,25 @@ export async function setup(app: App) {
         op.eq(schema.chiiPersonSubjects.personID, personID),
         subjectType ? op.eq(schema.chiiPersonSubjects.subjectType, subjectType) : undefined,
         position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
-        op.ne(schema.chiiSubjects.ban, 1),
-        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.countDistinct(schema.chiiPersonSubjects.subjectID) })
         .from(schema.chiiPersonSubjects)
-        .innerJoin(
-          schema.chiiSubjects,
-          op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
-        )
         .where(condition);
       const data = await db
-        .select()
+        .select({ sid: schema.chiiPersonSubjects.subjectID })
         .from(schema.chiiPersonSubjects)
         .innerJoin(
-          schema.chiiSubjects,
-          op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjects.id),
-        )
-        .innerJoin(
           schema.chiiSubjectFields,
-          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+          op.eq(schema.chiiPersonSubjects.subjectID, schema.chiiSubjectFields.id),
         )
         .where(condition)
         .groupBy(schema.chiiPersonSubjects.subjectID)
-        .orderBy(op.desc(schema.chiiPersonSubjects.subjectID))
+        .orderBy(op.desc(schema.chiiSubjectFields.date))
         .limit(limit)
         .offset(offset);
-      const subjectIDs = data.map((d) => d.chii_person_cs_index.subjectID);
+      const subjectIDs = data.map((d) => d.sid);
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, auth.allowNsfw);
       const relations = await db
         .select()
         .from(schema.chiiPersonSubjects)
@@ -156,22 +149,24 @@ export async function setup(app: App) {
             position ? op.eq(schema.chiiPersonSubjects.position, position) : undefined,
           ),
         );
-      const relationsMap = new Map<number, orm.IPersonSubject[]>();
+      const relationsMap = new Map<number, res.ISubjectStaffPosition[]>();
       for (const r of relations) {
         const relations = relationsMap.get(r.subjectID) || [];
-        relations.push(r);
+        relations.push(toPersonSubjectRelation(r));
         relationsMap.set(r.subjectID, relations);
       }
-      const subjects = data.map((d) =>
-        toPersonWork(
-          d.chii_subjects,
-          d.chii_subject_fields,
-          relationsMap.get(d.chii_subjects.id) || [],
-        ),
-      );
+      const works: res.IPersonWork[] = [];
+      for (const sid of subjectIDs) {
+        const subject = subjects[sid];
+        const positions = relationsMap.get(sid) || [];
+        if (!subject) {
+          continue;
+        }
+        works.push({ subject, positions });
+      }
       return {
         total: count,
-        data: subjects,
+        data: works,
       };
     },
   );
@@ -325,6 +320,104 @@ export async function setup(app: App) {
         total: count,
         data: users,
       };
+    },
+  );
+
+  app.get(
+    '/persons/:personID/comments',
+    {
+      schema: {
+        summary: '获取人物的吐槽箱',
+        operationId: 'getPersonComments',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        response: {
+          200: t.Array(res.Comment),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('person')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { personID } }) => {
+      const person = await fetcher.fetchSlimPersonByID(personID, auth.allowNsfw);
+      if (!person) {
+        throw new NotFoundError(`person ${personID}`);
+      }
+      return await comment.getAll(personID);
+    },
+  );
+
+  app.post(
+    '/persons/:personID/comments',
+    {
+      schema: {
+        summary: '创建人物的吐槽',
+        operationId: 'createPersonComment',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+        },
+      },
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+    },
+    async ({ auth, body: { content, replyTo = 0 }, params: { personID } }) => {
+      return await comment.create(auth, personID, content, replyTo);
+    },
+  );
+
+  app.put(
+    '/persons/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑人物的吐槽',
+        operationId: 'updatePersonComment',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateContent),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('edit a comment')],
+    },
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
+    },
+  );
+
+  app.delete(
+    '/persons/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除人物的吐槽',
+        operationId: 'deletePersonComment',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete a comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      return await comment.delete(auth, commentID);
     },
   );
 }

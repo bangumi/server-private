@@ -1,10 +1,13 @@
+import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 
-import { db, op } from '@app/drizzle/db.ts';
-import * as schema from '@app/drizzle/schema';
+import { db, op, schema } from '@app/drizzle';
 import { getSlimCacheKey as getBlogSlimCacheKey } from '@app/lib/blog/cache.ts';
 import { getSlimCacheKey as getCharacterSlimCacheKey } from '@app/lib/character/cache.ts';
-import { getSlimCacheKey as getGroupSlimCacheKey } from '@app/lib/group/cache.ts';
+import {
+  getSlimCacheKey as getGroupSlimCacheKey,
+  getTopicCacheKey as getGroupTopicCacheKey,
+} from '@app/lib/group/cache.ts';
 import { getSlimCacheKey as getIndexSlimCacheKey } from '@app/lib/index/cache.ts';
 import { getSlimCacheKey as getPersonSlimCacheKey } from '@app/lib/person/cache.ts';
 import redis from '@app/lib/redis.ts';
@@ -14,18 +17,19 @@ import {
   getItemCacheKey as getSubjectItemCacheKey,
   getListCacheKey as getSubjectListCacheKey,
   getSlimCacheKey as getSubjectSlimCacheKey,
+  getTopicCacheKey as getSubjectTopicCacheKey,
 } from '@app/lib/subject/cache.ts';
 import {
   type CalendarItem,
   type SubjectFilter,
   SubjectSort,
   SubjectType,
-  TagCat,
-  type UserEpisodeCollection,
 } from '@app/lib/subject/type.ts';
-import { getSubjectTrendingKey } from '@app/lib/trending/subject.ts';
+import { TagCat } from '@app/lib/tag.ts';
+import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
+import { isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -66,6 +70,8 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
+
   const cached = await redis.mget(ids.map((id) => getUserSlimCacheKey(id)));
   const result: Record<number, res.ISlimUser> = {};
   const missing = [];
@@ -88,20 +94,20 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   return result;
 }
 
-export async function fetchFriendIDsByUserID(userID: number): Promise<number[]> {
-  const data = await db
-    .select({ fid: schema.chiiFriends.fid })
-    .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.uid, userID));
-  return data.map((d) => d.fid);
-}
-
-export async function fetchFollowerIDsByUserID(userID: number): Promise<number[]> {
-  const data = await db
-    .select({ uid: schema.chiiFriends.uid })
-    .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.fid, userID));
-  return data.map((d) => d.uid);
+export async function fetchSimpleUsersByIDs(
+  ids: number[],
+): Promise<Record<number, res.ISimpleUser>> {
+  const slims = await fetchSlimUsersByIDs(ids);
+  return Object.fromEntries(
+    Object.entries(slims).map(([id, slim]) => [
+      id,
+      {
+        id: slim.id,
+        username: slim.username,
+        nickname: slim.nickname,
+      },
+    ]),
+  );
 }
 
 /** Cached */
@@ -142,6 +148,7 @@ export async function fetchSlimSubjectsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getSubjectSlimCacheKey(id)));
   const result: Record<number, res.ISlimSubject> = {};
   const missing = [];
@@ -220,6 +227,7 @@ export async function fetchSubjectsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getSubjectItemCacheKey(id)));
   const result: Record<number, res.ISubject> = {};
   const missing = [];
@@ -272,7 +280,7 @@ export async function fetchSubjectIDsByFilter(
     return JSON.parse(cached) as res.IPaged<number>;
   }
   if (sort === SubjectSort.Trends) {
-    const trendingKey = getSubjectTrendingKey(filter.type, TrendingPeriod.Month);
+    const trendingKey = getTrendingSubjectKey(filter.type, TrendingPeriod.Month);
     const data = await redis.get(trendingKey);
     if (!data) {
       return { data: [], total: 0 };
@@ -324,15 +332,15 @@ export async function fetchSubjectIDsByFilter(
   const sorts = [];
   switch (sort) {
     case SubjectSort.Rank: {
-      conditions.push(op.ne(schema.chiiSubjectFields.fieldRank, 0));
-      sorts.push(op.asc(schema.chiiSubjectFields.fieldRank));
+      conditions.push(op.ne(schema.chiiSubjectFields.rank, 0));
+      sorts.push(op.asc(schema.chiiSubjectFields.rank));
       break;
     }
     case SubjectSort.Trends: {
       break;
     }
     case SubjectSort.Collects: {
-      sorts.push(op.desc(schema.chiiSubjects.done));
+      sorts.push(op.desc(schema.chiiSubjects.collect));
       break;
     }
     case SubjectSort.Date: {
@@ -402,7 +410,7 @@ export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
   const data = await db
     .select({
       id: schema.chiiSubjects.id,
-      weekday: schema.chiiSubjectFields.weekDay,
+      weekday: schema.chiiSubjectFields.weekday,
       watchers: schema.chiiSubjects.doing,
     })
     .from(schema.chiiSubjects)
@@ -428,20 +436,50 @@ export async function fetchSubjectOnAirItems(): Promise<CalendarItem[]> {
   return result;
 }
 
-export async function fetchSubjectEpStatus(
+export async function fetchSubjectInterest(
   userID: number,
   subjectID: number,
-): Promise<Record<number, UserEpisodeCollection>> {
-  const data = await db
+): Promise<res.ISubjectInterest | undefined> {
+  const [data] = await db
     .select()
-    .from(schema.chiiEpStatus)
+    .from(schema.chiiSubjectInterests)
     .where(
-      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
-    );
-  for (const d of data) {
-    return convert.toSubjectEpStatus(d);
+      op.and(
+        op.eq(schema.chiiSubjectInterests.uid, userID),
+        op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+      ),
+    )
+    .limit(1);
+  if (!data) {
+    return;
   }
-  return {};
+  return convert.toSubjectInterest(data);
+}
+
+/** Cached */
+export async function fetchSubjectTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  const cached = await redis.mget(ids.map((id) => getSubjectTopicCacheKey(id)));
+  const result: Record<number, res.ITopic> = {};
+  const missing = [];
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      result[id] = JSON.parse(cached[idx]) as res.ITopic;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiSubjectTopics)
+      .where(op.inArray(schema.chiiSubjectTopics.id, missing));
+    for (const d of data) {
+      const topic = convert.toSubjectTopic(d);
+      result[d.id] = topic;
+      await redis.setex(getSubjectTopicCacheKey(d.id), 86400, JSON.stringify(topic));
+    }
+  }
+  return result;
 }
 
 /** Cached */
@@ -553,6 +591,7 @@ export async function fetchSlimCharactersByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getCharacterSlimCacheKey(id)));
   const result: Record<number, res.ISlimCharacter> = {};
   const missing = [];
@@ -620,6 +659,7 @@ export async function fetchSlimPersonsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getPersonSlimCacheKey(id)));
   const result: Record<number, res.ISlimPerson> = {};
   const missing = [];
@@ -778,6 +818,26 @@ export async function fetchSlimIndexByID(indexID: number): Promise<res.ISlimInde
   return item;
 }
 
+export async function fetchSlimGroupByName(
+  groupName: string,
+  allowNsfw = false,
+): Promise<res.ISlimGroup | undefined> {
+  const [data] = await db
+    .select()
+    .from(schema.chiiGroups)
+    .where(
+      op.and(
+        op.eq(schema.chiiGroups.name, groupName),
+        allowNsfw ? undefined : op.eq(schema.chiiGroups.nsfw, false),
+      ),
+    )
+    .limit(1);
+  if (!data) {
+    return;
+  }
+  return convert.toSlimGroup(data);
+}
+
 /** Cached */
 export async function fetchSlimGroupByID(
   groupID: number,
@@ -814,6 +874,7 @@ export async function fetchSlimGroupsByIDs(
   if (ids.length === 0) {
     return {};
   }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getGroupSlimCacheKey(id)));
   const result: Record<number, res.ISlimGroup> = {};
   const missing = [];
@@ -846,12 +907,44 @@ export async function fetchSlimGroupsByIDs(
 }
 
 /** Cached */
+export async function fetchGroupTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  const cached = await redis.mget(ids.map((id) => getGroupTopicCacheKey(id)));
+  const result: Record<number, res.ITopic> = {};
+  const missing = [];
+  for (const [idx, id] of ids.entries()) {
+    if (cached[idx]) {
+      result[id] = JSON.parse(cached[idx]) as res.ITopic;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiGroupTopics)
+      .where(op.inArray(schema.chiiGroupTopics.id, missing));
+    for (const d of data) {
+      const topic = convert.toGroupTopic(d);
+      result[d.id] = topic;
+      await redis.setex(getGroupTopicCacheKey(d.id), 86400, JSON.stringify(topic));
+    }
+  }
+  return result;
+}
+
+/** Cached */
 export async function fetchSlimBlogEntryByID(
   entryID: number,
+  uid: number,
 ): Promise<res.ISlimBlogEntry | undefined> {
   const cached = await redis.get(getBlogSlimCacheKey(entryID));
   if (cached) {
-    return JSON.parse(cached) as res.ISlimBlogEntry;
+    const slim = JSON.parse(cached) as res.ISlimBlogEntry;
+    const isFriend = await isFriends(slim.uid, uid);
+    if (!slim.public && slim.uid !== uid && !isFriend) {
+      return;
+    }
+    return slim;
   }
   const [data] = await db
     .select()
@@ -862,44 +955,9 @@ export async function fetchSlimBlogEntryByID(
   }
   const slim = convert.toSlimBlogEntry(data);
   await redis.setex(getBlogSlimCacheKey(entryID), ONE_MONTH, JSON.stringify(slim));
+  const isFriend = await isFriends(slim.uid, uid);
+  if (!slim.public && slim.uid !== uid && !isFriend) {
+    return;
+  }
   return slim;
-}
-
-export async function fetchSubjectTopicByID(topicID: number): Promise<res.ITopic | undefined> {
-  const data = await db
-    .select()
-    .from(schema.chiiSubjectTopics)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectTopics.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectTopics.id, topicID));
-  for (const d of data) {
-    return convert.toSubjectTopic(d.chii_subject_topics, d.chii_members);
-  }
-  return;
-}
-
-export async function fetchSubjectTopicRepliesByTopicID(topicID: number): Promise<res.IReply[]> {
-  const data = await db
-    .select()
-    .from(schema.chiiSubjectPosts)
-    .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectPosts.uid, schema.chiiUsers.id))
-    .where(op.eq(schema.chiiSubjectPosts.mid, topicID));
-
-  const subReplies: Record<number, res.ISubReply[]> = {};
-  const topLevelReplies: res.IReply[] = [];
-  for (const d of data) {
-    const related = d.chii_subject_posts.related;
-    if (related == 0) {
-      const reply = convert.toSubjectTopicReply(d.chii_subject_posts, d.chii_members);
-      topLevelReplies.push(reply);
-    } else {
-      const subReply = convert.toSubjectTopicSubReply(d.chii_subject_posts, d.chii_members);
-      const list = subReplies[related] ?? [];
-      list.push(subReply);
-      subReplies[related] = list;
-    }
-  }
-  for (const reply of topLevelReplies) {
-    reply.replies = subReplies[reply.id] ?? [];
-  }
-  return topLevelReplies;
 }

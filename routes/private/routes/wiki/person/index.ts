@@ -6,7 +6,8 @@ import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { PersonRev } from '@app/lib/orm/entity/index.ts';
 import { createRevision, RevType } from '@app/lib/orm/entity/index.ts';
-import { AppDataSource, entity, PersonRepo } from '@app/lib/orm/index.ts';
+import * as entity from '@app/lib/orm/entity/index.ts';
+import { AppDataSource, PersonRepo } from '@app/lib/orm/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -49,7 +50,7 @@ export async function setup(app: App) {
         operationId: 'getPersonWikiInfo',
         description: '获取当前的 wiki 信息',
         params: t.Object({
-          personID: t.Integer({ examples: [1], minimum: 0 }),
+          personID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
@@ -90,7 +91,7 @@ export async function setup(app: App) {
         tags: [Tag.Wiki],
         operationId: 'patchPersonInfo',
         params: t.Object({
-          personID: t.Integer({ examples: [1], minimum: 0 }),
+          personID: t.Integer({ minimum: 1 }),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(

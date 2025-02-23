@@ -1,6 +1,8 @@
 import type { Static, TRefUnsafe, TSchema, UnsafeOptions } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
+import { datePattern } from '@app/lib/utils/date.ts';
+
 export function Ref<T extends TSchema>(T: T, options?: UnsafeOptions): TRefUnsafe<T> {
   return t.Unsafe<Static<T>>({ $ref: T.$id, ...options });
 }
@@ -71,3 +73,60 @@ export const IndexRelatedCategory = t.Integer({
   - 2 = 人物
   - 3 = 剧集`,
 });
+
+export const EpisodeCollectionStatus = t.Integer({
+  $id: 'EpisodeCollectionStatus',
+  enum: [0, 1, 2, 3],
+  'x-ms-enum': {
+    name: 'EpisodeCollectionStatus',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['None', 'Wish', 'Done', 'Dropped'],
+  description: `剧集收藏状态
+  - 0 = 撤消/删除
+  - 1 = 想看
+  - 2 = 看过
+  - 3 = 抛弃`,
+});
+
+export const GroupMemberRole = t.Integer({
+  $id: 'GroupMemberRole',
+  enum: [-2, -1, 0, 1, 2, 3],
+  'x-ms-enum': {
+    name: 'GroupMemberRole',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['Visitor', 'Guest', 'Member', 'Creator', 'Moderator', 'Blocked'],
+  description: `小组成员角色
+  - -2 = 访客
+  - -1 = 游客
+  - 0 = 小组成员
+  - 1 = 小组长
+  - 2 = 小组管理员
+  - 3 = 禁言成员`,
+});
+
+export type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;
+export const EpisodeWikiInfo = t.Object(
+  {
+    id: t.Integer(),
+    subjectID: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
+    type: Ref(EpisodeType),
+    ep: t.Number(),
+    disc: t.Optional(t.Number()),
+    duration: t.String({ examples: ['24:53', '24m52s'] }),
+    date: t.Optional(
+      t.String({
+        description: 'YYYY-MM-DD',
+        pattern: datePattern.source,
+        examples: ['2022-02-02'],
+      }),
+    ),
+    summary: t.String(),
+  },
+  {
+    $id: 'EpisodeWikiInfo',
+  },
+);
