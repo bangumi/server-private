@@ -2,6 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';
+import { IndexType } from '@app/lib/index/types';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
 import { CollectionPrivacy } from '@app/lib/subject/type.ts';
@@ -436,6 +437,7 @@ export async function setup(app: App) {
       }
 
       const conditions = op.and(
+        op.eq(schema.chiiIndexes.type, IndexType.User),
         op.eq(schema.chiiIndexCollects.uid, user.id),
         op.ne(schema.chiiIndexes.ban, 1),
       );
@@ -550,6 +552,7 @@ export async function setup(app: App) {
       }
 
       const conditions = op.and(
+        op.eq(schema.chiiIndexes.type, IndexType.User),
         op.eq(schema.chiiIndexes.uid, user.id),
         op.ne(schema.chiiIndexes.ban, 1),
       );
