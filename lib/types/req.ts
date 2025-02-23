@@ -261,6 +261,13 @@ export const CollectSubject = t.Object(
     comment: t.Optional(t.String({ description: '评价' })),
     private: t.Optional(t.Boolean({ description: '仅自己可见' })),
     tags: t.Optional(t.Array(t.String({ description: '标签, 不能包含空格' }))),
+    progress: t.Optional(
+      t.Boolean({
+        description: `是否包含进度，仅在 \`type\` 为 \`看过\` 时有效，并且不会产生对应的时间线记录：
+          - 书籍条目会检查总的话数和卷数，并更新收藏进度到最新;
+          - 动画和三次元会标记所有正片章节为已完成，并同时更新收藏进度`,
+      }),
+    ),
   },
   { $id: 'CollectSubject' },
 );
