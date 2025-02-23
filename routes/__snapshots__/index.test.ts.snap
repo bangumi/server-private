@@ -789,11 +789,16 @@ exports[`should build private api spec 1`] = `
         total:
           type: integer
         type:
+          $ref: '#/components/schemas/IndexType'
+        uid:
           type: integer
         updatedAt:
           type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
       required:
         - id
+        - uid
         - type
         - title
         - desc
@@ -808,7 +813,7 @@ exports[`should build private api spec 1`] = `
     IndexRelated:
       properties:
         cat:
-          type: integer
+          $ref: '#/components/schemas/IndexRelatedCategory'
         character:
           $ref: '#/components/schemas/SlimCharacter'
         comment:
@@ -868,6 +873,24 @@ exports[`should build private api spec 1`] = `
         type: integer
       title: IndexStats
       type: object
+    IndexType:
+      description: |-
+        目录类型
+          - 0 = 用户
+          - 1 = 公共
+          - 2 = TBA
+      enum:
+        - 0
+        - 1
+        - 2
+      type: integer
+      x-enum-varnames:
+        - User
+        - Public
+        - Award
+      x-ms-enum:
+        modelAsString: false
+        name: IndexType
     Infobox:
       items:
         properties:
@@ -1469,9 +1492,12 @@ exports[`should build private api spec 1`] = `
         total:
           type: integer
         type:
+          $ref: '#/components/schemas/IndexType'
+        uid:
           type: integer
       required:
         - id
+        - uid
         - type
         - title
         - total

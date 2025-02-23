@@ -4,18 +4,6 @@ exports[`get index > should get index 1`] = `
 Object {
   "collects": 96,
   "createdAt": 1352366596,
-  "creator": Object {
-    "avatar": Object {
-      "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-      "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-      "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
-    },
-    "id": 14127,
-    "joinedAt": 0,
-    "nickname": "nickname 14127",
-    "sign": "sing 14127",
-    "username": "14127",
-  },
   "desc": "[url]http://www.tudou.com/programs/view/W6eIoxnHs6g/[/url]
 有美国动画混入，所以准确的说是在日本播放的动画最高收视率（而且是关东地区的
 基本大部分是70年代的，那个年代娱乐贫乏优势真大",
@@ -27,7 +15,21 @@ Object {
   "title": "日本动画最高收视率TOP100",
   "total": 101,
   "type": 0,
+  "uid": 14127,
   "updatedAt": 1356922367,
+  "user": Object {
+    "avatar": Object {
+      "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+      "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+      "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+    },
+    "group": 0,
+    "id": 14127,
+    "joinedAt": 0,
+    "nickname": "nickname 14127",
+    "sign": "sing 14127",
+    "username": "14127",
+  },
 }
 `;
 
