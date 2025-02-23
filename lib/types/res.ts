@@ -9,7 +9,7 @@ import {
   EpisodeCollectionStatus,
   EpisodeType,
   GroupMemberRole,
-  IndexRelatedType,
+  IndexRelatedCategory,
   IndexType,
   Ref,
   SubjectType,
@@ -849,9 +849,9 @@ export type IIndexRelated = Static<typeof IndexRelated>;
 export const IndexRelated = t.Object(
   {
     id: t.Integer(),
-    cat: t.Integer(),
+    cat: Ref(IndexRelatedCategory),
     rid: t.Integer(),
-    type: Ref(IndexRelatedType),
+    type: t.Integer(),
     sid: t.Integer(),
     order: t.Integer(),
     comment: t.String(),
