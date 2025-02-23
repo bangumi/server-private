@@ -211,7 +211,7 @@ exports[`should build private api spec 1`] = `
           type: boolean
         progress:
           description: |-
-            是否包含进度，仅在 \`type\` 为 \`看过\` 时有效，并且不会产生对应的时间线记录：
+            是否自动完成条目进度，仅在 \`type\` 为 \`看过\` 时有效，并且不会产生对应的时间线记录：
                       - 书籍条目会检查总的话数和卷数，并更新收藏进度到最新;
                       - 动画和三次元会标记所有正片章节为已完成，并同时更新收藏进度
           type: boolean
