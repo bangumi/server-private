@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 
 import { db, decr, incr, op, type orm, schema, type Txn } from '@app/drizzle';
 
-import type { CollectionType, UserEpisodeStatusItem } from './type';
+import { type CollectionType, SubjectType, type UserEpisodeStatusItem } from './type';
 import { EpisodeCollectionStatus, getCollectionTypeField } from './type';
 
 /** 更新条目收藏计数，需要在事务中执行 */
@@ -217,4 +217,36 @@ export async function getEpStatus(
     return {};
   }
   return parseSubjectEpStatus(data.status);
+}
+
+/** 完成条目进度，需要在事务中执行 */
+export async function completeSubjectProgress(
+  t: Txn,
+  userID: number,
+  subject: orm.ISubject,
+  type: CollectionType,
+  interest: Partial<orm.ISubjectInterest>,
+) {
+  if (subject.eps > 0) {
+    interest.epStatus = subject.eps;
+  }
+  if (subject.volumes > 0) {
+    interest.volStatus = subject.volumes;
+  }
+  if (subject.typeID === SubjectType.Anime || subject.typeID === SubjectType.Real) {
+    const episodes = await t
+      .select({ id: schema.chiiEpisodes.id })
+      .from(schema.chiiEpisodes)
+      .where(
+        op.and(
+          op.eq(schema.chiiEpisodes.subjectID, subject.id),
+          op.eq(schema.chiiEpisodes.type, 0),
+          op.eq(schema.chiiEpisodes.ban, 0),
+        ),
+      );
+    const episodeIDs = episodes.map((e) => e.id);
+    if (episodeIDs.length > 0) {
+      await markEpisodesAsWatched(t, userID, subject.id, episodeIDs, true);
+    }
+  }
 }

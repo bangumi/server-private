@@ -6,8 +6,14 @@ import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
-import { CollectionPrivacy, getCollectionTypeField, SubjectType } from '@app/lib/subject/type.ts';
 import {
+  CollectionPrivacy,
+  CollectionType,
+  getCollectionTypeField,
+  SubjectType,
+} from '@app/lib/subject/type.ts';
+import {
+  completeSubjectProgress,
   markEpisodesAsWatched,
   updateSubjectCollection,
   updateSubjectEpisodeProgress,
@@ -246,7 +252,7 @@ export async function setup(app: App) {
       ip,
       auth,
       params: { subjectID },
-      body: { type, rate, comment, private: priv, tags },
+      body: { type, rate, comment, private: priv, tags, progress },
     }) => {
       const slimSubject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
       if (!slimSubject) {
@@ -342,6 +348,9 @@ export async function setup(app: App) {
           if (tags !== undefined) {
             toUpdate.tag = tags.join(' ');
           }
+          if (type === CollectionType.Collect && progress) {
+            await completeSubjectProgress(t, auth.userID, subject, type, toUpdate);
+          }
           if (Object.keys(toUpdate).length > 0) {
             await t
               .update(schema.chiiSubjectInterests)
@@ -383,6 +392,9 @@ export async function setup(app: App) {
             updatedAt: now,
             privacy,
           };
+          if (type === CollectionType.Collect && progress) {
+            await completeSubjectProgress(t, auth.userID, subject, type, toInsert);
+          }
           const field = getCollectionTypeField(type);
           toInsert[`${field}Dateline`] = now;
           const [result] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
