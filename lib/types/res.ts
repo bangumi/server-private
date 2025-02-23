@@ -816,6 +816,7 @@ export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
     id: t.Integer(),
+    uid: t.Integer(),
     type: Ref(IndexType),
     title: t.String(),
     desc: t.String(),
@@ -834,6 +835,7 @@ export type ISlimIndex = Static<typeof SlimIndex>;
 export const SlimIndex = t.Object(
   {
     id: t.Integer(),
+    uid: t.Integer(),
     type: Ref(IndexType),
     title: t.String(),
     total: t.Integer(),

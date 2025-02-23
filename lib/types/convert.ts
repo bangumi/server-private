@@ -543,6 +543,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
 export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
   return {
     id: index.id,
+    uid: index.uid,
     type: index.type,
     title: index.title,
     total: index.total,
@@ -553,6 +554,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
 export function toIndex(index: orm.IIndex): res.IIndex {
   return {
     id: index.id,
+    uid: index.uid,
     type: index.type,
     title: index.title,
     desc: index.desc,
