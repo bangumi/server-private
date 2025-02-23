@@ -246,7 +246,7 @@ export async function completeSubjectProgress(
       );
     const episodeIDs = episodes.map((e) => e.id);
     if (episodeIDs.length > 0) {
-      await markEpisodesAsWatched(t, userID, subject.id, episodeIDs, true);
+      await markEpisodesAsWatched(t, userID, subject.id, episodeIDs);
     }
   }
 }
