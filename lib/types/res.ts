@@ -833,7 +833,7 @@ export type ISlimIndex = Static<typeof SlimIndex>;
 export const SlimIndex = t.Object(
   {
     id: t.Integer(),
-    type: t.Integer(),
+    type: Ref(IndexType),
     title: t.String(),
     total: t.Integer(),
     createdAt: t.Integer(),
