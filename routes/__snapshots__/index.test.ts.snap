@@ -776,6 +776,8 @@ exports[`should build private api spec 1`] = `
       type: object
     Index:
       properties:
+        award:
+          type: integer
         collectedAt:
           type: integer
         collects:
@@ -812,12 +814,15 @@ exports[`should build private api spec 1`] = `
         - total
         - collects
         - stats
+        - award
         - createdAt
         - updatedAt
       title: Index
       type: object
     IndexRelated:
       properties:
+        award:
+          type: string
         cat:
           $ref: '#/components/schemas/IndexRelatedCategory'
         character:
@@ -850,6 +855,7 @@ exports[`should build private api spec 1`] = `
         - sid
         - order
         - comment
+        - award
         - createdAt
       title: IndexRelated
       type: object

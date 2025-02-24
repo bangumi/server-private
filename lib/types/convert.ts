@@ -562,6 +562,7 @@ export function toIndex(index: orm.IIndex): res.IIndex {
     total: index.total,
     collects: index.collects,
     stats: toIndexStats(index.stats),
+    award: index.award,
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
   };
@@ -576,6 +577,7 @@ export function toIndexRelated(related: orm.IIndexRelated): res.IIndexRelated {
     sid: related.sid,
     order: related.order,
     comment: related.comment,
+    award: related.award,
     createdAt: related.createdAt,
   };
 }

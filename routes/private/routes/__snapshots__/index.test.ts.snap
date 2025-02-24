@@ -2,6 +2,7 @@
 
 exports[`get index > should get index 1`] = `
 Object {
+  "award": 0,
   "collects": 96,
   "createdAt": 1352366596,
   "desc": "[url]http://www.tudou.com/programs/view/W6eIoxnHs6g/[/url]
@@ -37,6 +38,7 @@ exports[`get index > should get index related 1`] = `
 Object {
   "data": Array [
     Object {
+      "award": "",
       "cat": 0,
       "comment": "1位 40.3",
       "createdAt": 1352382566,
@@ -47,6 +49,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "2位 39.9",
       "createdAt": 1352382511,
@@ -57,6 +60,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "3位 39.4",
       "createdAt": 1352382444,
@@ -67,6 +71,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "4位 36.9",
       "createdAt": 1352382378,
@@ -77,6 +82,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "5位 36.7",
       "createdAt": 1352382135,
@@ -87,6 +93,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "5位 36.7",
       "createdAt": 1352382314,
@@ -97,6 +104,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "7位 36",
       "createdAt": 1352382072,
@@ -107,6 +115,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "8位 35.6",
       "createdAt": 1352382022,
@@ -117,6 +126,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "9位 34.5",
       "createdAt": 1352381764,
@@ -127,6 +137,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "10位 33.7 （有奇怪的美国动画混进去了！",
       "createdAt": 1352381582,
@@ -137,6 +148,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "11位 33.6",
       "createdAt": 1352380988,
@@ -147,6 +159,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "12位 32.5",
       "createdAt": 1352380796,
@@ -157,6 +170,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "13位 31.9",
       "createdAt": 1352380648,
@@ -167,6 +181,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "13位 31.9",
       "createdAt": 1352380716,
@@ -177,6 +192,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "15位 31.8",
       "createdAt": 1352380464,
@@ -187,6 +203,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "16位 31.6",
       "createdAt": 1352380102,
@@ -197,6 +214,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "17位 31.2",
       "createdAt": 1352379920,
@@ -207,6 +225,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "18位 30.7",
       "createdAt": 1352379781,
@@ -217,6 +236,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "19位 30.4",
       "createdAt": 1352379633,
@@ -227,6 +247,7 @@ Object {
       "type": 2,
     },
     Object {
+      "award": "",
       "cat": 0,
       "comment": "20位 30.1",
       "createdAt": 1352379532,
