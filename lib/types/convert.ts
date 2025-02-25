@@ -391,11 +391,11 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
 
 export function toSubjectInterestComment(
   interest: orm.ISubjectInterest,
-  user: orm.IUser,
+  user: res.ISlimUser,
 ): res.ISubjectInterestComment {
   return {
     id: interest.id,
-    user: toSlimUser(user),
+    user: user,
     type: interest.type,
     rate: interest.rate,
     comment: interest.comment,
@@ -406,11 +406,11 @@ export function toSubjectInterestComment(
 export function toSubjectReview(
   review: orm.ISubjectRelatedBlog,
   blog: orm.IBlogEntry,
-  user: orm.IUser,
+  user: res.ISlimUser,
 ): res.ISubjectReview {
   return {
     id: review.id,
-    user: toSlimUser(user),
+    user: user,
     entry: toSlimBlogEntry(blog),
   };
 }

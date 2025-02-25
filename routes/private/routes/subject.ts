@@ -674,23 +674,27 @@ export async function setup(app: App) {
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiSubjectInterests)
-        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectInterests.uid, schema.chiiUsers.id))
         .where(condition);
       const data = await db
         .select()
         .from(schema.chiiSubjectInterests)
-        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectInterests.uid, schema.chiiUsers.id))
         .where(condition)
         .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
         .limit(limit)
         .offset(offset);
-      const comments = data.map((d) =>
-        convert.toSubjectInterestComment(d.chii_subject_interests, d.chii_members),
-      );
-      const collectIDs = comments.map((c) => c.id);
+      const uids = data.map((d) => d.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const collectIDs = data.map((d) => d.id);
       const reactions = await fetchSubjectCollectReactions(collectIDs);
-      for (const comment of comments) {
+      const comments: res.ISubjectInterestComment[] = [];
+      for (const d of data) {
+        const user = users[d.uid];
+        if (!user) {
+          continue;
+        }
+        const comment = convert.toSubjectInterestComment(d, user);
         comment.reactions = reactions[comment.id];
+        comments.push(comment);
       }
       return {
         data: comments,
@@ -733,7 +737,6 @@ export async function setup(app: App) {
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiSubjectRelatedBlogs)
-        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectRelatedBlogs.uid, schema.chiiUsers.id))
         .innerJoin(
           schema.chiiBlogEntries,
           op.eq(schema.chiiSubjectRelatedBlogs.entryID, schema.chiiBlogEntries.id),
@@ -742,7 +745,6 @@ export async function setup(app: App) {
       const data = await db
         .select()
         .from(schema.chiiSubjectRelatedBlogs)
-        .innerJoin(schema.chiiUsers, op.eq(schema.chiiSubjectRelatedBlogs.uid, schema.chiiUsers.id))
         .innerJoin(
           schema.chiiBlogEntries,
           op.eq(schema.chiiSubjectRelatedBlogs.entryID, schema.chiiBlogEntries.id),
@@ -751,9 +753,21 @@ export async function setup(app: App) {
         .orderBy(op.desc(schema.chiiBlogEntries.createdAt))
         .limit(limit)
         .offset(offset);
-      const reviews = data.map((d) =>
-        convert.toSubjectReview(d.chii_subject_related_blog, d.chii_blog_entry, d.chii_members),
-      );
+      const uids = data.map((d) => d.chii_subject_related_blog.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const reviews: res.ISubjectReview[] = [];
+      for (const d of data) {
+        const user = users[d.chii_subject_related_blog.uid];
+        if (!user) {
+          continue;
+        }
+        const review = convert.toSubjectReview(
+          d.chii_subject_related_blog,
+          d.chii_blog_entry,
+          user,
+        );
+        reviews.push(review);
+      }
       return {
         data: reviews,
         total: count,
