@@ -389,32 +389,6 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
   };
 }
 
-export function toSubjectInterestComment(
-  interest: orm.ISubjectInterest,
-  user: res.ISlimUser,
-): res.ISubjectInterestComment {
-  return {
-    id: interest.id,
-    user: user,
-    type: interest.type,
-    rate: interest.rate,
-    comment: interest.comment,
-    updatedAt: interest.updatedAt,
-  };
-}
-
-export function toSubjectReview(
-  review: orm.ISubjectRelatedBlog,
-  blog: orm.IBlogEntry,
-  user: res.ISlimUser,
-): res.ISubjectReview {
-  return {
-    id: review.id,
-    user: user,
-    entry: toSlimBlogEntry(blog),
-  };
-}
-
 export function toEpisode(episode: orm.IEpisode): res.IEpisode {
   return {
     id: episode.id,

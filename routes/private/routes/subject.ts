@@ -692,8 +692,15 @@ export async function setup(app: App) {
         if (!user) {
           continue;
         }
-        const comment = convert.toSubjectInterestComment(d, user);
-        comment.reactions = reactions[comment.id];
+        const comment = {
+          id: d.id,
+          user,
+          type: d.type,
+          rate: d.rate,
+          comment: d.comment,
+          reactions: reactions[d.id],
+          updatedAt: d.updatedAt,
+        };
         comments.push(comment);
       }
       return {
@@ -761,11 +768,11 @@ export async function setup(app: App) {
         if (!user) {
           continue;
         }
-        const review = convert.toSubjectReview(
-          d.chii_subject_related_blog,
-          d.chii_blog_entry,
+        const review = {
+          id: d.chii_subject_related_blog.id,
           user,
-        );
+          entry: convert.toSlimBlogEntry(d.chii_blog_entry),
+        };
         reviews.push(review);
       }
       return {
