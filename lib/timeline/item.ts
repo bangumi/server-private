@@ -322,21 +322,22 @@ export async function fetchTimelineByID(
   auth: Readonly<IAuth>,
   id: number,
 ): Promise<res.ITimeline | undefined> {
+  let item: orm.ITimeline | undefined;
   const cached = await redis.get(getItemCacheKey(id));
   if (cached) {
-    return JSON.parse(cached) as res.ITimeline;
+    item = JSON.parse(cached) as orm.ITimeline;
   }
-  const [data] = await db
+  [item] = await db
     .select()
     .from(schema.chiiTimeline)
     .where(op.eq(schema.chiiTimeline.id, id))
     .limit(1);
-  if (!data) {
+  if (!item) {
     return;
   }
-  const item = await toTimeline(auth, data);
   await redis.setex(getItemCacheKey(id), 604800, JSON.stringify(item));
-  return item;
+  const result = await toTimeline(auth, item);
+  return result;
 }
 
 /** Cached */
@@ -347,13 +348,13 @@ export async function fetchTimelineByIDs(
   if (ids.length === 0) {
     return {};
   }
-  const cached = await redis.mget(ids.map((id) => getItemCacheKey(id)));
   const result: Record<number, res.ITimeline> = {};
+  const cached = await redis.mget(ids.map((id) => getItemCacheKey(id)));
   const missing = [];
   for (const [idx, tid] of ids.entries()) {
     if (cached[idx]) {
-      const item = JSON.parse(cached[idx]) as res.ITimeline;
-      result[tid] = item;
+      const item = JSON.parse(cached[idx]) as orm.ITimeline;
+      result[tid] = await toTimeline(auth, item);
     } else {
       missing.push(tid);
     }
@@ -364,9 +365,9 @@ export async function fetchTimelineByIDs(
       .from(schema.chiiTimeline)
       .where(op.inArray(schema.chiiTimeline.id, missing));
     for (const d of data) {
+      await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(d));
       const item = await toTimeline(auth, d);
       result[d.id] = item;
-      await redis.setex(getItemCacheKey(d.id), 604800, JSON.stringify(item));
     }
   }
 
