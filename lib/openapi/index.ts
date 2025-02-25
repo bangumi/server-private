@@ -9,6 +9,7 @@ export const Tag = {
   Episode: 'episode',
   Friend: 'friend',
   Group: 'group',
+  Index: 'index',
   Person: 'person',
   Search: 'search',
   Subject: 'subject',

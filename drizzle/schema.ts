@@ -231,12 +231,13 @@ export const chiiGroupPosts = mysqlTable('chii_group_posts', {
 export const chiiIndexes = mysqlTable('chii_index', {
   id: mediumint('idx_id').autoincrement().notNull(),
   type: tinyint('idx_type').default(0).notNull(),
-  title: varchar('idx_title', { length: 80 }).notNull(),
-  desc: mediumtext('idx_desc').notNull(),
+  title: htmlEscapedString('varchar')('idx_title', { length: 80 }).notNull(),
+  desc: htmlEscapedString('mediumtext')('idx_desc').notNull(),
   replies: mediumint('idx_replies').notNull(),
   total: mediumint('idx_subject_total').notNull(),
   collects: mediumint('idx_collects').notNull(),
   stats: mediumtext('idx_stats').notNull(),
+  award: mediumint('idx_award').default(0).notNull(),
   createdAt: int('idx_dateline').notNull(),
   updatedAt: int('idx_lasttouch').notNull(),
   uid: mediumint('idx_uid').notNull(),
@@ -260,15 +261,16 @@ export const chiiIndexComments = mysqlTable('chii_index_comments', {
 });
 
 export const chiiIndexRelated = mysqlTable('chii_index_related', {
-  idxRltId: mediumint('idx_rlt_id').autoincrement().notNull(),
-  idxRltCat: tinyint('idx_rlt_cat').notNull(),
-  idxRltRid: mediumint('idx_rlt_rid').notNull(),
-  idxRltType: smallint('idx_rlt_type').notNull(),
-  idxRltSid: mediumint('idx_rlt_sid').notNull(),
-  idxRltOrder: mediumint('idx_rlt_order').notNull(),
-  idxRltComment: mediumtext('idx_rlt_comment').notNull(),
-  idxRltDateline: int('idx_rlt_dateline').notNull(),
-  idxRltBan: tinyint('idx_rlt_ban').default(0).notNull(),
+  id: mediumint('idx_rlt_id').autoincrement().notNull(),
+  cat: tinyint('idx_rlt_cat').notNull(),
+  rid: mediumint('idx_rlt_rid').notNull(),
+  type: smallint('idx_rlt_type').notNull(),
+  sid: mediumint('idx_rlt_sid').notNull(),
+  order: mediumint('idx_rlt_order').notNull(),
+  award: varchar('idx_rlt_award', { length: 255 }).notNull(),
+  comment: htmlEscapedString('mediumtext')('idx_rlt_comment').notNull(),
+  createdAt: int('idx_rlt_dateline').notNull(),
+  ban: tinyint('idx_rlt_ban').default(0).notNull(),
 });
 
 export const chiiLikes = mysqlTable('chii_likes', {

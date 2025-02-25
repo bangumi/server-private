@@ -528,6 +528,37 @@ async function fetchEpisodeItemByID(episodeID: number): Promise<res.IEpisode | u
 }
 
 /** Cached */
+export async function fetchSlimEpisodesByIDs(
+  episodeIDs: number[],
+): Promise<Record<number, res.IEpisode>> {
+  const cached = await redis.mget(episodeIDs.map((id) => getSubjectEpCacheKey(id)));
+  const result: Record<number, res.IEpisode> = {};
+  const missing = [];
+  for (const [idx, id] of episodeIDs.entries()) {
+    if (cached[idx]) {
+      const item = JSON.parse(cached[idx]) as res.IEpisode;
+      item.desc = undefined;
+      result[id] = item;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiEpisodes)
+      .where(op.inArray(schema.chiiEpisodes.id, missing));
+    for (const d of data) {
+      const item = convert.toEpisode(d);
+      await redis.setex(getSubjectEpCacheKey(d.id), ONE_MONTH, JSON.stringify(item));
+      item.desc = undefined;
+      result[d.id] = item;
+    }
+  }
+  return result;
+}
+
+/** Cached */
 export async function fetchSlimCharacterByID(
   id: number,
   allowNsfw = false,

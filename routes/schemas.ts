@@ -11,11 +11,13 @@ export function addSchemas(app: App) {
 
 function addCommonSchemas(app: App) {
   app.addSchema(common.CollectionType);
-  app.addSchema(common.EpisodeType);
-  app.addSchema(common.SubjectType);
-  app.addSchema(common.GroupMemberRole);
   app.addSchema(common.EpisodeCollectionStatus);
+  app.addSchema(common.EpisodeType);
   app.addSchema(common.EpisodeWikiInfo);
+  app.addSchema(common.GroupMemberRole);
+  app.addSchema(common.IndexRelatedCategory);
+  app.addSchema(common.IndexType);
+  app.addSchema(common.SubjectType);
 }
 
 function addRequestSchemas(app: App) {
@@ -58,6 +60,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.GroupTopic);
   app.addSchema(res.Index);
   app.addSchema(res.IndexStats);
+  app.addSchema(res.IndexRelated);
   app.addSchema(res.Infobox);
   app.addSchema(res.Permissions);
   app.addSchema(res.Person);

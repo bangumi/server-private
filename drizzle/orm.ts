@@ -30,6 +30,7 @@ export type IPersonCollect = typeof schema.chiiPersonCollects.$inferSelect;
 
 export type IIndex = typeof schema.chiiIndexes.$inferSelect;
 export type IIndexCollect = typeof schema.chiiIndexCollects.$inferSelect;
+export type IIndexRelated = typeof schema.chiiIndexRelated.$inferSelect;
 
 export type IBlogEntry = typeof schema.chiiBlogEntries.$inferSelect;
 export type IBlogPhoto = typeof schema.chiiBlogPhotos.$inferSelect;

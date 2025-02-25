@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 import { db, op, type orm, schema } from '@app/drizzle';
 import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
+import { IndexType } from '@app/lib/index/types';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
 import {
@@ -724,6 +725,7 @@ export async function setup(app: App) {
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
+        op.eq(schema.chiiIndexes.type, IndexType.User),
         op.eq(schema.chiiIndexCollects.uid, auth.userID),
         op.ne(schema.chiiIndexes.ban, 1),
       );

@@ -9,6 +9,8 @@ import {
   EpisodeCollectionStatus,
   EpisodeType,
   GroupMemberRole,
+  IndexRelatedCategory,
+  IndexType,
   Ref,
   SubjectType,
 } from '@app/lib/types/common.ts';
@@ -814,16 +816,19 @@ export type IIndex = Static<typeof Index>;
 export const Index = t.Object(
   {
     id: t.Integer(),
-    type: t.Integer(),
+    uid: t.Integer(),
+    type: Ref(IndexType),
     title: t.String(),
     desc: t.String(),
     replies: t.Integer(),
     total: t.Integer(),
     collects: t.Integer(),
     stats: Ref(IndexStats),
+    award: t.Integer(),
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
     collectedAt: t.Optional(t.Integer()),
+    user: t.Optional(Ref(SlimUser)),
   },
   { $id: 'Index', title: 'Index' },
 );
@@ -832,12 +837,33 @@ export type ISlimIndex = Static<typeof SlimIndex>;
 export const SlimIndex = t.Object(
   {
     id: t.Integer(),
-    type: t.Integer(),
+    uid: t.Integer(),
+    type: Ref(IndexType),
     title: t.String(),
     total: t.Integer(),
     createdAt: t.Integer(),
   },
   { $id: 'SlimIndex', title: 'SlimIndex' },
+);
+
+export type IIndexRelated = Static<typeof IndexRelated>;
+export const IndexRelated = t.Object(
+  {
+    id: t.Integer(),
+    cat: Ref(IndexRelatedCategory),
+    rid: t.Integer(),
+    type: t.Integer(),
+    sid: t.Integer(),
+    order: t.Integer(),
+    comment: t.String(),
+    award: t.String(),
+    createdAt: t.Integer(),
+    subject: t.Optional(Ref(SlimSubject)),
+    character: t.Optional(Ref(SlimCharacter)),
+    person: t.Optional(Ref(SlimPerson)),
+    episode: t.Optional(Ref(Episode)),
+  },
+  { $id: 'IndexRelated', title: 'IndexRelated' },
 );
 
 export type IGroupMember = Static<typeof GroupMember>;

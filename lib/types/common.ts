@@ -59,6 +59,21 @@ export const CollectionType = t.Integer({
   - 5 = 抛弃`,
 });
 
+export const IndexRelatedCategory = t.Integer({
+  $id: 'IndexRelatedCategory',
+  enum: [0, 1, 2, 3],
+  'x-ms-enum': {
+    name: 'IndexRelatedCategory',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['Subject', 'Character', 'Person', 'Episode'],
+  description: `目录关联类型
+  - 0 = 条目
+  - 1 = 角色
+  - 2 = 人物
+  - 3 = 剧集`,
+});
+
 export const EpisodeCollectionStatus = t.Integer({
   $id: 'EpisodeCollectionStatus',
   enum: [0, 1, 2, 3],
@@ -89,6 +104,20 @@ export const GroupMemberRole = t.Integer({
   - 1 = 小组长
   - 2 = 小组管理员
   - 3 = 禁言成员`,
+});
+
+export const IndexType = t.Integer({
+  $id: 'IndexType',
+  enum: [0, 1, 2],
+  'x-ms-enum': {
+    name: 'IndexType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['User', 'Public', 'Award'],
+  description: `目录类型
+  - 0 = 用户
+  - 1 = 公共
+  - 2 = TBA`,
 });
 
 export type IEpisodeWikiInfo = Static<typeof EpisodeWikiInfo>;

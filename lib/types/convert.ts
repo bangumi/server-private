@@ -517,6 +517,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
 export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
   return {
     id: index.id,
+    uid: index.uid,
     type: index.type,
     title: index.title,
     total: index.total,
@@ -527,6 +528,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
 export function toIndex(index: orm.IIndex): res.IIndex {
   return {
     id: index.id,
+    uid: index.uid,
     type: index.type,
     title: index.title,
     desc: index.desc,
@@ -534,8 +536,23 @@ export function toIndex(index: orm.IIndex): res.IIndex {
     total: index.total,
     collects: index.collects,
     stats: toIndexStats(index.stats),
+    award: index.award,
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,
+  };
+}
+
+export function toIndexRelated(related: orm.IIndexRelated): res.IIndexRelated {
+  return {
+    id: related.id,
+    cat: related.cat,
+    rid: related.rid,
+    type: related.type,
+    sid: related.sid,
+    order: related.order,
+    comment: related.comment,
+    award: related.award,
+    createdAt: related.createdAt,
   };
 }
 
