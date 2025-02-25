@@ -295,8 +295,11 @@ export async function fetchSubjectIDsByFilter(
       .innerJoin(schema.chiiTagIndex, op.eq(schema.chiiTagIndex.id, schema.chiiTagList.tagID))
       .where(
         op.and(
+          op.eq(schema.chiiTagList.cat, TagCat.Meta),
+          op.eq(schema.chiiTagList.type, filter.type),
           op.inArray(schema.chiiTagIndex.name, filter.tags),
           op.eq(schema.chiiTagIndex.cat, TagCat.Meta),
+          op.eq(schema.chiiTagIndex.type, filter.type),
         ),
       );
     if (filter.ids) {
