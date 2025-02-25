@@ -322,22 +322,21 @@ export async function fetchTimelineByID(
   auth: Readonly<IAuth>,
   id: number,
 ): Promise<res.ITimeline | undefined> {
-  let item: orm.ITimeline | undefined;
   const cached = await redis.get(getItemCacheKey(id));
   if (cached) {
-    item = JSON.parse(cached) as orm.ITimeline;
+    const item = JSON.parse(cached) as orm.ITimeline;
+    return await toTimeline(auth, item);
   }
-  [item] = await db
+  const [data] = await db
     .select()
     .from(schema.chiiTimeline)
     .where(op.eq(schema.chiiTimeline.id, id))
     .limit(1);
-  if (!item) {
+  if (!data) {
     return;
   }
-  await redis.setex(getItemCacheKey(id), 604800, JSON.stringify(item));
-  const result = await toTimeline(auth, item);
-  return result;
+  await redis.setex(getItemCacheKey(id), 604800, JSON.stringify(data));
+  return await toTimeline(auth, data);
 }
 
 /** Cached */
