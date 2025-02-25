@@ -438,6 +438,7 @@ export type IEpisode = Static<typeof Episode>;
 export const Episode = t.Object(
   {
     id: t.Integer(),
+    subjectID: t.Integer(),
     sort: t.Number(),
     type: Ref(EpisodeType),
     disc: t.Integer(),
@@ -446,9 +447,8 @@ export const Episode = t.Object(
     duration: t.String(),
     airdate: t.String(),
     comment: t.Integer(),
-    desc: t.Optional(t.String()),
+    desc: t.String(),
     status: t.Optional(Ref(EpisodeCollectionStatus)),
-    subjectID: t.Integer(),
     subject: t.Optional(Ref(SlimSubject)),
   },
   { $id: 'Episode', title: 'Episode' },

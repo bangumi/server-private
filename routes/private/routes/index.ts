@@ -119,7 +119,7 @@ export async function setup(app: App) {
       const episodeIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.Ep)
         .map((item) => item.sid);
-      const episodes = await fetcher.fetchSlimEpisodesByIDs(episodeIDs);
+      const episodes = await fetcher.fetchEpisodesByIDs(episodeIDs);
 
       const result = [];
       for (const item of items) {
