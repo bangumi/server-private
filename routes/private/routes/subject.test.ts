@@ -101,7 +101,7 @@ describe('subject', () => {
     const res = await app.inject({
       method: 'get',
       url: '/subjects/184017/reviews',
-      query: { limit: '2', offset: '0' },
+      query: { limit: '10', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
   });
