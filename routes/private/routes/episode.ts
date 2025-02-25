@@ -36,6 +36,11 @@ export async function setup(app: App) {
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
+      const subject = await fetcher.fetchSubjectByID(ep.subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${ep.subjectID}`);
+      }
+      ep.subject = subject;
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, ep.subjectID);
         ep.status = epStatus[episodeID]?.type;
@@ -60,7 +65,7 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { episodeID } }): Promise<res.IComment[]> => {
-      const ep = await fetcher.fetchSlimEpisodeByID(episodeID);
+      const ep = await fetcher.fetchEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
@@ -89,7 +94,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { episodeID } }) => {
-      const ep = await fetcher.fetchSlimEpisodeByID(episodeID);
+      const ep = await fetcher.fetchEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }

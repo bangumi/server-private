@@ -405,21 +405,6 @@ export function toEpisode(episode: orm.IEpisode): res.IEpisode {
   };
 }
 
-export function toSlimEpisode(episode: orm.IEpisode): res.IEpisode {
-  return {
-    id: episode.id,
-    sort: episode.sort,
-    type: episode.type,
-    disc: episode.disc,
-    name: episode.name,
-    nameCN: episode.nameCN,
-    duration: episode.duration,
-    airdate: episode.airdate,
-    comment: episode.comment,
-    subjectID: episode.subjectID,
-  };
-}
-
 export function toSlimCharacter(character: orm.ICharacter): res.ISlimCharacter {
   const infobox = toInfobox(character.infobox);
   return {

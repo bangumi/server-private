@@ -216,7 +216,7 @@ export async function setup(app: App) {
         )
         .limit(limit)
         .offset(offset);
-      const episodes = data.map((d) => convert.toSlimEpisode(d));
+      const episodes = data.map((d) => convert.toEpisode(d));
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, subjectID);
         for (const ep of episodes) {
