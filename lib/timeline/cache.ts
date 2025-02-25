@@ -1,5 +1,5 @@
 export function getItemCacheKey(id: number): string {
-  return `tml:v3:item:${id}`;
+  return `tml:v4:item:${id}`;
 }
 
 export function getUserCacheKey(uid: number | string) {
