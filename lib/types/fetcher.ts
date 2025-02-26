@@ -39,14 +39,15 @@ const ONE_MONTH = 2592000;
 export async function fetchSlimUserByUsername(
   username: string,
 ): Promise<res.ISlimUser | undefined> {
-  const data = await db
+  const [data] = await db
     .select()
     .from(schema.chiiUsers)
-    .where(op.eq(schema.chiiUsers.username, username));
-  for (const d of data) {
-    return convert.toSlimUser(d);
+    .where(op.eq(schema.chiiUsers.username, username))
+    .limit(1);
+  if (!data) {
+    return;
   }
-  return;
+  return convert.toSlimUser(data);
 }
 
 /** Cached */

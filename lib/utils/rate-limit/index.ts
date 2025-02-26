@@ -18,6 +18,7 @@ export const enum LimitAction {
   Like = 'like',
   Timeline = 'timeline',
   Comment = 'comment',
+  Relationship = 'relationship',
 }
 
 export interface Result {

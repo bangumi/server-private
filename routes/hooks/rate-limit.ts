@@ -51,6 +51,7 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   prsn_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   like: { limit: 2, durationMinutes: 1 },
   comment: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
+  relationship: { limit: 2, durationMinutes: 1, validate: 7, hibernate: 5 },
 };
 
 const limiter = createLimiter();

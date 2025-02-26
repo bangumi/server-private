@@ -2944,58 +2944,18 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取绝交用户列表
+      summary: 获取当前用户的绝交用户列表
       tags:
-        - misc
-    post:
-      operationId: addToBlocklist
-      requestBody:
-        content:
-          application/json:
-            schema:
-              properties:
-                id:
-                  type: integer
-              required:
-                - id
-              type: object
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                properties:
-                  blocklist:
-                    items:
-                      type: integer
-                    type: array
-                required:
-                  - blocklist
-                type: object
-          description: Default Response
-        '500':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 意料之外的服务器错误
-          description: 意料之外的服务器错误
-      security:
-        - CookiesSession: []
-          HTTPBearer: []
-      summary: 将用户添加到绝交列表
-      tags:
-        - misc
-  /p1/blocklist/{id}:
+        - relationship
+  /p1/blocklist/{username}:
     delete:
-      operationId: removeFromBlocklist
+      operationId: removeUserFromBlocklist
       parameters:
         - in: path
-          name: id
+          name: username
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           content:
@@ -3020,9 +2980,44 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 将用户从绝交列表移出
+      summary: 取消与用户绝交
       tags:
-        - misc
+        - relationship
+    put:
+      operationId: addUserToBlocklist
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  blocklist:
+                    items:
+                      type: integer
+                    type: array
+                required:
+                  - blocklist
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 与用户绝交
+      tags:
+        - relationship
   /p1/blogs/-/comments/{commentID}:
     delete:
       operationId: deleteBlogComment
@@ -4388,7 +4383,7 @@ paths:
           HTTPBearer: []
       summary: 获取当前用户的关注者列表
       tags:
-        - friend
+        - relationship
   /p1/friends:
     get:
       operationId: getMyFriends
@@ -4440,7 +4435,66 @@ paths:
           HTTPBearer: []
       summary: 获取当前用户的好友列表
       tags:
-        - friend
+        - relationship
+  /p1/friends/{username}:
+    delete:
+      operationId: removeFriend
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消好友
+      tags:
+        - relationship
+    put:
+      operationId: addFriend
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 添加好友
+      tags:
+        - relationship
   /p1/groups:
     get:
       operationId: getGroups
