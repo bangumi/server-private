@@ -104,6 +104,7 @@ export async function setup(app: App) {
           createdAt: DateTime.now().toUnixInteger(),
           description: '',
         });
+        // TODO: send notify
       });
       return {};
     },
