@@ -8,7 +8,7 @@ import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/s
 
 import type * as memo from './memo';
 import type { TimelineMonoCat, TimelineMonoType, TimelineSource } from './type';
-import { TimelineCat, TimelineStatusType } from './type';
+import { TimelineCat, TimelineDailyType, TimelineStatusType } from './type';
 
 /**
  * 时间轴消息
@@ -18,6 +18,14 @@ import { TimelineCat, TimelineStatusType } from './type';
  * Value 为 操作参数
  */
 export interface TimelineMessage {
+  daily: {
+    uid: number;
+    type: TimelineDailyType;
+    /** Type 操作对应的内容 ID, 如 userID, groupID, edenID 等 */
+    mid: number;
+    createdAt: number;
+    source: TimelineSource;
+  };
   subject: {
     uid: number;
     subject: {
@@ -97,6 +105,103 @@ type TimelineDatabaseWriter = {
 
 /** 写入时间轴的 MySQL 数据库表 */
 export const TimelineWriter: TimelineDatabaseWriter = {
+  /** 日常行为 */
+  async daily(payload: TimelineMessage['daily']): Promise<number> {
+    const params = {
+      uid: payload.uid,
+      cat: TimelineCat.Daily,
+      type: payload.type,
+      related: payload.mid.toString(),
+      source: payload.source,
+      img: '',
+      batch: false,
+      replies: 0,
+      createdAt: payload.createdAt,
+    };
+    if (payload.type === TimelineDailyType.Mystery || payload.type === TimelineDailyType.Register) {
+      const [result] = await db.insert(schema.chiiTimeline).values({
+        ...params,
+        memo: '',
+      });
+      return result.insertId;
+    }
+    interface DetailHandler {
+      detail: memo.User | memo.Group | memo.Eden;
+      getID(item: unknown): number;
+    }
+    let detailHandler: DetailHandler;
+    switch (payload.type) {
+      case TimelineDailyType.AddFriend: {
+        detailHandler = {
+          detail: { uid: payload.mid },
+          getID: (item: unknown) => (item as memo.User).uid,
+        };
+        break;
+      }
+      case TimelineDailyType.JoinGroup:
+      case TimelineDailyType.CreateGroup: {
+        detailHandler = {
+          detail: { grp_id: payload.mid },
+          getID: (item: unknown) => (item as memo.Group).grp_id,
+        };
+        break;
+      }
+      case TimelineDailyType.JoinEden: {
+        detailHandler = {
+          detail: { eden_id: payload.mid },
+          getID: (item: unknown) => (item as memo.Eden).eden_id,
+        };
+        break;
+      }
+      default: {
+        throw new Error(`Unsupported daily type: ${payload.type}`);
+      }
+    }
+    const detail = detailHandler.detail;
+    const [previous] = await db
+      .select()
+      .from(schema.chiiTimeline)
+      .where(
+        op.and(
+          op.eq(schema.chiiTimeline.uid, payload.uid),
+          op.eq(schema.chiiTimeline.cat, TimelineCat.Daily),
+          op.eq(schema.chiiTimeline.type, payload.type),
+        ),
+      )
+      .orderBy(op.desc(schema.chiiTimeline.id))
+      .limit(1);
+    if (previous) {
+      const details: Record<number, typeof detail> = {};
+      if (previous.batch) {
+        const info = php.parse(previous.memo) as Record<number, typeof detail>;
+        for (const [id, item] of Object.entries(info)) {
+          details[Number(id)] = item;
+        }
+      } else {
+        const info = php.parse(previous.memo) as typeof detail;
+        const previousID = detailHandler.getID(info);
+        details[previousID] = info;
+      }
+      details[Number(payload.mid)] = detail;
+      await db
+        .update(schema.chiiTimeline)
+        .set({
+          batch: true,
+          memo: php.stringify(details),
+          source: payload.source,
+        })
+        .where(op.eq(schema.chiiTimeline.id, previous.id))
+        .limit(1);
+      return previous.id;
+    } else {
+      const [result] = await db.insert(schema.chiiTimeline).values({
+        ...params,
+        memo: php.stringify(detail),
+      });
+      return result.insertId;
+    }
+  },
+
   /** 收藏条目 */
   async subject(payload: TimelineMessage['subject']): Promise<number> {
     const type = switchSubjectType(payload.collect.type, payload.subject.type);
