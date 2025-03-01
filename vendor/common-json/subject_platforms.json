@@ -120,7 +120,8 @@
         "type_cn": "其他",
         "alias": "misc",
         "wiki_tpl": "Anime",
-        "order": 5
+        "order": 5,
+        "sort_keys": ["上映年度"]
       },
       "1": {
         "id": 1,
