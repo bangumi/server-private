@@ -11,6 +11,14 @@ export async function handleTimelineMessage(_: string, value: string) {
   const payload = JSON.parse(value) as Payload;
 
   switch (payload.op) {
+    case 'daily': {
+      await TimelineWriter.daily(payload.message as TimelineMessage['daily']);
+      break;
+    }
+    case 'wiki': {
+      await TimelineWriter.wiki(payload.message as TimelineMessage['wiki']);
+      break;
+    }
     case 'subject': {
       await TimelineWriter.subject(payload.message as TimelineMessage['subject']);
       break;
@@ -23,8 +31,20 @@ export async function handleTimelineMessage(_: string, value: string) {
       await TimelineWriter.progressSubject(payload.message as TimelineMessage['progressSubject']);
       break;
     }
+    case 'statusSign': {
+      await TimelineWriter.statusSign(payload.message as TimelineMessage['statusSign']);
+      break;
+    }
     case 'statusTsukkomi': {
       await TimelineWriter.statusTsukkomi(payload.message as TimelineMessage['statusTsukkomi']);
+      break;
+    }
+    case 'statusNickname': {
+      await TimelineWriter.statusNickname(payload.message as TimelineMessage['statusNickname']);
+      break;
+    }
+    case 'mono': {
+      await TimelineWriter.mono(payload.message as TimelineMessage['mono']);
       break;
     }
     default: {
