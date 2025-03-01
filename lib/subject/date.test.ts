@@ -19,7 +19,7 @@ test.each([
   [parse(`{{Infobox}}`), SubjectType.Book, new DATE(0)],
   [
     parse(`{{Infobox
-|放送开始=1887-07-01
+|上映年度=1887-07-01
 }}`),
     SubjectType.Anime,
     DATE.parse('1887-07-01'),
