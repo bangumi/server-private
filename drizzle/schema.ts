@@ -327,7 +327,7 @@ export const chiiNotify = mysqlTable('chii_notify', {
   fromUID: mediumint('nt_from_uid').notNull(),
   unread: customBoolean('nt_status').default(true).notNull(),
   type: tinyint('nt_type').default(0).notNull(),
-  mid: mediumint('nt_mid').notNull(), // ID in notify_field
+  fieldID: mediumint('nt_mid').notNull(),
   related: int('nt_related_id').notNull(),
   createdAt: int('nt_dateline').notNull(),
 });

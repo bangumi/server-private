@@ -152,7 +152,7 @@ export const Notify = {
       unread: true,
       createdAt,
       type,
-      mid: fieldID,
+      fieldID,
       related: relatedID,
     });
     await t
@@ -211,14 +211,14 @@ export const Notify = {
     if (notifications.length === 0) {
       return [];
     }
-    const fieldIDs = lodash.uniq(notifications.map((x) => x.mid));
+    const fieldIDs = lodash.uniq(notifications.map((x) => x.fieldID));
     const fields = await db
       .select()
       .from(schema.chiiNotifyField)
       .where(op.inArray(schema.chiiNotifyField.id, fieldIDs));
     const fieldMap = Object.fromEntries(fields.map((x) => [x.id, x]));
     return notifications.map((x) => {
-      const field = fieldMap[x.mid];
+      const field = fieldMap[x.fieldID];
       return {
         id: x.id,
         type: x.type,
