@@ -982,45 +982,19 @@ exports[`should build private api spec 1`] = `
     Notice:
       properties:
         createdAt:
-          description: unix timestamp in seconds
           type: integer
         id:
           type: integer
-        postID:
+        mainID:
+          description: 对应的 topicID, episodeID, userID ...
+          type: integer
+        relatedID:
+          description: 对应的 postID ...
           type: integer
         sender:
-          properties:
-            avatar:
-              $ref: '#/components/schemas/Avatar'
-            group:
-              type: integer
-            id:
-              example: 1
-              type: integer
-            joinedAt:
-              type: integer
-            nickname:
-              example: Sai🖖
-              type: string
-            sign:
-              type: string
-            username:
-              example: sai
-              type: string
-          required:
-            - id
-            - username
-            - nickname
-            - avatar
-            - group
-            - sign
-            - joinedAt
-          title: SlimUser
-          type: object
+          $ref: '#/components/schemas/SlimUser'
         title:
           type: string
-        topicID:
-          type: integer
         type:
           description: 查看 \`./lib/notify.ts\` _settings
           type: integer
@@ -1028,13 +1002,14 @@ exports[`should build private api spec 1`] = `
           type: boolean
       required:
         - id
-        - title
         - type
         - sender
-        - topicID
-        - postID
+        - title
+        - mainID
+        - relatedID
         - createdAt
         - unread
+      title: Notice
       type: object
     Permissions:
       properties:
