@@ -40,7 +40,7 @@
     "@fastify/type-provider-typebox": "5.1.0",
     "@fastify/view": "10.0.2",
     "@node-rs/bcrypt": "1.10.7",
-    "@sentry/node": "8.55.0",
+    "@sentry/node": "9.3.0",
     "@sinclair/typebox": "0.34.28",
     "@trim21/php-serialize": "0.1.1",
     "ajv": "8.17.1",
