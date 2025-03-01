@@ -47,7 +47,7 @@
     "ajv-formats": "3.0.1",
     "ajv-keywords": "5.1.0",
     "altair-static": "8.1.6",
-    "cron": "3.5.0",
+    "cron": "4.1.0",
     "drizzle-orm": "0.40.0",
     "fastify": "5.2.1",
     "fastify-metrics": "12.1.0",

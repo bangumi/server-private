@@ -66,8 +66,8 @@ importers:
         specifier: 8.1.6
         version: 8.1.6
       cron:
-        specifier: 3.5.0
-        version: 3.5.0
+        specifier: 4.1.0
+        version: 4.1.0
       drizzle-orm:
         specifier: 0.40.0
         version: 0.40.0(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(gel@2.0.0)(mysql2@3.12.0)
@@ -2860,8 +2860,9 @@ packages:
       typescript:
         optional: true
 
-  cron@3.5.0:
-    resolution: {integrity: sha512-0eYZqCnapmxYcV06uktql93wNWdlTmmBFP2iYz+JPVcQqlyFYcn1lFuIk4R54pkOmE7mcldTAPZv6X5XA4Q46A==}
+  cron@4.1.0:
+    resolution: {integrity: sha512-wmcuXr2qP0UZStYgwruG6jC2AYSO9n5VMm2t93hmcEXEjWY3S2bsXe3sfGUrTs/uQ1AvRCrZ0Pp9Q032L/V9tw==}
+    engines: {node: '>=18.x'}
 
   cross-fetch@3.2.0:
     resolution: {integrity: sha512-Q+xVJLoGOeIMXZmbUK4HYk+69cQH6LudR0Vu/pRm2YlU/hDV9CiS0gKUMaWY5f2NeUH9C1nV3bsTlCo0FsTV1Q==}
@@ -8816,7 +8817,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.8.2
 
-  cron@3.5.0:
+  cron@4.1.0:
     dependencies:
       '@types/luxon': 3.4.2
       luxon: 3.5.0
