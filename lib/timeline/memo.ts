@@ -2,25 +2,24 @@ import type { TimelineMonoCat } from './type';
 
 export interface User {
   uid: number;
-  username: string;
-  nickname: string;
 }
 
 export type UserBatch = Record<number, User>;
 
 export interface Group {
   grp_id: number;
-  grp_name: string;
-  grp_title: string;
-  grp_desc: string;
 }
 
 export type GroupBatch = Record<number, Group>;
 
+export interface Eden {
+  eden_id: number;
+}
+
+export type EdenBatch = Record<number, Eden>;
+
 export interface NewSubject {
   subject_id: number;
-  subject_name: string;
-  subject_name_cn: string;
 }
 
 export interface Subject {

@@ -10,7 +10,7 @@ import type * as res from '@app/lib/types/res.ts';
 
 import { getItemCacheKey } from './cache.ts';
 import type * as memo from './memo';
-import { TimelineCat, TimelineMonoCat, TimelineStatusType } from './type';
+import { TimelineCat, TimelineDailyType, TimelineMonoCat, TimelineStatusType } from './type';
 
 export async function parseTimelineMemo(
   auth: Readonly<IAuth>,
@@ -26,7 +26,7 @@ export async function parseTimelineMemo(
   switch (cat) {
     case TimelineCat.Daily: {
       switch (type) {
-        case 2: {
+        case TimelineDailyType.AddFriend: {
           const users = [];
           if (batch) {
             const info = php.parse(data) as memo.UserBatch;
@@ -50,8 +50,8 @@ export async function parseTimelineMemo(
             },
           };
         }
-        case 3:
-        case 4: {
+        case TimelineDailyType.JoinGroup:
+        case TimelineDailyType.CreateGroup: {
           const groups = [];
           if (batch) {
             const info = php.parse(data) as memo.GroupBatch;
