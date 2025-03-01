@@ -213,12 +213,15 @@ export const TimelineWriter: TimelineDatabaseWriter = {
 
   /** 维基操作 */
   async wiki(payload: TimelineMessage['wiki']): Promise<number> {
+    const detail: memo.NewSubject = {
+      subject_id: payload.subject.id,
+    };
     const [result] = await db.insert(schema.chiiTimeline).values({
       uid: payload.uid,
       cat: TimelineCat.Wiki,
       type: payload.subject.type,
       related: payload.subject.id.toString(),
-      memo: '',
+      memo: php.stringify(detail),
       img: '',
       batch: false,
       replies: 0,
