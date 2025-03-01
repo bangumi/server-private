@@ -26,6 +26,15 @@ export interface TimelineMessage {
     createdAt: number;
     source: TimelineSource;
   };
+  wiki: {
+    uid: number;
+    subject: {
+      id: number;
+      type: SubjectType;
+    };
+    createdAt: number;
+    source: TimelineSource;
+  };
   subject: {
     uid: number;
     subject: {
@@ -200,6 +209,22 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       });
       return result.insertId;
     }
+  },
+
+  /** 维基操作 */
+  async wiki(payload: TimelineMessage['wiki']): Promise<number> {
+    const [result] = await db.insert(schema.chiiTimeline).values({
+      uid: payload.uid,
+      cat: TimelineCat.Wiki,
+      type: payload.subject.type,
+      related: payload.subject.id.toString(),
+      memo: '',
+      img: '',
+      batch: false,
+      replies: 0,
+      createdAt: payload.createdAt,
+    });
+    return result.insertId;
   },
 
   /** 收藏条目 */
