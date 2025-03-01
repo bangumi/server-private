@@ -170,7 +170,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       )
       .orderBy(op.desc(schema.chiiTimeline.id))
       .limit(1);
-    if (previous) {
+    if (previous && previous.createdAt > payload.createdAt - 10 * 60) {
       const details: Record<number, typeof detail> = {};
       if (previous.batch) {
         const info = php.parse(previous.memo) as Record<number, typeof detail>;
