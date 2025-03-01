@@ -78,9 +78,22 @@ export interface TimelineMessage {
     createdAt: number;
     source: TimelineSource;
   };
+  statusSign: {
+    uid: number;
+    sign: string;
+    createdAt: number;
+    source: TimelineSource;
+  };
   statusTsukkomi: {
     uid: number;
     text: string;
+    createdAt: number;
+    source: TimelineSource;
+  };
+  statusNickname: {
+    uid: number;
+    before: string;
+    after: string;
     createdAt: number;
     source: TimelineSource;
   };
@@ -397,6 +410,23 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     }
   },
 
+  /** 状态 - 签名 */
+  async statusSign(payload: TimelineMessage['statusSign']) {
+    const [result] = await db.insert(schema.chiiTimeline).values({
+      uid: payload.uid,
+      cat: TimelineCat.Status,
+      type: TimelineStatusType.Sign,
+      related: '',
+      memo: payload.sign,
+      img: '',
+      batch: false,
+      source: payload.source,
+      replies: 0,
+      createdAt: payload.createdAt,
+    });
+    return result.insertId;
+  },
+
   /** 状态 - 吐槽 */
   async statusTsukkomi(payload: TimelineMessage['statusTsukkomi']) {
     const [result] = await db.insert(schema.chiiTimeline).values({
@@ -405,6 +435,27 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       type: TimelineStatusType.Tsukkomi,
       related: '',
       memo: payload.text,
+      img: '',
+      batch: false,
+      source: payload.source,
+      replies: 0,
+      createdAt: payload.createdAt,
+    });
+    return result.insertId;
+  },
+
+  /** 状态 - 昵称 */
+  async statusNickname(payload: TimelineMessage['statusNickname']) {
+    const detail: memo.Nickname = {
+      before: lo.escape(payload.before),
+      after: lo.escape(payload.after),
+    };
+    const [result] = await db.insert(schema.chiiTimeline).values({
+      uid: payload.uid,
+      cat: TimelineCat.Status,
+      type: TimelineStatusType.Nickname,
+      related: '',
+      memo: php.stringify(detail),
       img: '',
       batch: false,
       source: payload.source,
