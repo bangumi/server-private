@@ -3,7 +3,11 @@ import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
+import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { TimelineSource } from '@app/lib/timeline/type';
+import { TimelineDailyType } from '@app/lib/timeline/type';
+import { AsyncTimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -79,11 +83,16 @@ export async function setup(app: App) {
       preHandler: [requireLogin('add friend')],
     },
     async ({ auth, params: { username } }) => {
+      const authUser = await fetcher.fetchSlimUserByID(auth.userID);
+      if (!authUser) {
+        throw new UnexpectedNotFoundError(`user ${auth.userID}`);
+      }
       const user = await fetcher.fetchSlimUserByUsername(username);
       if (!user) {
         throw new NotFoundError(`user ${username}`);
       }
       await rateLimit(LimitAction.Relationship, auth.userID);
+      const createdAt = DateTime.now().toUnixInteger();
       await db.transaction(async (t) => {
         const [existing] = await t
           .select()
@@ -101,10 +110,69 @@ export async function setup(app: App) {
         await t.insert(schema.chiiFriends).values({
           uid: auth.userID,
           fid: user.id,
-          createdAt: DateTime.now().toUnixInteger(),
+          createdAt,
           description: '',
         });
-        // TODO: send notify
+
+        const [followed] = await t
+          .select()
+          .from(schema.chiiFriends)
+          .where(
+            op.and(
+              op.eq(schema.chiiFriends.uid, user.id),
+              op.eq(schema.chiiFriends.fid, auth.userID),
+            ),
+          );
+        let notifyType: NotifyType;
+        // 如果对方已将自己加为好友，则确认
+        if (followed) {
+          notifyType = NotifyType.AcceptFriend;
+          // 同时修改自己收到的好友请求通知改为已读
+          await t
+            .update(schema.chiiNotify)
+            .set({ unread: false })
+            .where(
+              op.and(
+                op.eq(schema.chiiNotify.fromUID, user.id),
+                op.eq(schema.chiiNotify.uid, auth.userID),
+                op.eq(schema.chiiNotify.type, NotifyType.RequestFriend),
+              ),
+            )
+            .limit(1);
+          await Notify.consolidateUnreadCount(t, auth.userID);
+        } else {
+          notifyType = NotifyType.RequestFriend;
+        }
+        // 避免重复发送请求
+        const [previousUnreadNotify] = await t
+          .select()
+          .from(schema.chiiNotify)
+          .where(
+            op.and(
+              op.eq(schema.chiiNotify.fromUID, auth.userID),
+              op.eq(schema.chiiNotify.uid, user.id),
+              op.eq(schema.chiiNotify.type, notifyType),
+              op.eq(schema.chiiNotify.unread, true),
+            ),
+          );
+        if (!previousUnreadNotify) {
+          await Notify.create(t, {
+            destUserID: user.id,
+            sourceUserID: auth.userID,
+            createdAt,
+            type: notifyType,
+            relatedID: 0,
+            mainID: auth.userID,
+            title: authUser.nickname,
+          });
+        }
+      });
+      await AsyncTimelineWriter.daily({
+        uid: auth.userID,
+        type: TimelineDailyType.AddFriend,
+        mid: user.id,
+        createdAt,
+        source: TimelineSource.Next,
       });
       return {};
     },

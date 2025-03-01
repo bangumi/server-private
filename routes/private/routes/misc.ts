@@ -17,20 +17,6 @@ import { fetchFriends, parseBlocklist } from '@app/lib/user/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
-const NoticeRes = t.Object(
-  {
-    id: t.Integer(),
-    title: t.String(),
-    type: t.Integer({ description: '查看 `./lib/notify.ts` _settings' }),
-    sender: res.SlimUser,
-    topicID: t.Integer(),
-    postID: t.Integer(),
-    createdAt: t.Integer({ description: 'unix timestamp in seconds' }),
-    unread: t.Boolean(),
-  },
-  { $id: 'Notice' },
-);
-
 declare module 'fastify' {
   interface FastifyInstance {
     io: Server;
@@ -86,8 +72,6 @@ export async function setup(app: App) {
     },
   );
 
-  app.addSchema(NoticeRes);
-
   app.get(
     '/notify',
     {
@@ -101,7 +85,7 @@ export async function setup(app: App) {
           unread: t.Optional(t.Boolean()),
         }),
         response: {
-          200: res.Paged(res.Ref(NoticeRes)),
+          200: res.Paged(res.Ref(res.Notice)),
           401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
@@ -113,8 +97,8 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth: { userID }, query: { limit = 20, unread } }) => {
-      const data = await Notify.list(userID, { limit, unread });
+    async ({ auth, query: { limit = 20, unread } }) => {
+      const data = await Notify.list(auth.userID, { limit, unread });
       if (data.length === 0) {
         return { total: 0, data: [] };
       }
@@ -122,7 +106,7 @@ export async function setup(app: App) {
       const users = await fetcher.fetchSlimUsersByIDs(data.map((x) => x.fromUid));
 
       return {
-        total: await Notify.count(userID),
+        total: await Notify.count(auth.userID),
         data: data.map((x) => {
           const sender = users[x.fromUid];
           if (!sender) {

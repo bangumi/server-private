@@ -1,8 +1,7 @@
 import * as php from '@trim21/php-serialize';
 import * as lodash from 'lodash-es';
-import type { DateTime } from 'luxon';
 
-import { db, incr, op, schema } from '@app/drizzle';
+import { db, incr, op, schema, type Txn } from '@app/drizzle';
 import { siteUrl } from '@app/lib/config.ts';
 import { isFriends, parseBlocklist } from '@app/lib/user/utils.ts';
 
@@ -28,8 +27,8 @@ export const enum NotifyType {
   _11,
   _12,
   _13,
-  _14,
-  _15,
+  RequestFriend = 14,
+  AcceptFriend = 15,
   _16,
   _17,
   _18,
@@ -60,12 +59,12 @@ const enum PrivacyFilter {
 interface Creation {
   destUserID: number;
   sourceUserID: number;
-  now: DateTime;
+  createdAt: number;
   type: NotifyType;
-  /** 对应回帖所对应 post id */
-  postID: number;
-  /** 帖子 id, 章节 id ... */
-  topicID: number;
+  /** 对应回帖所对应的 post id */
+  relatedID: number;
+  /** Notify Field 里的 rid，对应为 帖子 id, 章节 id ... */
+  mainID: number;
   title: string;
 }
 
@@ -74,10 +73,10 @@ export interface INotify {
   type: NotifyType;
   createdAt: number;
   fromUid: number;
-  title: string;
-  topicID: number;
-  postID: number;
+  relatedID: number;
   unread: boolean;
+  mainID: number;
+  title: string;
 }
 
 interface Filter {
@@ -102,15 +101,16 @@ interface PrivacySetting {
 }
 
 export const Notify = {
-  async create({
-    destUserID,
-    sourceUserID,
-    now,
-    type,
-    postID,
-    topicID,
-    title,
-  }: Creation): Promise<void> {
+  /**
+   * 创建 notify
+   *
+   * @param t - 事务
+   * @param creation - 创建 notify 所需参数
+   */
+  async create(
+    t: Txn,
+    { destUserID, sourceUserID, createdAt, type, relatedID, mainID, title }: Creation,
+  ): Promise<void> {
     if (destUserID === sourceUserID) {
       return;
     }
@@ -129,41 +129,36 @@ export const Notify = {
     }
     const hash = hashType(type);
     let fieldID = 0;
-    const [field] = await db
+    const [field] = await t
       .select()
       .from(schema.chiiNotifyField)
       .where(
-        op.and(
-          op.eq(schema.chiiNotifyField.hash, hash),
-          op.eq(schema.chiiNotifyField.rid, topicID),
-        ),
+        op.and(op.eq(schema.chiiNotifyField.hash, hash), op.eq(schema.chiiNotifyField.rid, mainID)),
       )
       .limit(1);
     if (field) {
       fieldID = field.id;
     } else {
-      const [result] = await db.insert(schema.chiiNotifyField).values({
+      const [result] = await t.insert(schema.chiiNotifyField).values({
         title,
         hash,
-        rid: topicID,
+        rid: mainID,
       });
       fieldID = result.insertId;
     }
-    await db.transaction(async (t) => {
-      await t.insert(schema.chiiNotify).values({
-        uid: destUserID,
-        fromUID: sourceUserID,
-        unread: true,
-        createdAt: now.toUnixInteger(),
-        type,
-        mid: fieldID,
-        related: postID,
-      });
-      await t
-        .update(schema.chiiUsers)
-        .set({ newNotify: incr(schema.chiiUsers.newNotify) })
-        .where(op.eq(schema.chiiUsers.id, destUserID));
+    await t.insert(schema.chiiNotify).values({
+      uid: destUserID,
+      fromUID: sourceUserID,
+      unread: true,
+      createdAt,
+      type,
+      mid: fieldID,
+      related: relatedID,
     });
+    await t
+      .update(schema.chiiUsers)
+      .set({ newNotify: incr(schema.chiiUsers.newNotify) })
+      .where(op.eq(schema.chiiUsers.id, destUserID));
   },
 
   async markAllAsRead(userID: number, ids?: number[]): Promise<void> {
@@ -178,14 +173,7 @@ export const Notify = {
             ids ? op.inArray(schema.chiiNotify.id, ids) : undefined,
           ),
         );
-      const [{ count = 0 } = {}] = await t
-        .select({ count: op.count(schema.chiiNotify.id) })
-        .from(schema.chiiNotify)
-        .where(op.and(op.eq(schema.chiiNotify.uid, userID), op.eq(schema.chiiNotify.unread, true)));
-      await t
-        .update(schema.chiiUsers)
-        .set({ newNotify: count })
-        .where(op.eq(schema.chiiUsers.id, userID));
+      await this.consolidateUnreadCount(t, userID);
     });
   },
 
@@ -195,6 +183,18 @@ export const Notify = {
       .from(schema.chiiUsers)
       .where(op.eq(schema.chiiUsers.id, userID));
     return user?.newNotify ?? 0;
+  },
+
+  async consolidateUnreadCount(t: Txn, userID: number): Promise<number> {
+    const [{ count = 0 } = {}] = await t
+      .select({ count: op.count(schema.chiiNotify.id) })
+      .from(schema.chiiNotify)
+      .where(op.and(op.eq(schema.chiiNotify.uid, userID), op.eq(schema.chiiNotify.unread, true)));
+    await t
+      .update(schema.chiiUsers)
+      .set({ newNotify: count })
+      .where(op.eq(schema.chiiUsers.id, userID));
+    return count;
   },
 
   async list(userID: number, { unread, limit = 30 }: Filter): Promise<INotify[]> {
@@ -225,8 +225,8 @@ export const Notify = {
         createdAt: x.createdAt,
         fromUid: x.fromUID,
         title: field?.title ?? '',
-        topicID: field?.rid ?? 0,
-        postID: x.related,
+        mainID: field?.rid ?? 0,
+        relatedID: x.related,
         unread: x.unread,
       } satisfies INotify;
     });

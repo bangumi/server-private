@@ -1121,3 +1121,18 @@ export const Timeline = t.Object(
   },
   { $id: 'Timeline', title: 'Timeline' },
 );
+
+export type INotice = Static<typeof Notice>;
+export const Notice = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer({ description: '查看 `./lib/notify.ts` _settings' }),
+    sender: Ref(SlimUser),
+    title: t.String(),
+    mainID: t.Integer({ description: '对应的 topicID, episodeID, userID ...' }),
+    relatedID: t.Integer({ description: '对应的 postID ...' }),
+    createdAt: t.Integer(),
+    unread: t.Boolean(),
+  },
+  { $id: 'Notice', title: 'Notice' },
+);
