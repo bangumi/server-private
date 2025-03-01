@@ -75,6 +75,27 @@ export enum TimelineCat {
   Doujin = 9,
 }
 
+/** 时间线 `cat = TimelineCat.Daily` 时的 `type` */
+export enum TimelineDailyType {
+  /** 神秘的行动 */
+  Mystery = 0,
+
+  /** 注册 */
+  Register = 1,
+
+  /** 添加好友 */
+  AddFriend = 2,
+
+  /** 加入小组 */
+  JoinGroup = 3,
+
+  /** 创建小组 */
+  CreateGroup = 4,
+
+  /** 加入乐园 */
+  JoinEden = 5,
+}
+
 /** 时间线 `cat = TimelineCat.status` 时的 `type` */
 export enum TimelineStatusType {
   /** 更新签名 */
