@@ -12,7 +12,7 @@ import {
 } from '@app/lib/error.ts';
 import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
 import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
-import { fetchReactions, LikeType } from '@app/lib/like';
+import { addReaction, fetchReactions, LikeType } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
@@ -666,6 +666,46 @@ export async function setup(app: App) {
           replies: topic.replies,
         },
       };
+    },
+  );
+
+  app.post(
+    '/groups/-/posts/:postID/like',
+    {
+      schema: {
+        summary: '给小组话题回复点赞',
+        operationId: 'likeGroupPost',
+        tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        body: t.Object({
+          value: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a group post')],
+    },
+    async ({ auth, params: { postID }, body: { value } }) => {
+      const [post] = await db
+        .select({ mid: schema.chiiGroupPosts.mid })
+        .from(schema.chiiGroupPosts)
+        .where(op.eq(schema.chiiGroupPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+      await addReaction({
+        type: LikeType.GroupReply,
+        mid: post.mid,
+        rid: postID,
+        uid: auth.userID,
+        value,
+      });
+      return {};
     },
   );
 

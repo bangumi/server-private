@@ -26,6 +26,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CreateContent);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
+  app.addSchema(req.FilterMode);
   app.addSchema(req.GroupSort);
   app.addSchema(req.GroupTopicFilterMode);
   app.addSchema(req.PersonSearchFilter);
@@ -35,7 +36,6 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.SubjectBrowseSort);
   app.addSchema(req.SubjectSearchFilter);
   app.addSchema(req.SubjectSearchSort);
-  app.addSchema(req.TimelineFilterMode);
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateEpisodeProgress);
@@ -59,8 +59,8 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.GroupMember);
   app.addSchema(res.GroupTopic);
   app.addSchema(res.Index);
-  app.addSchema(res.IndexStats);
   app.addSchema(res.IndexRelated);
+  app.addSchema(res.IndexStats);
   app.addSchema(res.Infobox);
   app.addSchema(res.Notice);
   app.addSchema(res.Permissions);
@@ -87,6 +87,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.Subject);
   app.addSchema(res.SubjectAirtime);
   app.addSchema(res.SubjectCharacter);
+  app.addSchema(res.SubjectCollect);
   app.addSchema(res.SubjectCollection);
   app.addSchema(res.SubjectImages);
   app.addSchema(res.SubjectInterest);

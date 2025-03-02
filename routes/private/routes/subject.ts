@@ -5,7 +5,7 @@ import { db, op, type orm, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
-import { fetchReactions, fetchSubjectCollectReactions, LikeType } from '@app/lib/like';
+import { addReaction, fetchReactions, fetchSubjectCollectReactions, LikeType } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
@@ -18,6 +18,7 @@ import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { fetchFriends } from '@app/lib/user/utils';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -783,6 +784,128 @@ export async function setup(app: App) {
   );
 
   app.get(
+    '/subjects/:subjectID/collects',
+    {
+      schema: {
+        summary: '获取条目的收藏用户',
+        operationId: 'getSubjectCollects',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          type: t.Optional(req.Ref(req.CollectionType)),
+          mode: t.Optional(
+            req.Ref(req.FilterMode, {
+              description: '默认为 all, 未登录或没有好友时始终为 all',
+            }),
+          ),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.SubjectCollect)),
+        },
+      },
+    },
+    async ({
+      auth,
+      params: { subjectID },
+      query: { type, mode = req.IFilterMode.All, limit = 20, offset = 0 },
+    }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = [
+        op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+        op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
+      ];
+      if (type) {
+        condition.push(op.eq(schema.chiiSubjectInterests.type, type));
+      }
+      if (auth.login && mode === req.IFilterMode.Friends) {
+        const friendIDs = await fetchFriends(auth.userID);
+        if (friendIDs.length > 0) {
+          condition.push(op.inArray(schema.chiiSubjectInterests.uid, friendIDs));
+        }
+      }
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectInterests)
+        .where(op.and(...condition));
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .where(op.and(...condition))
+        .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
+        .limit(limit)
+        .offset(offset);
+      const uids = data.map((d) => d.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const result: res.ISubjectCollect[] = [];
+      for (const d of data) {
+        const user = users[d.uid];
+        if (!user) {
+          continue;
+        }
+        const interest = convert.toSlimSubjectInterest(d);
+        result.push({
+          user,
+          interest,
+        });
+      }
+      return {
+        data: result,
+        total: count,
+      };
+    },
+  );
+
+  app.post(
+    '/subjects/-/collects/:collectID/like',
+    {
+      schema: {
+        summary: '给条目收藏点赞',
+        operationId: 'likeSubjectCollect',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          collectID: t.Integer(),
+        }),
+        body: t.Object({
+          value: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a subject collect')],
+    },
+    async ({ auth, params: { collectID }, body: { value } }) => {
+      const [interest] = await db
+        .select({ sid: schema.chiiSubjectInterests.subjectID })
+        .from(schema.chiiSubjectInterests)
+        .where(op.eq(schema.chiiSubjectInterests.id, collectID))
+        .limit(1);
+      if (!interest) {
+        throw new NotFoundError(`subject interest ${collectID}`);
+      }
+      await addReaction({
+        type: LikeType.SubjectCollect,
+        mid: interest.sid,
+        rid: collectID,
+        uid: auth.userID,
+        value,
+      });
+      return {};
+    },
+  );
+
+  app.get(
     '/subjects/:subjectID/topics',
     {
       schema: {
@@ -1198,6 +1321,46 @@ export async function setup(app: App) {
           replies: topic.replies,
         },
       };
+    },
+  );
+
+  app.post(
+    '/subjects/-/posts/:postID/like',
+    {
+      schema: {
+        summary: '给条目讨论回复点赞',
+        operationId: 'likeSubjectPost',
+        tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        body: t.Object({
+          value: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a subject post')],
+    },
+    async ({ auth, params: { postID }, body: { value } }) => {
+      const [post] = await db
+        .select({ mid: schema.chiiSubjectPosts.mid })
+        .from(schema.chiiSubjectPosts)
+        .where(op.eq(schema.chiiSubjectPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+      await addReaction({
+        type: LikeType.SubjectReply,
+        mid: post.mid,
+        rid: postID,
+        uid: auth.userID,
+        value,
+      });
+      return {};
     },
   );
 

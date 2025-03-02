@@ -11,7 +11,6 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByID, fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import { TimelineSource } from '@app/lib/timeline/type';
-import { TimelineMode } from '@app/lib/timeline/type.ts';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -36,7 +35,7 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
           mode: t.Optional(
-            req.Ref(req.TimelineFilterMode, {
+            req.Ref(req.FilterMode, {
               description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
             }),
           ),
@@ -50,15 +49,15 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { mode = TimelineMode.Friends, limit = 20, until } }) => {
+    async ({ auth, query: { mode = req.IFilterMode.Friends, limit = 20, until } }) => {
       const ids = [];
       switch (mode) {
-        case TimelineMode.Friends: {
+        case req.IFilterMode.Friends: {
           const ret = await getTimelineInbox(auth.userID, limit, until);
           ids.push(...ret);
           break;
         }
-        case TimelineMode.All: {
+        case req.IFilterMode.All: {
           const ret = await getTimelineInbox(0, limit, until);
           ids.push(...ret);
           break;

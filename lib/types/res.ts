@@ -374,6 +374,15 @@ export const SlimSubjectInterest = t.Object(
   { $id: 'SlimSubjectInterest', title: 'SlimSubjectInterest' },
 );
 
+export type ISubjectCollect = Static<typeof SubjectCollect>;
+export const SubjectCollect = t.Object(
+  {
+    user: Ref(SlimUser),
+    interest: Ref(SlimSubjectInterest),
+  },
+  { $id: 'SubjectCollect', title: 'SubjectCollect' },
+);
+
 export type ISubject = Static<typeof Subject>;
 export const Subject = t.Object(
   {
