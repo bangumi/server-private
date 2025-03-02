@@ -1,8 +1,12 @@
 import * as lo from 'lodash-es';
+import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
+import { BadRequestError } from '@app/lib/error';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 
 export enum LikeType {
   SubjectCover = 1,
@@ -17,7 +21,7 @@ export enum LikeType {
 
 export const ALLOWED_REACTION_TYPES: ReadonlySet<number> = Object.freeze(
   new Set([
-    LikeType.SubjectCover,
+    LikeType.GroupReply,
     LikeType.SubjectReply,
     LikeType.EpisodeReply,
     LikeType.SubjectCollect,
@@ -88,18 +92,50 @@ export const ALLOWED_COMMON_REACTIONS: ReadonlySet<number> = Object.freeze(
   ]),
 );
 
+export interface NewReaction {
+  type: LikeType;
+  /** TopicID, SubjectID ... */
+  mid: number;
+  /** PostID, CollectID ... */
+  rid: number;
+  uid: number;
+  value: number;
+}
+
+function validateReaction(type: LikeType, value: number): boolean {
+  switch (type) {
+    case LikeType.GroupReply:
+    case LikeType.SubjectReply:
+    case LikeType.EpisodeReply: {
+      return ALLOWED_COMMON_REACTIONS.has(value);
+    }
+    case LikeType.SubjectCollect: {
+      return ALLOWED_SUBJECT_COLLECT_REACTIONS.has(value);
+    }
+    default: {
+      return false;
+    }
+  }
+}
+
 export async function fetchReactions(
   mainID: number,
   type: LikeType,
 ): Promise<Record<number, res.IReaction[]>> {
   if (!ALLOWED_REACTION_TYPES.has(type)) {
-    throw new Error(`Invalid reaction type: ${type}`);
+    throw new BadRequestError('Invalid reaction type');
   }
 
   const data = await db
     .select()
     .from(schema.chiiLikes)
-    .where(op.and(op.eq(schema.chiiLikes.mainID, mainID), op.eq(schema.chiiLikes.type, type)));
+    .where(
+      op.and(
+        op.eq(schema.chiiLikes.mainID, mainID),
+        op.eq(schema.chiiLikes.type, type),
+        op.eq(schema.chiiLikes.deleted, false),
+      ),
+    );
 
   const uids = data.map((x) => x.uid);
   const users = await fetcher.fetchSimpleUsersByIDs(uids);
@@ -129,6 +165,7 @@ export async function fetchSubjectCollectReactions(
       op.and(
         op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
         op.inArray(schema.chiiLikes.relatedID, collectIDs),
+        op.eq(schema.chiiLikes.deleted, false),
       ),
     );
 
@@ -147,5 +184,63 @@ export async function fetchSubjectCollectReactions(
         value: Number(key),
       };
     });
+  });
+}
+
+export async function addReaction(reaction: NewReaction) {
+  if (!validateReaction(reaction.type, reaction.value)) {
+    throw new BadRequestError('Invalid reaction');
+  }
+  await rateLimit(LimitAction.Like, reaction.uid);
+  await db.transaction(async (tx) => {
+    const [previous] = await tx
+      .select()
+      .from(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, reaction.type),
+          op.eq(schema.chiiLikes.relatedID, reaction.rid),
+          op.eq(schema.chiiLikes.uid, reaction.uid),
+        ),
+      )
+      .limit(1);
+    if (previous) {
+      // 重复点击取消
+      if (previous.value === reaction.value && !previous.deleted) {
+        await tx
+          .update(schema.chiiLikes)
+          .set({ deleted: true })
+          .where(
+            op.and(
+              op.eq(schema.chiiLikes.type, reaction.type),
+              op.eq(schema.chiiLikes.relatedID, reaction.rid),
+              op.eq(schema.chiiLikes.uid, reaction.uid),
+            ),
+          );
+      } else {
+        // 更新
+        await tx
+          .update(schema.chiiLikes)
+          .set({ deleted: false, value: reaction.value })
+          .where(
+            op.and(
+              op.eq(schema.chiiLikes.type, reaction.type),
+              op.eq(schema.chiiLikes.relatedID, reaction.rid),
+              op.eq(schema.chiiLikes.uid, reaction.uid),
+            ),
+          );
+      }
+    } else {
+      // 新增
+      await tx.insert(schema.chiiLikes).values({
+        type: reaction.type,
+        mainID: reaction.mid,
+        relatedID: reaction.rid,
+        uid: reaction.uid,
+        value: reaction.value,
+        createdAt: DateTime.now().toUnixInteger(),
+        deleted: false,
+      });
+    }
   });
 }

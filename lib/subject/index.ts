@@ -340,7 +340,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
           schema.chiiLikes.relatedID,
           images.map((x) => x.id),
         ),
-        op.eq(schema.chiiLikes.deleted, 0),
+        op.eq(schema.chiiLikes.deleted, false),
       ),
     );
 

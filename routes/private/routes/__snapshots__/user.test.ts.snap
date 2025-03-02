@@ -207,6 +207,7 @@ Object {
       "info": "25话 / 2008年4月6日 / 谷口悟朗 / 木村貴宏",
       "interest": Object {
         "comment": "test comment",
+        "id": 1,
         "rate": 0,
         "tags": Array [
           "SUNRISE",

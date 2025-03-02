@@ -279,7 +279,7 @@ export const chiiLikes = mysqlTable('chii_likes', {
   relatedID: int('related_id').notNull(),
   uid: mediumint('uid').notNull(),
   value: mediumint('value').default(0).notNull(),
-  deleted: tinyint('ban').default(0).notNull(),
+  deleted: customBoolean('ban').default(false).notNull(),
   createdAt: int('created_at').notNull(),
 });
 

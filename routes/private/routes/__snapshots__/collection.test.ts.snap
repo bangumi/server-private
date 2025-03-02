@@ -145,6 +145,7 @@ Object {
       "interest": Object {
         "comment": "",
         "epStatus": 0,
+        "id": 29,
         "private": false,
         "rate": 0,
         "tags": Array [],
@@ -426,6 +427,7 @@ Object {
       "interest": Object {
         "comment": "",
         "epStatus": 0,
+        "id": 28,
         "private": false,
         "rate": 0,
         "tags": Array [],

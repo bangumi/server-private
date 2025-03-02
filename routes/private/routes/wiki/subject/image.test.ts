@@ -68,7 +68,7 @@ describe('should vote for subject cover', () => {
       const likes = await db
         .select()
         .from(schema.chiiLikes)
-        .where(op.eq(schema.chiiLikes.deleted, 0));
+        .where(op.eq(schema.chiiLikes.deleted, false));
       expect(likes).not.toHaveLength(0);
     }
 
@@ -83,7 +83,7 @@ describe('should vote for subject cover', () => {
       const likes = await db
         .select()
         .from(schema.chiiLikes)
-        .where(op.eq(schema.chiiLikes.deleted, 1));
+        .where(op.eq(schema.chiiLikes.deleted, true));
       expect(likes).not.toHaveLength(0);
     }
   });

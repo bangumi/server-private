@@ -294,6 +294,7 @@ export function toSubject(subject: orm.ISubject, fields: orm.ISubjectFields): re
 
 export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectInterest {
   return {
+    id: interest.id,
     rate: interest.rate,
     type: interest.type,
     comment: interest.comment,
@@ -307,6 +308,7 @@ export function toSubjectInterest(interest: orm.ISubjectInterest): res.ISubjectI
 
 export function toSlimSubjectInterest(interest: orm.ISubjectInterest): res.ISlimSubjectInterest {
   return {
+    id: interest.id,
     rate: interest.rate,
     type: interest.type,
     comment: interest.comment,

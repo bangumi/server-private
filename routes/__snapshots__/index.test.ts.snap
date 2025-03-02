@@ -1573,6 +1573,8 @@ exports[`should build private api spec 1`] = `
       properties:
         comment:
           type: string
+        id:
+          type: integer
         rate:
           type: integer
         tags:
@@ -1584,6 +1586,7 @@ exports[`should build private api spec 1`] = `
         updatedAt:
           type: integer
       required:
+        - id
         - rate
         - type
         - comment
@@ -1952,6 +1955,8 @@ exports[`should build private api spec 1`] = `
           type: string
         epStatus:
           type: integer
+        id:
+          type: integer
         private:
           type: boolean
         rate:
@@ -1967,6 +1972,7 @@ exports[`should build private api spec 1`] = `
         volStatus:
           type: integer
       required:
+        - id
         - rate
         - type
         - comment
