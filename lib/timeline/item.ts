@@ -3,7 +3,7 @@ import * as lo from 'lodash-es';
 
 import { db, op, type orm, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
-import { fetchSubjectCollectReactions } from '@app/lib/like.ts';
+import { fetchReactionsByRelatedIDs, LikeType } from '@app/lib/like.ts';
 import redis from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -386,7 +386,10 @@ export async function fetchTimelineByIDs(
       collectIDs[Number(tid)] = subject.collectID;
     }
   }
-  const collectReactions = await fetchSubjectCollectReactions(Object.values(collectIDs));
+  const collectReactions = await fetchReactionsByRelatedIDs(
+    LikeType.SubjectCollect,
+    Object.values(collectIDs),
+  );
   for (const [tid, collectID] of Object.entries(collectIDs)) {
     const reactions = collectReactions[collectID];
     if (!reactions) {

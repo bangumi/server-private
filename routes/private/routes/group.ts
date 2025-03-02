@@ -12,7 +12,7 @@ import {
 } from '@app/lib/error.ts';
 import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
 import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
-import { addReaction, fetchReactions, LikeType } from '@app/lib/like';
+import { addReaction, fetchReactionsByMainID, LikeType } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
@@ -496,7 +496,7 @@ export async function setup(app: App) {
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await fetchReactions(topicID, LikeType.GroupReply);
+      const reactions = await fetchReactionsByMainID(topicID, LikeType.GroupReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';

@@ -118,7 +118,7 @@ function validateReaction(type: LikeType, value: number): boolean {
   }
 }
 
-export async function fetchReactions(
+export async function fetchReactionsByMainID(
   mainID: number,
   type: LikeType,
 ): Promise<Record<number, res.IReaction[]>> {
@@ -155,16 +155,17 @@ export async function fetchReactions(
   });
 }
 
-export async function fetchSubjectCollectReactions(
-  collectIDs: number[],
+export async function fetchReactionsByRelatedIDs(
+  type: LikeType,
+  relatedIDs: number[],
 ): Promise<Record<number, res.IReaction[]>> {
   const data = await db
     .select()
     .from(schema.chiiLikes)
     .where(
       op.and(
-        op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
-        op.inArray(schema.chiiLikes.relatedID, collectIDs),
+        op.eq(schema.chiiLikes.type, type),
+        op.inArray(schema.chiiLikes.relatedID, relatedIDs),
         op.eq(schema.chiiLikes.deleted, false),
       ),
     );
