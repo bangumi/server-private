@@ -1,6 +1,7 @@
 import * as fsp from 'node:fs/promises';
 import * as path from 'node:path';
 
+import { db, op, schema as ormSchema } from '@app/drizzle';
 import { projectRoot } from '@app/lib/config.ts';
 import type { Context } from '@app/lib/graphql/context.ts';
 import { convertCharacter } from '@app/lib/graphql/resolvers/character.ts';
@@ -10,7 +11,6 @@ import {
   convertTopic,
   subjectResolver,
 } from '@app/lib/graphql/resolvers/subject.ts';
-import { avatar } from '@app/lib/images.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import {
   CastRepo,
@@ -19,21 +19,11 @@ import {
   PersonRepo,
   PersonSubjectsRepo,
   SubjectRelationRepo,
-  SubjectTopicRepo,
 } from '@app/lib/orm/index.ts';
 import { ListTopicDisplays } from '@app/lib/topic/display.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 
 import type * as types from './__generated__/resolvers.ts';
-
-export function convertUser(user: entity.User) {
-  return {
-    id: user.id,
-    username: user.username,
-    nickname: user.nickname,
-    avatar: avatar(user.avatar),
-  };
-}
 
 export const resolvers = {
   Query: {
@@ -145,16 +135,24 @@ export const resolvers = {
       { limit, offset }: { limit: number; offset: number },
       { auth: u }: Context,
     ) {
-      let query = SubjectTopicRepo.createQueryBuilder('t')
-        .innerJoinAndMapOne('t.creator', entity.User, 'u', 'u.id = t.creatorID')
-        .where('t.parentID = :id', { id: parent.id });
       const displays = ListTopicDisplays(u);
+      const conditions = [op.eq(ormSchema.chiiSubjectTopics.subjectID, parent.id)];
       if (displays.length > 0) {
-        query = query.andWhere('t.display IN (:...displays)', { displays });
+        conditions.push(op.inArray(ormSchema.chiiSubjectTopics.display, displays));
       }
-      const topics = await query.orderBy('t.createdAt', 'DESC').skip(offset).take(limit).getMany();
-      return topics.map((t) => {
-        return convertTopic(t);
+      const data = await db
+        .select()
+        .from(ormSchema.chiiSubjectTopics)
+        .innerJoin(
+          ormSchema.chiiUsers,
+          op.eq(ormSchema.chiiUsers.id, ormSchema.chiiSubjectTopics.uid),
+        )
+        .where(op.and(...conditions))
+        .orderBy(op.desc(ormSchema.chiiSubjectTopics.createdAt))
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => {
+        return convertTopic(d.chii_subject_topics, d.chii_members);
       });
     },
 

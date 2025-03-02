@@ -5,19 +5,12 @@ import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
 
 import {
-  App,
   Cast,
   Character,
   CharacterSubjects,
   Episode,
   EpisodeComment,
   EpRevision,
-  Group,
-  GroupMembers,
-  GroupPost,
-  GroupTopic,
-  Notify,
-  NotifyField,
   Person,
   PersonSubjects,
   RevHistory,
@@ -26,12 +19,8 @@ import {
   SubjectFields,
   SubjectImage,
   SubjectInterest,
-  SubjectPost,
   SubjectRelation,
   SubjectRev,
-  SubjectTopic,
-  User,
-  UserField,
 } from './entity/index.ts';
 
 export const AppDataSource = new DataSource({
@@ -76,18 +65,11 @@ export const AppDataSource = new DataSource({
     logMigration() {},
   },
   entities: [
-    App,
     Cast,
     Character,
     CharacterSubjects,
     EpRevision,
-    User,
-    UserField,
-    Notify,
-    NotifyField,
     SubjectImage,
-    Group,
-    GroupMembers,
     Episode,
     EpisodeComment,
     Person,
@@ -95,19 +77,12 @@ export const AppDataSource = new DataSource({
     RevHistory,
     RevText,
     Subject,
-    SubjectTopic,
-    SubjectPost,
     SubjectFields,
     SubjectRelation,
-    GroupTopic,
-    GroupPost,
     SubjectRev,
     SubjectInterest,
   ],
 });
-
-export const UserRepo = AppDataSource.getRepository(User);
-export const UserFieldRepo = AppDataSource.getRepository(UserField);
 
 export const CharacterRepo = AppDataSource.getRepository(Character);
 export const CharacterSubjectsRepo = AppDataSource.getRepository(CharacterSubjects);
@@ -117,8 +92,6 @@ export const PersonRepo = AppDataSource.getRepository(Person);
 export const PersonSubjectsRepo = AppDataSource.getRepository(PersonSubjects);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
-export const SubjectTopicRepo = AppDataSource.getRepository(SubjectTopic);
-export const SubjectPostRepo = AppDataSource.getRepository(SubjectPost);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const SubjectRelationRepo = AppDataSource.getRepository(SubjectRelation);
@@ -132,16 +105,7 @@ export const RevTextRepo = AppDataSource.getRepository(RevText);
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
-export const NotifyRepo = AppDataSource.getRepository(Notify);
-export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
-
-export const GroupRepo = AppDataSource.getRepository(Group);
-export const GroupTopicRepo = AppDataSource.getRepository(GroupTopic);
-export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
-export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
-
 export const repo = {
-  UserField: UserFieldRepo,
   Subject: SubjectRepo,
   SubjectFields: SubjectFieldsRepo,
   SubjectRelation: SubjectRelationRepo,
@@ -151,10 +115,6 @@ export const repo = {
   Cast: CastRepo,
   Person: PersonRepo,
   PersonSubjects: PersonSubjectsRepo,
-  Notify: NotifyRepo,
-  NotifyField: NotifyFieldRepo,
-  Group: GroupRepo,
-  GroupMember: GroupMemberRepo,
 } as const;
 
 export interface Page {

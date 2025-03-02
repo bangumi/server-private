@@ -2,8 +2,6 @@ import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from 'ty
 
 import { BooleanTransformer, htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
 
-import type { User } from './user.ts';
-
 @Index('subject_name_cn', ['nameCN'], {})
 @Index('subject_platform', ['platform'], {})
 @Index('subject_creator', ['subjectCreator'], {})
@@ -379,91 +377,6 @@ export class SubjectRelation {
   order!: number;
 
   relatedSubject!: Subject;
-}
-
-@Index('sbj_tpc_lastpost', ['updatedAt', 'parentID', 'display'], {})
-@Index('tpc_display', ['display'], {})
-@Index('sbj_tpc_uid', ['creatorID'], {})
-@Index('tpc_subject_id', ['parentID'], {})
-@Entity('chii_subject_topics', { schema: 'bangumi' })
-export class SubjectTopic {
-  @PrimaryGeneratedColumn({
-    type: 'mediumint',
-    name: 'sbj_tpc_id',
-    unsigned: true,
-  })
-  id!: number;
-
-  @Column('mediumint', { name: 'sbj_tpc_subject_id', unsigned: true })
-  parentID!: number;
-
-  @Column('mediumint', { name: 'sbj_tpc_uid', unsigned: true })
-  creatorID!: number;
-
-  @Column('varchar', { name: 'sbj_tpc_title', length: 80, transformer: htmlEscapedString })
-  title!: string;
-
-  @Column('int', {
-    name: 'sbj_tpc_dateline',
-    unsigned: true,
-    default: () => "'0'",
-  })
-  createdAt!: number;
-
-  @Column('int', {
-    name: 'sbj_tpc_lastpost',
-    unsigned: true,
-    default: () => "'0'",
-  })
-  updatedAt!: number;
-
-  @Column('mediumint', {
-    name: 'sbj_tpc_replies',
-    unsigned: true,
-    default: () => "'0'",
-  })
-  replies!: number;
-
-  @Column('tinyint', { name: 'sbj_tpc_state', unsigned: true })
-  state!: number;
-
-  @Column('tinyint', {
-    name: 'sbj_tpc_display',
-    unsigned: true,
-    default: () => "'1'",
-  })
-  display!: number;
-
-  creator!: User;
-}
-
-@Index('pss_topic_id', ['topicID'], {})
-@Index('sbj_pst_related', ['related'], {})
-@Index('sbj_pst_uid', ['uid'], {})
-@Entity('chii_subject_posts', { schema: 'bangumi' })
-export class SubjectPost {
-  @PrimaryGeneratedColumn({ name: 'sbj_pst_id', type: 'mediumint', unsigned: true })
-  id!: number;
-
-  @Column('mediumint', { name: 'sbj_pst_mid', unsigned: true })
-  topicID!: number;
-
-  @Column('mediumint', { name: 'sbj_pst_uid', unsigned: true })
-  uid!: number;
-
-  @Column('mediumint', { name: 'sbj_pst_related', unsigned: true, default: 0 })
-  related!: number;
-
-  @Column('mediumint', { name: 'sbj_pst_content' })
-  content!: string;
-
-  @Column('tinyint', { name: 'sbj_pst_state', width: 1, unsigned: true })
-  state!: number;
-
-  @Column('int', { name: 'sbj_pst_dateline', unsigned: true, default: 0 })
-  dateline!: number;
-
-  creator!: User;
 }
 
 @Index('interest_collect_dateline', ['collectDateline'], {})

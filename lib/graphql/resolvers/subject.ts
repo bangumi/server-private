@@ -1,8 +1,8 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
+import { type orm } from '@app/drizzle';
 import type * as types from '@app/lib/graphql/__generated__/resolvers.ts';
-import { convertUser } from '@app/lib/graphql/schema.ts';
 import { subjectCover } from '@app/lib/images';
 import * as entity from '@app/lib/orm/entity/index.ts';
 import { SubjectRepo } from '@app/lib/orm/index.ts';
@@ -96,10 +96,10 @@ export function convertSubject(subject: entity.Subject) {
   };
 }
 
-export function convertTopic(topic: entity.SubjectTopic) {
+export function convertTopic(topic: orm.ISubjectTopic, user: orm.IUser) {
   return {
     id: topic.id,
-    creator: convertUser(topic.creator),
+    creator: convert.toSlimUser(user),
     title: topic.title,
     created_at: topic.createdAt,
     updated_at: topic.updatedAt,
