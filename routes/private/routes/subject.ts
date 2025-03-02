@@ -5,7 +5,7 @@ import { db, op, type orm, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
-import { fetchSubjectCollectReactions, fetchTopicReactions, LikeType } from '@app/lib/like';
+import { fetchReactions, fetchSubjectCollectReactions, LikeType } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
@@ -1028,7 +1028,7 @@ export async function setup(app: App) {
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await fetchTopicReactions(topicID, LikeType.SubjectReply);
+      const reactions = await fetchReactions(topicID, LikeType.SubjectReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
