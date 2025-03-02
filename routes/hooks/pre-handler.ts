@@ -64,7 +64,11 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
   }
 
   const user = await legacySessionCache.cached(userID, async () => {
-    const [u] = await db.select().from(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, userID));
+    const [u] = await db
+      .select()
+      .from(schema.chiiUsers)
+      .where(op.eq(schema.chiiUsers.id, userID))
+      .limit(1);
     if (u) {
       return { password: u.passwordCrypt };
     }
