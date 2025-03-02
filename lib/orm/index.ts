@@ -19,10 +19,8 @@ import {
   SubjectFields,
   SubjectImage,
   SubjectInterest,
-  SubjectPost,
   SubjectRelation,
   SubjectRev,
-  SubjectTopic,
 } from './entity/index.ts';
 
 export const AppDataSource = new DataSource({
@@ -79,8 +77,6 @@ export const AppDataSource = new DataSource({
     RevHistory,
     RevText,
     Subject,
-    SubjectTopic,
-    SubjectPost,
     SubjectFields,
     SubjectRelation,
     SubjectRev,
@@ -96,8 +92,6 @@ export const PersonRepo = AppDataSource.getRepository(Person);
 export const PersonSubjectsRepo = AppDataSource.getRepository(PersonSubjects);
 
 export const SubjectRepo = AppDataSource.getRepository(Subject);
-export const SubjectTopicRepo = AppDataSource.getRepository(SubjectTopic);
-export const SubjectPostRepo = AppDataSource.getRepository(SubjectPost);
 export const SubjectFieldsRepo = AppDataSource.getRepository(SubjectFields);
 export const SubjectImageRepo = AppDataSource.getRepository(SubjectImage);
 export const SubjectRelationRepo = AppDataSource.getRepository(SubjectRelation);
