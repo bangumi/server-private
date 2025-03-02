@@ -5,15 +5,12 @@ import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { logger } from '@app/lib/logger.ts';
 
 import {
-  App,
   Cast,
   Character,
   CharacterSubjects,
   Episode,
   EpisodeComment,
   EpRevision,
-  Notify,
-  NotifyField,
   Person,
   PersonSubjects,
   RevHistory,
@@ -26,8 +23,6 @@ import {
   SubjectRelation,
   SubjectRev,
   SubjectTopic,
-  User,
-  UserField,
 } from './entity/index.ts';
 
 export const AppDataSource = new DataSource({
@@ -72,15 +67,10 @@ export const AppDataSource = new DataSource({
     logMigration() {},
   },
   entities: [
-    App,
     Cast,
     Character,
     CharacterSubjects,
     EpRevision,
-    User,
-    UserField,
-    Notify,
-    NotifyField,
     SubjectImage,
     Episode,
     EpisodeComment,
@@ -97,9 +87,6 @@ export const AppDataSource = new DataSource({
     SubjectInterest,
   ],
 });
-
-export const UserRepo = AppDataSource.getRepository(User);
-export const UserFieldRepo = AppDataSource.getRepository(UserField);
 
 export const CharacterRepo = AppDataSource.getRepository(Character);
 export const CharacterSubjectsRepo = AppDataSource.getRepository(CharacterSubjects);
@@ -124,11 +111,7 @@ export const RevTextRepo = AppDataSource.getRepository(RevText);
 export const SubjectRevRepo = AppDataSource.getRepository(SubjectRev);
 export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 
-export const NotifyRepo = AppDataSource.getRepository(Notify);
-export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
-
 export const repo = {
-  UserField: UserFieldRepo,
   Subject: SubjectRepo,
   SubjectFields: SubjectFieldsRepo,
   SubjectRelation: SubjectRelationRepo,
@@ -138,8 +121,6 @@ export const repo = {
   Cast: CastRepo,
   Person: PersonRepo,
   PersonSubjects: PersonSubjectsRepo,
-  Notify: NotifyRepo,
-  NotifyField: NotifyFieldRepo,
 } as const;
 
 export interface Page {

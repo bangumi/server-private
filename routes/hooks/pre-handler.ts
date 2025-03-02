@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/require-await */
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
+import { db, op, schema } from '@app/drizzle';
 import * as authCode from '@app/lib/auth/authcode.ts';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { emptyAuth, NeedLoginError, NotAllowedError } from '@app/lib/auth/index.ts';
@@ -10,7 +11,6 @@ import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session.ts';
 import { TypedCache } from '@app/lib/cache.ts';
 import config from '@app/lib/config.ts';
 import { CaptchaError } from '@app/lib/error';
-import { UserRepo } from '@app/lib/orm/index.ts';
 import { turnstile } from '@app/lib/services/turnstile';
 import { md5 } from '@app/lib/utils/index.ts';
 
@@ -64,7 +64,7 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
   }
 
   const user = await legacySessionCache.cached(userID, async () => {
-    const u = await UserRepo.findOneBy({ id: userID });
+    const [u] = await db.select().from(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, userID));
     if (u) {
       return { password: u.passwordCrypt };
     }

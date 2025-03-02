@@ -2,6 +2,7 @@ import { createError } from '@fastify/error';
 import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
 
+import { db, op, schema } from '@app/drizzle';
 import { comparePassword, NeedLoginError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
@@ -9,7 +10,6 @@ import config, { redisPrefix } from '@app/lib/config.ts';
 import { BadRequestError, CaptchaError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
 import { Tag } from '@app/lib/openapi/index.ts';
-import { UserRepo } from '@app/lib/orm/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchPermission } from '@app/lib/user/perm.ts';
@@ -152,8 +152,11 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       if (!(await turnstile.verify(turnstileToken))) {
         throw new CaptchaError();
       }
-
-      const user = await UserRepo.findOne({ where: { email } });
+      const [user] = await db
+        .select()
+        .from(schema.chiiUsers)
+        .where(op.eq(schema.chiiUsers.email, email))
+        .limit(1);
       if (!user) {
         throw new EmailOrPasswordError();
       }

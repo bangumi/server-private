@@ -2,8 +2,6 @@ import { Column, Entity, Index, PrimaryColumn, PrimaryGeneratedColumn } from 'ty
 
 import { BooleanTransformer, htmlEscapedString, UnixTimestamp } from '@app/lib/orm/transformer.ts';
 
-import type { User } from './user.ts';
-
 @Index('subject_name_cn', ['nameCN'], {})
 @Index('subject_platform', ['platform'], {})
 @Index('subject_creator', ['subjectCreator'], {})
@@ -433,8 +431,6 @@ export class SubjectTopic {
     default: () => "'1'",
   })
   display!: number;
-
-  creator!: User;
 }
 
 @Index('pss_topic_id', ['topicID'], {})
@@ -462,8 +458,6 @@ export class SubjectPost {
 
   @Column('int', { name: 'sbj_pst_dateline', unsigned: true, default: 0 })
   dateline!: number;
-
-  creator!: User;
 }
 
 @Index('interest_collect_dateline', ['collectDateline'], {})
