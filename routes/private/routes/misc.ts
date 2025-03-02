@@ -10,28 +10,12 @@ import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
 import { Notify } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { UserFieldRepo } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchFriends, parseBlocklist } from '@app/lib/user/utils';
-import { intval } from '@app/lib/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
-
-const NoticeRes = t.Object(
-  {
-    id: t.Integer(),
-    title: t.String(),
-    type: t.Integer({ description: '查看 `./lib/notify.ts` _settings' }),
-    sender: res.SlimUser,
-    topicID: t.Integer(),
-    postID: t.Integer(),
-    createdAt: t.Integer({ description: 'unix timestamp in seconds' }),
-    unread: t.Boolean(),
-  },
-  { $id: 'Notice' },
-);
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -88,8 +72,6 @@ export async function setup(app: App) {
     },
   );
 
-  app.addSchema(NoticeRes);
-
   app.get(
     '/notify',
     {
@@ -103,7 +85,7 @@ export async function setup(app: App) {
           unread: t.Optional(t.Boolean()),
         }),
         response: {
-          200: res.Paged(res.Ref(NoticeRes)),
+          200: res.Paged(res.Ref(res.Notice)),
           401: res.Ref(res.Error, {
             description: '未登录',
             'x-examples': {
@@ -115,8 +97,8 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth: { userID }, query: { limit = 20, unread } }) => {
-      const data = await Notify.list(userID, { limit, unread });
+    async ({ auth, query: { limit = 20, unread } }) => {
+      const data = await Notify.list(auth.userID, { limit, unread });
       if (data.length === 0) {
         return { total: 0, data: [] };
       }
@@ -124,7 +106,7 @@ export async function setup(app: App) {
       const users = await fetcher.fetchSlimUsersByIDs(data.map((x) => x.fromUid));
 
       return {
-        total: await Notify.count(userID),
+        total: await Notify.count(auth.userID),
         data: data.map((x) => {
           const sender = users[x.fromUid];
           if (!sender) {
@@ -178,93 +160,6 @@ export async function setup(app: App) {
       }
 
       await Notify.markAllAsRead(userID, id);
-    },
-  );
-
-  app.get(
-    '/blocklist',
-    {
-      schema: {
-        summary: '获取绝交用户列表',
-        operationId: 'getBlocklist',
-        tags: [Tag.Misc],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        response: {
-          200: t.Object({
-            blocklist: t.Array(t.Integer()),
-          }),
-        },
-      },
-      preHandler: [requireLogin('get blocklist')],
-    },
-    async ({ auth: { userID } }) => {
-      const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
-      return {
-        blocklist: f.blocklist
-          .split(',')
-          .map((x) => x.trim())
-          .map((x) => intval(x)),
-      };
-    },
-  );
-
-  app.post(
-    '/blocklist',
-    {
-      schema: {
-        summary: '将用户添加到绝交列表',
-        operationId: 'addToBlocklist',
-        tags: [Tag.Misc],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: t.Object({
-          id: t.Integer(),
-        }),
-        response: {
-          200: t.Object({
-            blocklist: t.Array(t.Integer()),
-          }),
-        },
-      },
-      preHandler: [requireLogin('add to blocklist')],
-    },
-    async ({ auth: { userID }, body: { id } }) => {
-      const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
-      const blocklist = f.blocklist.split(',').map((x) => intval(x.trim()));
-      if (!blocklist.includes(id)) {
-        blocklist.push(id);
-      }
-      f.blocklist = blocklist.join(',');
-      await UserFieldRepo.save(f);
-      return { blocklist: blocklist };
-    },
-  );
-
-  app.delete(
-    '/blocklist/:id',
-    {
-      schema: {
-        summary: '将用户从绝交列表移出',
-        operationId: 'removeFromBlocklist',
-        tags: [Tag.Misc],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        params: t.Object({
-          id: t.Integer(),
-        }),
-        response: {
-          200: t.Object({
-            blocklist: t.Array(t.Integer()),
-          }),
-        },
-      },
-      preHandler: [requireLogin('remove from blocklist')],
-    },
-    async ({ auth: { userID }, params: { id } }) => {
-      const f = await UserFieldRepo.findOneOrFail({ where: { uid: userID } });
-      let blocklist = f.blocklist.split(',').map((x) => intval(x.trim()));
-      blocklist = blocklist.filter((v) => v !== id);
-      f.blocklist = blocklist.join(',');
-      await UserFieldRepo.save(f);
-      return { blocklist: blocklist };
     },
   );
 

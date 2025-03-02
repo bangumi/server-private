@@ -20,14 +20,16 @@ describe('notify', () => {
   });
 
   test('should list notify', async () => {
-    await Notify.create({
-      destUserID: 287622,
-      sourceUserID: 382951,
-      topicID: 2,
-      now: DateTime.now(),
-      type: NotifyType.GroupTopicReply,
-      title: 'tt',
-      postID: 1,
+    await db.transaction(async (t) => {
+      await Notify.create(t, {
+        destUserID: 287622,
+        sourceUserID: 382951,
+        mainID: 2,
+        createdAt: DateTime.now().toUnixInteger(),
+        type: NotifyType.GroupTopicReply,
+        title: 'tt',
+        relatedID: 1,
+      });
     });
 
     const app = await createTestServer({

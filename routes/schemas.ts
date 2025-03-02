@@ -62,6 +62,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.IndexStats);
   app.addSchema(res.IndexRelated);
   app.addSchema(res.Infobox);
+  app.addSchema(res.Notice);
   app.addSchema(res.Permissions);
   app.addSchema(res.Person);
   app.addSchema(res.PersonCharacter);

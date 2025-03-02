@@ -854,7 +854,7 @@ export async function setup(app: App) {
 
       await rateLimit(LimitAction.Group, auth.userID);
 
-      const now = DateTime.now();
+      const createdAt = DateTime.now().toUnixInteger();
 
       let postID = 0;
       await db.transaction(async (t) => {
@@ -873,29 +873,28 @@ export async function setup(app: App) {
           related: replyTo,
           content,
           state: CommentState.Normal,
-          createdAt: now.toUnixInteger(),
+          createdAt,
         });
         postID = insertId;
         const topicUpdate: Record<string, number> = {
           replies: count,
         };
         if (topic.state !== CommentState.AdminSilentTopic) {
-          topicUpdate.updatedAt = now.toUnixInteger();
+          topicUpdate.updatedAt = createdAt;
         }
         await t
           .update(schema.chiiGroupTopics)
           .set(topicUpdate)
           .where(op.eq(schema.chiiGroupTopics.id, topicID));
-      });
-
-      await Notify.create({
-        destUserID: notifyUserID,
-        sourceUserID: auth.userID,
-        now,
-        type: replyTo === 0 ? NotifyType.GroupTopicReply : NotifyType.GroupPostReply,
-        postID,
-        topicID: topic.id,
-        title: topic.title,
+        await Notify.create(t, {
+          destUserID: notifyUserID,
+          sourceUserID: auth.userID,
+          createdAt,
+          type: replyTo === 0 ? NotifyType.GroupTopicReply : NotifyType.GroupPostReply,
+          relatedID: postID,
+          mainID: topic.id,
+          title: topic.title,
+        });
       });
 
       return { id: postID };

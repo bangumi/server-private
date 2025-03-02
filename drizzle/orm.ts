@@ -42,3 +42,6 @@ export type IGroup = typeof schema.chiiGroups.$inferSelect;
 export type IGroupMember = typeof schema.chiiGroupMembers.$inferSelect;
 export type IGroupTopic = typeof schema.chiiGroupTopics.$inferSelect;
 export type IGroupPost = typeof schema.chiiGroupPosts.$inferSelect;
+
+export type INotify = typeof schema.chiiNotify.$inferSelect;
+export type INotifyField = typeof schema.chiiNotifyField.$inferSelect;

@@ -15,7 +15,8 @@ export function parseBlocklist(blocklist: string): number[] {
   return blocklist
     .split(',')
     .map((x) => x.trim())
-    .map((x) => intval(x));
+    .map((x) => intval(x))
+    .filter((x) => x !== 0);
 }
 
 /** Cached: Get friend ids of user(uid) */
