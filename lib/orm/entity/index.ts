@@ -1,7 +1,6 @@
 export * from './app.ts';
 export * from './character.ts';
 export * from './episode.ts';
-export * from './group.ts';
 export * from './notify.ts';
 export * from './person.ts';
 export * from './rev.ts';

@@ -12,10 +12,6 @@ import {
   Episode,
   EpisodeComment,
   EpRevision,
-  Group,
-  GroupMembers,
-  GroupPost,
-  GroupTopic,
   Notify,
   NotifyField,
   Person,
@@ -86,8 +82,6 @@ export const AppDataSource = new DataSource({
     Notify,
     NotifyField,
     SubjectImage,
-    Group,
-    GroupMembers,
     Episode,
     EpisodeComment,
     Person,
@@ -99,8 +93,6 @@ export const AppDataSource = new DataSource({
     SubjectPost,
     SubjectFields,
     SubjectRelation,
-    GroupTopic,
-    GroupPost,
     SubjectRev,
     SubjectInterest,
   ],
@@ -135,11 +127,6 @@ export const SubjectInterestRepo = AppDataSource.getRepository(SubjectInterest);
 export const NotifyRepo = AppDataSource.getRepository(Notify);
 export const NotifyFieldRepo = AppDataSource.getRepository(NotifyField);
 
-export const GroupRepo = AppDataSource.getRepository(Group);
-export const GroupTopicRepo = AppDataSource.getRepository(GroupTopic);
-export const GroupPostRepo = AppDataSource.getRepository(GroupPost);
-export const GroupMemberRepo = AppDataSource.getRepository(GroupMembers);
-
 export const repo = {
   UserField: UserFieldRepo,
   Subject: SubjectRepo,
@@ -153,8 +140,6 @@ export const repo = {
   PersonSubjects: PersonSubjectsRepo,
   Notify: NotifyRepo,
   NotifyField: NotifyFieldRepo,
-  Group: GroupRepo,
-  GroupMember: GroupMemberRepo,
 } as const;
 
 export interface Page {
