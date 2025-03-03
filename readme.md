@@ -28,6 +28,7 @@ fastify + Drizzle + mercurius
 (或者直接使用 corepack)
 
 ```shell
+npm i -g corepack@latest
 corepack enable
 corepack prepare --activate
 ```
