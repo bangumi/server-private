@@ -283,6 +283,7 @@ exports[`should build private api spec 1`] = `
             - createdAt
             - content
             - state
+            - reactions
           type: object
         - properties:
             replies:
@@ -323,6 +324,7 @@ exports[`should build private api spec 1`] = `
         - createdAt
         - content
         - state
+        - reactions
       type: object
     CreateContent:
       properties:
@@ -1338,6 +1340,7 @@ exports[`should build private api spec 1`] = `
         - createdAt
         - content
         - state
+        - reactions
       title: ReplyBase
       type: object
     SearchCharacter:
@@ -2034,6 +2037,7 @@ exports[`should build private api spec 1`] = `
         - rate
         - comment
         - updatedAt
+        - reactions
       title: SubjectInterestComment
       type: object
     SubjectNew:
@@ -2560,6 +2564,8 @@ exports[`should build private api spec 1`] = `
               - subject
               - comment
               - rate
+              - collectID
+              - reactions
             type: object
           type: array
         wiki:
@@ -3159,6 +3165,7 @@ paths:
                         - createdAt
                         - content
                         - state
+                        - reactions
                       type: object
                     - properties:
                         replies:
@@ -3655,6 +3662,7 @@ paths:
                         - createdAt
                         - content
                         - state
+                        - reactions
                       type: object
                     - properties:
                         replies:
@@ -4366,6 +4374,7 @@ paths:
                         - createdAt
                         - content
                         - state
+                        - reactions
                       type: object
                     - properties:
                         replies:
@@ -5819,6 +5828,7 @@ paths:
                         - createdAt
                         - content
                         - state
+                        - reactions
                       type: object
                     - properties:
                         replies:
@@ -7513,6 +7523,7 @@ paths:
                         - createdAt
                         - content
                         - state
+                        - reactions
                       type: object
                     - properties:
                         replies:

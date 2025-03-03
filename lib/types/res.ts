@@ -476,7 +476,7 @@ export const CommentBase = t.Object(
     content: t.String(),
     state: t.Integer(),
     user: t.Optional(Ref(SlimUser)),
-    reactions: t.Optional(t.Array(Ref(Reaction))),
+    reactions: t.Array(Ref(Reaction)),
   },
   {
     $id: 'CommentBase',
@@ -658,7 +658,7 @@ export const SubjectInterestComment = t.Object(
     rate: t.Integer(),
     comment: t.String(),
     updatedAt: t.Integer(),
-    reactions: t.Optional(t.Array(Ref(Reaction))),
+    reactions: t.Array(Ref(Reaction)),
   },
   { $id: 'SubjectInterestComment', title: 'SubjectInterestComment' },
 );
@@ -935,7 +935,7 @@ export const ReplyBase = t.Object(
     createdAt: t.Integer(),
     content: t.String(),
     state: t.Integer(),
-    reactions: t.Optional(t.Array(Ref(Reaction))),
+    reactions: t.Array(Ref(Reaction)),
   },
   { $id: 'ReplyBase', title: 'ReplyBase' },
 );
@@ -1026,8 +1026,8 @@ export const TimelineMemo = t.Object(
           subject: Ref(SlimSubject),
           comment: t.String(),
           rate: t.Number(),
-          collectID: t.Optional(t.Integer()),
-          reactions: t.Optional(t.Array(Ref(Reaction))),
+          collectID: t.Integer(),
+          reactions: t.Array(Ref(Reaction)),
         }),
       ),
     ),

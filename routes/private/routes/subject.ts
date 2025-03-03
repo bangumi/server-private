@@ -699,7 +699,7 @@ export async function setup(app: App) {
           type: d.type,
           rate: d.rate,
           comment: d.comment,
-          reactions: reactions[d.id],
+          reactions: reactions[d.id] ?? [],
           updatedAt: d.updatedAt,
         };
         comments.push(comment);

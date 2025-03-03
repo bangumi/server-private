@@ -53,7 +53,7 @@ export class CommentWithState {
         content: d.content,
         createdAt: d.createdAt,
         state: d.state,
-        reactions: allReactions[d.id],
+        reactions: allReactions[d.id] ?? [],
       };
       if (d.related === 0) {
         comments.push({ ...comment, replies: [], user });
@@ -225,6 +225,7 @@ export class CommentWithoutState {
         content: d.content,
         createdAt: d.createdAt,
         state: CommentState.Normal,
+        reactions: [],
       };
       if (d.related === 0) {
         comments.push({ ...comment, replies: [], user });

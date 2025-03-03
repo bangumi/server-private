@@ -55,6 +55,7 @@ Array [
     "creatorID": 382951,
     "id": 205402,
     "mainID": 1027,
+    "reactions": Array [],
     "relatedID": 0,
     "replies": Array [
       Object {
@@ -63,6 +64,7 @@ Array [
         "creatorID": 382951,
         "id": 242518,
         "mainID": 1027,
+        "reactions": Array [],
         "relatedID": 205402,
         "state": 0,
         "user": Object {
@@ -101,6 +103,7 @@ Array [
     "creatorID": 382951,
     "id": 215256,
     "mainID": 1027,
+    "reactions": Array [],
     "relatedID": 0,
     "replies": Array [],
     "state": 0,

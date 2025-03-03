@@ -155,6 +155,7 @@ Array [
     "creatorID": 287622,
     "id": 12345670,
     "mainID": 345911,
+    "reactions": Array [],
     "relatedID": 0,
     "replies": Array [
       Object {
@@ -163,6 +164,7 @@ Array [
         "creatorID": 287622,
         "id": 12345671,
         "mainID": 345911,
+        "reactions": Array [],
         "relatedID": 12345670,
         "state": 0,
         "user": Object {
@@ -185,6 +187,7 @@ Array [
         "creatorID": 287622,
         "id": 12345672,
         "mainID": 345911,
+        "reactions": Array [],
         "relatedID": 12345670,
         "state": 0,
         "user": Object {

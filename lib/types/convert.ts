@@ -575,6 +575,7 @@ export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReplyBase {
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
+    reactions: [],
   };
 }
 
@@ -647,5 +648,6 @@ export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
     state: reply.state,
     createdAt: reply.createdAt,
     creatorID: reply.uid,
+    reactions: [],
   };
 }

@@ -113,7 +113,8 @@ export async function parseTimelineMemo(
             subject,
             comment: lo.unescape(v.collect_comment),
             rate: v.collect_rate,
-            collectID: v.collect_id,
+            collectID: v.collect_id ?? 0,
+            reactions: [],
           });
         }
       } else {
@@ -124,7 +125,8 @@ export async function parseTimelineMemo(
             subject,
             comment: lo.unescape(info.collect_comment),
             rate: info.collect_rate,
-            collectID: info.collect_id,
+            collectID: info.collect_id ?? 0,
+            reactions: [],
           });
         }
       }
@@ -383,6 +385,9 @@ export async function fetchTimelineByIDs(
       continue;
     }
     if (subject.comment && subject.collectID) {
+      if (subject.collectID === 0) {
+        continue;
+      }
       collectIDs[Number(tid)] = subject.collectID;
     }
   }
