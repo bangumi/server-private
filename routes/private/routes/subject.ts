@@ -5,13 +5,7 @@ import { db, op, type orm, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
-import {
-  addReaction,
-  deleteReaction,
-  fetchReactionsByMainID,
-  fetchReactionsByRelatedIDs,
-  LikeType,
-} from '@app/lib/like';
+import { LikeType, Reaction } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
@@ -692,7 +686,7 @@ export async function setup(app: App) {
       const uids = data.map((d) => d.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const collectIDs = data.map((d) => d.id);
-      const reactions = await fetchReactionsByRelatedIDs(LikeType.SubjectCollect, collectIDs);
+      const reactions = await Reaction.fetchByRelatedIDs(LikeType.SubjectCollect, collectIDs);
       const comments: res.ISubjectInterestComment[] = [];
       for (const d of data) {
         const user = users[d.uid];
@@ -900,7 +894,7 @@ export async function setup(app: App) {
       if (!interest) {
         throw new NotFoundError(`subject interest ${collectID}`);
       }
-      await addReaction({
+      await Reaction.add({
         type: LikeType.SubjectCollect,
         mid: interest.sid,
         rid: collectID,
@@ -929,7 +923,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a subject collect')],
     },
     async ({ auth, params: { collectID } }) => {
-      await deleteReaction({
+      await Reaction.delete({
         type: LikeType.SubjectCollect,
         rid: collectID,
         uid: auth.userID,
@@ -1184,7 +1178,7 @@ export async function setup(app: App) {
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await fetchReactionsByMainID(topicID, LikeType.SubjectReply);
+      const reactions = await Reaction.fetchByMainID(topicID, LikeType.SubjectReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
@@ -1386,7 +1380,7 @@ export async function setup(app: App) {
       if (!post) {
         throw new NotFoundError(`post ${postID}`);
       }
-      await addReaction({
+      await Reaction.add({
         type: LikeType.SubjectReply,
         mid: post.mid,
         rid: postID,
@@ -1415,7 +1409,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a subject post')],
     },
     async ({ auth, params: { postID } }) => {
-      await deleteReaction({
+      await Reaction.delete({
         type: LikeType.SubjectReply,
         rid: postID,
         uid: auth.userID,

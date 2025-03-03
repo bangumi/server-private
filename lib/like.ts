@@ -19,7 +19,7 @@ export enum LikeType {
   SubjectCollect = 40,
 }
 
-export const ALLOWED_REACTION_TYPES: ReadonlySet<number> = Object.freeze(
+const ALLOWED_REACTION_TYPES: ReadonlySet<number> = Object.freeze(
   new Set([
     LikeType.GroupReply,
     LikeType.SubjectReply,
@@ -28,23 +28,8 @@ export const ALLOWED_REACTION_TYPES: ReadonlySet<number> = Object.freeze(
   ]),
 );
 
-export const REACTIONS: ReadonlySet<number> = Object.freeze(
+const HIDDEN_REACTIONS: ReadonlySet<number> = Object.freeze(
   new Set([
-    0, // bgm67
-    79, // bgm63
-    54, // bgm38
-    140, // bgm124
-
-    62, // bgm46
-    122, // bgm106
-    104, // bgm88
-    80, // bgm64
-
-    141, // bgm125
-    88, // bgm72
-    85, // bgm69
-    90, // bgm74
-
     // hidden
     53, // bgm37
     92, // bgm76
@@ -59,7 +44,7 @@ export const REACTIONS: ReadonlySet<number> = Object.freeze(
   ]),
 );
 
-export const ALLOWED_SUBJECT_COLLECT_REACTIONS: ReadonlySet<number> = Object.freeze(
+const ALLOWED_SUBJECT_COLLECT_REACTIONS: ReadonlySet<number> = Object.freeze(
   new Set([
     0, // bgm67
     104, // bgm88
@@ -73,7 +58,7 @@ export const ALLOWED_SUBJECT_COLLECT_REACTIONS: ReadonlySet<number> = Object.fre
   ]),
 );
 
-export const ALLOWED_COMMON_REACTIONS: ReadonlySet<number> = Object.freeze(
+const ALLOWED_COMMON_REACTIONS: ReadonlySet<number> = Object.freeze(
   new Set([
     0, // bgm67
     79, // bgm63
@@ -92,7 +77,7 @@ export const ALLOWED_COMMON_REACTIONS: ReadonlySet<number> = Object.freeze(
   ]),
 );
 
-export interface NewReaction {
+interface NewReaction {
   type: LikeType;
   /** TopicID, SubjectID ... */
   mid: number;
@@ -102,7 +87,7 @@ export interface NewReaction {
   value: number;
 }
 
-export interface DeleteReaction {
+interface DeleteReaction {
   type: LikeType;
   rid: number;
   uid: number;
@@ -124,7 +109,7 @@ function validateReaction(type: LikeType, value: number): boolean {
   }
 }
 
-export async function fetchReactionsByMainID(
+async function fetchReactionsByMainID(
   mainID: number,
   type: LikeType,
 ): Promise<Record<number, res.IReaction[]>> {
@@ -161,7 +146,7 @@ export async function fetchReactionsByMainID(
   });
 }
 
-export async function fetchReactionsByRelatedIDs(
+async function fetchReactionsByRelatedIDs(
   type: LikeType,
   relatedIDs: number[],
 ): Promise<Record<number, res.IReaction[]>> {
@@ -194,7 +179,7 @@ export async function fetchReactionsByRelatedIDs(
   });
 }
 
-export async function addReaction(reaction: NewReaction) {
+async function addReaction(reaction: NewReaction) {
   if (!validateReaction(reaction.type, reaction.value)) {
     throw new BadRequestError('Invalid reaction');
   }
@@ -242,7 +227,7 @@ export async function addReaction(reaction: NewReaction) {
   });
 }
 
-export async function deleteReaction(reaction: DeleteReaction) {
+async function deleteReaction(reaction: DeleteReaction) {
   await db.transaction(async (tx) => {
     const [previous] = await tx
       .select()
@@ -269,3 +254,10 @@ export async function deleteReaction(reaction: DeleteReaction) {
     }
   });
 }
+
+export const Reaction = {
+  fetchByMainID: fetchReactionsByMainID,
+  fetchByRelatedIDs: fetchReactionsByRelatedIDs,
+  add: addReaction,
+  delete: deleteReaction,
+};

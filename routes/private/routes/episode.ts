@@ -3,7 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op, schema } from '@app/drizzle';
 import { CommentWithState } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
-import { addReaction, deleteReaction, LikeType } from '@app/lib/like';
+import { LikeType, Reaction } from '@app/lib/like';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/utils';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -132,7 +132,7 @@ export async function setup(app: App) {
       if (!comment) {
         throw new NotFoundError(`comment ${commentID}`);
       }
-      await addReaction({
+      await Reaction.add({
         type: LikeType.EpisodeReply,
         mid: comment.mid,
         rid: commentID,
@@ -161,7 +161,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a episode comment')],
     },
     async ({ auth, params: { commentID } }) => {
-      await deleteReaction({
+      await Reaction.delete({
         type: LikeType.EpisodeReply,
         rid: commentID,
         uid: auth.userID,

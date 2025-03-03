@@ -12,7 +12,7 @@ import {
 } from '@app/lib/error.ts';
 import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
 import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
-import { addReaction, deleteReaction, fetchReactionsByMainID, LikeType } from '@app/lib/like';
+import { LikeType, Reaction } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
@@ -496,7 +496,7 @@ export async function setup(app: App) {
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await fetchReactionsByMainID(topicID, LikeType.GroupReply);
+      const reactions = await Reaction.fetchByMainID(topicID, LikeType.GroupReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
@@ -698,7 +698,7 @@ export async function setup(app: App) {
       if (!post) {
         throw new NotFoundError(`post ${postID}`);
       }
-      await addReaction({
+      await Reaction.add({
         type: LikeType.GroupReply,
         mid: post.mid,
         rid: postID,
@@ -727,7 +727,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a group post')],
     },
     async ({ auth, params: { postID } }) => {
-      await deleteReaction({
+      await Reaction.delete({
         type: LikeType.GroupReply,
         rid: postID,
         uid: auth.userID,
