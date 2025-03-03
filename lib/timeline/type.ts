@@ -8,11 +8,6 @@ export enum TimelineSource {
   Next = 6,
 }
 
-export enum TimelineMode {
-  All = 'all',
-  Friends = 'friends',
-}
-
 /** 时间线分类 */
 export enum TimelineCat {
   /**

@@ -103,7 +103,7 @@ export function setup(app: App) {
               ),
               op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
               op.eq(schema.chiiLikes.uid, auth.userID),
-              op.eq(schema.chiiLikes.deleted, 0),
+              op.eq(schema.chiiLikes.deleted, false),
             ),
           ),
         (x) => x.relatedID,
@@ -258,7 +258,7 @@ export function setup(app: App) {
         relatedID: imageID,
         uid: auth.userID,
         createdAt: DateTime.now().toUnixInteger(),
-        deleted: 0,
+        deleted: false,
       });
 
       await Subject.onSubjectVote(subjectID);
@@ -291,13 +291,13 @@ export function setup(app: App) {
     async ({ params: { subjectID, imageID }, auth }) => {
       const [result] = await db
         .update(schema.chiiLikes)
-        .set({ deleted: 1 })
+        .set({ deleted: true })
         .where(
           op.and(
             op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
             op.eq(schema.chiiLikes.uid, auth.userID),
             op.eq(schema.chiiLikes.relatedID, imageID),
-            op.eq(schema.chiiLikes.deleted, 0),
+            op.eq(schema.chiiLikes.deleted, false),
           ),
         );
 

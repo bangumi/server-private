@@ -5,7 +5,7 @@ import type { IAuth } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
-import { fetchTopicReactions, LikeType } from '@app/lib/like.ts';
+import { LikeType, Reaction } from '@app/lib/like.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -41,7 +41,7 @@ export class CommentWithState {
     const replies: Record<number, res.ICommentBase[]> = {};
     let allReactions: Record<number, res.IReaction[]> = {};
     if (this.table === schema.chiiEpComments) {
-      allReactions = await fetchTopicReactions(mainID, LikeType.EpReply);
+      allReactions = await Reaction.fetchByMainID(mainID, LikeType.EpisodeReply);
     }
     for (const d of data) {
       const user = users[d.uid];

@@ -592,6 +592,21 @@ exports[`should build private api spec 1`] = `
         - message
         - statusCode
       type: object
+    FilterMode:
+      description: |-
+        过滤模式
+          - all = 全站
+          - friends = 好友
+      enum:
+        - all
+        - friends
+      type: string
+      x-enum-varnames:
+        - All
+        - Friends
+      x-ms-enum:
+        modelAsString: true
+        name: FilterMode
     Friend:
       properties:
         createdAt:
@@ -1573,6 +1588,8 @@ exports[`should build private api spec 1`] = `
       properties:
         comment:
           type: string
+        id:
+          type: integer
         rate:
           type: integer
         tags:
@@ -1584,6 +1601,7 @@ exports[`should build private api spec 1`] = `
         updatedAt:
           type: integer
       required:
+        - id
         - rate
         - type
         - comment
@@ -1858,6 +1876,17 @@ exports[`should build private api spec 1`] = `
         - type
         - order
       type: object
+    SubjectCollect:
+      properties:
+        interest:
+          $ref: '#/components/schemas/SlimSubjectInterest'
+        user:
+          $ref: '#/components/schemas/SlimUser'
+      required:
+        - user
+        - interest
+      title: SubjectCollect
+      type: object
     SubjectCollection:
       additionalProperties:
         type: integer
@@ -1952,6 +1981,8 @@ exports[`should build private api spec 1`] = `
           type: string
         epStatus:
           type: integer
+        id:
+          type: integer
         private:
           type: boolean
         rate:
@@ -1967,6 +1998,7 @@ exports[`should build private api spec 1`] = `
         volStatus:
           type: integer
       required:
+        - id
         - rate
         - type
         - comment
@@ -2431,21 +2463,6 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: TimelineCat
-    TimelineFilterMode:
-      description: |-
-        时间线过滤模式
-          - all = 全站
-          - friends = 好友
-      enum:
-        - all
-        - friends
-      type: string
-      x-enum-varnames:
-        - All
-        - Friends
-      x-ms-enum:
-        modelAsString: true
-        name: TimelineFilterMode
     TimelineMemo:
       properties:
         blog:
@@ -4167,6 +4184,76 @@ paths:
       summary: 编辑条目的剧集吐槽
       tags:
         - episode
+  /p1/episodes/-/comments/{commentID}/like:
+    delete:
+      operationId: unlikeEpisodeComment
+      parameters:
+        - in: path
+          name: commentID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消条目的剧集吐槽点赞
+      tags:
+        - episode
+    put:
+      operationId: likeEpisodeComment
+      parameters:
+        - in: path
+          name: commentID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: integer
+              required:
+                - value
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 给条目的剧集吐槽点赞
+      tags:
+        - episode
   /p1/episodes/{episodeID}:
     get:
       operationId: getEpisode
@@ -4610,6 +4697,76 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 编辑小组话题回复
+      tags:
+        - topic
+  /p1/groups/-/posts/{postID}/like:
+    delete:
+      operationId: unlikeGroupPost
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消小组话题回复点赞
+      tags:
+        - topic
+    post:
+      operationId: likeGroupPost
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: integer
+              required:
+                - value
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 给小组话题回复点赞
       tags:
         - topic
   /p1/groups/-/topics:
@@ -6008,6 +6165,76 @@ paths:
       summary: 获取条目列表
       tags:
         - subject
+  /p1/subjects/-/collects/{collectID}/like:
+    delete:
+      operationId: unlikeSubjectCollect
+      parameters:
+        - in: path
+          name: collectID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消条目收藏点赞
+      tags:
+        - subject
+    put:
+      operationId: likeSubjectCollect
+      parameters:
+        - in: path
+          name: collectID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: integer
+              required:
+                - value
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 给条目收藏点赞
+      tags:
+        - subject
   /p1/subjects/-/posts/{postID}:
     delete:
       operationId: deleteSubjectPost
@@ -6095,6 +6322,76 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 编辑条目讨论回复
+      tags:
+        - topic
+  /p1/subjects/-/posts/{postID}/like:
+    delete:
+      operationId: unlikeSubjectPost
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消条目讨论回复点赞
+      tags:
+        - topic
+    put:
+      operationId: likeSubjectPost
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: integer
+              required:
+                - value
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 给条目讨论回复点赞
       tags:
         - topic
   /p1/subjects/-/topics:
@@ -6356,6 +6653,74 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取条目的角色
+      tags:
+        - subject
+  /p1/subjects/{subjectID}/collects:
+    get:
+      operationId: getSubjectCollects
+      parameters:
+        - in: query
+          name: type
+          required: false
+          schema:
+            $ref: '#/components/schemas/CollectionType'
+        - description: 默认为 all, 未登录或没有好友时始终为 all
+          in: query
+          name: mode
+          required: false
+          schema:
+            $ref: '#/components/schemas/FilterMode'
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/SubjectCollect'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目的收藏用户
       tags:
         - subject
   /p1/subjects/{subjectID}/comments:
@@ -6893,7 +7258,7 @@ paths:
           name: mode
           required: false
           schema:
-            $ref: '#/components/schemas/TimelineFilterMode'
+            $ref: '#/components/schemas/FilterMode'
         - description: min 1, max 20
           in: query
           name: limit

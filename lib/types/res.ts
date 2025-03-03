@@ -348,6 +348,7 @@ export const SubjectImages = t.Object(
 export type ISubjectInterest = Static<typeof SubjectInterest>;
 export const SubjectInterest = t.Object(
   {
+    id: t.Integer(),
     rate: t.Integer(),
     type: Ref(CollectionType),
     comment: t.String(),
@@ -363,6 +364,7 @@ export const SubjectInterest = t.Object(
 export type ISlimSubjectInterest = Static<typeof SlimSubjectInterest>;
 export const SlimSubjectInterest = t.Object(
   {
+    id: t.Integer(),
     rate: t.Integer(),
     type: Ref(CollectionType),
     comment: t.String(),
@@ -370,6 +372,15 @@ export const SlimSubjectInterest = t.Object(
     updatedAt: t.Integer(),
   },
   { $id: 'SlimSubjectInterest', title: 'SlimSubjectInterest' },
+);
+
+export type ISubjectCollect = Static<typeof SubjectCollect>;
+export const SubjectCollect = t.Object(
+  {
+    user: Ref(SlimUser),
+    interest: Ref(SlimSubjectInterest),
+  },
+  { $id: 'SubjectCollect', title: 'SubjectCollect' },
 );
 
 export type ISubject = Static<typeof Subject>;

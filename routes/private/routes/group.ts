@@ -12,8 +12,7 @@ import {
 } from '@app/lib/error.ts';
 import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
 import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
-import { fetchTopicReactions } from '@app/lib/like';
-import { LikeType } from '@app/lib/like';
+import { LikeType, Reaction } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
@@ -497,7 +496,7 @@ export async function setup(app: App) {
       const uids = replies.map((x) => x.uid);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await fetchTopicReactions(topicID, LikeType.GroupReply);
+      const reactions = await Reaction.fetchByMainID(topicID, LikeType.GroupReply);
       for (const x of replies.filter((x) => x.related !== 0)) {
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
@@ -667,6 +666,73 @@ export async function setup(app: App) {
           replies: topic.replies,
         },
       };
+    },
+  );
+
+  app.post(
+    '/groups/-/posts/:postID/like',
+    {
+      schema: {
+        summary: '给小组话题回复点赞',
+        operationId: 'likeGroupPost',
+        tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        body: t.Object({
+          value: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a group post')],
+    },
+    async ({ auth, params: { postID }, body: { value } }) => {
+      const [post] = await db
+        .select({ mid: schema.chiiGroupPosts.mid })
+        .from(schema.chiiGroupPosts)
+        .where(op.eq(schema.chiiGroupPosts.id, postID))
+        .limit(1);
+      if (!post) {
+        throw new NotFoundError(`post ${postID}`);
+      }
+      await Reaction.add({
+        type: LikeType.GroupReply,
+        mid: post.mid,
+        rid: postID,
+        uid: auth.userID,
+        value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/groups/-/posts/:postID/like',
+    {
+      schema: {
+        summary: '取消小组话题回复点赞',
+        operationId: 'unlikeGroupPost',
+        tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a group post')],
+    },
+    async ({ auth, params: { postID } }) => {
+      await Reaction.delete({
+        type: LikeType.GroupReply,
+        rid: postID,
+        uid: auth.userID,
+      });
+      return {};
     },
   );
 

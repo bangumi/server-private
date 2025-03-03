@@ -18,15 +18,20 @@ const nsfwDescription = `无权限的用户会直接忽略此字段，不会返�
 \`null\` 或者 \`true\` 会返回包含 R18 的所有搜索结果。
 \`false\` 只会返回非 R18 条目。`;
 
-export const TimelineFilterMode = t.String({
-  $id: 'TimelineFilterMode',
+export enum IFilterMode {
+  All = 'all',
+  Friends = 'friends',
+}
+
+export const FilterMode = t.String({
+  $id: 'FilterMode',
   enum: ['all', 'friends'],
   'x-ms-enum': {
-    name: 'TimelineFilterMode',
+    name: 'FilterMode',
     modelAsString: true,
   },
   'x-enum-varnames': ['All', 'Friends'],
-  description: `时间线过滤模式
+  description: `过滤模式
   - all = 全站
   - friends = 好友`,
 });
