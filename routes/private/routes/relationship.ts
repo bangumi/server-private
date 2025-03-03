@@ -78,6 +78,7 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Object({}),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('add friend')],
@@ -191,6 +192,7 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Object({}),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('remove friend')],
@@ -305,6 +307,7 @@ export async function setup(app: App) {
           200: t.Object({
             blocklist: t.Array(t.Integer()),
           }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('add user to blocklist')],
@@ -350,6 +353,7 @@ export async function setup(app: App) {
           200: t.Object({
             blocklist: t.Array(t.Integer()),
           }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('remove user from blocklist')],

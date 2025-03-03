@@ -188,6 +188,7 @@ export async function setup(app: App) {
           200: t.Object({
             id: t.Integer({ description: 'new comment id' }),
           }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],

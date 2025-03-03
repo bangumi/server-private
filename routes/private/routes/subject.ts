@@ -881,6 +881,7 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Object({}),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('liking a subject collect')],
@@ -1078,6 +1079,7 @@ export async function setup(app: App) {
           200: t.Object({
             id: t.Integer({ description: 'new topic id' }),
           }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('creating a topic'), requireTurnstileToken()],
@@ -1367,6 +1369,7 @@ export async function setup(app: App) {
         }),
         response: {
           200: t.Object({}),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('liking a subject post')],
@@ -1549,6 +1552,7 @@ export async function setup(app: App) {
         body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({ id: t.Integer() }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],

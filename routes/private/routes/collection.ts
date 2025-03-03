@@ -245,6 +245,7 @@ export async function setup(app: App) {
         body: req.Ref(req.CollectSubject),
         response: {
           200: t.Object({}),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('update subject collection')],
