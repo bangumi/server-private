@@ -24,9 +24,7 @@ interface LimitRule {
 
 const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   app: { limit: 5, durationMinutes: 10 },
-  ep: { limit: 10, durationMinutes: 10 },
   blog: { limit: 3, durationMinutes: 30 },
-  index: { limit: 3, durationMinutes: 30 },
   group: { limit: 3, durationMinutes: 30 },
   doujin: { limit: 3, durationMinutes: 30 },
   event: { limit: 1, durationMinutes: 60 },
@@ -34,22 +32,38 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   club_topics: { limit: 1, durationMinutes: 30 },
 
   /**
-   * 修改/添加条目收藏
+   * 修改/添加收藏
    *
-   * 1分钟 3次
+   * 1 分钟 3 次
    */
   subject: { limit: 3, durationMinutes: 1 },
+  character: { limit: 3, durationMinutes: 1 },
+  person: { limit: 3, durationMinutes: 1 },
+  index: { limit: 3, durationMinutes: 1 },
+
+  /**
+   * 更新章节进度
+   *
+   * 10 分钟 10 次
+   */
+  episode: { limit: 10, durationMinutes: 10 },
 
   /**
    * 发送时间线吐槽
    *
-   * 1分钟 3次
+   * 1 分钟 3 次
    */
   timeline: { limit: 3, durationMinutes: 1 },
 
+  /**
+   * 点赞
+   *
+   * 1 分钟 5 次
+   */
+  like: { limit: 5, durationMinutes: 1 },
+
   crt_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   prsn_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
-  like: { limit: 2, durationMinutes: 1 },
   comment: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   relationship: { limit: 2, durationMinutes: 1, validate: 7, hibernate: 5 },
 };

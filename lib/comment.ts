@@ -105,12 +105,12 @@ export class CommentWithState {
       state: CommentState.Normal,
     };
     let insertId = 0;
-    await db.transaction(async (tx) => {
-      const [result] = await tx.insert(this.table).values(reply);
+    await db.transaction(async (t) => {
+      const [result] = await t.insert(this.table).values(reply);
       insertId = result.insertId;
       switch (this.table) {
         case schema.chiiEpComments: {
-          await tx
+          await t
             .update(schema.chiiEpisodes)
             .set({
               comment: incr(schema.chiiEpisodes.comment),
@@ -121,7 +121,7 @@ export class CommentWithState {
           break;
         }
         case schema.chiiCrtComments: {
-          await tx
+          await t
             .update(schema.chiiCharacters)
             .set({
               comment: incr(schema.chiiCharacters.comment),
@@ -132,7 +132,7 @@ export class CommentWithState {
           break;
         }
         case schema.chiiPrsnComments: {
-          await tx
+          await t
             .update(schema.chiiPersons)
             .set({
               comment: incr(schema.chiiPersons.comment),
@@ -272,12 +272,12 @@ export class CommentWithoutState {
       createdAt: now,
     };
     let insertId = 0;
-    await db.transaction(async (tx) => {
-      const [result] = await tx.insert(this.table).values(reply);
+    await db.transaction(async (t) => {
+      const [result] = await t.insert(this.table).values(reply);
       insertId = result.insertId;
       switch (this.table) {
         case schema.chiiIndexComments: {
-          await tx
+          await t
             .update(schema.chiiIndexes)
             .set({
               replies: incr(schema.chiiIndexes.replies),
@@ -288,7 +288,7 @@ export class CommentWithoutState {
           break;
         }
         case schema.chiiBlogComments: {
-          await tx
+          await t
             .update(schema.chiiBlogEntries)
             .set({
               replies: incr(schema.chiiBlogEntries.replies),
@@ -299,7 +299,7 @@ export class CommentWithoutState {
           break;
         }
         case schema.chiiTimelineComments: {
-          await tx
+          await t
             .update(schema.chiiTimeline)
             .set({
               replies: incr(schema.chiiTimeline.replies),

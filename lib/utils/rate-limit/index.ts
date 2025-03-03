@@ -4,21 +4,23 @@ import { RedisLimiter } from '@app/lib/utils/rate-limit/redis.ts';
 
 export const enum LimitAction {
   App = 'app',
-  Ep = 'ep',
   Blog = 'blog',
-  Index = 'index',
-  Group = 'group',
+  Character = 'character',
+  ClubTopics = 'club_topics',
+  Comment = 'comment',
+  CrtPost = 'crt_post',
   Doujin = 'doujin',
+  Episode = 'episode',
   Event = 'event',
   EventTopics = 'event_topics',
-  Subject = 'subject',
-  ClubTopics = 'club_topics',
-  CrtPost = 'crt_post',
-  PrsnPost = 'prsn_post',
+  Group = 'group',
+  Index = 'index',
   Like = 'like',
-  Timeline = 'timeline',
-  Comment = 'comment',
+  Person = 'person',
+  PrsnPost = 'prsn_post',
   Relationship = 'relationship',
+  Subject = 'subject',
+  Timeline = 'timeline',
 }
 
 export interface Result {

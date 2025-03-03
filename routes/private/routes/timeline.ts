@@ -144,12 +144,12 @@ export async function setup(app: App) {
       if (timeline.uid !== auth.userID) {
         throw new NotAllowedError('delete timeline');
       }
-      await db.transaction(async (tx) => {
-        await tx
+      await db.transaction(async (t) => {
+        await t
           .delete(schema.chiiTimeline)
           .where(op.eq(schema.chiiTimeline.id, timelineID))
           .limit(1);
-        await tx
+        await t
           .delete(schema.chiiTimelineComments)
           .where(op.eq(schema.chiiTimelineComments.mid, timelineID));
       });

@@ -177,8 +177,8 @@ export const Reaction = {
       throw new BadRequestError('Invalid reaction');
     }
     await rateLimit(LimitAction.Like, reaction.uid);
-    await db.transaction(async (tx) => {
-      const [previous] = await tx
+    await db.transaction(async (t) => {
+      const [previous] = await t
         .select()
         .from(schema.chiiLikes)
         .where(
@@ -194,7 +194,7 @@ export const Reaction = {
           return;
         } else {
           // 更新
-          await tx
+          await t
             .update(schema.chiiLikes)
             .set({ deleted: false, value: reaction.value })
             .where(
@@ -207,7 +207,7 @@ export const Reaction = {
         }
       } else {
         // 新增
-        await tx.insert(schema.chiiLikes).values({
+        await t.insert(schema.chiiLikes).values({
           type: reaction.type,
           mainID: reaction.mid,
           relatedID: reaction.rid,
@@ -221,8 +221,8 @@ export const Reaction = {
   },
 
   async delete(reaction: DeleteReaction) {
-    await db.transaction(async (tx) => {
-      const [previous] = await tx
+    await db.transaction(async (t) => {
+      const [previous] = await t
         .select()
         .from(schema.chiiLikes)
         .where(
@@ -234,7 +234,7 @@ export const Reaction = {
         )
         .limit(1);
       if (previous && !previous.deleted) {
-        await tx
+        await t
           .update(schema.chiiLikes)
           .set({ deleted: true })
           .where(
