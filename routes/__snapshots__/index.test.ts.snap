@@ -3755,20 +3755,6 @@ paths:
       responses:
         '200':
           description: 没有返回值
-        '401':
-          content:
-            application/json:
-              examples:
-                NeedLoginError:
-                  value:
-                    code: NEED_LOGIN
-                    error: Unauthorized
-                    message: you need to login before marking notifications as read
-                    statusCode: 401
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 未登录
-          description: 未登录
         '500':
           content:
             application/json:
@@ -5732,20 +5718,6 @@ paths:
                   - total
                 type: object
           description: Default Response
-        '401':
-          content:
-            application/json:
-              examples:
-                NeedLoginError:
-                  value:
-                    code: NEED_LOGIN
-                    error: Unauthorized
-                    message: you need to login before getting notifications
-                    statusCode: 401
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-                description: 未登录
-          description: 未登录
         '500':
           content:
             application/json:

@@ -83,6 +83,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Notice)),
         },
       },
+      preHandler: [requireLogin('list notice')],
     },
     async ({ auth, query: { limit = 20, unread } }) => {
       const data = await Notify.list(auth.userID, { limit, unread });
@@ -129,17 +130,10 @@ export async function setup(app: App) {
           },
         ),
         response: {
-          200: t.Null({ description: '没有返回值' }),
-          401: res.Ref(res.Error, {
-            description: '未登录',
-            'x-examples': {
-              NeedLoginError: {
-                value: res.formatError(new NeedLoginError('marking notifications as read')),
-              },
-            },
-          }),
+          200: t.Object({}),
         },
       },
+      preHandler: [requireLogin('clear notice')],
     },
     async ({ auth: { userID }, body: { id } }) => {
       if (id?.length === 0) {
@@ -147,6 +141,7 @@ export async function setup(app: App) {
       }
 
       await Notify.markAllAsRead(userID, id);
+      return {};
     },
   );
 
