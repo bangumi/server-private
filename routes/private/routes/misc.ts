@@ -1,4 +1,4 @@
-import { type Static, Type as t } from '@sinclair/typebox';
+import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
 
@@ -40,7 +40,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('get current user')],
     },
-    async function ({ auth }): Promise<Static<typeof res.Profile>> {
+    async function ({ auth }): Promise<res.IProfile> {
       const [u] = await db
         .select()
         .from(schema.chiiUsers)
@@ -81,14 +81,6 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(res.Ref(res.Notice)),
-          401: res.Ref(res.Error, {
-            description: '未登录',
-            'x-examples': {
-              NeedLoginError: {
-                value: res.formatError(new NeedLoginError('getting notifications')),
-              },
-            },
-          }),
         },
       },
     },
