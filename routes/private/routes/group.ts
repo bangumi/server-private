@@ -670,7 +670,7 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
+  app.put(
     '/groups/-/posts/:postID/like',
     {
       schema: {
