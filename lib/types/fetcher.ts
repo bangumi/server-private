@@ -449,6 +449,7 @@ export async function fetchSubjectInterest(
     .from(schema.chiiSubjectInterests)
     .where(
       op.and(
+        op.ne(schema.chiiSubjectInterests.type, 0),
         op.eq(schema.chiiSubjectInterests.uid, userID),
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
       ),
