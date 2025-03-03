@@ -10,6 +10,7 @@ import { PersonCat } from '@app/lib/person/type.ts';
 import {
   CollectionPrivacy,
   CollectionType,
+  EpisodeCollectionStatus,
   getCollectionTypeField,
   SubjectType,
 } from '@app/lib/subject/type.ts';
@@ -475,6 +476,13 @@ export async function setup(app: App) {
           throw new BadRequestError('subject not supported for progress');
         }
       }
+      if (type === undefined) {
+        if (batch) {
+          type = EpisodeCollectionStatus.Done;
+        } else {
+          throw new BadRequestError('type is required on single update');
+        }
+      }
 
       const now = DateTime.now().toUnixInteger();
       await db.transaction(async (t) => {
@@ -516,9 +524,6 @@ export async function setup(app: App) {
             false,
           );
         } else {
-          if (type === undefined) {
-            throw new BadRequestError('type is required on single update');
-          }
           watchedEpisodes = await updateSubjectEpisodeProgress(
             t,
             auth.userID,
@@ -560,9 +565,6 @@ export async function setup(app: App) {
             source: TimelineSource.Next,
           });
         } else {
-          if (!type) {
-            throw new BadRequestError('type is required on single update');
-          }
           await AsyncTimelineWriter.progressEpisode({
             uid: auth.userID,
             subject: {
