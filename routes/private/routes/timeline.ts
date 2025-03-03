@@ -91,6 +91,7 @@ export async function setup(app: App) {
         body: t.Intersect([req.Ref(req.CreateContent), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({ id: t.Integer() }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('posting a say'), requireTurnstileToken()],
@@ -198,6 +199,7 @@ export async function setup(app: App) {
         body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({ id: t.Integer() }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
