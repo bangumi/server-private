@@ -335,6 +335,9 @@ export async function setup(app: App) {
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
             await updateSubjectCollection(t, subjectID, type, oldType);
+            if (type === CollectionType.Collect && progress) {
+              await completeSubjectProgress(t, auth.userID, subject, toUpdate);
+            }
           }
           if (oldRate !== rate) {
             needUpdateRate = true;
@@ -349,9 +352,6 @@ export async function setup(app: App) {
           }
           if (tags !== undefined) {
             toUpdate.tag = tags.join(' ');
-          }
-          if (type === CollectionType.Collect && progress) {
-            await completeSubjectProgress(t, auth.userID, subject, type, toUpdate);
           }
           if (Object.keys(toUpdate).length > 0) {
             await t
@@ -395,7 +395,7 @@ export async function setup(app: App) {
             privacy,
           };
           if (type === CollectionType.Collect && progress) {
-            await completeSubjectProgress(t, auth.userID, subject, type, toInsert);
+            await completeSubjectProgress(t, auth.userID, subject, toInsert);
           }
           const field = getCollectionTypeField(type);
           toInsert[`${field}Dateline`] = now;

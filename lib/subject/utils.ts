@@ -224,7 +224,6 @@ export async function completeSubjectProgress(
   t: Txn,
   userID: number,
   subject: orm.ISubject,
-  type: CollectionType,
   interest: Partial<orm.ISubjectInterest>,
 ) {
   if (subject.eps > 0) {
