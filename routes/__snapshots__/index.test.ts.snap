@@ -3754,7 +3754,12 @@ paths:
               type: object
       responses:
         '200':
-          description: 没有返回值
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
         '500':
           content:
             application/json:
