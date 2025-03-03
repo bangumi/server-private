@@ -9,7 +9,7 @@ import { LikeType, Reaction } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
-import { CollectionPrivacy } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, EpisodeCollectionStatus } from '@app/lib/subject/type.ts';
 import { getEpStatus } from '@app/lib/subject/utils';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
@@ -221,7 +221,7 @@ export async function setup(app: App) {
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, subjectID);
         for (const ep of episodes) {
-          ep.status = epStatus[ep.id]?.type;
+          ep.status = epStatus[ep.id]?.type ?? EpisodeCollectionStatus.None;
         }
       }
       return {
