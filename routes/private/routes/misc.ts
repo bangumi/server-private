@@ -1,4 +1,4 @@
-import { type Static, Type as t } from '@sinclair/typebox';
+import { Type as t } from '@sinclair/typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
 
@@ -13,7 +13,6 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
-import { fetchFriends, parseBlocklist } from '@app/lib/user/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
@@ -41,7 +40,7 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('get current user')],
     },
-    async function ({ auth }): Promise<Static<typeof res.Profile>> {
+    async function ({ auth }): Promise<res.IProfile> {
       const [u] = await db
         .select()
         .from(schema.chiiUsers)
@@ -51,7 +50,6 @@ export async function setup(app: App) {
       if (!u) {
         throw new UnexpectedNotFoundError(`user ${auth.userID}`);
       }
-      const friendIDs = await fetchFriends(auth.userID);
       return {
         id: u.chii_members.id,
         username: u.chii_members.username,
@@ -60,11 +58,8 @@ export async function setup(app: App) {
         sign: u.chii_members.sign,
         group: u.chii_members.groupid,
         joinedAt: u.chii_members.regdate,
-        friendIDs,
-        blocklist: parseBlocklist(u.chii_memberfields.blocklist),
         site: u.chii_memberfields.site,
         location: u.chii_memberfields.location,
-        bio: u.chii_memberfields.bio,
         permissions: {
           subjectWikiEdit: auth.permission.subject_edit ?? false,
         },
@@ -86,16 +81,9 @@ export async function setup(app: App) {
         }),
         response: {
           200: res.Paged(res.Ref(res.Notice)),
-          401: res.Ref(res.Error, {
-            description: '未登录',
-            'x-examples': {
-              NeedLoginError: {
-                value: res.formatError(new NeedLoginError('getting notifications')),
-              },
-            },
-          }),
         },
       },
+      preHandler: [requireLogin('list notice')],
     },
     async ({ auth, query: { limit = 20, unread } }) => {
       const data = await Notify.list(auth.userID, { limit, unread });
@@ -142,17 +130,10 @@ export async function setup(app: App) {
           },
         ),
         response: {
-          200: t.Null({ description: '没有返回值' }),
-          401: res.Ref(res.Error, {
-            description: '未登录',
-            'x-examples': {
-              NeedLoginError: {
-                value: res.formatError(new NeedLoginError('marking notifications as read')),
-              },
-            },
-          }),
+          200: t.Object({}),
         },
       },
+      preHandler: [requireLogin('clear notice')],
     },
     async ({ auth: { userID }, body: { id } }) => {
       if (id?.length === 0) {
@@ -160,6 +141,7 @@ export async function setup(app: App) {
       }
 
       await Notify.markAllAsRead(userID, id);
+      return {};
     },
   );
 

@@ -11,7 +11,7 @@ import { AsyncTimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
-import { parseBlocklist } from '@app/lib/user/utils.ts';
+import { fetchFriends, parseBlocklist } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -258,6 +258,28 @@ export async function setup(app: App) {
         data: followers,
         total: count,
       };
+    },
+  );
+
+  app.get(
+    '/friendlist',
+    {
+      schema: {
+        summary: '获取当前用户的好友 ID 列表',
+        operationId: 'getFriendlist',
+        tags: [Tag.Relationship],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Object({
+            friendlist: t.Array(t.Integer()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('get friendlist')],
+    },
+    async ({ auth }) => {
+      const friendlist = await fetchFriends(auth.userID);
+      return { friendlist };
     },
   );
 
