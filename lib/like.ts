@@ -102,6 +102,12 @@ export interface NewReaction {
   value: number;
 }
 
+export interface DeleteReaction {
+  type: LikeType;
+  rid: number;
+  uid: number;
+}
+
 function validateReaction(type: LikeType, value: number): boolean {
   switch (type) {
     case LikeType.GroupReply:
@@ -206,18 +212,8 @@ export async function addReaction(reaction: NewReaction) {
       )
       .limit(1);
     if (previous) {
-      // 重复点击取消
       if (previous.value === reaction.value && !previous.deleted) {
-        await tx
-          .update(schema.chiiLikes)
-          .set({ deleted: true })
-          .where(
-            op.and(
-              op.eq(schema.chiiLikes.type, reaction.type),
-              op.eq(schema.chiiLikes.relatedID, reaction.rid),
-              op.eq(schema.chiiLikes.uid, reaction.uid),
-            ),
-          );
+        return;
       } else {
         // 更新
         await tx
@@ -242,6 +238,34 @@ export async function addReaction(reaction: NewReaction) {
         createdAt: DateTime.now().toUnixInteger(),
         deleted: false,
       });
+    }
+  });
+}
+
+export async function deleteReaction(reaction: DeleteReaction) {
+  await db.transaction(async (tx) => {
+    const [previous] = await tx
+      .select()
+      .from(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, reaction.type),
+          op.eq(schema.chiiLikes.relatedID, reaction.rid),
+          op.eq(schema.chiiLikes.uid, reaction.uid),
+        ),
+      )
+      .limit(1);
+    if (previous && !previous.deleted) {
+      await tx
+        .update(schema.chiiLikes)
+        .set({ deleted: true })
+        .where(
+          op.and(
+            op.eq(schema.chiiLikes.type, reaction.type),
+            op.eq(schema.chiiLikes.relatedID, reaction.rid),
+            op.eq(schema.chiiLikes.uid, reaction.uid),
+          ),
+        );
     }
   });
 }

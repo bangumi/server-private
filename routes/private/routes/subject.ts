@@ -7,6 +7,7 @@ import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import {
   addReaction,
+  deleteReaction,
   fetchReactionsByMainID,
   fetchReactionsByRelatedIDs,
   LikeType,
@@ -870,7 +871,7 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
+  app.put(
     '/subjects/-/collects/:collectID/like',
     {
       schema: {
@@ -905,6 +906,33 @@ export async function setup(app: App) {
         rid: collectID,
         uid: auth.userID,
         value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/collects/:collectID/like',
+    {
+      schema: {
+        summary: '取消条目收藏点赞',
+        operationId: 'unlikeSubjectCollect',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          collectID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a subject collect')],
+    },
+    async ({ auth, params: { collectID } }) => {
+      await deleteReaction({
+        type: LikeType.SubjectCollect,
+        rid: collectID,
+        uid: auth.userID,
       });
       return {};
     },
@@ -1329,7 +1357,7 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
+  app.put(
     '/subjects/-/posts/:postID/like',
     {
       schema: {
@@ -1364,6 +1392,33 @@ export async function setup(app: App) {
         rid: postID,
         uid: auth.userID,
         value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/posts/:postID/like',
+    {
+      schema: {
+        summary: '取消条目讨论回复点赞',
+        operationId: 'unlikeSubjectPost',
+        tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a subject post')],
+    },
+    async ({ auth, params: { postID } }) => {
+      await deleteReaction({
+        type: LikeType.SubjectReply,
+        rid: postID,
+        uid: auth.userID,
       });
       return {};
     },

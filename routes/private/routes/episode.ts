@@ -3,7 +3,7 @@ import { Type as t } from '@sinclair/typebox';
 import { db, op, schema } from '@app/drizzle';
 import { CommentWithState } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
-import { addReaction, LikeType } from '@app/lib/like';
+import { addReaction, deleteReaction, LikeType } from '@app/lib/like';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/utils';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -138,6 +138,33 @@ export async function setup(app: App) {
         rid: commentID,
         uid: auth.userID,
         value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/episodes/-/comments/:commentID/like',
+    {
+      schema: {
+        summary: '取消条目的剧集吐槽点赞',
+        operationId: 'unlikeEpisodeComment',
+        tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a episode comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      await deleteReaction({
+        type: LikeType.EpisodeReply,
+        rid: commentID,
+        uid: auth.userID,
       });
       return {};
     },

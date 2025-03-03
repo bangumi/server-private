@@ -12,7 +12,7 @@ import {
 } from '@app/lib/error.ts';
 import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
 import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
-import { addReaction, fetchReactionsByMainID, LikeType } from '@app/lib/like';
+import { addReaction, deleteReaction, fetchReactionsByMainID, LikeType } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
@@ -704,6 +704,33 @@ export async function setup(app: App) {
         rid: postID,
         uid: auth.userID,
         value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/groups/-/posts/:postID/like',
+    {
+      schema: {
+        summary: '取消小组话题回复点赞',
+        operationId: 'unlikeGroupPost',
+        tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          postID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a group post')],
+    },
+    async ({ auth, params: { postID } }) => {
+      await deleteReaction({
+        type: LikeType.GroupReply,
+        rid: postID,
+        uid: auth.userID,
       });
       return {};
     },
