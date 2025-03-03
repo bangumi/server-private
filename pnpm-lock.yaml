@@ -63,8 +63,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(ajv@8.17.1)
       altair-static:
-        specifier: 8.1.6
-        version: 8.1.6
+        specifier: 8.2.0
+        version: 8.2.0
       cron:
         specifier: 4.1.0
         version: 4.1.0
@@ -2480,8 +2480,8 @@ packages:
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
 
-  altair-static@8.1.6:
-    resolution: {integrity: sha512-iB/Qe5wieTbfhQoEtYdd6nufgw7PGIpQtSyXP21/dr7YbCS0EuZjHON6ZWKc4DwJgYp4BTjMbTW7DlvNIqkfxQ==}
+  altair-static@8.2.0:
+    resolution: {integrity: sha512-WVYeEmjXCB9Znx4u9bVWGqwnuuQTavF9xYYOCqXlT74QrE8RYPV3rG7KdV+nUr+bmMPuPrEYClzFYLm7lhg4AQ==}
     engines: {node: '>= 6.9.1'}
 
   ansi-escapes@4.3.2:
@@ -8352,7 +8352,7 @@ snapshots:
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
-  altair-static@8.1.6: {}
+  altair-static@8.2.0: {}
 
   ansi-escapes@4.3.2:
     dependencies:
