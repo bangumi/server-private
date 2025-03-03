@@ -22,7 +22,7 @@ import {
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
 import { insertUserTags, TagCat } from '@app/lib/tag';
-import { TimelineSource } from '@app/lib/timeline/type';
+import { TimelineMonoCat, TimelineMonoType, TimelineSource } from '@app/lib/timeline/type';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -680,6 +680,8 @@ export async function setup(app: App) {
 
       await rateLimit(LimitAction.Character, auth.userID);
 
+      const createdAt = DateTime.now().toUnixInteger();
+
       await db.transaction(async (t) => {
         const [previous] = await t
           .select()
@@ -699,7 +701,7 @@ export async function setup(app: App) {
           cat: PersonCat.Character,
           uid: auth.userID,
           mid: characterID,
-          createdAt: DateTime.now().toUnixInteger(),
+          createdAt,
         });
         await t
           .update(schema.chiiCharacters)
@@ -708,6 +710,14 @@ export async function setup(app: App) {
           })
           .where(op.eq(schema.chiiCharacters.id, characterID))
           .limit(1);
+        await AsyncTimelineWriter.mono({
+          uid: auth.userID,
+          cat: TimelineMonoCat.Character,
+          type: TimelineMonoType.Collected,
+          id: characterID,
+          createdAt,
+          source: TimelineSource.Next,
+        });
       });
       return {};
     },
@@ -854,6 +864,8 @@ export async function setup(app: App) {
 
       await rateLimit(LimitAction.Person, auth.userID);
 
+      const createdAt = DateTime.now().toUnixInteger();
+
       await db.transaction(async (t) => {
         const [previous] = await t
           .select()
@@ -873,7 +885,7 @@ export async function setup(app: App) {
           cat: PersonCat.Person,
           uid: auth.userID,
           mid: personID,
-          createdAt: DateTime.now().toUnixInteger(),
+          createdAt,
         });
         await t
           .update(schema.chiiPersons)
@@ -882,6 +894,14 @@ export async function setup(app: App) {
           })
           .where(op.eq(schema.chiiPersons.id, personID))
           .limit(1);
+        await AsyncTimelineWriter.mono({
+          uid: auth.userID,
+          cat: TimelineMonoCat.Person,
+          type: TimelineMonoType.Collected,
+          id: personID,
+          createdAt,
+          source: TimelineSource.Next,
+        });
       });
       return {};
     },
