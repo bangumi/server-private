@@ -103,7 +103,7 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
+  app.put(
     '/episodes/-/comments/:commentID/like',
     {
       schema: {

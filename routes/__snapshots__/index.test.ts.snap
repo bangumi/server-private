@@ -4185,7 +4185,36 @@ paths:
       tags:
         - episode
   /p1/episodes/-/comments/{commentID}/like:
-    post:
+    delete:
+      operationId: unlikeEpisodeComment
+      parameters:
+        - in: path
+          name: commentID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消条目的剧集吐槽点赞
+      tags:
+        - episode
+    put:
       operationId: likeEpisodeComment
       parameters:
         - in: path
@@ -4671,6 +4700,35 @@ paths:
       tags:
         - topic
   /p1/groups/-/posts/{postID}/like:
+    delete:
+      operationId: unlikeGroupPost
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消小组话题回复点赞
+      tags:
+        - topic
     post:
       operationId: likeGroupPost
       parameters:
@@ -6108,7 +6166,36 @@ paths:
       tags:
         - subject
   /p1/subjects/-/collects/{collectID}/like:
-    post:
+    delete:
+      operationId: unlikeSubjectCollect
+      parameters:
+        - in: path
+          name: collectID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消条目收藏点赞
+      tags:
+        - subject
+    put:
       operationId: likeSubjectCollect
       parameters:
         - in: path
@@ -6238,7 +6325,36 @@ paths:
       tags:
         - topic
   /p1/subjects/-/posts/{postID}/like:
-    post:
+    delete:
+      operationId: unlikeSubjectPost
+      parameters:
+        - in: path
+          name: postID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消条目讨论回复点赞
+      tags:
+        - topic
+    put:
       operationId: likeSubjectPost
       parameters:
         - in: path
