@@ -13,7 +13,6 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
-import { fetchFriends, parseBlocklist } from '@app/lib/user/utils';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
@@ -51,7 +50,6 @@ export async function setup(app: App) {
       if (!u) {
         throw new UnexpectedNotFoundError(`user ${auth.userID}`);
       }
-      const friendIDs = await fetchFriends(auth.userID);
       return {
         id: u.chii_members.id,
         username: u.chii_members.username,
@@ -60,11 +58,8 @@ export async function setup(app: App) {
         sign: u.chii_members.sign,
         group: u.chii_members.groupid,
         joinedAt: u.chii_members.regdate,
-        friendIDs,
-        blocklist: parseBlocklist(u.chii_memberfields.blocklist),
         site: u.chii_memberfields.site,
         location: u.chii_memberfields.location,
-        bio: u.chii_memberfields.bio,
         permissions: {
           subjectWikiEdit: auth.permission.subject_edit ?? false,
         },
