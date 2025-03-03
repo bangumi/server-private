@@ -736,8 +736,8 @@ export async function setup(app: App) {
       if (episodeIDs.length !== new Set(episodeIDs).size) {
         throw new BadRequestError('episode ids are not unique');
       }
-      await db.transaction(async (txn) => {
-        const eps = await txn
+      await db.transaction(async (t) => {
+        const eps = await t
           .select()
           .from(schema.chiiEpisodes)
           .where(op.inArray(schema.chiiEpisodes.id, episodeIDs));
@@ -793,9 +793,9 @@ export async function setup(app: App) {
         }
 
         for (const ep of eps) {
-          await txn.update(schema.chiiEpisodes).set(ep).where(op.eq(schema.chiiEpisodes.id, ep.id));
+          await t.update(schema.chiiEpisodes).set(ep).where(op.eq(schema.chiiEpisodes.id, ep.id));
         }
-        await pushRev(txn, {
+        await pushRev(t, {
           revisions: eps.map((ep) => ({
             episodeID: ep.id,
             rev: {

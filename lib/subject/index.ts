@@ -88,8 +88,8 @@ export async function edit({
 
   metaTags?.sort();
 
-  await db.transaction(async (t: Txn) => {
-    const [s]: orm.ISubject[] = await db
+  await db.transaction(async (t) => {
+    const [s]: orm.ISubject[] = await t
       .select()
       .from(schema.chiiSubjects)
       .where(op.eq(schema.chiiSubjects.id, subjectID))

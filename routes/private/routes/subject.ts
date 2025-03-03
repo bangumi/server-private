@@ -670,7 +670,9 @@ export async function setup(app: App) {
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
         op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
         op.eq(schema.chiiSubjectInterests.hasComment, 1),
-        type ? op.eq(schema.chiiSubjectInterests.type, type) : undefined,
+        type
+          ? op.eq(schema.chiiSubjectInterests.type, type)
+          : op.ne(schema.chiiSubjectInterests.type, 0),
       );
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })

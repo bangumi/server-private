@@ -1,7 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
-import { db, op, type orm, schema } from '@app/drizzle';
+import { db, decr, incr, op, type orm, schema } from '@app/drizzle';
 import { Dam, dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { IndexType } from '@app/lib/index/types';
@@ -130,6 +130,7 @@ export async function setup(app: App) {
         body: req.Ref(req.UpdateSubjectProgress),
         response: {
           200: t.Object({}),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('update subject progress')],
@@ -152,6 +153,8 @@ export async function setup(app: App) {
       if (!interest) {
         throw new NotFoundError(`subject not collected`);
       }
+
+      await rateLimit(LimitAction.Subject, auth.userID);
 
       await db.transaction(async (t) => {
         const toUpdate: Partial<orm.ISubjectInterest> = {};
@@ -454,6 +457,7 @@ export async function setup(app: App) {
         body: req.Ref(req.UpdateEpisodeProgress),
         response: {
           200: t.Object({}),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('update episode progress')],
@@ -483,6 +487,8 @@ export async function setup(app: App) {
           throw new BadRequestError('type is required on single update');
         }
       }
+
+      await rateLimit(LimitAction.Episode, auth.userID);
 
       const now = DateTime.now().toUnixInteger();
       await db.transaction(async (t) => {
@@ -648,6 +654,122 @@ export async function setup(app: App) {
     },
   );
 
+  app.put(
+    '/collections/characters/:characterID',
+    {
+      schema: {
+        summary: '新增角色收藏',
+        operationId: 'addCharacterCollection',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          characterID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('add character collection')],
+    },
+    async ({ auth, params: { characterID } }) => {
+      const character = await fetcher.fetchSlimCharacterByID(characterID);
+      if (!character) {
+        throw new NotFoundError(`character ${characterID}`);
+      }
+
+      await rateLimit(LimitAction.Character, auth.userID);
+
+      await db.transaction(async (t) => {
+        const [previous] = await t
+          .select()
+          .from(schema.chiiPersonCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.cat, PersonCat.Character),
+              op.eq(schema.chiiPersonCollects.uid, auth.userID),
+              op.eq(schema.chiiPersonCollects.mid, characterID),
+            ),
+          )
+          .limit(1);
+        if (previous) {
+          return;
+        }
+        await t.insert(schema.chiiPersonCollects).values({
+          cat: PersonCat.Character,
+          uid: auth.userID,
+          mid: characterID,
+          createdAt: DateTime.now().toUnixInteger(),
+        });
+        await t
+          .update(schema.chiiCharacters)
+          .set({
+            collects: incr(schema.chiiCharacters.collects),
+          })
+          .where(op.eq(schema.chiiCharacters.id, characterID))
+          .limit(1);
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/collections/characters/:characterID',
+    {
+      schema: {
+        summary: '删除角色收藏',
+        operationId: 'deleteCharacterCollection',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          characterID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('remove character collection')],
+    },
+    async ({ auth, params: { characterID } }) => {
+      const character = await fetcher.fetchSlimCharacterByID(characterID);
+      if (!character) {
+        throw new NotFoundError(`character ${characterID}`);
+      }
+
+      await rateLimit(LimitAction.Character, auth.userID);
+
+      await db.transaction(async (t) => {
+        const [previous] = await t
+          .select()
+          .from(schema.chiiPersonCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.cat, PersonCat.Character),
+              op.eq(schema.chiiPersonCollects.uid, auth.userID),
+              op.eq(schema.chiiPersonCollects.mid, characterID),
+            ),
+          )
+          .limit(1);
+        if (!previous) {
+          return;
+        }
+        await t
+          .delete(schema.chiiPersonCollects)
+          .where(op.eq(schema.chiiPersonCollects.id, previous.id))
+          .limit(1);
+        await t
+          .update(schema.chiiCharacters)
+          .set({
+            collects: decr(schema.chiiCharacters.collects),
+          })
+          .where(op.eq(schema.chiiCharacters.id, characterID))
+          .limit(1);
+      });
+      return {};
+    },
+  );
+
   app.get(
     '/collections/persons',
     {
@@ -706,6 +828,122 @@ export async function setup(app: App) {
     },
   );
 
+  app.put(
+    '/collections/persons/:personID',
+    {
+      schema: {
+        summary: '新增人物收藏',
+        operationId: 'addPersonCollection',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('add person collection')],
+    },
+    async ({ auth, params: { personID } }) => {
+      const person = await fetcher.fetchSlimPersonByID(personID);
+      if (!person) {
+        throw new NotFoundError(`person ${personID}`);
+      }
+
+      await rateLimit(LimitAction.Person, auth.userID);
+
+      await db.transaction(async (t) => {
+        const [previous] = await t
+          .select()
+          .from(schema.chiiPersonCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.cat, PersonCat.Person),
+              op.eq(schema.chiiPersonCollects.uid, auth.userID),
+              op.eq(schema.chiiPersonCollects.mid, personID),
+            ),
+          )
+          .limit(1);
+        if (previous) {
+          return;
+        }
+        await t.insert(schema.chiiPersonCollects).values({
+          cat: PersonCat.Person,
+          uid: auth.userID,
+          mid: personID,
+          createdAt: DateTime.now().toUnixInteger(),
+        });
+        await t
+          .update(schema.chiiPersons)
+          .set({
+            collects: incr(schema.chiiPersons.collects),
+          })
+          .where(op.eq(schema.chiiPersons.id, personID))
+          .limit(1);
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/collections/persons/:personID',
+    {
+      schema: {
+        summary: '删除人物收藏',
+        operationId: 'deletePersonCollection',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('delete person collection')],
+    },
+    async ({ auth, params: { personID } }) => {
+      const person = await fetcher.fetchSlimPersonByID(personID);
+      if (!person) {
+        throw new NotFoundError(`person ${personID}`);
+      }
+
+      await rateLimit(LimitAction.Person, auth.userID);
+
+      await db.transaction(async (t) => {
+        const [previous] = await t
+          .select()
+          .from(schema.chiiPersonCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonCollects.cat, PersonCat.Person),
+              op.eq(schema.chiiPersonCollects.uid, auth.userID),
+              op.eq(schema.chiiPersonCollects.mid, personID),
+            ),
+          )
+          .limit(1);
+        if (!previous) {
+          return;
+        }
+        await t
+          .delete(schema.chiiPersonCollects)
+          .where(op.eq(schema.chiiPersonCollects.id, previous.id))
+          .limit(1);
+        await t
+          .update(schema.chiiPersons)
+          .set({
+            collects: decr(schema.chiiPersons.collects),
+          })
+          .where(op.eq(schema.chiiPersons.id, personID))
+          .limit(1);
+      });
+      return {};
+    },
+  );
+
   app.get(
     '/collections/indexes',
     {
@@ -759,6 +997,119 @@ export async function setup(app: App) {
         data: collection,
         total: count,
       };
+    },
+  );
+
+  app.put(
+    '/collections/indexes/:indexID',
+    {
+      schema: {
+        summary: '新增目录收藏',
+        operationId: 'addIndexCollection',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('add index collection')],
+    },
+    async ({ auth, params: { indexID } }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError(`index ${indexID}`);
+      }
+
+      await rateLimit(LimitAction.Index, auth.userID);
+
+      await db.transaction(async (t) => {
+        const [previous] = await t
+          .select()
+          .from(schema.chiiIndexCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiIndexCollects.uid, auth.userID),
+              op.eq(schema.chiiIndexCollects.mid, indexID),
+            ),
+          )
+          .limit(1);
+        if (previous) {
+          return;
+        }
+        await t.insert(schema.chiiIndexCollects).values({
+          uid: auth.userID,
+          mid: indexID,
+          createdAt: DateTime.now().toUnixInteger(),
+        });
+        await t
+          .update(schema.chiiIndexes)
+          .set({
+            collects: incr(schema.chiiIndexes.collects),
+          })
+          .where(op.eq(schema.chiiIndexes.id, indexID))
+          .limit(1);
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/collections/indexes/:indexID',
+    {
+      schema: {
+        summary: '删除目录收藏',
+        operationId: 'deleteIndexCollection',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('delete index collection')],
+    },
+    async ({ auth, params: { indexID } }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError(`index ${indexID}`);
+      }
+
+      await rateLimit(LimitAction.Index, auth.userID);
+
+      await db.transaction(async (t) => {
+        const [previous] = await t
+          .select()
+          .from(schema.chiiIndexCollects)
+          .where(
+            op.and(
+              op.eq(schema.chiiIndexCollects.uid, auth.userID),
+              op.eq(schema.chiiIndexCollects.mid, indexID),
+            ),
+          )
+          .limit(1);
+        if (!previous) {
+          return;
+        }
+        await t
+          .delete(schema.chiiIndexCollects)
+          .where(op.eq(schema.chiiIndexCollects.id, previous.id))
+          .limit(1);
+        await t
+          .update(schema.chiiIndexes)
+          .set({
+            collects: decr(schema.chiiIndexes.collects),
+          })
+          .where(op.eq(schema.chiiIndexes.id, indexID))
+          .limit(1);
+      });
+      return {};
     },
   );
 }
