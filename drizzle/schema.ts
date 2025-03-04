@@ -11,7 +11,6 @@ import {
   mysqlEnum,
   mysqlTable,
   smallint,
-  text,
   timestamp,
   tinyint,
   varchar,
@@ -102,7 +101,7 @@ export const chiiCharacterCasts = mysqlTable('chii_crt_cast_index', {
   personID: mediumint('prsn_id').notNull(),
   subjectID: mediumint('subject_id').notNull(),
   subjectType: tinyint('subject_type_id').notNull(),
-  summary: varchar('summary', { length: 255 }).notNull(),
+  summary: htmlEscapedString('varchar')('summary', { length: 255 }).notNull(),
 });
 
 export const chiiCrtComments = mysqlTable('chii_crt_comments', {
@@ -130,8 +129,8 @@ export const chiiEpisodes = mysqlTable('chii_episodes', {
   sort: float('ep_sort').notNull(),
   type: tinyint('ep_type').notNull(),
   disc: tinyint('ep_disc').default(0).notNull(),
-  name: varchar('ep_name', { length: 80 }).notNull(),
-  nameCN: varchar('ep_name_cn', { length: 80 }).notNull(),
+  name: htmlEscapedString('varchar')('ep_name', { length: 80 }).notNull(),
+  nameCN: htmlEscapedString('varchar')('ep_name_cn', { length: 80 }).notNull(),
   rate: tinyint('ep_rate').notNull(),
   duration: varchar('ep_duration', { length: 80 }).notNull(),
   airdate: varchar('ep_airdate', { length: 80 }).notNull(),
@@ -186,13 +185,13 @@ export const chiiGroups = mysqlTable('chii_groups', {
   id: smallint('grp_id').autoincrement().notNull(),
   cat: smallint('grp_cat').notNull(),
   name: char('grp_name', { length: 50 }).notNull(),
-  title: char('grp_title', { length: 50 }).notNull(),
+  title: htmlEscapedString('varchar')('grp_title', { length: 50 }).notNull(),
   icon: varchar('grp_icon', { length: 255 }).notNull(),
   creator: mediumint('grp_creator').notNull(),
   topics: mediumint('grp_topics').notNull(),
   posts: mediumint('grp_posts').notNull(),
   members: mediumint('grp_members').default(1).notNull(),
-  desc: text('grp_desc').notNull(),
+  desc: htmlEscapedString('text')('grp_desc').notNull(),
   updatedAt: int('grp_lastpost').notNull(),
   createdAt: int('grp_builddate').notNull(),
   accessible: customBoolean('grp_accessible').default(true).notNull(),
@@ -308,7 +307,7 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   uid: mediumint('uid').notNull(),
   site: varchar('site', { length: 75 }).default('').notNull(),
   location: varchar('location', { length: 30 }).default('').notNull(),
-  bio: text('bio').notNull(),
+  bio: htmlEscapedString('text')('bio').notNull(),
   homepage: mediumtext('homepage').notNull(),
   privacy: mediumtext('privacy').notNull(),
   blocklist: mediumtext('blocklist').notNull(),
@@ -336,7 +335,7 @@ export const chiiNotifyField = mysqlTable('chii_notify_field', {
   id: mediumint('ntf_id').autoincrement().notNull(),
   hash: tinyint('ntf_hash').default(0).notNull(),
   rid: int('ntf_rid').notNull(),
-  title: varchar('ntf_title', { length: 255 }).notNull(),
+  title: htmlEscapedString('varchar')('ntf_title', { length: 255 }).notNull(),
 });
 
 export const chiiAccessToken = mysqlTable('chii_oauth_access_tokens', {
@@ -390,7 +389,7 @@ export const chiiPersons = mysqlTable('chii_persons', {
   writer: tinyint('prsn_writer').default(0).notNull(),
   illustrator: tinyint('prsn_illustrator').default(0).notNull(),
   actor: tinyint('prsn_actor').notNull(),
-  summary: mediumtext('prsn_summary').notNull(),
+  summary: htmlEscapedString('mediumtext')('prsn_summary').notNull(),
   img: varchar('prsn_img', { length: 255 }).notNull(),
   comment: mediumint('prsn_comment').notNull(),
   collects: mediumint('prsn_collects').notNull(),
@@ -426,8 +425,8 @@ export const chiiPersonSubjects = mysqlTable('chii_person_cs_index', {
   position: smallint('prsn_position').notNull(),
   subjectID: mediumint('subject_id').notNull(),
   subjectType: tinyint('subject_type_id').notNull(),
-  summary: mediumtext('summary').notNull(),
-  appearEps: mediumtext('prsn_appear_eps').notNull(),
+  summary: htmlEscapedString('mediumtext')('summary').notNull(),
+  appearEps: htmlEscapedString('mediumtext')('prsn_appear_eps').notNull(),
 });
 
 export const chiiPersonFields = mysqlTable('chii_person_fields', {
@@ -453,9 +452,9 @@ export const chiiPms = mysqlTable('chii_pms', {
   msgRid: mediumint('msg_rid').notNull(),
   msgFolder: mysqlEnum('msg_folder', ['inbox', 'outbox']).default('inbox').notNull(),
   msgNew: tinyint('msg_new').default(0).notNull(),
-  msgTitle: varchar('msg_title', { length: 75 }).notNull(),
+  msgTitle: htmlEscapedString('varchar')('msg_title', { length: 75 }).notNull(),
   msgDateline: int('msg_dateline').default(0).notNull(),
-  msgMessage: text('msg_message').notNull(),
+  msgMessage: htmlEscapedString('text')('msg_message').notNull(),
   msgRelatedMain: int('msg_related_main').default(0).notNull(),
   msgRelated: int('msg_related').notNull(),
   msgSdeleted: tinyint('msg_sdeleted').default(0).notNull(),
@@ -479,7 +478,7 @@ export const chiiRevHistory = mysqlTable('chii_rev_history', {
   revTextId: mediumint('rev_text_id').notNull(),
   createdAt: int('rev_dateline').notNull(),
   revCreator: mediumint('rev_creator').notNull(),
-  revEditSummary: varchar('rev_edit_summary', { length: 200 }).notNull(),
+  revEditSummary: htmlEscapedString('varchar')('rev_edit_summary', { length: 200 }).notNull(),
 });
 
 export const chiiRevText = mysqlTable('chii_rev_text', {
@@ -499,7 +498,7 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   platform: smallint('subject_platform').notNull(),
   metaTags: mediumtext('field_meta_tags').notNull(),
   infobox: htmlEscapedString('mediumtext')('field_infobox').notNull(),
-  summary: mediumtext('field_summary').notNull(),
+  summary: htmlEscapedString('mediumtext')('field_summary').notNull(),
   field5: mediumtext('field_5').notNull(),
   volumes: mediumint('field_volumes').notNull(),
   eps: mediumint('field_eps').notNull(),
@@ -623,7 +622,7 @@ export const chiiSubjectRev = mysqlTable('chii_subject_revisions', {
   summary: mediumtext('rev_field_summary').notNull(),
   revVoteField: mediumtext('rev_vote_field').default('').notNull(),
   eps: mediumint('rev_field_eps').default(0).notNull(),
-  commitMessage: varchar('rev_edit_summary', { length: 200 }).notNull(),
+  commitMessage: htmlEscapedString('varchar')('rev_edit_summary', { length: 200 }).notNull(),
   platform: smallint('rev_platform').notNull(),
 });
 
@@ -670,7 +669,7 @@ export const chiiTagList = mysqlTable('chii_tag_neue_list', {
 
 export const chiiTagFields = mysqlTable('chii_tag_neue_fields', {
   tagID: int('field_tid').notNull(),
-  summary: mediumtext('field_summary').notNull(),
+  summary: htmlEscapedString('mediumtext')('field_summary').notNull(),
   order: mediumint('field_order').notNull(),
   nsfw: customBoolean('field_nsfw').notNull(),
   lock: int('field_lock').default(0).notNull(),
@@ -712,7 +711,7 @@ export const chiiBlogComments = mysqlTable('chii_blog_comments', {
   uid: mediumint('blg_pst_uid').notNull(),
   related: mediumint('blg_pst_related').notNull(),
   createdAt: int('blg_pst_dateline').notNull(),
-  content: mediumtext('blg_pst_content').notNull(),
+  content: htmlEscapedString('mediumtext')('blg_pst_content').notNull(),
 });
 
 export const chiiBlogEntries = mysqlTable('chii_blog_entry', {
@@ -721,7 +720,7 @@ export const chiiBlogEntries = mysqlTable('chii_blog_entry', {
   uid: mediumint('entry_uid').notNull(),
   title: htmlEscapedString('varchar')('entry_title', { length: 80 }).notNull(),
   icon: varchar('entry_icon', { length: 255 }).notNull(),
-  content: mediumtext('entry_content').notNull(),
+  content: htmlEscapedString('mediumtext')('entry_content').notNull(),
   tags: mediumtext('entry_tags').notNull(),
   views: mediumint('entry_views').notNull(),
   replies: mediumint('entry_replies').notNull(),
