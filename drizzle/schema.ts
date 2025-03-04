@@ -186,13 +186,13 @@ export const chiiGroups = mysqlTable('chii_groups', {
   id: smallint('grp_id').autoincrement().notNull(),
   cat: smallint('grp_cat').notNull(),
   name: char('grp_name', { length: 50 }).notNull(),
-  title: char('grp_title', { length: 50 }).notNull(),
+  title: htmlEscapedString('varchar')('grp_title', { length: 50 }).notNull(),
   icon: varchar('grp_icon', { length: 255 }).notNull(),
   creator: mediumint('grp_creator').notNull(),
   topics: mediumint('grp_topics').notNull(),
   posts: mediumint('grp_posts').notNull(),
   members: mediumint('grp_members').default(1).notNull(),
-  desc: text('grp_desc').notNull(),
+  desc: htmlEscapedString('text')('grp_desc').notNull(),
   updatedAt: int('grp_lastpost').notNull(),
   createdAt: int('grp_builddate').notNull(),
   accessible: customBoolean('grp_accessible').default(true).notNull(),
@@ -308,7 +308,7 @@ export const chiiUserFields = mysqlTable('chii_memberfields', {
   uid: mediumint('uid').notNull(),
   site: varchar('site', { length: 75 }).default('').notNull(),
   location: varchar('location', { length: 30 }).default('').notNull(),
-  bio: text('bio').notNull(),
+  bio: htmlEscapedString('text')('bio').notNull(),
   homepage: mediumtext('homepage').notNull(),
   privacy: mediumtext('privacy').notNull(),
   blocklist: mediumtext('blocklist').notNull(),
@@ -390,7 +390,7 @@ export const chiiPersons = mysqlTable('chii_persons', {
   writer: tinyint('prsn_writer').default(0).notNull(),
   illustrator: tinyint('prsn_illustrator').default(0).notNull(),
   actor: tinyint('prsn_actor').notNull(),
-  summary: mediumtext('prsn_summary').notNull(),
+  summary: htmlEscapedString('mediumtext')('prsn_summary').notNull(),
   img: varchar('prsn_img', { length: 255 }).notNull(),
   comment: mediumint('prsn_comment').notNull(),
   collects: mediumint('prsn_collects').notNull(),
@@ -426,8 +426,8 @@ export const chiiPersonSubjects = mysqlTable('chii_person_cs_index', {
   position: smallint('prsn_position').notNull(),
   subjectID: mediumint('subject_id').notNull(),
   subjectType: tinyint('subject_type_id').notNull(),
-  summary: mediumtext('summary').notNull(),
-  appearEps: mediumtext('prsn_appear_eps').notNull(),
+  summary: htmlEscapedString('mediumtext')('summary').notNull(),
+  appearEps: htmlEscapedString('mediumtext')('prsn_appear_eps').notNull(),
 });
 
 export const chiiPersonFields = mysqlTable('chii_person_fields', {
@@ -499,7 +499,7 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   platform: smallint('subject_platform').notNull(),
   metaTags: mediumtext('field_meta_tags').notNull(),
   infobox: htmlEscapedString('mediumtext')('field_infobox').notNull(),
-  summary: mediumtext('field_summary').notNull(),
+  summary: htmlEscapedString('mediumtext')('field_summary').notNull(),
   field5: mediumtext('field_5').notNull(),
   volumes: mediumint('field_volumes').notNull(),
   eps: mediumint('field_eps').notNull(),
@@ -670,7 +670,7 @@ export const chiiTagList = mysqlTable('chii_tag_neue_list', {
 
 export const chiiTagFields = mysqlTable('chii_tag_neue_fields', {
   tagID: int('field_tid').notNull(),
-  summary: mediumtext('field_summary').notNull(),
+  summary: htmlEscapedString('mediumtext')('field_summary').notNull(),
   order: mediumint('field_order').notNull(),
   nsfw: customBoolean('field_nsfw').notNull(),
   lock: int('field_lock').default(0).notNull(),
@@ -712,7 +712,7 @@ export const chiiBlogComments = mysqlTable('chii_blog_comments', {
   uid: mediumint('blg_pst_uid').notNull(),
   related: mediumint('blg_pst_related').notNull(),
   createdAt: int('blg_pst_dateline').notNull(),
-  content: mediumtext('blg_pst_content').notNull(),
+  content: htmlEscapedString('mediumtext')('blg_pst_content').notNull(),
 });
 
 export const chiiBlogEntries = mysqlTable('chii_blog_entry', {
@@ -721,7 +721,7 @@ export const chiiBlogEntries = mysqlTable('chii_blog_entry', {
   uid: mediumint('entry_uid').notNull(),
   title: htmlEscapedString('varchar')('entry_title', { length: 80 }).notNull(),
   icon: varchar('entry_icon', { length: 255 }).notNull(),
-  content: mediumtext('entry_content').notNull(),
+  content: htmlEscapedString('mediumtext')('entry_content').notNull(),
   tags: mediumtext('entry_tags').notNull(),
   views: mediumint('entry_views').notNull(),
   replies: mediumint('entry_replies').notNull(),
