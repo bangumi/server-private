@@ -22,6 +22,42 @@ describe('group list', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get joined group list', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups',
+      query: { mode: 'joined', sort: 'created', limit: '2' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get managed group list', async () => {
+    const app = await createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      url: '/groups',
+      query: { mode: 'managed', sort: 'created', limit: '2' },
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchSnapshot();
+  });
 });
 
 describe('group info', () => {

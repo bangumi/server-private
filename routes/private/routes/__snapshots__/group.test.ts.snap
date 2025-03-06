@@ -175,6 +175,52 @@ Object {
 }
 `;
 
+exports[`group list > should get joined group list 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "accessible": true,
+      "createdAt": 1531631310,
+      "creatorID": 287622,
+      "icon": Object {
+        "large": "https://lain.bgm.tv/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
+        "medium": "https://lain.bgm.tv/pic/icon/m/000/00/42/4215.jpg?r=1531631345",
+        "small": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+      },
+      "id": 4215,
+      "members": 3,
+      "name": "sandbox",
+      "nsfw": false,
+      "title": "沙盒",
+    },
+  ],
+  "total": 1,
+}
+`;
+
+exports[`group list > should get managed group list 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "accessible": true,
+      "createdAt": 1531631310,
+      "creatorID": 287622,
+      "icon": Object {
+        "large": "https://lain.bgm.tv/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
+        "medium": "https://lain.bgm.tv/pic/icon/m/000/00/42/4215.jpg?r=1531631345",
+        "small": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+      },
+      "id": 4215,
+      "members": 3,
+      "name": "sandbox",
+      "nsfw": false,
+      "title": "沙盒",
+    },
+  ],
+  "total": 1,
+}
+`;
+
 exports[`group topics > should get group post 1`] = `
 Object {
   "content": "Test Reply",

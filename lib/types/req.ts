@@ -36,6 +36,20 @@ export const FilterMode = t.String({
   - friends = 好友`,
 });
 
+export const GroupFilterMode = t.String({
+  $id: 'GroupFilterMode',
+  enum: ['all', 'joined', 'managed'],
+  'x-ms-enum': {
+    name: 'GroupFilterMode',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['All', 'Joined', 'Managed'],
+  description: `小组过滤模式
+  - all = 所有小组
+  - joined = 我加入的小组
+  - managed = 我管理的小组`,
+});
+
 export const GroupTopicFilterMode = t.String({
   $id: 'GroupTopicFilterMode',
   enum: ['all', 'joined', 'created', 'replied'],
