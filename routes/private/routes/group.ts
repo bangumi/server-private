@@ -62,34 +62,6 @@ export async function setup(app: App) {
       if (!auth.allowNsfw) {
         conditions.push(op.eq(schema.chiiGroups.nsfw, false));
       }
-      if (auth.login) {
-        switch (mode) {
-          case GroupFilterMode.Joined: {
-            conditions.push(
-              op.eq(schema.chiiGroupMembers.uid, auth.userID),
-              op.inArray(schema.chiiGroupMembers.role, [
-                GroupMemberRole.Member,
-                GroupMemberRole.Moderator,
-                GroupMemberRole.Creator,
-              ]),
-            );
-            break;
-          }
-          case GroupFilterMode.Managed: {
-            conditions.push(
-              op.eq(schema.chiiGroups.creator, auth.userID),
-              op.inArray(schema.chiiGroupMembers.role, [
-                GroupMemberRole.Moderator,
-                GroupMemberRole.Creator,
-              ]),
-            );
-            break;
-          }
-          case GroupFilterMode.All: {
-            break;
-          }
-        }
-      }
       const orderBy = [];
       switch (sort) {
         case GroupSort.Members: {
@@ -113,27 +85,90 @@ export async function setup(app: App) {
           break;
         }
       }
-      const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
-        .from(schema.chiiGroups)
-        .innerJoin(
-          schema.chiiGroupMembers,
-          op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
-        )
-        .where(op.and(...conditions));
-      const data = await db
-        .select()
-        .from(schema.chiiGroups)
-        .innerJoin(
-          schema.chiiGroupMembers,
-          op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
-        )
-        .where(op.and(...conditions))
-        .orderBy(...orderBy)
-        .limit(limit)
-        .offset(offset);
-      const groups = data.map((d) => convert.toSlimGroup(d.chii_groups));
-      return { total: count, data: groups };
+      let count = 0;
+      let result: res.ISlimGroup[] = [];
+      if (auth.login) {
+        switch (mode) {
+          case GroupFilterMode.Joined: {
+            conditions.push(
+              op.eq(schema.chiiGroupMembers.uid, auth.userID),
+              op.inArray(schema.chiiGroupMembers.role, [
+                GroupMemberRole.Member,
+                GroupMemberRole.Moderator,
+                GroupMemberRole.Creator,
+              ]),
+            );
+            [{ count = 0 } = {}] = await db
+              .select({ count: op.count() })
+              .from(schema.chiiGroupMembers)
+              .innerJoin(
+                schema.chiiGroups,
+                op.eq(schema.chiiGroupMembers.gid, schema.chiiGroups.id),
+              )
+              .where(op.and(...conditions));
+            const data = await db
+              .select()
+              .from(schema.chiiGroups)
+              .innerJoin(
+                schema.chiiGroupMembers,
+                op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
+              )
+              .where(op.and(...conditions))
+              .orderBy(...orderBy)
+              .limit(limit)
+              .offset(offset);
+            result = data.map((d) => convert.toSlimGroup(d.chii_groups));
+            break;
+          }
+          case GroupFilterMode.Managed: {
+            conditions.push(
+              op.eq(schema.chiiGroups.creator, auth.userID),
+              op.inArray(schema.chiiGroupMembers.role, [
+                GroupMemberRole.Moderator,
+                GroupMemberRole.Creator,
+              ]),
+            );
+            [{ count = 0 } = {}] = await db
+              .select({ count: op.count() })
+              .from(schema.chiiGroups)
+              .innerJoin(
+                schema.chiiGroupMembers,
+                op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
+              )
+              .where(op.and(...conditions));
+            const data = await db
+              .select()
+              .from(schema.chiiGroups)
+              .innerJoin(
+                schema.chiiGroupMembers,
+                op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
+              )
+              .where(op.and(...conditions))
+              .orderBy(...orderBy)
+              .limit(limit)
+              .offset(offset);
+            result = data.map((d) => convert.toSlimGroup(d.chii_groups));
+            break;
+          }
+          case GroupFilterMode.All: {
+            [{ count = 0 } = {}] = await db
+              .select({ count: op.count() })
+              .from(schema.chiiGroups)
+              .where(op.and(...conditions));
+            const data = await db
+              .select()
+              .from(schema.chiiGroups)
+              .where(op.and(...conditions))
+              .orderBy(...orderBy)
+              .limit(limit)
+              .offset(offset);
+            result = data.map((d) => convert.toSlimGroup(d));
+            break;
+          }
+        }
+      }
+
+      return { total: count, data: result };
     },
   );
 
