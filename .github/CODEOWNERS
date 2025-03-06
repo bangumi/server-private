@@ -1,3 +1,4 @@
 package.json @trim21
 pnpm-lock.yaml @trim21
 .github/ @trim21
+Dockerfile @trim21
