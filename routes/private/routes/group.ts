@@ -87,44 +87,15 @@ export async function setup(app: App) {
       }
       if (auth.login) {
         switch (mode) {
-          case GroupFilterMode.Joined: {
+          case GroupFilterMode.Joined:
+          case GroupFilterMode.Managed: {
+            const roles = [GroupMemberRole.Moderator, GroupMemberRole.Creator];
+            if (mode === GroupFilterMode.Joined) {
+              roles.push(GroupMemberRole.Member);
+            }
             conditions.push(
               op.eq(schema.chiiGroupMembers.uid, auth.userID),
-              op.inArray(schema.chiiGroupMembers.role, [
-                GroupMemberRole.Member,
-                GroupMemberRole.Moderator,
-                GroupMemberRole.Creator,
-              ]),
-            );
-            const [{ count = 0 } = {}] = await db
-              .select({ count: op.count() })
-              .from(schema.chiiGroupMembers)
-              .innerJoin(
-                schema.chiiGroups,
-                op.eq(schema.chiiGroupMembers.gid, schema.chiiGroups.id),
-              )
-              .where(op.and(...conditions));
-            const data = await db
-              .select()
-              .from(schema.chiiGroups)
-              .innerJoin(
-                schema.chiiGroupMembers,
-                op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
-              )
-              .where(op.and(...conditions))
-              .orderBy(...orderBy)
-              .limit(limit)
-              .offset(offset);
-            const groups = data.map((d) => convert.toSlimGroup(d.chii_groups));
-            return { total: count, data: groups };
-          }
-          case GroupFilterMode.Managed: {
-            conditions.push(
-              op.eq(schema.chiiGroups.creator, auth.userID),
-              op.inArray(schema.chiiGroupMembers.role, [
-                GroupMemberRole.Moderator,
-                GroupMemberRole.Creator,
-              ]),
+              op.inArray(schema.chiiGroupMembers.role, roles),
             );
             const [{ count = 0 } = {}] = await db
               .select({ count: op.count() })
