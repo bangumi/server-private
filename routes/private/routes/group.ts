@@ -85,8 +85,6 @@ export async function setup(app: App) {
           break;
         }
       }
-      let count = 0;
-      let result: res.ISlimGroup[] = [];
       if (auth.login) {
         switch (mode) {
           case GroupFilterMode.Joined: {
@@ -98,7 +96,7 @@ export async function setup(app: App) {
                 GroupMemberRole.Creator,
               ]),
             );
-            [{ count = 0 } = {}] = await db
+            const [{ count = 0 } = {}] = await db
               .select({ count: op.count() })
               .from(schema.chiiGroupMembers)
               .innerJoin(
@@ -117,8 +115,8 @@ export async function setup(app: App) {
               .orderBy(...orderBy)
               .limit(limit)
               .offset(offset);
-            result = data.map((d) => convert.toSlimGroup(d.chii_groups));
-            break;
+            const groups = data.map((d) => convert.toSlimGroup(d.chii_groups));
+            return { total: count, data: groups };
           }
           case GroupFilterMode.Managed: {
             conditions.push(
@@ -128,7 +126,7 @@ export async function setup(app: App) {
                 GroupMemberRole.Creator,
               ]),
             );
-            [{ count = 0 } = {}] = await db
+            const [{ count = 0 } = {}] = await db
               .select({ count: op.count() })
               .from(schema.chiiGroups)
               .innerJoin(
@@ -147,28 +145,27 @@ export async function setup(app: App) {
               .orderBy(...orderBy)
               .limit(limit)
               .offset(offset);
-            result = data.map((d) => convert.toSlimGroup(d.chii_groups));
-            break;
+            const groups = data.map((d) => convert.toSlimGroup(d.chii_groups));
+            return { total: count, data: groups };
           }
           case GroupFilterMode.All: {
-            [{ count = 0 } = {}] = await db
-              .select({ count: op.count() })
-              .from(schema.chiiGroups)
-              .where(op.and(...conditions));
-            const data = await db
-              .select()
-              .from(schema.chiiGroups)
-              .where(op.and(...conditions))
-              .orderBy(...orderBy)
-              .limit(limit)
-              .offset(offset);
-            result = data.map((d) => convert.toSlimGroup(d));
             break;
           }
         }
       }
-
-      return { total: count, data: result };
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiGroups)
+        .where(op.and(...conditions));
+      const data = await db
+        .select()
+        .from(schema.chiiGroups)
+        .where(op.and(...conditions))
+        .orderBy(...orderBy)
+        .limit(limit)
+        .offset(offset);
+      const groups = data.map((d) => convert.toSlimGroup(d));
+      return { total: count, data: groups };
     },
   );
 

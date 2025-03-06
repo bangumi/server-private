@@ -139,8 +139,39 @@ Object {
 
 exports[`group list > should get group list 1`] = `
 Object {
-  "data": Array [],
-  "total": 0,
+  "data": Array [
+    Object {
+      "accessible": true,
+      "createdAt": 1531631310,
+      "creatorID": 287622,
+      "icon": Object {
+        "large": "https://lain.bgm.tv/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
+        "medium": "https://lain.bgm.tv/pic/icon/m/000/00/42/4215.jpg?r=1531631345",
+        "small": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+      },
+      "id": 4215,
+      "members": 3,
+      "name": "sandbox",
+      "nsfw": false,
+      "title": "沙盒",
+    },
+    Object {
+      "accessible": true,
+      "createdAt": 1217542289,
+      "creatorID": 64,
+      "icon": Object {
+        "large": "https://lain.bgm.tv/pic/icon/l/000/00/00/11.jpg",
+        "medium": "https://lain.bgm.tv/pic/icon/m/000/00/00/11.jpg",
+        "small": "https://lain.bgm.tv/pic/icon/s/000/00/00/11.jpg",
+      },
+      "id": 11,
+      "members": 9452,
+      "name": "a",
+      "nsfw": false,
+      "title": "～技术宅真可怕～",
+    },
+  ],
+  "total": 12,
 }
 `;
 
