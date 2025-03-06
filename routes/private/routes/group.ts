@@ -10,7 +10,12 @@ import {
   NotJoinPrivateGroupError,
   UnexpectedNotFoundError,
 } from '@app/lib/error.ts';
-import { GroupSort, GroupTopicMode } from '@app/lib/group/type';
+import {
+  GroupFilterMode,
+  GroupMemberRole,
+  GroupSort,
+  GroupTopicFilterMode,
+} from '@app/lib/group/type';
 import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
 import { LikeType, Reaction } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
@@ -39,6 +44,7 @@ export async function setup(app: App) {
         tags: [Tag.Group],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
+          mode: t.Optional(req.Ref(req.GroupFilterMode)),
           sort: req.Ref(req.GroupSort),
           limit: t.Optional(t.Integer({ default: 20, maximum: 100 })),
           offset: t.Optional(t.Integer({ default: 0 })),
@@ -48,10 +54,41 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { sort = GroupSort.Created, limit = 20, offset = 0 } }) => {
+    async ({
+      auth,
+      query: { mode = GroupFilterMode.All, sort = GroupSort.Created, limit = 20, offset = 0 },
+    }) => {
       const conditions = [];
       if (!auth.allowNsfw) {
         conditions.push(op.eq(schema.chiiGroups.nsfw, false));
+      }
+      if (auth.login) {
+        switch (mode) {
+          case GroupFilterMode.Joined: {
+            conditions.push(
+              op.eq(schema.chiiGroupMembers.uid, auth.userID),
+              op.inArray(schema.chiiGroupMembers.role, [
+                GroupMemberRole.Member,
+                GroupMemberRole.Moderator,
+                GroupMemberRole.Creator,
+              ]),
+            );
+            break;
+          }
+          case GroupFilterMode.Managed: {
+            conditions.push(
+              op.eq(schema.chiiGroups.creator, auth.userID),
+              op.inArray(schema.chiiGroupMembers.role, [
+                GroupMemberRole.Moderator,
+                GroupMemberRole.Creator,
+              ]),
+            );
+            break;
+          }
+          case GroupFilterMode.All: {
+            break;
+          }
+        }
       }
       const orderBy = [];
       switch (sort) {
@@ -79,15 +116,23 @@ export async function setup(app: App) {
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiGroups)
+        .innerJoin(
+          schema.chiiGroupMembers,
+          op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
+        )
         .where(op.and(...conditions));
       const data = await db
         .select()
         .from(schema.chiiGroups)
+        .innerJoin(
+          schema.chiiGroupMembers,
+          op.eq(schema.chiiGroups.id, schema.chiiGroupMembers.gid),
+        )
         .where(op.and(...conditions))
         .orderBy(...orderBy)
         .limit(limit)
         .offset(offset);
-      const groups = data.map((d) => convert.toSlimGroup(d));
+      const groups = data.map((d) => convert.toSlimGroup(d.chii_groups));
       return { total: count, data: groups };
     },
   );
@@ -264,14 +309,14 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { mode = GroupTopicMode.Joined, limit = 20, offset = 0 } }) => {
+    async ({ auth, query: { mode = GroupTopicFilterMode.Joined, limit = 20, offset = 0 } }) => {
       let total = 0;
       const tids = [];
       if (!auth.login) {
-        mode = GroupTopicMode.All;
+        mode = GroupTopicFilterMode.All;
       }
       switch (mode) {
-        case GroupTopicMode.All: {
+        case GroupTopicFilterMode.All: {
           const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
           const [{ count = 0 } = {}] = await db
             .select({ count: op.count() })
@@ -288,7 +333,7 @@ export async function setup(app: App) {
           tids.push(...data.map((x) => x.id));
           break;
         }
-        case GroupTopicMode.Joined: {
+        case GroupTopicFilterMode.Joined: {
           const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
           const gids = await fetchJoinedGroups(auth.userID);
           if (gids.length > 0) {
@@ -309,7 +354,7 @@ export async function setup(app: App) {
           tids.push(...data.map((x) => x.id));
           break;
         }
-        case GroupTopicMode.Created: {
+        case GroupTopicFilterMode.Created: {
           const conditions = [op.eq(schema.chiiGroupTopics.uid, auth.userID)];
           const [{ count = 0 } = {}] = await db
             .select({ count: op.count() })
@@ -326,7 +371,7 @@ export async function setup(app: App) {
           tids.push(...data.map((x) => x.id));
           break;
         }
-        case GroupTopicMode.Replied: {
+        case GroupTopicFilterMode.Replied: {
           const conditions = [op.eq(schema.chiiGroupPosts.uid, auth.userID)];
           const [{ count = 0 } = {}] = await db
             .select({ count: op.countDistinct(schema.chiiGroupPosts.mid) })

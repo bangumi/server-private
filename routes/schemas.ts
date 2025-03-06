@@ -27,6 +27,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.FilterMode);
+  app.addSchema(req.GroupFilterMode);
   app.addSchema(req.GroupSort);
   app.addSchema(req.GroupTopicFilterMode);
   app.addSchema(req.PersonSearchFilter);
