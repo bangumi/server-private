@@ -162,7 +162,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@confluentinc/kafka-javascript"
+      "@confluentinc/kafka-javascript",
+      "esbuild"
     ],
     "patchedDependencies": {}
   }
