@@ -47,5 +47,4 @@ jobs:
           push-to-fork: bangumi-bot/server-private
           branch: 'ci/release-next-version'
           body-path: changelog.md
-          assignees: '@trim21'
           commit-message: 'bump: ${{ env.NEW_VERSION }}'
