@@ -15,3 +15,4 @@ static/style
 .yarn/*
 !.yarn/releases
 !.yarn/plugins
+changelog.md
