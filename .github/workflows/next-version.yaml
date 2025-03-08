@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   github:
+    if: ${{ github.repository_owner == 'bangumi' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
