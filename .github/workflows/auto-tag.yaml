@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   auto-tag:
+    if: ${{ github.repository_owner == 'bangumi' }}
     name: update
     runs-on: ubuntu-latest
     steps:
