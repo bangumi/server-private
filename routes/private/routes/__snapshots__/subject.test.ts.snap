@@ -687,10 +687,10 @@ Object {
   "data": Array [
     Object {
       "position": Object {
-        "cn": "导演",
-        "en": "Director/Direction",
-        "id": 2,
-        "jp": "監督 シリーズ監督",
+        "cn": "原作",
+        "en": "Original Creator/Original Work",
+        "id": 1,
+        "jp": "",
       },
       "staffs": Array [
         Object {
@@ -710,6 +710,36 @@ Object {
             "nameCN": "",
             "nsfw": false,
             "type": 3,
+          },
+          "summary": "",
+        },
+      ],
+    },
+    Object {
+      "position": Object {
+        "cn": "导演",
+        "en": "Director/Direction",
+        "id": 2,
+        "jp": "監督 シリーズ監督",
+      },
+      "staffs": Array [
+        Object {
+          "appearEps": "",
+          "person": Object {
+            "comment": 100,
+            "id": 40,
+            "images": Object {
+              "grid": "https://lain.bgm.tv/pic/crt/g/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "large": "https://lain.bgm.tv/pic/crt/l/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "medium": "https://lain.bgm.tv/pic/crt/m/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+              "small": "https://lain.bgm.tv/pic/crt/s/1e/ef/40_prsn_JQ7B0.jpg?r=1701577139",
+            },
+            "info": "性别 男 / 生日 1967-03-11",
+            "lock": false,
+            "name": "浅香守生",
+            "nameCN": "浅香守生",
+            "nsfw": false,
+            "type": 1,
           },
           "summary": "",
         },
