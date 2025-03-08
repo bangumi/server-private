@@ -42,7 +42,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.ADMIN_TOKEN }}
+          token: ${{ secrets.PAT }}
           title: 'bump: ${{ env.NEW_VERSION }}'
           branch: 'ci/release-next-version'
           body-path: changelog.md
