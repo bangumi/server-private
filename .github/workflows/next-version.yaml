@@ -1,11 +1,11 @@
-name: preview-changelog
+name: next-version
 
 on:
   push:
     branches: [master]
 
 concurrency:
-  group: preview-changelog
+  group: next-version
   cancel-in-progress: false
 
 permissions:
