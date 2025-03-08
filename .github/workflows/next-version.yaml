@@ -35,7 +35,7 @@ jobs:
       - run: python ./.github/scripts/avoid-changelog-ref.py changelog.md
 
       - run: |
-          jq ".version = \"${NEW_VERSION}\"" package.json > tmp
+          jq '.version = "${{ env.NEW_VERSION }}"' package.json > tmp
           rm package.json
           mv tmp package.json
 
