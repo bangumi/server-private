@@ -526,8 +526,8 @@ export async function setup(app: App) {
       const positions = data.map((d) =>
         convert.toSubjectStaffPositionType(subject.type, d.position),
       );
-      const positionIDs = positions.map((p) => p.id);
 
+      const positionIDs = positions.map((p) => p.id);
       const relationsData = await db
         .select()
         .from(schema.chiiPersonSubjects)
@@ -536,7 +536,8 @@ export async function setup(app: App) {
             op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
             op.inArray(schema.chiiPersonSubjects.position, positionIDs),
           ),
-        );
+        )
+        .orderBy(op.asc(schema.chiiPersonSubjects.position));
       const personIDs = relationsData.map((d) => d.personID);
       const persons = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
 
@@ -556,14 +557,11 @@ export async function setup(app: App) {
       }
 
       const result: res.ISubjectPosition[] = [];
-      for (const pid of positionIDs) {
-        const position = positions[pid];
-        if (position) {
-          result.push({
-            position: position,
-            staffs: relations[pid] || [],
-          });
-        }
+      for (const position of positions) {
+        result.push({
+          position: position,
+          staffs: relations[position.id] || [],
+        });
       }
 
       return {
