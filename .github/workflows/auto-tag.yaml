@@ -4,6 +4,10 @@ on:
   push:
     branches: [master]
 
+concurrency:
+  group: auto-tag
+  cancel-in-progress: false
+
 jobs:
   auto-tag:
     name: update
