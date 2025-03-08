@@ -24,6 +24,10 @@
       "matchDatasources": ["docker"],
       "matchPackageNames": ["gcr.io/distroless/**", "node"],
       "pinDigests": true
+    },
+    {
+      "matchManagers": ["git-submodules"],
+      "semanticCommitType": "build"
     }
   ]
 }

@@ -1,0 +1,58 @@
+name: preview-changelog
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: preview-changelog
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  github:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Get Latest Tag
+        id: tag
+        run: echo "FROM_TAG=$(jq .version package.json -r)" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up git-cliff
+        uses: kenji-miyake/setup-git-cliff@v1
+
+      - run: echo "NEW_VERSION=$(git cliff --tag=v${{ env.FROM_TAG }} --bumped-version)" >> $GITHUB_ENV
+
+      - run: echo -e "## ${NEW_VERSION}\n\n" > changelog.md
+
+      - run: git cliff --latest >> changelog.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: gh issue edit 1132 --body-file changelog.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: |
+          jq ".version = \"${NEW_VERSION#v}\"" package.json > tmp
+          rm package.json
+          mv tmp package.json
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.ADMIN_TOKEN }}
+          title: 'bump: ${{ env.NEW_VERSION }}'
+          branch: 'ci/release-next-version'
+          body-path: changelog.md
+          assignees: '@trim21'
+          commit-message: 'bump: ${{ env.NEW_VERSION }}'
