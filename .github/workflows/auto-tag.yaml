@@ -1,0 +1,33 @@
+name: auto-tag
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  auto-tag:
+    name: update
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: echo "CURRENT_VERSION=v$(jq .version ./package.json -r)" >> $GITHUB_ENV
+
+      - run: echo get tag ${{ env.CURRENT_VERSION }}
+
+      - uses: bbonkr/git-tag-check-action@v1
+        id: git_tag_check
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: '${{ env.CURRENT_VERSION }}'
+
+      - uses: rickstaa/action-create-tag@v1
+        if: ${{ steps.git_tag_check.outputs.tag == '' }}
+        id: 'tag_create'
+        with:
+          tag: '${{ env.CURRENT_VERSION }}'
+          tag_exists_error: false
+          message: 'bump: ${{ env.CURRENT_VERSION }}'
