@@ -28,7 +28,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up git-cliff
-        uses: kenji-miyake/setup-git-cliff@v1
+        uses: kenji-miyake/setup-git-cliff@v2
 
       - run: echo "NEW_VERSION=$(git cliff --tag=v${{ env.FROM_TAG }} --bumped-version)" >> $GITHUB_ENV
 
