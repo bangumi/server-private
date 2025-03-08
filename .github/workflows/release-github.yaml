@@ -12,18 +12,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
 
-      - name: Generate Changelog
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
-          writeToFile: false
-          restrictToTypes: feat,fix,revert
+      - name: Set up git-cliff
+        uses: kenji-miyake/setup-git-cliff@v1
+
+      - run: git cliff --current -o changelog.md
 
       - name: Upload GitHub Release
-        run: gh release create "${GITHUB_REF}" --notes "${CHANGELOG}"
+        run: gh release create "${GITHUB_REF}" -F changelog.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CHANGELOG: '${{ steps.changelog.outputs.changes }}'
