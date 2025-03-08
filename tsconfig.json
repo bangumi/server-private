@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "erasableSyntaxOnly": true,
     "experimentalDecorators": true,
     "module": "ESNext",
     "target": "ES2022",
