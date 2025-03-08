@@ -21,29 +21,20 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Get Latest Tag
-        id: tag
-        run: echo "FROM_TAG=$(jq .version package.json -r)" >> $GITHUB_ENV
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Set up git-cliff
         uses: kenji-miyake/setup-git-cliff@v2
 
-      - run: echo "NEW_VERSION=$(git cliff --tag=v${{ env.FROM_TAG }} --bumped-version)" >> $GITHUB_ENV
+      - run: echo "NEW_TAG=$(git cliff --bumped-version)" >> $GITHUB_ENV
+      - run: echo "NEW_VERSION=${NEW_TAG#v}" >> $GITHUB_ENV
 
-      - run: echo -e "## ${NEW_VERSION}\n\n" > changelog.md
-
-      - run: git cliff --latest >> changelog.md
+      - run: git cliff --unreleased -o changelog.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - run: gh issue edit 1132 --body-file changelog.md
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: python ./.github/scripts/avoid-changelog-ref.py changelog.md
 
       - run: |
-          jq ".version = \"${NEW_VERSION#v}\"" package.json > tmp
+          jq ".version = \"${NEW_VERSION}\"" package.json > tmp
           rm package.json
           mv tmp package.json
 
