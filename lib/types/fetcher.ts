@@ -290,23 +290,38 @@ export async function fetchSubjectIDsByFilter(
     filter.ids = ids.map((item) => item.id);
   }
   if (filter.tags) {
-    const ids = await db
-      .selectDistinct({ id: schema.chiiTagList.mainID })
+    const tagIndexes = await db
+      .select({ id: schema.chiiTagIndex.id })
+      .from(schema.chiiTagIndex)
+      .where(
+        op.and(
+          op.eq(schema.chiiTagIndex.cat, TagCat.Meta),
+          op.eq(schema.chiiTagIndex.type, filter.type),
+          op.inArray(
+            schema.chiiTagIndex.name,
+            filter.tags.map((t) => t.normalize('NFKC')),
+          ),
+        ),
+      );
+    if (!tagIndexes) {
+      return { data: [], total: 0 };
+    }
+    const tagIDs = tagIndexes.map((d) => d.id);
+    const tagList = await db
+      .selectDistinct({ mid: schema.chiiTagList.mainID })
       .from(schema.chiiTagList)
-      .innerJoin(schema.chiiTagIndex, op.eq(schema.chiiTagIndex.id, schema.chiiTagList.tagID))
       .where(
         op.and(
           op.eq(schema.chiiTagList.cat, TagCat.Meta),
           op.eq(schema.chiiTagList.type, filter.type),
-          op.inArray(schema.chiiTagIndex.name, filter.tags),
-          op.eq(schema.chiiTagIndex.cat, TagCat.Meta),
-          op.eq(schema.chiiTagIndex.type, filter.type),
+          op.inArray(schema.chiiTagList.tagID, tagIDs),
         ),
       );
+    const subjectIDs = tagList.map((d) => d.mid);
     if (filter.ids) {
-      filter.ids = filter.ids.filter((id) => ids.some((item) => item.id === id));
+      filter.ids = filter.ids.filter((id) => subjectIDs.includes(id));
     } else {
-      filter.ids = ids.map((item) => item.id);
+      filter.ids = subjectIDs;
     }
   }
 
