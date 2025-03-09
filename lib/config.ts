@@ -66,10 +66,11 @@ function Obj<T extends TProperties>(properties: T): TObject<T> {
   return t.Object(properties, { additionalProperties: false });
 }
 
-export enum Image {
-  S3 = 's3',
-  FileSystem = 'fs',
-}
+export const Image = Object.freeze({
+  S3: 's3',
+  FileSystem: 'fs',
+});
+export type Image = (typeof Image)[keyof typeof Image];
 
 export const schema = Obj({
   server: Obj({
