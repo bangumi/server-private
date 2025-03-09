@@ -117,6 +117,7 @@ export default tsEslint.config(
         },
       ],
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/no-deprecated': 'error',
       '@typescript-eslint/member-delimiter-style': [
         'error',
         {
