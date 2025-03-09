@@ -1,14 +1,14 @@
-// eslint-disable-next-line erasable-syntax-only/enums
-export enum IndexType {
-  User = 0,
-  Public = 1,
-  Award = 2,
-}
+export type IndexType = (typeof IndexType)[keyof typeof IndexType];
+export const IndexType = Object.freeze({
+  User: 0,
+  Public: 1,
+  Award: 2,
+});
 
-// eslint-disable-next-line erasable-syntax-only/enums
-export enum IndexRelatedCategory {
-  Subject = 0,
-  Character = 1,
-  Person = 2,
-  Ep = 3,
-}
+export type IndexRelatedCategory = (typeof IndexRelatedCategory)[keyof typeof IndexRelatedCategory];
+export const IndexRelatedCategory = Object.freeze({
+  Subject: 0,
+  Character: 1,
+  Person: 2,
+  Ep: 3,
+});
