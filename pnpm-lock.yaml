@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  fastify-socket.io:
+    hash: 5d0b9e07e81266f8ac4b5cea2f9f5c8ec46f7e62958394df3d45fd497061679c
+    path: patches/fastify-socket.io.patch
+
 importers:
 
   .:
@@ -79,7 +84,7 @@ importers:
         version: 12.1.0(fastify@5.2.1)
       fastify-socket.io:
         specifier: 5.1.0
-        version: 5.1.0(fastify@5.2.1)(socket.io@4.8.1)
+        version: 5.1.0(patch_hash=5d0b9e07e81266f8ac4b5cea2f9f5c8ec46f7e62958394df3d45fd497061679c)(fastify@5.2.1)(socket.io@4.8.1)
       got:
         specifier: 14.4.6
         version: 14.4.6
@@ -8765,7 +8770,7 @@ snapshots:
 
   fastify-plugin@5.0.1: {}
 
-  fastify-socket.io@5.1.0(fastify@5.2.1)(socket.io@4.8.1):
+  fastify-socket.io@5.1.0(patch_hash=5d0b9e07e81266f8ac4b5cea2f9f5c8ec46f7e62958394df3d45fd497061679c)(fastify@5.2.1)(socket.io@4.8.1):
     dependencies:
       fastify: 5.2.1
       fastify-plugin: 4.5.1

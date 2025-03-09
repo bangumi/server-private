@@ -1,0 +1,24 @@
+diff --git a/package.json b/package.json
+index 966af0c67347ead120d201dc6ace8d6fb4298566..88fc403ec73462b2a9ee9fc574a7f0acf3b54134 100644
+--- a/package.json
++++ b/package.json
+@@ -31,18 +31,9 @@
+     "dist"
+   ],
+   "peerDependencies": {
+-    "fastify": "4.x.x",
++    "fastify": "^4 || ^5",
+     "socket.io": ">=4"
+   },
+   "scripts": {
+-    "build": "tsc --noEmit && tsup-node",
+-    "format": "rome format --write .",
+-    "lint": "rome check .",
+-    "preinstall": "npx only-allow pnpm",
+-    "prepublish": "pnpm build",
+-    "release": "pnpm build && changeset publish",
+-    "test": "tsx --test ./test/*.ts",
+-    "test:watch": "tsx --watch --test ./test/*.ts",
+-    "test:coverage": "c8 --all --src src --reporter lcov --reporter text tsx --test ./test/*.ts"
+   }
+ }
