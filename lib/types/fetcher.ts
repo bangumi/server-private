@@ -375,7 +375,7 @@ export async function fetchSubjectIDsByFilter(
     if (!filter.ids) {
       return { data: [], total: 0 };
     }
-    query.orderBy(op.sql`find_in_set(id, ${filter.ids.join(',')})`);
+    query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${filter.ids.join(',')})`);
   } else {
     query.orderBy(...sorts);
   }
