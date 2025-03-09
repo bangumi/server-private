@@ -12,8 +12,10 @@ export const enum CommentState {
   AdminOffTopic = 8, // 折叠
 }
 
-export const enum TopicDisplay {
-  Ban = 0, // 软删除
-  Normal = 1,
-  Review = 2,
-}
+export const TopicDisplay = Object.freeze({
+  Ban: 0, // 软删除
+  Normal: 1,
+  Review: 2,
+});
+
+export type TopicDisplay = (typeof TopicDisplay)[keyof typeof TopicDisplay];

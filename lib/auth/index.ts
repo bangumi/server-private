@@ -33,22 +33,22 @@ export const NotAllowedError = createError<[string]>(
   403,
 );
 
-export const enum UserGroup {
-  Unknown = 0,
-  Admin = 1,
-  BangumiAdmin = 2,
-  WindowAdmin = 3,
-  Quite = 4,
-  Banned = 5,
+export const UserGroup = Object.freeze({
+  Unknown: 0 as number,
+  Admin: 1 as number,
+  BangumiAdmin: 2 as number,
+  WindowAdmin: 3 as number,
+  Quite: 4 as number,
+  Banned: 5 as number,
   // 不太清楚具体是什么
-  _6 = 6,
+  _6: 6 as number,
   // 不太清楚具体是什么
-  _7 = 7,
-  CharacterAdmin = 8,
-  WikiAdmin = 9,
-  Normal = 10,
-  WikiEditor = 11,
-}
+  _7: 7 as number,
+  CharacterAdmin: 8 as number,
+  WikiAdmin: 9 as number,
+  Normal: 10 as number,
+  WikiEditor: 11 as number,
+} as const);
 
 const nsfwRestrictedUIDs = new Set([
   873244, // by @everpcpc
@@ -61,7 +61,7 @@ export interface IAuth {
   permission: Readonly<Permission>;
   /** Unix time seconds */
   regTime: number;
-  groupID: UserGroup;
+  groupID: number;
 }
 
 export async function byHeader(key: string | string[] | undefined): Promise<IAuth | null> {

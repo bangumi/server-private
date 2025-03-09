@@ -1,8 +1,8 @@
 import * as php from '@trim21/php-serialize';
+import Keyv from 'keyv';
 
 import { db, op, schema } from '@app/drizzle';
 import { logger } from '@app/lib/logger.ts';
-import NodeCache from '@app/vendor/node-cache.ts';
 
 export interface Permission {
   app_erase?: boolean;
@@ -46,11 +46,11 @@ const defaultPermission: Permission = {
   ban_visit: true,
 };
 
-const permissionCache = new NodeCache({ stdTTL: 60 * 10 });
+const permissionCache = new Keyv({ ttl: 60 * 10 });
 
 /** Cached locally */
 export async function fetchPermission(userGroup: number): Promise<Readonly<Permission>> {
-  const cached = await permissionCache.get(userGroup);
+  const cached = await permissionCache.get<Permission>(userGroup.toString());
   if (cached) {
     return cached;
   }
@@ -75,6 +75,6 @@ export async function fetchPermission(userGroup: number): Promise<Readonly<Permi
       ),
     ),
   );
-  permissionCache.set(userGroup, permission);
+  await permissionCache.set<Permission>(userGroup.toString(), permission);
   return permission;
 }
