@@ -165,6 +165,8 @@
       "@confluentinc/kafka-javascript",
       "esbuild"
     ],
-    "patchedDependencies": {}
+    "patchedDependencies": {
+      "fastify-socket.io": "patches/fastify-socket.io.patch"
+    }
   }
 }
