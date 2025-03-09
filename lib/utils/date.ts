@@ -1,11 +1,15 @@
 import { BadRequestError } from '@app/lib/error.ts';
 
 export class DATE {
-  constructor(
-    readonly year: number,
-    readonly month = 0,
-    readonly day = 0,
-  ) {}
+  readonly year: number;
+  readonly month: number;
+  readonly day: number;
+
+  constructor(year: number, month = 0, day = 0) {
+    this.year = year;
+    this.month = month;
+    this.day = day;
+  }
 
   static parse(s: string): DATE {
     const [year, month, day] = s.split('-');

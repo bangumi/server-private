@@ -18,10 +18,10 @@ const nsfwDescription = `无权限的用户会直接忽略此字段，不会返�
 \`null\` 或者 \`true\` 会返回包含 R18 的所有搜索结果。
 \`false\` 只会返回非 R18 条目。`;
 
-export enum IFilterMode {
-  All = 'all',
-  Friends = 'friends',
-}
+export const IFilterMode = Object.freeze({
+  All: 'all',
+  Friends: 'friends',
+});
 
 export const FilterMode = t.String({
   $id: 'FilterMode',

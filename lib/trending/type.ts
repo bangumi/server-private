@@ -5,12 +5,13 @@ export interface TrendingItem {
   total: number;
 }
 
-export enum TrendingPeriod {
-  All = 'all',
-  Day = 'day',
-  Week = 'week',
-  Month = 'month',
-}
+export const TrendingPeriod = Object.freeze({
+  All: 'all',
+  Day: 'day',
+  Week: 'week',
+  Month: 'month',
+});
+export type TrendingPeriod = (typeof TrendingPeriod)[keyof typeof TrendingPeriod];
 
 export function getTrendingDateline(period: TrendingPeriod): number {
   const now = DateTime.now().toUnixInteger();

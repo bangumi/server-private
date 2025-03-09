@@ -1,28 +1,31 @@
-export enum TimelineSource {
-  Web = 0,
-  Mobile = 1,
-  OnAir = 2,
-  InTouch = 3,
-  WP = 4,
-  API = 5,
-  Next = 6,
-}
+/** 时间线来源 */
+export const TimelineSource = Object.freeze({
+  Web: 0,
+  Mobile: 1,
+  OnAir: 2,
+  InTouch: 3,
+  WP: 4,
+  API: 5,
+  Next: 6,
+});
+
+export type TimelineSource = (typeof TimelineSource)[keyof typeof TimelineSource];
 
 /** 时间线分类 */
-export enum TimelineCat {
+export const TimelineCat = Object.freeze({
   /**
    * 日常行为
    *
    * 0 = 神秘的行动, 1 = 注册, 2 = 添加好友, 3 = 加入小组, 4 = 创建小组, 5 = 加入乐园,
    */
-  Daily = 1,
+  Daily: 1,
 
   /**
    * 维基操作
    *
    * 1 = 添加了新书, 2 = 添加了新动画, 3 = 添加了新唱片, 4 = 添加了新游戏, 5 = 添加了新图书系列, 6 = 添加了新影视,
    */
-  Wiki = 2,
+  Wiki: 2,
 
   /**
    * 收藏条目
@@ -33,90 +36,100 @@ export enum TimelineCat {
    * Batch: 1 = 本书, 2 = 部番组, 3 = 张音乐, 4 = 部游戏, 5 = 本书, 6 = 部番组, 7 = 张音乐, 8 = 部游戏, 9 = 本书, 10 = 部番组,
    * 11 = 张音乐, 12 = 部游戏,
    */
-  Subject = 3,
+  Subject: 3,
 
   /**
    * 收视进度
    *
    * 0 = batch(完成), 1 = 想看, 2 = 看过, 3 = 抛弃,
    */
-  Progress = 4,
+  Progress: 4,
 
   /**
    * 状态
    *
    * 0 = 更新签名, 1 = 吐槽, 2 = 修改昵称,
    */
-  Status = 5,
+  Status: 5,
 
   /** 日志 */
-  Blog = 6,
+  Blog: 6,
 
   /** 目录 */
-  Index = 7,
+  Index: 7,
 
   /**
    * 人物
    *
    * Cat: 1 = 角色, 2 = 人物
    */
-  Mono = 8,
+  Mono: 8,
 
   /**
    * 天窗
    *
    * 0 = 添加作品, 1 = 收藏作品, 2 = 创建社团, 3 = 关注社团, 4 = 关注活动, 5 = 参加活动
    */
-  Doujin = 9,
-}
+  Doujin: 9,
+});
+
+export type TimelineCat = (typeof TimelineCat)[keyof typeof TimelineCat];
 
 /** 时间线 `cat = TimelineCat.Daily` 时的 `type` */
-export enum TimelineDailyType {
+export const TimelineDailyType = Object.freeze({
   /** 神秘的行动 */
-  Mystery = 0,
+  Mystery: 0,
 
   /** 注册 */
-  Register = 1,
+  Register: 1,
 
   /** 添加好友 */
-  AddFriend = 2,
+  AddFriend: 2,
 
   /** 加入小组 */
-  JoinGroup = 3,
+  JoinGroup: 3,
 
   /** 创建小组 */
-  CreateGroup = 4,
+  CreateGroup: 4,
 
   /** 加入乐园 */
-  JoinEden = 5,
-}
+  JoinEden: 5,
+});
 
-/** 时间线 `cat = TimelineCat.status` 时的 `type` */
-export enum TimelineStatusType {
+export type TimelineDailyType = (typeof TimelineDailyType)[keyof typeof TimelineDailyType];
+
+/** 时间线 `cat = TimelineCat.Status` 时的 `type` */
+export const TimelineStatusType = Object.freeze({
   /** 更新签名 */
-  Sign = 0,
+  Sign: 0,
 
   /** 吐槽 */
-  Tsukkomi = 1,
+  Tsukkomi: 1,
 
   /** 修改昵称 */
-  Nickname = 2,
-}
+  Nickname: 2,
+});
+
+export type TimelineStatusType = (typeof TimelineStatusType)[keyof typeof TimelineStatusType];
 
 /** 时间线 `cat = TimelineCat.Mono` 时的 `type` */
-export enum TimelineMonoType {
+export const TimelineMonoType = Object.freeze({
   /** 创建 */
-  Created = 0,
+  Created: 0,
 
   /** 收藏 */
-  Collected = 1,
-}
+  Collected: 1,
+});
+
+export type TimelineMonoType = (typeof TimelineMonoType)[keyof typeof TimelineMonoType];
 
 /** 时间线 `cat = TimelineCat.Mono` 时 memo 里的 `cat` */
-export enum TimelineMonoCat {
+export const TimelineMonoCat = Object.freeze({
   /** 角色 */
-  Character = 1,
+  Character: 1,
 
   /** 人物 */
-  Person = 2,
-}
+  Person: 2,
+});
+
+export type TimelineMonoCat = (typeof TimelineMonoCat)[keyof typeof TimelineMonoCat];

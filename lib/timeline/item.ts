@@ -14,7 +14,7 @@ import { TimelineCat, TimelineDailyType, TimelineMonoCat, TimelineStatusType } f
 
 export async function parseTimelineMemo(
   auth: Readonly<IAuth>,
-  cat: TimelineCat,
+  cat: number,
   type: number,
   related: string,
   batch: boolean,
@@ -298,6 +298,8 @@ export async function parseTimelineMemo(
       return {};
     }
   }
+
+  return {};
 }
 
 export async function toTimeline(

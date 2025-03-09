@@ -8,16 +8,18 @@ import type * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 
-export enum LikeType {
-  SubjectCover = 1,
+export const LikeType = Object.freeze({
+  SubjectCover: 1,
 
-  GroupReply = 8,
+  GroupReply: 8,
 
-  SubjectReply = 10,
-  EpisodeReply = 11,
+  SubjectReply: 10,
+  EpisodeReply: 11,
 
-  SubjectCollect = 40,
-}
+  SubjectCollect: 40,
+});
+
+export type LikeType = (typeof LikeType)[keyof typeof LikeType];
 
 const ALLOWED_REACTION_TYPES: ReadonlySet<number> = Object.freeze(
   new Set([

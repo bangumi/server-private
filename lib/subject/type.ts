@@ -1,3 +1,4 @@
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum SubjectType {
   Book = 1, // 书籍
   Anime = 2, // 动画
@@ -7,19 +8,21 @@ export enum SubjectType {
 }
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
 
-export enum EpisodeType {
+export const EpisodeType = Object.freeze({
   /** 本篇 */
-  Normal = 0,
+  Normal: 0,
   /** 特别篇 */
-  Special = 1,
-  OP = 2,
-  ED = 3,
+  Special: 1,
+  OP: 2,
+  ED: 3,
   /** 预告/宣传/广告 */
-  Pre = 4,
-  MAD = 5,
-  Other = 6,
-}
+  Pre: 4,
+  MAD: 5,
+  Other: 6,
+});
+export type EpisodeType = (typeof EpisodeType)[keyof typeof EpisodeType];
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum CollectionType {
   Wish = 1,
   Collect = 2,
@@ -50,32 +53,33 @@ export function getCollectionTypeField(type: CollectionType) {
   }
 }
 
-export enum CollectionPrivacy {
-  Public = 0,
-  Private = 1,
-  Ban = 2,
-}
-export const SubjectInterestPrivacyValues = new Set([0, 1, 2]);
+export const CollectionPrivacy = Object.freeze({
+  Public: 0, // 公共
+  Private: 1, // 私密
+  Ban: 2, // 禁止
+});
+export const SubjectInterestPrivacyValues = new Set(Object.values(CollectionPrivacy));
 
-export enum EpisodeCollectionStatus {
-  None = 0, // 撤消/删除
-  Wish = 1, // 想看
-  Done = 2, // 看过
-  Dropped = 3, // 抛弃
-}
+export const EpisodeCollectionStatus = Object.freeze({
+  None: 0, // 撤消/删除
+  Wish: 1, // 想看
+  Done: 2, // 看过
+  Dropped: 3, // 抛弃
+});
 
 export interface UserEpisodeStatusItem {
   eid: number;
-  type: EpisodeCollectionStatus;
+  type: number;
 }
 
-export enum SubjectSort {
-  Rank = 'rank',
-  Trends = 'trends',
-  Collects = 'collects',
-  Date = 'date',
-  Title = 'title',
-}
+export const SubjectSort = Object.freeze({
+  Rank: 'rank',
+  Trends: 'trends',
+  Collects: 'collects',
+  Date: 'date',
+  Title: 'title',
+});
+export type SubjectSort = (typeof SubjectSort)[keyof typeof SubjectSort];
 
 export interface SubjectFilter {
   type: SubjectType;

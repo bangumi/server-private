@@ -1101,7 +1101,7 @@ export async function setup(app: App) {
       }
 
       const state = CommentState.Normal;
-      let display = TopicDisplay.Normal;
+      let display: TopicDisplay = TopicDisplay.Normal;
       if (dam.needReview(title) || dam.needReview(content)) {
         display = TopicDisplay.Review;
       }

@@ -3,19 +3,13 @@ import { DateTime } from 'luxon';
 import { op, schema, type Txn } from '@app/drizzle';
 import { dam } from '@app/lib/dam';
 
-export enum TagCat {
-  /** 条目, 对应的 type: 条目类型 */
-  Subject = 0,
-
-  /** 入口, 对应的 type: blog = 1 */
-  Entry = 1,
-
-  /** 同人, 对应的 type: doujin = 1 和 club = 2 */
-  Doujin = 2,
-
-  /** Wiki, 对应的 type: 条目类型 */
-  Meta = 3,
-}
+export type TagCat = (typeof TagCat)[keyof typeof TagCat];
+export const TagCat = Object.freeze({
+  Subject: 0,
+  Entry: 1,
+  Doujin: 2,
+  Meta: 3,
+});
 
 export function validateTags(tags: string[]): string[] {
   const result = new Set<string>();

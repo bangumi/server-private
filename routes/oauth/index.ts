@@ -26,10 +26,10 @@ const ACCESS_TOKEN_TTL_SECONDS = 1209600;
 // refresh in 3 month
 const REFRESH_TOKEN_TTL_SECONDS = 8035200;
 
-export const enum TokenType {
-  OauthToken = 0,
-  AccessToken = 1,
-}
+export const TokenType = Object.freeze({
+  OauthToken: 0,
+  AccessToken: 1,
+});
 
 interface TokenInfo {
   created_at: string; // RFC3339 string
