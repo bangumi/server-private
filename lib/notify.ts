@@ -12,51 +12,52 @@ import { NotFoundError, UnreachableError } from './error.ts';
  *
  * Todo 参照下面的 `_settings`
  */
-// eslint-disable-next-line erasable-syntax-only/enums
-export const enum NotifyType {
-  Unknown = 0,
-  GroupTopicReply = 1,
-  GroupPostReply = 2,
-  IndexTopicReply = 3,
-  IndexPostReply = 4,
-  CharacterTopicReply = 5,
-  CharacterPostReply = 6,
-  SubjectTopicReply = 7,
-  SubjectPostReply = 8,
-  _9,
-  _10,
-  _11,
-  _12,
-  _13,
-  RequestFriend = 14,
-  AcceptFriend = 15,
-  _16,
-  _17,
-  _18,
-  _19,
-  _20,
-  _21,
-  _22,
-  _23,
-  _24,
-  _25,
-  _26,
-  _27,
-  _28,
-  _29,
-  _30,
-  _31,
-  _32,
-  _33,
-  _34,
-}
+export const NotifyType = Object.freeze({
+  Unknown: 0,
+  GroupTopicReply: 1,
+  GroupPostReply: 2,
+  IndexTopicReply: 3,
+  IndexPostReply: 4,
+  CharacterTopicReply: 5,
+  CharacterPostReply: 6,
+  SubjectTopicReply: 7,
+  SubjectPostReply: 8,
+  _9: 9,
+  _10: 10,
+  _11: 11,
+  _12: 12,
+  _13: 13,
+  RequestFriend: 14,
+  AcceptFriend: 15,
+  _16: 16,
+  _17: 17,
+  _18: 18,
+  _19: 19,
+  _20: 20,
+  _21: 21,
+  _22: 22,
+  _23: 23,
+  _24: 24,
+  _25: 25,
+  _26: 26,
+  _27: 27,
+  _28: 28,
+  _29: 29,
+  _30: 30,
+  _31: 31,
+  _32: 32,
+  _33: 33,
+  _34: 34,
+});
 
-// eslint-disable-next-line erasable-syntax-only/enums
-const enum PrivacyFilter {
-  All = 0,
-  Friends = 1,
-  None = 2,
-}
+export type NotifyType = (typeof NotifyType)[keyof typeof NotifyType];
+
+export const PrivacyFilter = Object.freeze({
+  All: 0,
+  Friends: 1,
+  None: 2,
+});
+export type PrivacyFilter = (typeof PrivacyFilter)[keyof typeof PrivacyFilter];
 
 interface Creation {
   destUserID: number;
@@ -72,7 +73,7 @@ interface Creation {
 
 export interface INotify {
   id: number;
-  type: NotifyType;
+  type: number;
   createdAt: number;
   fromUid: number;
   relatedID: number;
