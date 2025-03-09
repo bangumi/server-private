@@ -58,7 +58,7 @@ export interface TimelineMessage {
     };
     episode: {
       id: number;
-      status: EpisodeCollectionStatus;
+      status: number;
     };
     createdAt: number;
     source: TimelineSource;

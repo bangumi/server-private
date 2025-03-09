@@ -8,7 +8,6 @@ export enum SubjectType {
 }
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
 
-// eslint-disable-next-line erasable-syntax-only/enums
 export const EpisodeType = Object.freeze({
   /** 本篇 */
   Normal: 0,
@@ -67,8 +66,6 @@ export const EpisodeCollectionStatus = Object.freeze({
   Done: 2, // 看过
   Dropped: 3, // 抛弃
 });
-/** @deprecated Use number */
-export type EpisodeCollectionStatus = number;
 
 export interface UserEpisodeStatusItem {
   eid: number;
