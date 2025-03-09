@@ -1,6 +1,6 @@
 import fastifyStatic from '@fastify/static';
 import type { RenderOptions } from 'altair-static';
-import { getDistDirectory, renderAltair, renderInitialOptions } from 'altair-static';
+import { getDistDirectory, renderAltair, renderInitSnippet } from 'altair-static';
 import type { FastifyPluginAsync } from 'fastify/types/plugin';
 
 export interface AltairFastifyPluginOptions extends RenderOptions {
@@ -40,7 +40,7 @@ export const fastifyAltairPlugin: FastifyPluginAsync<AltairFastifyPluginOptions>
   });
 
   if (renderOptions.serveInitialOptionsInSeperateRequest) {
-    const initialOptions = renderInitialOptions(renderOptions);
+    const initialOptions = renderInitSnippet(renderOptions);
     const initOptPath = path + '/initial_options.js';
 
     fastify.get(initOptPath, (_req, res) => {
