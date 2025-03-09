@@ -310,7 +310,13 @@ export async function fetchSubjectIDsByFilter(
     const tagList = await db
       .selectDistinct({ mid: schema.chiiTagList.mainID })
       .from(schema.chiiTagList)
-      .where(op.inArray(schema.chiiTagList.tagID, tagIDs));
+      .where(
+        op.and(
+          op.eq(schema.chiiTagList.cat, TagCat.Meta),
+          op.eq(schema.chiiTagList.type, filter.type),
+          op.inArray(schema.chiiTagList.tagID, tagIDs),
+        ),
+      );
     const subjectIDs = tagList.map((d) => d.mid);
     if (filter.ids) {
       filter.ids = filter.ids.filter((id) => subjectIDs.includes(id));
