@@ -53,13 +53,12 @@ export function getCollectionTypeField(type: CollectionType) {
   }
 }
 
-// eslint-disable-next-line erasable-syntax-only/enums
-export enum CollectionPrivacy {
-  Public = 0,
-  Private = 1,
-  Ban = 2,
-}
-export const SubjectInterestPrivacyValues = new Set([0, 1, 2]);
+export const CollectionPrivacy = Object.freeze({
+  Public: 0, // 公共
+  Private: 1, // 私密
+  Ban: 2, // 禁止
+});
+export const SubjectInterestPrivacyValues = new Set(Object.values(CollectionPrivacy));
 
 // eslint-disable-next-line erasable-syntax-only/enums
 export enum EpisodeCollectionStatus {
@@ -74,14 +73,14 @@ export interface UserEpisodeStatusItem {
   type: EpisodeCollectionStatus;
 }
 
-// eslint-disable-next-line erasable-syntax-only/enums
-export enum SubjectSort {
-  Rank = 'rank',
-  Trends = 'trends',
-  Collects = 'collects',
-  Date = 'date',
-  Title = 'title',
-}
+export const SubjectSort = Object.freeze({
+  Rank: 'rank',
+  Trends: 'trends',
+  Collects: 'collects',
+  Date: 'date',
+  Title: 'title',
+});
+export type SubjectSort = (typeof SubjectSort)[keyof typeof SubjectSort];
 
 export interface SubjectFilter {
   type: SubjectType;
