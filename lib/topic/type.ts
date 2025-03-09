@@ -1,3 +1,4 @@
+// eslint-disable-next-line erasable-syntax-only/enums
 export const enum CommentState {
   Normal = 0, // 正常
   // CommentStateAdminCloseTopic 管理员关闭主题 https://bgm.tv/subject/topic/12629#post_108127

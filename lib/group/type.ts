@@ -1,9 +1,11 @@
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum GroupFilterMode {
   All = 'all',
   Joined = 'joined',
   Managed = 'managed',
 }
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum GroupTopicFilterMode {
   All = 'all',
   Joined = 'joined',
@@ -11,6 +13,7 @@ export enum GroupTopicFilterMode {
   Replied = 'replied',
 }
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum GroupSort {
   Members = 'members',
   Posts = 'posts',
@@ -19,6 +22,7 @@ export enum GroupSort {
   Updated = 'updated',
 }
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum GroupMemberRole {
   Visitor = -2,
   Guest = -1,

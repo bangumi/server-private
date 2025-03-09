@@ -1,3 +1,4 @@
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum SubjectType {
   Book = 1, // 书籍
   Anime = 2, // 动画
@@ -7,6 +8,7 @@ export enum SubjectType {
 }
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum EpisodeType {
   /** 本篇 */
   Normal = 0,
@@ -20,6 +22,7 @@ export enum EpisodeType {
   Other = 6,
 }
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum CollectionType {
   Wish = 1,
   Collect = 2,
@@ -50,6 +53,7 @@ export function getCollectionTypeField(type: CollectionType) {
   }
 }
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum CollectionPrivacy {
   Public = 0,
   Private = 1,
@@ -57,6 +61,7 @@ export enum CollectionPrivacy {
 }
 export const SubjectInterestPrivacyValues = new Set([0, 1, 2]);
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum EpisodeCollectionStatus {
   None = 0, // 撤消/删除
   Wish = 1, // 想看
@@ -69,6 +74,7 @@ export interface UserEpisodeStatusItem {
   type: EpisodeCollectionStatus;
 }
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum SubjectSort {
   Rank = 'rank',
   Trends = 'trends',

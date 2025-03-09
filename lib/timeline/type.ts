@@ -1,3 +1,4 @@
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum TimelineSource {
   Web = 0,
   Mobile = 1,
@@ -9,6 +10,7 @@ export enum TimelineSource {
 }
 
 /** 时间线分类 */
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum TimelineCat {
   /**
    * 日常行为
@@ -71,6 +73,7 @@ export enum TimelineCat {
 }
 
 /** 时间线 `cat = TimelineCat.Daily` 时的 `type` */
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum TimelineDailyType {
   /** 神秘的行动 */
   Mystery = 0,
@@ -92,6 +95,7 @@ export enum TimelineDailyType {
 }
 
 /** 时间线 `cat = TimelineCat.status` 时的 `type` */
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum TimelineStatusType {
   /** 更新签名 */
   Sign = 0,
@@ -104,6 +108,7 @@ export enum TimelineStatusType {
 }
 
 /** 时间线 `cat = TimelineCat.Mono` 时的 `type` */
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum TimelineMonoType {
   /** 创建 */
   Created = 0,
@@ -113,6 +118,7 @@ export enum TimelineMonoType {
 }
 
 /** 时间线 `cat = TimelineCat.Mono` 时 memo 里的 `cat` */
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum TimelineMonoCat {
   /** 角色 */
   Character = 1,

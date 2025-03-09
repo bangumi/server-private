@@ -3,6 +3,7 @@ import { DateTime } from 'luxon';
 import { op, schema, type Txn } from '@app/drizzle';
 import { dam } from '@app/lib/dam';
 
+// eslint-disable-next-line erasable-syntax-only/enums
 export enum TagCat {
   /** 条目, 对应的 type: 条目类型 */
   Subject = 0,

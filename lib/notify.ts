@@ -12,6 +12,7 @@ import { NotFoundError, UnreachableError } from './error.ts';
  *
  * Todo 参照下面的 `_settings`
  */
+// eslint-disable-next-line erasable-syntax-only/enums
 export const enum NotifyType {
   Unknown = 0,
   GroupTopicReply = 1,
@@ -50,6 +51,7 @@ export const enum NotifyType {
   _34,
 }
 
+// eslint-disable-next-line erasable-syntax-only/enums
 const enum PrivacyFilter {
   All = 0,
   Friends = 1,
