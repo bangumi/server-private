@@ -1,6 +1,6 @@
 import { CommentState } from './type.ts';
 
-export function canReplyPost(state: CommentState) {
+export function canReplyPost(state: number) {
   switch (state) {
     // 管理员操作记录不能回复
     case CommentState.AdminCloseTopic:
@@ -14,7 +14,7 @@ export function canReplyPost(state: CommentState) {
   }
 }
 
-export function canEditTopic(state: CommentState) {
+export function canEditTopic(state: number) {
   switch (state) {
     case CommentState.AdminReopen:
     case CommentState.AdminPin:

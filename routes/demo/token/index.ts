@@ -5,12 +5,8 @@ import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { randomBase62String } from '@app/lib/utils/index.ts';
 import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { TokenType } from '@app/routes/oauth';
 import type { App } from '@app/routes/type.ts';
-
-export const enum TokenType {
-  OauthToken = 0,
-  AccessToken = 1,
-}
 
 interface TokenInfo {
   created_at: string; // RFC3339 string

@@ -264,7 +264,7 @@ export async function setup(app: App) {
       if (!slimSubject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
-      let privacy: CollectionPrivacy | undefined;
+      let privacy: number | undefined;
       if (priv !== undefined) {
         privacy = priv ? CollectionPrivacy.Private : CollectionPrivacy.Public;
       }
