@@ -107,7 +107,7 @@ importers:
         specifier: 4.1.0
         version: 4.1.0
       keyv:
-        specifier: ^5.3.1
+        specifier: 5.3.1
         version: 5.3.1
       liquidjs:
         specifier: 10.21.0
