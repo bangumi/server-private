@@ -237,7 +237,7 @@ importers:
         specifier: 3.8.3
         version: 3.8.3(eslint@9.22.0(jiti@2.4.2))
       eslint-plugin-erasable-syntax-only:
-        specifier: ^0.3.0
+        specifier: 0.3.0
         version: 0.3.0(@typescript-eslint/parser@8.26.0(eslint@9.22.0(jiti@2.4.2))(typescript@5.8.2))(eslint@9.22.0(jiti@2.4.2))(typescript@5.8.2)
       eslint-plugin-promise:
         specifier: 7.2.1
