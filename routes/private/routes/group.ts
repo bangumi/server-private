@@ -531,7 +531,7 @@ export async function setup(app: App) {
       }
       const group = await fetcher.fetchSlimGroupByID(topic.gid, auth.allowNsfw);
       if (!group) {
-        throw new UnexpectedNotFoundError(`group ${topic.gid}`);
+        throw new NotFoundError(`group ${topic.gid}`);
       }
       const creator = await fetcher.fetchSlimUserByID(topic.uid);
       if (!creator) {
