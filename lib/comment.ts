@@ -22,6 +22,22 @@ type commentTablesWithoutState =
   | typeof schema.chiiBlogComments
   | typeof schema.chiiTimelineComments;
 
+function CanViewComment(state: number): boolean {
+  switch (state) {
+    case CommentState.AdminDelete:
+    case CommentState.UserDelete:
+    case CommentState.AdminReopen:
+    case CommentState.AdminCloseTopic:
+    case CommentState.AdminSilentTopic: {
+      return false;
+    }
+
+    default: {
+      return true;
+    }
+  }
+}
+
 export class CommentWithState {
   private readonly table: commentTablesWithState;
 
@@ -44,16 +60,17 @@ export class CommentWithState {
       allReactions = await Reaction.fetchByMainID(mainID, LikeType.EpisodeReply);
     }
     for (const d of data) {
+      const canViewContent = CanViewComment(d.state);
       const user = users[d.uid];
       const comment: res.ICommentBase = {
         id: d.id,
         mainID: d.mid,
         creatorID: d.uid,
         relatedID: d.related,
-        content: d.content,
+        content: canViewContent ? d.content : '',
         createdAt: d.createdAt,
         state: d.state,
-        reactions: allReactions[d.id],
+        reactions: canViewContent ? allReactions[d.id] : [],
       };
       if (d.related === 0) {
         comments.push({ ...comment, replies: [], user });
