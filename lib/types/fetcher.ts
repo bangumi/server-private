@@ -295,7 +295,7 @@ export async function fetchSubjectIDsByFilter(
       .from(schema.chiiTagIndex)
       .where(
         op.and(
-          op.eq(schema.chiiTagIndex.cat, TagCat.Meta),
+          op.eq(schema.chiiTagIndex.cat, TagCat.Subject),
           op.eq(schema.chiiTagIndex.type, filter.type),
           op.inArray(
             schema.chiiTagIndex.name,
@@ -312,7 +312,7 @@ export async function fetchSubjectIDsByFilter(
       .from(schema.chiiTagList)
       .where(
         op.and(
-          op.eq(schema.chiiTagList.cat, TagCat.Meta),
+          op.eq(schema.chiiTagList.cat, TagCat.Subject),
           op.eq(schema.chiiTagList.type, filter.type),
           op.inArray(schema.chiiTagList.tagID, tagIDs),
         ),
