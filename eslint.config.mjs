@@ -1,5 +1,6 @@
 import eslint from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
+import erasableSyntaxOnly from 'eslint-plugin-erasable-syntax-only';
 import pluginPromise from 'eslint-plugin-promise';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import eslintPluginTsDoc from 'eslint-plugin-tsdoc';
@@ -34,7 +35,7 @@ export default tsEslint.config(
       },
     },
   },
-  eslintPluginUnicorn.configs['flat/recommended'],
+  eslintPluginUnicorn.configs.recommended,
   {
     rules: {
       'unicorn/import-style': 'off',
@@ -117,6 +118,7 @@ export default tsEslint.config(
         },
       ],
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/no-deprecated': 'error',
       '@typescript-eslint/member-delimiter-style': [
         'error',
         {
@@ -210,4 +212,5 @@ export default tsEslint.config(
     },
   },
   eslintConfigPrettier,
+  erasableSyntaxOnly.configs.recommended,
 );

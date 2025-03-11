@@ -2,26 +2,27 @@ import { stage } from '@app/lib/config.ts';
 import redis from '@app/lib/redis.ts';
 import { RedisLimiter } from '@app/lib/utils/rate-limit/redis.ts';
 
-export const enum LimitAction {
-  App = 'app',
-  Blog = 'blog',
-  Character = 'character',
-  ClubTopics = 'club_topics',
-  Comment = 'comment',
-  CrtPost = 'crt_post',
-  Doujin = 'doujin',
-  Episode = 'episode',
-  Event = 'event',
-  EventTopics = 'event_topics',
-  Group = 'group',
-  Index = 'index',
-  Like = 'like',
-  Person = 'person',
-  PrsnPost = 'prsn_post',
-  Relationship = 'relationship',
-  Subject = 'subject',
-  Timeline = 'timeline',
-}
+export type LimitAction = (typeof LimitAction)[keyof typeof LimitAction];
+export const LimitAction = Object.freeze({
+  App: 'app',
+  Blog: 'blog',
+  Character: 'character',
+  ClubTopics: 'club_topics',
+  Comment: 'comment',
+  CrtPost: 'crt_post',
+  Doujin: 'doujin',
+  Episode: 'episode',
+  Event: 'event',
+  EventTopics: 'event_topics',
+  Group: 'group',
+  Index: 'index',
+  Like: 'like',
+  Person: 'person',
+  PrsnPost: 'prsn_post',
+  Relationship: 'relationship',
+  Subject: 'subject',
+  Timeline: 'timeline',
+});
 
 export interface Result {
   limited: boolean;

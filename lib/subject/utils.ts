@@ -85,7 +85,7 @@ export async function updateSubjectEpisodeProgress(
   userID: number,
   subjectID: number,
   episodeID: number,
-  type: EpisodeCollectionStatus,
+  type: number,
 ): Promise<number> {
   const [current] = await t
     .select()
