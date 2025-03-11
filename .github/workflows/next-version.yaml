@@ -32,6 +32,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - run: echo -e "\n## Full Commits\n" >> changelog.md
+
       - run: git log --oneline v$(jq .version package.json -r)..master >> changelog.md
 
       - run: python ./.github/scripts/avoid-changelog-ref.py changelog.md
