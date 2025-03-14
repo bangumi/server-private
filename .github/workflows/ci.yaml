@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: 'true'
+          ref: gh-pages
       - uses: ./.github/actions/setup-js-env
 
       - run: pnpm exec prettier --check .
