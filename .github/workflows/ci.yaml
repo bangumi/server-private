@@ -37,6 +37,7 @@ jobs:
         with:
           repository: 'bangumi/dev-env'
           path: 'dev-env'
+          ref: gh-pages
       - run: mv dev-env $HOME/dev-env
       - run: cd ~/dev-env && docker compose up -d
 
