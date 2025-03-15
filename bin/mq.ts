@@ -104,7 +104,7 @@ async function main() {
           await onServiceMessage(topic, message.key.toString(), message.value.toString());
         }
       } catch (error) {
-        logger.error(`Error processing message ${message.key.toString()}: ${error}`);
+        logger.error(error, `error processing message ${message.key.toString()}`);
       }
     },
   });
