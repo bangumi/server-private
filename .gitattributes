@@ -1,4 +1,4 @@
 pnpm-lock.yaml merge=binary linguist-generated=true
 *.snap linguist-generated=true
-__snapshots__ linguist-generated=true
+__snapshots__/** linguist-generated=true
 vendor/common-json/** linguist-generated=true
