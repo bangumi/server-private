@@ -31,7 +31,12 @@ const EmailOrPasswordError = createError(
 
 const UserBannedError = createError('USER_BANNED', 'user is banned', httpCodes.UNAUTHORIZED);
 
-const allowedRedirectUris: string[] = ['chii://', 'bangumi://', 'ani://bangumi-turnstile-callback','bangulite://turnstile/callback'];
+const allowedRedirectUris: string[] = [
+  'chii://',
+  'bangumi://',
+  'ani://bangumi-turnstile-callback',
+  'bangulite://turnstile/callback'
+];
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
