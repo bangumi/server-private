@@ -22,7 +22,6 @@ jobs:
           submodules: 'true'
       - uses: ./.github/actions/setup-js-env
 
-      - run: pnpm exec prettier --write .
       - run: pnpm exec prettier --check .
       - run: pnpm exec tsc
       - run: pnpm run lint
