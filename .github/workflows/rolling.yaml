@@ -1,11 +1,11 @@
-name: next-version
+name: rolling
 
 on:
   push:
     branches: [master]
 
 concurrency:
-  group: next-version
+  group: rolling
   cancel-in-progress: false
 
 permissions:
@@ -13,9 +13,37 @@ permissions:
   pull-requests: write
 
 jobs:
+  auto-tag:
+    if: ${{ github.repository_owner == 'bangumi' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ADMIN_TOKEN }}
+
+      - run: echo "CURRENT_VERSION=v$(jq .version ./package.json -r)" >> $GITHUB_ENV
+
+      - run: echo get tag ${{ env.CURRENT_VERSION }}
+
+      - uses: bbonkr/git-tag-check-action@v1
+        id: git_tag_check
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: '${{ env.CURRENT_VERSION }}'
+
+      - uses: rickstaa/action-create-tag@v1
+        if: ${{ steps.git_tag_check.outputs.tag == '' }}
+        id: 'tag_create'
+        with:
+          tag: '${{ env.CURRENT_VERSION }}'
+          tag_exists_error: false
+          message: 'bump: ${{ env.CURRENT_VERSION }}'
+
   github:
     if: ${{ github.repository_owner == 'bangumi' }}
     runs-on: ubuntu-24.04
+    needs:
+      - auto-tag
     steps:
       - uses: actions/checkout@v4
         with:
