@@ -17,7 +17,7 @@ const buildConfigs = {
     {
       name: 'import.meta.url',
       setup({ onLoad }) {
-        onLoad({ filter: /.*\.ts/g, namespace: 'file' }, (args) => {
+        onLoad({ filter: /.*\.ts/, namespace: 'file' }, (args) => {
           let code = fs.readFileSync(args.path, 'utf8');
           code = code
             .replaceAll(/\bimport\.meta\.url\b/g, JSON.stringify(url.pathToFileURL(args.path)))
