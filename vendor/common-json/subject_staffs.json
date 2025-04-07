@@ -262,10 +262,20 @@
           "cn": "特效作画监督",
           "jp": "エフェクト作画監督"
         },
+        "89": {
+          "en": "Chief Episode Direction",
+          "cn": "主演出",
+          "jp": "チーフ演出"
+        },
         "90": {
           "en": "Assistant Animation Direction",
           "cn": "作画监督助理",
           "jp": "作画監督補佐"
+        },
+        "91": {
+          "en": "Assistant Episode Direction",
+          "cn": "演出助理",
+          "jp": "演出助手 演出補佐 演出協力"
         },
         "92": {
           "en": "Main Animator",
@@ -359,7 +369,8 @@
         },
         "2010": { "en": "", "cn": "脚本", "jp": "シナリオ" },
         "2011": { "en": "Label", "cn": "书系", "jp": "" },
-        "2012": { "en": "", "cn": "出品方", "jp": "" }
+        "2012": { "en": "", "cn": "出品方", "jp": "" },
+        "2013": { "en": "Brand", "cn": "图书品牌", "jp": "ブランド" }
       },
       "music": {
         "3001": { "en": "Artist", "cn": "艺术家", "jp": "" },
@@ -442,7 +453,8 @@
       },
       "2010": { "en": "", "cn": "脚本", "jp": "シナリオ" },
       "2011": { "en": "Label", "cn": "书系", "jp": "" },
-      "2012": { "en": "", "cn": "出品方", "jp": "" }
+      "2012": { "en": "", "cn": "出品方", "jp": "" },
+      "2013": { "en": "Brand", "cn": "图书品牌", "jp": "ブランド" }
     },
     "2": {
       "1": { "en": "Original Creator/Original Work", "cn": "原作", "jp": "" },
@@ -680,10 +692,20 @@
         "cn": "特效作画监督",
         "jp": "エフェクト作画監督"
       },
+      "89": {
+        "en": "Chief Episode Direction",
+        "cn": "主演出",
+        "jp": "チーフ演出"
+      },
       "90": {
         "en": "Assistant Animation Direction",
         "cn": "作画监督助理",
         "jp": "作画監督補佐"
+      },
+      "91": {
+        "en": "Assistant Episode Direction",
+        "cn": "演出助理",
+        "jp": "演出助手 演出補佐 演出協力"
       },
       "92": {
         "en": "Main Animator",
