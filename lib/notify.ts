@@ -103,6 +103,14 @@ interface PrivacySetting {
   blockedUsers: number[];
 }
 
+const defaultPrivacySetting: PrivacySetting = {
+  TimelineReply: PrivacyFilter.All,
+  CommentNotification: PrivacyFilter.All,
+  MentionNotification: PrivacyFilter.All,
+  PrivateMessage: PrivacyFilter.All,
+  blockedUsers: [],
+};
+
 export const Notify = {
   /**
    * 创建 notify
@@ -245,13 +253,11 @@ async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
     throw new NotFoundError('user not found');
   }
 
+  const blockedUsers = parseBlocklist(uf.blocklist);
   if (!uf.privacy) {
     return {
-      PrivateMessage: PrivacyFilter.All,
-      TimelineReply: PrivacyFilter.All,
-      MentionNotification: PrivacyFilter.All,
-      CommentNotification: PrivacyFilter.All,
-      blockedUsers: parseBlocklist(uf.blocklist),
+      ...defaultPrivacySetting,
+      blockedUsers,
     };
   }
 
@@ -261,7 +267,7 @@ async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
     TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,
     MentionNotification: field[UserPrivacyReceiveMentionNotification] as PrivacyFilter,
     CommentNotification: field[UserPrivacyReceiveCommentNotification] as PrivacyFilter,
-    blockedUsers: parseBlocklist(uf.blocklist),
+    blockedUsers,
   };
 }
 
