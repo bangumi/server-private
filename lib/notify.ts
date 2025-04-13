@@ -245,15 +245,24 @@ async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
     throw new NotFoundError('user not found');
   }
 
-  const field = php.parse(uf.privacy) as Record<number, number>;
-
-  return {
-    PrivateMessage: field[UserPrivacyReceivePrivateMessage] as PrivacyFilter,
-    TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,
-    MentionNotification: field[UserPrivacyReceiveMentionNotification] as PrivacyFilter,
-    CommentNotification: field[UserPrivacyReceiveCommentNotification] as PrivacyFilter,
-    blockedUsers: parseBlocklist(uf.blocklist),
-  };
+  if (uf.privacy) {
+    const field = php.parse(uf.privacy) as Record<number, number>;
+    return {
+      PrivateMessage: field[UserPrivacyReceivePrivateMessage] as PrivacyFilter,
+      TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,
+      MentionNotification: field[UserPrivacyReceiveMentionNotification] as PrivacyFilter,
+      CommentNotification: field[UserPrivacyReceiveCommentNotification] as PrivacyFilter,
+      blockedUsers: parseBlocklist(uf.blocklist),
+    };
+  } else {
+    return {
+      PrivateMessage: PrivacyFilter.All,
+      TimelineReply: PrivacyFilter.All,
+      MentionNotification: PrivacyFilter.All,
+      CommentNotification: PrivacyFilter.All,
+      blockedUsers: parseBlocklist(uf.blocklist),
+    };
+  }
 }
 
 /** 计算 notifyField 的 hash 字段，参照 settings */
