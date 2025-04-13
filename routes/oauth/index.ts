@@ -259,6 +259,7 @@ export async function userOauthRoutes(app: App) {
         csrfToken,
         client,
         creator,
+        state: req.query.state,
         scope: req.query.scope,
         scopes: scopeMessage(scope),
       });
@@ -275,6 +276,7 @@ export async function userOauthRoutes(app: App) {
           client_id: t.String(),
           redirect_uri: t.String(),
           scope: t.String({ default: '' }),
+          state: t.Optional(t.String({})),
         }),
       },
     },
@@ -313,6 +315,9 @@ export async function userOauthRoutes(app: App) {
       );
       const u = new URL(client.redirectUri);
       u.searchParams.set('code', code);
+      if (req.body.state) {
+        u.searchParams.set('state', req.body.state);
+      }
       return reply.redirect(u.toString());
     },
   );
@@ -331,7 +336,6 @@ export async function userOauthRoutes(app: App) {
           code: t.Optional(t.String()),
           refresh_token: t.Optional(t.String()),
           redirect_uri: t.String(),
-          state: t.Optional(t.String()),
         }),
       },
     },
@@ -346,7 +350,6 @@ export async function userOauthRoutes(app: App) {
           clientSecret: req.body.client_secret,
           code: req.body.code,
           redirectUri: req.body.redirect_uri,
-          state: req.body.state,
         });
       }
 
@@ -373,7 +376,6 @@ async function tokenFromCode(req: {
   clientID: string;
   redirectUri: string;
   clientSecret: string;
-  state?: string;
 }): Promise<ITokenResponse> {
   const [{ chii_oauth_clients: client = null, chii_apps: app = null } = {}] = await db
     .select()

@@ -101,6 +101,9 @@
               name='redirect_uri'
               value='{{ client.redirectUri }}'
             >
+            {% if state %}
+              <input type='hidden' name='state' value='{{ state }}'>
+            {% endif %}
             <input type='hidden' name='scope' value='{{ scope }}'>
             <button
               style='width: 100%; background: #F09199;'
