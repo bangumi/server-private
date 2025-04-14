@@ -97,7 +97,7 @@ export async function updateSubjectEpisodeProgress(
   if (current?.status) {
     const epStatusList = parseSubjectEpStatus(current.status);
     epStatusList[episodeID] = {
-      eid: episodeID,
+      eid: episodeID.toString(),
       type,
     };
     watchedEpisodes = Object.values(epStatusList).filter(
@@ -112,7 +112,7 @@ export async function updateSubjectEpisodeProgress(
   } else {
     const epStatusList: Record<number, UserEpisodeStatusItem> = {};
     epStatusList[episodeID] = {
-      eid: episodeID,
+      eid: episodeID.toString(),
       type,
     };
     watchedEpisodes = Object.values(epStatusList).filter(
@@ -140,7 +140,7 @@ export async function markEpisodesAsWatched(
   const epStatusList: Record<number, UserEpisodeStatusItem> = {};
   for (const episodeID of episodeIDs) {
     epStatusList[episodeID] = {
-      eid: episodeID,
+      eid: episodeID.toString(),
       type: EpisodeCollectionStatus.Done,
     };
   }
@@ -154,16 +154,16 @@ export async function markEpisodesAsWatched(
   if (current?.status) {
     const oldList = parseSubjectEpStatus(current.status);
     for (const x of Object.values(oldList)) {
-      if (episodeIDs.includes(x.eid)) {
+      if (episodeIDs.includes(Number(x.eid))) {
         continue;
       }
       if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
-        epStatusList[x.eid] = {
+        epStatusList[Number(x.eid)] = {
           eid: x.eid,
           type: EpisodeCollectionStatus.None,
         };
       } else {
-        epStatusList[x.eid] = x;
+        epStatusList[Number(x.eid)] = x;
       }
     }
     watchedEpisodes = Object.values(epStatusList).filter(
@@ -197,7 +197,7 @@ export function parseSubjectEpStatus(status: string): Record<number, UserEpisode
   }
   const epStatusList = php.parse(status) as Record<number, UserEpisodeStatusItem>;
   for (const x of Object.values(epStatusList)) {
-    result[x.eid] = x;
+    result[Number(x.eid)] = x;
   }
   return result;
 }
