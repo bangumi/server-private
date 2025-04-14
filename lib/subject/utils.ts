@@ -97,7 +97,7 @@ export async function updateSubjectEpisodeProgress(
   if (current?.status) {
     const epStatusList = parseSubjectEpStatus(current.status);
     epStatusList.set(episodeID, {
-      eid: episodeID,
+      eid: episodeID.toString(),
       type,
     });
     watchedEpisodes = [...epStatusList.values()].filter(
@@ -112,7 +112,7 @@ export async function updateSubjectEpisodeProgress(
   } else {
     const epStatusList = new Map<number, UserEpisodeStatusItem>();
     epStatusList.set(episodeID, {
-      eid: episodeID,
+      eid: episodeID.toString(),
       type,
     });
     watchedEpisodes = [...epStatusList.values()].filter(
@@ -140,7 +140,7 @@ export async function markEpisodesAsWatched(
   const epStatusList = new Map<number, UserEpisodeStatusItem>();
   for (const episodeID of episodeIDs) {
     epStatusList.set(episodeID, {
-      eid: episodeID,
+      eid: episodeID.toString(),
       type: EpisodeCollectionStatus.Done,
     });
   }
@@ -153,17 +153,17 @@ export async function markEpisodesAsWatched(
   let watchedEpisodes = 0;
   if (current?.status) {
     const oldList = parseSubjectEpStatus(current.status);
-    for (const x of oldList.values()) {
-      if (episodeIDs.includes(x.eid)) {
+    for (const [eid, x] of oldList) {
+      if (episodeIDs.includes(eid)) {
         continue;
       }
       if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
-        epStatusList.set(x.eid, {
+        epStatusList.set(eid, {
           eid: x.eid,
           type: EpisodeCollectionStatus.None,
         });
       } else {
-        epStatusList.set(x.eid, x);
+        epStatusList.set(eid, x);
       }
     }
     watchedEpisodes = [...epStatusList.values()].filter(
