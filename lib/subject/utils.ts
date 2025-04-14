@@ -96,11 +96,11 @@ export async function updateSubjectEpisodeProgress(
   let watchedEpisodes = 0;
   if (current?.status) {
     const epStatusList = parseSubjectEpStatus(current.status);
-    epStatusList[episodeID] = {
-      eid: episodeID,
+    epStatusList.set(episodeID, {
+      eid: episodeID.toString(),
       type,
-    };
-    watchedEpisodes = Object.values(epStatusList).filter(
+    });
+    watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = php.stringify(epStatusList);
@@ -110,12 +110,12 @@ export async function updateSubjectEpisodeProgress(
       .where(op.eq(schema.chiiEpStatus.id, current.id))
       .limit(1);
   } else {
-    const epStatusList: Record<number, UserEpisodeStatusItem> = {};
-    epStatusList[episodeID] = {
-      eid: episodeID,
+    const epStatusList = new Map<number, UserEpisodeStatusItem>();
+    epStatusList.set(episodeID, {
+      eid: episodeID.toString(),
       type,
-    };
-    watchedEpisodes = Object.values(epStatusList).filter(
+    });
+    watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = php.stringify(epStatusList);
@@ -137,12 +137,12 @@ export async function markEpisodesAsWatched(
   episodeIDs: number[],
   revertOthers = false,
 ): Promise<number> {
-  const epStatusList: Record<number, UserEpisodeStatusItem> = {};
+  const epStatusList = new Map<number, UserEpisodeStatusItem>();
   for (const episodeID of episodeIDs) {
-    epStatusList[episodeID] = {
-      eid: episodeID,
+    epStatusList.set(episodeID, {
+      eid: episodeID.toString(),
       type: EpisodeCollectionStatus.Done,
-    };
+    });
   }
   const [current] = await t
     .select()
@@ -153,20 +153,20 @@ export async function markEpisodesAsWatched(
   let watchedEpisodes = 0;
   if (current?.status) {
     const oldList = parseSubjectEpStatus(current.status);
-    for (const x of Object.values(oldList)) {
-      if (episodeIDs.includes(x.eid)) {
+    for (const [eid, x] of oldList) {
+      if (episodeIDs.includes(eid)) {
         continue;
       }
       if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
-        epStatusList[x.eid] = {
+        epStatusList.set(eid, {
           eid: x.eid,
           type: EpisodeCollectionStatus.None,
-        };
+        });
       } else {
-        epStatusList[x.eid] = x;
+        epStatusList.set(eid, x);
       }
     }
-    watchedEpisodes = Object.values(epStatusList).filter(
+    watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = php.stringify(epStatusList);
@@ -176,7 +176,7 @@ export async function markEpisodesAsWatched(
       .where(op.eq(schema.chiiEpStatus.id, current.id))
       .limit(1);
   } else {
-    watchedEpisodes = Object.values(epStatusList).filter(
+    watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = php.stringify(epStatusList);
@@ -190,14 +190,14 @@ export async function markEpisodesAsWatched(
   return watchedEpisodes;
 }
 
-export function parseSubjectEpStatus(status: string): Record<number, UserEpisodeStatusItem> {
-  const result: Record<number, UserEpisodeStatusItem> = {};
+export function parseSubjectEpStatus(status: string): Map<number, UserEpisodeStatusItem> {
+  const result = new Map<number, UserEpisodeStatusItem>();
   if (!status) {
     return result;
   }
-  const epStatusList = php.parse(status) as Record<number, UserEpisodeStatusItem>;
-  for (const x of Object.values(epStatusList)) {
-    result[x.eid] = x;
+  const epStatusList = php.parse(status) as Map<number, UserEpisodeStatusItem>;
+  for (const [eid, x] of epStatusList) {
+    result.set(eid, x);
   }
   return result;
 }
@@ -205,7 +205,7 @@ export function parseSubjectEpStatus(status: string): Record<number, UserEpisode
 export async function getEpStatus(
   userID: number,
   subjectID: number,
-): Promise<Record<number, UserEpisodeStatusItem>> {
+): Promise<Map<number, UserEpisodeStatusItem>> {
   const [data] = await db
     .select()
     .from(schema.chiiEpStatus)
@@ -214,7 +214,7 @@ export async function getEpStatus(
     )
     .limit(1);
   if (!data) {
-    return {};
+    return new Map();
   }
   return parseSubjectEpStatus(data.status);
 }

@@ -68,7 +68,7 @@ export const EpisodeCollectionStatus = Object.freeze({
 });
 
 export interface UserEpisodeStatusItem {
-  eid: number;
+  eid: string;
   type: number;
 }
 
