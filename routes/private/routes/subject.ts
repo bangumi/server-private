@@ -221,7 +221,7 @@ export async function setup(app: App) {
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, subjectID);
         for (const ep of episodes) {
-          ep.status = epStatus[ep.id]?.type ?? EpisodeCollectionStatus.None;
+          ep.status = epStatus.get(ep.id)?.type ?? EpisodeCollectionStatus.None;
         }
       }
       return {

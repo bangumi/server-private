@@ -5,6 +5,7 @@ import { CommentWithState } from '@app/lib/comment';
 import { NotFoundError } from '@app/lib/error.ts';
 import { LikeType, Reaction } from '@app/lib/like';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { EpisodeCollectionStatus } from '@app/lib/subject/type';
 import { getEpStatus } from '@app/lib/subject/utils';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -44,7 +45,7 @@ export async function setup(app: App) {
       ep.subject = subject;
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, ep.subjectID);
-        ep.status = epStatus[episodeID]?.type;
+        ep.status = epStatus.get(episodeID)?.type ?? EpisodeCollectionStatus.None;
       }
       return ep;
     },
