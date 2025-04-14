@@ -153,7 +153,7 @@ export async function markEpisodesAsWatched(
   let watchedEpisodes = 0;
   if (current?.status) {
     const oldList = parseSubjectEpStatus(current.status);
-    for (const [eid, x] of oldList.entries()) {
+    for (const [eid, x] of oldList) {
       if (episodeIDs.includes(eid)) {
         continue;
       }
@@ -195,9 +195,9 @@ export function parseSubjectEpStatus(status: string): Map<number, UserEpisodeSta
   if (!status) {
     return result;
   }
-  const epStatusList = php.parse(status) as Map<number, UserEpisodeStatusItem>;
-  for (const [eid, x] of epStatusList.entries()) {
-    result.set(eid, x);
+  const epStatusList = php.parse(status) as Record<number, UserEpisodeStatusItem>;
+  for (const [eid, x] of Object.entries(epStatusList)) {
+    result.set(Number(eid), x);
   }
   return result;
 }
