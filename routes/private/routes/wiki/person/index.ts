@@ -105,7 +105,7 @@ export async function setup(app: App) {
         response: {
           200: t.Object({}),
           400: res.Ref(res.Error, {
-            'x-examples': formatErrors(new WikiChangedError('name', '1', '2')),
+            'x-examples': formatErrors(new WikiChangedError('name', '- 1\n+ 2')),
           }),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
