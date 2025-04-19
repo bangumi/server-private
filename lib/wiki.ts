@@ -7,12 +7,12 @@ export const WikiChangedError = createError<[string, unknown, unknown]>(
   StatusCodes.BAD_REQUEST,
 );
 
-export function matchExpected<A extends object, B extends Record<keyof A, string>>(
+export function matchExpected<A extends object, B extends Record<keyof A, string | null>>(
   w: A,
   expected: Partial<B>,
 ) {
   for (const [key, value] of Object.entries(expected)) {
-    if (value === undefined) {
+    if (value === undefined || value === null) {
       continue;
     }
 
