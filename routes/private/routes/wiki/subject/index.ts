@@ -113,6 +113,7 @@ const SubjectExpected = t.Optional(
         metaTags: t.Union([t.Null(), t.Array(t.String())]),
       },
       {
+        additionalProperties: false,
         description:
           "a optional object to check if input is changed by others\nif `infobox` is given, and current data in database doesn't match input, subject will not be changed",
       },
