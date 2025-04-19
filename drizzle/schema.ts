@@ -498,7 +498,7 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   platform: smallint('subject_platform').notNull(),
   metaTags: mediumtext('field_meta_tags').notNull(),
   infobox: htmlEscapedString('mediumtext')('field_infobox').notNull(),
-  summary: htmlEscapedString('mediumtext')('field_summary').notNull(),
+  summary: mediumtext('field_summary').notNull(),
   field5: mediumtext('field_5').notNull(),
   volumes: mediumint('field_volumes').notNull(),
   eps: mediumint('field_eps').notNull(),
