@@ -42,10 +42,10 @@ interface Create {
   nsfw?: boolean;
   metaTags?: string[];
   expectedRevision?: Partial<{
-    name: string;
-    infobox: string;
-    metaTags: string[];
-    summary: string;
+    name: string | null;
+    infobox: string | null;
+    metaTags: string[] | null;
+    summary: string | null;
   }>;
 }
 

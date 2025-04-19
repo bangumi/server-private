@@ -106,12 +106,14 @@ const SubjectExpected = t.Optional(
   t.Partial(
     t.Object(
       {
-        name: t.String({ minLength: 1 }),
-        infobox: t.String({ minLength: 1 }),
-        platform: t.Integer(),
-        metaTags: t.Array(t.String()),
+        name: t.Union([t.Null(), t.String({ minLength: 1 })]),
+        infobox: t.Union([t.Null(), t.String({ minLength: 1 })]),
+        platform: t.Union([t.Null(), t.Integer()]),
+        summary: t.Union([t.Null(), t.String({ minLength: 1 })]),
+        metaTags: t.Union([t.Null(), t.Array(t.String())]),
       },
       {
+        additionalProperties: false,
         description:
           "a optional object to check if input is changed by others\nif `infobox` is given, and current data in database doesn't match input, subject will not be changed",
       },
