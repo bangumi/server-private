@@ -73,7 +73,6 @@ export class Subject {
   @Column('mediumtext', {
     name: 'field_summary',
     comment: 'summary',
-    transformer: htmlEscapedString,
   })
   fieldSummary!: string;
 
