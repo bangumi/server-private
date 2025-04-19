@@ -105,7 +105,16 @@ export async function setup(app: App) {
         response: {
           200: t.Object({}),
           400: res.Ref(res.Error, {
-            'x-examples': formatErrors(new WikiChangedError('name', '1', '2')),
+            'x-examples': formatErrors(
+              new WikiChangedError(`Index: name
+===================================================================
+--- name	expected
++++ name	current
+@@ -1,1 +1,1 @@
+-1234
++水樹奈々
+`),
+            ),
           }),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
@@ -133,7 +142,7 @@ export async function setup(app: App) {
           throw new BadRequestError('locked person');
         }
 
-        matchExpected(p, expectedRevision);
+        matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
 
         p.infobox = input.infobox ?? p.infobox;
         p.name = input.name ?? p.name;

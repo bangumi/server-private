@@ -755,7 +755,13 @@ export async function setup(app: App) {
             throw new BadRequestError(`episode ${epEdit.id} is not for subject ${subjectID}`);
           }
           if (expectedRevision?.[index] !== undefined) {
-            matchExpected(ep, expectedRevision[index]);
+            matchExpected(expectedRevision[index], {
+              name: ep.name,
+              nameCN: ep.nameCN,
+              duration: ep.duration,
+              date: ep.airdate,
+              summary: ep.desc,
+            });
           }
 
           if (epEdit.date !== undefined) {

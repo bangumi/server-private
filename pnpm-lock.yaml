@@ -73,6 +73,9 @@ importers:
       cron:
         specifier: 4.3.0
         version: 4.3.0
+      diff:
+        specifier: ^7.0.0
+        version: 7.0.0
       drizzle-orm:
         specifier: 0.42.0
         version: 0.42.0(@opentelemetry/api@1.9.0)(@types/pg@8.6.1)(gel@2.0.2)(mysql2@3.14.0)
@@ -182,6 +185,9 @@ importers:
       '@shopify/prettier-plugin-liquid':
         specifier: 1.9.0
         version: 1.9.0(prettier@3.5.3)
+      '@types/diff':
+        specifier: ^7.0.2
+        version: 7.0.2
       '@types/ioredis-mock':
         specifier: 8.2.5
         version: 8.2.5
@@ -2095,6 +2101,9 @@ packages:
   '@types/debug@4.1.12':
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
 
+  '@types/diff@7.0.2':
+    resolution: {integrity: sha512-JSWRMozjFKsGlEjiiKajUjIJVKuKdE3oVy2DNtK+fUo8q82nhFZ2CPQwicAIkXrofahDXrWJ7mjelvZphMS98Q==}
+
   '@types/estree@1.0.7':
     resolution: {integrity: sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==}
 
@@ -2771,6 +2780,10 @@ packages:
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
+
+  diff@7.0.0:
+    resolution: {integrity: sha512-PJWHUb1RFevKCwaFA9RlG5tCd+FO5iRh9A8HEtkmBH2Li03iJriB6m6JIN4rGz3K3JLawI7/veA1xzRKP6ISBw==}
+    engines: {node: '>=0.3.1'}
 
   dir-glob@3.0.1:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
@@ -7637,6 +7650,8 @@ snapshots:
     dependencies:
       '@types/ms': 2.1.0
 
+  '@types/diff@7.0.2': {}
+
   '@types/estree@1.0.7': {}
 
   '@types/http-cache-semantics@4.0.4': {}
@@ -8353,6 +8368,8 @@ snapshots:
   devlop@1.1.0:
     dependencies:
       dequal: 2.0.3
+
+  diff@7.0.0: {}
 
   dir-glob@3.0.1:
     dependencies:

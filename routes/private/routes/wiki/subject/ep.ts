@@ -139,7 +139,13 @@ export async function setup(app: App) {
       }
 
       if (expected) {
-        matchExpected(ep, expected);
+        matchExpected(expected, {
+          name: ep.name,
+          nameCN: ep.nameCN,
+          duration: ep.duration,
+          date: ep.date,
+          summary: ep.summary,
+        });
       }
 
       if (body.date) {

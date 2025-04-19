@@ -112,9 +112,11 @@ export async function edit({
     if (expectedRevision) {
       expectedRevision.metaTags?.sort();
 
-      matchExpected(s, {
-        ...expectedRevision,
-        metaTags: expectedRevision.metaTags?.join(' '),
+      matchExpected(expectedRevision, {
+        name: s.name,
+        infobox: s.infobox,
+        summary: s.summary,
+        metaTags: s.metaTags.split(' ').sort(),
       });
     }
 
