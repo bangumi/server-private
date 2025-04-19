@@ -8907,9 +8907,10 @@ paths:
                   value:
                     code: WIKI_CHANGED
                     error: Bad Request
-                    message: >-
-                      expected data doesn't match, name changed, expecting "1",
-                      currently "2"
+                    message: |-
+                      expected data doesn't match, name changed
+                      - 1
+                      + 2
                     statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
