@@ -9142,6 +9142,7 @@ paths:
                   minLength: 1
                   type: string
                 expectedRevision:
+                  additionalProperties: false
                   description: >-
                     a optional object to check if input is changed by others
 
@@ -9318,6 +9319,7 @@ paths:
                   minLength: 1
                   type: string
                 expectedRevision:
+                  additionalProperties: false
                   description: >-
                     a optional object to check if input is changed by others
 
