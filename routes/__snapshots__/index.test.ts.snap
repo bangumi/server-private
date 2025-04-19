@@ -8907,10 +8907,7 @@ paths:
                   value:
                     code: WIKI_CHANGED
                     error: Bad Request
-                    message: |-
-                      expected data doesn't match, name changed
-                      - 1
-                      + 2
+                    message: "expected data doesn't match\\nIndex: name\\n===================================================================\\n--- name\\texpected\\n+++ name\\tcurrent\\n@@ -1,1 +1,1 @@\\n-1234\\n+水樹奈々\\n"
                     statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
