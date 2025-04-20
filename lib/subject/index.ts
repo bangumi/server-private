@@ -136,7 +136,7 @@ export async function edit({
 
       const newTags: number[] = [];
       for (const tag of metaTags) {
-        const id = allowedTags.get(tag);
+        const id = allowedTags.get(tag.toLocaleLowerCase());
         if (!id) {
           throw BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
         }
@@ -279,7 +279,7 @@ async function getAllowedTagList(t: Txn, typeID: number): Promise<Map<string, nu
       ),
     );
 
-  return new Map<string, number>(rows.map((item) => [item.name, item.id]));
+  return new Map<string, number>(rows.map((item) => [item.name.toLocaleLowerCase(), item.id]));
 }
 
 export async function uploadCover({
