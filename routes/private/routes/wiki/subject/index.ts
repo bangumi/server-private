@@ -7,7 +7,7 @@ import type { ResultSetHeader } from 'mysql2';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
+import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
 import { RevType } from '@app/lib/orm/entity';
@@ -465,7 +465,7 @@ export async function setup(app: App) {
       }
 
       if (s.locked) {
-        throw new NotAllowedError('edit a locked subject');
+        throw new LockedError();
       }
 
       const body: Static<typeof SubjectEdit> = input;
@@ -539,8 +539,8 @@ export async function setup(app: App) {
         throw new BadRequestError(`subject ${subjectID}`);
       }
 
-      if (s.locked) {
-        throw new NotAllowedError('edit a locked subject');
+      if (s.locked || s.redirect) {
+        throw new LockedError();
       }
 
       const {
@@ -629,7 +629,7 @@ export async function setup(app: App) {
       }
 
       if (s.locked) {
-        throw new NotAllowedError('edit a locked subject');
+        throw new LockedError();
       }
 
       const now = DateTime.now().toUnixInteger();

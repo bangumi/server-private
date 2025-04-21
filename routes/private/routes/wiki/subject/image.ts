@@ -211,11 +211,8 @@ export function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      if (s.locked) {
-        throw new NotAllowedError('edit a locked subject');
-      }
-      if (s.redirect) {
-        throw new NotAllowedError('edit a locked subject');
+      if (s.locked || s.redirect) {
+        throw new LockedError();
       }
 
       await uploadSubjectImage(filename, raw);
