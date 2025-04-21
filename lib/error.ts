@@ -46,7 +46,7 @@ export const NotJoinPrivateGroupError = createError<[string]>(
 );
 
 export const LockedError = createError<[]>(
-  'SUBJECT_LOCKED',
+  'ITEM_LOCKED',
   `this resource is locked and not allowed to be updated`,
   403,
 );
