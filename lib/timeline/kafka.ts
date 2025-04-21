@@ -7,7 +7,7 @@ interface Payload {
   message: TimelineMessage[keyof TimelineMessage];
 }
 
-export async function handleTimelineMessage(_: string, value: string) {
+export async function handleTimelineMessage(topic: string, key: string, value: string) {
   const payload = JSON.parse(value) as Payload;
 
   switch (payload.op) {

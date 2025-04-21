@@ -29,7 +29,7 @@ interface Payload {
   after: TimelineItem | null;
 }
 
-export async function handle(key: string, value: string) {
+export async function handle(topic: string, key: string, value: string) {
   const idx = JSON.parse(key) as Key;
   const payload = JSON.parse(value) as Payload;
 

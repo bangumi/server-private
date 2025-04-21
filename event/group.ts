@@ -12,7 +12,7 @@ interface GroupPayload {
   op: EventOp;
 }
 
-export async function handle(key: string, value: string) {
+export async function handle(topic: string, key: string, value: string) {
   const idx = JSON.parse(key) as GroupKey;
   const payload = JSON.parse(value) as GroupPayload;
   switch (payload.op) {
@@ -42,7 +42,7 @@ interface GroupMemberPayload {
   };
 }
 
-export async function handleMember(_: string, value: string) {
+export async function handleMember(topic: string, _: string, value: string) {
   const payload = JSON.parse(value) as GroupMemberPayload;
   const uid = payload.before?.gmb_uid ?? payload.after?.gmb_uid;
   if (!uid) {
@@ -70,7 +70,7 @@ interface GroupTopicPayload {
   op: EventOp;
 }
 
-export async function handleTopic(key: string, value: string) {
+export async function handleTopic(topic: string, key: string, value: string) {
   const idx = JSON.parse(key) as GroupTopicKey;
   const payload = JSON.parse(value) as GroupTopicPayload;
   switch (payload.op) {

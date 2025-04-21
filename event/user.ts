@@ -16,7 +16,7 @@ interface UserKey {
   uid: number;
 }
 
-export async function handle(key: string, value: string) {
+export async function handle(topic: string, key: string, value: string) {
   const idx = JSON.parse(key) as UserKey;
   const payload = JSON.parse(value) as UserPayload;
   switch (payload.op) {
@@ -46,7 +46,7 @@ interface FriendPayload {
   };
 }
 
-export async function handleFriend(_: string, value: string) {
+export async function handleFriend(topic: string, _: string, value: string) {
   const payload = JSON.parse(value) as FriendPayload;
   const uid = payload.before?.frd_uid ?? payload.after?.frd_uid;
   const fid = payload.before?.frd_fid ?? payload.after?.frd_fid;
