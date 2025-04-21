@@ -141,7 +141,8 @@ async function updateSubjectDate(subjectID: number, ts: number) {
   const [subject] = await db
     .select()
     .from(schema.chiiSubjects)
-    .where(op.eq(schema.chiiSubjects.id, subjectID));
+    .where(op.eq(schema.chiiSubjects.id, subjectID))
+    .limit(1);
   if (!subject) {
     return;
   }
