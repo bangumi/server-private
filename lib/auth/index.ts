@@ -19,7 +19,7 @@ export const NeedLoginError = createError<[string]>(
   401,
 );
 
-const HeaderInvalidError = createError<[string]>('AUTHORIZATION_INVALID', '%s', 401);
+export const HeaderInvalidError = createError<[string]>('AUTHORIZATION_INVALID', '%s', 401);
 
 const TokenNotValidError = createError<[]>(
   'TOKEN_INVALID',
