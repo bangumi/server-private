@@ -158,9 +158,12 @@ async function updateSubjectDate(subjectID: number, ts: number) {
     return;
   }
 
-  await db.update(schema.chiiSubjectFields).set({
-    year: date.year,
-    month: date.month,
-    date: date.toString(),
-  });
+  await db
+    .update(schema.chiiSubjectFields)
+    .set({
+      year: date.year,
+      month: date.month,
+      date: date.toString(),
+    })
+    .where(op.eq(schema.chiiSubjectFields.id, subjectID));
 }
