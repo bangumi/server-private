@@ -44,3 +44,9 @@ export const NotJoinPrivateGroupError = createError<[string]>(
   `you need to join private group '%s' before you create a post or reply`,
   401,
 );
+
+export const LockedError = createError<[]>(
+  'SUBJECT_LOCKED',
+  `this resource is locked and not allowed to be updated`,
+  403,
+);

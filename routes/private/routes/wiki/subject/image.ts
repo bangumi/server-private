@@ -9,7 +9,7 @@ import { DateTime } from 'luxon';
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { imageDomain } from '@app/lib/config.ts';
-import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { LockedError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image/index.ts';
 import { LikeType } from '@app/lib/like.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
@@ -75,7 +75,7 @@ export function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
       if (s.locked) {
-        throw new NotAllowedError(`subject ${subjectID} is locked`);
+        throw new LockedError();
       }
 
       const images = await SubjectImageRepo.find({
