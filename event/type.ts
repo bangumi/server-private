@@ -15,3 +15,9 @@ export interface Payload {
   };
   op: EventOp;
 }
+
+export interface KafkaMessage {
+  topic: string;
+  key: string;
+  value: string;
+}

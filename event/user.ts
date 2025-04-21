@@ -6,7 +6,7 @@ import {
   getSlimCacheKey,
 } from '@app/lib/user/cache';
 
-import { EventOp } from './type';
+import { EventOp, type KafkaMessage } from './type';
 
 interface UserPayload {
   op: EventOp;
@@ -16,7 +16,7 @@ interface UserKey {
   uid: number;
 }
 
-export async function handle(topic: string, key: string, value: string) {
+export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as UserKey;
   const payload = JSON.parse(value) as UserPayload;
   switch (payload.op) {
@@ -46,7 +46,7 @@ interface FriendPayload {
   };
 }
 
-export async function handleFriend(topic: string, _: string, value: string) {
+export async function handleFriend({ value }: KafkaMessage) {
   const payload = JSON.parse(value) as FriendPayload;
   const uid = payload.before?.frd_uid ?? payload.after?.frd_uid;
   const fid = payload.before?.frd_fid ?? payload.after?.frd_fid;

@@ -1,3 +1,4 @@
+import type { KafkaMessage } from '@app/event/type';
 import { logger } from '@app/lib/logger';
 
 import { type TimelineMessage, TimelineWriter } from './writer';
@@ -7,7 +8,7 @@ interface Payload {
   message: TimelineMessage[keyof TimelineMessage];
 }
 
-export async function handleTimelineMessage(topic: string, key: string, value: string) {
+export async function handleTimelineMessage({ value }: KafkaMessage) {
   const payload = JSON.parse(value) as Payload;
 
   switch (payload.op) {

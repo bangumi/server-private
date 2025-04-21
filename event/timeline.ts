@@ -11,7 +11,7 @@ import {
 } from '@app/lib/timeline/cache';
 import { fetchFollowers } from '@app/lib/user/utils';
 
-import { EventOp } from './type';
+import { EventOp, type KafkaMessage } from './type';
 
 interface Key {
   tml_id: number;
@@ -29,7 +29,7 @@ interface Payload {
   after: TimelineItem | null;
 }
 
-export async function handle(topic: string, key: string, value: string) {
+export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as Key;
   const payload = JSON.parse(value) as Payload;
 

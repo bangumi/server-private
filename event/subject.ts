@@ -11,7 +11,7 @@ import {
 import { extractDate } from '@app/lib/subject/date';
 import { sleep } from '@app/lib/utils';
 
-import { EventOp } from './type';
+import { EventOp, type KafkaMessage } from './type';
 
 interface SubjectKey {
   subject_id: number;
@@ -24,7 +24,7 @@ interface Payload {
   };
 }
 
-export async function handle(topic: string, key: string, value: string) {
+export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as SubjectKey;
   const payload = JSON.parse(value) as Payload;
   switch (payload.op) {
@@ -46,7 +46,7 @@ interface FieldsKey {
   field_sid: number;
 }
 
-export async function handleFields(topic: string, key: string, value: string) {
+export async function handleFields({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as FieldsKey;
   const payload = JSON.parse(value) as Payload;
   switch (payload.op) {
@@ -68,7 +68,7 @@ interface TopicKey {
   sbj_tpc_id: number;
 }
 
-export async function handleTopic(topic: string, key: string, value: string) {
+export async function handleTopic({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as TopicKey;
   const payload = JSON.parse(value) as Payload;
   switch (payload.op) {
@@ -90,7 +90,7 @@ interface EpisodeKey {
   ep_id: number;
 }
 
-export async function handleEpisode(topic: string, key: string, value: string) {
+export async function handleEpisode({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as EpisodeKey;
   const payload = JSON.parse(value) as Payload;
   switch (payload.op) {
@@ -112,7 +112,7 @@ interface SubjectRevKey {
   rev_subject_id: number;
 }
 
-export async function handleSubjectDate(topic: string, key: string, value: string) {
+export async function handleSubjectDate({ topic, key, value }: KafkaMessage) {
   let subjectID: number;
   if (topic.endsWith('.chii_subject_revisions')) {
     const idx = JSON.parse(key) as SubjectRevKey;
