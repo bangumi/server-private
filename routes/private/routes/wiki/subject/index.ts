@@ -6,7 +6,8 @@ import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
 
 import { db, op, schema } from '@app/drizzle';
-import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { HeaderInvalidError, NotAllowedError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config.ts';
 import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
@@ -502,6 +503,12 @@ export async function setup(app: App) {
             commitMessage: t.String({ minLength: 1 }),
             expectedRevision: SubjectExpected,
             subject: t.Partial(SubjectEdit, { $id: undefined }),
+            authorID: t.Optional(
+              t.Integer({
+                exclusiveMinimum: 0,
+                description: 'when header x-admin-token is provided, use this as author id.',
+              }),
+            ),
           },
           {
             examples: [
@@ -523,7 +530,8 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, subject: input, expectedRevision },
+      headers,
+      body: { commitMessage, subject: input, expectedRevision, authorID },
       params: { subjectID },
     }): Promise<void> => {
       if (!auth.permission.subject_edit) {
@@ -566,6 +574,21 @@ export async function setup(app: App) {
         return;
       }
 
+      let finalAuthorID = auth.userID;
+      const adminToken = headers['x-admin-token'];
+      if (adminToken !== undefined) {
+        if (adminToken !== config.admin_token) {
+          throw new HeaderInvalidError('invalid admin token');
+        }
+
+        if (authorID) {
+          if (!(await orm.fetchSubjectByID(authorID))) {
+            throw new BadRequestError(`user ${authorID} does not exists`);
+          }
+          finalAuthorID = authorID;
+        }
+      }
+
       await Subject.edit({
         subjectID: subjectID,
         name: name,
@@ -576,7 +599,7 @@ export async function setup(app: App) {
         summary: summary,
         nsfw,
         date,
-        userID: auth.userID,
+        userID: finalAuthorID,
         now: DateTime.now(),
         expectedRevision,
       });

@@ -80,6 +80,12 @@ export const schema = Obj({
     clientIpHeader: t.String({ default: 'x-real-ip', transform: ['toLowerCase'] }),
   }),
 
+  admin_token: t.String({
+    minLength: 16,
+    env: 'ADMIN_TOKEN',
+    description: 'a admin token to let server know that the api caller can be trusted',
+  }),
+
   siteUrl: t.String({ default: 'https://next.bgm.tv ', transform: ['trim'] }),
 
   cookie_secret_token: t.String({
