@@ -2,7 +2,7 @@ import type { Static } from '@sinclair/typebox';
 import { Type as t } from '@sinclair/typebox';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
+import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { PersonRev } from '@app/lib/orm/entity/index.ts';
 import { createRevision, RevType } from '@app/lib/orm/entity/index.ts';
@@ -139,7 +139,7 @@ export async function setup(app: App) {
           throw new NotFoundError(`person ${personID}`);
         }
         if (p.lock || p.redirect) {
-          throw new BadRequestError('locked person');
+          throw new LockedError();
         }
 
         matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
