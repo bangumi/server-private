@@ -11,6 +11,7 @@ import {
   handle as handleSubjectEvent,
   handleEpisode as handleEpisodeEvent,
   handleFields as handleSubjectFieldsEvent,
+  handleSubjectDate,
   handleTopic as handleSubjectTopicEvent,
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
@@ -39,11 +40,12 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_subject_topics',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_timeline',
+  'debezium.chii.bangumi.chii_subject_revisions',
 ];
 
-type Handler = (key: string, value: string) => Promise<void>;
+type Handler = (topic: string, key: string, value: string) => Promise<void>;
 
-const binlogHandlers: Record<string, Handler> = {
+const binlogHandlers: Record<string, Handler | Handler[]> = {
   chii_blog_entry: handleBlogEvent,
   chii_characters: handleCharacterEvent,
   chii_episodes: handleEpisodeEvent,
@@ -56,17 +58,33 @@ const binlogHandlers: Record<string, Handler> = {
   chii_persons: handlePersonEvent,
   chii_subject_fields: handleSubjectFieldsEvent,
   chii_subject_topics: handleSubjectTopicEvent,
-  chii_subjects: handleSubjectEvent,
+  chii_subjects: [handleSubjectEvent, handleSubjectDate],
   chii_timeline: handleTimelineEvent,
+  chii_subject_revisions: handleSubjectDate,
 };
 
-async function onBinlogMessage(key: string, value: string) {
+async function onBinlogMessage(topic: string, key: string, value: string) {
   const payload = JSON.parse(value) as Payload;
   const handler = binlogHandlers[payload.source.table];
   if (!handler) {
     return;
   }
-  await handler(key, value);
+  if (Array.isArray(handler)) {
+    const ts = [];
+    for (const h of handler) {
+      // catch on each handler to it doesn't get swallowed by Promise.all.
+      ts.push(
+        h(topic, key, value).catch((error) => {
+          logger.error('failed to handle event from %s: %o', payload.source.table, error);
+        }),
+      );
+    }
+    await Promise.all(ts);
+  } else {
+    await handler(topic, key, value).catch((error) => {
+      logger.error('failed to handle event from %s: %o', payload.source.table, error);
+    });
+  }
 }
 
 const serviceHandlers: Record<string, Handler> = {
@@ -78,7 +96,9 @@ async function onServiceMessage(topic: string, key: string, value: string) {
   if (!handler) {
     return;
   }
-  await handler(key, value);
+  await handler(topic, key, value).catch((error) => {
+    logger.error('failed to handle event from %s: %o', topic, error);
+  });
 }
 
 async function main() {
@@ -99,7 +119,7 @@ async function main() {
       }
       try {
         if (topic.startsWith('debezium.')) {
-          await onBinlogMessage(message.key.toString(), message.value.toString());
+          await onBinlogMessage(topic, message.key.toString(), message.value.toString());
         } else {
           await onServiceMessage(topic, message.key.toString(), message.value.toString());
         }

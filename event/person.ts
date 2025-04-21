@@ -11,7 +11,7 @@ interface Payload {
   op: EventOp;
 }
 
-export async function handle(key: string, value: string) {
+export async function handle(topic: string, key: string, value: string) {
   const idx = JSON.parse(key) as PersonKey;
   const payload = JSON.parse(value) as Payload;
   switch (payload.op) {

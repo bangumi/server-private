@@ -24,6 +24,15 @@ export function extractDate(w: Wiki, typeID: SubjectType, platform: number): DAT
         return parsed;
       }
     }
+
+    for (const value of item.values ?? []) {
+      if (value.v) {
+        const parsed = extractFromString(value.v);
+        if (parsed) {
+          return parsed;
+        }
+      }
+    }
   }
 
   return new DATE(0, 0, 0);
