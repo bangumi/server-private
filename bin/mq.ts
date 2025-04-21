@@ -15,7 +15,7 @@ import {
   handleTopic as handleSubjectTopicEvent,
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
-import type { Payload } from '@app/event/type';
+import type { KafkaMessage, Payload } from '@app/event/type';
 import { handle as handleUserEvent, handleFriend as handleFriendEvent } from '@app/event/user';
 import { newConsumer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
@@ -43,7 +43,7 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_subject_revisions',
 ];
 
-type Handler = (topic: string, key: string, value: string) => Promise<void>;
+type Handler = (msg: KafkaMessage) => Promise<void>;
 
 const binlogHandlers: Record<string, Handler | Handler[]> = {
   chii_blog_entry: handleBlogEvent,
@@ -63,8 +63,8 @@ const binlogHandlers: Record<string, Handler | Handler[]> = {
   chii_subject_revisions: handleSubjectDate,
 };
 
-async function onBinlogMessage(topic: string, key: string, value: string) {
-  const payload = JSON.parse(value) as Payload;
+async function onBinlogMessage(msg: KafkaMessage) {
+  const payload = JSON.parse(msg.value) as Payload;
   const handler = binlogHandlers[payload.source.table];
   if (!handler) {
     return;
@@ -74,14 +74,14 @@ async function onBinlogMessage(topic: string, key: string, value: string) {
     for (const h of handler) {
       // catch on each handler to it doesn't get swallowed by Promise.all.
       ts.push(
-        h(topic, key, value).catch((error) => {
+        h(msg).catch((error) => {
           logger.error('failed to handle event from %s: %o', payload.source.table, error);
         }),
       );
     }
     await Promise.all(ts);
   } else {
-    await handler(topic, key, value).catch((error) => {
+    await handler(msg).catch((error) => {
       logger.error('failed to handle event from %s: %o', payload.source.table, error);
     });
   }
@@ -91,13 +91,13 @@ const serviceHandlers: Record<string, Handler> = {
   timeline: handleTimelineMessage,
 };
 
-async function onServiceMessage(topic: string, key: string, value: string) {
-  const handler = serviceHandlers[topic];
+async function onServiceMessage(msg: KafkaMessage) {
+  const handler = serviceHandlers[msg.topic];
   if (!handler) {
     return;
   }
-  await handler(topic, key, value).catch((error) => {
-    logger.error('failed to handle event from %s: %o', topic, error);
+  await handler(msg).catch((error) => {
+    logger.error('failed to handle event from %s: %o', msg.topic, error);
   });
 }
 
@@ -119,9 +119,17 @@ async function main() {
       }
       try {
         if (topic.startsWith('debezium.')) {
-          await onBinlogMessage(topic, message.key.toString(), message.value.toString());
+          await onBinlogMessage({
+            topic: topic,
+            key: message.key.toString(),
+            value: message.value.toString(),
+          });
         } else {
-          await onServiceMessage(topic, message.key.toString(), message.value.toString());
+          await onServiceMessage({
+            topic: topic,
+            key: message.key.toString(),
+            value: message.value.toString(),
+          });
         }
       } catch (error) {
         logger.error(error, `error processing message ${message.key.toString()}`);

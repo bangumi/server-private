@@ -1,7 +1,7 @@
 import { getSlimCacheKey } from '@app/lib/blog/cache';
 import redis from '@app/lib/redis.ts';
 
-import { EventOp } from './type';
+import { EventOp, type KafkaMessage } from './type';
 
 interface BlogKey {
   entry_id: number;
@@ -11,7 +11,7 @@ interface Payload {
   op: EventOp;
 }
 
-export async function handle(topic: string, key: string, value: string) {
+export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as BlogKey;
   const payload = JSON.parse(value) as Payload;
   switch (payload.op) {
