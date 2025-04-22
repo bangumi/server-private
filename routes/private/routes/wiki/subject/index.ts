@@ -582,7 +582,7 @@ export async function setup(app: App) {
         }
 
         if (authorID) {
-          if (!(await orm.fetchSubjectByID(authorID))) {
+          if (!(await fetcher.fetchSlimUserByID(authorID))) {
             throw new BadRequestError(`user ${authorID} does not exists`);
           }
           finalAuthorID = authorID;
