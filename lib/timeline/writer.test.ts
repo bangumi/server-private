@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
-import { decode } from '@app/lib/utils';
+import { decode } from '@app/lib/utils/index.ts';
 
 import { TimelineCat, TimelineMonoType, TimelineSource, TimelineStatusType } from './type';
 import { TimelineMonoCat } from './type';
