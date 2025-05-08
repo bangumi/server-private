@@ -1,6 +1,5 @@
 import type { WikiMap } from '@bgm38/wiki';
 import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
-import * as php from '@trim21/php-serialize';
 
 import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
@@ -8,6 +7,7 @@ import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/in
 import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
+import { decode } from '@app/lib/utils';
 import {
   findNetworkService,
   findSubjectPlatform,
@@ -31,7 +31,7 @@ export function toIndexStats(stats: string): res.IIndexStats {
   if (!stats) {
     return result;
   }
-  const statList = php.parse(stats) as Record<number, string>;
+  const statList = decode(stats) as Record<number, string>;
   for (const [key, value] of Object.entries(statList)) {
     const k = Number.parseInt(key);
     const v = Number.parseInt(value);
@@ -47,7 +47,7 @@ export function toSubjectTags(tags: string): res.ISubjectTag[] {
   if (!tags) {
     return [];
   }
-  const tagList = php.parse(tags) as { tag_name: string; result: string }[];
+  const tagList = decode(tags) as { tag_name: string; result: string }[];
   return tagList
     .filter((x) => x.tag_name !== undefined)
     .map((x) => ({ name: x.tag_name, count: Number.parseInt(x.result) }))

@@ -1,4 +1,3 @@
-import * as php from '@trim21/php-serialize';
 import * as lodash from 'lodash-es';
 
 import { db, incr, op, schema, type Txn } from '@app/drizzle';
@@ -6,6 +5,7 @@ import { siteUrl } from '@app/lib/config.ts';
 import { isFriends, parseBlocklist } from '@app/lib/user/utils.ts';
 
 import { NotFoundError, UnreachableError } from './error.ts';
+import { decode } from './utils/index.ts';
 
 /**
  * `nt_type`
@@ -261,7 +261,7 @@ async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
     };
   }
 
-  const field = php.parse(uf.privacy) as Record<number, number>;
+  const field = decode(uf.privacy) as Record<number, number>;
   return {
     PrivateMessage: field[UserPrivacyReceivePrivateMessage] as PrivacyFilter,
     TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,

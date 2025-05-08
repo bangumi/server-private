@@ -5,6 +5,7 @@ import { db, op, schema } from '@app/drizzle';
 import { BadRequestError } from '@app/lib/error.ts';
 import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
+import { decode } from '@app/lib/utils';
 
 import type * as memo from './memo';
 import type { TimelineMonoCat, TimelineMonoType, TimelineSource } from './type';
@@ -195,12 +196,12 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     if (previous && previous.createdAt > payload.createdAt - 10 * 60) {
       const details: Record<number, typeof detail> = {};
       if (previous.batch) {
-        const info = php.parse(previous.memo) as Record<number, typeof detail>;
+        const info = decode(previous.memo) as Record<number, typeof detail>;
         for (const [id, item] of Object.entries(info)) {
           details[Number(id)] = item;
         }
       } else {
-        const info = php.parse(previous.memo) as typeof detail;
+        const info = decode(previous.memo) as typeof detail;
         const previousID = detailHandler.getID(info);
         details[previousID] = info;
       }
@@ -267,12 +268,12 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     if (previous && previous.createdAt > payload.createdAt - 10 * 60) {
       const details: memo.SubjectBatch = {};
       if (previous.batch) {
-        const info = php.parse(previous.memo) as memo.SubjectBatch;
+        const info = decode(previous.memo) as memo.SubjectBatch;
         for (const [id, subject] of Object.entries(info)) {
           details[Number(id)] = subject;
         }
       } else {
-        const info = php.parse(previous.memo) as memo.Subject;
+        const info = decode(previous.memo) as memo.Subject;
         details[Number(info.subject_id)] = info;
       }
       details[Number(detail.subject_id)] = detail;
@@ -486,12 +487,12 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     if (previous && previous.createdAt > payload.createdAt - 10 * 60) {
       const details: memo.MonoBatch = {};
       if (previous.batch) {
-        const info = php.parse(previous.memo) as memo.MonoBatch;
+        const info = decode(previous.memo) as memo.MonoBatch;
         for (const [id, mono] of Object.entries(info)) {
           details[Number(id)] = mono;
         }
       } else {
-        const info = php.parse(previous.memo) as memo.MonoSingle;
+        const info = decode(previous.memo) as memo.MonoSingle;
         details[Number(info.id)] = info;
       }
       details[Number(detail.id)] = detail;

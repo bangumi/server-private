@@ -6,6 +6,7 @@ import type { EntityManager } from 'typeorm';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 import * as entity from '@app/lib/orm/entity/index.ts';
+import { decode } from '@app/lib/utils';
 
 const decompress = promisify(zlib.inflateRaw);
 const compress = promisify(zlib.deflateRaw);
@@ -120,7 +121,7 @@ export class RevText {
   }
 
   static async deserialize(o: Buffer): Promise<Record<string, unknown>> {
-    return php.parse(await decompress(o)) as Record<string, unknown>;
+    return decode(await decompress(o)) as Record<string, unknown>;
   }
 
   static async serialize(o: unknown): Promise<Buffer> {

@@ -1,9 +1,9 @@
-import * as php from '@trim21/php-serialize';
 import { DateTime } from 'luxon';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
+import { decode } from '@app/lib/utils/index.ts';
 
 import { TimelineCat, TimelineMonoType, TimelineSource, TimelineStatusType } from './type';
 import { TimelineMonoCat } from './type';
@@ -54,7 +54,7 @@ describe('TimelineWriter', () => {
       expect(entry.type).toBe(6); // Anime collect type
       expect(entry.related).toBe(payload.subject.id.toString());
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo);
       expect(memo).toEqual({
         subject_id: payload.subject.id,
         collect_id: payload.collect.id,
@@ -111,11 +111,11 @@ describe('TimelineWriter', () => {
 
       expect(entry.batch).toBe(true);
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo) as Record<string, { collect_comment: string }>;
       expect(memo).toHaveProperty('100');
       expect(memo).toHaveProperty('101');
-      expect(memo['100'].collect_comment).toBe('First comment');
-      expect(memo['101'].collect_comment).toBe('Second comment');
+      expect(memo['100']?.collect_comment).toBe('First comment');
+      expect(memo['101']?.collect_comment).toBe('Second comment');
     });
   });
 
@@ -150,7 +150,7 @@ describe('TimelineWriter', () => {
       expect(entry.cat).toBe(TimelineCat.Progress);
       expect(entry.type).toBe(EpisodeCollectionStatus.Done);
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo);
       expect(memo).toEqual({
         subject_id: payload.subject.id,
         subject_type_id: payload.subject.type,
@@ -197,7 +197,7 @@ describe('TimelineWriter', () => {
         throw new Error('Entry not found');
       }
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo) as { ep_id: number };
       expect(memo.ep_id).toBe(payload2.episode.id);
     });
   });
@@ -234,7 +234,7 @@ describe('TimelineWriter', () => {
       expect(entry.cat).toBe(TimelineCat.Progress);
       expect(entry.type).toBe(0);
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo);
       expect(memo).toEqual({
         subject_id: payload.subject.id,
         subject_type_id: payload.subject.type,
@@ -284,7 +284,7 @@ describe('TimelineWriter', () => {
         throw new Error('Entry not found');
       }
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo) as { eps_update: number };
       expect(memo.eps_update).toBe(payload2.collect.epsUpdate);
     });
   });
@@ -343,7 +343,7 @@ describe('TimelineWriter', () => {
       expect(entry.type).toBe(payload.type);
       expect(entry.related).toBe(payload.id.toString());
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo);
       expect(memo).toEqual({
         cat: payload.cat,
         id: payload.id,
@@ -383,11 +383,11 @@ describe('TimelineWriter', () => {
 
       expect(entry.batch).toBe(true);
 
-      const memo = php.parse(entry.memo);
+      const memo = decode(entry.memo) as Record<string, { cat: number }>;
       expect(memo).toHaveProperty('100');
       expect(memo).toHaveProperty('101');
-      expect(memo['100'].cat).toBe(TimelineMonoCat.Person);
-      expect(memo['101'].cat).toBe(TimelineMonoCat.Person);
+      expect(memo['100']?.cat).toBe(TimelineMonoCat.Person);
+      expect(memo['101']?.cat).toBe(TimelineMonoCat.Person);
     });
   });
 });

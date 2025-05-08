@@ -1,8 +1,8 @@
-import * as php from '@trim21/php-serialize';
 import Keyv from 'keyv';
 
 import { db, op, schema } from '@app/drizzle';
 import { logger } from '@app/lib/logger.ts';
+import { decode } from '@app/lib/utils';
 
 export interface Permission {
   app_erase?: boolean;
@@ -70,9 +70,10 @@ export async function fetchPermission(userGroup: number): Promise<Readonly<Permi
 
   const permission = Object.freeze(
     Object.fromEntries(
-      Object.entries(php.parse(data.perm) as Record<keyof Permission, string>).map(
-        ([key, value]) => [key, value === '1'],
-      ),
+      Object.entries(decode(data.perm) as Record<keyof Permission, string>).map(([key, value]) => [
+        key,
+        value === '1',
+      ]),
     ),
   );
   await permissionCache.set<Permission>(userGroup.toString(), permission);
