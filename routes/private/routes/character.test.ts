@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
+import { emptyAuth } from '@app/lib/auth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './character.ts';
-import { emptyAuth } from '@app/lib/auth/index.ts';
 
 describe('character', () => {
   test('should get character', async () => {

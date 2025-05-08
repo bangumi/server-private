@@ -2,21 +2,21 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import { StatusCodes } from 'http-status-codes';
-import { afterEach, beforeEach, beforeAll, describe, expect, test, vi } from 'vitest';
+import { DateTime } from 'luxon';
+import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
-import type { Permission } from '@app/lib/user/perm.ts';
 import { SubjectRepo } from '@app/lib/orm/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
+import type { Permission } from '@app/lib/user/perm.ts';
 import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
-import { DateTime } from 'luxon';
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
@@ -395,19 +395,20 @@ describe('lock subject', () => {
   });
 });
 
+const newEpisodeApp = () =>
+  testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { ep_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
 describe('create episodes', () => {
   const subjectID = 13;
-  const newEpisodeApp = () =>
-    testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { ep_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
 
   test('create new episodes', async () => {
     await db.delete(schema.chiiEpisodes).where(op.eq(schema.chiiEpisodes.subjectID, subjectID));
@@ -496,6 +497,18 @@ describe('create episodes', () => {
   });
 });
 
+const patchEpisodesApp = () =>
+  testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { ep_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
 describe('patch episodes', () => {
   const subjectID = 13;
   let episodeIDs: number[];
@@ -509,18 +522,6 @@ describe('patch episodes', () => {
     episodeIDs = episodes.map((ep) => ep.id);
     expect(episodeIDs).toHaveLength(2);
   });
-
-  const patchEpisodesApp = () =>
-    testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { ep_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
 
   test('successfully patch episodes', async () => {
     const app = await patchEpisodesApp();

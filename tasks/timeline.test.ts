@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
-import { getInboxCacheKey } from '@app/lib/timeline/cache';
 import redis from '@app/lib/redis.ts';
+import { getInboxCacheKey } from '@app/lib/timeline/cache';
 
 import { truncateGlobalCache, truncateInboxCache } from './timeline.ts';
 
@@ -18,7 +18,7 @@ describe('truncate timeline cache', () => {
     const cacheKey = getInboxCacheKey(0);
     // generate 1500 members
     const members = Array.from({ length: 1500 }, (_, i) => i + 1);
-    await redis.zadd(cacheKey, ...members.map((m) => [m, m]).flat());
+    await redis.zadd(cacheKey, ...members.flatMap((m) => [m, m]));
     const countBefore = await redis.zcard(cacheKey);
     expect(countBefore).toBe(1500);
 
@@ -43,7 +43,7 @@ describe('truncate timeline cache', () => {
     const cacheKey = getInboxCacheKey(1);
     // generate 400 members
     const members = Array.from({ length: 400 }, (_, i) => i + 1);
-    await redis.zadd(cacheKey, ...members.map((m) => [m, m]).flat());
+    await redis.zadd(cacheKey, ...members.flatMap((m) => [m, m]));
     const countBefore = await redis.zcard(cacheKey);
     expect(countBefore).toBe(400);
 
