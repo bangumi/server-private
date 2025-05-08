@@ -1,11 +1,11 @@
+import { DateTime } from 'luxon';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
+import { UserGroup } from '@app/lib/auth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './ep.ts';
-import { DateTime } from 'luxon';
-import { UserGroup } from '@app/lib/auth/index.ts';
 
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);

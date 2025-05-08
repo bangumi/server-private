@@ -10,12 +10,26 @@ import tsEslint from 'typescript-eslint';
 
 import firstPartEslintPlugin from './eslint/index.mjs';
 
+const sortImport = {
+  'simple-import-sort/imports': [
+    'error',
+    {
+      groups: [
+        [String.raw`^\u0000`], // Side effect imports.
+        ['^node:'],
+        ['^'],
+        ['^@app/.*'],
+        [String.raw`^\.`], // Relative imports.
+      ],
+    },
+  ],
+};
+
 export default tsEslint.config(
   {
     ignores: [
       'dist/**',
       'coverage/**',
-      '**/*.test.ts',
       '**/__generated__/**',
       '**/generated/**',
       'drizzle/new/**/*',
@@ -133,6 +147,7 @@ export default tsEslint.config(
           multilineDetection: 'brackets',
         },
       ],
+      ...sortImport,
       '@typescript-eslint/space-before-function-paren': 'off',
       '@typescript-eslint/semi': ['error', 'always'],
       semi: ['error', 'always'],
@@ -145,26 +160,8 @@ export default tsEslint.config(
           exports: 'always-multiline',
           functions: 'ignore',
         },
-      ], // 'import/first': 'error',
-      // 'import/no-duplicates': 'error',
-      // 'import/newline-after-import': 'error',
-      // 'import/no-named-as-default': 'off',
-      'simple-import-sort/imports': [
-        'error',
-        {
-          groups: [
-            // Side effect imports.
-            [String.raw`^\u0000`], // Node.js builtins prefixed with `node:`.
-            ['^node:'], // Absolute imports and other imports such as Vue-style `@/foo`.
-            // Anything not matched in another group.
-            ['^'], // Packages.
-            // Things that start with a letter (or digit or underscore), or `@` followed by a letter.
-            ['^@app/.*'], // Relative imports.
-            // Anything that starts with a dot.
-            [String.raw`^\.`],
-          ],
-        },
       ],
+
       'simple-import-sort/exports': 'error',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -179,7 +176,7 @@ export default tsEslint.config(
     },
   },
   {
-    files: ['tests/**/*', '*.test.ts'],
+    files: ['tests/**/*', '**/*.test.ts'],
     rules: {
       '@typescript-eslint/consistent-type-imports': ['error', { disallowTypeAnnotations: false }],
       '@typescript-eslint/require-await': 'off',
@@ -188,7 +185,9 @@ export default tsEslint.config(
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      ...sortImport,
     },
   },
   {

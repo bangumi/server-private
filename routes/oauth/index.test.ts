@@ -1,12 +1,12 @@
+import fastifyCookie from '@fastify/cookie';
 import formBody from '@fastify/formbody';
+import * as cheerio from 'cheerio';
 import { describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { fetchUserX } from '@app/lib/user/utils.ts';
 import { userOauthRoutes } from '@app/routes/oauth/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
-import fastifyCookie from '@fastify/cookie';
-import * as cheerio from 'cheerio';
 
 const createApp = async () => {
   const app = createTestServer({
@@ -66,13 +66,13 @@ describe('oauth', () => {
 
     expect(res2.body).toMatchInlineSnapshot(`""`);
     expect(res2.statusCode).toBe(302);
-    const u = new URL(res2.headers.location as string);
+    const u = new URL(res2.headers.location!);
     expect(u.protocol).toMatchInlineSnapshot(`"bangumi:"`);
     expect(u.hostname).toMatchInlineSnapshot(`"oauth"`);
     expect(u.pathname).toMatchInlineSnapshot(`"/callback"`);
     expect(u.searchParams.get('state')).toMatchInlineSnapshot(`null`);
 
-    const code = u.searchParams.get('code') as string;
+    const code = u.searchParams.get('code')!;
 
     const fetch_token = await app.inject({
       url: '/access_token',
