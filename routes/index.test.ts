@@ -1,4 +1,3 @@
-import * as yaml from 'js-yaml';
 import { expect, test } from 'vitest';
 
 import { createServer } from '@app/lib/server.ts';

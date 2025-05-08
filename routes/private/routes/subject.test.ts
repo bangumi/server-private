@@ -2,10 +2,10 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
+import { CommentState } from '@app/lib/topic/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './subject.ts';
-import { CommentState } from '@app/lib/topic/type.ts';
 
 describe('subject', () => {
   test('should get subject', async () => {
@@ -193,7 +193,7 @@ describe('subject topics', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    const { id } = res.json() as { id: number };
+    const { id } = res.json();
 
     const [topic] = await db
       .select()
@@ -288,7 +288,7 @@ describe('subject topics', () => {
       },
     });
     expect(createRes.statusCode).toBe(200);
-    const { id } = createRes.json() as { id: number };
+    const { id } = createRes.json();
     const [createdPost] = await db
       .select()
       .from(schema.chiiSubjectPosts)
