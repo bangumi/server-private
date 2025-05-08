@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 
+import * as php from '@trim21/php-serialize';
 import _parseDuration from 'parse-duration';
 
 import { BadRequestError } from '@app/lib/error.ts';
@@ -172,4 +173,17 @@ function formatLongDuration(durationSeconds: number) {
 
 export async function sleep(ms: number) {
   await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function decode(s: string | Buffer): unknown {
+  if (s.length === 0) {
+    return {};
+  }
+
+  const buf = Buffer.from(s);
+  if (buf.subarray(0, 2).toString() === 'a:') {
+    return php.parse(s);
+  }
+
+  return JSON.parse(buf.toString('utf8'));
 }

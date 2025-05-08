@@ -1,4 +1,3 @@
-import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 
 import { db, op, type orm, schema } from '@app/drizzle';
@@ -7,6 +6,7 @@ import { LikeType, Reaction } from '@app/lib/like.ts';
 import redis from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
+import { decode } from '@app/lib/utils/index.ts';
 
 import { getItemCacheKey } from './cache.ts';
 import type * as memo from './memo';
@@ -29,7 +29,7 @@ export async function parseTimelineMemo(
         case TimelineDailyType.AddFriend: {
           const users = [];
           if (batch) {
-            const info = php.parse(data) as memo.UserBatch;
+            const info = decode(data) as memo.UserBatch;
             const us = await fetcher.fetchSlimUsersByIDs(Object.keys(info).map(Number));
             for (const id of Object.keys(info).map(Number).sort()) {
               const user = us[id];
@@ -38,7 +38,7 @@ export async function parseTimelineMemo(
               }
             }
           } else {
-            const info = php.parse(data) as memo.User;
+            const info = decode(data) as memo.User;
             const user = await fetcher.fetchSlimUserByID(Number(info.uid));
             if (user) {
               users.push(user);
@@ -54,7 +54,7 @@ export async function parseTimelineMemo(
         case TimelineDailyType.CreateGroup: {
           const groups = [];
           if (batch) {
-            const info = php.parse(data) as memo.GroupBatch;
+            const info = decode(data) as memo.GroupBatch;
             const gs = await fetcher.fetchSlimGroupsByIDs(
               Object.keys(info).map(Number),
               auth.allowNsfw,
@@ -66,7 +66,7 @@ export async function parseTimelineMemo(
               }
             }
           } else {
-            const info = php.parse(data) as memo.Group;
+            const info = decode(data) as memo.Group;
             const group = await fetcher.fetchSlimGroupByID(Number(info.grp_id));
             if (group) {
               groups.push(group);
@@ -84,7 +84,7 @@ export async function parseTimelineMemo(
       }
     }
     case TimelineCat.Wiki: {
-      const info = php.parse(data) as memo.NewSubject;
+      const info = decode(data) as memo.NewSubject;
       const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
       return {
         wiki: {
@@ -95,7 +95,7 @@ export async function parseTimelineMemo(
     case TimelineCat.Subject: {
       const subjects = [];
       if (batch) {
-        const info = php.parse(data) as memo.SubjectBatch;
+        const info = decode(data) as memo.SubjectBatch;
         const ss = await fetcher.fetchSlimSubjectsByIDs(
           Object.keys(info).map(Number),
           auth.allowNsfw,
@@ -117,7 +117,7 @@ export async function parseTimelineMemo(
           });
         }
       } else {
-        const info = php.parse(data) as memo.Subject;
+        const info = decode(data) as memo.Subject;
         const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
         if (subject) {
           subjects.push({
@@ -134,7 +134,7 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Progress: {
       if (type === 0) {
-        const info = php.parse(data) as memo.ProgressBatch;
+        const info = decode(data) as memo.ProgressBatch;
         let subjectID = Number(info.subject_id);
         // memo 里面的 subject_id 有时候为空，这时候 fallback 到 related
         if (!subjectID) {
@@ -163,7 +163,7 @@ export async function parseTimelineMemo(
           },
         };
       } else {
-        const info = php.parse(data) as memo.ProgressSingle;
+        const info = decode(data) as memo.ProgressSingle;
         const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
         const episode = await fetcher.fetchEpisodeByID(Number(info.ep_id));
         if (!subject || !episode) {
@@ -198,7 +198,7 @@ export async function parseTimelineMemo(
           };
         }
         case TimelineStatusType.Nickname: {
-          const info = php.parse(data) as memo.Nickname;
+          const info = decode(data) as memo.Nickname;
           return {
             status: {
               nickname: {
@@ -214,14 +214,14 @@ export async function parseTimelineMemo(
       }
     }
     case TimelineCat.Blog: {
-      const info = php.parse(data) as memo.Blog;
+      const info = decode(data) as memo.Blog;
       const blog = await fetcher.fetchSlimBlogEntryByID(Number(info.entry_id), auth.userID);
       return {
         blog,
       };
     }
     case TimelineCat.Index: {
-      const info = php.parse(data) as memo.Index;
+      const info = decode(data) as memo.Index;
       const index = await fetcher.fetchSlimIndexByID(Number(info.idx_id));
       return {
         index,
@@ -229,7 +229,7 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Mono: {
       if (batch) {
-        const info = php.parse(data) as memo.MonoBatch;
+        const info = decode(data) as memo.MonoBatch;
         const characterIDs = [];
         const personIDs = [];
         for (const value of Object.values(info)) {
@@ -267,7 +267,7 @@ export async function parseTimelineMemo(
           },
         };
       } else {
-        const info = php.parse(data) as memo.MonoSingle;
+        const info = decode(data) as memo.MonoSingle;
         const characters = [];
         const persons = [];
         switch (info.cat) {

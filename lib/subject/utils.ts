@@ -2,6 +2,7 @@ import * as php from '@trim21/php-serialize';
 import { DateTime } from 'luxon';
 
 import { db, decr, incr, op, type orm, schema, type Txn } from '@app/drizzle';
+import { decode } from '@app/lib/utils';
 
 import { type CollectionType, SubjectType, type UserEpisodeStatusItem } from './type';
 import { EpisodeCollectionStatus, getCollectionTypeField } from './type';
@@ -195,7 +196,7 @@ export function parseSubjectEpStatus(status: string): Map<number, UserEpisodeSta
   if (!status) {
     return result;
   }
-  const epStatusList = php.parse(status) as Record<number, UserEpisodeStatusItem>;
+  const epStatusList = decode(status) as Record<number, UserEpisodeStatusItem>;
   for (const [eid, x] of Object.entries(epStatusList)) {
     result.set(Number(eid), x);
   }
