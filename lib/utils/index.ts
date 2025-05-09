@@ -180,7 +180,13 @@ export function decode(s: string | Buffer): unknown {
     return {};
   }
 
-  const buf = Buffer.from(s);
+  let buf: Buffer;
+  if (typeof s === 'string') {
+    buf = Buffer.from(s, 'utf8');
+  } else {
+    buf = s;
+  }
+
   if (buf.subarray(0, 2).toString() === 'a:') {
     return php.parse(s);
   }

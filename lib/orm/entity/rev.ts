@@ -1,7 +1,6 @@
 import { promisify } from 'node:util';
 import * as zlib from 'node:zlib';
 
-import * as php from '@trim21/php-serialize';
 import type { EntityManager } from 'typeorm';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -125,7 +124,7 @@ export class RevText {
   }
 
   static async serialize(o: unknown): Promise<Buffer> {
-    return await compress(php.stringify(o));
+    return await compress(JSON.stringify(o));
   }
 }
 

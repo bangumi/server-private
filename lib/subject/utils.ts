@@ -1,4 +1,3 @@
-import * as php from '@trim21/php-serialize';
 import { DateTime } from 'luxon';
 
 import { db, decr, incr, op, type orm, schema, type Txn } from '@app/drizzle';
@@ -104,7 +103,7 @@ export async function updateSubjectEpisodeProgress(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = php.stringify(epStatusList);
+    const newStatus = JSON.stringify(epStatusList);
     await t
       .update(schema.chiiEpStatus)
       .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
@@ -119,7 +118,7 @@ export async function updateSubjectEpisodeProgress(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = php.stringify(epStatusList);
+    const newStatus = JSON.stringify(epStatusList);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
       sid: subjectID,
@@ -170,7 +169,7 @@ export async function markEpisodesAsWatched(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = php.stringify(epStatusList);
+    const newStatus = JSON.stringify(epStatusList);
     await t
       .update(schema.chiiEpStatus)
       .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
@@ -180,7 +179,7 @@ export async function markEpisodesAsWatched(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = php.stringify(epStatusList);
+    const newStatus = JSON.stringify(epStatusList);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
       sid: subjectID,

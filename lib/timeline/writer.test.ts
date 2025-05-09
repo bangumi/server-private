@@ -241,7 +241,6 @@ describe('TimelineWriter', () => {
         eps_total: payload.subject.eps.toString(),
         eps_update: payload.collect.epsUpdate,
         vols_total: '??',
-        vols_update: null,
       });
     });
 

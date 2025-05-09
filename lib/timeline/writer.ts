@@ -1,4 +1,3 @@
-import * as php from '@trim21/php-serialize';
 import * as lo from 'lodash-es';
 
 import { db, op, schema } from '@app/drizzle';
@@ -210,7 +209,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         .update(schema.chiiTimeline)
         .set({
           batch: true,
-          memo: php.stringify(details),
+          memo: JSON.stringify(details),
           source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
@@ -219,7 +218,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     } else {
       const [result] = await db.insert(schema.chiiTimeline).values({
         ...params,
-        memo: php.stringify(detail),
+        memo: JSON.stringify(detail),
       });
       return result.insertId;
     }
@@ -235,7 +234,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       cat: TimelineCat.Wiki,
       type: payload.subject.type,
       related: payload.subject.id.toString(),
-      memo: php.stringify(detail),
+      memo: JSON.stringify(detail),
       img: '',
       batch: false,
       replies: 0,
@@ -281,7 +280,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         .update(schema.chiiTimeline)
         .set({
           batch: true,
-          memo: php.stringify(details),
+          memo: JSON.stringify(details),
           source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
@@ -293,7 +292,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         cat: TimelineCat.Subject,
         type,
         related: payload.subject.id.toString(),
-        memo: php.stringify(detail),
+        memo: JSON.stringify(detail),
         img: '',
         batch: false,
         source: payload.source,
@@ -335,7 +334,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       await db
         .update(schema.chiiTimeline)
         .set({
-          memo: php.stringify(detail),
+          memo: JSON.stringify(detail),
           source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
@@ -347,7 +346,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         cat: TimelineCat.Progress,
         type: payload.episode.status,
         related: payload.subject.id.toString(),
-        memo: php.stringify(detail),
+        memo: JSON.stringify(detail),
         img: '',
         batch: false,
         source: payload.source,
@@ -388,7 +387,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       await db
         .update(schema.chiiTimeline)
         .set({
-          memo: php.stringify(detail),
+          memo: JSON.stringify(detail),
           source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
@@ -400,7 +399,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         cat: TimelineCat.Progress,
         type: 0,
         related: payload.subject.id.toString(),
-        memo: php.stringify(detail),
+        memo: JSON.stringify(detail),
         img: '',
         batch: false,
         source: payload.source,
@@ -456,7 +455,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
       cat: TimelineCat.Status,
       type: TimelineStatusType.Nickname,
       related: '',
-      memo: php.stringify(detail),
+      memo: JSON.stringify(detail),
       img: '',
       batch: false,
       source: payload.source,
@@ -500,7 +499,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         .update(schema.chiiTimeline)
         .set({
           batch: true,
-          memo: php.stringify(details),
+          memo: JSON.stringify(details),
           source: payload.source,
         })
         .where(op.eq(schema.chiiTimeline.id, previous.id))
@@ -512,7 +511,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         cat: TimelineCat.Mono,
         type: payload.type,
         related: payload.id.toString(),
-        memo: php.stringify(detail),
+        memo: JSON.stringify(detail),
         img: '',
         batch: false,
         source: payload.source,
