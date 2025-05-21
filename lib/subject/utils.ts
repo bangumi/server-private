@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import { decr, incr, op, type orm, schema, type Txn } from '@app/drizzle';
 
-import { parseSubjectEpStatus } from './ep';
+import { markEpisodesAsWatched, parseSubjectEpStatus } from './ep';
 import { type CollectionType, SubjectType, type UserEpisodeStatusItem } from './type';
 import { EpisodeCollectionStatus, getCollectionTypeField } from './type';
 
@@ -115,67 +115,6 @@ export async function updateSubjectEpisodeProgress(
       eid: episodeID.toString(),
       type,
     });
-    watchedEpisodes = [...epStatusList.values()].filter(
-      (x) => x.type === EpisodeCollectionStatus.Done,
-    ).length;
-    const newStatus = JSON.stringify(epStatusList);
-    await t.insert(schema.chiiEpStatus).values({
-      uid: userID,
-      sid: subjectID,
-      status: newStatus,
-      updatedAt: DateTime.now().toUnixInteger(),
-    });
-  }
-  return watchedEpisodes;
-}
-
-/** 标记条目剧集为已观看，需要在事务中执行 */
-export async function markEpisodesAsWatched(
-  t: Txn,
-  userID: number,
-  subjectID: number,
-  episodeIDs: number[],
-  revertOthers = false,
-): Promise<number> {
-  const epStatusList = new Map<number, UserEpisodeStatusItem>();
-  for (const episodeID of episodeIDs) {
-    epStatusList.set(episodeID, {
-      eid: episodeID.toString(),
-      type: EpisodeCollectionStatus.Done,
-    });
-  }
-  const [current] = await t
-    .select()
-    .from(schema.chiiEpStatus)
-    .where(
-      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
-    );
-  let watchedEpisodes = 0;
-  if (current?.status) {
-    const oldList = parseSubjectEpStatus(current.status);
-    for (const [eid, x] of oldList) {
-      if (episodeIDs.includes(eid)) {
-        continue;
-      }
-      if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
-        epStatusList.set(eid, {
-          eid: x.eid,
-          type: EpisodeCollectionStatus.None,
-        });
-      } else {
-        epStatusList.set(eid, x);
-      }
-    }
-    watchedEpisodes = [...epStatusList.values()].filter(
-      (x) => x.type === EpisodeCollectionStatus.Done,
-    ).length;
-    const newStatus = JSON.stringify(epStatusList);
-    await t
-      .update(schema.chiiEpStatus)
-      .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
-      .where(op.eq(schema.chiiEpStatus.id, current.id))
-      .limit(1);
-  } else {
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;

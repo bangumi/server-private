@@ -7,6 +7,7 @@ import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/li
 import { IndexType } from '@app/lib/index/types';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
+import { markEpisodesAsWatched } from '@app/lib/subject/ep';
 import {
   CollectionPrivacy,
   CollectionType,
@@ -16,7 +17,6 @@ import {
 } from '@app/lib/subject/type.ts';
 import {
   completeSubjectProgress,
-  markEpisodesAsWatched,
   updateSubjectCollectionCounts,
   updateSubjectEpisodeProgress,
   updateSubjectRating,
