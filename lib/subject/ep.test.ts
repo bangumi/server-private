@@ -5,7 +5,7 @@ import { EpisodeCollectionStatus } from '@app/lib/subject/type';
 
 import { getEpStatus, markEpisodesAsWatched } from './ep.ts';
 
-describe('Episode Status Management', () => {
+describe('episode status', () => {
   const testUserID = 382951;
   const testSubjectID = 12;
 
