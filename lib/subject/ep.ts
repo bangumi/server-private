@@ -59,6 +59,7 @@ export async function markEpisodesAsWatched(
     );
   let watchedEpisodes = 0;
   if (current?.status) {
+    logger.info('==> current.status', current.status);
     const oldList = parseSubjectEpStatus(current.status);
     for (const [eid, x] of oldList) {
       if (episodeIDs.includes(eid)) {
