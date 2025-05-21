@@ -17,7 +17,7 @@ import {
 import {
   completeSubjectProgress,
   markEpisodesAsWatched,
-  updateSubjectCollection,
+  updateSubjectCollectionCounts,
   updateSubjectEpisodeProgress,
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
@@ -338,7 +338,7 @@ export async function setup(app: App) {
             toUpdate.updateIp = ip;
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
-            await updateSubjectCollection(t, subjectID, type, oldType);
+            await updateSubjectCollectionCounts(t, subjectID, type, oldType);
             if (type === CollectionType.Collect && progress) {
               await completeSubjectProgress(t, auth.userID, subject, toUpdate);
             }
@@ -411,7 +411,7 @@ export async function setup(app: App) {
           }
           if (type) {
             // 收藏计数＋1
-            await updateSubjectCollection(t, subjectID, type);
+            await updateSubjectCollectionCounts(t, subjectID, type);
           }
         }
 

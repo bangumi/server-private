@@ -7,7 +7,7 @@ import { type CollectionType, SubjectType, type UserEpisodeStatusItem } from './
 import { EpisodeCollectionStatus, getCollectionTypeField } from './type';
 
 /** 更新条目收藏计数，需要在事务中执行 */
-export async function updateSubjectCollection(
+export async function updateSubjectCollectionCounts(
   t: Txn,
   subjectID: number,
   newType: CollectionType,
