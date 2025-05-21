@@ -8,7 +8,6 @@ import { getEpStatus, markEpisodesAsWatched } from './ep.ts';
 describe('Episode Status Management', () => {
   const testUserID = 382951;
   const testSubjectID = 12;
-  const testEpisodeIDs = [1027, 1028];
 
   beforeEach(async () => {
     await db
@@ -23,19 +22,14 @@ describe('Episode Status Management', () => {
 
   it('should mark episodes as watched and verify status', async () => {
     await db.transaction(async (t) => {
-      const watchedCount = await markEpisodesAsWatched(
-        t,
-        testUserID,
-        testSubjectID,
-        testEpisodeIDs,
-      );
-      expect(watchedCount).toBe(testEpisodeIDs.length);
+      const watchedCount = await markEpisodesAsWatched(t, testUserID, testSubjectID, [1027, 1028]);
+      expect(watchedCount).toBe(2);
     });
 
     const status = await getEpStatus(testUserID, testSubjectID);
-    expect(status.size).toBe(testEpisodeIDs.length);
+    expect(status.size).toBe(2);
 
-    for (const episodeID of testEpisodeIDs) {
+    for (const episodeID of [1027, 1028]) {
       const episodeStatus = status.get(episodeID);
       expect(episodeStatus).toBeDefined();
       expect(episodeStatus?.type).toBe(EpisodeCollectionStatus.Done);
@@ -45,21 +39,27 @@ describe('Episode Status Management', () => {
 
   it('should handle marking episodes as watched with revertOthers', async () => {
     await db.transaction(async (t) => {
-      await markEpisodesAsWatched(t, testUserID, testSubjectID, [1, 2]);
+      await markEpisodesAsWatched(t, testUserID, testSubjectID, [1027, 1028]);
     });
 
     await db.transaction(async (t) => {
-      const watchedCount = await markEpisodesAsWatched(t, testUserID, testSubjectID, [3, 4], true);
+      const watchedCount = await markEpisodesAsWatched(
+        t,
+        testUserID,
+        testSubjectID,
+        [1029, 1030],
+        true,
+      );
       expect(watchedCount).toBe(2);
     });
 
     const status = await getEpStatus(testUserID, testSubjectID);
     expect(status.size).toBe(2);
 
-    expect(status.get(3)?.type).toBe(EpisodeCollectionStatus.Done);
-    expect(status.get(4)?.type).toBe(EpisodeCollectionStatus.Done);
-    expect(status.get(1)).toBeUndefined();
-    expect(status.get(2)).toBeUndefined();
+    expect(status.get(1029)?.type).toBe(EpisodeCollectionStatus.Done);
+    expect(status.get(1030)?.type).toBe(EpisodeCollectionStatus.Done);
+    expect(status.get(1027)).toBeUndefined();
+    expect(status.get(1028)).toBeUndefined();
   });
 
   it('should handle empty episode list', async () => {
