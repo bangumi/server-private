@@ -7,6 +7,7 @@ import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/li
 import { IndexType } from '@app/lib/index/types';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
+import { markEpisodesAsWatched, updateSubjectEpisodeProgress } from '@app/lib/subject/ep';
 import {
   CollectionPrivacy,
   CollectionType,
@@ -16,9 +17,7 @@ import {
 } from '@app/lib/subject/type.ts';
 import {
   completeSubjectProgress,
-  markEpisodesAsWatched,
-  updateSubjectCollection,
-  updateSubjectEpisodeProgress,
+  updateSubjectCollectionCounts,
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
 import { insertUserTags, TagCat } from '@app/lib/tag';
@@ -338,7 +337,7 @@ export async function setup(app: App) {
             toUpdate.updateIp = ip;
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
-            await updateSubjectCollection(t, subjectID, type, oldType);
+            await updateSubjectCollectionCounts(t, subjectID, type, oldType);
             if (type === CollectionType.Collect && progress) {
               await completeSubjectProgress(t, auth.userID, subject, toUpdate);
             }
@@ -411,7 +410,7 @@ export async function setup(app: App) {
           }
           if (type) {
             // 收藏计数＋1
-            await updateSubjectCollection(t, subjectID, type);
+            await updateSubjectCollectionCounts(t, subjectID, type);
           }
         }
 

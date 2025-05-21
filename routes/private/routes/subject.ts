@@ -8,9 +8,9 @@ import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/li
 import { LikeType, Reaction } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { getEpStatus } from '@app/lib/subject/ep';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
 import { CollectionPrivacy, EpisodeCollectionStatus } from '@app/lib/subject/type.ts';
-import { getEpStatus } from '@app/lib/subject/utils';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
