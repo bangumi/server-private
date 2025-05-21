@@ -59,7 +59,7 @@ export async function markEpisodesAsWatched(
     );
   let watchedEpisodes = 0;
   if (current?.status) {
-    logger.error('==> current.status', current.status);
+    logger.error(`==> current.status: ${current.status}`);
     const oldList = parseSubjectEpStatus(current.status);
     for (const [eid, x] of oldList) {
       if (episodeIDs.includes(eid)) {
@@ -78,7 +78,7 @@ export async function markEpisodesAsWatched(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = JSON.stringify(epStatusList);
-    logger.error('==> newStatus', newStatus);
+    logger.error(`==> newStatus: ${newStatus}`);
     await t
       .update(schema.chiiEpStatus)
       .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
@@ -89,7 +89,7 @@ export async function markEpisodesAsWatched(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = JSON.stringify(epStatusList);
-    logger.error('==> newStatus', newStatus);
+    logger.error(`==> newStatus: ${newStatus}`);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
       sid: subjectID,
