@@ -1,10 +1,8 @@
-import { DateTime } from 'luxon';
-
 import { decr, incr, op, type orm, schema, type Txn } from '@app/drizzle';
 
-import { markEpisodesAsWatched, parseSubjectEpStatus } from './ep';
-import { type CollectionType, SubjectType, type UserEpisodeStatusItem } from './type';
-import { EpisodeCollectionStatus, getCollectionTypeField } from './type';
+import { markEpisodesAsWatched } from './ep';
+import { type CollectionType, SubjectType } from './type';
+import { getCollectionTypeField } from './type';
 
 /** 更新条目收藏计数，需要在事务中执行 */
 export async function updateSubjectCollectionCounts(
@@ -77,56 +75,6 @@ export async function updateSubjectRating(
     .set(toUpdate)
     .where(op.eq(schema.chiiSubjectFields.id, subjectID))
     .limit(1);
-}
-
-/** 更新条目剧集进度，需要在事务中执行 */
-export async function updateSubjectEpisodeProgress(
-  t: Txn,
-  userID: number,
-  subjectID: number,
-  episodeID: number,
-  type: number,
-): Promise<number> {
-  const [current] = await t
-    .select()
-    .from(schema.chiiEpStatus)
-    .where(
-      op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
-    );
-  let watchedEpisodes = 0;
-  if (current) {
-    const epStatusList = parseSubjectEpStatus(current.status);
-    epStatusList.set(episodeID, {
-      eid: episodeID.toString(),
-      type,
-    });
-    watchedEpisodes = [...epStatusList.values()].filter(
-      (x) => x.type === EpisodeCollectionStatus.Done,
-    ).length;
-    const newStatus = JSON.stringify(epStatusList);
-    await t
-      .update(schema.chiiEpStatus)
-      .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
-      .where(op.eq(schema.chiiEpStatus.id, current.id))
-      .limit(1);
-  } else {
-    const epStatusList = new Map<number, UserEpisodeStatusItem>();
-    epStatusList.set(episodeID, {
-      eid: episodeID.toString(),
-      type,
-    });
-    watchedEpisodes = [...epStatusList.values()].filter(
-      (x) => x.type === EpisodeCollectionStatus.Done,
-    ).length;
-    const newStatus = JSON.stringify(epStatusList);
-    await t.insert(schema.chiiEpStatus).values({
-      uid: userID,
-      sid: subjectID,
-      status: newStatus,
-      updatedAt: DateTime.now().toUnixInteger(),
-    });
-  }
-  return watchedEpisodes;
 }
 
 /** 完成条目进度，需要在事务中执行 */
