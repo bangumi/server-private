@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 
 import { db, op, schema, type Txn } from '@app/drizzle';
-import { logger } from '@app/lib/logger';
 import { decode } from '@app/lib/utils';
 
 import { type UserEpisodeStatusItem } from './type';
@@ -63,7 +62,6 @@ export async function markEpisodesAsWatched(
     );
   let watchedEpisodes = 0;
   if (current?.status) {
-    logger.error(`==> current.status: ${current.status}`);
     const oldList = decodeSubjectEpStatus(current.status);
     for (const [eid, x] of oldList) {
       if (episodeIDs.includes(eid)) {
@@ -82,7 +80,6 @@ export async function markEpisodesAsWatched(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = encodeSubjectEpStatus(epStatusList);
-    logger.error(`==> newStatus: ${newStatus}`);
     await t
       .update(schema.chiiEpStatus)
       .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
@@ -93,7 +90,6 @@ export async function markEpisodesAsWatched(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = encodeSubjectEpStatus(epStatusList);
-    logger.error(`==> newStatus: ${newStatus}`);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
       sid: subjectID,
