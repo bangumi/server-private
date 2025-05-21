@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon';
 
 import { db, op, schema, type Txn } from '@app/drizzle';
+import { logger } from '@app/lib/logger';
 import { decode } from '@app/lib/utils';
 
 import { type UserEpisodeStatusItem } from './type';
@@ -76,6 +77,7 @@ export async function markEpisodesAsWatched(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = JSON.stringify(epStatusList);
+    logger.info('==> newStatus', newStatus);
     await t
       .update(schema.chiiEpStatus)
       .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
@@ -86,6 +88,7 @@ export async function markEpisodesAsWatched(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
     const newStatus = JSON.stringify(epStatusList);
+    logger.info('==> newStatus', newStatus);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
       sid: subjectID,
