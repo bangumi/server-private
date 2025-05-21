@@ -26,6 +26,19 @@ describe('episode status', () => {
       expect(watchedCount).toBe(2);
     });
 
+    // DEBUG:
+    const [st] = await db
+      .select()
+      .from(schema.chiiEpStatus)
+      .where(
+        op.and(
+          op.eq(schema.chiiEpStatus.uid, testUserID),
+          op.eq(schema.chiiEpStatus.sid, testSubjectID),
+        ),
+      );
+    expect(st).toBeDefined();
+    expect(st?.status).toBe('check');
+
     const status = await getEpStatus(testUserID, testSubjectID);
     expect(status.size).toBe(2);
 
