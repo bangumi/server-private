@@ -94,7 +94,7 @@ export async function updateSubjectEpisodeProgress(
       op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
     );
   let watchedEpisodes = 0;
-  if (current?.status) {
+  if (current) {
     const epStatusList = parseSubjectEpStatus(current.status);
     epStatusList.set(episodeID, {
       eid: episodeID.toString(),
