@@ -54,12 +54,12 @@ describe('episode status', () => {
     });
 
     const status = await getEpStatus(testUserID, testSubjectID);
-    expect(status.size).toBe(2);
+    expect(status.size).toBe(4);
 
     expect(status.get(1029)?.type).toBe(EpisodeCollectionStatus.Done);
     expect(status.get(1030)?.type).toBe(EpisodeCollectionStatus.Done);
-    expect(status.get(1027)).toBeUndefined();
-    expect(status.get(1028)).toBeUndefined();
+    expect(status.get(1027)?.type).toBe(EpisodeCollectionStatus.None);
+    expect(status.get(1028)?.type).toBe(EpisodeCollectionStatus.None);
   });
 
   it('should handle empty episode list', async () => {
