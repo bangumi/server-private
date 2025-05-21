@@ -7,7 +7,7 @@ import { decode } from '@app/lib/utils';
 import { type UserEpisodeStatusItem } from './type';
 import { EpisodeCollectionStatus } from './type';
 
-export function parseSubjectEpStatus(status: string): Map<number, UserEpisodeStatusItem> {
+export function decodeSubjectEpStatus(status: string): Map<number, UserEpisodeStatusItem> {
   const result = new Map<number, UserEpisodeStatusItem>();
   if (!status) {
     return result;
@@ -17,6 +17,10 @@ export function parseSubjectEpStatus(status: string): Map<number, UserEpisodeSta
     result.set(Number(eid), x);
   }
   return result;
+}
+
+export function encodeSubjectEpStatus(status: Map<number, UserEpisodeStatusItem>): string {
+  return JSON.stringify(Object.fromEntries(status));
 }
 
 export async function getEpStatus(
@@ -33,7 +37,7 @@ export async function getEpStatus(
   if (!data) {
     return new Map();
   }
-  return parseSubjectEpStatus(data.status);
+  return decodeSubjectEpStatus(data.status);
 }
 
 /** 标记条目剧集为已观看，需要在事务中执行 */
@@ -60,7 +64,7 @@ export async function markEpisodesAsWatched(
   let watchedEpisodes = 0;
   if (current?.status) {
     logger.error(`==> current.status: ${current.status}`);
-    const oldList = parseSubjectEpStatus(current.status);
+    const oldList = decodeSubjectEpStatus(current.status);
     for (const [eid, x] of oldList) {
       if (episodeIDs.includes(eid)) {
         continue;
@@ -77,7 +81,7 @@ export async function markEpisodesAsWatched(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = JSON.stringify(epStatusList);
+    const newStatus = encodeSubjectEpStatus(epStatusList);
     logger.error(`==> newStatus: ${newStatus}`);
     await t
       .update(schema.chiiEpStatus)
@@ -88,7 +92,7 @@ export async function markEpisodesAsWatched(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = JSON.stringify(epStatusList);
+    const newStatus = encodeSubjectEpStatus(epStatusList);
     logger.error(`==> newStatus: ${newStatus}`);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
@@ -116,7 +120,7 @@ export async function updateSubjectEpisodeProgress(
     );
   let watchedEpisodes = 0;
   if (current) {
-    const epStatusList = parseSubjectEpStatus(current.status);
+    const epStatusList = decodeSubjectEpStatus(current.status);
     epStatusList.set(episodeID, {
       eid: episodeID.toString(),
       type,
@@ -124,7 +128,7 @@ export async function updateSubjectEpisodeProgress(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = JSON.stringify(epStatusList);
+    const newStatus = encodeSubjectEpStatus(epStatusList);
     await t
       .update(schema.chiiEpStatus)
       .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
@@ -139,7 +143,7 @@ export async function updateSubjectEpisodeProgress(
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = JSON.stringify(epStatusList);
+    const newStatus = encodeSubjectEpStatus(epStatusList);
     await t.insert(schema.chiiEpStatus).values({
       uid: userID,
       sid: subjectID,
