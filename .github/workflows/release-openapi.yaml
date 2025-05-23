@@ -14,12 +14,12 @@ jobs:
   openapi:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-js-env
 
       - run: pnpm run file ./bin/export-openapi.ts
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           repository: 'bangumi/dev-docs'
           path: dev-docs
@@ -27,7 +27,7 @@ jobs:
       - run: cp ./dist/private.yaml ./dev-docs/api.yaml
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        uses: peter-evans/create-pull-request@v7
         with:
           path: dev-docs
           token: ${{ secrets.PAT }}

@@ -17,7 +17,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           submodules: 'true'
       - uses: ./.github/actions/setup-js-env
@@ -33,7 +33,7 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           repository: 'bangumi/dev-env'
           path: 'dev-env'
@@ -41,7 +41,7 @@ jobs:
       - run: mv dev-env $HOME/dev-env
       - run: cd ~/dev-env && docker compose up -d
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-js-env
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
@@ -52,14 +52,14 @@ jobs:
           REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d # v5
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
       - run: docker build -t tmp -f Dockerfile .
       - run: docker run tmp ./dist/index.mjs --help
 

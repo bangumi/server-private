@@ -17,7 +17,7 @@ jobs:
     if: ${{ github.repository_owner == 'bangumi' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.ADMIN_TOKEN }}
 
@@ -25,13 +25,13 @@ jobs:
 
       - run: echo get tag ${{ env.CURRENT_VERSION }}
 
-      - uses: bbonkr/git-tag-check-action@90d761617080db1b14b3b2ccb3af8d9566d391e7 # v1
+      - uses: bbonkr/git-tag-check-action@v1
         id: git_tag_check
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag: '${{ env.CURRENT_VERSION }}'
 
-      - uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1
+      - uses: rickstaa/action-create-tag@v1
         if: ${{ steps.git_tag_check.outputs.tag == '' }}
         id: 'tag_create'
         with:
@@ -45,13 +45,13 @@ jobs:
     needs:
       - auto-tag
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
 
       - name: Set up git-cliff
-        uses: kenji-miyake/setup-git-cliff@2778609c643a39a2576c4bae2e493b855eb4aee8 # v2
+        uses: kenji-miyake/setup-git-cliff@v2
 
       - run: echo "NEW_TAG=$(git cliff --bumped-version)" >> $GITHUB_ENV
       - run: echo "NEW_VERSION=${NEW_TAG#v}" >> $GITHUB_ENV
@@ -72,7 +72,7 @@ jobs:
           mv tmp package.json
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PAT }}
           title: 'bump: ${{ env.NEW_VERSION }}'

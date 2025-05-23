@@ -9,13 +9,13 @@ jobs:
   github:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
 
       - name: Set up git-cliff
-        uses: kenji-miyake/setup-git-cliff@2778609c643a39a2576c4bae2e493b855eb4aee8 # v2
+        uses: kenji-miyake/setup-git-cliff@v2
 
       - run: git cliff --current -o changelog.md
 
