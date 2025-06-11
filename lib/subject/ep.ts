@@ -57,20 +57,23 @@ export async function markEpisodesAsWatched(
   let watchedEpisodes = 0;
   if (current?.status) {
     const epStatusList = decodeSubjectEpStatus(current.status);
-    for (const [eid, x] of epStatusList) {
-      if (episodeIDs.includes(eid)) {
-        const status: UserEpisodeStatusItem = {
-          eid: x.eid,
-          type: EpisodeCollectionStatus.Done,
-          updated_at: {
-            ...epStatusList.get(eid)?.updated_at,
-            [EpisodeCollectionStatus.Done]: now,
-          },
-        };
-        epStatusList.set(eid, status);
-      } else if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
-        epStatusList.delete(eid);
+    if (revertOthers) {
+      for (const [eid, x] of epStatusList) {
+        if (x.type === EpisodeCollectionStatus.Done) {
+          epStatusList.delete(eid);
+        }
       }
+    }
+    for (const eid of episodeIDs) {
+      const status: UserEpisodeStatusItem = {
+        eid: eid.toString(),
+        type: EpisodeCollectionStatus.Done,
+        updated_at: {
+          ...epStatusList.get(eid)?.updated_at,
+          [EpisodeCollectionStatus.Done]: now,
+        },
+      };
+      epStatusList.set(eid, status);
     }
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
