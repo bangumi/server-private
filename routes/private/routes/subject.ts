@@ -221,9 +221,12 @@ export async function setup(app: App) {
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, subjectID);
         for (const ep of episodes) {
-          ep.status = epStatus.get(ep.id)?.type;
-          if (ep.status) {
-            ep.updatedAt = epStatus.get(ep.id)?.updated_at?.[ep.status];
+          const status = epStatus.get(ep.id)?.type;
+          if (status) {
+            ep.collection = {
+              status,
+              updatedAt: epStatus.get(ep.id)?.updated_at?.[status],
+            };
           }
         }
       }

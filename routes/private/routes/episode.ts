@@ -44,9 +44,12 @@ export async function setup(app: App) {
       ep.subject = subject;
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, ep.subjectID);
-        ep.status = epStatus.get(episodeID)?.type;
-        if (ep.status) {
-          ep.updatedAt = epStatus.get(episodeID)?.updated_at?.[ep.status];
+        const status = epStatus.get(episodeID)?.type;
+        if (status) {
+          ep.collection = {
+            status,
+            updatedAt: epStatus.get(episodeID)?.updated_at?.[status],
+          };
         }
       }
       return ep;
