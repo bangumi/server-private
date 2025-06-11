@@ -70,6 +70,8 @@ export async function markEpisodesAsWatched(
         epStatusList.set(eid, status);
       } else if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
         epStatusList.delete(eid);
+      } else {
+        epStatusList.set(eid, x);
       }
     }
     watchedEpisodes = [...epStatusList.values()].filter(
