@@ -6,7 +6,6 @@ import { NotFoundError } from '@app/lib/error.ts';
 import { LikeType, Reaction } from '@app/lib/like';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/ep';
-import { EpisodeCollectionStatus } from '@app/lib/subject/type';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -45,7 +44,10 @@ export async function setup(app: App) {
       ep.subject = subject;
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, ep.subjectID);
-        ep.status = epStatus.get(episodeID)?.type ?? EpisodeCollectionStatus.None;
+        ep.status = epStatus.get(episodeID)?.type;
+        if (ep.status) {
+          ep.updatedAt = epStatus.get(episodeID)?.updated_at?.[ep.status];
+        }
       }
       return ep;
     },

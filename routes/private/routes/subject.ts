@@ -10,7 +10,7 @@ import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/ep';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
-import { CollectionPrivacy, EpisodeCollectionStatus } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy } from '@app/lib/subject/type.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
@@ -221,7 +221,10 @@ export async function setup(app: App) {
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, subjectID);
         for (const ep of episodes) {
-          ep.status = epStatus.get(ep.id)?.type ?? EpisodeCollectionStatus.None;
+          ep.status = epStatus.get(ep.id)?.type;
+          if (ep.status) {
+            ep.updatedAt = epStatus.get(ep.id)?.updated_at?.[ep.status];
+          }
         }
       }
       return {
