@@ -145,10 +145,7 @@ export async function updateSubjectEpisodeProgress(
     const status: UserEpisodeStatusItem = {
       eid: episodeID.toString(),
       type,
-      updated_at: {
-        ...epStatusList.get(episodeID)?.updated_at,
-        [type]: now,
-      },
+      updated_at: { [type]: now },
     };
     epStatusList.set(episodeID, status);
     watchedEpisodes = [...epStatusList.values()].filter(
