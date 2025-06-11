@@ -59,13 +59,9 @@ export async function markEpisodesAsWatched(
     const epStatusList = decodeSubjectEpStatus(current.status);
     if (revertOthers) {
       for (const [eid, x] of epStatusList) {
-        if (episodeIDs.includes(eid)) {
-          continue;
+        if (episodeIDs.includes(eid) && x.type === EpisodeCollectionStatus.Done) {
+          epStatusList.delete(eid);
         }
-        if (x.type !== EpisodeCollectionStatus.Done) {
-          continue;
-        }
-        epStatusList.delete(eid);
       }
     }
     for (const eid of episodeIDs) {
