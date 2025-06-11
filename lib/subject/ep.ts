@@ -48,10 +48,12 @@ export async function markEpisodesAsWatched(
   revertOthers = false,
 ): Promise<number> {
   const epStatusList = new Map<number, UserEpisodeStatusItem>();
+  const now = DateTime.now().toUnixInteger();
   for (const episodeID of episodeIDs) {
     epStatusList.set(episodeID, {
       eid: episodeID.toString(),
       type: EpisodeCollectionStatus.Done,
+      updated_at: { [EpisodeCollectionStatus.Done]: now },
     });
   }
   const [current] = await t
@@ -68,13 +70,9 @@ export async function markEpisodesAsWatched(
         continue;
       }
       if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
-        epStatusList.set(eid, {
-          eid: x.eid,
-          type: EpisodeCollectionStatus.None,
-        });
-      } else {
-        epStatusList.set(eid, x);
+        continue;
       }
+      epStatusList.set(eid, x);
     }
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
@@ -82,7 +80,7 @@ export async function markEpisodesAsWatched(
     const newStatus = encodeSubjectEpStatus(epStatusList);
     await t
       .update(schema.chiiEpStatus)
-      .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
+      .set({ status: newStatus, updatedAt: now })
       .where(op.eq(schema.chiiEpStatus.id, current.id))
       .limit(1);
   } else {
@@ -94,7 +92,7 @@ export async function markEpisodesAsWatched(
       uid: userID,
       sid: subjectID,
       status: newStatus,
-      updatedAt: DateTime.now().toUnixInteger(),
+      updatedAt: now,
     });
   }
   return watchedEpisodes;
@@ -108,6 +106,7 @@ export async function updateSubjectEpisodeProgress(
   episodeID: number,
   type: number,
 ): Promise<number> {
+  const now = DateTime.now().toUnixInteger();
   const [current] = await t
     .select()
     .from(schema.chiiEpStatus)
@@ -120,6 +119,7 @@ export async function updateSubjectEpisodeProgress(
     epStatusList.set(episodeID, {
       eid: episodeID.toString(),
       type,
+      updated_at: { [type]: now },
     });
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
@@ -127,7 +127,7 @@ export async function updateSubjectEpisodeProgress(
     const newStatus = encodeSubjectEpStatus(epStatusList);
     await t
       .update(schema.chiiEpStatus)
-      .set({ status: newStatus, updatedAt: DateTime.now().toUnixInteger() })
+      .set({ status: newStatus, updatedAt: now })
       .where(op.eq(schema.chiiEpStatus.id, current.id))
       .limit(1);
   } else {
@@ -135,6 +135,7 @@ export async function updateSubjectEpisodeProgress(
     epStatusList.set(episodeID, {
       eid: episodeID.toString(),
       type,
+      updated_at: { [type]: now },
     });
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
@@ -144,7 +145,7 @@ export async function updateSubjectEpisodeProgress(
       uid: userID,
       sid: subjectID,
       status: newStatus,
-      updatedAt: DateTime.now().toUnixInteger(),
+      updatedAt: now,
     });
   }
   return watchedEpisodes;
