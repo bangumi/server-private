@@ -456,8 +456,13 @@ export const Episode = t.Object(
     airdate: t.String(),
     comment: t.Integer(),
     desc: t.String(),
-    status: t.Optional(Ref(EpisodeCollectionStatus)),
     subject: t.Optional(Ref(SlimSubject)),
+    collection: t.Optional(
+      t.Object({
+        status: Ref(EpisodeCollectionStatus),
+        updatedAt: t.Optional(t.Integer()),
+      }),
+    ),
   },
   { $id: 'Episode', title: 'Episode' },
 );

@@ -70,6 +70,7 @@ export const EpisodeCollectionStatus = Object.freeze({
 export interface UserEpisodeStatusItem {
   eid: string;
   type: number;
+  updated_at?: Record<number, number>;
 }
 
 export const SubjectSort = Object.freeze({
