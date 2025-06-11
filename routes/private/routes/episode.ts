@@ -44,11 +44,11 @@ export async function setup(app: App) {
       ep.subject = subject;
       if (auth.login) {
         const epStatus = await getEpStatus(auth.userID, ep.subjectID);
-        const status = epStatus.get(episodeID)?.type;
-        if (status) {
+        const status = epStatus.get(episodeID);
+        if (status?.type) {
           ep.collection = {
-            status,
-            updatedAt: epStatus.get(episodeID)?.updated_at?.[status],
+            status: status.type,
+            updatedAt: status.updated_at?.[status.type],
           };
         }
       }
