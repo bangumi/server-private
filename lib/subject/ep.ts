@@ -47,15 +47,7 @@ export async function markEpisodesAsWatched(
   episodeIDs: number[],
   revertOthers = false,
 ): Promise<number> {
-  const epStatusList = new Map<number, UserEpisodeStatusItem>();
   const now = DateTime.now().toUnixInteger();
-  for (const episodeID of episodeIDs) {
-    epStatusList.set(episodeID, {
-      eid: episodeID.toString(),
-      type: EpisodeCollectionStatus.Done,
-      updated_at: { [EpisodeCollectionStatus.Done]: now },
-    });
-  }
   const [current] = await t
     .select()
     .from(schema.chiiEpStatus)
@@ -64,15 +56,21 @@ export async function markEpisodesAsWatched(
     );
   let watchedEpisodes = 0;
   if (current?.status) {
-    const oldList = decodeSubjectEpStatus(current.status);
-    for (const [eid, x] of oldList) {
+    const epStatusList = decodeSubjectEpStatus(current.status);
+    for (const [eid, x] of epStatusList) {
       if (episodeIDs.includes(eid)) {
-        continue;
+        const status: UserEpisodeStatusItem = {
+          eid: x.eid,
+          type: EpisodeCollectionStatus.Done,
+          updated_at: {
+            ...epStatusList.get(eid)?.updated_at,
+            [EpisodeCollectionStatus.Done]: now,
+          },
+        };
+        epStatusList.set(eid, status);
+      } else if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
+        epStatusList.delete(eid);
       }
-      if (revertOthers && x.type === EpisodeCollectionStatus.Done) {
-        continue;
-      }
-      epStatusList.set(eid, x);
     }
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
@@ -84,6 +82,14 @@ export async function markEpisodesAsWatched(
       .where(op.eq(schema.chiiEpStatus.id, current.id))
       .limit(1);
   } else {
+    const epStatusList = new Map<number, UserEpisodeStatusItem>();
+    for (const episodeID of episodeIDs) {
+      epStatusList.set(episodeID, {
+        eid: episodeID.toString(),
+        type: EpisodeCollectionStatus.Done,
+        updated_at: { [EpisodeCollectionStatus.Done]: now },
+      });
+    }
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
@@ -116,11 +122,15 @@ export async function updateSubjectEpisodeProgress(
   let watchedEpisodes = 0;
   if (current) {
     const epStatusList = decodeSubjectEpStatus(current.status);
-    epStatusList.set(episodeID, {
+    const status: UserEpisodeStatusItem = {
       eid: episodeID.toString(),
       type,
-      updated_at: { [type]: now },
-    });
+      updated_at: {
+        ...epStatusList.get(episodeID)?.updated_at,
+        [type]: now,
+      },
+    };
+    epStatusList.set(episodeID, status);
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
@@ -132,11 +142,15 @@ export async function updateSubjectEpisodeProgress(
       .limit(1);
   } else {
     const epStatusList = new Map<number, UserEpisodeStatusItem>();
-    epStatusList.set(episodeID, {
+    const status: UserEpisodeStatusItem = {
       eid: episodeID.toString(),
       type,
-      updated_at: { [type]: now },
-    });
+      updated_at: {
+        ...epStatusList.get(episodeID)?.updated_at,
+        [type]: now,
+      },
+    };
+    epStatusList.set(episodeID, status);
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
