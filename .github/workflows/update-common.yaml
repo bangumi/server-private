@@ -1,0 +1,37 @@
+name: update common defs
+
+on:
+  push:
+    branches:
+      - master
+  repository_dispatch:
+    types:
+      - ci-update-common
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: ./.github/actions/setup-js-env
+
+      - run: git reset --hard origin/master
+        working-directory: ./vendor/common
+
+      - run: pnpm run build-common
+      - run: pnpm run format
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.PAT }}
+          title: 'feat: update common'
+          branch: 'ci/update-common'
+          push-to-fork: 'bangumi-bot/server-private'
+          author: 'github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>'
