@@ -286,7 +286,6 @@ Object {
     Object {
       "positions": Array [
         Object {
-          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "开发",
@@ -333,7 +332,6 @@ Object {
     Object {
       "positions": Array [
         Object {
-          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "游戏设计师",

@@ -133,12 +133,6 @@ export class PersonSubjects {
   @Column('mediumtext', { name: 'summary' })
   summary!: string;
 
-  // @Column('mediumtext', {
-  //   name: 'prsn_appear_eps',
-  //   comment: '可选，人物参与的章节',
-  // })
-  // appearEps: string;
-
   person!: Person;
 
   subject!: Subject;

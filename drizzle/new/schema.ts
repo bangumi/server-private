@@ -225,7 +225,6 @@ export const chiiCrtSubjectIndex = mysqlTable(
     subjectId: mediumint('subject_id').notNull(),
     subjectTypeId: tinyint('subject_type_id').notNull(),
     crtType: tinyint('crt_type').notNull(),
-    ctrAppearEps: mediumtext('ctr_appear_eps').notNull(),
     crtOrder: smallint('crt_order').notNull(),
   },
   (table) => {
@@ -244,7 +243,6 @@ export const chiiCrtSubjectIndexBak240803 = mysqlTable(
     subjectId: mediumint('subject_id').notNull(),
     subjectTypeId: tinyint('subject_type_id').notNull(),
     crtType: tinyint('crt_type').notNull(),
-    ctrAppearEps: mediumtext('ctr_appear_eps').notNull(),
     crtOrder: tinyint('crt_order').notNull(),
   },
   (table) => {
@@ -1487,7 +1485,6 @@ export const chiiPersonCsIndex = mysqlTable(
     subjectId: mediumint('subject_id').notNull(),
     subjectTypeId: tinyint('subject_type_id').notNull(),
     summary: mediumtext('summary').notNull(),
-    prsnAppearEps: mediumtext('prsn_appear_eps').notNull(),
   },
   (table) => {
     return {
