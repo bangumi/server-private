@@ -712,7 +712,6 @@ export const SubjectStaffPosition = t.Object(
   {
     type: Ref(SubjectStaffPositionType),
     summary: t.String(),
-    appearEps: t.String(),
   },
   { $id: 'SubjectStaffPosition' },
 );
@@ -722,7 +721,6 @@ export const SubjectPositionStaff = t.Object(
   {
     person: Ref(SlimPerson),
     summary: t.String(),
-    appearEps: t.String(),
   },
   { $id: 'SubjectPositionStaff' },
 );

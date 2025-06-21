@@ -86,12 +86,6 @@ export class CharacterSubjects {
   })
   type!: number;
 
-  // @Column('mediumtext', {
-  //   name: 'ctr_appear_eps',
-  //   comment: '可选，角色出场的的章节',
-  // })
-  // appearEps: string;
-
   @Column('tinyint', { name: 'crt_order', unsigned: true })
   order!: number;
 

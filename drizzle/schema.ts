@@ -119,7 +119,6 @@ export const chiiCharacterSubjects = mysqlTable('chii_crt_subject_index', {
   subjectID: mediumint('subject_id').notNull(),
   subjectType: tinyint('subject_type_id').notNull(),
   type: tinyint('crt_type').notNull(),
-  appearEps: mediumtext('ctr_appear_eps').notNull(),
   order: smallint('crt_order').notNull(),
 });
 
@@ -426,7 +425,6 @@ export const chiiPersonSubjects = mysqlTable('chii_person_cs_index', {
   subjectID: mediumint('subject_id').notNull(),
   subjectType: tinyint('subject_type_id').notNull(),
   summary: htmlEscapedString('mediumtext')('summary').notNull(),
-  appearEps: htmlEscapedString('mediumtext')('prsn_appear_eps').notNull(),
 });
 
 export const chiiPersonFields = mysqlTable('chii_person_fields', {

@@ -17,7 +17,6 @@ import type { App } from '@app/routes/type.ts';
 function toPersonSubjectRelation(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
   return {
     summary: relation.summary,
-    appearEps: relation.appearEps,
     type: convert.toSubjectStaffPositionType(relation.subjectType, relation.position),
   };
 }
