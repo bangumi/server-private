@@ -14,12 +14,12 @@ async function main() {
 
   for (;;) {
     const fields = await SubjectFieldsRepo.createQueryBuilder('t')
-      .where('t.year = :year and t.subject_id > :start', {
+      .where('t.year = :year and t.field_sid > :start', {
         year: 0,
         start: start,
       })
       .take(step)
-      .orderBy('t.subject_id')
+      .orderBy('t.field_sid')
       .getMany();
 
     if (fields.length === 0) {
