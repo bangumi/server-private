@@ -7,7 +7,7 @@ import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/s
 import { decode } from '@app/lib/utils';
 
 import type * as memo from './memo';
-import type { TimelineMonoCat, TimelineMonoType, TimelineSource } from './type';
+import type { TimelineMonoCat, TimelineMonoType } from './type';
 import { TimelineCat, TimelineDailyType, TimelineStatusType } from './type';
 
 /**
@@ -24,7 +24,7 @@ export interface TimelineMessage {
     /** Type 操作对应的内容 ID, 如 userID, groupID, edenID 等 */
     mid: number;
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   wiki: {
     uid: number;
@@ -33,7 +33,7 @@ export interface TimelineMessage {
       type: SubjectType;
     };
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   subject: {
     uid: number;
@@ -48,7 +48,7 @@ export interface TimelineMessage {
       comment: string;
     };
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   progressEpisode: {
     uid: number;
@@ -61,7 +61,7 @@ export interface TimelineMessage {
       status: number;
     };
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   progressSubject: {
     uid: number;
@@ -76,26 +76,26 @@ export interface TimelineMessage {
       volsUpdate?: number;
     };
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   statusSign: {
     uid: number;
     sign: string;
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   statusTsukkomi: {
     uid: number;
     text: string;
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   statusNickname: {
     uid: number;
     before: string;
     after: string;
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
   mono: {
     uid: number;
@@ -103,7 +103,7 @@ export interface TimelineMessage {
     type: TimelineMonoType;
     id: number;
     createdAt: number;
-    source: TimelineSource;
+    source: number;
   };
 }
 

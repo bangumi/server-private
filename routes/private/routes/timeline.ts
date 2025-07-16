@@ -10,7 +10,6 @@ import { BadRequestError, NotFoundError } from '@app/lib/error';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByID, fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
-import { TimelineSource } from '@app/lib/timeline/type';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -113,7 +112,7 @@ export async function setup(app: App) {
         uid: auth.userID,
         text,
         createdAt: DateTime.now().toUnixInteger(),
-        source: TimelineSource.Next,
+        source: auth.source,
       });
       return { id };
     },

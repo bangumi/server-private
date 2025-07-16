@@ -1099,22 +1099,14 @@ export const TimelineCat = t.Integer({
   - 9 = 天窗`,
 });
 
-export const TimelineSource = t.Integer({
-  $id: 'TimelineSource',
-  enum: [0, 1, 2, 3, 4, 5],
-  'x-ms-enum': {
-    name: 'TimelineSource',
-    modelAsString: false,
+export type ITimelineSource = Static<typeof TimelineSource>;
+export const TimelineSource = t.Object(
+  {
+    name: t.String(),
+    url: t.Optional(t.String()),
   },
-  'x-enum-varnames': ['Web', 'Mobile', 'OnAir', 'InTouch', 'WP', 'API'],
-  description: `时间线来源
-  - 0 = 网站
-  - 1 = 移动端
-  - 2 = https://bgm.tv/onair
-  - 3 = https://netaba.re/
-  - 4 = WP
-  - 5 = API`,
-});
+  { $id: 'TimelineSource', title: 'TimelineSource' },
+);
 
 export type ITimeline = Static<typeof Timeline>;
 export const Timeline = t.Object(

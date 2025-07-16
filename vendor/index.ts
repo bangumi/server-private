@@ -2,6 +2,7 @@ import { services } from './common-json/network_services.json';
 import * as platforms from './common-json/subject_platforms.json';
 import { relations } from './common-json/subject_relations.json';
 import { staffs } from './common-json/subject_staffs.json';
+import { sources } from './common-json/timeline_sources.json';
 
 export interface NetworkService {
   name: string;
@@ -80,4 +81,31 @@ export function findSubjectStaffPosition(
 ): SubjectStaffPosition | undefined {
   const positions = staffs as Record<string, Record<string, SubjectStaffPosition>>;
   return positions[subjectType]?.[position];
+}
+
+export interface TimelineSource {
+  name: string;
+  url?: string;
+  appID?: string;
+}
+
+export function findTimelineSource(sourceID: number): TimelineSource | undefined {
+  const srcs = sources as Record<string, TimelineSource>;
+  return srcs[sourceID];
+}
+
+export function getTimelineSourceFromAppID(appID: string): number | undefined {
+  if (!appID) {
+    return;
+  }
+  const srcs = sources as Record<string, TimelineSource>;
+  for (const [idx, src] of Object.entries(srcs)) {
+    if (!src.appID) {
+      continue;
+    }
+    if (src.appID === appID) {
+      return Number(idx);
+    }
+  }
+  return;
 }
