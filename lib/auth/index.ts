@@ -10,8 +10,10 @@ import type * as res from '@app/lib/types/res.ts';
 import { fetchPermission, type Permission } from '@app/lib/user/perm';
 import { fetchUserX } from '@app/lib/user/utils.ts';
 import { intval } from '@app/lib/utils/index.ts';
+import { getTimelineSourceFromAppID } from '@app/vendor';
 
 const tokenPrefix = 'Bearer ';
+const defaultSource = 6; // next
 
 export const NeedLoginError = createError<[string]>(
   'NEED_LOGIN',
@@ -62,6 +64,7 @@ export interface IAuth {
   /** Unix time seconds */
   regTime: number;
   groupID: number;
+  source: number;
 }
 
 export async function byHeader(key: string | string[] | undefined): Promise<IAuth | null> {
@@ -85,12 +88,14 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
-const tokenAuthCache = TypedCache<string, res.ISlimUser>((token) => `auth:v2:token:${token}`);
+const tokenAuthCache = TypedCache<string, { user: res.ISlimUser; appID: string }>(
+  (token) => `auth:v3:token:${token}`,
+);
 
 export async function byToken(accessToken: string): Promise<IAuth | null> {
   const cached = await tokenAuthCache.get(accessToken);
   if (cached) {
-    return await userToAuth(cached);
+    return await userToAuth(cached.user, cached.appID);
   }
 
   const token = await db.query.chiiAccessToken.findFirst({
@@ -110,9 +115,9 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
 
   const u = await fetchUserX(intval(token.userID));
 
-  await tokenAuthCache.set(accessToken, u, 60 * 60 * 24);
+  await tokenAuthCache.set(accessToken, { user: u, appID: token.clientID }, 60 * 60 * 24);
 
-  return await userToAuth(u);
+  return await userToAuth(u, token.clientID);
 }
 
 const userCache = TypedCache<number, res.ISlimUser>((userID) => `auth:v2:user:${userID}`);
@@ -138,10 +143,11 @@ export function emptyAuth(): IAuth {
     allowNsfw: false,
     regTime: 0,
     groupID: 0,
+    source: defaultSource,
   };
 }
 
-async function userToAuth(user: res.ISlimUser): Promise<IAuth> {
+async function userToAuth(user: res.ISlimUser, appID?: string): Promise<IAuth> {
   const perms = await fetchPermission(user.group);
   return {
     userID: user.id,
@@ -154,6 +160,7 @@ async function userToAuth(user: res.ISlimUser): Promise<IAuth> {
       DateTime.now().toUnixInteger() - user.joinedAt >= 60 * 60 * 24 * 90,
     regTime: user.joinedAt,
     groupID: user.group,
+    source: getTimelineSourceFromAppID(appID ?? '') ?? defaultSource,
   };
 }
 

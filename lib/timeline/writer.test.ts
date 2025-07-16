@@ -5,7 +5,7 @@ import { db, op, schema } from '@app/drizzle';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 import { decode } from '@app/lib/utils/index.ts';
 
-import { TimelineCat, TimelineMonoType, TimelineSource, TimelineStatusType } from './type';
+import { TimelineCat, TimelineMonoType, TimelineStatusType } from './type';
 import { TimelineMonoCat } from './type';
 import { TimelineWriter } from './writer';
 
@@ -33,7 +33,7 @@ describe('TimelineWriter', () => {
           comment: 'Great anime!',
         },
         createdAt: DateTime.now().toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const id = await TimelineWriter.subject(payload);
@@ -78,7 +78,7 @@ describe('TimelineWriter', () => {
           comment: 'First comment',
         },
         createdAt: now.toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const firstId = await TimelineWriter.subject(payload1);
@@ -132,7 +132,7 @@ describe('TimelineWriter', () => {
           status: EpisodeCollectionStatus.Done,
         },
         createdAt: DateTime.now().toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const id = await TimelineWriter.progressEpisode(payload);
@@ -171,7 +171,7 @@ describe('TimelineWriter', () => {
           status: EpisodeCollectionStatus.Done,
         },
         createdAt: now.toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const firstId = await TimelineWriter.progressEpisode(payload1);
@@ -216,7 +216,7 @@ describe('TimelineWriter', () => {
           epsUpdate: 6,
         },
         createdAt: DateTime.now().toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const id = await TimelineWriter.progressSubject(payload);
@@ -258,7 +258,7 @@ describe('TimelineWriter', () => {
           epsUpdate: 6,
         },
         createdAt: now.toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const firstId = await TimelineWriter.progressSubject(payload1);
@@ -294,7 +294,7 @@ describe('TimelineWriter', () => {
         uid: 1,
         text: 'Test tsukkomi message',
         createdAt: DateTime.now().toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const id = await TimelineWriter.statusTsukkomi(payload);
@@ -323,7 +323,7 @@ describe('TimelineWriter', () => {
         type: TimelineMonoType.Collected,
         id: 100,
         createdAt: DateTime.now().toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const id = await TimelineWriter.mono(payload);
@@ -357,7 +357,7 @@ describe('TimelineWriter', () => {
         type: TimelineMonoType.Collected,
         id: 100,
         createdAt: now.toUnixInteger(),
-        source: TimelineSource.Web,
+        source: 0,
       };
 
       const firstId = await TimelineWriter.mono(payload1);

@@ -1,16 +1,3 @@
-/** 时间线来源 */
-export const TimelineSource = Object.freeze({
-  Web: 0,
-  Mobile: 1,
-  OnAir: 2,
-  InTouch: 3,
-  WP: 4,
-  API: 5,
-  Next: 6,
-});
-
-export type TimelineSource = (typeof TimelineSource)[keyof typeof TimelineSource];
-
 /** 时间线分类 */
 export const TimelineCat = Object.freeze({
   /**

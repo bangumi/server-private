@@ -95,6 +95,9 @@ export function findTimelineSource(sourceID: number): TimelineSource | undefined
 }
 
 export function getTimelineSourceFromAppID(appID: string): number | undefined {
+  if (!appID) {
+    return;
+  }
   const srcs = sources as Record<string, TimelineSource>;
   for (const [idx, src] of Object.entries(srcs)) {
     if (!src.appID) {

@@ -21,7 +21,7 @@ import {
   updateSubjectRating,
 } from '@app/lib/subject/utils.ts';
 import { insertUserTags, TagCat } from '@app/lib/tag';
-import { TimelineMonoCat, TimelineMonoType, TimelineSource } from '@app/lib/timeline/type';
+import { TimelineMonoCat, TimelineMonoType } from '@app/lib/timeline/type';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -228,7 +228,7 @@ export async function setup(app: App) {
           volsUpdate: volStatus,
         },
         createdAt: DateTime.now().toUnixInteger(),
-        source: TimelineSource.Next,
+        source: auth.source,
       });
       return {};
     },
@@ -435,7 +435,7 @@ export async function setup(app: App) {
             comment: comment ?? '',
           },
           createdAt: DateTime.now().toUnixInteger(),
-          source: TimelineSource.Next,
+          source: auth.source,
         });
       }
       return {};
@@ -567,7 +567,7 @@ export async function setup(app: App) {
               epsUpdate: watchedEpisodes,
             },
             createdAt: now,
-            source: TimelineSource.Next,
+            source: auth.source,
           });
         } else {
           await AsyncTimelineWriter.progressEpisode({
@@ -581,7 +581,7 @@ export async function setup(app: App) {
               status: type,
             },
             createdAt: now,
-            source: TimelineSource.Next,
+            source: auth.source,
           });
         }
       });
@@ -715,7 +715,7 @@ export async function setup(app: App) {
           type: TimelineMonoType.Collected,
           id: characterID,
           createdAt,
-          source: TimelineSource.Next,
+          source: auth.source,
         });
       });
       return {};
@@ -899,7 +899,7 @@ export async function setup(app: App) {
           type: TimelineMonoType.Collected,
           id: personID,
           createdAt,
-          source: TimelineSource.Next,
+          source: auth.source,
         });
       });
       return {};

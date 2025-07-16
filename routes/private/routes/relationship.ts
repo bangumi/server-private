@@ -5,7 +5,6 @@ import { db, op, schema } from '@app/drizzle';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { TimelineSource } from '@app/lib/timeline/type';
 import { TimelineDailyType } from '@app/lib/timeline/type';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
@@ -173,7 +172,7 @@ export async function setup(app: App) {
         type: TimelineDailyType.AddFriend,
         mid: user.id,
         createdAt,
-        source: TimelineSource.Next,
+        source: auth.source,
       });
       return {};
     },
