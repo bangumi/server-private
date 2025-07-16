@@ -104,5 +104,5 @@ export function getTimelineSourceFromAppID(appID: string): number | undefined {
       return Number(idx);
     }
   }
-  return undefined;
+  return;
 }
