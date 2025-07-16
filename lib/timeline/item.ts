@@ -7,6 +7,7 @@ import redis from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { decode } from '@app/lib/utils/index.ts';
+import { findTimelineSource } from '@app/vendor';
 
 import { getItemCacheKey } from './cache.ts';
 import type * as memo from './memo';
@@ -314,7 +315,7 @@ export async function toTimeline(
     memo: await parseTimelineMemo(auth, tml.cat, tml.type, tml.related, tml.batch, tml.memo),
     batch: tml.batch,
     replies: tml.replies,
-    source: tml.source,
+    source: findTimelineSource(tml.source) ?? { name: 'web' },
     createdAt: tml.createdAt,
   };
 }
