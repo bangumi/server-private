@@ -38,7 +38,7 @@ const allowedRedirectUris: string[] = [
   // https://github.com/kechuan/banguLite
   'bangulite://turnstile/callback',
   // https://www.anix.app
-  'anix://tv.bgm/turnstile'
+  'anix://tv.bgm/turnstile',
 ];
 
 // eslint-disable-next-line @typescript-eslint/require-await
