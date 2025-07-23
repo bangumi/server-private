@@ -39,6 +39,7 @@ export interface Permission {
   user_list?: boolean;
   user_wiki_apply?: boolean;
   user_wiki_approve?: boolean;
+  cron_invoke?: boolean;
 }
 
 const defaultPermission: Permission = {

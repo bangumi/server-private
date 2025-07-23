@@ -8,11 +8,13 @@ import * as Subject from '@app/lib/subject/index.ts';
 import { redirectIfNotLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
+import * as cron from './cron.ts';
 import * as ep from './ep.ts';
 
 export async function setup(app: App) {
   app.addHook('preHandler', redirectIfNotLogin);
 
+  await app.register(cron.setup);
   await app.register(ep.setup);
 
   const debugUser = new Set<number>();
