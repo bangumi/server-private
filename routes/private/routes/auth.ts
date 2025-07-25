@@ -37,6 +37,8 @@ const allowedRedirectUris: string[] = [
   'ani://bangumi-turnstile-callback',
   // https://github.com/kechuan/banguLite
   'bangulite://turnstile/callback',
+  // https://www.anix.app
+  'anix://tv.bgm/turnstile',
 ];
 
 // eslint-disable-next-line @typescript-eslint/require-await
