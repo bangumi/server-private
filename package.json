@@ -87,7 +87,7 @@
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-resolvers": "4.5.1",
     "@shopify/prettier-plugin-liquid": "1.9.3",
-    "@types/diff": "7.0.2",
+    "@types/diff": "8.0.0",
     "@types/ioredis-mock": "8.2.6",
     "@types/js-yaml": "4.0.9",
     "@types/lodash-es": "4.17.12",
