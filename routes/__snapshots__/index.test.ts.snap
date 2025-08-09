@@ -2565,7 +2565,6 @@ exports[`should build private api spec 1`] = `
             required:
               - subject
               - comment
-              - rate
             type: object
           type: array
         wiki:
