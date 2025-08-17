@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package mq;
+
+// option go_package = "github.com/bangumi/server/proto/mq";
+
+message Notify {
+  int64 mid = 1;
+  int64 user_id = 2;
+}

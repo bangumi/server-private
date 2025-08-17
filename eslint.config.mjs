@@ -28,6 +28,7 @@ const sortImport = {
 export default tsEslint.config(
   {
     ignores: [
+      'vendor/proto/**',
       'dist/**',
       'coverage/**',
       '**/__generated__/**',
