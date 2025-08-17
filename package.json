@@ -10,7 +10,7 @@
     "node": "^22.11"
   },
   "scripts": {
-    "generate:pb": "buf generate protocol/mq",
+    "generate:pb": "buf generate protocol",
     "drizzle-pull": "drizzle-kit introspect",
     "format": "prettier --list-different -w ./",
     "tsc": "tsc",
