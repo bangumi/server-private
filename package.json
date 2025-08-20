@@ -10,7 +10,7 @@
     "node": "^22.11"
   },
   "scripts": {
-    "generate:pb": "buf generate proto",
+    "generate:pb": "rimraf vendor/proto && buf generate proto",
     "drizzle-pull": "drizzle-kit introspect",
     "format": "prettier --list-different -w ./",
     "tsc": "tsc",
@@ -123,6 +123,7 @@
     "p-limit": "6.2.0",
     "prettier": "3.6.2",
     "prettier-plugin-jsdoc": "1.3.3",
+    "rimraf": "^6.0.1",
     "std-env": "3.9.0",
     "tsx": "4.20.3",
     "typescript": "5.8.3",

@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 
 import { db } from '@app/drizzle';
 import { Notify, type NotifyType } from '@app/lib/notify.ts';
-import { NotifySchema } from '@app/vendor/proto/mq/notify_pb';
+import { NotifySchema } from '@app/vendor/proto/mq/v1/notify_pb';
 
 import { type KafkaMessage } from './type';
 
