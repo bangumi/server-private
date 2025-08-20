@@ -10,8 +10,8 @@ async function to_json(file) {
   return data;
 }
 
-const folder = './vendor/common/';
-const output_folder = './vendor/common-json/';
+const folder = './upstream/common/';
+const output_folder = './vendor/common/';
 
 for (const file of await fs.readdir(folder)) {
   if (file.toLowerCase().endsWith('.yml') || file.toLowerCase().endsWith('.yaml')) {

@@ -1,0 +1,597 @@
+define:
+  type:
+    book: &TYPE_BOOK 1
+    anime: &TYPE_ANIME 2
+    music: &TYPE_MUSIC 3
+    game: &TYPE_GAME 4
+    real: &TYPE_REAL 6
+
+  types:
+    book:
+      none: &PLATFORM_NONE 0
+      comic: &PLATFORM_COMIC 1001
+      novel: &PLATFORM_NOVEL 1002
+      illustration: &PLATFORM_ILLUSTRATION 1003
+      picture: &PLATFORM_PICTURE_BOOK 1004
+      photo: &PLATFORM_PHOTO_BOOK 1005
+      official: &PLATFORM_OFFICIAL 1006
+
+    book_series:
+      offprint: &TYPE_BOOK_OFFPRINT 0
+      series: &TYPE_BOOK_SERIES 1
+
+    # ANIME
+    anime:
+      tv: &PLATFORM_TV 1
+      ova: &PLATFORM_OVA 2
+      movie: &PLATFORM_MOVIE 3
+      short_film: &PLATFORM_SHORT_FILM 4
+      web: &PLATFORM_WEB 5
+      anime_comic: &PLATFORM_ANIME_COMIC 2006
+
+    # TV
+    real:
+      none: &PLATFORM_REAL_NONE 0
+      jp: &PLATFORM_REAL_JP 1
+      en: &PLATFORM_REAL_EN 2
+      cn: &PLATFORM_REAL_CN 3
+      tv: &PLATFORM_REAL_TV 6001
+      movie: &PLATFORM_REAL_MOVIE 6002
+      live: &PLATFORM_REAL_LIVE 6003
+      show: &PLATFORM_REAL_SHOW 6004
+
+    # Music
+    music:
+      album: &PLATFORM_MUSIC_ALBUM 3001
+      drama: &PLATFORM_MUSIC_DRAMA 3002
+      audio: &PLATFORM_MUSIC_AUDIO 3003
+      radio: &PLATFORM_MUSIC_RADIO 3004
+
+    game:
+      none: &TYPE_GAME_NONE 0
+      games: &TYPE_GAME_GAMES 4001
+      software: &TYPE_GAME_SOFTWARE 4002
+      dlc: &TYPE_GAME_DLC 4003
+      demo: &TYPE_GAME_DEMO 4004
+      table: &TYPE_GAME_TABLE 4005
+
+defaults:
+  *TYPE_BOOK :
+    sort_keys: &BOOK_SORT_KEYS ["发售日"]
+    wiki_tpl: Book
+
+  *TYPE_ANIME :
+    sort_keys: &ANIME_SORT_KEYS ["放送开始", "发售日", "发售日期", "上映年度", "上映日"]
+    wiki_tpl: Anime
+
+  *TYPE_MUSIC :
+    sort_keys: &MUSIC_SORT_KEYS ["发售日期"]
+    wiki_tpl: Album
+
+  *TYPE_GAME :
+    sort_keys: &GAME_SORT_KEYS ["发行日期"]
+    wiki_tpl: Game
+
+  *TYPE_REAL :
+    sort_keys: &REAL_SORT_KEYS ["上映日", "开始"]
+    wiki_tpl: TV
+
+platforms:
+  *TYPE_BOOK :
+    *PLATFORM_COMIC :
+      id: *PLATFORM_COMIC
+      type: Comic
+      type_cn: 漫画
+      alias: comic
+      wiki_tpl: Manga
+      enable_header: true
+      order: 0
+
+    *PLATFORM_NOVEL :
+      id: *PLATFORM_NOVEL
+      type: Novel
+      type_cn: 小说
+      alias: novel
+      wiki_tpl: Novel
+      enable_header: true
+      order: 1
+
+    *PLATFORM_ILLUSTRATION :
+      id: *PLATFORM_ILLUSTRATION
+      type: Illustration
+      type_cn: 画集
+      alias: illustration
+      wiki_tpl: Book
+      enable_header: true
+      order: 2
+
+    *PLATFORM_PICTURE_BOOK :
+      id: *PLATFORM_PICTURE_BOOK
+      type: Picture
+      type_cn: 绘本
+      alias: picture
+      wiki_tpl: Book
+      enable_header: true
+      order: 3
+
+    *PLATFORM_OFFICIAL :
+      id: *PLATFORM_OFFICIAL
+      type: Official
+      type_cn: 公式书
+      alias: official
+      wiki_tpl: Book
+      enable_header: true
+      order: 4
+
+    *PLATFORM_PHOTO_BOOK :
+      id: *PLATFORM_PHOTO_BOOK
+      type: Photo
+      type_cn: 写真
+      alias: photo
+      wiki_tpl: PhotoBook
+      enable_header: true
+      order: 5
+
+    *PLATFORM_NONE :
+      id: *PLATFORM_NONE
+      type: other
+      type_cn: 其他
+      alias: misc
+      wiki_tpl: Book
+      order: 6
+
+  *TYPE_ANIME :
+    *PLATFORM_TV :
+      id: *PLATFORM_TV
+      type: TV
+      type_cn: TV
+      alias: tv
+      enable_header: true
+      wiki_tpl: TVAnime
+      order: 0
+      sort_keys: *ANIME_SORT_KEYS
+
+    *PLATFORM_WEB :
+      id: *PLATFORM_WEB
+      type: web
+      type_cn: WEB
+      alias: web
+      enable_header: true
+      wiki_tpl: TVAnime
+      order: 1
+      sort_keys: *ANIME_SORT_KEYS
+
+    *PLATFORM_OVA :
+      id: *PLATFORM_OVA
+      type: OVA
+      type_cn: OVA
+      alias: ova
+      enable_header: true
+      wiki_tpl: OVA
+      order: 2
+      sort_keys: *ANIME_SORT_KEYS
+
+    *PLATFORM_MOVIE :
+      id: *PLATFORM_MOVIE
+      type: movie
+      type_cn: 剧场版
+      alias: movie
+      enable_header: true
+      wiki_tpl: Movie
+      order: 3
+      sort_keys: *ANIME_SORT_KEYS
+
+    *PLATFORM_ANIME_COMIC :
+      id: *PLATFORM_ANIME_COMIC
+      type: anime_comic
+      type_cn: 动态漫画
+      alias: anime_comic
+      enable_header: true
+      wiki_tpl: TVAnime
+      order: 4
+
+    *PLATFORM_NONE :
+      id: *PLATFORM_NONE
+      type: other
+      type_cn: 其他
+      alias: misc
+      wiki_tpl: Anime
+      order: 5
+      sort_keys: *ANIME_SORT_KEYS
+
+  *TYPE_REAL :
+    *PLATFORM_REAL_JP :
+      id: *PLATFORM_REAL_JP
+      type: jp
+      type_cn: 日剧
+      alias: jp
+      enable_header: true
+      wiki_tpl: TV
+      order: 0
+
+    *PLATFORM_REAL_EN :
+      id: *PLATFORM_REAL_EN
+      type: en
+      type_cn: 欧美剧
+      alias: en
+      enable_header: true
+      wiki_tpl: TV
+      order: 1
+
+    *PLATFORM_REAL_CN :
+      id: *PLATFORM_REAL_CN
+      type: cn
+      type_cn: 华语剧
+      alias: cn
+      enable_header: true
+      wiki_tpl: TV
+      order: 2
+
+    *PLATFORM_REAL_TV :
+      id: *PLATFORM_REAL_TV
+      type: tv
+      type_cn: 电视剧
+      alias: tv
+      enable_header: true
+      wiki_tpl: TV
+      order: 3
+
+    *PLATFORM_REAL_MOVIE :
+      id: *PLATFORM_REAL_MOVIE
+      type: movie
+      type_cn: 电影
+      alias: movie
+      enable_header: true
+      wiki_tpl: realMovie
+      order: 4
+
+    *PLATFORM_REAL_LIVE :
+      id: *PLATFORM_REAL_LIVE
+      type: live
+      type_cn: 演出
+      alias: live
+      enable_header: true
+      wiki_tpl: TV
+      order: 5
+
+    *PLATFORM_REAL_SHOW :
+      id: *PLATFORM_REAL_SHOW
+      type: show
+      type_cn: 综艺
+      alias: show
+      enable_header: true
+      wiki_tpl: TV
+      order: 6
+
+    *PLATFORM_REAL_NONE :
+      id: *PLATFORM_REAL_NONE
+      type: other
+      type_cn: 其他
+      alias: misc
+      wiki_tpl: TV
+      order: 7
+
+  *TYPE_GAME :
+    *TYPE_GAME_GAMES :
+      id: *TYPE_GAME_GAMES
+      type: games
+      type_cn: 游戏
+      alias: games
+      enable_header: true
+      order: 0
+
+    *TYPE_GAME_DLC :
+      id: *TYPE_GAME_DLC
+      type: dlc
+      type_cn: 扩展包
+      alias: dlc
+      enable_header: true
+      order: 1
+
+    # *TYPE_GAME_DEMO :
+    #     id: *TYPE_GAME_DEMO
+    #     type: demo
+    #     type_cn: 试玩版
+    #     alias: demo
+
+    *TYPE_GAME_SOFTWARE :
+      id: *TYPE_GAME_SOFTWARE
+      type: software
+      type_cn: 软件
+      alias: software
+      enable_header: true
+      order: 2
+
+    *TYPE_GAME_TABLE :
+      id: *TYPE_GAME_TABLE
+      type: tabletop
+      type_cn: 桌游
+      alias: tabletop
+      enable_header: true
+      order: 3
+
+    *TYPE_GAME_NONE :
+      id: *TYPE_GAME_NONE
+      type: other
+      type_cn: 其他
+      alias: misc
+      order: 4
+
+  book_series:
+    *TYPE_BOOK_SERIES :
+      id: *TYPE_BOOK_SERIES
+      type: series
+      type_cn: 系列
+      alias: series
+      order: 0
+
+    *TYPE_BOOK_OFFPRINT :
+      id: *TYPE_BOOK_OFFPRINT
+      type: offprint
+      type_cn: 单行本
+      alias: offprint
+      order: 1
+
+  game_platforms:
+    4:
+      id: 4
+      type: PC
+      alias: pc
+      search_string: pc|windows
+      type_cn: PC
+      order: 0
+
+    33:
+      id: 33
+      type: Mac OS
+      alias: mac
+      search_string: mac
+      type_cn: Mac OS
+      order: 1
+
+    38:
+      id: 38
+      type: PS5
+      alias: ps5
+      search_string: PS5
+      type_cn: PS5
+      order: 2
+
+    39:
+      id: 39
+      type: Xbox Series X/S
+      alias: xbox_series_xs
+      search_string: XSX|XSS|Xbox Series X|Xbox Series S
+      type_cn: Xbox Series X/S
+      order: 3
+
+    34:
+      id: 34
+      type: PS4
+      alias: ps4
+      search_string: PS4
+      type_cn: PS4
+      order: 4
+
+    35:
+      id: 35
+      type: Xbox One
+      alias: xbox_one
+      search_string: Xbox One
+      type_cn: Xbox One
+      order: 5
+
+    37:
+      id: 37
+      type: Nintendo Switch
+      alias: ns
+      search_string: Switch|NS
+      type_cn: Nintendo Switch
+      order: 6
+
+    36:
+      id: 36
+      type: Wii U
+      alias: wii_u
+      search_string: Wii U|WiiU
+      type_cn: Wii U
+      order: 7
+
+    8:
+      id: 8
+      type: PS3
+      alias: ps3
+      search_string: PS3|PlayStation 3
+      type_cn: PS3
+      order: 8
+
+    9:
+      id: 9
+      type: Xbox360
+      alias: xbox360
+      search_string: xbox360
+      type_cn: Xbox360
+      order: 9
+
+    10:
+      id: 10
+      type: Wii
+      alias: wii
+      search_string: Wii
+      type_cn: Wii
+      order: 10
+
+    30:
+      id: 30
+      type: PSVita
+      alias: psv
+      search_string: psv|vita
+      type_cn: PS Vita
+      order: 11
+
+    31:
+      id: 31
+      type: 3DS
+      alias: 3ds
+      search_string: 3ds
+      type_cn: 3DS
+      order: 12
+
+    11:
+      id: 11
+      type: iOS
+      alias: iphone
+      search_string: iphone|ipad|ios
+      type_cn: iOS
+      order: 13
+
+    32:
+      id: 32
+      type: Android
+      alias: android
+      search_string: android
+      type_cn: Android
+      order: 14
+
+    12:
+      id: 12
+      type: ARC
+      alias: arc
+      search_string: ARC|街机
+      type_cn: 街机
+      order: 15
+
+    5:
+      id: 5
+      type: NDS
+      alias: nds
+      search_string: nds
+      type_cn: NDS
+      order: 16
+
+    6:
+      id: 6
+      type: PSP
+      alias: psp
+      search_string: psp
+      type_cn: PSP
+      order: 17
+
+    # 13:
+    #     id: 13
+    #     type: Mobile
+    #     alias: mobile
+    #     search_string: Mobile
+    #     type_cn: 手机
+
+    7:
+      id: 7
+      type: PS2
+      alias: ps2
+      search_string: PS2
+      type_cn: PS2
+      order: 18
+
+    15:
+      id: 15
+      type: XBOX
+      alias: xbox
+      search_string: XBOX
+      type_cn: XBOX
+      order: 19
+
+    17:
+      id: 17
+      type: GameCube
+      alias: gamecube
+      search_string: GameCube|ngc
+      type_cn: GameCube
+      order: 20
+
+    27:
+      id: 27
+      type: Dreamcast
+      alias: dreamcast
+      search_string: dc
+      type_cn: Dreamcast
+      order: 21
+
+    21:
+      id: 21
+      type: Nintendo 64
+      alias: n64
+      search_string: n64
+      type_cn: Nintendo 64
+      order: 22
+
+    28:
+      id: 28
+      type: PlayStation
+      alias: ps
+      search_string: ps
+      type_cn: PlayStation
+      order: 23
+
+    19:
+      id: 19
+      type: SFC
+      alias: sfc
+      search_string: SFC
+      type_cn: SFC
+      order: 24
+
+    20:
+      id: 20
+      type: FC
+      alias: fc
+      search_string: FC
+      type_cn: FC
+      order: 25
+
+    29:
+      id: 29
+      type: WonderSwan
+      alias: ws
+      search_string: ws
+      type_cn: WonderSwan
+      order: 26
+
+    26:
+      id: 26
+      type: WonderSwan Color
+      alias: wsc
+      search_string: wsc
+      type_cn: WonderSwan Color
+      order: 27
+
+    18:
+      id: 18
+      type: NEOGEO Pocket Color
+      alias: ngp
+      search_string: ngp
+      type_cn: NEOGEO Pocket Color
+      order: 28
+
+    22:
+      id: 22
+      type: GBA
+      alias: GBA
+      search_string: GBA
+      type_cn: GBA
+      order: 29
+
+    23:
+      id: 23
+      type: GB
+      alias: GB
+      search_string: GB
+      type_cn: GB
+      order: 30
+
+    25:
+      id: 25
+      type: Virtual Boy
+      alias: vb
+      search_string: Virtual Boy
+      type_cn: Virtual Boy
+      order: 31

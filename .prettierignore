@@ -4,4 +4,4 @@ coverage/
 .husky/_/
 pnpm-lock.yaml
 vendor/common/
-vendor/proto/
+upstream/

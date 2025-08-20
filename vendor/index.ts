@@ -1,8 +1,8 @@
-import { services } from './common-json/network_services.json';
-import * as platforms from './common-json/subject_platforms.json';
-import { relations } from './common-json/subject_relations.json';
-import { staffs } from './common-json/subject_staffs.json';
-import { sources } from './common-json/timeline_sources.json';
+import { services } from './common/network_services.json';
+import * as platforms from './common/subject_platforms.json';
+import { relations } from './common/subject_relations.json';
+import { staffs } from './common/subject_staffs.json';
+import { sources } from './common/timeline_sources.json';
 
 export interface NetworkService {
   name: string;
