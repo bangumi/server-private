@@ -3,7 +3,7 @@ import { afterEach, beforeEach, test } from 'vitest';
 
 import { db, schema } from '@app/drizzle';
 import { handle } from '@app/event/notify.ts';
-import { NotifySchema } from '@app/vendor/generated/proto/mq/v1/notify_pb.ts';
+import { NotifySchema } from '@app/vendor/proto/mq/v1/notify_pb.ts';
 
 beforeEach(async () => {
   await db.delete(schema.chiiOsWebSessions);

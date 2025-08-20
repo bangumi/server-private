@@ -5,3 +5,6 @@
 [submodule "vendor/proto"]
 	path = vendor/proto
 	url = https://github.com/Bangumi/proto
+[submodule "proto"]
+	path = proto
+	url = https://github.com/bangumi/proto.git
