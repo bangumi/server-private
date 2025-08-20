@@ -5,6 +5,8 @@ package mq;
 // option go_package = "github.com/bangumi/server/proto/mq";
 
 message Notify {
-  int64 mid = 1;
-  int64 user_id = 2;
+  uint32 mid = 1;
+  uint32 user_id = 2;
+  int32 type = 3;
+  string title = 4;
 }

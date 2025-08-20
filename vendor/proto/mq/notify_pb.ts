@@ -10,21 +10,31 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file mq/notify.proto.
  */
 export const file_mq_notify: GenFile = /*@__PURE__*/
-  fileDesc("Cg9tcS9ub3RpZnkucHJvdG8SAm1xIiYKBk5vdGlmeRILCgNtaWQYASABKAMSDwoHdXNlcl9pZBgCIAEoA2IGcHJvdG8z");
+  fileDesc("Cg9tcS9ub3RpZnkucHJvdG8SAm1xIkMKBk5vdGlmeRILCgNtaWQYASABKA0SDwoHdXNlcl9pZBgCIAEoDRIMCgR0eXBlGAMgASgFEg0KBXRpdGxlGAQgASgJYgZwcm90bzM");
 
 /**
  * @generated from message mq.Notify
  */
 export type Notify = Message<"mq.Notify"> & {
   /**
-   * @generated from field: int64 mid = 1;
+   * @generated from field: uint32 mid = 1;
    */
-  mid: bigint;
+  mid: number;
 
   /**
-   * @generated from field: int64 user_id = 2;
+   * @generated from field: uint32 user_id = 2;
    */
-  userId: bigint;
+  userId: number;
+
+  /**
+   * @generated from field: int32 type = 3;
+   */
+  type: number;
+
+  /**
+   * @generated from field: string title = 4;
+   */
+  title: string;
 };
 
 /**
