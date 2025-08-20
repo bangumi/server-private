@@ -2,45 +2,12 @@
 // @generated from file mq/v1/notify.proto (package mq.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
-import type { Message } from "@bufbuild/protobuf";
+import type { GenFile } from "@bufbuild/protobuf/codegenv2";
+import { fileDesc } from "@bufbuild/protobuf/codegenv2";
 
 /**
  * Describes the file mq/v1/notify.proto.
  */
 export const file_mq_v1_notify: GenFile = /*@__PURE__*/
-  fileDesc("ChJtcS92MS9ub3RpZnkucHJvdG8SBW1xLnYxIkMKBk5vdGlmeRILCgNtaWQYASABKA0SDwoHdXNlcl9pZBgCIAEoDRIMCgR0eXBlGAMgASgFEg0KBXRpdGxlGAQgASgJYgZwcm90bzM");
-
-/**
- * @generated from message mq.v1.Notify
- */
-export type Notify = Message<"mq.v1.Notify"> & {
-  /**
-   * @generated from field: uint32 mid = 1;
-   */
-  mid: number;
-
-  /**
-   * @generated from field: uint32 user_id = 2;
-   */
-  userId: number;
-
-  /**
-   * @generated from field: int32 type = 3;
-   */
-  type: number;
-
-  /**
-   * @generated from field: string title = 4;
-   */
-  title: string;
-};
-
-/**
- * Describes the message mq.v1.Notify.
- * Use `create(NotifySchema)` to create a new message.
- */
-export const NotifySchema: GenMessage<Notify> = /*@__PURE__*/
-  messageDesc(file_mq_v1_notify, 0);
+  fileDesc("ChJtcS92MS9ub3RpZnkucHJvdG8SBW1xLnYxYgZwcm90bzM");
 

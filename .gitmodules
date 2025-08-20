@@ -2,3 +2,6 @@
 	path = upstream/common
 	url = https://github.com/Bangumi/common
 
+[submodule "upstream/proto"]
+	path = upstream/proto
+	url = https://github.com/Bangumi/proto
