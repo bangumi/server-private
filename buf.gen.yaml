@@ -2,5 +2,5 @@ version: v1
 
 plugins:
   - plugin: es
-    out: vendor/proto
+    out: vendor/generated/proto
     opt: target=ts

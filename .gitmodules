@@ -2,6 +2,6 @@
 	path = vendor/common
 	url = https://github.com/Bangumi/common
 
-[submodule "proto"]
-	path = proto
-	url = https://github.com/bangumi/proto.git
+[submodule "vendor/proto"]
+	path = vendor/proto
+	url = https://github.com/Bangumi/proto

@@ -10,7 +10,7 @@
     "node": "^22.11"
   },
   "scripts": {
-    "generate:pb": "rimraf vendor/proto && buf generate proto",
+    "generate:pb": "rimraf vendor/generated/proto && buf generate vendor/proto",
     "drizzle-pull": "drizzle-kit introspect",
     "format": "prettier --list-different -w ./",
     "tsc": "tsc",
