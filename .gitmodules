@@ -1,3 +1,7 @@
 [submodule "vendor/common"]
 	path = vendor/common
 	url = https://github.com/Bangumi/common
+
+[submodule "proto"]
+	path = proto
+	url = https://github.com/bangumi/proto.git
