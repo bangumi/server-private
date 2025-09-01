@@ -28,6 +28,7 @@ jobs:
 
       # check generated code fresh
       - run: pnpm run build-common
+      - run: pnpm run format
       - run: git diff --exit-code
 
   test:
