@@ -614,8 +614,8 @@ const _settings: Record<number, setting> = {
     anchor: '#post_',
     prefix: '在 patch 讨论',
     suffix: '中回复了你',
-    id: 34,
-    hash: 20,
+    id: 35,
+    hash: 21,
     merge: 1,
   },
 
@@ -624,8 +624,8 @@ const _settings: Record<number, setting> = {
     anchor: '#post_',
     prefix: '在 patch 讨论',
     suffix: '中回复了你',
-    id: 34,
-    hash: 20,
+    id: 36,
+    hash: 21,
     merge: 1,
   },
 };
