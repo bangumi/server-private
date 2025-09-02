@@ -628,4 +628,34 @@ const _settings: Record<number, setting> = {
     hash: 21,
     merge: 1,
   },
+
+  37: {
+    url: 'DOUJIN_URL/event/topic/',
+    anchor: '#post_',
+    prefix: '你的 patch ',
+    suffix: '已经过期',
+    id: 37,
+    hash: 21,
+    merge: 1,
+  },
+    
+  38: {
+    url: 'DOUJIN_URL/event/topic/',
+    anchor: '#post_',
+    prefix: '你的 patch ',
+    suffix: '已被接受',
+    id: 37,
+    hash: 21,
+    merge: 1,
+  },
+    
+  39: {
+    url: 'DOUJIN_URL/event/topic/',
+    anchor: '#post_',
+    prefix: '你的 patch ',
+    suffix: '已被拒绝',
+    id: 37,
+    hash: 21,
+    merge: 1,
+  },
 };
