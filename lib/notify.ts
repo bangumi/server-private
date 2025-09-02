@@ -638,7 +638,7 @@ const _settings: Record<number, setting> = {
     hash: 21,
     merge: 1,
   },
-    
+
   38: {
     url: 'DOUJIN_URL/event/topic/',
     anchor: '#post_',
@@ -648,7 +648,7 @@ const _settings: Record<number, setting> = {
     hash: 21,
     merge: 1,
   },
-    
+
   39: {
     url: 'DOUJIN_URL/event/topic/',
     anchor: '#post_',
