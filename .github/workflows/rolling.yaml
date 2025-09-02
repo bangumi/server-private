@@ -17,7 +17,7 @@ jobs:
     if: ${{ github.repository_owner == 'bangumi' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ secrets.ADMIN_TOKEN }}
 
@@ -45,7 +45,7 @@ jobs:
     needs:
       - auto-tag
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: true
