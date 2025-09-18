@@ -3,4 +3,5 @@ dist/
 coverage/
 .husky/_/
 pnpm-lock.yaml
+vendor/proto/
 upstream/
