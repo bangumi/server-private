@@ -1957,6 +1957,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         platform:
           type: integer
+        series:
+          type: boolean
         summary:
           type: string
       required:
@@ -2064,6 +2066,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         platform:
           type: integer
+        series:
+          type: boolean
         summary:
           type: string
         type:
@@ -2384,6 +2388,8 @@ exports[`should build private api spec 1`] = `
           type: boolean
         platform:
           type: integer
+        series:
+          type: boolean
         summary:
           type: string
         typeID:
@@ -8980,6 +8986,8 @@ paths:
                   type: boolean
                 platform:
                   type: integer
+                series:
+                  type: boolean
                 summary:
                   type: string
                 type:
@@ -9217,6 +9225,8 @@ paths:
                       type: boolean
                     platform:
                       type: integer
+                    series:
+                      type: boolean
                     summary:
                       type: string
                   type: object
