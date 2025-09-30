@@ -72,6 +72,7 @@ export const SubjectNew = t.Object(
     type: res.Ref(res.SubjectType),
     platform: t.Integer(),
     infobox: t.String({ minLength: 1 }),
+    series: t.Optional(t.Boolean()),
     nsfw: t.Boolean(),
     metaTags: t.Array(t.String()),
     summary: t.String(),
@@ -87,6 +88,7 @@ export const SubjectEdit = t.Object(
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
     platform: t.Integer(),
+    series: t.Optional(t.Boolean()),
     nsfw: t.Boolean(),
     date: t.Optional(
       t.String({
@@ -141,6 +143,7 @@ export const SubjectWikiInfo = t.Object(
     availablePlatform: t.Array(res.Ref(Platform)),
     metaTags: t.Array(t.String()),
     summary: t.String(),
+    series: t.Optional(t.Boolean()),
     nsfw: t.Boolean(),
   },
   { $id: 'SubjectWikiInfo' },
@@ -221,6 +224,7 @@ export async function setup(app: App) {
           text: x.type_cn,
           wiki_tpl: x.wiki_tpl,
         })),
+        ...(s.typeID === SubjectType.Book && { series: s.series }),
         nsfw: s.nsfw,
         typeID: s.typeID,
       };
@@ -283,6 +287,7 @@ export async function setup(app: App) {
         typeID: body.type,
         metaTags: body.metaTags.sort().join(' '),
         fieldSummary: body.summary,
+        subjectSeries: body.series,
         subjectNsfw: body.nsfw,
         fieldEps: eps,
         updatedAt: DateTime.now().toUnixInteger(),
@@ -479,6 +484,7 @@ export async function setup(app: App) {
         date: body.date,
         metaTags: body.metaTags,
         summary: body.summary,
+        series: body.series,
         nsfw: body.nsfw,
         userID: auth.userID,
         now: DateTime.now(),
@@ -557,6 +563,7 @@ export async function setup(app: App) {
         platform = s.platform,
         metaTags = s.metaTags ? s.metaTags.split(' ') : [],
         summary = s.summary,
+        series = s.series,
         nsfw = s.nsfw,
         date,
       }: Partial<Static<typeof SubjectEdit>> = input;
@@ -567,6 +574,7 @@ export async function setup(app: App) {
         platform === s.platform &&
         metaTags.sort().join(' ') === s.metaTags &&
         summary === s.summary &&
+        series === s.series &&
         nsfw === s.nsfw &&
         date === undefined
       ) {
@@ -597,6 +605,7 @@ export async function setup(app: App) {
         platform: platform,
         metaTags: metaTags,
         summary: summary,
+        series,
         nsfw,
         date,
         userID: finalAuthorID,

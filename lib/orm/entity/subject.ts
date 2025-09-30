@@ -131,12 +131,8 @@ export class Subject {
   })
   subjectDropped!: number;
 
-  @Column('tinyint', {
-    name: 'subject_series',
-    unsigned: true,
-    default: () => "'0'",
-  })
-  subjectSeries!: number;
+  @Column('tinyint', { name: 'subject_series', width: 1, transformer: BooleanTransformer })
+  subjectSeries!: boolean;
 
   @Column('mediumint', {
     name: 'subject_series_entry',
