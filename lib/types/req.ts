@@ -345,6 +345,7 @@ export const CreateIndex = t.Object(
   {
     title: t.String({ minLength: 1, maxLength: 80, description: '目录标题' }),
     desc: t.String({ description: '目录描述' }),
+    private: t.Optional(t.Boolean({ description: '仅自己可见' })),
   },
   { $id: 'CreateIndex', title: 'CreateIndex' },
 );
@@ -354,6 +355,7 @@ export const UpdateIndex = t.Object(
   {
     title: t.Optional(t.String({ minLength: 1, maxLength: 80, description: '目录标题' })),
     desc: t.Optional(t.String({ description: '目录描述' })),
+    private: t.Optional(t.Boolean({ description: '仅自己可见' })),
   },
   { $id: 'UpdateIndex', title: 'UpdateIndex' },
 );

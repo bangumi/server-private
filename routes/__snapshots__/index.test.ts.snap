@@ -337,6 +337,9 @@ exports[`should build private api spec 1`] = `
         desc:
           description: 目录描述
           type: string
+        private:
+          description: 仅自己可见
+          type: boolean
         title:
           description: 目录标题
           maxLength: 80
@@ -864,6 +867,8 @@ exports[`should build private api spec 1`] = `
           type: string
         id:
           type: integer
+        private:
+          type: boolean
         replies:
           type: integer
         stats:
@@ -886,6 +891,7 @@ exports[`should build private api spec 1`] = `
         - type
         - title
         - desc
+        - private
         - replies
         - total
         - collects
@@ -1575,6 +1581,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         id:
           type: integer
+        private:
+          type: boolean
         title:
           type: string
         total:
@@ -1588,6 +1596,7 @@ exports[`should build private api spec 1`] = `
         - uid
         - type
         - title
+        - private
         - total
         - createdAt
       title: SlimIndex
@@ -2745,6 +2754,9 @@ exports[`should build private api spec 1`] = `
         desc:
           description: 目录描述
           type: string
+        private:
+          description: 仅自己可见
+          type: boolean
         title:
           description: 目录标题
           maxLength: 80

@@ -41,6 +41,7 @@ export async function setup(app: App) {
       const now = DateTime.now().toUnixInteger();
       const title = body.title;
       const desc = body.desc;
+      const banValue = body.private ? 2 : 0;
 
       const [{ insertId }] = await db.insert(schema.chiiIndexes).values({
         type: 0,
@@ -54,7 +55,7 @@ export async function setup(app: App) {
         createdAt: now,
         updatedAt: now,
         uid: auth.userID,
-        ban: 0,
+        ban: banValue,
       });
 
       return { id: insertId };
@@ -77,7 +78,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { indexID } }) => {
+    async ({ params: { indexID }, auth }) => {
       const [data] = await db
         .select()
         .from(schema.chiiIndexes)
@@ -85,7 +86,13 @@ export async function setup(app: App) {
       if (!data) {
         throw new NotFoundError('index');
       }
+
       const index = convert.toIndex(data);
+
+      if (index.private && (!auth || index.uid !== auth.userID)) {
+        throw new NotFoundError('index');
+      }
+
       const user = await fetcher.fetchSlimUserByID(index.uid);
       if (user) {
         index.user = user;
@@ -133,6 +140,9 @@ export async function setup(app: App) {
       if (body.desc !== undefined) {
         updateData.desc = body.desc;
       }
+      if (body.private !== undefined) {
+        updateData.ban = body.private ? 2 : 0;
+      }
 
       await db
         .update(schema.chiiIndexes)
@@ -168,9 +178,13 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { indexID }, query: { cat, type, limit = 100, offset = 0 } }) => {
+    async ({ params: { indexID }, query: { cat, type, limit = 100, offset = 0 }, auth }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      if (index.private && (!auth || index.uid !== auth.userID)) {
         throw new NotFoundError('index');
       }
 
@@ -521,11 +535,16 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { indexID } }) => {
+    async ({ params: { indexID }, auth }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
         throw new NotFoundError('Index not found');
       }
+
+      if (index.private && (!auth || index.uid !== auth.userID)) {
+        throw new NotFoundError('Index not found');
+      }
+
       return await comment.getAll(indexID);
     },
   );
@@ -556,6 +575,11 @@ export async function setup(app: App) {
       if (!index) {
         throw new NotFoundError('Index not found');
       }
+
+      if (index.private && (!auth || index.uid !== auth.userID)) {
+        throw new NotFoundError('Index not found');
+      }
+
       return await comment.create(auth, indexID, content, replyTo);
     },
   );

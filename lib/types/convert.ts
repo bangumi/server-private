@@ -549,6 +549,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
     uid: index.uid,
     type: index.type,
     title: index.title,
+    private: index.ban === 2,
     total: index.total,
     createdAt: index.createdAt,
   };
@@ -561,6 +562,7 @@ export function toIndex(index: orm.IIndex): res.IIndex {
     type: index.type,
     title: index.title,
     desc: index.desc,
+    private: index.ban === 2,
     replies: index.replies,
     total: index.total,
     collects: index.collects,

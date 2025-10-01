@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { DateTime } from 'luxon';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
@@ -26,6 +27,7 @@ describe('index APIs', () => {
   let createdIndexId: number | null = null;
 
   beforeEach(async () => {
+    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime);
     await db
       .delete(schema.chiiIndexRelated)
       .where(
@@ -291,6 +293,9 @@ describe('index APIs', () => {
       const res = await app.inject({
         method: 'get',
         url: `/indexes/${TEST_INDEX_ID}/related`,
+        query: {
+          limit: '5',
+        },
       });
       expect(res.statusCode).toBe(200);
       expect(res.json()).toMatchSnapshot();
@@ -301,7 +306,7 @@ describe('index APIs', () => {
       await app.register(setup);
       const res = await app.inject({
         method: 'get',
-        url: `/indexes/${TEST_INDEX_ID}/related?cat=0&type=2&limit=50&offset=10`,
+        url: `/indexes/${TEST_INDEX_ID}/related?cat=0&type=2&limit=5&offset=10`,
       });
       expect(res.statusCode).toBe(200);
       expect(res.json()).toMatchSnapshot();
