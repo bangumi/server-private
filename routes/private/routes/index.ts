@@ -69,7 +69,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { indexID }, query: { cat, type, limit = 20, offset = 0 } }) => {
+    async ({ params: { indexID }, query: { cat, type, limit = 100, offset = 0 } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
         throw new NotFoundError('index');
