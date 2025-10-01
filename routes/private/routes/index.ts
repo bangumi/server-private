@@ -77,7 +77,6 @@ export async function setup(app: App) {
 
       const conditions = [
         op.eq(schema.chiiIndexRelated.rid, indexID),
-        op.eq(schema.chiiIndexRelated.cat, IndexRelatedCategory.Subject),
         op.eq(schema.chiiIndexRelated.ban, 0),
       ];
       if (cat) {
@@ -121,6 +120,31 @@ export async function setup(app: App) {
         .map((item) => item.sid);
       const episodes = await fetcher.fetchEpisodesByIDs(episodeIDs);
 
+      const blogIDs = items
+        .filter((item) => item.cat === IndexRelatedCategory.Blog)
+        .map((item) => item.sid);
+      const blogs = await fetcher.fetchSlimBlogEntriesByIDs(blogIDs, index.uid);
+
+      const groupTopicIDs = items
+        .filter((item) => item.cat === IndexRelatedCategory.GroupTopic)
+        .map((item) => item.sid);
+      const groupTopics = await fetcher.fetchGroupTopicsByIDs(groupTopicIDs);
+
+      const groupIDs = Object.values(groupTopics)
+        .map((topic) => topic.parentID)
+        .filter((id, index, arr) => arr.indexOf(id) === index);
+      const groups = await fetcher.fetchSlimGroupsByIDs(groupIDs);
+
+      const subjectTopicIDs = items
+        .filter((item) => item.cat === IndexRelatedCategory.SubjectTopic)
+        .map((item) => item.sid);
+      const subjectTopics = await fetcher.fetchSubjectTopicsByIDs(subjectTopicIDs);
+
+      const topicSubjectIDs = Object.values(subjectTopics)
+        .map((topic) => topic.parentID)
+        .filter((id, index, arr) => arr.indexOf(id) === index);
+      const topicSubjects = await fetcher.fetchSlimSubjectsByIDs(topicSubjectIDs);
+
       const result = [];
       for (const item of items) {
         switch (item.cat) {
@@ -138,6 +162,38 @@ export async function setup(app: App) {
           }
           case IndexRelatedCategory.Ep: {
             item.episode = episodes[item.sid];
+            break;
+          }
+          case IndexRelatedCategory.Blog: {
+            item.blog = blogs[item.sid];
+            break;
+          }
+          case IndexRelatedCategory.GroupTopic: {
+            const topic = groupTopics[item.sid];
+            if (topic?.parentID) {
+              const group = groups[topic.parentID];
+              if (group) {
+                item.groupTopic = {
+                  ...topic,
+                  group,
+                  replies: [],
+                };
+              }
+            }
+            break;
+          }
+          case IndexRelatedCategory.SubjectTopic: {
+            const topic = subjectTopics[item.sid];
+            if (topic?.parentID) {
+              const subject = topicSubjects[topic.parentID];
+              if (subject) {
+                item.subjectTopic = {
+                  ...topic,
+                  subject,
+                  replies: [],
+                };
+              }
+            }
             break;
           }
         }

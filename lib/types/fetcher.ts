@@ -955,3 +955,43 @@ export async function fetchSlimBlogEntryByID(
   }
   return slim;
 }
+
+/** Cached */
+export async function fetchSlimBlogEntriesByIDs(
+  entryIDs: number[],
+  uid: number,
+): Promise<Record<number, res.ISlimBlogEntry>> {
+  const cached = await redis.mget(entryIDs.map((id) => getBlogSlimCacheKey(id)));
+  const result: Record<number, res.ISlimBlogEntry> = {};
+  const missing = [];
+
+  for (const [idx, id] of entryIDs.entries()) {
+    if (cached[idx]) {
+      const slim = JSON.parse(cached[idx]) as res.ISlimBlogEntry;
+      const isFriend = await isFriends(slim.uid, uid);
+      if (slim.public || slim.uid === uid || isFriend) {
+        result[id] = slim;
+      }
+    } else {
+      missing.push(id);
+    }
+  }
+
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiBlogEntries)
+      .where(op.inArray(schema.chiiBlogEntries.id, missing));
+
+    for (const d of data) {
+      const slim = convert.toSlimBlogEntry(d);
+      await redis.setex(getBlogSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
+      const isFriend = await isFriends(slim.uid, uid);
+      if (slim.public || slim.uid === uid || isFriend) {
+        result[d.id] = slim;
+      }
+    }
+  }
+
+  return result;
+}
