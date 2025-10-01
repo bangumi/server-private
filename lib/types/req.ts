@@ -4,6 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import {
   CollectionType,
   EpisodeCollectionStatus,
+  IndexRelatedCategory,
   Ref,
   SubjectType,
 } from '@app/lib/types/common.ts';
@@ -337,4 +338,24 @@ export const SearchPerson = t.Object(
     filter: t.Optional(Ref(PersonSearchFilter)),
   },
   { $id: 'SearchPerson' },
+);
+
+export const CreateIndexRelated = t.Object(
+  {
+    cat: Ref(IndexRelatedCategory),
+    type: t.Integer(),
+    sid: t.Integer(),
+    order: t.Optional(t.Integer()),
+    comment: t.Optional(t.String()),
+    award: t.Optional(t.String()),
+  },
+  { $id: 'CreateIndexRelated', title: 'CreateIndexRelated' },
+);
+
+export const UpdateIndexRelated = t.Object(
+  {
+    order: t.Integer(),
+    comment: t.String(),
+  },
+  { $id: 'UpdateIndexRelated', title: 'UpdateIndexRelated' },
 );

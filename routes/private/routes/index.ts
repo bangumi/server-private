@@ -1,7 +1,7 @@
 import { Type as t } from '@sinclair/typebox';
 
 import { db, op, schema } from '@app/drizzle';
-import { NotFoundError } from '@app/lib/error.ts';
+import { ConflictError, NotFoundError } from '@app/lib/error.ts';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -203,6 +203,180 @@ export async function setup(app: App) {
         data: result,
         total: count,
       };
+    },
+  );
+
+  app.put(
+    '/indexes/:indexID/related',
+    {
+      schema: {
+        summary: '添加目录关联内容',
+        operationId: 'putIndexRelated',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+        }),
+        body: req.Ref(req.CreateIndexRelated),
+        response: {
+          200: t.Object({
+            id: t.Integer(),
+          }),
+        },
+      },
+    },
+    async ({ params: { indexID }, body }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      const [existing] = await db
+        .select()
+        .from(schema.chiiIndexRelated)
+        .where(
+          op.and(
+            op.eq(schema.chiiIndexRelated.rid, indexID),
+            op.eq(schema.chiiIndexRelated.cat, body.cat),
+            op.eq(schema.chiiIndexRelated.sid, body.sid),
+          ),
+        );
+
+      const now = Math.floor(Date.now() / 1000);
+      const order = body.order ?? 0;
+      const comment = body.comment ?? '';
+      const award = body.award ?? '';
+
+      if (existing) {
+        if (existing.ban === 0) {
+          throw new ConflictError('Related item already exists');
+        } else {
+          await db
+            .update(schema.chiiIndexRelated)
+            .set({
+              type: body.type,
+              order,
+              comment,
+              award,
+              ban: 0,
+            })
+            .where(op.eq(schema.chiiIndexRelated.id, existing.id));
+
+          return { id: existing.id };
+        }
+      }
+
+      const [{ insertId }] = await db.insert(schema.chiiIndexRelated).values({
+        cat: body.cat,
+        rid: indexID,
+        type: body.type,
+        sid: body.sid,
+        order,
+        comment,
+        award,
+        createdAt: now,
+        ban: 0,
+      });
+
+      return { id: insertId };
+    },
+  );
+
+  app.post(
+    '/indexes/:indexID/related/:id',
+    {
+      schema: {
+        summary: '更新目录关联内容',
+        operationId: 'postIndexRelated',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+          id: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateIndexRelated),
+        response: {
+          200: t.Object({}),
+        },
+      },
+    },
+    async ({ params: { indexID, id }, body }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      const [existing] = await db
+        .select()
+        .from(schema.chiiIndexRelated)
+        .where(
+          op.and(
+            op.eq(schema.chiiIndexRelated.id, id),
+            op.eq(schema.chiiIndexRelated.rid, indexID),
+            op.eq(schema.chiiIndexRelated.ban, 0),
+          ),
+        );
+
+      if (!existing) {
+        throw new NotFoundError('index related item');
+      }
+
+      await db
+        .update(schema.chiiIndexRelated)
+        .set({
+          order: body.order,
+          comment: body.comment,
+        })
+        .where(op.eq(schema.chiiIndexRelated.id, id));
+
+      return {};
+    },
+  );
+
+  app.delete(
+    '/indexes/:indexID/related/:id',
+    {
+      schema: {
+        summary: '删除目录关联内容',
+        operationId: 'deleteIndexRelated',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+          id: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+    },
+    async ({ params: { indexID, id } }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      const [existing] = await db
+        .select()
+        .from(schema.chiiIndexRelated)
+        .where(
+          op.and(
+            op.eq(schema.chiiIndexRelated.id, id),
+            op.eq(schema.chiiIndexRelated.rid, indexID),
+            op.eq(schema.chiiIndexRelated.ban, 0),
+          ),
+        );
+
+      if (!existing) {
+        throw new NotFoundError('index related item');
+      }
+
+      await db
+        .update(schema.chiiIndexRelated)
+        .set({ ban: 1 })
+        .where(op.eq(schema.chiiIndexRelated.id, id));
+
+      return {};
     },
   );
 }
