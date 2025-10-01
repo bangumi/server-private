@@ -60,7 +60,7 @@ export async function setup(app: App) {
           cat: t.Optional(req.Ref(req.IndexRelatedCategory)),
           type: t.Optional(req.Ref(req.SubjectType)),
           limit: t.Optional(
-            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+            t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
