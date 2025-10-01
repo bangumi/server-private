@@ -478,6 +478,10 @@ export async function fetchSubjectInterest(
 
 /** Cached */
 export async function fetchSubjectTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  if (ids.length === 0) {
+    return {};
+  }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getSubjectTopicCacheKey(id)));
   const result: Record<number, res.ITopic> = {};
   const missing = [];
@@ -524,6 +528,10 @@ export async function fetchEpisodeByID(episodeID: number): Promise<res.IEpisode 
 export async function fetchEpisodesByIDs(
   episodeIDs: number[],
 ): Promise<Record<number, res.IEpisode>> {
+  if (episodeIDs.length === 0) {
+    return {};
+  }
+  episodeIDs = lo.uniq(episodeIDs);
   const cached = await redis.mget(episodeIDs.map((id) => getSubjectEpCacheKey(id)));
   const result: Record<number, res.IEpisode> = {};
   const missing = [];
@@ -902,6 +910,10 @@ export async function fetchSlimGroupsByIDs(
 
 /** Cached */
 export async function fetchGroupTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  if (ids.length === 0) {
+    return {};
+  }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getGroupTopicCacheKey(id)));
   const result: Record<number, res.ITopic> = {};
   const missing = [];
@@ -961,6 +973,10 @@ export async function fetchSlimBlogEntriesByIDs(
   entryIDs: number[],
   uid: number,
 ): Promise<Record<number, res.ISlimBlogEntry>> {
+  if (entryIDs.length === 0) {
+    return {};
+  }
+  entryIDs = lo.uniq(entryIDs);
   const cached = await redis.mget(entryIDs.map((id) => getBlogSlimCacheKey(id)));
   const result: Record<number, res.ISlimBlogEntry> = {};
   const missing = [];

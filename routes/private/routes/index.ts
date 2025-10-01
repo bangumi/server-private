@@ -82,7 +82,7 @@ export async function setup(app: App) {
       const [data] = await db
         .select()
         .from(schema.chiiIndexes)
-        .where(op.eq(schema.chiiIndexes.id, indexID));
+        .where(op.and(op.eq(schema.chiiIndexes.id, indexID), op.ne(schema.chiiIndexes.ban, 1)));
       if (!data) {
         throw new NotFoundError('index');
       }
@@ -190,7 +190,7 @@ export async function setup(app: App) {
 
       const conditions = [
         op.eq(schema.chiiIndexRelated.rid, indexID),
-        op.eq(schema.chiiIndexRelated.ban, 0),
+        op.ne(schema.chiiIndexRelated.ban, 1),
       ];
       if (cat !== undefined) {
         conditions.push(op.eq(schema.chiiIndexRelated.cat, cat));
@@ -243,9 +243,7 @@ export async function setup(app: App) {
         .map((item) => item.sid);
       const groupTopics = await fetcher.fetchGroupTopicsByIDs(groupTopicIDs);
 
-      const groupIDs = Object.values(groupTopics)
-        .map((topic) => topic.parentID)
-        .filter((id, index, arr) => arr.indexOf(id) === index);
+      const groupIDs = Object.values(groupTopics).map((topic) => topic.parentID);
       const groups = await fetcher.fetchSlimGroupsByIDs(groupIDs);
 
       const subjectTopicIDs = items
@@ -253,9 +251,7 @@ export async function setup(app: App) {
         .map((item) => item.sid);
       const subjectTopics = await fetcher.fetchSubjectTopicsByIDs(subjectTopicIDs);
 
-      const topicSubjectIDs = Object.values(subjectTopics)
-        .map((topic) => topic.parentID)
-        .filter((id, index, arr) => arr.indexOf(id) === index);
+      const topicSubjectIDs = Object.values(subjectTopics).map((topic) => topic.parentID);
       const topicSubjects = await fetcher.fetchSlimSubjectsByIDs(topicSubjectIDs);
 
       const result = [];
@@ -441,7 +437,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.eq(schema.chiiIndexRelated.ban, 0),
+            op.ne(schema.chiiIndexRelated.ban, 1),
           ),
         );
 
@@ -497,7 +493,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.eq(schema.chiiIndexRelated.ban, 0),
+            op.ne(schema.chiiIndexRelated.ban, 1),
           ),
         );
 
