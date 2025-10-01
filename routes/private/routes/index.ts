@@ -2,6 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
+import { CommentWithoutState } from '@app/lib/comment';
 import { ConflictError, NotFoundError } from '@app/lib/error.ts';
 import { getSlimCacheKey } from '@app/lib/index/cache';
 import { updateIndexStats } from '@app/lib/index/stats';
@@ -12,10 +13,54 @@ import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { formatErrors } from '@app/lib/types/res.ts';
+import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  const comment = new CommentWithoutState(schema.chiiIndexComments);
+  app.post(
+    '/indexes',
+    {
+      schema: {
+        summary: '创建目录',
+        operationId: 'createIndex',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: req.Ref(req.CreateIndex),
+        response: {
+          200: t.Object({
+            id: t.Integer(),
+          }),
+        },
+      },
+      preHandler: [requireLogin('create index')],
+    },
+    async ({ auth, body }) => {
+      const now = DateTime.now().toUnixInteger();
+      const title = body.title;
+      const desc = body.desc;
+
+      const [{ insertId }] = await db.insert(schema.chiiIndexes).values({
+        type: 0,
+        title,
+        desc,
+        replies: 0,
+        total: 0,
+        collects: 0,
+        stats: '{}',
+        award: 0,
+        createdAt: now,
+        updatedAt: now,
+        uid: auth.userID,
+        ban: 0,
+      });
+
+      return { id: insertId };
+    },
+  );
+
   app.get(
     '/indexes/:indexID',
     {
@@ -46,6 +91,56 @@ export async function setup(app: App) {
         index.user = user;
       }
       return index;
+    },
+  );
+
+  app.patch(
+    '/indexes/:indexID',
+    {
+      schema: {
+        summary: '更新目录',
+        operationId: 'updateIndex',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateIndex),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('update index')],
+    },
+    async ({ auth, params: { indexID }, body }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      if (index.uid !== auth.userID) {
+        throw new NotFoundError('index');
+      }
+
+      const now = DateTime.now().toUnixInteger();
+      const updateData: Partial<typeof schema.chiiIndexes.$inferInsert> = {
+        updatedAt: now,
+      };
+
+      if (body.title !== undefined) {
+        updateData.title = body.title;
+      }
+      if (body.desc !== undefined) {
+        updateData.desc = body.desc;
+      }
+
+      await db
+        .update(schema.chiiIndexes)
+        .set(updateData)
+        .where(op.eq(schema.chiiIndexes.id, indexID));
+
+      await redis.del(getSlimCacheKey(indexID));
+      return {};
     },
   );
 
@@ -228,10 +323,15 @@ export async function setup(app: App) {
           }),
         },
       },
+      preHandler: [requireLogin('add index related content')],
     },
-    async ({ params: { indexID }, body }) => {
+    async ({ auth, params: { indexID }, body }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      if (index.uid !== auth.userID) {
         throw new NotFoundError('index');
       }
 
@@ -290,12 +390,12 @@ export async function setup(app: App) {
     },
   );
 
-  app.post(
+  app.patch(
     '/indexes/:indexID/related/:id',
     {
       schema: {
         summary: '更新目录关联内容',
-        operationId: 'postIndexRelated',
+        operationId: 'patchIndexRelated',
         tags: [Tag.Index],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -307,10 +407,15 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
+      preHandler: [requireLogin('update index related content')],
     },
-    async ({ params: { indexID, id }, body }) => {
+    async ({ auth, params: { indexID, id }, body }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      if (index.uid !== auth.userID) {
         throw new NotFoundError('index');
       }
 
@@ -358,10 +463,15 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
+      preHandler: [requireLogin('delete index related content')],
     },
-    async ({ params: { indexID, id } }) => {
+    async ({ auth, params: { indexID, id } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
+        throw new NotFoundError('index');
+      }
+
+      if (index.uid !== auth.userID) {
         throw new NotFoundError('index');
       }
 
@@ -389,6 +499,109 @@ export async function setup(app: App) {
 
       await redis.del(getSlimCacheKey(indexID));
       return {};
+    },
+  );
+
+  app.get(
+    '/indexes/:indexID/comments',
+    {
+      schema: {
+        summary: '获取目录的评论',
+        operationId: 'getIndexComments',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+        }),
+        response: {
+          200: t.Array(res.Comment),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('index')),
+          }),
+        },
+      },
+    },
+    async ({ params: { indexID } }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError('Index not found');
+      }
+      return await comment.getAll(indexID);
+    },
+  );
+
+  app.post(
+    '/indexes/:indexID/comments',
+    {
+      schema: {
+        summary: '创建目录的评论',
+        operationId: 'createIndexComment',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+    },
+    async ({ auth, body: { content, replyTo = 0 }, params: { indexID } }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError('Index not found');
+      }
+      return await comment.create(auth, indexID, content, replyTo);
+    },
+  );
+
+  app.put(
+    '/indexes/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑目录的评论',
+        operationId: 'updateIndexComment',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        body: req.Ref(req.UpdateContent),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('edit a comment')],
+    },
+    async ({ auth, body: { content }, params: { commentID } }) => {
+      return await comment.update(auth, commentID, content);
+    },
+  );
+
+  app.delete(
+    '/indexes/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除目录的评论',
+        operationId: 'deleteIndexComment',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete a comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      return await comment.delete(auth, commentID);
     },
   );
 }
