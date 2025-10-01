@@ -1,4 +1,5 @@
 import { Type as t } from '@sinclair/typebox';
+import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
 import { ConflictError, NotFoundError } from '@app/lib/error.ts';
@@ -245,7 +246,7 @@ export async function setup(app: App) {
           ),
         );
 
-      const now = Math.floor(Date.now() / 1000);
+      const now = DateTime.now().toUnixInteger();
       const order = body.order ?? 0;
       const comment = body.comment ?? '';
       const award = body.award ?? '';
@@ -262,6 +263,7 @@ export async function setup(app: App) {
               comment,
               award,
               ban: 0,
+              createdAt: now,
             })
             .where(op.eq(schema.chiiIndexRelated.id, existing.id));
 
