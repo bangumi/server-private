@@ -192,10 +192,10 @@ export async function setup(app: App) {
         op.eq(schema.chiiIndexRelated.rid, indexID),
         op.eq(schema.chiiIndexRelated.ban, 0),
       ];
-      if (cat) {
+      if (cat !== undefined) {
         conditions.push(op.eq(schema.chiiIndexRelated.cat, cat));
       }
-      if (type) {
+      if (type !== undefined) {
         conditions.push(op.eq(schema.chiiIndexRelated.type, type));
       }
 
@@ -362,9 +362,10 @@ export async function setup(app: App) {
 
       const now = DateTime.now().toUnixInteger();
       const order = body.order ?? 0;
-      const comment = body.comment ?? '';
+      const commentContent = body.comment ?? '';
       const award = body.award ?? '';
 
+      let returnID = existing?.id;
       if (existing) {
         if (existing.ban === 0) {
           throw new ConflictError('Related item already exists');
@@ -374,33 +375,33 @@ export async function setup(app: App) {
             .set({
               type: body.type,
               order,
-              comment,
+              comment: commentContent,
               award,
               ban: 0,
               createdAt: now,
             })
             .where(op.eq(schema.chiiIndexRelated.id, existing.id));
-
-          return { id: existing.id };
+          returnID = existing.id;
         }
+      } else {
+        const [{ insertId }] = await db.insert(schema.chiiIndexRelated).values({
+          cat: body.cat,
+          rid: indexID,
+          type: body.type,
+          sid: body.sid,
+          order,
+          comment: commentContent,
+          award,
+          createdAt: now,
+          ban: 0,
+        });
+        returnID = insertId;
       }
-
-      const [{ insertId }] = await db.insert(schema.chiiIndexRelated).values({
-        cat: body.cat,
-        rid: indexID,
-        type: body.type,
-        sid: body.sid,
-        order,
-        comment,
-        award,
-        createdAt: now,
-        ban: 0,
-      });
 
       await updateIndexStats(indexID);
 
       await redis.del(getSlimCacheKey(indexID));
-      return { id: insertId };
+      return { id: returnID };
     },
   );
 
@@ -538,11 +539,11 @@ export async function setup(app: App) {
     async ({ params: { indexID }, auth }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
-        throw new NotFoundError('Index not found');
+        throw new NotFoundError('index');
       }
 
       if (index.private && (!auth || index.uid !== auth.userID)) {
-        throw new NotFoundError('Index not found');
+        throw new NotFoundError('index');
       }
 
       return await comment.getAll(indexID);
@@ -573,11 +574,11 @@ export async function setup(app: App) {
     async ({ auth, body: { content, replyTo = 0 }, params: { indexID } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
-        throw new NotFoundError('Index not found');
+        throw new NotFoundError('index');
       }
 
       if (index.private && (!auth || index.uid !== auth.userID)) {
-        throw new NotFoundError('Index not found');
+        throw new NotFoundError('index');
       }
 
       return await comment.create(auth, indexID, content, replyTo);
