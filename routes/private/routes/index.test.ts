@@ -49,6 +49,7 @@ describe('index APIs', () => {
   });
 
   afterEach(async () => {
+    vi.clearAllMocks();
     await db
       .update(schema.chiiIndexes)
       .set({
