@@ -26,24 +26,24 @@ export async function updateIndexStats(indexId: number) {
       total += count;
       if (cat === IndexRelatedCategory.Subject) {
         switch (type) {
-          case SubjectType.Anime: {
-            stats['1'] = count;
+          case SubjectType.Book: {
+            stats[SubjectType.Book.toString()] = count;
             break;
           }
-          case SubjectType.Book: {
-            stats['2'] = count;
+          case SubjectType.Anime: {
+            stats[SubjectType.Anime.toString()] = count;
             break;
           }
           case SubjectType.Music: {
-            stats['3'] = count;
+            stats[SubjectType.Music.toString()] = count;
             break;
           }
           case SubjectType.Game: {
-            stats['4'] = count;
+            stats[SubjectType.Game.toString()] = count;
             break;
           }
           case SubjectType.Real: {
-            stats['6'] = count;
+            stats[SubjectType.Real.toString()] = count;
             break;
           }
         }

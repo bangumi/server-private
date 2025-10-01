@@ -5,7 +5,7 @@ import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
 import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
 import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
-import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, CollectionType, SubjectType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { decode } from '@app/lib/utils';
 import {
@@ -36,23 +36,23 @@ export function toIndexStats(stats: string): res.IIndexStats {
   const statList = decode(stats) as Record<string, number>;
   for (const [key, value] of Object.entries(statList)) {
     switch (key) {
-      case '1': {
-        result.subject.anime = value;
-        break;
-      }
-      case '2': {
+      case SubjectType.Book.toString(): {
         result.subject.book = value;
         break;
       }
-      case '3': {
+      case SubjectType.Anime.toString(): {
+        result.subject.anime = value;
+        break;
+      }
+      case SubjectType.Music.toString(): {
         result.subject.music = value;
         break;
       }
-      case '4': {
+      case SubjectType.Game.toString(): {
         result.subject.game = value;
         break;
       }
-      case '6': {
+      case SubjectType.Real.toString(): {
         result.subject.real = value;
         break;
       }
