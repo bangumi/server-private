@@ -29,7 +29,7 @@ import { TagCat } from '@app/lib/tag.ts';
 import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
-import { isFriends } from '@app/lib/user/utils.ts';
+import { fetchFriends, isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -964,11 +964,12 @@ export async function fetchSlimBlogEntriesByIDs(
   const cached = await redis.mget(entryIDs.map((id) => getBlogSlimCacheKey(id)));
   const result: Record<number, res.ISlimBlogEntry> = {};
   const missing = [];
+  const friends = await fetchFriends(uid);
 
   for (const [idx, id] of entryIDs.entries()) {
     if (cached[idx]) {
       const slim = JSON.parse(cached[idx]) as res.ISlimBlogEntry;
-      const isFriend = await isFriends(slim.uid, uid);
+      const isFriend = friends.includes(slim.uid);
       if (slim.public || slim.uid === uid || isFriend) {
         result[id] = slim;
       }
