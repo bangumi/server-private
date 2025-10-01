@@ -11,4 +11,7 @@ export const IndexRelatedCategory = Object.freeze({
   Character: 1,
   Person: 2,
   Ep: 3,
+  Blog: 4,
+  GroupTopic: 5,
+  SubjectTopic: 6,
 });
