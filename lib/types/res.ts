@@ -947,10 +947,24 @@ export const SubjectTopic = t.Intersect(
 );
 
 export type IIndexStats = Static<typeof IndexStats>;
-export const IndexStats = t.Record(t.Integer(), t.Integer(), {
-  $id: 'IndexStats',
-  title: 'IndexStats',
-});
+export const IndexStats = t.Object(
+  {
+    subject: t.Object({
+      anime: t.Optional(t.Integer()),
+      book: t.Optional(t.Integer()),
+      music: t.Optional(t.Integer()),
+      game: t.Optional(t.Integer()),
+      real: t.Optional(t.Integer()),
+    }),
+    character: t.Optional(t.Integer()),
+    person: t.Optional(t.Integer()),
+    episode: t.Optional(t.Integer()),
+    blog: t.Optional(t.Integer()),
+    groupTopic: t.Optional(t.Integer()),
+    subjectTopic: t.Optional(t.Integer()),
+  },
+  { $id: 'IndexStats', title: 'IndexStats' },
+);
 
 export type IIndex = Static<typeof Index>;
 export const Index = t.Object(

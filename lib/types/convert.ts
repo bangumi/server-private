@@ -27,18 +27,60 @@ export function extractNameCN(infobox: res.IInfobox): string {
 }
 
 export function toIndexStats(stats: string): res.IIndexStats {
-  const result: Record<number, number> = {};
+  const result: res.IIndexStats = {
+    subject: {},
+  };
   if (!stats) {
     return result;
   }
-  const statList = decode(stats) as Record<number, string>;
+  const statList = decode(stats) as Record<string, number>;
   for (const [key, value] of Object.entries(statList)) {
-    const k = Number.parseInt(key);
-    const v = Number.parseInt(value);
-    if (Number.isNaN(k) || Number.isNaN(v)) {
-      continue;
+    switch (key) {
+      case '1': {
+        result.subject.anime = value;
+        break;
+      }
+      case '2': {
+        result.subject.book = value;
+        break;
+      }
+      case '3': {
+        result.subject.music = value;
+        break;
+      }
+      case '4': {
+        result.subject.game = value;
+        break;
+      }
+      case '6': {
+        result.subject.real = value;
+        break;
+      }
+      case 'character': {
+        result.character = value;
+        break;
+      }
+      case 'person': {
+        result.person = value;
+        break;
+      }
+      case 'ep': {
+        result.episode = value;
+        break;
+      }
+      case 'blog': {
+        result.blog = value;
+        break;
+      }
+      case 'group_topic': {
+        result.groupTopic = value;
+        break;
+      }
+      case 'subject_topic': {
+        result.subjectTopic = value;
+        break;
+      }
     }
-    result[k] = v;
   }
   return result;
 }

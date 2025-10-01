@@ -2,6 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { ConflictError, NotFoundError } from '@app/lib/error.ts';
+import { updateIndexStats } from '@app/lib/index/stats';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -278,6 +279,8 @@ export async function setup(app: App) {
         ban: 0,
       });
 
+      await updateIndexStats(indexID);
+
       return { id: insertId };
     },
   );
@@ -375,6 +378,8 @@ export async function setup(app: App) {
         .update(schema.chiiIndexRelated)
         .set({ ban: 1 })
         .where(op.eq(schema.chiiIndexRelated.id, id));
+
+      await updateIndexStats(indexID);
 
       return {};
     },
