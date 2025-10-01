@@ -2,9 +2,11 @@ import { Type as t } from '@sinclair/typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { ConflictError, NotFoundError } from '@app/lib/error.ts';
+import { getSlimCacheKey } from '@app/lib/index/cache';
 import { updateIndexStats } from '@app/lib/index/stats';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import redis from '@app/lib/redis';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -281,6 +283,7 @@ export async function setup(app: App) {
 
       await updateIndexStats(indexID);
 
+      await redis.del(getSlimCacheKey(indexID));
       return { id: insertId };
     },
   );
@@ -332,6 +335,7 @@ export async function setup(app: App) {
         })
         .where(op.eq(schema.chiiIndexRelated.id, id));
 
+      await redis.del(getSlimCacheKey(indexID));
       return {};
     },
   );
@@ -381,6 +385,7 @@ export async function setup(app: App) {
 
       await updateIndexStats(indexID);
 
+      await redis.del(getSlimCacheKey(indexID));
       return {};
     },
   );

@@ -2,10 +2,7 @@ import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
-import redis from '@app/lib/redis.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
-
-import { getSlimCacheKey } from './cache';
 
 export async function updateIndexStats(indexId: number) {
   const now = DateTime.now().toUnixInteger();
@@ -87,6 +84,4 @@ export async function updateIndexStats(indexId: number) {
       .set({ stats: statsString, total, updatedAt: now })
       .where(op.eq(schema.chiiIndexes.id, indexId));
   });
-
-  await redis.del(getSlimCacheKey(indexId));
 }
