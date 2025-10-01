@@ -24,6 +24,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CharacterSearchFilter);
   app.addSchema(req.CollectSubject);
   app.addSchema(req.CreateContent);
+  app.addSchema(req.CreateIndexRelated);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.FilterMode);
@@ -40,6 +41,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateEpisodeProgress);
+  app.addSchema(req.UpdateIndexRelated);
   app.addSchema(req.UpdateSubjectProgress);
   app.addSchema(req.UpdateTopic);
 }
