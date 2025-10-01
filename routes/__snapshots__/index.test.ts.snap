@@ -408,7 +408,7 @@ exports[`should build private api spec 1`] = `
       type: object
     EpisodeCollectionStatus:
       description: |-
-        剧集收藏状态
+        章节收藏状态
           - 0 = 撤消/删除
           - 1 = 想看
           - 2 = 看过
@@ -906,7 +906,7 @@ exports[`should build private api spec 1`] = `
           - 0 = 条目
           - 1 = 角色
           - 2 = 人物
-          - 3 = 剧集
+          - 3 = 章节
       enum:
         - 0
         - 1
@@ -4386,7 +4386,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 删除条目的剧集吐槽
+      summary: 删除条目的章节吐槽
       tags:
         - episode
     put:
@@ -4421,7 +4421,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 编辑条目的剧集吐槽
+      summary: 编辑条目的章节吐槽
       tags:
         - episode
   /p1/episodes/-/comments/{commentID}/like:
@@ -4451,7 +4451,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 取消条目的剧集吐槽点赞
+      summary: 取消条目的章节吐槽点赞
       tags:
         - episode
     put:
@@ -4497,7 +4497,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 给条目的剧集吐槽点赞
+      summary: 给条目的章节吐槽点赞
       tags:
         - episode
   /p1/episodes/{episodeID}:
@@ -4527,7 +4527,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取剧集信息
+      summary: 获取章节信息
       tags:
         - episode
   /p1/episodes/{episodeID}/comments:
@@ -4595,7 +4595,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
                 description: 意料之外的服务器错误
           description: 意料之外的服务器错误
-      summary: 获取条目的剧集吐槽箱
+      summary: 获取条目的章节吐槽箱
       tags:
         - episode
     post:
@@ -4643,7 +4643,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 创建条目的剧集吐槽
+      summary: 创建条目的章节吐槽
       tags:
         - episode
   /p1/followers:
@@ -7171,7 +7171,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取条目的剧集
+      summary: 获取条目的章节
       tags:
         - subject
   /p1/subjects/{subjectID}/recs:

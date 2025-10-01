@@ -170,7 +170,7 @@ export async function setup(app: App) {
               .where(
                 op.and(
                   op.eq(schema.chiiEpisodes.subjectID, subjectID),
-                  // 只更新 main 类型的剧集
+                  // 只更新 main 类型的章节
                   op.eq(schema.chiiEpisodes.type, 0),
                   op.eq(schema.chiiEpisodes.ban, 0),
                 ),
