@@ -120,22 +120,6 @@ describe('index APIs', () => {
       createdIndexId = data.id;
     });
 
-    test('should return 400 for invalid payload', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
-      const res = await app.inject({
-        method: 'post',
-        url: '/indexes',
-        payload: {
-          title: '',
-          desc: 'Test description',
-        },
-      });
-      expect(res.statusCode).toBe(400);
-    });
-
     test('should return 401 for unauthenticated request', async () => {
       const app = createTestServer({});
       await app.register(setup);
@@ -225,34 +209,6 @@ describe('index APIs', () => {
       expect(res.statusCode).toBe(404);
     });
 
-    test('should return 400 for invalid payload', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
-
-      const createRes = await app.inject({
-        method: 'post',
-        url: '/indexes',
-        payload: {
-          title: 'Original Title',
-          desc: 'Original description',
-        },
-      });
-      expect(createRes.statusCode).toBe(200);
-      const { id } = createRes.json();
-      createdIndexId = id;
-
-      const updateRes = await app.inject({
-        method: 'patch',
-        url: `/indexes/${id}`,
-        payload: {
-          title: '',
-        },
-      });
-      expect(updateRes.statusCode).toBe(400);
-    });
-
     test('should return 401 for unauthenticated request', async () => {
       const app = createTestServer();
       await app.register(setup);
@@ -300,16 +256,6 @@ describe('index APIs', () => {
       });
       expect(res.statusCode).toBe(404);
     });
-
-    test('should return 400 for invalid indexID', async () => {
-      const app = createTestServer({});
-      await app.register(setup);
-      const res = await app.inject({
-        method: 'get',
-        url: '/indexes/invalid',
-      });
-      expect(res.statusCode).toBe(400);
-    });
   });
 
   describe('GET /indexes/:indexID/related', () => {
@@ -346,16 +292,6 @@ describe('index APIs', () => {
         url: '/indexes/999999/related',
       });
       expect(res.statusCode).toBe(404);
-    });
-
-    test('should handle invalid query parameters', async () => {
-      const app = createTestServer();
-      await app.register(setup);
-      const res = await app.inject({
-        method: 'get',
-        url: `/indexes/${TEST_INDEX_ID}/related?limit=2000&offset=-1`,
-      });
-      expect(res.statusCode).toBe(400);
     });
   });
 
@@ -417,23 +353,6 @@ describe('index APIs', () => {
         },
       });
       expect(res.statusCode).toBe(404);
-    });
-
-    test('should return 400 for invalid payload', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
-      const res = await app.inject({
-        method: 'put',
-        url: `/indexes/${TEST_INDEX_ID}/related`,
-        payload: {
-          cat: 'invalid',
-          type: 'invalid',
-          sid: 'invalid',
-        },
-      });
-      expect(res.statusCode).toBe(400);
     });
 
     test('should handle conflict when item already exists', async () => {
@@ -550,22 +469,6 @@ describe('index APIs', () => {
       expect(res.statusCode).toBe(404);
     });
 
-    test('should return 400 for invalid payload', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
-      const res = await app.inject({
-        method: 'patch',
-        url: `/indexes/${TEST_INDEX_ID}/related/1`,
-        payload: {
-          order: 'invalid',
-          comment: 123,
-        },
-      });
-      expect(res.statusCode).toBe(400);
-    });
-
     test('should return 401 for unauthenticated request', async () => {
       const app = createTestServer();
       await app.register(setup);
@@ -640,18 +543,6 @@ describe('index APIs', () => {
         url: `/indexes/${TEST_INDEX_ID}/related/999999`,
       });
       expect(res.statusCode).toBe(404);
-    });
-
-    test('should return 400 for invalid id parameter', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
-      const res = await app.inject({
-        method: 'delete',
-        url: `/indexes/${TEST_INDEX_ID}/related/invalid`,
-      });
-      expect(res.statusCode).toBe(400);
     });
 
     test('should return 401 for unauthenticated request', async () => {

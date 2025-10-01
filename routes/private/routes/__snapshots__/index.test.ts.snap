@@ -294,7 +294,7 @@ exports[`index comments > should return 404 for non-existent index when creating
 Object {
   "code": "NOT_FOUND",
   "error": "Not Found",
-  "message": "Index not found not found",
+  "message": "index not found",
   "statusCode": 404,
 }
 `;
@@ -303,7 +303,7 @@ exports[`index comments > should return 404 for non-existent index when getting 
 Object {
   "code": "NOT_FOUND",
   "error": "Not Found",
-  "message": "Index not found not found",
+  "message": "index not found",
   "statusCode": 404,
 }
 `;

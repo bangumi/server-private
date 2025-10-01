@@ -987,7 +987,7 @@ export async function fetchSlimBlogEntriesByIDs(
     for (const d of data) {
       const slim = convert.toSlimBlogEntry(d);
       await redis.setex(getBlogSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
-      const isFriend = await isFriends(slim.uid, uid);
+      const isFriend = friends.includes(slim.uid);
       if (slim.public || slim.uid === uid || isFriend) {
         result[d.id] = slim;
       }
