@@ -29,16 +29,12 @@ describe('index APIs', () => {
   beforeEach(async () => {
     vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime);
     await db
-      .delete(schema.chiiIndexRelated)
-      .where(
-        op.and(
-          op.eq(schema.chiiIndexRelated.rid, TEST_INDEX_ID),
-          op.inArray(schema.chiiIndexRelated.sid, [12, 32]),
-        ),
-      );
-  });
-
-  afterEach(async () => {
+      .update(schema.chiiIndexes)
+      .set({
+        replies: 0,
+        updatedAt: 1020240000,
+      })
+      .where(op.eq(schema.chiiIndexes.id, TEST_INDEX_ID));
     await db
       .delete(schema.chiiIndexRelated)
       .where(
@@ -47,9 +43,39 @@ describe('index APIs', () => {
           op.inArray(schema.chiiIndexRelated.sid, [12, 32]),
         ),
       );
+    await db
+      .delete(schema.chiiIndexComments)
+      .where(op.eq(schema.chiiIndexComments.mid, TEST_INDEX_ID));
+  });
+
+  afterEach(async () => {
+    await db
+      .update(schema.chiiIndexes)
+      .set({
+        replies: 0,
+        updatedAt: 1020240000,
+      })
+      .where(op.eq(schema.chiiIndexes.id, TEST_INDEX_ID));
+    await db
+      .delete(schema.chiiIndexRelated)
+      .where(
+        op.and(
+          op.eq(schema.chiiIndexRelated.rid, TEST_INDEX_ID),
+          op.inArray(schema.chiiIndexRelated.sid, [12, 32]),
+        ),
+      );
+    await db
+      .delete(schema.chiiIndexComments)
+      .where(op.eq(schema.chiiIndexComments.mid, TEST_INDEX_ID));
 
     if (createdIndexId) {
       await db.delete(schema.chiiIndexes).where(op.eq(schema.chiiIndexes.id, createdIndexId));
+      await db
+        .delete(schema.chiiIndexRelated)
+        .where(op.eq(schema.chiiIndexRelated.rid, createdIndexId));
+      await db
+        .delete(schema.chiiIndexComments)
+        .where(op.eq(schema.chiiIndexComments.mid, createdIndexId));
       createdIndexId = null;
     }
   });
