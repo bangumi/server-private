@@ -5841,13 +5841,13 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
-        - description: max 1000
+        - description: max 100
           in: query
           name: limit
           required: false
           schema:
-            default: 100
-            maximum: 1000
+            default: 20
+            maximum: 100
             minimum: 1
             type: integer
         - description: min 0

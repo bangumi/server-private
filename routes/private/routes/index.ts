@@ -169,7 +169,7 @@ export async function setup(app: App) {
           cat: t.Optional(req.Ref(req.IndexRelatedCategory)),
           type: t.Optional(req.Ref(req.SubjectType)),
           limit: t.Optional(
-            t.Integer({ default: 100, minimum: 1, maximum: 1000, description: 'max 1000' }),
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
         }),
@@ -178,7 +178,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { indexID }, query: { cat, type, limit = 100, offset = 0 }, auth }) => {
+    async ({ params: { indexID }, query: { cat, type, limit = 20, offset = 0 }, auth }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
       if (!index) {
         throw new NotFoundError('index');
