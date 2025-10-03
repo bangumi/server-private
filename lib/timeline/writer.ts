@@ -303,7 +303,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     }
   },
 
-  /** 进度 - 剧集 */
+  /** 进度 - 章节 */
   async progressEpisode(payload: TimelineMessage['progressEpisode']): Promise<number> {
     if (payload.episode.status === EpisodeCollectionStatus.None) {
       throw new BadRequestError('episode status is none');

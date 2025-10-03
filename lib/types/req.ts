@@ -4,6 +4,7 @@ import { Type as t } from '@sinclair/typebox';
 import {
   CollectionType,
   EpisodeCollectionStatus,
+  IndexRelatedCategory,
   Ref,
   SubjectType,
 } from '@app/lib/types/common.ts';
@@ -337,4 +338,44 @@ export const SearchPerson = t.Object(
     filter: t.Optional(Ref(PersonSearchFilter)),
   },
   { $id: 'SearchPerson' },
+);
+
+export type ICreateIndex = Static<typeof CreateIndex>;
+export const CreateIndex = t.Object(
+  {
+    title: t.String({ minLength: 1, maxLength: 80, description: '目录标题' }),
+    desc: t.String({ description: '目录描述' }),
+    private: t.Optional(t.Boolean({ description: '仅自己可见' })),
+  },
+  { $id: 'CreateIndex', title: 'CreateIndex' },
+);
+
+export type IUpdateIndex = Static<typeof UpdateIndex>;
+export const UpdateIndex = t.Object(
+  {
+    title: t.Optional(t.String({ minLength: 1, maxLength: 80, description: '目录标题' })),
+    desc: t.Optional(t.String({ description: '目录描述' })),
+    private: t.Optional(t.Boolean({ description: '仅自己可见' })),
+  },
+  { $id: 'UpdateIndex', title: 'UpdateIndex' },
+);
+
+export const CreateIndexRelated = t.Object(
+  {
+    cat: Ref(IndexRelatedCategory),
+    type: t.Integer(),
+    sid: t.Integer(),
+    order: t.Optional(t.Integer()),
+    comment: t.Optional(t.String()),
+    award: t.Optional(t.String()),
+  },
+  { $id: 'CreateIndexRelated', title: 'CreateIndexRelated' },
+);
+
+export const UpdateIndexRelated = t.Object(
+  {
+    order: t.Integer(),
+    comment: t.String(),
+  },
+  { $id: 'UpdateIndexRelated', title: 'UpdateIndexRelated' },
 );

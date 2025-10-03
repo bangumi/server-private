@@ -173,7 +173,7 @@ export async function setup(app: App) {
     '/subjects/:subjectID/episodes',
     {
       schema: {
-        summary: '获取条目的剧集',
+        summary: '获取条目的章节',
         operationId: 'getSubjectEpisodes',
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],

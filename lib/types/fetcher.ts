@@ -29,7 +29,7 @@ import { TagCat } from '@app/lib/tag.ts';
 import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
-import { isFriends } from '@app/lib/user/utils.ts';
+import { fetchFriends, isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -478,6 +478,10 @@ export async function fetchSubjectInterest(
 
 /** Cached */
 export async function fetchSubjectTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  if (ids.length === 0) {
+    return {};
+  }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getSubjectTopicCacheKey(id)));
   const result: Record<number, res.ITopic> = {};
   const missing = [];
@@ -524,6 +528,10 @@ export async function fetchEpisodeByID(episodeID: number): Promise<res.IEpisode 
 export async function fetchEpisodesByIDs(
   episodeIDs: number[],
 ): Promise<Record<number, res.IEpisode>> {
+  if (episodeIDs.length === 0) {
+    return {};
+  }
+  episodeIDs = lo.uniq(episodeIDs);
   const cached = await redis.mget(episodeIDs.map((id) => getSubjectEpCacheKey(id)));
   const result: Record<number, res.IEpisode> = {};
   const missing = [];
@@ -902,6 +910,10 @@ export async function fetchSlimGroupsByIDs(
 
 /** Cached */
 export async function fetchGroupTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  if (ids.length === 0) {
+    return {};
+  }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getGroupTopicCacheKey(id)));
   const result: Record<number, res.ITopic> = {};
   const missing = [];
@@ -954,4 +966,49 @@ export async function fetchSlimBlogEntryByID(
     return;
   }
   return slim;
+}
+
+/** Cached */
+export async function fetchSlimBlogEntriesByIDs(
+  entryIDs: number[],
+  uid: number,
+): Promise<Record<number, res.ISlimBlogEntry>> {
+  if (entryIDs.length === 0) {
+    return {};
+  }
+  entryIDs = lo.uniq(entryIDs);
+  const cached = await redis.mget(entryIDs.map((id) => getBlogSlimCacheKey(id)));
+  const result: Record<number, res.ISlimBlogEntry> = {};
+  const missing = [];
+  const friends = await fetchFriends(uid);
+
+  for (const [idx, id] of entryIDs.entries()) {
+    if (cached[idx]) {
+      const slim = JSON.parse(cached[idx]) as res.ISlimBlogEntry;
+      const isFriend = friends.includes(slim.uid);
+      if (slim.public || slim.uid === uid || isFriend) {
+        result[id] = slim;
+      }
+    } else {
+      missing.push(id);
+    }
+  }
+
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiBlogEntries)
+      .where(op.inArray(schema.chiiBlogEntries.id, missing));
+
+    for (const d of data) {
+      const slim = convert.toSlimBlogEntry(d);
+      await redis.setex(getBlogSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
+      const isFriend = friends.includes(slim.uid);
+      if (slim.public || slim.uid === uid || isFriend) {
+        result[d.id] = slim;
+      }
+    }
+  }
+
+  return result;
 }

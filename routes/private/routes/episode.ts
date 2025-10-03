@@ -21,7 +21,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'getEpisode',
-        summary: '获取剧集信息',
+        summary: '获取章节信息',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -61,7 +61,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'getEpisodeComments',
-        summary: '获取条目的剧集吐槽箱',
+        summary: '获取条目的章节吐槽箱',
         tags: [Tag.Episode],
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
@@ -85,7 +85,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'createEpisodeComment',
-        summary: '创建条目的剧集吐槽',
+        summary: '创建条目的章节吐槽',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -114,7 +114,7 @@ export async function setup(app: App) {
     '/episodes/-/comments/:commentID/like',
     {
       schema: {
-        summary: '给条目的剧集吐槽点赞',
+        summary: '给条目的章节吐槽点赞',
         operationId: 'likeEpisodeComment',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -155,7 +155,7 @@ export async function setup(app: App) {
     '/episodes/-/comments/:commentID/like',
     {
       schema: {
-        summary: '取消条目的剧集吐槽点赞',
+        summary: '取消条目的章节吐槽点赞',
         operationId: 'unlikeEpisodeComment',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -183,7 +183,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'updateEpisodeComment',
-        summary: '编辑条目的剧集吐槽',
+        summary: '编辑条目的章节吐槽',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
@@ -207,7 +207,7 @@ export async function setup(app: App) {
     {
       schema: {
         operationId: 'deleteEpisodeComment',
-        summary: '删除条目的剧集吐槽',
+        summary: '删除条目的章节吐槽',
         tags: [Tag.Episode],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
