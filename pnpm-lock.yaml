@@ -41,8 +41,8 @@ importers:
         specifier: 9.5.1
         version: 9.5.1
       '@fastify/type-provider-typebox':
-        specifier: 5.2.0
-        version: 5.2.0(@sinclair/typebox@0.34.38)
+        specifier: 6.0.0
+        version: 6.0.0(typebox@1.0.26)
       '@fastify/view':
         specifier: 11.1.0
         version: 11.1.0
@@ -963,10 +963,10 @@ packages:
   '@fastify/swagger@9.5.1':
     resolution: {integrity: sha512-EGjYLA7vDmCPK7XViAYMF6y4+K3XUy5soVTVxsyXolNe/Svb4nFQxvtuQvvoQb2Gzc9pxiF3+ZQN/iZDHhKtTg==}
 
-  '@fastify/type-provider-typebox@5.2.0':
-    resolution: {integrity: sha512-RoUFTQNYlaVM/gXosFqlrUAD/JHC+OXLcj4DxNoMOag2GI7OydfCt+3vdT+6D2daJwhGAdkpxB0wLNqS7gf4CQ==}
+  '@fastify/type-provider-typebox@6.0.0':
+    resolution: {integrity: sha512-rzRQ/VCIRqaKiT8QMSNVw+zlbmVetRMlZLr9ZoEAKieI3aZUcJAMPCmUmUpU1BCU4nuoweOTZvZIPpnHPsa2xQ==}
     peerDependencies:
-      '@sinclair/typebox': '>=0.26 <=0.34'
+      typebox: ^1.0.13
 
   '@fastify/view@11.1.0':
     resolution: {integrity: sha512-ab8LG5V8srCdnknYlufaSusrjkYLYf5TUWm3DTdPFr5m1C9tI7KNl78UCcP0BJiaGaZj1udsyzAC67JCf5Ol/g==}
@@ -4868,6 +4868,9 @@ packages:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
 
+  typebox@1.0.26:
+    resolution: {integrity: sha512-s6gDKKQ/ZOk0VM1G6DLGRzQx7V5YKX2IOyaEL0/6RE07MTITzNyIzu5l+XIv06t/bvgXreUr2yNe13UWCOijXw==}
+
   typeorm@0.3.25:
     resolution: {integrity: sha512-fTKDFzWXKwAaBdEMU4k661seZewbNYET4r1J/z3Jwf+eAvlzMVpTLKAVcAzg75WwQk7GDmtsmkZ5MfkmXCiFWg==}
     engines: {node: '>=16.13.0'}
@@ -6115,9 +6118,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fastify/type-provider-typebox@5.2.0(@sinclair/typebox@0.34.38)':
+  '@fastify/type-provider-typebox@6.0.0(typebox@1.0.26)':
     dependencies:
-      '@sinclair/typebox': 0.34.38
+      typebox: 1.0.26
 
   '@fastify/view@11.1.0':
     dependencies:
@@ -10507,6 +10510,8 @@ snapshots:
       prelude-ls: 1.2.1
 
   type-fest@4.41.0: {}
+
+  typebox@1.0.26: {}
 
   typeorm@0.3.25(ioredis@5.7.0)(mysql2@3.14.3)(reflect-metadata@0.2.2):
     dependencies:
