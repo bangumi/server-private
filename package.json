@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "main": "bin/main.ts",
-  "packageManager": "pnpm@10.14.0",
+  "packageManager": "pnpm@10.18.0",
   "engines": {
     "node": "^22.11"
   },
