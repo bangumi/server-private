@@ -7,17 +7,17 @@ import type { IIndexStats } from '@app/lib/types/res';
 import { decode } from '@app/lib/utils';
 
 interface IInnerIndexStats {
-  '1': number | undefined;
-  '2': number | undefined;
-  '3': number | undefined;
-  '4': number | undefined;
-  '6': number | undefined;
-  character: number | undefined;
-  person: number | undefined;
-  ep: number | undefined;
-  blog: number | undefined;
-  group_topic: number | undefined;
-  subject_topic: number | undefined;
+  '1'?: number;
+  '2'?: number;
+  '3'?: number;
+  '4'?: number;
+  '6'?: number;
+  character?: number;
+  person?: number;
+  ep?: number;
+  blog?: number;
+  group_topic?: number;
+  subject_topic?: number;
 }
 
 export async function updateIndexStats(indexId: number) {
@@ -35,19 +35,7 @@ export async function updateIndexStats(indexId: number) {
       )
       .groupBy(schema.chiiIndexRelated.cat, schema.chiiIndexRelated.type);
 
-    const stats: IInnerIndexStats = {
-      '1': undefined,
-      '2': undefined,
-      '3': undefined,
-      '4': undefined,
-      '6': undefined,
-      character: undefined,
-      person: undefined,
-      ep: undefined,
-      blog: undefined,
-      group_topic: undefined,
-      subject_topic: undefined,
-    };
+    const stats: IInnerIndexStats = {};
     let total = 0;
 
     for (const { cat, type, count } of data) {
