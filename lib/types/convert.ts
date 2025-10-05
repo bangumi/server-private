@@ -3,9 +3,10 @@ import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
 import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
+import { parseIndexStats } from '@app/lib/index/stats';
 import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
 import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
-import { CollectionPrivacy, CollectionType, SubjectType } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { decode } from '@app/lib/utils';
 import {
@@ -24,65 +25,6 @@ export function splitTags(tags: string): string[] {
 
 export function extractNameCN(infobox: res.IInfobox): string {
   return infobox.find((x) => ['中文名', '简体中文名'].includes(x.key))?.values[0]?.v ?? '';
-}
-
-export function toIndexStats(stats: string): res.IIndexStats {
-  const result: res.IIndexStats = {
-    subject: {},
-  };
-  if (!stats) {
-    return result;
-  }
-  const statList = decode(stats) as Record<string, number>;
-  for (const [key, value] of Object.entries(statList)) {
-    switch (key) {
-      case SubjectType.Book.toString(): {
-        result.subject.book = value;
-        break;
-      }
-      case SubjectType.Anime.toString(): {
-        result.subject.anime = value;
-        break;
-      }
-      case SubjectType.Music.toString(): {
-        result.subject.music = value;
-        break;
-      }
-      case SubjectType.Game.toString(): {
-        result.subject.game = value;
-        break;
-      }
-      case SubjectType.Real.toString(): {
-        result.subject.real = value;
-        break;
-      }
-      case 'character': {
-        result.character = value;
-        break;
-      }
-      case 'person': {
-        result.person = value;
-        break;
-      }
-      case 'ep': {
-        result.episode = value;
-        break;
-      }
-      case 'blog': {
-        result.blog = value;
-        break;
-      }
-      case 'group_topic': {
-        result.groupTopic = value;
-        break;
-      }
-      case 'subject_topic': {
-        result.subjectTopic = value;
-        break;
-      }
-    }
-  }
-  return result;
 }
 
 export function toSubjectTags(tags: string): res.ISubjectTag[] {
@@ -566,7 +508,7 @@ export function toIndex(index: orm.IIndex): res.IIndex {
     replies: index.replies,
     total: index.total,
     collects: index.collects,
-    stats: toIndexStats(index.stats),
+    stats: parseIndexStats(index.stats),
     award: index.award,
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,

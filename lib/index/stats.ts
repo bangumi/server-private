@@ -3,8 +3,9 @@ import { DateTime } from 'luxon';
 import { db, op, schema } from '@app/drizzle';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
+import type { IIndexStats } from '@app/lib/types/res';
 
-interface IIndexStats {
+interface IInnerIndexStats {
   '1': number | undefined;
   '2': number | undefined;
   '3': number | undefined;
@@ -33,7 +34,7 @@ export async function updateIndexStats(indexId: number) {
       )
       .groupBy(schema.chiiIndexRelated.cat, schema.chiiIndexRelated.type);
 
-    const stats: IIndexStats = {
+    const stats: IInnerIndexStats = {
       '1': undefined,
       '2': undefined,
       '3': undefined,
@@ -110,4 +111,23 @@ export async function updateIndexStats(indexId: number) {
       .set({ stats: statsString, total, updatedAt: now })
       .where(op.eq(schema.chiiIndexes.id, indexId));
   });
+}
+
+export function parseIndexStats(stats: string): IIndexStats {
+  const innerStats = JSON.parse(stats) as IInnerIndexStats;
+  return {
+    subject: {
+      book: innerStats['1'],
+      anime: innerStats['2'],
+      music: innerStats['3'],
+      game: innerStats['4'],
+      real: innerStats['6'],
+    },
+    character: innerStats.character,
+    person: innerStats.person,
+    episode: innerStats.ep,
+    blog: innerStats.blog,
+    groupTopic: innerStats.group_topic,
+    subjectTopic: innerStats.subject_topic,
+  };
 }
