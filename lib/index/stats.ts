@@ -4,6 +4,7 @@ import { db, op, schema } from '@app/drizzle';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
 import type { IIndexStats } from '@app/lib/types/res';
+import { decode } from '@app/lib/utils';
 
 interface IInnerIndexStats {
   '1': number | undefined;
@@ -114,7 +115,7 @@ export async function updateIndexStats(indexId: number) {
 }
 
 export function parseIndexStats(stats: string): IIndexStats {
-  const innerStats = JSON.parse(stats) as IInnerIndexStats;
+  const innerStats = decode(stats) as IInnerIndexStats;
   return {
     subject: {
       book: innerStats['1'],
