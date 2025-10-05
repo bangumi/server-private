@@ -7,7 +7,7 @@ import { CommentWithoutState } from '@app/lib/comment';
 import { ConflictError, NotFoundError } from '@app/lib/error.ts';
 import { getSlimCacheKey } from '@app/lib/index/cache';
 import { updateIndexStats } from '@app/lib/index/stats';
-import { IndexRelatedCategory, IndexStatus } from '@app/lib/index/types.ts';
+import { IndexPrivacy, IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import redis from '@app/lib/redis';
 import * as convert from '@app/lib/types/convert.ts';
@@ -86,7 +86,7 @@ export async function setup(app: App) {
         .where(
           op.and(
             op.eq(schema.chiiIndexes.id, indexID),
-            op.ne(schema.chiiIndexes.ban, IndexStatus.Ban),
+            op.ne(schema.chiiIndexes.ban, IndexPrivacy.Ban),
           ),
         );
       if (!data) {
@@ -139,7 +139,7 @@ export async function setup(app: App) {
       const updateData: Partial<typeof schema.chiiIndexes.$inferInsert> = {
         title: body.title,
         desc: body.desc,
-        ban: body.private ? IndexStatus.Private : IndexStatus.Normal,
+        ban: body.private ? IndexPrivacy.Private : IndexPrivacy.Normal,
         updatedAt: now,
       };
 
@@ -189,7 +189,7 @@ export async function setup(app: App) {
 
       const conditions = [
         op.eq(schema.chiiIndexRelated.rid, indexID),
-        op.ne(schema.chiiIndexRelated.ban, IndexStatus.Ban),
+        op.ne(schema.chiiIndexRelated.ban, IndexPrivacy.Ban),
       ];
       if (cat !== undefined) {
         conditions.push(op.eq(schema.chiiIndexRelated.cat, cat));
@@ -436,7 +436,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.ne(schema.chiiIndexRelated.ban, IndexStatus.Ban),
+            op.ne(schema.chiiIndexRelated.ban, IndexPrivacy.Ban),
           ),
         );
 
@@ -492,7 +492,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.ne(schema.chiiIndexRelated.ban, IndexStatus.Ban),
+            op.ne(schema.chiiIndexRelated.ban, IndexPrivacy.Ban),
           ),
         );
 

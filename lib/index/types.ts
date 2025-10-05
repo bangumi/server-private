@@ -5,8 +5,8 @@ export const IndexType = Object.freeze({
   Award: 2,
 });
 
-export type IndexStatus = (typeof IndexStatus)[keyof typeof IndexStatus];
-export const IndexStatus = Object.freeze({
+export type IndexPrivacy = (typeof IndexPrivacy)[keyof typeof IndexPrivacy];
+export const IndexPrivacy = Object.freeze({
   Normal: 0,
   Private: 1,
   Ban: 2,
