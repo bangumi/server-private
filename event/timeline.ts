@@ -36,7 +36,7 @@ export async function handle({ key, value }: KafkaMessage) {
   switch (payload.op) {
     case EventOp.Create: {
       if (!payload.after) {
-        logger.error('invalid timeline payload for create', payload);
+        logger.error({ payload }, 'invalid timeline payload for create');
         return;
       }
       const tml = payload.after;
@@ -69,7 +69,7 @@ export async function handle({ key, value }: KafkaMessage) {
     }
     case EventOp.Delete: {
       if (!payload.before) {
-        logger.error('invalid timeline payload for delete', payload);
+        logger.error({ payload }, 'invalid timeline payload for delete');
         return;
       }
       const tml = payload.before;
