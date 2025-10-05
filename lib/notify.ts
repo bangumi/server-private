@@ -609,53 +609,58 @@ const _settings: Record<number, setting> = {
     merge: 1,
   },
 
-  35: {
-    url: 'DOUJIN_URL/event/topic/',
-    anchor: '#post_',
-    prefix: '在 patch 讨论',
-    suffix: '中回复了你',
+  '35': {
+    url: 'https://patch.bgm38.tv/s/',
+    anchor: '#',
+    prefix: '你的 patch 已经被接受',
+    suffix: '',
     id: 35,
     hash: 21,
     merge: 1,
   },
-
-  36: {
-    url: 'DOUJIN_URL/event/topic/',
-    anchor: '#post_',
-    prefix: '在 patch 讨论',
-    suffix: '中回复了你',
+  '36': {
+    url: 'https://patch.bgm38.tv/e/',
+    anchor: '#',
+    prefix: '你的 patch 已经被接受',
+    suffix: '',
     id: 36,
-    hash: 21,
+    hash: 22,
     merge: 1,
   },
-
-  37: {
-    url: 'DOUJIN_URL/event/topic/',
-    anchor: '#post_',
-    prefix: '你的 patch ',
-    suffix: '已经过期',
+  '37': {
+    url: 'https://patch.bgm38.tv/s/',
+    anchor: '#',
+    prefix: '你的 patch 已经被拒绝',
+    suffix: '',
     id: 37,
-    hash: 21,
+    hash: 23,
     merge: 1,
   },
-
-  38: {
-    url: 'DOUJIN_URL/event/topic/',
-    anchor: '#post_',
-    prefix: '你的 patch ',
-    suffix: '已被接受',
-    id: 37,
-    hash: 21,
+  '38': {
+    url: 'https://patch.bgm38.tv/e/',
+    anchor: '#',
+    prefix: '你的 patch 已经被拒绝',
+    suffix: '',
+    id: 38,
+    hash: 24,
     merge: 1,
   },
-
-  39: {
-    url: 'DOUJIN_URL/event/topic/',
-    anchor: '#post_',
-    prefix: '你的 patch ',
-    suffix: '已被拒绝',
-    id: 37,
-    hash: 21,
+  '39': {
+    url: 'https://patch.bgm38.tv/s/',
+    anchor: '#',
+    prefix: '你的 patch 已经过期',
+    suffix: '',
+    id: 39,
+    hash: 25,
+    merge: 1,
+  },
+  '40': {
+    url: 'https://patch.bgm38.tv/e/',
+    anchor: '#',
+    prefix: '你的 patch 已经过期',
+    suffix: '',
+    id: 40,
+    hash: 26,
     merge: 1,
   },
 };

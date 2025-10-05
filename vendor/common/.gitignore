@@ -1,0 +1,24 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+.vscode
+ics
+env
+.env
+.envrc
+source.sh
+.scrapy
+a.html
+*.py[cod]
+.mypy_cache
+.pytest_cache
+docs/build
+docs/source/openapi.json
+*.egg-info
+.venv/
+dev-env/
+.coverage
+*.pyc.*
+/data/
+tmp/
+.task/
+node_modules/

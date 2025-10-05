@@ -13,7 +13,7 @@ export async function handle({ value }: KafkaMessage) {
   await db.transaction(async (t) => {
     await Notify.create(t, {
       destUserID: payload.userId,
-      sourceUserID: 0,
+      sourceUserID: payload.fromUserId,
       createdAt: DateTime.now().toUnixInteger(),
       type: payload.type as NotifyType,
       relatedID: payload.mid,

@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file mq/v1/notify.proto.
  */
 export const file_mq_v1_notify: GenFile = /*@__PURE__*/
-  fileDesc("ChJtcS92MS9ub3RpZnkucHJvdG8SBW1xLnYxIkMKBk5vdGlmeRILCgNtaWQYASABKA0SDwoHdXNlcl9pZBgCIAEoDRIMCgR0eXBlGAMgASgFEg0KBXRpdGxlGAQgASgJYgZwcm90bzM");
+  fileDesc("ChJtcS92MS9ub3RpZnkucHJvdG8SBW1xLnYxIlkKBk5vdGlmeRILCgNtaWQYASABKA0SDwoHdXNlcl9pZBgCIAEoDRIUCgxmcm9tX3VzZXJfaWQYAyABKA0SDAoEdHlwZRgEIAEoBRINCgV0aXRsZRgFIAEoCWIGcHJvdG8z");
 
 /**
  * @generated from message mq.v1.Notify
@@ -27,12 +27,17 @@ export type Notify = Message<"mq.v1.Notify"> & {
   userId: number;
 
   /**
-   * @generated from field: int32 type = 3;
+   * @generated from field: uint32 from_user_id = 3;
+   */
+  fromUserId: number;
+
+  /**
+   * @generated from field: int32 type = 4;
    */
   type: number;
 
   /**
-   * @generated from field: string title = 4;
+   * @generated from field: string title = 5;
    */
   title: string;
 };
