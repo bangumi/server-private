@@ -4,6 +4,20 @@ import { db, op, schema } from '@app/drizzle';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
 
+interface IIndexStats {
+  '1': number | undefined;
+  '2': number | undefined;
+  '3': number | undefined;
+  '4': number | undefined;
+  '6': number | undefined;
+  character: number | undefined;
+  person: number | undefined;
+  ep: number | undefined;
+  blog: number | undefined;
+  group_topic: number | undefined;
+  subject_topic: number | undefined;
+}
+
 export async function updateIndexStats(indexId: number) {
   const now = DateTime.now().toUnixInteger();
   await db.transaction(async (tx) => {
@@ -19,7 +33,19 @@ export async function updateIndexStats(indexId: number) {
       )
       .groupBy(schema.chiiIndexRelated.cat, schema.chiiIndexRelated.type);
 
-    const stats: Record<string, number> = {};
+    const stats: IIndexStats = {
+      '1': undefined,
+      '2': undefined,
+      '3': undefined,
+      '4': undefined,
+      '6': undefined,
+      character: undefined,
+      person: undefined,
+      ep: undefined,
+      blog: undefined,
+      group_topic: undefined,
+      subject_topic: undefined,
+    };
     let total = 0;
 
     for (const { cat, type, count } of data) {
@@ -27,23 +53,23 @@ export async function updateIndexStats(indexId: number) {
       if (cat === IndexRelatedCategory.Subject) {
         switch (type) {
           case SubjectType.Book: {
-            stats[SubjectType.Book.toString()] = count;
+            stats['1'] = count;
             break;
           }
           case SubjectType.Anime: {
-            stats[SubjectType.Anime.toString()] = count;
+            stats['2'] = count;
             break;
           }
           case SubjectType.Music: {
-            stats[SubjectType.Music.toString()] = count;
+            stats['3'] = count;
             break;
           }
           case SubjectType.Game: {
-            stats[SubjectType.Game.toString()] = count;
+            stats['4'] = count;
             break;
           }
           case SubjectType.Real: {
-            stats[SubjectType.Real.toString()] = count;
+            stats['6'] = count;
             break;
           }
         }
