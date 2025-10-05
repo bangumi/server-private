@@ -50,3 +50,5 @@ export const LockedError = createError<[]>(
   `this resource is locked and not allowed to be updated`,
   403,
 );
+
+export const ConflictError = createError<[string]>('CONFLICT', '%s', httpCodes.CONFLICT);

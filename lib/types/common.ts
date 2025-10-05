@@ -66,12 +66,23 @@ export const IndexRelatedCategory = t.Integer({
     name: 'IndexRelatedCategory',
     modelAsString: false,
   },
-  'x-enum-varnames': ['Subject', 'Character', 'Person', 'Episode'],
+  'x-enum-varnames': [
+    'Subject',
+    'Character',
+    'Person',
+    'Episode',
+    'Blog',
+    'GroupTopic',
+    'SubjectTopic',
+  ],
   description: `目录关联类型
   - 0 = 条目
   - 1 = 角色
   - 2 = 人物
-  - 3 = 剧集`,
+  - 3 = 章节
+  - 4 = 日志
+  - 5 = 小组话题
+  - 6 = 条目讨论`,
 });
 
 export const EpisodeCollectionStatus = t.Integer({
@@ -82,7 +93,7 @@ export const EpisodeCollectionStatus = t.Integer({
     modelAsString: false,
   },
   'x-enum-varnames': ['None', 'Wish', 'Done', 'Dropped'],
-  description: `剧集收藏状态
+  description: `章节收藏状态
   - 0 = 撤消/删除
   - 1 = 想看
   - 2 = 看过

@@ -817,66 +817,6 @@ export const PersonCollect = t.Object(
   { $id: 'PersonCollect' },
 );
 
-export type IIndexStats = Static<typeof IndexStats>;
-export const IndexStats = t.Record(t.Integer(), t.Integer(), {
-  $id: 'IndexStats',
-  title: 'IndexStats',
-});
-
-export type IIndex = Static<typeof Index>;
-export const Index = t.Object(
-  {
-    id: t.Integer(),
-    uid: t.Integer(),
-    type: Ref(IndexType),
-    title: t.String(),
-    desc: t.String(),
-    replies: t.Integer(),
-    total: t.Integer(),
-    collects: t.Integer(),
-    stats: Ref(IndexStats),
-    award: t.Integer(),
-    createdAt: t.Integer(),
-    updatedAt: t.Integer(),
-    collectedAt: t.Optional(t.Integer()),
-    user: t.Optional(Ref(SlimUser)),
-  },
-  { $id: 'Index', title: 'Index' },
-);
-
-export type ISlimIndex = Static<typeof SlimIndex>;
-export const SlimIndex = t.Object(
-  {
-    id: t.Integer(),
-    uid: t.Integer(),
-    type: Ref(IndexType),
-    title: t.String(),
-    total: t.Integer(),
-    createdAt: t.Integer(),
-  },
-  { $id: 'SlimIndex', title: 'SlimIndex' },
-);
-
-export type IIndexRelated = Static<typeof IndexRelated>;
-export const IndexRelated = t.Object(
-  {
-    id: t.Integer(),
-    cat: Ref(IndexRelatedCategory),
-    rid: t.Integer(),
-    type: t.Integer(),
-    sid: t.Integer(),
-    order: t.Integer(),
-    comment: t.String(),
-    award: t.String(),
-    createdAt: t.Integer(),
-    subject: t.Optional(Ref(SlimSubject)),
-    character: t.Optional(Ref(SlimCharacter)),
-    person: t.Optional(Ref(SlimPerson)),
-    episode: t.Optional(Ref(Episode)),
-  },
-  { $id: 'IndexRelated', title: 'IndexRelated' },
-);
-
 export type IGroupMember = Static<typeof GroupMember>;
 export const GroupMember = t.Object(
   {
@@ -1004,6 +944,85 @@ export const SubjectTopic = t.Intersect(
     }),
   ],
   { $id: 'SubjectTopic', title: 'SubjectTopic' },
+);
+
+export type IIndexStats = Static<typeof IndexStats>;
+export const IndexStats = t.Object(
+  {
+    subject: t.Object({
+      anime: t.Optional(t.Integer()),
+      book: t.Optional(t.Integer()),
+      music: t.Optional(t.Integer()),
+      game: t.Optional(t.Integer()),
+      real: t.Optional(t.Integer()),
+    }),
+    character: t.Optional(t.Integer()),
+    person: t.Optional(t.Integer()),
+    episode: t.Optional(t.Integer()),
+    blog: t.Optional(t.Integer()),
+    groupTopic: t.Optional(t.Integer()),
+    subjectTopic: t.Optional(t.Integer()),
+  },
+  { $id: 'IndexStats', title: 'IndexStats' },
+);
+
+export type IIndex = Static<typeof Index>;
+export const Index = t.Object(
+  {
+    id: t.Integer(),
+    uid: t.Integer(),
+    type: Ref(IndexType),
+    title: t.String(),
+    desc: t.String(),
+    private: t.Boolean(),
+    replies: t.Integer(),
+    total: t.Integer(),
+    collects: t.Integer(),
+    stats: Ref(IndexStats),
+    award: t.Integer(),
+    createdAt: t.Integer(),
+    updatedAt: t.Integer(),
+    collectedAt: t.Optional(t.Integer()),
+    user: t.Optional(Ref(SlimUser)),
+  },
+  { $id: 'Index', title: 'Index' },
+);
+
+export type ISlimIndex = Static<typeof SlimIndex>;
+export const SlimIndex = t.Object(
+  {
+    id: t.Integer(),
+    uid: t.Integer(),
+    type: Ref(IndexType),
+    title: t.String(),
+    private: t.Boolean(),
+    total: t.Integer(),
+    createdAt: t.Integer(),
+  },
+  { $id: 'SlimIndex', title: 'SlimIndex' },
+);
+
+export type IIndexRelated = Static<typeof IndexRelated>;
+export const IndexRelated = t.Object(
+  {
+    id: t.Integer(),
+    cat: Ref(IndexRelatedCategory),
+    rid: t.Integer(),
+    type: t.Integer(),
+    sid: t.Integer(),
+    order: t.Integer(),
+    comment: t.String(),
+    award: t.String(),
+    createdAt: t.Integer(),
+    subject: t.Optional(Ref(SlimSubject)),
+    character: t.Optional(Ref(SlimCharacter)),
+    person: t.Optional(Ref(SlimPerson)),
+    episode: t.Optional(Ref(Episode)),
+    blog: t.Optional(Ref(SlimBlogEntry)),
+    groupTopic: t.Optional(Ref(GroupTopic)),
+    subjectTopic: t.Optional(Ref(SubjectTopic)),
+  },
+  { $id: 'IndexRelated', title: 'IndexRelated' },
 );
 
 export type ITimelineMemo = Static<typeof TimelineMemo>;

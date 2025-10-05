@@ -39,7 +39,7 @@ export async function getEpStatus(
   return decodeSubjectEpStatus(data.status);
 }
 
-/** 标记条目剧集为已观看，需要在事务中执行 */
+/** 标记条目章节为已观看，需要在事务中执行 */
 export async function markEpisodesAsWatched(
   t: Txn,
   userID: number,
@@ -107,7 +107,7 @@ export async function markEpisodesAsWatched(
   return watchedEpisodes;
 }
 
-/** 更新条目剧集进度，需要在事务中执行 */
+/** 更新条目章节进度，需要在事务中执行 */
 export async function updateSubjectEpisodeProgress(
   t: Txn,
   userID: number,

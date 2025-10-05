@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`get index > should get index 1`] = `
+exports[`index APIs > GET /indexes/:indexID > should get index successfully 1`] = `
 Object {
   "award": 0,
   "collects": 96,
@@ -9,15 +9,18 @@ Object {
 有美国动画混入，所以准确的说是在日本播放的动画最高收视率（而且是关东地区的
 基本大部分是70年代的，那个年代娱乐贫乏优势真大",
   "id": 15045,
-  "replies": 8,
+  "private": false,
+  "replies": 0,
   "stats": Object {
-    "2": 101,
+    "subject": Object {
+      "anime": 101,
+    },
   },
   "title": "日本动画最高收视率TOP100",
   "total": 101,
   "type": 0,
   "uid": 14127,
-  "updatedAt": 1356922367,
+  "updatedAt": 1020240000,
   "user": Object {
     "avatar": Object {
       "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
@@ -34,7 +37,7 @@ Object {
 }
 `;
 
-exports[`get index > should get index related 1`] = `
+exports[`index APIs > GET /indexes/:indexID/related > should get index related successfully 1`] = `
 Object {
   "data": Array [
     Object {
@@ -92,61 +95,14 @@ Object {
       "sid": 41983,
       "type": 2,
     },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "5位 36.7",
-      "createdAt": 1352382314,
-      "id": 29273,
-      "order": 5,
-      "rid": 15045,
-      "sid": 53805,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "7位 36",
-      "createdAt": 1352382072,
-      "id": 29271,
-      "order": 7,
-      "rid": 15045,
-      "sid": 37258,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "8位 35.6",
-      "createdAt": 1352382022,
-      "id": 29270,
-      "order": 8,
-      "rid": 15045,
-      "sid": 53804,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "9位 34.5",
-      "createdAt": 1352381764,
-      "id": 29266,
-      "order": 9,
-      "rid": 15045,
-      "sid": 53739,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "10位 33.7 （有奇怪的美国动画混进去了！",
-      "createdAt": 1352381582,
-      "id": 29264,
-      "order": 10,
-      "rid": 15045,
-      "sid": 25713,
-      "type": 2,
-    },
+  ],
+  "total": 101,
+}
+`;
+
+exports[`index APIs > GET /indexes/:indexID/related > should get index related with filters 1`] = `
+Object {
+  "data": Array [
     Object {
       "award": "",
       "cat": 0,
@@ -202,62 +158,152 @@ Object {
       "sid": 53800,
       "type": 2,
     },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "16位 31.6",
-      "createdAt": 1352380102,
-      "id": 29245,
-      "order": 16,
-      "rid": 15045,
-      "sid": 10404,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "17位 31.2",
-      "createdAt": 1352379920,
-      "id": 29241,
-      "order": 17,
-      "rid": 15045,
-      "sid": 37460,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "18位 30.7",
-      "createdAt": 1352379781,
-      "id": 29239,
-      "order": 18,
-      "rid": 15045,
-      "sid": 53794,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "19位 30.4",
-      "createdAt": 1352379633,
-      "id": 29235,
-      "order": 19,
-      "rid": 15045,
-      "sid": 10390,
-      "type": 2,
-    },
-    Object {
-      "award": "",
-      "cat": 0,
-      "comment": "20位 30.1",
-      "createdAt": 1352379532,
-      "id": 29234,
-      "order": 20,
-      "rid": 15045,
-      "sid": 10374,
-      "type": 2,
-    },
   ],
   "total": 101,
+}
+`;
+
+exports[`index comments > should get index comments 1`] = `
+Array [
+  Object {
+    "content": "测试目录评论",
+    "createdAt": 1718275200,
+    "creatorID": 14127,
+    "id": 12345680,
+    "mainID": 15045,
+    "relatedID": 0,
+    "replies": Array [
+      Object {
+        "content": "测试目录评论2",
+        "createdAt": 1718275200,
+        "creatorID": 14127,
+        "id": 12345681,
+        "mainID": 15045,
+        "relatedID": 12345680,
+        "state": 0,
+        "user": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "group": 0,
+          "id": 14127,
+          "joinedAt": 0,
+          "nickname": "nickname 14127",
+          "sign": "sing 14127",
+          "username": "14127",
+        },
+      },
+      Object {
+        "content": "测试目录评论3",
+        "createdAt": 1718275200,
+        "creatorID": 14127,
+        "id": 12345682,
+        "mainID": 15045,
+        "relatedID": 12345680,
+        "state": 0,
+        "user": Object {
+          "avatar": Object {
+            "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+          },
+          "group": 0,
+          "id": 14127,
+          "joinedAt": 0,
+          "nickname": "nickname 14127",
+          "sign": "sing 14127",
+          "username": "14127",
+        },
+      },
+    ],
+    "state": 0,
+    "user": Object {
+      "avatar": Object {
+        "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
+        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
+        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+      },
+      "group": 0,
+      "id": 14127,
+      "joinedAt": 0,
+      "nickname": "nickname 14127",
+      "sign": "sing 14127",
+      "username": "14127",
+    },
+  },
+]
+`;
+
+exports[`index comments > should not allow create index comment 1`] = `
+Object {
+  "code": "NEED_LOGIN",
+  "error": "Unauthorized",
+  "message": "you need to login before creating a comment",
+  "statusCode": 401,
+}
+`;
+
+exports[`index comments > should not delete index comment not owned 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Forbidden",
+  "message": "you don't have permission to delete a comment which is not yours",
+  "statusCode": 403,
+}
+`;
+
+exports[`index comments > should not edit index comment not owned 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Forbidden",
+  "message": "you don't have permission to edit a comment which is not yours",
+  "statusCode": 403,
+}
+`;
+
+exports[`index comments > should not edit index comment with reply 1`] = `
+Object {
+  "code": "NOT_ALLOWED",
+  "error": "Forbidden",
+  "message": "you don't have permission to edit a comment with replies",
+  "statusCode": 403,
+}
+`;
+
+exports[`index comments > should return 404 for non-existent comment when deleting 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "comment id 999999 not found",
+  "statusCode": 404,
+}
+`;
+
+exports[`index comments > should return 404 for non-existent comment when editing 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "comment id 999999 not found",
+  "statusCode": 404,
+}
+`;
+
+exports[`index comments > should return 404 for non-existent index when creating comment 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "index not found",
+  "statusCode": 404,
+}
+`;
+
+exports[`index comments > should return 404 for non-existent index when getting comments 1`] = `
+Object {
+  "code": "NOT_FOUND",
+  "error": "Not Found",
+  "message": "index not found",
+  "statusCode": 404,
 }
 `;

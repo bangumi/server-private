@@ -5,10 +5,20 @@ export const IndexType = Object.freeze({
   Award: 2,
 });
 
+export type IndexPrivacy = (typeof IndexPrivacy)[keyof typeof IndexPrivacy];
+export const IndexPrivacy = Object.freeze({
+  Normal: 0,
+  Private: 1,
+  Ban: 2,
+});
+
 export type IndexRelatedCategory = (typeof IndexRelatedCategory)[keyof typeof IndexRelatedCategory];
 export const IndexRelatedCategory = Object.freeze({
   Subject: 0,
   Character: 1,
   Person: 2,
   Ep: 3,
+  Blog: 4,
+  GroupTopic: 5,
+  SubjectTopic: 6,
 });
