@@ -7,7 +7,7 @@ import { CommentWithoutState } from '@app/lib/comment';
 import { ConflictError, NotFoundError } from '@app/lib/error.ts';
 import { getSlimCacheKey } from '@app/lib/index/cache';
 import { updateIndexStats } from '@app/lib/index/stats';
-import { IndexRelatedCategory } from '@app/lib/index/types.ts';
+import { IndexRelatedCategory, IndexStatus } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import redis from '@app/lib/redis';
 import * as convert from '@app/lib/types/convert.ts';
@@ -83,7 +83,12 @@ export async function setup(app: App) {
       const [data] = await db
         .select()
         .from(schema.chiiIndexes)
-        .where(op.and(op.eq(schema.chiiIndexes.id, indexID), op.ne(schema.chiiIndexes.ban, 1)));
+        .where(
+          op.and(
+            op.eq(schema.chiiIndexes.id, indexID),
+            op.ne(schema.chiiIndexes.ban, IndexStatus.Ban),
+          ),
+        );
       if (!data) {
         throw new NotFoundError('index');
       }
@@ -132,18 +137,11 @@ export async function setup(app: App) {
 
       const now = DateTime.now().toUnixInteger();
       const updateData: Partial<typeof schema.chiiIndexes.$inferInsert> = {
+        title: body.title,
+        desc: body.desc,
+        ban: body.private ? IndexStatus.Private : IndexStatus.Normal,
         updatedAt: now,
       };
-
-      if (body.title !== undefined) {
-        updateData.title = body.title;
-      }
-      if (body.desc !== undefined) {
-        updateData.desc = body.desc;
-      }
-      if (body.private !== undefined) {
-        updateData.ban = body.private ? 2 : 0;
-      }
 
       await db
         .update(schema.chiiIndexes)
@@ -191,7 +189,7 @@ export async function setup(app: App) {
 
       const conditions = [
         op.eq(schema.chiiIndexRelated.rid, indexID),
-        op.ne(schema.chiiIndexRelated.ban, 1),
+        op.ne(schema.chiiIndexRelated.ban, IndexStatus.Ban),
       ];
       if (cat !== undefined) {
         conditions.push(op.eq(schema.chiiIndexRelated.cat, cat));
@@ -438,7 +436,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.ne(schema.chiiIndexRelated.ban, 1),
+            op.ne(schema.chiiIndexRelated.ban, IndexStatus.Ban),
           ),
         );
 
@@ -494,7 +492,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.ne(schema.chiiIndexRelated.ban, 1),
+            op.ne(schema.chiiIndexRelated.ban, IndexStatus.Ban),
           ),
         );
 

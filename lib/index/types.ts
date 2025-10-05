@@ -5,6 +5,13 @@ export const IndexType = Object.freeze({
   Award: 2,
 });
 
+export type IndexStatus = (typeof IndexStatus)[keyof typeof IndexStatus];
+export const IndexStatus = Object.freeze({
+  Normal: 0,
+  Private: 1,
+  Ban: 2,
+});
+
 export type IndexRelatedCategory = (typeof IndexRelatedCategory)[keyof typeof IndexRelatedCategory];
 export const IndexRelatedCategory = Object.freeze({
   Subject: 0,
