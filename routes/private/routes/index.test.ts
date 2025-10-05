@@ -392,7 +392,7 @@ describe('index APIs', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    test('should return 404 for non-owner user', async () => {
+    test('should return 403 for non-owner user', async () => {
       const app = createTestServer({
         auth: { login: true, userID: 99999 }, // 非目录创建者
       });
@@ -406,7 +406,7 @@ describe('index APIs', () => {
           sid: 12,
         },
       });
-      expect(res.statusCode).toBe(404);
+      expect(res.statusCode).toBe(403);
     });
   });
 
@@ -484,7 +484,7 @@ describe('index APIs', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    test('should return 404 for non-owner user', async () => {
+    test('should return 403 for non-owner user', async () => {
       const app = createTestServer({
         auth: { login: true, userID: 99999 },
       });
@@ -497,7 +497,7 @@ describe('index APIs', () => {
           comment: 'Test',
         },
       });
-      expect(res.statusCode).toBe(404);
+      expect(res.statusCode).toBe(403);
     });
   });
 
@@ -556,7 +556,7 @@ describe('index APIs', () => {
       expect(res.statusCode).toBe(401);
     });
 
-    test('should return 404 for non-owner user', async () => {
+    test('should return 403 for non-owner user', async () => {
       const app = createTestServer({
         auth: { login: true, userID: 99999 },
       });
@@ -565,7 +565,7 @@ describe('index APIs', () => {
         method: 'delete',
         url: `/indexes/${TEST_INDEX_ID}/related/1`,
       });
-      expect(res.statusCode).toBe(404);
+      expect(res.statusCode).toBe(403);
     });
   });
 });

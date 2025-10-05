@@ -2,6 +2,7 @@ import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
+import { NotAllowedError } from '@app/lib/auth';
 import { CommentWithoutState } from '@app/lib/comment';
 import { ConflictError, NotFoundError } from '@app/lib/error.ts';
 import { getSlimCacheKey } from '@app/lib/index/cache';
@@ -126,7 +127,7 @@ export async function setup(app: App) {
       }
 
       if (index.uid !== auth.userID) {
-        throw new NotFoundError('index');
+        throw new NotAllowedError('update index related content which is not yours');
       }
 
       const now = DateTime.now().toUnixInteger();
@@ -342,7 +343,7 @@ export async function setup(app: App) {
       }
 
       if (index.uid !== auth.userID) {
-        throw new NotFoundError('index');
+        throw new NotAllowedError('update index related content which is not yours');
       }
 
       const [existing] = await db
@@ -427,7 +428,7 @@ export async function setup(app: App) {
       }
 
       if (index.uid !== auth.userID) {
-        throw new NotFoundError('index');
+        throw new NotAllowedError('update index related content which is not yours');
       }
 
       const [existing] = await db
@@ -483,7 +484,7 @@ export async function setup(app: App) {
       }
 
       if (index.uid !== auth.userID) {
-        throw new NotFoundError('index');
+        throw new NotAllowedError('update index related content which is not yours');
       }
 
       const [existing] = await db
