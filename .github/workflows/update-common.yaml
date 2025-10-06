@@ -22,7 +22,7 @@ jobs:
       - uses: ./.github/actions/setup-js-env
 
       - run: git reset --hard origin/master
-        working-directory: ./vendor/common
+        working-directory: ./upstream/common
 
       - run: pnpm run build-common
       - run: pnpm run format
