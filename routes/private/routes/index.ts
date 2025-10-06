@@ -377,6 +377,16 @@ export async function setup(app: App) {
         throw new NotAllowedError('update index related content which is not yours');
       }
 
+      let type = 0;
+      if (body.cat === IndexRelatedCategory.Subject) {
+        const subject = await fetcher.fetchSlimSubjectByID(body.sid);
+        if (subject) {
+          type = subject.type;
+        } else {
+          throw new NotFoundError('subject');
+        }
+      }
+
       const [existing] = await db
         .select()
         .from(schema.chiiIndexRelated)
@@ -392,15 +402,6 @@ export async function setup(app: App) {
       const order = body.order ?? 0;
       const commentContent = body.comment ?? '';
       const award = body.award ?? '';
-      let type = 0;
-      if (body.cat === IndexRelatedCategory.Subject) {
-        const subject = await fetcher.fetchSlimSubjectByID(body.sid);
-        if (subject) {
-          type = subject.type;
-        } else {
-          throw new NotFoundError('subject');
-        }
-      }
 
       let returnID = existing?.id;
       if (existing) {
@@ -429,8 +430,8 @@ export async function setup(app: App) {
           order,
           comment: commentContent,
           award,
-          createdAt: now,
           ban: 0,
+          createdAt: now,
         });
         returnID = insertId;
       }
