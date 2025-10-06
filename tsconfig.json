@@ -3,7 +3,7 @@
     "erasableSyntaxOnly": false,
     "experimentalDecorators": true,
     "module": "ESNext",
-    "target": "ES2022",
+    "target": "ES2023",
     "moduleResolution": "bundler",
     // 在 ./vendor 文件中添加一个 wrapper 来避免启用这个选项。
     "allowSyntheticDefaultImports": false,
@@ -13,7 +13,7 @@
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": true,
     "strict": true,
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "ES2023"],
     "skipLibCheck": true,
     "strictNullChecks": true,
     "allowImportingTsExtensions": true,

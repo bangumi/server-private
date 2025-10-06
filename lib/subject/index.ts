@@ -118,7 +118,7 @@ export async function edit({
         name: s.name,
         infobox: s.infobox,
         summary: s.summary,
-        metaTags: s.metaTags.split(' ').sort(),
+        metaTags: s.metaTags.split(' ').toSorted(),
       });
     }
 
@@ -380,7 +380,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
         rank: toRank((votes[image.id] ?? []).map((x) => x.user)),
       };
     })
-    .sort((a, b) => {
+    .toSorted((a, b) => {
       for (let i = 0; i < subjectImageVoteOrder.length + 1; i++) {
         const va = a.rank[i] ?? 0;
         const vb = b.rank[i] ?? 0;

@@ -44,7 +44,7 @@ export function findSubjectPlatform(
 
 export function getSubjectPlatforms(subjectType: number): SubjectPlatform[] {
   const plats = platforms.platforms as Record<string, Record<string, SubjectPlatform>>;
-  return Object.values(plats[subjectType] ?? {}).sort((a, b) => a.id - b.id);
+  return Object.values(plats[subjectType] ?? {}).toSorted((a, b) => a.id - b.id);
 }
 
 export function getSubjectPlatformSortKeys(subjectType: number, plat: number): readonly string[] {
