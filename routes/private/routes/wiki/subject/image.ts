@@ -1,7 +1,7 @@
 import * as crypto from 'node:crypto';
 
 import { createError } from '@fastify/error';
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';

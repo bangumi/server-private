@@ -1,10 +1,10 @@
-import type { Static, TRefUnsafe, TSchema, UnsafeOptions } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import type { Static, TRef, TSchema } from 'typebox';
+import t from 'typebox';
 
 import { datePattern } from '@app/lib/utils/date.ts';
 
-export function Ref<T extends TSchema>(T: T, options?: UnsafeOptions): TRefUnsafe<T> {
-  return t.Unsafe<Static<T>>({ $ref: T.$id, ...options });
+export function Ref<T extends TSchema>(t: T): TRef<Static<T>> {
+  return t.Unsafe<Static<T>>({ $ref: t.$id });
 }
 
 export const SubjectType = t.Integer({

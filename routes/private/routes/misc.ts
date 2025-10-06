@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
 

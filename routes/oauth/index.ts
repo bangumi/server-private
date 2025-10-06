@@ -1,8 +1,8 @@
 import Cookie from '@fastify/cookie';
 import { createError } from '@fastify/error';
 import formBody from '@fastify/formbody';
-import type { Static } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import type { Static } from 'typebox';
+import t from 'typebox';
 import { sql } from 'drizzle-orm';
 import type { FastifySchema } from 'fastify';
 import { StatusCodes } from 'http-status-codes';

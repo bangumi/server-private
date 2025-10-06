@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 
 import { db, op, type orm, schema } from '@app/drizzle';
 import { CommentWithState } from '@app/lib/comment.ts';

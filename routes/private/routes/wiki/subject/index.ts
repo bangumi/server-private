@@ -1,6 +1,6 @@
 import { parseToMap } from '@bgm38/wiki';
-import type { Static } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import type { Static } from 'typebox';
+import t from 'typebox';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
@@ -155,7 +155,7 @@ export const EpsisodesNew = t.Object(
   {
     episodes: t.Array(
       // EpisodePartial with required ep
-      t.Composite([t.Omit(EpisodePartial, ['ep']), t.Object({ ep: t.Number() })]),
+      t.Interface([t.Omit(EpisodePartial, ['ep']), t.Object({ ep: t.Number() })], {}),
     ),
   },
   { $id: 'EpsisodesNew' },
@@ -166,7 +166,7 @@ export const EpsisodesEdit = t.Object(
     commitMessage: t.String(),
     episodes: t.Array(
       // EpisodePartial with required id
-      t.Composite([EpisodePartial, t.Object({ id: t.Integer() })]),
+      t.Interface([EpisodePartial, t.Object({ id: t.Integer() })], {}),
     ),
     expectedRevision: t.Optional(t.Array(req.EpisodeExpected)),
   },

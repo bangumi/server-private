@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { search as searchCharacter } from '@app/lib/search/character';

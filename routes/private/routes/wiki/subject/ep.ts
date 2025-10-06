@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 

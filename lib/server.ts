@@ -1,5 +1,5 @@
 import fastifyRequestContextPlugin from '@fastify/request-context';
-import type { Static } from '@sinclair/typebox';
+import type { Static } from 'typebox';
 import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { DrizzleError } from 'drizzle-orm';

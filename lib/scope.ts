@@ -1,4 +1,4 @@
-import { type Static, Type as t } from '@sinclair/typebox';
+import { type Static, Type as t } from 'typebox';
 import * as lo from 'lodash-es';
 
 export type IScope = Static<typeof Scope>;

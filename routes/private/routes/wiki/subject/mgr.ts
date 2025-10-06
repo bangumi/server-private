@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 import { DateTime } from 'luxon';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';

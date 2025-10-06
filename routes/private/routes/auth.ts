@@ -1,5 +1,5 @@
 import { createError } from '@fastify/error';
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 import httpCodes from 'http-status-codes';
 
 import { db, op, schema } from '@app/drizzle';

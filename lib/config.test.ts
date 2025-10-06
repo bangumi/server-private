@@ -1,7 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import { Value } from '@sinclair/typebox/value';
+import { Value } from 'typebox/value';
 import * as yaml from 'js-yaml';
 import * as lo from 'lodash-es';
 import { expect, test } from 'vitest';

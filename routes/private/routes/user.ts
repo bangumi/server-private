@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';

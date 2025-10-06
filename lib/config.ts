@@ -32,9 +32,9 @@ import * as path from 'node:path';
 import * as process from 'node:process';
 import * as url from 'node:url';
 
-import type { Static, TObject, TProperties, TSchema } from '@sinclair/typebox';
-import { Kind, Type as t } from '@sinclair/typebox';
-import { Value } from '@sinclair/typebox/value';
+import type { Static, TObject, TProperties, TSchema } from 'typebox';
+import t from 'typebox';
+import { Value } from 'typebox/value';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import ajvKeywords from 'ajv-keywords';
@@ -166,7 +166,7 @@ function readConfig(): Static<typeof schema> {
   const config = lo.merge(Value.Create(schema), yaml.load(configFileContent));
 
   function readFromEnv(keyPath: string[], o: TSchema) {
-    if (o[Kind] === 'Object') {
+    if (t.IsKind(o, 'Object')) {
       for (const [key, value] of Object.entries(o.properties as Record<string, TSchema>)) {
         readFromEnv([...keyPath, key], value);
       }
@@ -174,7 +174,7 @@ function readConfig(): Static<typeof schema> {
       return;
     }
 
-    const envKey = o.env as string | undefined;
+    const envKey = o['env'] as string | undefined;
     if (envKey) {
       const v = process.env[envKey];
       if (v !== undefined) {

@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 import { DateTime } from 'luxon';
 
 import { db, decr, incr, op, type orm, schema } from '@app/drizzle';

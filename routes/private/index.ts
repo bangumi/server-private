@@ -1,5 +1,5 @@
 import Cookie from '@fastify/cookie';
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { production } from '@app/lib/config.ts';

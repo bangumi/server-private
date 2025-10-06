@@ -41,7 +41,7 @@
     "@fastify/view": "11.1.1",
     "@node-rs/bcrypt": "1.10.7",
     "@sentry/node": "10.17.0",
-    "@sinclair/typebox": "0.34.41",
+    "typebox": "^1.0.0",
     "@trim21/php-serialize": "0.2.2",
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1",

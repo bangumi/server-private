@@ -1,6 +1,6 @@
 import type { FastifyError } from '@fastify/error';
-import type { Static, TSchema } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import type { Static, TSchema } from 'typebox';
+import t from 'typebox';
 import httpCodes from 'http-status-codes';
 import * as lo from 'lodash-es';
 
