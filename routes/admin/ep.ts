@@ -102,7 +102,7 @@ export async function setup(app: App) {
 
       return await res.view('admin/episode-history', {
         ep,
-        histories: histories.sort((a, b) => a.revDateline - b.revDateline),
+        histories: histories.toSorted((a, b) => a.revDateline - b.revDateline),
       });
     },
   );

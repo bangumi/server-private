@@ -285,7 +285,7 @@ export async function setup(app: App) {
         platform: body.platform,
         fieldInfobox: body.infobox,
         typeID: body.type,
-        metaTags: body.metaTags.sort().join(' '),
+        metaTags: body.metaTags.toSorted().join(' '),
         fieldSummary: body.summary,
         subjectSeries: body.series,
         subjectNsfw: body.nsfw,
@@ -572,7 +572,7 @@ export async function setup(app: App) {
         infobox === s.infobox &&
         name === s.name &&
         platform === s.platform &&
-        metaTags.sort().join(' ') === s.metaTags &&
+        metaTags.toSorted().join(' ') === s.metaTags &&
         summary === s.summary &&
         series === s.series &&
         nsfw === s.nsfw &&

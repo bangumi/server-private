@@ -31,7 +31,7 @@ describe('truncate timeline cache', () => {
     expect(leadingMembers).toEqual(
       members
         .slice(1500 - 10, 1500)
-        .reverse()
+        .toReversed()
         .map(String),
     );
 
@@ -56,7 +56,7 @@ describe('truncate timeline cache', () => {
     expect(leadingMembers).toEqual(
       members
         .slice(400 - 10, 400)
-        .reverse()
+        .toReversed()
         .map(String),
     );
 

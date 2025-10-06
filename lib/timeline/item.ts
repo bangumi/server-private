@@ -32,7 +32,7 @@ export async function parseTimelineMemo(
           if (batch) {
             const info = decode(data) as memo.UserBatch;
             const us = await fetcher.fetchSlimUsersByIDs(Object.keys(info).map(Number));
-            for (const id of Object.keys(info).map(Number).sort()) {
+            for (const id of Object.keys(info).map(Number).toSorted()) {
               const user = us[id];
               if (user) {
                 users.push(user);
@@ -60,7 +60,7 @@ export async function parseTimelineMemo(
               Object.keys(info).map(Number),
               auth.allowNsfw,
             );
-            for (const id of Object.keys(info).map(Number).sort()) {
+            for (const id of Object.keys(info).map(Number).toSorted()) {
               const group = gs[id];
               if (group) {
                 groups.push(group);
@@ -101,7 +101,7 @@ export async function parseTimelineMemo(
           Object.keys(info).map(Number),
           auth.allowNsfw,
         );
-        for (const id of Object.keys(info).map(Number).sort()) {
+        for (const id of Object.keys(info).map(Number).toSorted()) {
           const subject = ss[id];
           const v = info[id];
           if (!subject) {
