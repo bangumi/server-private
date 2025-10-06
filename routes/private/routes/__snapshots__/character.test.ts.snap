@@ -205,3 +205,10 @@ Object {
   "total": 2,
 }
 `;
+
+exports[`character > should get character indexes 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;

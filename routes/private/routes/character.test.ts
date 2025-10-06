@@ -55,4 +55,15 @@ describe('character', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get character indexes', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/characters/32/indexes',
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
 });
