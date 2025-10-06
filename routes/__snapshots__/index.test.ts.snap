@@ -44,6 +44,8 @@ exports[`should build private api spec 1`] = `
           type: string
         type:
           type: integer
+        uid:
+          type: integer
         updatedAt:
           type: integer
         user:
@@ -53,6 +55,7 @@ exports[`should build private api spec 1`] = `
       required:
         - id
         - type
+        - uid
         - user
         - title
         - icon
@@ -362,11 +365,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         sid:
           type: integer
-        type:
-          type: integer
       required:
         - cat
-        - type
         - sid
       title: CreateIndexRelated
       type: object
@@ -1499,10 +1499,12 @@ exports[`should build private api spec 1`] = `
           type: integer
         updatedAt:
           type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
       required:
         - id
-        - uid
         - type
+        - uid
         - title
         - icon
         - summary

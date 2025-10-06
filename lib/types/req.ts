@@ -363,7 +363,6 @@ export const UpdateIndex = t.Object(
 export const CreateIndexRelated = t.Object(
   {
     cat: Ref(IndexRelatedCategory),
-    type: t.Integer(),
     sid: t.Integer(),
     order: t.Optional(t.Integer()),
     comment: t.Optional(t.String()),
