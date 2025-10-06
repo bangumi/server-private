@@ -362,11 +362,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         sid:
           type: integer
-        type:
-          type: integer
       required:
         - cat
-        - type
         - sid
       title: CreateIndexRelated
       type: object
@@ -2334,6 +2331,8 @@ exports[`should build private api spec 1`] = `
         type:
           items:
             $ref: '#/components/schemas/SubjectType'
+            description: 条目类型, 可以多次出现。多值之间为 \`或\` 关系。
+            example: 2
           type: array
       type: object
     SubjectSearchSort:
@@ -3031,6 +3030,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3072,6 +3072,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3112,6 +3113,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3141,6 +3143,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3174,6 +3177,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3202,6 +3206,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - HTTPBearer: []
@@ -3268,6 +3273,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: blog entry not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -3276,6 +3288,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3322,6 +3335,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3378,6 +3392,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - HTTPBearer: []
@@ -3407,6 +3422,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - HTTPBearer: []
@@ -3428,6 +3444,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3457,6 +3474,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3490,6 +3508,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3516,6 +3535,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -3524,6 +3550,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3537,6 +3564,7 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
@@ -3588,6 +3616,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -3596,6 +3631,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3650,6 +3686,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -3658,6 +3701,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3725,6 +3769,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -3733,6 +3784,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3779,6 +3831,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3835,6 +3888,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3880,6 +3934,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3931,6 +3986,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3966,6 +4022,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4000,6 +4057,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4040,6 +4098,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4091,6 +4150,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4126,6 +4186,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4160,6 +4221,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4211,6 +4273,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4246,6 +4309,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4280,6 +4344,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4293,10 +4358,12 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: 起始时间戳
@@ -4346,6 +4413,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4386,6 +4454,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4425,6 +4494,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4447,6 +4517,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: debug
   /p1/episodes/-/comments/{commentID}:
@@ -4472,6 +4543,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4506,6 +4578,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4535,6 +4608,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4580,6 +4654,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4609,6 +4684,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4679,6 +4755,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取条目的章节吐槽箱
       tags:
@@ -4723,6 +4800,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4774,6 +4852,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4803,6 +4882,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4854,6 +4934,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4889,6 +4970,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4923,6 +5005,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4936,10 +5019,12 @@ paths:
       parameters:
         - in: query
           name: mode
+          required: false
           schema:
             $ref: '#/components/schemas/GroupFilterMode'
         - in: query
           name: sort
+          required: true
           schema:
             $ref: '#/components/schemas/GroupSort'
         - in: query
@@ -4978,6 +5063,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5007,6 +5093,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5034,6 +5121,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取小组话题回复详情
       tags:
@@ -5064,6 +5152,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5093,6 +5182,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5138,6 +5228,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5149,8 +5240,10 @@ paths:
     get:
       operationId: getRecentGroupTopics
       parameters:
-        - in: query
+        - description: 登录时默认为 joined, 未登录或没有加入小组时始终为 all
+          in: query
           name: mode
+          required: true
           schema:
             $ref: '#/components/schemas/GroupTopicFilterMode'
         - in: query
@@ -5189,6 +5282,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5217,6 +5311,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5251,6 +5346,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5296,6 +5392,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5325,6 +5422,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5338,6 +5436,7 @@ paths:
       parameters:
         - in: query
           name: role
+          required: false
           schema:
             $ref: '#/components/schemas/GroupMemberRole'
         - in: query
@@ -5382,6 +5481,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5435,6 +5535,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5482,6 +5583,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5514,6 +5616,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5543,6 +5646,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5576,6 +5680,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5605,6 +5710,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5632,6 +5738,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5665,6 +5772,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5732,6 +5840,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: index not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -5740,6 +5855,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5786,6 +5902,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5799,10 +5916,12 @@ paths:
       parameters:
         - in: query
           name: cat
+          required: false
           schema:
             $ref: '#/components/schemas/IndexRelatedCategory'
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: max 100
@@ -5850,6 +5969,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5887,6 +6007,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5921,6 +6042,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5959,6 +6081,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6000,12 +6123,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: request validation error
           description: request validation error
         '401':
           content:
             application/json:
+              examples:
+                CAPTCHA_ERROR:
+                  value:
+                    code: CAPTCHA_ERROR
+                    error: Unauthorized
+                    message: wrong captcha
+                    statusCode: 401
+                EMAIL_PASSWORD_ERROR:
+                  value:
+                    code: EMAIL_PASSWORD_ERROR
+                    error: Unauthorized
+                    message: email does not exists or email and password not match
+                    statusCode: 401
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 验证码错误/账号密码不匹配
           description: 验证码错误/账号密码不匹配
           headers:
             X-RateLimit-Limit:
@@ -6023,8 +6161,14 @@ paths:
         '429':
           content:
             application/json:
+              example:
+                code: TOO_MANY_REQUESTS
+                error: Too Many Requests
+                message: too many failed login attempts
+                statusCode: 429
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 失败次数太多，需要过一段时间再重试
           description: 失败次数太多，需要过一段时间再重试
           headers:
             X-RateLimit-Limit:
@@ -6044,6 +6188,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - auth
@@ -6066,14 +6211,23 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                NeedLoginError:
+                  value:
+                    code: NEED_LOGIN
+                    error: Unauthorized
+                    message: you need to login before logout
+                    statusCode: 401
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 未登录
           description: 未登录
         '500':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - auth
@@ -6090,6 +6244,11 @@ paths:
         '401':
           content:
             application/json:
+              example:
+                code: NEED_LOGIN
+                error: Unauthorized
+                message: you need to login before get current user
+                statusCode: 401
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -6098,6 +6257,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6144,6 +6304,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6173,6 +6334,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6206,6 +6368,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6232,6 +6395,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -6240,6 +6410,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6253,6 +6424,7 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
@@ -6304,6 +6476,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -6312,6 +6491,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6366,6 +6546,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -6374,6 +6561,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6441,6 +6629,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -6449,6 +6644,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6495,6 +6691,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6551,6 +6748,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6564,6 +6762,7 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: 职位
@@ -6615,6 +6814,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -6623,6 +6829,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6679,6 +6886,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6735,6 +6943,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6791,6 +7000,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6804,10 +7014,12 @@ paths:
       parameters:
         - in: query
           name: type
+          required: true
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: sort
+          required: true
           schema:
             $ref: '#/components/schemas/SubjectBrowseSort'
         - description: min 1
@@ -6875,6 +7087,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6904,6 +7117,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6949,6 +7163,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6978,6 +7193,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7005,6 +7221,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取条目讨论回复详情
       tags:
@@ -7035,6 +7252,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7064,6 +7282,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7109,6 +7328,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7160,6 +7380,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7188,6 +7409,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7234,6 +7456,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7280,6 +7503,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7308,6 +7532,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7370,6 +7595,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7383,10 +7609,13 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
-        - in: query
+        - description: 默认为 all, 未登录或没有好友时始终为 all
+          in: query
           name: mode
+          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
         - description: max 100
@@ -7434,6 +7663,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7447,6 +7677,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: max 100
@@ -7494,6 +7725,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7507,6 +7739,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/EpisodeType'
         - description: max 1000
@@ -7554,6 +7787,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7610,6 +7844,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7666,6 +7901,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7679,6 +7915,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: 是否单行本
@@ -7733,6 +7970,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7789,6 +8027,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7851,6 +8090,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7907,6 +8147,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7963,6 +8204,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8010,6 +8252,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8021,8 +8264,10 @@ paths:
     get:
       operationId: getTimeline
       parameters:
-        - in: query
+        - description: 登录时默认为 friends, 未登录或没有好友时始终为 all
+          in: query
           name: mode
+          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
         - description: min 1, max 20
@@ -8054,6 +8299,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8093,6 +8339,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8122,6 +8369,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8189,6 +8437,13 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: timeline not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -8197,6 +8452,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8242,6 +8498,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8255,6 +8512,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: true
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: max 100
@@ -8297,6 +8555,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8348,6 +8607,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8385,6 +8645,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取 Turnstile 令牌
       tags:
@@ -8410,6 +8671,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8467,6 +8729,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8524,6 +8787,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8581,6 +8845,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8638,6 +8903,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8651,10 +8917,12 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: max 100
@@ -8703,6 +8971,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8759,6 +9028,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8815,6 +9085,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8872,6 +9143,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8929,6 +9201,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8975,6 +9248,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8996,12 +9270,30 @@ paths:
         '200':
           content:
             application/json:
+              example:
+                date: '2012-12-23'
+                duration: '00:23:37'
+                ep: 60
+                id: 1148124
+                name: キマリ×ト×ハジマリ
+                nameCN: 结末×与×开始
+                subjectID: 65536
+                summary: >-
+                  ゴンとキルアはG.I.プレイヤー選考会にいよいよ挑戦する。審査を担当するツェズゲラから提示された合格の条件はただ一つ「練を見せる」こと。合格できる者は200人中32名という狭き門だが、ゴンとキルアはくぐり抜けることができるのか！？
+                type: 0
               schema:
                 $ref: '#/components/schemas/EpisodeWikiInfo'
           description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: episode not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9010,6 +9302,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9105,10 +9398,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: invalid input
           description: invalid input
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: episode 1 not found
+                    statusCode: 404
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9117,6 +9418,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9153,6 +9455,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -9177,6 +9480,13 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9185,12 +9495,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 角色不存在
           description: 角色不存在
         '500':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9257,12 +9569,26 @@ paths:
         '400':
           content:
             application/json:
+              examples:
+                WIKI_CHANGED:
+                  value:
+                    code: WIKI_CHANGED
+                    error: Bad Request
+                    message: "expected data doesn't match\\nIndex: name\\n===================================================================\\n--- name\\texpected\\n+++ name\\tcurrent\\n@@ -1,1 +1,1 @@\\n-1234\\n+水樹奈々\\n"
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9271,6 +9597,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9310,6 +9637,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -9367,6 +9695,13 @@ paths:
         '400':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9381,6 +9716,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9408,6 +9744,13 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9416,6 +9759,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9575,6 +9919,13 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9583,6 +9934,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9688,6 +10040,13 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9696,6 +10055,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9787,6 +10147,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -9823,12 +10184,32 @@ paths:
         '400':
           content:
             application/json:
+              examples:
+                IMAGE_FILE_TOO_LARGE:
+                  value:
+                    code: IMAGE_FILE_TOO_LARGE
+                    error: Bad Request
+                    message: uploaded image file is too large
+                    statusCode: 400
+                IMAGE_FORMAT_NOT_SUPPORT:
+                  value:
+                    code: IMAGE_FORMAT_NOT_SUPPORT
+                    error: Bad Request
+                    message: not valid image file, only support jpeg, jpg, png, webp
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
         '403':
           content:
             application/json:
+              examples:
+                NOT_ALLOWED:
+                  value:
+                    code: NOT_ALLOWED
+                    error: Forbidden
+                    message: you don't have permission to non sandbox subject
+                    statusCode: 403
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9837,6 +10218,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -9870,6 +10252,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 撤消条目封面投票
       tags:
@@ -9903,6 +10286,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 为条目封面投票
       tags:
@@ -9986,6 +10370,13 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -9994,6 +10385,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10064,6 +10456,13 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -10072,6 +10471,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10102,6 +10502,13 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
@@ -10110,6 +10517,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10146,6 +10554,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki

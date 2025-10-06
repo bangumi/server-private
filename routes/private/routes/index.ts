@@ -392,6 +392,15 @@ export async function setup(app: App) {
       const order = body.order ?? 0;
       const commentContent = body.comment ?? '';
       const award = body.award ?? '';
+      let type = 0;
+      if (body.cat === IndexRelatedCategory.Subject) {
+        const subject = await fetcher.fetchSlimSubjectByID(body.sid);
+        if (subject) {
+          type = subject.type;
+        } else {
+          throw new NotFoundError('subject');
+        }
+      }
 
       let returnID = existing?.id;
       if (existing) {
@@ -401,7 +410,7 @@ export async function setup(app: App) {
           await db
             .update(schema.chiiIndexRelated)
             .set({
-              type: body.type,
+              type,
               order,
               comment: commentContent,
               award,
@@ -415,7 +424,7 @@ export async function setup(app: App) {
         const [{ insertId }] = await db.insert(schema.chiiIndexRelated).values({
           cat: body.cat,
           rid: indexID,
-          type: body.type,
+          type,
           sid: body.sid,
           order,
           comment: commentContent,

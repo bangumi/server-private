@@ -5,7 +5,6 @@ import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import redis from '@app/lib/redis.ts';
-import { SubjectType } from '@app/lib/subject/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './index.ts';
@@ -378,7 +377,6 @@ describe('index APIs', () => {
         url: `/indexes/${TEST_INDEX_ID}/related`,
         payload: {
           cat: IndexRelatedCategory.Subject,
-          type: SubjectType.Anime,
           sid: 12,
           order: 1,
           comment: 'Test comment',
@@ -401,7 +399,6 @@ describe('index APIs', () => {
         url: `/indexes/${TEST_INDEX_ID}/related`,
         payload: {
           cat: IndexRelatedCategory.Character,
-          type: 1,
           sid: 32,
         },
       });
@@ -420,7 +417,6 @@ describe('index APIs', () => {
         url: '/indexes/999999/related',
         payload: {
           cat: IndexRelatedCategory.Subject,
-          type: SubjectType.Anime,
           sid: 12,
         },
       });
@@ -435,14 +431,12 @@ describe('index APIs', () => {
 
       const createRes = await createTestIndexRelated(app, {
         cat: IndexRelatedCategory.Subject,
-        type: SubjectType.Anime,
         sid: 12,
       });
       expect(createRes.statusCode).toBe(200);
 
       const conflictRes = await createTestIndexRelated(app, {
         cat: IndexRelatedCategory.Subject,
-        type: SubjectType.Anime,
         sid: 12,
       });
       expect(conflictRes.statusCode).toBe(409);
@@ -456,7 +450,6 @@ describe('index APIs', () => {
         url: `/indexes/${TEST_INDEX_ID}/related`,
         payload: {
           cat: IndexRelatedCategory.Subject,
-          type: SubjectType.Anime,
           sid: 12,
         },
       });
@@ -473,7 +466,6 @@ describe('index APIs', () => {
         url: `/indexes/${TEST_INDEX_ID}/related`,
         payload: {
           cat: IndexRelatedCategory.Subject,
-          type: SubjectType.Anime,
           sid: 12,
         },
       });
@@ -490,7 +482,6 @@ describe('index APIs', () => {
 
       const createRes = await createTestIndexRelated(app, {
         cat: IndexRelatedCategory.Subject,
-        type: SubjectType.Anime,
         sid: 12,
         order: 1,
         comment: 'Original comment',
@@ -581,7 +572,6 @@ describe('index APIs', () => {
 
       const createRes = await createTestIndexRelated(app, {
         cat: IndexRelatedCategory.Subject,
-        type: SubjectType.Anime,
         sid: 12,
       });
       expect(createRes.statusCode).toBe(200);
