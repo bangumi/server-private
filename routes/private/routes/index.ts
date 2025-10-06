@@ -286,6 +286,13 @@ export async function setup(app: App) {
       const topicSubjectIDs = Object.values(subjectTopics).map((topic) => topic.parentID);
       const topicSubjects = await fetcher.fetchSlimSubjectsByIDs(topicSubjectIDs);
 
+      const userIDs = [
+        ...Object.values(blogs).map((blog) => blog.uid),
+        ...Object.values(groupTopics).map((topic) => topic.creatorID),
+        ...Object.values(subjectTopics).map((topic) => topic.creatorID),
+      ];
+      const users = await fetcher.fetchSlimUsersByIDs(userIDs);
+
       const result = [];
       for (const item of items) {
         switch (item.cat) {
@@ -310,17 +317,23 @@ export async function setup(app: App) {
             break;
           }
           case IndexRelatedCategory.Blog: {
-            item.blog = blogs[item.sid];
+            const blog = blogs[item.sid];
+            if (blog) {
+              blog.user = users[blog.uid];
+              item.blog = blog;
+            }
             break;
           }
           case IndexRelatedCategory.GroupTopic: {
             const topic = groupTopics[item.sid];
             if (topic?.parentID) {
               const group = groups[topic.parentID];
+              const creator = users[topic.creatorID];
               if (group) {
                 item.groupTopic = {
                   ...topic,
                   group,
+                  creator,
                   replies: [],
                 };
               }
@@ -331,10 +344,12 @@ export async function setup(app: App) {
             const topic = subjectTopics[item.sid];
             if (topic) {
               const subject = topicSubjects[topic.parentID];
+              const creator = users[topic.creatorID];
               if (subject) {
                 item.subjectTopic = {
                   ...topic,
                   subject,
+                  creator,
                   replies: [],
                 };
               }

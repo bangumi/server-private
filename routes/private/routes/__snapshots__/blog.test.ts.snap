@@ -15,6 +15,7 @@ Object {
   ],
   "title": "试试",
   "type": 1,
+  "uid": 287622,
   "updatedAt": 1680072373,
   "user": Object {
     "avatar": Object {
@@ -91,6 +92,7 @@ Object {
   ],
   "title": "[2023-06-05] 相关条目数据更新",
   "type": 1,
+  "uid": 287622,
   "updatedAt": 1724513422,
   "user": Object {
     "avatar": Object {
@@ -129,6 +131,7 @@ Object {
   ],
   "title": "[2023-06-05] 相关条目数据更新",
   "type": 1,
+  "uid": 287622,
   "updatedAt": 1724513422,
   "user": Object {
     "avatar": Object {
