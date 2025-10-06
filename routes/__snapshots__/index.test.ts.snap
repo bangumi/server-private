@@ -295,7 +295,6 @@ exports[`should build private api spec 1`] = `
           required:
             - replies
           type: object
-      type: object
     CommentBase:
       properties:
         content:
@@ -566,11 +565,6 @@ exports[`should build private api spec 1`] = `
           type: array
         expectedRevision:
           items:
-            description: >-
-              a optional object to check if input is changed by others
-
-              if some key is given, and current data in database doesn't match
-              input, subject will not be changed
             properties:
               date:
                 type: string
@@ -3264,7 +3258,6 @@ paths:
                       required:
                         - replies
                       type: object
-                  type: object
                 type: array
           description: Default Response
         '404':
@@ -3721,7 +3714,6 @@ paths:
                       required:
                         - replies
                       type: object
-                  type: object
                 type: array
           description: Default Response
         '404':
@@ -4673,7 +4665,6 @@ paths:
                       required:
                         - replies
                       type: object
-                  type: object
                 type: array
           description: Default Response
         '500':
@@ -5728,7 +5719,6 @@ paths:
                       required:
                         - replies
                       type: object
-                  type: object
                 type: array
           description: Default Response
         '404':
@@ -6437,7 +6427,6 @@ paths:
                       required:
                         - replies
                       type: object
-                  type: object
                 type: array
           description: Default Response
         '404':
@@ -8185,7 +8174,6 @@ paths:
                       required:
                         - replies
                       type: object
-                  type: object
                 type: array
           description: Default Response
         '404':
@@ -8366,16 +8354,10 @@ paths:
           name: theme
           required: false
           schema:
-            anyOf:
-              - enum:
-                  - dark
-                type: string
-              - enum:
-                  - light
-                type: string
-              - enum:
-                  - auto
-                type: string
+            enum:
+              - dark
+              - light
+              - auto
         - in: query
           name: redirect_uri
           required: true
@@ -9072,11 +9054,6 @@ paths:
                       $ref: '#/components/schemas/EpisodeType'
                   type: object
                 expectedRevision:
-                  description: >-
-                    a optional object to check if input is changed by others
-
-                    if some key is given, and current data in database doesn't
-                    match input, subject will not be changed
                   properties:
                     date:
                       type: string
@@ -9473,12 +9450,6 @@ paths:
                   minLength: 1
                   type: string
                 expectedRevision:
-                  additionalProperties: false
-                  description: >-
-                    a optional object to check if input is changed by others
-
-                    if \`infobox\` is given, and current data in database doesn't
-                    match input, subject will not be changed
                   properties:
                     infobox:
                       anyOf:
@@ -9507,41 +9478,6 @@ paths:
                           type: string
                   type: object
                 subject:
-                  example:
-                    infobox: |-
-                      {{Infobox animanga/TVAnime
-                      |中文名= 沙盒
-                      |别名={
-                      }
-                      |话数= 7
-                      |放送开始= 0000-10-06
-                      |放送星期= 
-                      |官方网站= 
-                      |播放电视台= 
-                      |其他电视台= 
-                      |播放结束= 
-                      |其他= 
-                      |Copyright= 
-                      |平台={
-                      [龟壳]
-                      [Xbox Series S]
-                      [Xbox Series X]
-                      [Xbox Series X/S]
-                      [PC]
-                      [Xbox Series X|S]
-                      }
-                      }}
-                    name: 沙盒
-                    nsfw: false
-                    platform: 0
-                    summary: >-
-                      本条目是一个沙盒，可以用于尝试bgm功能。
-
-
-                      普通维基人可以随意编辑条目信息以及相关关联查看编辑效果，但是请不要完全删除沙盒说明并且不要关联非沙盒条目/人物/角色。
-
-
-                      https://bgm.tv/group/topic/366812#post_1923517
                   properties:
                     date:
                       example: '0000-00-00'
@@ -9644,12 +9580,6 @@ paths:
                   minLength: 1
                   type: string
                 expectedRevision:
-                  additionalProperties: false
-                  description: >-
-                    a optional object to check if input is changed by others
-
-                    if \`infobox\` is given, and current data in database doesn't
-                    match input, subject will not be changed
                   properties:
                     infobox:
                       anyOf:
@@ -9959,11 +9889,6 @@ paths:
                   type: array
                 expectedRevision:
                   items:
-                    description: >-
-                      a optional object to check if input is changed by others
-
-                      if some key is given, and current data in database doesn't
-                      match input, subject will not be changed
                     properties:
                       date:
                         type: string

@@ -1,6 +1,6 @@
-import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth';

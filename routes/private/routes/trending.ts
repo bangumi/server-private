@@ -1,5 +1,5 @@
-import type { Static } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import type { Static } from 'typebox';
+import t from 'typebox';
 
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import redis from '@app/lib/redis';

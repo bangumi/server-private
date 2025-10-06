@@ -1,6 +1,6 @@
 import { createError } from '@fastify/error';
-import { Type as t } from '@sinclair/typebox';
 import httpCodes from 'http-status-codes';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { comparePassword, NeedLoginError } from '@app/lib/auth/index.ts';
