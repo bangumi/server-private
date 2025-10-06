@@ -271,8 +271,6 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.Blog)
         .map((item) => item.sid);
       const blogs = await fetcher.fetchSlimBlogEntriesByIDs(blogIDs, index.uid);
-      const blogUserIDs = Object.values(blogs).map((blog) => blog.uid);
-      const blogUsers = await fetcher.fetchSlimUsersByIDs(blogUserIDs);
 
       const groupTopicIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.GroupTopic)
@@ -287,6 +285,13 @@ export async function setup(app: App) {
       const subjectTopics = await fetcher.fetchSubjectTopicsByIDs(subjectTopicIDs);
       const topicSubjectIDs = Object.values(subjectTopics).map((topic) => topic.parentID);
       const topicSubjects = await fetcher.fetchSlimSubjectsByIDs(topicSubjectIDs);
+
+      const userIDs = [
+        ...Object.values(blogs).map((blog) => blog.uid),
+        ...Object.values(groupTopics).map((topic) => topic.creatorID),
+        ...Object.values(subjectTopics).map((topic) => topic.creatorID),
+      ];
+      const users = await fetcher.fetchSlimUsersByIDs(userIDs);
 
       const result = [];
       for (const item of items) {
@@ -314,7 +319,7 @@ export async function setup(app: App) {
           case IndexRelatedCategory.Blog: {
             const blog = blogs[item.sid];
             if (blog) {
-              blog.user = blogUsers[blog.uid];
+              blog.user = users[blog.uid];
               item.blog = blog;
             }
             break;
@@ -323,10 +328,12 @@ export async function setup(app: App) {
             const topic = groupTopics[item.sid];
             if (topic?.parentID) {
               const group = groups[topic.parentID];
+              const creator = users[topic.creatorID];
               if (group) {
                 item.groupTopic = {
                   ...topic,
                   group,
+                  creator,
                   replies: [],
                 };
               }
@@ -337,10 +344,12 @@ export async function setup(app: App) {
             const topic = subjectTopics[item.sid];
             if (topic) {
               const subject = topicSubjects[topic.parentID];
+              const creator = users[topic.creatorID];
               if (subject) {
                 item.subjectTopic = {
                   ...topic,
                   subject,
+                  creator,
                   replies: [],
                 };
               }
