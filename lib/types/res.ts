@@ -606,6 +606,7 @@ export const BlogEntry = t.Object(
   {
     id: t.Integer(),
     type: t.Integer(),
+    uid: t.Integer(),
     user: Ref(SlimUser),
     title: t.String(),
     icon: t.String(),
@@ -626,8 +627,9 @@ export type ISlimBlogEntry = Static<typeof SlimBlogEntry>;
 export const SlimBlogEntry = t.Object(
   {
     id: t.Integer(),
-    uid: t.Integer(),
     type: t.Integer(),
+    uid: t.Integer(),
+    user: t.Optional(Ref(SlimUser)),
     title: t.String(),
     icon: t.String(),
     summary: t.String(),

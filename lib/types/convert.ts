@@ -336,6 +336,7 @@ export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEn
   return {
     id: entry.id,
     type: entry.type,
+    uid: entry.uid,
     user: toSlimUser(user),
     title: entry.title,
     icon: blogIcon(entry.icon),

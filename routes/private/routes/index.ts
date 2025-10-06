@@ -271,6 +271,8 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.Blog)
         .map((item) => item.sid);
       const blogs = await fetcher.fetchSlimBlogEntriesByIDs(blogIDs, index.uid);
+      const blogUserIDs = Object.values(blogs).map((blog) => blog.uid);
+      const blogUsers = await fetcher.fetchSlimUsersByIDs(blogUserIDs);
 
       const groupTopicIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.GroupTopic)
@@ -310,7 +312,11 @@ export async function setup(app: App) {
             break;
           }
           case IndexRelatedCategory.Blog: {
-            item.blog = blogs[item.sid];
+            const blog = blogs[item.sid];
+            if (blog) {
+              blog.user = blogUsers[blog.uid];
+              item.blog = blog;
+            }
             break;
           }
           case IndexRelatedCategory.GroupTopic: {
