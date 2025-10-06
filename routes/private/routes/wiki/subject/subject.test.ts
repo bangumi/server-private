@@ -276,7 +276,7 @@ describe('should upload image', () => {
           throw new mod.NotValidImageError();
         },
 
-        convert(): Promise<Buffer> {
+        convert(): Promise<Buffer<ArrayBuffer>> {
           return Promise.resolve(Buffer.from(''));
         },
       } satisfies IImaginary,
