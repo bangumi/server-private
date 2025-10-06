@@ -9,6 +9,7 @@ import {
   getTopicCacheKey as getGroupTopicCacheKey,
 } from '@app/lib/group/cache.ts';
 import { getSlimCacheKey as getIndexSlimCacheKey } from '@app/lib/index/cache.ts';
+import { IndexPrivacy } from '@app/lib/index/types.ts';
 import { getSlimCacheKey as getPersonSlimCacheKey } from '@app/lib/person/cache.ts';
 import redis from '@app/lib/redis.ts';
 import {
@@ -811,13 +812,55 @@ export async function fetchSlimIndexByID(indexID: number): Promise<res.ISlimInde
   const [data] = await db
     .select()
     .from(schema.chiiIndexes)
-    .where(op.and(op.eq(schema.chiiIndexes.id, indexID), op.ne(schema.chiiIndexes.ban, 1)));
+    .where(
+      op.and(
+        op.eq(schema.chiiIndexes.id, indexID),
+        op.ne(schema.chiiIndexes.ban, IndexPrivacy.Ban),
+      ),
+    );
   if (!data) {
     return;
   }
   const item = convert.toSlimIndex(data);
   await redis.setex(getIndexSlimCacheKey(indexID), ONE_MONTH, JSON.stringify(item));
   return item;
+}
+
+/** Cached */
+export async function fetchSlimIndexesByIDs(
+  indexIDs: number[],
+): Promise<Record<number, res.ISlimIndex>> {
+  if (indexIDs.length === 0) {
+    return {};
+  }
+  indexIDs = lo.uniq(indexIDs);
+  const cached = await redis.mget(indexIDs.map((id) => getIndexSlimCacheKey(id)));
+  const result: Record<number, res.ISlimIndex> = {};
+  const missing = [];
+  for (const [idx, id] of indexIDs.entries()) {
+    if (cached[idx]) {
+      result[id] = JSON.parse(cached[idx]) as res.ISlimIndex;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiIndexes)
+      .where(
+        op.and(
+          op.inArray(schema.chiiIndexes.id, missing),
+          op.ne(schema.chiiIndexes.ban, IndexPrivacy.Ban),
+        ),
+      );
+    for (const d of data) {
+      const slim = convert.toSlimIndex(d);
+      await redis.setex(getIndexSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
+      result[d.id] = slim;
+    }
+  }
+  return result;
 }
 
 export async function fetchSlimGroupByName(

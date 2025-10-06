@@ -4,6 +4,7 @@ import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
 import { parseIndexStats } from '@app/lib/index/stats';
+import { IndexPrivacy } from '@app/lib/index/types';
 import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
 import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
@@ -491,7 +492,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
     uid: index.uid,
     type: index.type,
     title: index.title,
-    private: index.ban === 2,
+    private: index.ban === IndexPrivacy.Private,
     total: index.total,
     createdAt: index.createdAt,
   };
