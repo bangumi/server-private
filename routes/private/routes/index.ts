@@ -264,6 +264,8 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.Ep)
         .map((item) => item.sid);
       const episodes = await fetcher.fetchEpisodesByIDs(episodeIDs);
+      const episodeSubjectIDs = Object.values(episodes).map((episode) => episode.subjectID);
+      const episodeSubjects = await fetcher.fetchSlimSubjectsByIDs(episodeSubjectIDs);
 
       const blogIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.Blog)
@@ -274,7 +276,6 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.GroupTopic)
         .map((item) => item.sid);
       const groupTopics = await fetcher.fetchGroupTopicsByIDs(groupTopicIDs);
-
       const groupIDs = Object.values(groupTopics).map((topic) => topic.parentID);
       const groups = await fetcher.fetchSlimGroupsByIDs(groupIDs);
 
@@ -282,7 +283,6 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.SubjectTopic)
         .map((item) => item.sid);
       const subjectTopics = await fetcher.fetchSubjectTopicsByIDs(subjectTopicIDs);
-
       const topicSubjectIDs = Object.values(subjectTopics).map((topic) => topic.parentID);
       const topicSubjects = await fetcher.fetchSlimSubjectsByIDs(topicSubjectIDs);
 
@@ -302,7 +302,11 @@ export async function setup(app: App) {
             break;
           }
           case IndexRelatedCategory.Ep: {
-            item.episode = episodes[item.sid];
+            const episode = episodes[item.sid];
+            if (episode) {
+              episode.subject = episodeSubjects[episode.subjectID];
+              item.episode = episode;
+            }
             break;
           }
           case IndexRelatedCategory.Blog: {
@@ -325,7 +329,7 @@ export async function setup(app: App) {
           }
           case IndexRelatedCategory.SubjectTopic: {
             const topic = subjectTopics[item.sid];
-            if (topic?.parentID) {
+            if (topic) {
               const subject = topicSubjects[topic.parentID];
               if (subject) {
                 item.subjectTopic = {
