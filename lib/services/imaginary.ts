@@ -28,7 +28,7 @@ export interface Info {
 export interface IImaginary {
   info(img: Buffer): Promise<Info>;
 
-  convert(img: Buffer, target: { format: 'jpeg' }): Promise<Buffer>;
+  convert(img: Buffer, target: { format: 'jpeg' }): Promise<Buffer<ArrayBuffer>>;
 }
 
 class Imaginary extends BaseHttpSrv implements IImaginary {
@@ -45,7 +45,7 @@ class Imaginary extends BaseHttpSrv implements IImaginary {
     return JSON.parse(res.body) as Info;
   }
 
-  async convert(img: Buffer, { format }: { format: 'jpeg' }): Promise<Buffer> {
+  async convert(img: Buffer, { format }: { format: 'jpeg' }): Promise<Buffer<ArrayBuffer>> {
     const res = await this.client.post('convert', {
       body: img,
       searchParams: { type: format, quality: 80 },
@@ -56,7 +56,7 @@ class Imaginary extends BaseHttpSrv implements IImaginary {
       throw new Error('failed to convert image: ' + res.body);
     }
 
-    return res.rawBody;
+    return Buffer.from(res.rawBody);
   }
 }
 
@@ -73,7 +73,7 @@ function createImaginaryClient(): IImaginary {
     info(): Promise<Info> {
       return Promise.resolve({ width: 0, height: 0, type: 'jpg' });
     },
-    convert(): Promise<Buffer> {
+    convert(): Promise<Buffer<ArrayBuffer>> {
       throw new UnimplementedError('missing imaginary');
     },
   };
