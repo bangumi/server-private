@@ -5635,6 +5635,35 @@ paths:
       tags:
         - index
   /p1/indexes/{indexID}:
+    delete:
+      operationId: deleteIndex
+      parameters:
+        - in: path
+          name: indexID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 删除目录
+      tags:
+        - index
     get:
       operationId: getIndex
       parameters:

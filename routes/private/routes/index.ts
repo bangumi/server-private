@@ -153,6 +153,39 @@ export async function setup(app: App) {
     },
   );
 
+  app.delete(
+    '/indexes/:indexID',
+    {
+      schema: {
+        summary: '删除目录',
+        operationId: 'deleteIndex',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          indexID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete index')],
+    },
+    async ({ auth, params: { indexID } }) => {
+      const index = await fetcher.fetchSlimIndexByID(indexID);
+      if (!index) {
+        throw new NotFoundError('index');
+      }
+      if (index.uid !== auth.userID) {
+        throw new NotAllowedError('delete index');
+      }
+      await db
+        .update(schema.chiiIndexes)
+        .set({ ban: IndexPrivacy.Ban })
+        .where(op.eq(schema.chiiIndexes.id, indexID));
+      return {};
+    },
+  );
+
   app.get(
     '/indexes/:indexID/related',
     {
@@ -189,7 +222,7 @@ export async function setup(app: App) {
 
       const conditions = [
         op.eq(schema.chiiIndexRelated.rid, indexID),
-        op.ne(schema.chiiIndexRelated.ban, IndexPrivacy.Ban),
+        op.eq(schema.chiiIndexRelated.ban, 0),
       ];
       if (cat !== undefined) {
         conditions.push(op.eq(schema.chiiIndexRelated.cat, cat));
@@ -436,7 +469,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.ne(schema.chiiIndexRelated.ban, IndexPrivacy.Ban),
+            op.eq(schema.chiiIndexRelated.ban, 0),
           ),
         );
 
@@ -492,7 +525,7 @@ export async function setup(app: App) {
           op.and(
             op.eq(schema.chiiIndexRelated.id, id),
             op.eq(schema.chiiIndexRelated.rid, indexID),
-            op.ne(schema.chiiIndexRelated.ban, IndexPrivacy.Ban),
+            op.eq(schema.chiiIndexRelated.ban, 0),
           ),
         );
 
