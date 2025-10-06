@@ -362,11 +362,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         sid:
           type: integer
-        type:
-          type: integer
       required:
         - cat
-        - type
         - sid
       title: CreateIndexRelated
       type: object

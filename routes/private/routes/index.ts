@@ -264,6 +264,8 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.Ep)
         .map((item) => item.sid);
       const episodes = await fetcher.fetchEpisodesByIDs(episodeIDs);
+      const episodeSubjectIDs = Object.values(episodes).map((episode) => episode.subjectID);
+      const episodeSubjects = await fetcher.fetchSlimSubjectsByIDs(episodeSubjectIDs);
 
       const blogIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.Blog)
@@ -274,7 +276,6 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.GroupTopic)
         .map((item) => item.sid);
       const groupTopics = await fetcher.fetchGroupTopicsByIDs(groupTopicIDs);
-
       const groupIDs = Object.values(groupTopics).map((topic) => topic.parentID);
       const groups = await fetcher.fetchSlimGroupsByIDs(groupIDs);
 
@@ -282,7 +283,6 @@ export async function setup(app: App) {
         .filter((item) => item.cat === IndexRelatedCategory.SubjectTopic)
         .map((item) => item.sid);
       const subjectTopics = await fetcher.fetchSubjectTopicsByIDs(subjectTopicIDs);
-
       const topicSubjectIDs = Object.values(subjectTopics).map((topic) => topic.parentID);
       const topicSubjects = await fetcher.fetchSlimSubjectsByIDs(topicSubjectIDs);
 
@@ -302,7 +302,11 @@ export async function setup(app: App) {
             break;
           }
           case IndexRelatedCategory.Ep: {
-            item.episode = episodes[item.sid];
+            const episode = episodes[item.sid];
+            if (episode) {
+              episode.subject = episodeSubjects[episode.subjectID];
+              item.episode = episode;
+            }
             break;
           }
           case IndexRelatedCategory.Blog: {
@@ -325,7 +329,7 @@ export async function setup(app: App) {
           }
           case IndexRelatedCategory.SubjectTopic: {
             const topic = subjectTopics[item.sid];
-            if (topic?.parentID) {
+            if (topic) {
               const subject = topicSubjects[topic.parentID];
               if (subject) {
                 item.subjectTopic = {
@@ -377,6 +381,16 @@ export async function setup(app: App) {
         throw new NotAllowedError('update index related content which is not yours');
       }
 
+      let type = 0;
+      if (body.cat === IndexRelatedCategory.Subject) {
+        const subject = await fetcher.fetchSlimSubjectByID(body.sid);
+        if (subject) {
+          type = subject.type;
+        } else {
+          throw new NotFoundError('subject');
+        }
+      }
+
       const [existing] = await db
         .select()
         .from(schema.chiiIndexRelated)
@@ -401,7 +415,7 @@ export async function setup(app: App) {
           await db
             .update(schema.chiiIndexRelated)
             .set({
-              type: body.type,
+              type,
               order,
               comment: commentContent,
               award,
@@ -415,13 +429,13 @@ export async function setup(app: App) {
         const [{ insertId }] = await db.insert(schema.chiiIndexRelated).values({
           cat: body.cat,
           rid: indexID,
-          type: body.type,
+          type,
           sid: body.sid,
           order,
           comment: commentContent,
           award,
-          createdAt: now,
           ban: 0,
+          createdAt: now,
         });
         returnID = insertId;
       }
