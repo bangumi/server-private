@@ -236,6 +236,77 @@ describe('index APIs', () => {
     });
   });
 
+  describe('DELETE /indexes/:indexID', () => {
+    test('should delete index successfully', async () => {
+      const app = createTestServer({
+        auth: { login: true, userID: TEST_USER_ID },
+      });
+      await app.register(setup);
+
+      // 先创建一个目录
+      const createRes = await app.inject({
+        method: 'post',
+        url: '/indexes',
+        payload: {
+          title: 'Test Index to Delete',
+          desc: 'Test description for deletion',
+        },
+      });
+      expect(createRes.statusCode).toBe(200);
+      const { id } = createRes.json();
+      createdIndexId = id;
+
+      // 删除目录
+      const deleteRes = await app.inject({
+        method: 'delete',
+        url: `/indexes/${id}`,
+      });
+      expect(deleteRes.statusCode).toBe(200);
+
+      // 验证目录已被标记为删除（ban = 2）
+      const [deletedIndex] = await db
+        .select()
+        .from(schema.chiiIndexes)
+        .where(op.eq(schema.chiiIndexes.id, id));
+      expect(deletedIndex?.ban).toBe(2); // IndexPrivacy.Ban = 2
+    });
+
+    test('should return 404 for non-existent index', async () => {
+      const app = createTestServer({
+        auth: { login: true, userID: TEST_USER_ID },
+      });
+      await app.register(setup);
+      const res = await app.inject({
+        method: 'delete',
+        url: '/indexes/999999',
+      });
+      expect(res.statusCode).toBe(404);
+    });
+
+    test('should return 401 for unauthenticated request', async () => {
+      const app = createTestServer();
+      await app.register(setup);
+      const res = await app.inject({
+        method: 'delete',
+        url: `/indexes/${TEST_INDEX_ID}`,
+        headers: {},
+      });
+      expect(res.statusCode).toBe(401);
+    });
+
+    test('should return 403 for non-owner user', async () => {
+      const app = createTestServer({
+        auth: { login: true, userID: 99999 }, // 非目录创建者
+      });
+      await app.register(setup);
+      const res = await app.inject({
+        method: 'delete',
+        url: `/indexes/${TEST_INDEX_ID}`,
+      });
+      expect(res.statusCode).toBe(403);
+    });
+  });
+
   describe('GET /indexes/:indexID', () => {
     test('should get index successfully', async () => {
       const app = createTestServer();

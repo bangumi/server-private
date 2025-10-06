@@ -280,6 +280,13 @@ Object {
 }
 `;
 
+exports[`person > should get person indexes 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`person > should get person works 1`] = `
 Object {
   "data": Array [

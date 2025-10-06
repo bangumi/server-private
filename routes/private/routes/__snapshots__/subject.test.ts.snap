@@ -500,6 +500,13 @@ Object {
 }
 `;
 
+exports[`subject > should get subject indexes 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`subject > should get subject recs 1`] = `
 Object {
   "data": Array [],

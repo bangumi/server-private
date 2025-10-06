@@ -105,6 +105,17 @@ describe('subject', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get subject indexes', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/12/indexes',
+      query: { limit: '10', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
 });
 
 describe('subject topics', () => {

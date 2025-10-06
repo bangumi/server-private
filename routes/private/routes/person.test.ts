@@ -68,6 +68,17 @@ describe('person', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get person indexes', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/persons/1/indexes',
+      query: { limit: '2', offset: '0' },
+    });
+    expect(res.json()).toMatchSnapshot();
+  });
 });
 
 describe('person comments', () => {
