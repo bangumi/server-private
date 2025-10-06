@@ -1,10 +1,15 @@
-import type { Static, TRef, TSchema } from 'typebox';
+import type { Static, TSchema, TSchemaOptions, TUnsafe } from 'typebox';
 import t from 'typebox';
+import { Unsafe } from 'typebox';
 
 import { datePattern } from '@app/lib/utils/date.ts';
 
-export function Ref<T extends TSchema>(t: T): TRef<Static<T>> {
-  return t.Unsafe<Static<T>>({ $ref: t.$id });
+export function Ref<T extends TSchema>(t: T, options: TSchemaOptions = {}): TUnsafe<Static<T>> {
+  const id = (t as unknown as Record<string, string | undefined>).$id;
+  if (!id) {
+    throw new Error('missing ID on schema');
+  }
+  return Unsafe<Static<T>>({ ...t, $ref: id, $id: undefined, ...options });
 }
 
 export const SubjectType = t.Integer({

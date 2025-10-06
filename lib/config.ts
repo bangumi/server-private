@@ -32,14 +32,14 @@ import * as path from 'node:path';
 import * as process from 'node:process';
 import * as url from 'node:url';
 
-import type { Static, TObject, TProperties, TSchema } from 'typebox';
-import t from 'typebox';
-import { Value } from 'typebox/value';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import ajvKeywords from 'ajv-keywords';
 import * as yaml from 'js-yaml';
 import * as lo from 'lodash-es';
+import type { Static, TObject, TObjectOptions, TProperties, TSchema } from 'typebox';
+import t from 'typebox';
+import { Value } from 'typebox/value';
 
 // read from env
 
@@ -167,14 +167,16 @@ function readConfig(): Static<typeof schema> {
 
   function readFromEnv(keyPath: string[], o: TSchema) {
     if (t.IsKind(o, 'Object')) {
-      for (const [key, value] of Object.entries(o.properties as Record<string, TSchema>)) {
+      for (const [key, value] of Object.entries(
+        (o as TObjectOptions).properties as Record<string, TSchema>,
+      )) {
         readFromEnv([...keyPath, key], value);
       }
 
       return;
     }
 
-    const envKey = o['env'] as string | undefined;
+    const envKey = (o as Record<string, string | undefined>).env;
     if (envKey) {
       const v = process.env[envKey];
       if (v !== undefined) {

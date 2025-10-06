@@ -1,12 +1,12 @@
 import Cookie from '@fastify/cookie';
 import { createError } from '@fastify/error';
 import formBody from '@fastify/formbody';
-import type { Static } from 'typebox';
-import t from 'typebox';
 import { sql } from 'drizzle-orm';
 import type { FastifySchema } from 'fastify';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime, Duration } from 'luxon';
+import type { Static } from 'typebox';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NeedLoginError } from '@app/lib/auth/index.ts';

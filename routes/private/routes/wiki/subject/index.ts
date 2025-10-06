@@ -1,9 +1,9 @@
 import { parseToMap } from '@bgm38/wiki';
-import type { Static } from 'typebox';
-import t from 'typebox';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
+import type { Static } from 'typebox';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { HeaderInvalidError, NotAllowedError } from '@app/lib/auth/index.ts';

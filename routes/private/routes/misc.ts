@@ -1,6 +1,6 @@
-import t from 'typebox';
 import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NeedLoginError } from '@app/lib/auth/index.ts';

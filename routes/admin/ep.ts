@@ -1,5 +1,5 @@
-import t from 'typebox';
 import * as lo from 'lodash-es';
+import t from 'typebox';
 
 import type { EpTextRev } from '@app/lib/orm/entity/index.ts';
 import { RevHistory, RevText } from '@app/lib/orm/entity/index.ts';
