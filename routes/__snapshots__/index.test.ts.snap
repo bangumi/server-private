@@ -1589,6 +1589,8 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/IndexType'
         uid:
           type: integer
+        updatedAt:
+          type: integer
       required:
         - id
         - uid
@@ -1598,6 +1600,7 @@ exports[`should build private api spec 1`] = `
         - total
         - stats
         - createdAt
+        - updatedAt
       title: SlimIndex
       type: object
     SlimPerson:

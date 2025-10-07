@@ -497,6 +497,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
     total: index.total,
     stats: parseIndexStats(index.stats),
     createdAt: index.createdAt,
+    updatedAt: index.updatedAt,
   };
 }
 

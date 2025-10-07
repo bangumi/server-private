@@ -1001,6 +1001,7 @@ export const SlimIndex = t.Object(
     total: t.Integer(),
     stats: Ref(IndexStats),
     createdAt: t.Integer(),
+    updatedAt: t.Integer(),
   },
   { $id: 'SlimIndex', title: 'SlimIndex' },
 );
