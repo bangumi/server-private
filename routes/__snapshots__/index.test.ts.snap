@@ -1605,6 +1605,12 @@ exports[`should build private api spec 1`] = `
       type: object
     SlimPerson:
       properties:
+        career:
+          description: 职业
+          example: producer
+          items:
+            type: string
+          type: array
         comment:
           type: integer
         id:
@@ -1629,6 +1635,7 @@ exports[`should build private api spec 1`] = `
         - nameCN
         - type
         - info
+        - career
         - comment
         - lock
         - nsfw

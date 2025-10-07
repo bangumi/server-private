@@ -617,6 +617,11 @@ Object {
         },
       ],
       "staff": Object {
+        "career": Array [
+          "producer",
+          "mangaka",
+          "mangaka",
+        ],
         "comment": 59,
         "id": 39,
         "images": Object {
@@ -664,6 +669,9 @@ Object {
         },
       ],
       "staff": Object {
+        "career": Array [
+          "producer",
+        ],
         "comment": 100,
         "id": 40,
         "images": Object {
@@ -698,6 +706,11 @@ Object {
       "staffs": Array [
         Object {
           "person": Object {
+            "career": Array [
+              "producer",
+              "mangaka",
+              "mangaka",
+            ],
             "comment": 59,
             "id": 39,
             "images": Object {
@@ -727,6 +740,9 @@ Object {
       "staffs": Array [
         Object {
           "person": Object {
+            "career": Array [
+              "producer",
+            ],
             "comment": 100,
             "id": 40,
             "images": Object {

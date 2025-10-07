@@ -589,6 +589,10 @@ export const SlimPerson = t.Object(
     nameCN: t.String(),
     type: t.Integer(),
     info: t.String(),
+    career: t.Array(t.String(), {
+      description: '职业',
+      examples: ['producer', 'mangaka', 'artist', 'seiyu', 'writer', 'illustrator', 'actor'],
+    }),
     images: t.Optional(Ref(PersonImages)),
     comment: t.Integer(),
     lock: t.Boolean(),
