@@ -8,8 +8,8 @@ export const IndexType = Object.freeze({
 export type IndexPrivacy = (typeof IndexPrivacy)[keyof typeof IndexPrivacy];
 export const IndexPrivacy = Object.freeze({
   Normal: 0,
-  Private: 1,
-  Ban: 2,
+  Ban: 1,
+  Private: 2,
 });
 
 export type IndexRelatedCategory = (typeof IndexRelatedCategory)[keyof typeof IndexRelatedCategory];

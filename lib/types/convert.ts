@@ -427,23 +427,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
   };
 }
 
-export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
-  const infobox = toInfobox(person.infobox);
-  return {
-    id: person.id,
-    name: person.name,
-    nameCN: extractNameCN(infobox),
-    type: person.type,
-    info: getPersonInfoboxSummary(infobox),
-    images: personImages(person.img),
-    comment: person.comment,
-    nsfw: person.nsfw,
-    lock: Boolean(person.lock),
-  };
-}
-
-export function toPerson(person: orm.IPerson): res.IPerson {
-  const infobox = toInfobox(person.infobox);
+function parsePersonCareer(person: orm.IPerson): string[] {
   const career = [];
   if (person.producer) {
     career.push('producer');
@@ -469,13 +453,34 @@ export function toPerson(person: orm.IPerson): res.IPerson {
   if (person.actor) {
     career.push('actor');
   }
+  return career;
+}
+
+export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
+  const infobox = toInfobox(person.infobox);
+  return {
+    id: person.id,
+    name: person.name,
+    nameCN: extractNameCN(infobox),
+    type: person.type,
+    info: getPersonInfoboxSummary(infobox),
+    career: parsePersonCareer(person),
+    images: personImages(person.img),
+    comment: person.comment,
+    nsfw: person.nsfw,
+    lock: Boolean(person.lock),
+  };
+}
+
+export function toPerson(person: orm.IPerson): res.IPerson {
+  const infobox = toInfobox(person.infobox);
   return {
     id: person.id,
     name: person.name,
     nameCN: extractNameCN(infobox),
     type: person.type,
     infobox: infobox,
-    career,
+    career: parsePersonCareer(person),
     summary: person.summary,
     info: getPersonInfoboxSummary(infobox),
     images: personImages(person.img),
@@ -495,7 +500,9 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
     title: index.title,
     private: index.ban === IndexPrivacy.Private,
     total: index.total,
+    stats: parseIndexStats(index.stats),
     createdAt: index.createdAt,
+    updatedAt: index.updatedAt,
   };
 }
 

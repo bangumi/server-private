@@ -886,8 +886,8 @@ exports[`should build private api spec 1`] = `
         - title
         - desc
         - private
-        - replies
         - total
+        - replies
         - collects
         - stats
         - award
@@ -956,6 +956,9 @@ exports[`should build private api spec 1`] = `
         - 1
         - 2
         - 3
+        - 4
+        - 5
+        - 6
       type: integer
       x-enum-varnames:
         - Subject
@@ -1579,6 +1582,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         private:
           type: boolean
+        stats:
+          $ref: '#/components/schemas/IndexStats'
         title:
           type: string
         total:
@@ -1587,6 +1592,8 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/IndexType'
         uid:
           type: integer
+        updatedAt:
+          type: integer
       required:
         - id
         - uid
@@ -1594,11 +1601,19 @@ exports[`should build private api spec 1`] = `
         - title
         - private
         - total
+        - stats
         - createdAt
+        - updatedAt
       title: SlimIndex
       type: object
     SlimPerson:
       properties:
+        career:
+          description: 职业
+          example: producer
+          items:
+            type: string
+          type: array
         comment:
           type: integer
         id:
@@ -1623,6 +1638,7 @@ exports[`should build private api spec 1`] = `
         - nameCN
         - type
         - info
+        - career
         - comment
         - lock
         - nsfw
