@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
-import { IndexRelatedCategory } from '@app/lib/index/types.ts';
+import { IndexPrivacy, IndexRelatedCategory } from '@app/lib/index/types.ts';
 import redis from '@app/lib/redis.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -242,7 +242,6 @@ describe('index APIs', () => {
       });
       await app.register(setup);
 
-      // 先创建一个目录
       const createRes = await app.inject({
         method: 'post',
         url: '/indexes',
@@ -255,19 +254,17 @@ describe('index APIs', () => {
       const { id } = createRes.json();
       createdIndexId = id;
 
-      // 删除目录
       const deleteRes = await app.inject({
         method: 'delete',
         url: `/indexes/${id}`,
       });
       expect(deleteRes.statusCode).toBe(200);
 
-      // 验证目录已被标记为删除（ban = 2）
       const [deletedIndex] = await db
         .select()
         .from(schema.chiiIndexes)
         .where(op.eq(schema.chiiIndexes.id, id));
-      expect(deletedIndex?.ban).toBe(2); // IndexPrivacy.Ban = 2
+      expect(deletedIndex?.ban).toBe(IndexPrivacy.Ban);
     });
 
     test('should return 404 for non-existent index', async () => {
@@ -295,7 +292,7 @@ describe('index APIs', () => {
 
     test('should return 403 for non-owner user', async () => {
       const app = createTestServer({
-        auth: { login: true, userID: 99999 }, // 非目录创建者
+        auth: { login: true, userID: 99999 },
       });
       await app.register(setup);
       const res = await app.inject({
@@ -391,7 +388,7 @@ describe('index APIs', () => {
 
     test('should create index related item with minimal data', async () => {
       const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID }, // TEST_INDEX_ID 15045 对应的 uid
+        auth: { login: true, userID: TEST_USER_ID },
       });
       await app.register(setup);
       const res = await app.inject({
@@ -425,7 +422,7 @@ describe('index APIs', () => {
 
     test('should handle conflict when item already exists', async () => {
       const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID }, // TEST_INDEX_ID 15045 对应的 uid
+        auth: { login: true, userID: TEST_USER_ID },
       });
       await app.register(setup);
 
@@ -458,7 +455,7 @@ describe('index APIs', () => {
 
     test('should return 403 for non-owner user', async () => {
       const app = createTestServer({
-        auth: { login: true, userID: 99999 }, // 非目录创建者
+        auth: { login: true, userID: 99999 },
       });
       await app.register(setup);
       const res = await app.inject({
