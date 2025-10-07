@@ -66,7 +66,7 @@ export const CollectionType = t.Integer({
 
 export const IndexRelatedCategory = t.Integer({
   $id: 'IndexRelatedCategory',
-  enum: [0, 1, 2, 3],
+  enum: [0, 1, 2, 3, 4, 5, 6],
   'x-ms-enum': {
     name: 'IndexRelatedCategory',
     modelAsString: false,

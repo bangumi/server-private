@@ -956,6 +956,9 @@ exports[`should build private api spec 1`] = `
         - 1
         - 2
         - 3
+        - 4
+        - 5
+        - 6
       type: integer
       x-enum-varnames:
         - Subject
