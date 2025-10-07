@@ -886,8 +886,8 @@ exports[`should build private api spec 1`] = `
         - title
         - desc
         - private
-        - replies
         - total
+        - replies
         - collects
         - stats
         - award
@@ -1579,6 +1579,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         private:
           type: boolean
+        stats:
+          $ref: '#/components/schemas/IndexStats'
         title:
           type: string
         total:
@@ -1594,6 +1596,7 @@ exports[`should build private api spec 1`] = `
         - title
         - private
         - total
+        - stats
         - createdAt
       title: SlimIndex
       type: object

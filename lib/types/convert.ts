@@ -495,6 +495,7 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
     title: index.title,
     private: index.ban === IndexPrivacy.Private,
     total: index.total,
+    stats: parseIndexStats(index.stats),
     createdAt: index.createdAt,
   };
 }
