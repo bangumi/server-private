@@ -427,7 +427,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
   };
 }
 
-function prasePersonCareer(person: orm.IPerson): string[] {
+function parsePersonCareer(person: orm.IPerson): string[] {
   const career = [];
   if (person.producer) {
     career.push('producer');
@@ -464,7 +464,7 @@ export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
     nameCN: extractNameCN(infobox),
     type: person.type,
     info: getPersonInfoboxSummary(infobox),
-    career: prasePersonCareer(person),
+    career: parsePersonCareer(person),
     images: personImages(person.img),
     comment: person.comment,
     nsfw: person.nsfw,
@@ -480,7 +480,7 @@ export function toPerson(person: orm.IPerson): res.IPerson {
     nameCN: extractNameCN(infobox),
     type: person.type,
     infobox: infobox,
-    career: prasePersonCareer(person),
+    career: parsePersonCareer(person),
     summary: person.summary,
     info: getPersonInfoboxSummary(infobox),
     images: personImages(person.img),
