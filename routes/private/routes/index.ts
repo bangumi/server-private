@@ -245,27 +245,20 @@ export async function setup(app: App) {
         .offset(offset);
       const items = data.map((item) => convert.toIndexRelated(item));
 
-      const subjectIDs = items
-        .filter((item) => item.cat === IndexRelatedCategory.Subject)
-        .map((item) => item.sid);
-      const subjects = await fetcher.fetchSlimSubjectsByIDs(subjectIDs);
-
       const characterIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.Character)
         .map((item) => item.sid);
-      const characters = await fetcher.fetchSlimCharactersByIDs(characterIDs);
+      const characters = await fetcher.fetchSlimCharactersByIDs(characterIDs, auth.allowNsfw);
 
       const personIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.Person)
         .map((item) => item.sid);
-      const persons = await fetcher.fetchSlimPersonsByIDs(personIDs);
+      const persons = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
 
       const episodeIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.Ep)
         .map((item) => item.sid);
       const episodes = await fetcher.fetchEpisodesByIDs(episodeIDs);
-      const episodeSubjectIDs = Object.values(episodes).map((episode) => episode.subjectID);
-      const episodeSubjects = await fetcher.fetchSlimSubjectsByIDs(episodeSubjectIDs);
 
       const blogIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.Blog)
@@ -277,14 +270,21 @@ export async function setup(app: App) {
         .map((item) => item.sid);
       const groupTopics = await fetcher.fetchGroupTopicsByIDs(groupTopicIDs);
       const groupIDs = Object.values(groupTopics).map((topic) => topic.parentID);
-      const groups = await fetcher.fetchSlimGroupsByIDs(groupIDs);
+      const groups = await fetcher.fetchSlimGroupsByIDs(groupIDs, auth.allowNsfw);
 
       const subjectTopicIDs = items
         .filter((item) => item.cat === IndexRelatedCategory.SubjectTopic)
         .map((item) => item.sid);
       const subjectTopics = await fetcher.fetchSubjectTopicsByIDs(subjectTopicIDs);
-      const topicSubjectIDs = Object.values(subjectTopics).map((topic) => topic.parentID);
-      const topicSubjects = await fetcher.fetchSlimSubjectsByIDs(topicSubjectIDs);
+
+      const subjectIDs = [
+        ...items
+          .filter((item) => item.cat === IndexRelatedCategory.Subject)
+          .map((item) => item.sid),
+        ...Object.values(episodes).map((episode) => episode.subjectID),
+        ...Object.values(subjectTopics).map((topic) => topic.parentID),
+      ];
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, auth.allowNsfw);
 
       const userIDs = [
         ...Object.values(blogs).map((blog) => blog.uid),
@@ -311,7 +311,7 @@ export async function setup(app: App) {
           case IndexRelatedCategory.Ep: {
             const episode = episodes[item.sid];
             if (episode) {
-              episode.subject = episodeSubjects[episode.subjectID];
+              episode.subject = subjects[episode.subjectID];
               item.episode = episode;
             }
             break;
@@ -343,7 +343,7 @@ export async function setup(app: App) {
           case IndexRelatedCategory.SubjectTopic: {
             const topic = subjectTopics[item.sid];
             if (topic) {
-              const subject = topicSubjects[topic.parentID];
+              const subject = subjects[topic.parentID];
               const creator = users[topic.creatorID];
               if (subject) {
                 item.subjectTopic = {
