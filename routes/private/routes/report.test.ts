@@ -1,7 +1,8 @@
-import { afterEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
+import redis from '@app/lib/redis.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './report.ts';
@@ -9,8 +10,13 @@ import { setup } from './report.ts';
 const testUserID = 382951;
 
 describe('report API', () => {
+  beforeEach(async () => {
+    await redis.flushdb();
+    await db.delete(schema.chiiIssues).where(op.eq(schema.chiiIssues.operator, testUserID));
+  });
+
   afterEach(async () => {
-    // Clean up test data
+    await redis.flushdb();
     await db.delete(schema.chiiIssues).where(op.eq(schema.chiiIssues.operator, testUserID));
   });
 

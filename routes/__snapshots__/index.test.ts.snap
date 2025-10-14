@@ -6767,6 +6767,12 @@ paths:
                   - message
                 type: object
           description: Default Response
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
         '500':
           content:
             application/json:
