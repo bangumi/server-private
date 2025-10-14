@@ -6,7 +6,10 @@ import { ConflictError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { Ref } from '@app/lib/types/common.ts';
 import * as req from '@app/lib/types/req.ts';
+import * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const ISSUE_STATUS = {
@@ -29,11 +32,13 @@ export async function setup(app: App) {
           200: t.Object({
             message: t.String(),
           }),
+          429: res.Ref(res.Error),
         },
       },
       preHandler: [requireLogin('logout')],
     },
     async ({ auth, body }) => {
+      await rateLimit(LimitAction.Report, auth.userID);
       const [existingReport] = await db
         .select()
         .from(schema.chiiIssues)
