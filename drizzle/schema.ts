@@ -739,3 +739,16 @@ export const chiiBlogPhotos = mysqlTable('chii_blog_photo', {
   vote: mediumint('photo_vote').notNull(),
   createdAt: int('photo_dateline').notNull(),
 });
+
+export const chiiIssues = mysqlTable('chii_issues', {
+  id: mediumint('isu_id').autoincrement().notNull(),
+  type: tinyint('isu_type').notNull(),
+  mid: mediumint('isu_main_id').notNull(),
+  value: mediumint('isu_value').notNull(),
+  creator: mediumint('isu_creator').notNull(),
+  operator: mediumint('isu_operator').notNull(),
+  status: tinyint('isu_status').notNull(),
+  reason: htmlEscapedString('mediumtext')('isu_reason').notNull(),
+  related: mediumint('isu_related').notNull(),
+  createdAt: int('isu_dateline').notNull(),
+});

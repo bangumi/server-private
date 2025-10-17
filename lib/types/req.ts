@@ -6,6 +6,8 @@ import {
   EpisodeCollectionStatus,
   IndexRelatedCategory,
   Ref,
+  ReportReason,
+  ReportType,
   SubjectType,
 } from '@app/lib/types/common.ts';
 
@@ -377,4 +379,23 @@ export const UpdateIndexRelated = t.Object(
     comment: t.String(),
   },
   { $id: 'UpdateIndexRelated', title: 'UpdateIndexRelated' },
+);
+
+export type ICreateReport = Static<typeof CreateReport>;
+export const CreateReport = t.Object(
+  {
+    type: Ref(ReportType),
+    id: t.Integer({
+      description: '被举报对象的 ID',
+      minimum: 1,
+    }),
+    value: Ref(ReportReason),
+    comment: t.Optional(
+      t.String({
+        description: '举报说明（可选）',
+        maxLength: 2000,
+      }),
+    ),
+  },
+  { $id: 'CreateReport', title: 'CreateReport' },
 );

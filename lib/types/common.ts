@@ -160,3 +160,75 @@ export const EpisodeWikiInfo = t.Object(
     $id: 'EpisodeWikiInfo',
   },
 );
+
+export const ReportReason = t.Integer({
+  $id: 'ReportReason',
+  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 99],
+  'x-ms-enum': {
+    name: 'ReportReason',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'Abuse',
+    'Spam',
+    'Political',
+    'Illegal',
+    'Privacy',
+    'CheatScore',
+    'Flame',
+    'Advertisement',
+    'Spoiler',
+    'Other',
+  ],
+  description: `举报原因
+  - 1 = 辱骂、人身攻击
+  - 2 = 刷屏、无关内容
+  - 3 = 政治相关
+  - 4 = 违法信息
+  - 5 = 泄露隐私
+  - 6 = 涉嫌刷分
+  - 7 = 引战
+  - 8 = 广告
+  - 9 = 剧透
+  - 99 = 其他`,
+});
+
+export const ReportType = t.Integer({
+  $id: 'ReportType',
+  enum: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+  'x-ms-enum': {
+    name: 'ReportType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'User',
+    'GroupTopic',
+    'GroupReply',
+    'SubjectTopic',
+    'SubjectReply',
+    'EpisodeReply',
+    'CharacterReply',
+    'PersonReply',
+    'Blog',
+    'BlogReply',
+    'Timeline',
+    'TimelineReply',
+    'Index',
+    'IndexReply',
+  ],
+  description: `举报类型
+  - 6 = 用户
+  - 7 = 小组话题
+  - 8 = 小组回复
+  - 9 = 条目话题
+  - 10 = 条目回复
+  - 11 = 章节回复
+  - 12 = 角色回复
+  - 13 = 人物回复
+  - 14 = 日志
+  - 15 = 日志回复
+  - 16 = 时间线
+  - 17 = 时间线回复
+  - 18 = 目录
+  - 19 = 目录回复`,
+});

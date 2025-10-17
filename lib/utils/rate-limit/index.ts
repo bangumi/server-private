@@ -20,6 +20,7 @@ export const LimitAction = Object.freeze({
   Person: 'person',
   PrsnPost: 'prsn_post',
   Relationship: 'relationship',
+  Report: 'report',
   Subject: 'subject',
   Timeline: 'timeline',
 });

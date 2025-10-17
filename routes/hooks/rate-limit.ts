@@ -62,6 +62,13 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
    */
   like: { limit: 5, durationMinutes: 1 },
 
+  /**
+   * 报告疑虑
+   *
+   * 1 分钟 3 次
+   */
+  report: { limit: 3, durationMinutes: 1 },
+
   crt_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   prsn_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
   comment: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
