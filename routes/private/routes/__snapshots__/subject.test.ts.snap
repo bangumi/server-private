@@ -607,6 +607,7 @@ Object {
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "原作",
@@ -641,6 +642,7 @@ Object {
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "导演",
@@ -650,6 +652,7 @@ Object {
           },
         },
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "分镜",
@@ -659,6 +662,7 @@ Object {
           },
         },
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "演出",
@@ -705,6 +709,7 @@ Object {
       },
       "staffs": Array [
         Object {
+          "appearEps": "",
           "person": Object {
             "career": Array [
               "producer",
@@ -739,6 +744,7 @@ Object {
       },
       "staffs": Array [
         Object {
+          "appearEps": "",
           "person": Object {
             "career": Array [
               "producer",
