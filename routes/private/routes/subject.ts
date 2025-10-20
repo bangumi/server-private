@@ -465,6 +465,7 @@ export async function setup(app: App) {
         const positions = relations[r.personID] || [];
         positions.push({
           type: convert.toSubjectStaffPositionType(r.subjectType, r.position),
+          appearEps: r.appearEps,
           summary: r.summary,
         });
         relations[r.personID] = positions;
@@ -557,6 +558,7 @@ export async function setup(app: App) {
         staffs.push({
           person: person,
           summary: r.summary,
+          appearEps: r.appearEps,
         });
         relations[r.position] = staffs;
       }

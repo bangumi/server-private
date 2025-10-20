@@ -2328,6 +2328,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SubjectPositionStaff:
       properties:
+        appearEps:
+          type: string
         person:
           $ref: '#/components/schemas/SlimPerson'
         summary:
@@ -2335,6 +2337,7 @@ exports[`should build private api spec 1`] = `
       required:
         - person
         - summary
+        - appearEps
       type: object
     SubjectRating:
       properties:
@@ -2494,6 +2497,8 @@ exports[`should build private api spec 1`] = `
       type: object
     SubjectStaffPosition:
       properties:
+        appearEps:
+          type: string
         summary:
           type: string
         type:
@@ -2501,6 +2506,7 @@ exports[`should build private api spec 1`] = `
       required:
         - type
         - summary
+        - appearEps
       type: object
     SubjectStaffPositionType:
       properties:

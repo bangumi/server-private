@@ -114,7 +114,7 @@ CREATE TABLE `chii_crt_subject_index` (
 	`subject_id` mediumint(9) unsigned NOT NULL,
 	`subject_type_id` tinyint NOT NULL,
 	`crt_type` tinyint NOT NULL,
-	`ctr_appear_eps` mediumtext NOT NULL,
+	`crt_appear_eps` mediumtext NOT NULL,
 	`crt_order` smallint(6) unsigned NOT NULL
 );
 --> statement-breakpoint
@@ -123,7 +123,7 @@ CREATE TABLE `chii_crt_subject_index_bak_240803` (
 	`subject_id` mediumint(9) unsigned NOT NULL,
 	`subject_type_id` tinyint NOT NULL,
 	`crt_type` tinyint NOT NULL,
-	`ctr_appear_eps` mediumtext NOT NULL,
+	`crt_appear_eps` mediumtext NOT NULL,
 	`crt_order` tinyint NOT NULL
 );
 --> statement-breakpoint

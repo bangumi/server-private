@@ -422,6 +422,7 @@ export const chiiPersonSubjects = mysqlTable('chii_person_cs_index', {
   personType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
   personID: mediumint('prsn_id').notNull(),
   position: smallint('prsn_position').notNull(),
+  appearEps: mediumtext('prsn_appear_eps').notNull(),
   subjectID: mediumint('subject_id').notNull(),
   subjectType: tinyint('subject_type_id').notNull(),
   summary: htmlEscapedString('mediumtext')('summary').notNull(),

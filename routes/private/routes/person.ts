@@ -19,6 +19,7 @@ function toPersonSubjectRelation(relation: orm.IPersonSubject): res.ISubjectStaf
   return {
     summary: relation.summary,
     type: convert.toSubjectStaffPositionType(relation.subjectType, relation.position),
+    appearEps: relation.appearEps,
   };
 }
 
