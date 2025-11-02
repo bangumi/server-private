@@ -1,3 +1,5 @@
+import { createSlimCacheKey } from '@app/lib/cache-keys.ts';
+
 export function getSlimCacheKey(id: number): string {
-  return `prsn:v3:slim:${id}`;
+  return createSlimCacheKey('prsn', 3, id);
 }

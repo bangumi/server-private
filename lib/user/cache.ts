@@ -1,5 +1,7 @@
+import { createSlimCacheKey } from '@app/lib/cache-keys.ts';
+
 export function getSlimCacheKey(uid: number): string {
-  return `user:v2:slim:${uid}`;
+  return createSlimCacheKey('user', 2, uid);
 }
 
 export function getStatsCacheKey(uid: number, section: string): string {

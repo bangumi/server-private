@@ -1,3 +1,9 @@
+import {
+  createItemCacheKey,
+  createSlimCacheKey,
+  createTopicCacheKey,
+} from '@app/lib/cache-keys.ts';
+
 import type { SubjectFilter, SubjectSort } from './type';
 
 export function getCalendarCacheKey(): string {
@@ -5,11 +11,11 @@ export function getCalendarCacheKey(): string {
 }
 
 export function getSlimCacheKey(id: number): string {
-  return `sbj:v2:slim:${id}`;
+  return createSlimCacheKey('sbj', 2, id);
 }
 
 export function getItemCacheKey(id: number): string {
-  return `sbj:v2:item:${id}`;
+  return createItemCacheKey('sbj', 2, id);
 }
 
 export function getEpCacheKey(id: number): string {
@@ -38,5 +44,5 @@ export function getListCacheKey(filter: SubjectFilter, sort: SubjectSort, page: 
 }
 
 export function getTopicCacheKey(id: number): string {
-  return `sbj:topic:${id}`;
+  return createTopicCacheKey('sbj', id);
 }

@@ -1,7 +1,9 @@
+import { createSlimCacheKey, createTopicCacheKey } from '@app/lib/cache-keys.ts';
+
 export function getSlimCacheKey(id: number): string {
-  return `grp:v3:slim:${id}`;
+  return createSlimCacheKey('grp', 3, id);
 }
 
 export function getTopicCacheKey(id: number): string {
-  return `grp:topic:${id}`;
+  return createTopicCacheKey('grp', id);
 }

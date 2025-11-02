@@ -1,5 +1,7 @@
+import { createItemCacheKey } from '@app/lib/cache-keys.ts';
+
 export function getItemCacheKey(id: number): string {
-  return `tml:v4:item:${id}`;
+  return createItemCacheKey('tml', 4, id);
 }
 
 export function getUserCacheKey(uid: number | string) {
