@@ -187,7 +187,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectInfo',
-        description: ['获取当前的 wiki 信息'].join('\n\n'),
+        summary: '获取条目当前的 wiki 信息',
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
@@ -359,9 +359,54 @@ export async function setup(app: App) {
     },
   );
 
+  const SubjectRevisionWikiInfo = t.Object(
+    {
+      id: t.Integer(),
+      name: t.String(),
+      infobox: t.String(),
+      metaTags: t.Array(t.String()),
+      summary: t.String(),
+    },
+    { $id: 'SubjectRevisionWikiInfo' },
+  );
+  app.addSchema(SubjectRevisionWikiInfo);
+
+  app.get(
+    '/subjects/revisions/:revisionID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectRevisionInfo',
+        summary: '获取条目历史版本 wiki 信息',
+        params: t.Object({
+          revisionID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [] }],
+        response: {
+          200: req.Ref(SubjectRevisionWikiInfo),
+        },
+      },
+    },
+    async ({ params: { revisionID } }): Promise<Static<typeof SubjectRevisionWikiInfo>> => {
+      const r = await SubjectRevRepo.findOneBy({ id: revisionID });
+      if (!r) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      return {
+        id: r.subjectID,
+        name: r.name,
+        infobox: r.infobox,
+        metaTags: r.metaTags ? r.metaTags.split(' ') : [],
+        summary: r.summary,
+      };
+    },
+  );
+
   type IHistorySummary = Static<typeof HistorySummary>;
   const HistorySummary = t.Object(
     {
+      id: t.Integer(),
       creator: t.Object({
         username: t.String(),
       }),
@@ -382,7 +427,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectEditHistorySummary',
-        description: ['获取当前的 wiki 信息'].join('\n\n'),
+        summary: '获取条目 wiki 历史编辑摘要',
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
@@ -410,6 +455,7 @@ export async function setup(app: App) {
 
       return history.map((x) => {
         return {
+          id: x.id,
           creator: {
             username: users[x.creatorID]?.username ?? '',
           },

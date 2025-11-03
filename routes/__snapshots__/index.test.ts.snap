@@ -858,10 +858,13 @@ exports[`should build private api spec 1`] = `
           required:
             - username
           type: object
+        id:
+          type: integer
         type:
           description: 修改类型。\`1\` 正常修改， \`11\` 合并，\`103\` 锁定/解锁 \`104\` 未知
           type: integer
       required:
+        - id
         - creator
         - type
         - commitMessage
@@ -2417,6 +2420,27 @@ exports[`should build private api spec 1`] = `
         - user
         - entry
       title: SubjectReview
+      type: object
+    SubjectRevisionWikiInfo:
+      properties:
+        id:
+          type: integer
+        infobox:
+          type: string
+        metaTags:
+          items:
+            type: string
+          type: array
+        name:
+          type: string
+        summary:
+          type: string
+      required:
+        - id
+        - name
+        - infobox
+        - metaTags
+        - summary
       type: object
     SubjectSearchFilter:
       properties:
@@ -9536,9 +9560,36 @@ paths:
           HTTPBearer: []
       tags:
         - wiki
+  /p1/wiki/subjects/revisions/{revisionID}:
+    get:
+      operationId: getSubjectRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectRevisionWikiInfo'
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+      summary: 获取条目历史版本 wiki 信息
+      tags:
+        - wiki
   /p1/wiki/subjects/{subjectID}:
     get:
-      description: 获取当前的 wiki 信息
       operationId: subjectInfo
       parameters:
         - in: path
@@ -9568,6 +9619,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+      summary: 获取条目当前的 wiki 信息
       tags:
         - wiki
     patch:
@@ -10178,7 +10230,6 @@ paths:
         - wiki
   /p1/wiki/subjects/{subjectID}/history-summary:
     get:
-      description: 获取当前的 wiki 信息
       operationId: subjectEditHistorySummary
       parameters:
         - in: path
@@ -10210,6 +10261,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+      summary: 获取条目 wiki 历史编辑摘要
       tags:
         - wiki
   /p1/wiki/unlock/subjects:
