@@ -12,7 +12,7 @@ import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
 import { RevType } from '@app/lib/orm/entity';
-import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
+import { AppDataSource } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import * as Subject from '@app/lib/subject/index.ts';
@@ -388,7 +388,10 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { revisionID } }): Promise<Static<typeof SubjectRevisionWikiInfo>> => {
-      const r = await SubjectRevRepo.findOneBy({ id: revisionID });
+      const [r] = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.revId, revisionID));
       if (!r) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
@@ -441,11 +444,12 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID } }): Promise<IHistorySummary[]> => {
-      const history = await SubjectRevRepo.find({
-        take: 10,
-        order: { id: 'desc' },
-        where: { subjectID },
-      });
+      const history = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.subjectID, subjectID))
+        .orderBy(op.desc(schema.chiiSubjectRev.revId))
+        .limit(10);
 
       if (history.length === 0) {
         return [];
@@ -455,7 +459,7 @@ export async function setup(app: App) {
 
       return history.map((x) => {
         return {
-          id: x.id,
+          id: x.revId,
           creator: {
             username: users[x.creatorID]?.username ?? '',
           },
