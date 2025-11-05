@@ -191,7 +191,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: req.Ref(SubjectWikiInfo),
           401: req.Ref(res.Error, {
@@ -381,7 +381,7 @@ export async function setup(app: App) {
         params: t.Object({
           revisionID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: req.Ref(SubjectRevisionWikiInfo),
         },
@@ -434,7 +434,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Array(res.Ref(HistorySummary)),
           401: res.Ref(res.Error, {
@@ -481,7 +481,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
@@ -553,7 +553,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),

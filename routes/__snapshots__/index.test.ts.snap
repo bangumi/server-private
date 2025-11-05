@@ -3356,7 +3356,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
           description: 意料之外的服务器错误
       security:
-        - HTTPBearer: []
+        - CookiesSession: []
+          HTTPBearer: []
       summary: 获取日志详情
       tags:
         - blog
@@ -3531,7 +3532,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
           description: 意料之外的服务器错误
       security:
-        - HTTPBearer: []
+        - CookiesSession: []
+          HTTPBearer: []
       summary: 获取日志的图片
       tags:
         - blog
@@ -3560,7 +3562,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
           description: 意料之外的服务器错误
       security:
-        - HTTPBearer: []
+        - CookiesSession: []
+          HTTPBearer: []
       summary: 获取日志的关联条目
       tags:
         - blog
@@ -9191,6 +9194,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+          HTTPBearer: []
       tags:
         - wiki
     patch:
@@ -9293,6 +9297,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+          HTTPBearer: []
       tags:
         - wiki
   /p1/wiki/lock/subjects:
@@ -9585,6 +9590,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+          HTTPBearer: []
       summary: 获取条目历史版本 wiki 信息
       tags:
         - wiki
@@ -9619,6 +9625,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+          HTTPBearer: []
       summary: 获取条目当前的 wiki 信息
       tags:
         - wiki
@@ -9746,6 +9753,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+          HTTPBearer: []
       tags:
         - wiki
     put:
@@ -9853,6 +9861,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+          HTTPBearer: []
       tags:
         - wiki
   /p1/wiki/subjects/{subjectID}/covers:
@@ -10261,6 +10270,7 @@ paths:
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
+          HTTPBearer: []
       summary: 获取条目 wiki 历史编辑摘要
       tags:
         - wiki
