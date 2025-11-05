@@ -12,7 +12,7 @@ import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
 import { RevType } from '@app/lib/orm/entity';
-import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
+import { AppDataSource } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import * as Subject from '@app/lib/subject/index.ts';
@@ -187,15 +187,18 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectInfo',
-        description: ['获取当前的 wiki 信息'].join('\n\n'),
+        summary: '获取条目当前的 wiki 信息',
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: req.Ref(SubjectWikiInfo),
           401: req.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+          404: req.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
           }),
         },
       },
@@ -359,9 +362,60 @@ export async function setup(app: App) {
     },
   );
 
+  const SubjectRevisionWikiInfo = t.Object(
+    {
+      id: t.Integer(),
+      name: t.String(),
+      infobox: t.String(),
+      metaTags: t.Array(t.String()),
+      summary: t.String(),
+    },
+    { $id: 'SubjectRevisionWikiInfo' },
+  );
+  app.addSchema(SubjectRevisionWikiInfo);
+
+  app.get(
+    '/subjects/revisions/:revisionID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectRevisionInfo',
+        summary: '获取条目历史版本 wiki 信息',
+        params: t.Object({
+          revisionID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: req.Ref(SubjectRevisionWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('revision')),
+          }),
+        },
+      },
+    },
+    async ({ params: { revisionID } }): Promise<Static<typeof SubjectRevisionWikiInfo>> => {
+      const [r] = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.revId, revisionID));
+      if (!r) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      return {
+        id: r.subjectID,
+        name: r.name,
+        infobox: r.infobox,
+        metaTags: r.metaTags ? r.metaTags.split(' ') : [],
+        summary: r.summary,
+      };
+    },
+  );
+
   type IHistorySummary = Static<typeof HistorySummary>;
   const HistorySummary = t.Object(
     {
+      id: t.Integer(),
       creator: t.Object({
         username: t.String(),
       }),
@@ -382,11 +436,11 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectEditHistorySummary',
-        description: ['获取当前的 wiki 信息'].join('\n\n'),
+        summary: '获取条目 wiki 历史编辑摘要',
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Array(res.Ref(HistorySummary)),
           401: res.Ref(res.Error, {
@@ -396,11 +450,12 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID } }): Promise<IHistorySummary[]> => {
-      const history = await SubjectRevRepo.find({
-        take: 10,
-        order: { id: 'desc' },
-        where: { subjectID },
-      });
+      const history = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.subjectID, subjectID))
+        .orderBy(op.desc(schema.chiiSubjectRev.revId))
+        .limit(10);
 
       if (history.length === 0) {
         return [];
@@ -410,6 +465,7 @@ export async function setup(app: App) {
 
       return history.map((x) => {
         return {
+          id: x.revId,
           creator: {
             username: users[x.creatorID]?.username ?? '',
           },
@@ -431,7 +487,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
@@ -503,7 +559,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),

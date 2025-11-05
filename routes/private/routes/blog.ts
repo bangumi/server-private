@@ -24,7 +24,7 @@ export async function setup(app: App) {
         summary: '获取日志详情',
         operationId: 'getBlogEntry',
         tags: [Tag.Blog],
-        security: [{ [Security.HTTPBearer]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           entryID: t.Integer(),
         }),
@@ -58,7 +58,7 @@ export async function setup(app: App) {
         summary: '获取日志的关联条目',
         operationId: 'getBlogRelatedSubjects',
         tags: [Tag.Blog],
-        security: [{ [Security.HTTPBearer]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           entryID: t.Integer(),
         }),
@@ -101,7 +101,7 @@ export async function setup(app: App) {
         summary: '获取日志的图片',
         operationId: 'getBlogPhotos',
         tags: [Tag.Blog],
-        security: [{ [Security.HTTPBearer]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           entryID: t.Integer(),
         }),
