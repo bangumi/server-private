@@ -197,6 +197,9 @@ export async function setup(app: App) {
           401: req.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
+          404: req.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
         },
       },
     },
@@ -384,6 +387,9 @@ export async function setup(app: App) {
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: req.Ref(SubjectRevisionWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('revision')),
+          }),
         },
       },
     },

@@ -9582,6 +9582,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/SubjectRevisionWikiInfo'
           description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
         '500':
           content:
             application/json:
@@ -9612,6 +9618,12 @@ paths:
                 $ref: '#/components/schemas/SubjectWikiInfo'
           description: Default Response
         '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '404':
           content:
             application/json:
               schema:
