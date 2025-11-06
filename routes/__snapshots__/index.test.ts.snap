@@ -1278,6 +1278,24 @@ exports[`should build private api spec 1`] = `
             type: string
           type: array
       type: object
+    PersonType:
+      description: |-
+        人物类型
+          - 1 = 个人
+          - 2 = 公司
+          - 3 = 组合
+      enum:
+        - 1
+        - 2
+        - 3
+      type: integer
+      x-enum-varnames:
+        - Individual
+        - Company
+        - Group
+      x-ms-enum:
+        modelAsString: false
+        name: PersonType
     PersonWikiInfo:
       properties:
         id:
@@ -1289,7 +1307,7 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         typeID:
-          $ref: '#/components/schemas/SubjectType'
+          $ref: '#/components/schemas/PersonType'
       required:
         - id
         - name
@@ -9336,7 +9354,6 @@ paths:
         - wiki
   /p1/wiki/persons/{personID}:
     get:
-      description: 获取当前的 wiki 信息
       operationId: getPersonWikiInfo
       parameters:
         - in: path
@@ -9363,7 +9380,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-          description: 角色不存在
+          description: 人物不存在
         '500':
           content:
             application/json:
@@ -9373,6 +9390,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
+      summary: 获取人物当前的 wiki 信息
       tags:
         - wiki
     patch:

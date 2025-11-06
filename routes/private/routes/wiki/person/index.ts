@@ -1,13 +1,14 @@
 import type { Static } from 'typebox';
 import t from 'typebox';
 
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import type { PersonRev } from '@app/lib/orm/entity/index.ts';
 import { createRevision, RevType } from '@app/lib/orm/entity/index.ts';
 import * as entity from '@app/lib/orm/entity/index.ts';
-import { AppDataSource, PersonRepo } from '@app/lib/orm/index.ts';
+import { AppDataSource } from '@app/lib/orm/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -15,11 +16,26 @@ import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
+export const PersonCareers = [
+  'producer',
+  'mangaka',
+  'artist',
+  'seiyu',
+  'writer',
+  'illustrator',
+  'actor',
+] as const;
+export const PersonEditTypes = [
+  RevType.personEdit,
+  RevType.personErase,
+  RevType.personMerge,
+] as const;
+
 export const PersonWikiInfo = t.Object(
   {
     id: t.Integer(),
     name: t.String(),
-    typeID: res.Ref(res.SubjectType),
+    typeID: res.Ref(res.PersonType),
     infobox: t.String(),
     summary: t.String(),
   },
@@ -40,6 +56,7 @@ export const PersonEdit = t.Object(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  app.addSchema(res.PersonType);
   app.addSchema(PersonWikiInfo);
 
   app.get(
@@ -48,7 +65,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'getPersonWikiInfo',
-        description: '获取当前的 wiki 信息',
+        summary: '获取人物当前的 wiki 信息',
         params: t.Object({
           personID: t.Integer({ minimum: 1 }),
         }),
@@ -59,13 +76,18 @@ export async function setup(app: App) {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
           404: res.Ref(res.Error, {
-            description: '角色不存在',
+            description: '人物不存在',
           }),
         },
       },
     },
     async ({ params: { personID } }): Promise<Static<typeof PersonWikiInfo>> => {
-      const p = await PersonRepo.findOneBy({ id: personID, redirect: 0 });
+      const [p] = await db
+        .select()
+        .from(schema.chiiPersons)
+        .where(op.eq(schema.chiiPersons.id, personID))
+        .limit(1);
+
       if (!p) {
         throw new NotFoundError(`person ${personID}`);
       }
@@ -150,13 +172,22 @@ export async function setup(app: App) {
 
         await PersonRepo.save(p);
 
+        const profession = PersonCareers.reduce(
+          (acc, c) => {
+            if (p[c]) acc[c] = '1';
+            return acc;
+          },
+          {} as PersonRev['profession'],
+        );
+
         await createRevision(t, {
           mid: personID,
           type: RevType.personEdit,
           rev: {
-            crt_name: p.name,
-            crt_infobox: p.infobox,
-            crt_summary: p.summary,
+            prsn_name: p.name,
+            prsn_infobox: p.infobox,
+            prsn_summary: p.summary,
+            profession,
             extra: {
               img: p.img,
             },

@@ -176,9 +176,18 @@ export interface EpTextRev {
 }
 
 export interface PersonRev {
-  crt_name: string;
-  crt_infobox: string;
-  crt_summary: string;
+  prsn_name: string;
+  prsn_infobox: string;
+  prsn_summary: string;
+  profession: {
+    producer?: string;
+    mangaka?: string;
+    artist?: string;
+    seiyu?: string;
+    writer?: string;
+    illustrator?: string;
+    actor?: string;
+  };
   extra: {
     img?: string;
   };
