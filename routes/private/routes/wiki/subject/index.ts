@@ -912,4 +912,83 @@ export async function setup(app: App) {
       });
     },
   );
+
+  type IUserSubjectContribution = Static<typeof UserSubjectContribution>;
+  const UserSubjectContribution = t.Object(
+    {
+      id: t.Integer(),
+      type: t.Integer({
+        description: '修改类型。`1` 正常修改， `11` 合并，`103` 锁定/解锁 `104` 未知',
+      }),
+      subjectID: t.Integer(),
+      name: t.String(),
+      commitMessage: t.String(),
+      createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+    },
+    { $id: 'UserSubjectContribution' },
+  );
+
+  app.addSchema(UserSubjectContribution);
+
+  app.get(
+    '/users/:username/contributions/subjects',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getUserContributedSubjects',
+        summary: '获取用户 wiki 条目编辑记录',
+        params: t.Object({
+          username: t.String(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Paged(res.Ref(UserSubjectContribution)),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetcher.fetchSlimUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.countDistinct(schema.chiiSubjectRev.subjectID) })
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.creatorID, user.id));
+
+      const history = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.creatorID, user.id))
+        .orderBy(op.desc(schema.chiiSubjectRev.revId))
+        .offset(offset)
+        .limit(limit);
+
+      const revisions = history.map((r) => {
+        return {
+          id: r.revId,
+          type: r.type,
+          subjectID: r.subjectID,
+          name: r.name,
+          commitMessage: r.commitMessage,
+          createdAt: r.createdAt,
+        } satisfies IUserSubjectContribution;
+      });
+
+      return {
+        total: count,
+        data: revisions,
+      };
+    },
+  );
 }
