@@ -1232,6 +1232,32 @@ exports[`should build private api spec 1`] = `
         - user
         - createdAt
       type: object
+    PersonHistorySummary:
+      properties:
+        commitMessage:
+          type: string
+        createdAt:
+          description: unix timestamp seconds
+          type: integer
+        creator:
+          properties:
+            username:
+              type: string
+          required:
+            - username
+          type: object
+        id:
+          type: integer
+        type:
+          description: 3 = 人物编辑，15 = 合并，16 = 删除
+          type: integer
+      required:
+        - id
+        - creator
+        - type
+        - commitMessage
+        - createdAt
+      type: object
     PersonImages:
       properties:
         grid:
@@ -1259,6 +1285,25 @@ exports[`should build private api spec 1`] = `
       required:
         - person
         - relation
+      type: object
+    PersonRevisionWikiInfo:
+      properties:
+        extra:
+          properties:
+            img:
+              type: string
+          type: object
+        infobox:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+      required:
+        - name
+        - infobox
+        - summary
+        - extra
       type: object
     PersonSearchFilter:
       properties:
@@ -3118,6 +3163,30 @@ exports[`should build private api spec 1`] = `
         - color
         - account
       title: UserNetworkService
+      type: object
+    UserPersonContribution:
+      properties:
+        commitMessage:
+          type: string
+        createdAt:
+          description: unix timestamp seconds
+          type: integer
+        id:
+          type: integer
+        name:
+          type: string
+        personID:
+          type: integer
+        type:
+          description: 3 = 人物编辑，15 = 合并，16 = 删除
+          type: integer
+      required:
+        - id
+        - type
+        - personID
+        - name
+        - commitMessage
+        - createdAt
       type: object
     UserStats:
       properties:
@@ -9352,6 +9421,41 @@ paths:
           description: 意料之外的服务器错误
       tags:
         - wiki
+  /p1/wiki/persons/revisions/{revisionID}:
+    get:
+      operationId: getPersonRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物历史版本 wiki 信息
+      tags:
+        - wiki
   /p1/wiki/persons/{personID}:
     get:
       operationId: getPersonWikiInfo
@@ -9471,6 +9575,63 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
+      tags:
+        - wiki
+  /p1/wiki/persons/{personID}/history-summary:
+    get:
+      operationId: subjectEditHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/PersonHistorySummary'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物 wiki 历史编辑摘要
       tags:
         - wiki
   /p1/wiki/recent:
@@ -10336,6 +10497,68 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: 意料之外的服务器错误
+      tags:
+        - wiki
+  /p1/wiki/users/{username}/contributions/persons:
+    get:
+      operationId: getUserContributedPersons
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UserPersonContribution'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户 wiki 人物编辑记录
       tags:
         - wiki
 "
