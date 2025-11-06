@@ -175,6 +175,15 @@ export interface EpTextRev {
   ep_desc: string;
 }
 
+export interface CharacterRev {
+  crt_name: string;
+  crt_infobox: string;
+  crt_summary: string;
+  extra: {
+    img?: string;
+  };
+}
+
 export interface PersonRev {
   crt_name: string;
   crt_infobox: string;

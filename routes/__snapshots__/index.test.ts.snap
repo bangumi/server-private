@@ -159,6 +159,32 @@ exports[`should build private api spec 1`] = `
         - nsfw
       title: Character
       type: object
+    CharacterHistorySummary:
+      properties:
+        commitMessage:
+          type: string
+        createdAt:
+          description: unix timestamp seconds
+          type: integer
+        creator:
+          properties:
+            username:
+              type: string
+          required:
+            - username
+          type: object
+        id:
+          type: integer
+        type:
+          description: 2 = 角色编辑
+          type: integer
+      required:
+        - id
+        - creator
+        - type
+        - commitMessage
+        - createdAt
+      type: object
     CharacterRelation:
       properties:
         character:
@@ -169,6 +195,25 @@ exports[`should build private api spec 1`] = `
       required:
         - character
         - relation
+      type: object
+    CharacterRevisionWikiInfo:
+      properties:
+        extra:
+          properties:
+            img:
+              type: string
+          type: object
+        infobox:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+      required:
+        - name
+        - infobox
+        - summary
+        - extra
       type: object
     CharacterSearchFilter:
       properties:
@@ -203,6 +248,22 @@ exports[`should build private api spec 1`] = `
       required:
         - subject
         - type
+      type: object
+    CharacterWikiInfo:
+      properties:
+        id:
+          type: integer
+        infobox:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+      required:
+        - id
+        - name
+        - infobox
+        - summary
       type: object
     CollectSubject:
       properties:
@@ -3015,6 +3076,30 @@ exports[`should build private api spec 1`] = `
         - homepage
         - stats
       title: User
+      type: object
+    UserCharacterContribution:
+      properties:
+        characterID:
+          type: integer
+        commitMessage:
+          type: string
+        createdAt:
+          description: unix timestamp seconds
+          type: integer
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          description: 2 = 角色编辑
+          type: integer
+      required:
+        - id
+        - type
+        - characterID
+        - name
+        - commitMessage
+        - createdAt
       type: object
     UserHomepage:
       properties:
@@ -9163,6 +9248,139 @@ paths:
       summary: 获取用户时间胶囊
       tags:
         - user
+  /p1/wiki/characters/revisions/{revisionID}:
+    get:
+      operationId: getCharacterRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacterRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色历史版本 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/characters/{characterID}:
+    get:
+      operationId: getCharacterWikiInfo
+      parameters:
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacterWikiInfo'
+          description: Default Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色当前的 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/characters/{characterID}/history-summary:
+    get:
+      operationId: subjectEditHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/CharacterHistorySummary'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色 wiki 历史编辑摘要
+      tags:
+        - wiki
   /p1/wiki/ep/{episodeID}:
     get:
       operationId: getEpisodeWikiInfo
@@ -10318,6 +10536,68 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: 意料之外的服务器错误
+      tags:
+        - wiki
+  /p1/wiki/users/{username}/contributions/characters:
+    get:
+      operationId: getUserContributedcharacters
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UserCharacterContribution'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户 wiki 角色编辑记录
       tags:
         - wiki
 "
