@@ -1707,6 +1707,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         updatedAt:
           type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - uid

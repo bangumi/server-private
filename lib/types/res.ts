@@ -979,6 +979,7 @@ export const Index = t.Object(
   {
     id: t.Integer(),
     uid: t.Integer(),
+    user: t.Optional(Ref(SlimUser)),
     type: Ref(IndexType),
     title: t.String(),
     desc: t.String(),
@@ -991,7 +992,6 @@ export const Index = t.Object(
     createdAt: t.Integer(),
     updatedAt: t.Integer(),
     collectedAt: t.Optional(t.Integer()),
-    user: t.Optional(Ref(SlimUser)),
   },
   { $id: 'Index', title: 'Index' },
 );
@@ -1001,6 +1001,7 @@ export const SlimIndex = t.Object(
   {
     id: t.Integer(),
     uid: t.Integer(),
+    user: t.Optional(Ref(SlimUser)),
     type: Ref(IndexType),
     title: t.String(),
     private: t.Boolean(),
