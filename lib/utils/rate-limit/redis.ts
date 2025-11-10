@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import type { Redis } from 'ioredis';
 
 import { projectRoot, redisPrefix } from '@app/lib/config.ts';
-import type { LimitAction, Limiter, Result } from '@app/lib/utils/rate-limit/index.ts';
+import type { Limiter, Result } from '@app/lib/utils/rate-limit/index.ts';
 
 const luaScript = fs.readFileSync(
   path.join(projectRoot, 'lib/utils/rate-limit/redis-script.lua'),
@@ -35,7 +35,7 @@ export class RedisLimiter implements Limiter {
 
   async userAction(
     userID: number,
-    action: LimitAction,
+    action: string,
     timeWindow: number,
     limit: number,
   ): Promise<Result> {
