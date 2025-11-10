@@ -159,6 +159,15 @@ describe('edit subject ', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should get user edit history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/users/1/contributions/subjects');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
   test('should need authorization', async () => {
     const payload = {
       subject: {
