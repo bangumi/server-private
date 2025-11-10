@@ -25,7 +25,6 @@ interface LimitRule {
 const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   app: { limit: 5, durationMinutes: 10 },
   blog: { limit: 3, durationMinutes: 30 },
-  group: { limit: 3, durationMinutes: 30 },
   doujin: { limit: 3, durationMinutes: 30 },
   event: { limit: 1, durationMinutes: 60 },
   event_topics: { limit: 3, durationMinutes: 30 },
@@ -58,9 +57,9 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
   /**
    * 点赞
    *
-   * 1 分钟 5 次
+   * 1 分钟 10 次
    */
-  like: { limit: 5, durationMinutes: 1 },
+  like: { limit: 10, durationMinutes: 1 },
 
   /**
    * 报告疑虑
@@ -69,10 +68,33 @@ const LIMIT_RULES: Record<LimitAction, LimitRule> = {
    */
   report: { limit: 3, durationMinutes: 1 },
 
-  crt_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
-  prsn_post: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
-  comment: { limit: 1, durationMinutes: 1, validate: 7, hibernate: 5 },
-  relationship: { limit: 2, durationMinutes: 1, validate: 7, hibernate: 5 },
+  /**
+   * 创建小组话题和条目讨论
+   *
+   * 10 分钟 5 次
+   */
+  topic: { limit: 5, durationMinutes: 10 },
+
+  /**
+   * 回复小组话题和条目讨论
+   *
+   * 1 分钟 5 次
+   */
+  reply: { limit: 5, durationMinutes: 1 },
+
+  /**
+   * 发表 章节/角色/人物/目录/日志/时间线 吐槽
+   *
+   * 1 分钟 3 次
+   */
+  comment: { limit: 3, durationMinutes: 1 },
+
+  /**
+   * 添加/删除 好友/黑名单
+   *
+   * 1 分钟 3 次
+   */
+  relationship: { limit: 3, durationMinutes: 1 },
 };
 
 const limiter = createLimiter();

@@ -1179,7 +1179,7 @@ export async function setup(app: App) {
         display = TopicDisplay.Review;
       }
 
-      await rateLimit(LimitAction.Subject, auth.userID);
+      await rateLimit(LimitAction.Topic, auth.userID);
       const now = DateTime.now().toUnixInteger();
 
       let topicID = 0;
@@ -1665,7 +1665,7 @@ export async function setup(app: App) {
         notifyUserID = parent.uid;
       }
 
-      await rateLimit(LimitAction.Subject, auth.userID);
+      await rateLimit(LimitAction.Reply, auth.userID);
 
       const createdAt = DateTime.now().toUnixInteger();
 
