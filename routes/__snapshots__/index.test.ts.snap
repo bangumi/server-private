@@ -9250,7 +9250,7 @@ paths:
       summary: 获取用户时间胶囊
       tags:
         - user
-  /p1/wiki/characters/revisions/{revisionID}:
+  /p1/wiki/characters/-/revisions/{revisionID}:
     get:
       operationId: getCharacterRevisionInfo
       parameters:
