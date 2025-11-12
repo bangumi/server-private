@@ -322,6 +322,7 @@ describe('TimelineWriter', () => {
         cat: TimelineMonoCat.Person,
         type: TimelineMonoType.Collected,
         id: 100,
+        name: 'Test person',
         createdAt: DateTime.now().toUnixInteger(),
         source: 7,
       };
@@ -346,6 +347,7 @@ describe('TimelineWriter', () => {
       expect(memo).toEqual({
         cat: payload.cat,
         id: payload.id,
+        name: payload.name,
       });
     });
 
@@ -356,6 +358,7 @@ describe('TimelineWriter', () => {
         cat: TimelineMonoCat.Person,
         type: TimelineMonoType.Collected,
         id: 100,
+        name: 'Test person',
         createdAt: now.toUnixInteger(),
         source: 0,
       };
@@ -365,6 +368,7 @@ describe('TimelineWriter', () => {
       const payload2 = {
         ...payload1,
         id: 101,
+        name: 'Test person 2',
         createdAt: now.plus({ minutes: 5 }).toUnixInteger(),
       };
 
@@ -382,11 +386,13 @@ describe('TimelineWriter', () => {
 
       expect(entry.batch).toBe(true);
 
-      const memo = decode(entry.memo) as Record<string, { cat: number }>;
+      const memo = decode(entry.memo) as Record<string, { cat: number; name: string }>;
       expect(memo).toHaveProperty('100');
       expect(memo).toHaveProperty('101');
       expect(memo['100']?.cat).toBe(TimelineMonoCat.Person);
       expect(memo['101']?.cat).toBe(TimelineMonoCat.Person);
+      expect(memo['100']?.name).toBe('Test person');
+      expect(memo['101']?.name).toBe('Test person 2');
     });
   });
 });
