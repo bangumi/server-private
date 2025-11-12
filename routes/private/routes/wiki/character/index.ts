@@ -202,7 +202,7 @@ export async function setup(app: App) {
   );
 
   app.get(
-    '/characters/revisions/:revisionID',
+    '/characters/-/revisions/:revisionID',
     {
       schema: {
         tags: [Tag.Wiki],
