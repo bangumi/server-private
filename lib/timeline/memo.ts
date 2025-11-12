@@ -66,6 +66,7 @@ export interface Index {
 export interface MonoSingle {
   cat: TimelineMonoCat;
   id: number;
+  name: string;
 }
 
 export type MonoBatch = Record<number, MonoSingle>;
