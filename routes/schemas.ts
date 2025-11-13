@@ -19,6 +19,7 @@ function addCommonSchemas(app: App) {
   app.addSchema(common.IndexType);
   app.addSchema(common.ReportReason);
   app.addSchema(common.ReportType);
+  app.addSchema(common.RevisionType);
   app.addSchema(common.SubjectType);
 }
 
@@ -83,6 +84,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
   app.addSchema(res.ReplyBase);
+  app.addSchema(res.RevisionHistory);
   app.addSchema(res.SimpleUser);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);

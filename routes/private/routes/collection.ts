@@ -715,6 +715,7 @@ export async function setup(app: App) {
           cat: TimelineMonoCat.Character,
           type: TimelineMonoType.Collected,
           id: characterID,
+          name: character.name,
           createdAt,
           source: auth.source,
         });
@@ -899,6 +900,7 @@ export async function setup(app: App) {
           cat: TimelineMonoCat.Person,
           type: TimelineMonoType.Collected,
           id: personID,
+          name: person.name,
           createdAt,
           source: auth.source,
         });

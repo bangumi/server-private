@@ -12,6 +12,7 @@ import {
   IndexRelatedCategory,
   IndexType,
   Ref,
+  RevisionType,
   SubjectType,
 } from '@app/lib/types/common.ts';
 import * as examples from '@app/lib/types/examples.ts';
@@ -1057,7 +1058,6 @@ export const TimelineMemo = t.Object(
           comment: t.String(),
           rate: t.Optional(t.Number()),
           collectID: t.Optional(t.Integer()),
-          reactions: t.Optional(t.Array(Ref(Reaction))),
         }),
       ),
     ),
@@ -1151,6 +1151,7 @@ export const Timeline = t.Object(
     source: Ref(TimelineSource),
     replies: t.Integer(),
     createdAt: t.Integer(),
+    reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   { $id: 'Timeline', title: 'Timeline' },
 );
@@ -1168,4 +1169,18 @@ export const Notice = t.Object(
     unread: t.Boolean(),
   },
   { $id: 'Notice', title: 'Notice' },
+);
+
+export type IRevisionHistory = Static<typeof RevisionHistory>;
+export const RevisionHistory = t.Object(
+  {
+    id: t.Integer(),
+    creator: t.Object({
+      username: t.String(),
+    }),
+    type: Ref(RevisionType),
+    commitMessage: t.String(),
+    createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+  },
+  { $id: 'RevisionHistory' },
 );

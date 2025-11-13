@@ -412,24 +412,6 @@ export async function setup(app: App) {
     },
   );
 
-  type IHistorySummary = Static<typeof HistorySummary>;
-  const HistorySummary = t.Object(
-    {
-      id: t.Integer(),
-      creator: t.Object({
-        username: t.String(),
-      }),
-      type: t.Integer({
-        description: '修改类型。`1` 正常修改， `11` 合并，`103` 锁定/解锁 `104` 未知',
-      }),
-      commitMessage: t.String(),
-      createdAt: t.Integer({ description: 'unix timestamp seconds' }),
-    },
-    { $id: 'HistorySummary' },
-  );
-
-  app.addSchema(HistorySummary);
-
   app.get(
     '/subjects/:subjectID/history-summary',
     {
@@ -442,14 +424,14 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: t.Array(res.Ref(HistorySummary)),
+          200: t.Array(res.Ref(res.RevisionHistory)),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },
     },
-    async ({ params: { subjectID } }): Promise<IHistorySummary[]> => {
+    async ({ params: { subjectID } }) => {
       const history = await db
         .select()
         .from(schema.chiiSubjectRev)
@@ -472,7 +454,7 @@ export async function setup(app: App) {
           type: x.type,
           createdAt: x.createdAt,
           commitMessage: x.commitMessage,
-        } satisfies IHistorySummary;
+        } satisfies res.IRevisionHistory;
       });
     },
   );
