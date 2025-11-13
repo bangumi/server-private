@@ -962,7 +962,7 @@ export async function setup(app: App) {
       }
 
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.countDistinct(schema.chiiSubjectRev.subjectID) })
+        .select({ count: op.count(schema.chiiSubjectRev.subjectID) })
         .from(schema.chiiSubjectRev)
         .where(op.eq(schema.chiiSubjectRev.creatorID, user.id));
 
