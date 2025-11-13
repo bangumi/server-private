@@ -12,6 +12,7 @@ import {
   IndexRelatedCategory,
   IndexType,
   Ref,
+  RevisionType,
   SubjectType,
 } from '@app/lib/types/common.ts';
 import * as examples from '@app/lib/types/examples.ts';
@@ -1168,4 +1169,18 @@ export const Notice = t.Object(
     unread: t.Boolean(),
   },
   { $id: 'Notice', title: 'Notice' },
+);
+
+export type IRevisionHistory = Static<typeof RevisionHistory>;
+export const RevisionHistory = t.Object(
+  {
+    id: t.Integer(),
+    creator: t.Object({
+      username: t.String(),
+    }),
+    type: Ref(RevisionType),
+    commitMessage: t.String(),
+    createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+  },
+  { $id: 'RevisionHistory' },
 );
