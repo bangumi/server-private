@@ -1058,7 +1058,6 @@ export const TimelineMemo = t.Object(
           comment: t.String(),
           rate: t.Optional(t.Number()),
           collectID: t.Optional(t.Integer()),
-          reactions: t.Optional(t.Array(Ref(Reaction))),
         }),
       ),
     ),
@@ -1152,6 +1151,7 @@ export const Timeline = t.Object(
     source: Ref(TimelineSource),
     replies: t.Integer(),
     createdAt: t.Integer(),
+    reactions: t.Optional(t.Array(Ref(Reaction))),
   },
   { $id: 'Timeline', title: 'Timeline' },
 );

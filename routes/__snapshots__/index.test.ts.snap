@@ -2772,6 +2772,10 @@ exports[`should build private api spec 1`] = `
           type: integer
         memo:
           $ref: '#/components/schemas/TimelineMemo'
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
         replies:
           type: integer
         source:
@@ -2917,10 +2921,6 @@ exports[`should build private api spec 1`] = `
                 type: string
               rate:
                 type: number
-              reactions:
-                items:
-                  $ref: '#/components/schemas/Reaction'
-                type: array
               subject:
                 $ref: '#/components/schemas/SlimSubject'
             required:
@@ -8462,6 +8462,80 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 删除时间线
+      tags:
+        - timeline
+  /p1/timeline/{timelineID}/like:
+    delete:
+      operationId: unlikeTimeline
+      parameters:
+        - in: path
+          name: timelineID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消时间线吐槽点赞
+      tags:
+        - timeline
+    put:
+      operationId: likeTimeline
+      parameters:
+        - in: path
+          name: timelineID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: integer
+              required:
+                - value
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 给时间线吐槽点赞
       tags:
         - timeline
   /p1/timeline/{timelineID}/replies:
