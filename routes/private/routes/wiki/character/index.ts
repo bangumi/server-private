@@ -37,22 +37,6 @@ export const CharacterEdit = t.Object(
   },
 );
 
-type ICharacterHistorySummary = Static<typeof CharacterHistorySummary>;
-export const CharacterHistorySummary = t.Object(
-  {
-    id: t.Integer(),
-    creator: t.Object({
-      username: t.String(),
-    }),
-    type: t.Integer({
-      description: '2 = 角色编辑',
-    }),
-    commitMessage: t.String(),
-    createdAt: t.Integer({ description: 'unix timestamp seconds' }),
-  },
-  { $id: 'CharacterHistorySummary' },
-);
-
 type ICharacterRevisionWikiInfo = Static<typeof CharacterRevisionWikiInfo>;
 export const CharacterRevisionWikiInfo = t.Object(
   {
@@ -86,7 +70,6 @@ const UserCharacterContribution = t.Object(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(CharacterWikiInfo);
-  app.addSchema(CharacterHistorySummary);
   app.addSchema(CharacterRevisionWikiInfo);
   app.addSchema(UserCharacterContribution);
 
@@ -153,7 +136,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Paged(res.Ref(CharacterHistorySummary)),
+          200: res.Paged(res.Ref(res.RevisionHistory)),
         },
       },
     },
@@ -191,7 +174,7 @@ export async function setup(app: App) {
           type: x.revType,
           createdAt: x.createdAt,
           commitMessage: x.revEditSummary,
-        } satisfies ICharacterHistorySummary;
+        } satisfies res.IRevisionHistory;
       });
 
       return {

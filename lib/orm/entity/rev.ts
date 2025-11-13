@@ -14,14 +14,26 @@ export const RevType = {
   subjectEdit: 1,
   subjectLock: 103,
   subjectUnlock: 104,
+  subjectMerge: 11, // 条目管理
+  subjectErase: 12,
+  subjectRelation: 17, // 条目关联
+  subjectCharacterRelation: 5, // 条目->角色关联
+  subjectCastRelation: 6, // 条目->声优关联
+  subjectPersonRelation: 10, // 条目->人物关联
 
   characterEdit: 2, // 角色编辑
+  characterMerge: 13, // 角色管理
+  characterErase: 14,
+  characterSubjectRelation: 4, // 角色->条目关联
+  characterCastRelation: 7, // 角色->声优关联
+
   personEdit: 3, // 人物编辑
   personMerge: 15,
   personErase: 16,
+  personCastRelation: 8, // 人物->声优关联
+  personSubjectRelation: 9, // 人物->条目关联
 
   episodeEdit: 18, // 章节
-
   // 章节管理
   episodeMerge: 181,
   episodeMove: 182,
@@ -29,21 +41,6 @@ export const RevType = {
   episodeUnlock: 184,
   episodeErase: 185,
 } as const;
-
-// const TypeSubjectCharacterRelation = 5; // 条目->角色关联
-// const TypeSubjectCastRelation = 6; // 条目->声优关联
-// const TypeSubjectPersonRelation = 10; // 条目->人物关联
-// const TypeSubjectMerge = 11; // 条目管理
-// const TypeSubjectErase = 12;
-// const TypeSubjectRelation = 17; // 条目关联
-// const TypeSubjectLock = 103;
-// const TypeSubjectUnlock = 104;
-// const TypeCharacterSubjectRelation = 4; // 角色->条目关联
-// const TypeCharacterCastRelation = 7; // 角色->声优关联
-// const TypeCharacterMerge = 13; // 角色管理
-// const TypeCharacterErase = 14;
-// const TypePersonCastRelation = 8; // 人物->声优关联
-// const TypePersonSubjectRelation = 9; // 人物->条目关联
 
 @Index('rev_crt_id', ['revType', 'revMid'], {})
 @Index('rev_crt_creator', ['revCreator'], {})
