@@ -17,6 +17,8 @@ export const LikeType = Object.freeze({
   EpisodeReply: 11,
 
   SubjectCollect: 40,
+
+  TimelineStatus: 50,
 });
 
 export type LikeType = (typeof LikeType)[keyof typeof LikeType];
@@ -27,6 +29,7 @@ const ALLOWED_REACTION_TYPES: ReadonlySet<number> = Object.freeze(
     LikeType.SubjectReply,
     LikeType.EpisodeReply,
     LikeType.SubjectCollect,
+    LikeType.TimelineStatus,
   ]),
 );
 
@@ -99,7 +102,8 @@ function validateReaction(type: LikeType, value: number): boolean {
   switch (type) {
     case LikeType.GroupReply:
     case LikeType.SubjectReply:
-    case LikeType.EpisodeReply: {
+    case LikeType.EpisodeReply:
+    case LikeType.TimelineStatus: {
       return ALLOWED_COMMON_REACTIONS.has(value);
     }
     case LikeType.SubjectCollect: {
