@@ -375,7 +375,7 @@ export async function setup(app: App) {
   app.addSchema(SubjectRevisionWikiInfo);
 
   app.get(
-    '/subjects/revisions/:revisionID',
+    '/subjects/-/revisions/:revisionID',
     {
       schema: {
         tags: [Tag.Wiki],

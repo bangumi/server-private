@@ -145,7 +145,7 @@ describe('edit subject ', () => {
   test('should get subject revision wiki info', async () => {
     const app = await testApp({});
 
-    const res = await app.inject('/subjects/revisions/551942');
+    const res = await app.inject('/subjects/-/revisions/551942');
 
     expect(res.json()).toMatchSnapshot();
   });

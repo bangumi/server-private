@@ -9943,7 +9943,7 @@ paths:
           HTTPBearer: []
       tags:
         - wiki
-  /p1/wiki/subjects/revisions/{revisionID}:
+  /p1/wiki/subjects/-/revisions/{revisionID}:
     get:
       operationId: getSubjectRevisionInfo
       parameters:
@@ -10758,6 +10758,68 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取用户 wiki 角色编辑记录
+      tags:
+        - wiki
+  /p1/wiki/users/{username}/contributions/subjects:
+    get:
+      operationId: getUserContributedSubjects
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UserSubjectContribution'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户 wiki 条目编辑记录
       tags:
         - wiki
 "
