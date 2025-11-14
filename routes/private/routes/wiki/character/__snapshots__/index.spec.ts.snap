@@ -227,9 +227,40 @@ Object {
 
 exports[`view history  > should get revision 1`] = `
 Object {
-  "error": "Not Found",
-  "message": "Route GET:/characters/revisions/1198747 not found",
-  "statusCode": 404,
+  "extra": Object {
+    "img": "7b/3a/1_crt_EcUzC.jpg",
+  },
+  "infobox": "{{Infobox Crt
+|简体中文名= 鲁路修·兰佩路基
+|别名={
+[L.L.]
+[勒鲁什]
+[鲁鲁修]
+[ゼロ]
+[Zero]
+[英文名|Lelouch Lamperouge]
+[第二中文名|鲁路修·冯·布里塔尼亚]
+[英文名二|Lelouch Vie Britannia]
+[日文名|ルルーシュ・ヴィ・ブリタニア]
+[纯假名|]
+[罗马字|]
+[昵称|]
+[其他名义|]
+}
+|性别= 男
+|生日= 12月5日
+|血型= A型
+|身高= 178cm→181cm
+|体重= 54kg
+|BWH= 
+|引用来源= Wikipedia
+}}",
+  "name": "ルルーシュ・ランペルージ",
+  "summary": "鲁路修·兰佩洛基是日本动画《Code Geass 反叛的鲁路修》中的主角。
+
+一年前的东京攻略战中，黑色骑士团因为首领Zero的离开而最终战败。之后一年间，鲁路修的Geass能力被人封印而平静的生活在阿什弗德学园，在第二季开头，鲁路修重新与C.C相遇之后，Geass封印被解开，鲁路修也恢复了记忆。
+一年前最后的神根岛之战，鲁路修被朱雀制服，并被押到其父不列颠皇帝面前，被皇帝施以Geass封印一切记忆。
+封印解除之后，Geass能力恢复到封印之前的状态，依然暴走，无法关闭，为了防止尤菲米雅的悲剧再次上演，C.C给了鲁路修特制的隐形眼镜来应对暴走的Geass能力。",
 }
 `;
 

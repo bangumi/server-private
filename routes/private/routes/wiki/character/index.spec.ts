@@ -50,7 +50,7 @@ describe('view history ', () => {
   test('should get revision', async () => {
     const app = await testApp({});
 
-    const res = await app.inject('/characters/revisions/1198747');
+    const res = await app.inject('/characters/-/revisions/1198747');
 
     expect(res.json()).toMatchSnapshot();
   });

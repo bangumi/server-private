@@ -215,3 +215,27 @@ Object {
 　　现在，恢复记忆的鲁路修不仅要面对帝国的强大军事力量，更要面对虚假的弟弟罗洛、失踪的妹妹娜娜丽、不知敌友的中华联盟、内部出现分歧的黑色骑士团。面对内忧外患，鲁路修走上了GEASS之力的诅咒——孤独的王之路。 ",
 }
 `;
+
+exports[`edit subject  > should get user edit history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "合并恢复版本",
+      "createdAt": 1272719723,
+      "id": 7493,
+      "name": "コードギアス反逆のルルーシュR2",
+      "subjectID": 8,
+      "type": 1,
+    },
+    Object {
+      "commitMessage": "维基化",
+      "createdAt": 1232787986,
+      "id": 37,
+      "name": "リズム天国ゴールド",
+      "subjectID": 9,
+      "type": 1,
+    },
+  ],
+  "total": 2,
+}
+`;

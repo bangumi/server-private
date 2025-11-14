@@ -145,7 +145,7 @@ describe('edit subject ', () => {
   test('should get subject revision wiki info', async () => {
     const app = await testApp({});
 
-    const res = await app.inject('/subjects/revisions/551942');
+    const res = await app.inject('/subjects/-/revisions/551942');
 
     expect(res.json()).toMatchSnapshot();
   });
@@ -155,6 +155,15 @@ describe('edit subject ', () => {
     await app.register(setup);
 
     const res = await app.inject('/subjects/8/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get user edit history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/users/1/contributions/subjects');
 
     expect(res.json()).toMatchSnapshot();
   });
