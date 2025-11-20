@@ -10,6 +10,7 @@ import {
 } from '@app/lib/group/cache.ts';
 import { getSlimCacheKey as getIndexSlimCacheKey } from '@app/lib/index/cache.ts';
 import { IndexPrivacy } from '@app/lib/index/types.ts';
+import { logger } from '@app/lib/logger.ts';
 import { getSlimCacheKey as getPersonSlimCacheKey } from '@app/lib/person/cache.ts';
 import redis from '@app/lib/redis.ts';
 import {
@@ -311,6 +312,12 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
     const tagIDs = lo.uniq(tagIndexes.map((d) => d.id));
+    if (tagIndexes.length > tagIDs.length) {
+      logger.warn(
+        `[SubjectFetcher] Duplicate tag index IDs detected for tags: ${filter.tags?.join(', ')}. This may indicate a data or normalization issue.`,
+      );
+    }
+
     const tagRows = await db
       .select({
         subjectID: schema.chiiTagList.mainID,
