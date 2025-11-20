@@ -282,7 +282,6 @@ export async function fetchSubjectIDsByFilter(
       .filter((tag) => tag.length > 0);
     filter.tags = normalizedTags;
   }
-
   const cacheKey = getSubjectListCacheKey(filter, sort, page);
   const cached = await redis.get(cacheKey);
   if (cached) {
@@ -328,12 +327,8 @@ export async function fetchSubjectIDsByFilter(
     if (tagRows.length === 0) {
       return { data: [], total: 0 };
     }
-    const tagIDSet = new Set(tagIDs);
     const subjectTagMap = new Map<number, Set<number>>();
     for (const row of tagRows) {
-      if (!tagIDSet.has(row.tagID)) {
-        continue;
-      }
       let tagsForSubject = subjectTagMap.get(row.subjectID);
       if (!tagsForSubject) {
         tagsForSubject = new Set<number>();
@@ -358,14 +353,11 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
     const subjectIDSet = new Set(subjectIDs);
-    if (filter.ids) {
-      filter.ids = filter.ids.filter((id) => subjectIDSet.has(id));
-    } else {
-      filter.ids = subjectIDs;
-    }
-    if (!filter.ids || filter.ids.length === 0) {
+    const mergedIDs = filter.ids ? filter.ids.filter((id) => subjectIDSet.has(id)) : subjectIDs;
+    if (mergedIDs.length === 0) {
       return { data: [], total: 0 };
     }
+    filter.ids = mergedIDs;
   }
 
   const conditions = [
