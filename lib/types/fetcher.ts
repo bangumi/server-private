@@ -308,12 +308,15 @@ export async function fetchSubjectIDsByFilter(
           op.inArray(schema.chiiTagIndex.name, filter.tags),
         ),
       );
-    const tagIDs = tagIndexes.map((d) => d.id);
-    if (tagIDs.length === 0) {
+    if (tagIndexes.length === 0) {
       return { data: [], total: 0 };
     }
-    const tagList = await db
-      .selectDistinct({ mid: schema.chiiTagList.mainID })
+    const tagIDs = lo.uniq(tagIndexes.map((d) => d.id));
+    const tagRows = await db
+      .select({
+        subjectID: schema.chiiTagList.mainID,
+        tagID: schema.chiiTagList.tagID,
+      })
       .from(schema.chiiTagList)
       .where(
         op.and(
@@ -322,14 +325,46 @@ export async function fetchSubjectIDsByFilter(
           op.inArray(schema.chiiTagList.tagID, tagIDs),
         ),
       );
-    if (tagList.length === 0) {
+    if (tagRows.length === 0) {
       return { data: [], total: 0 };
     }
-    const subjectIDs = tagList.map((d) => d.mid);
+    const tagIDSet = new Set(tagIDs);
+    const subjectTagMap = new Map<number, Set<number>>();
+    for (const row of tagRows) {
+      if (!tagIDSet.has(row.tagID)) {
+        continue;
+      }
+      let tagsForSubject = subjectTagMap.get(row.subjectID);
+      if (!tagsForSubject) {
+        tagsForSubject = new Set<number>();
+        subjectTagMap.set(row.subjectID, tagsForSubject);
+      }
+      tagsForSubject.add(row.tagID);
+    }
+    const subjectIDs: number[] = [];
+    for (const [subjectID, subjectTags] of subjectTagMap) {
+      let hasAllTags = true;
+      for (const tagID of tagIDs) {
+        if (!subjectTags.has(tagID)) {
+          hasAllTags = false;
+          break;
+        }
+      }
+      if (hasAllTags) {
+        subjectIDs.push(subjectID);
+      }
+    }
+    if (subjectIDs.length === 0) {
+      return { data: [], total: 0 };
+    }
+    const subjectIDSet = new Set(subjectIDs);
     if (filter.ids) {
-      filter.ids = filter.ids.filter((id) => subjectIDs.includes(id));
+      filter.ids = filter.ids.filter((id) => subjectIDSet.has(id));
     } else {
       filter.ids = subjectIDs;
+    }
+    if (!filter.ids || filter.ids.length === 0) {
+      return { data: [], total: 0 };
     }
   }
 
