@@ -276,6 +276,13 @@ export async function fetchSubjectIDsByFilter(
   sort: SubjectSort,
   page: number,
 ): Promise<res.IPaged<number>> {
+  if (filter.tags) {
+    const normalizedTags = filter.tags
+      .map((tag) => tag.trim().normalize('NFKC'))
+      .filter((tag) => tag.length > 0);
+    filter.tags = normalizedTags;
+  }
+
   const cacheKey = getSubjectListCacheKey(filter, sort, page);
   const cached = await redis.get(cacheKey);
   if (cached) {
@@ -290,7 +297,7 @@ export async function fetchSubjectIDsByFilter(
     const ids = JSON.parse(data) as TrendingItem[];
     filter.ids = ids.map((item) => item.id);
   }
-  if (filter.tags) {
+  if (filter.tags?.length) {
     const tagIndexes = await db
       .select({ id: schema.chiiTagIndex.id })
       .from(schema.chiiTagIndex)
@@ -298,16 +305,13 @@ export async function fetchSubjectIDsByFilter(
         op.and(
           op.eq(schema.chiiTagIndex.cat, TagCat.Subject),
           op.eq(schema.chiiTagIndex.type, filter.type),
-          op.inArray(
-            schema.chiiTagIndex.name,
-            filter.tags.map((t) => t.normalize('NFKC')),
-          ),
+          op.inArray(schema.chiiTagIndex.name, filter.tags),
         ),
       );
-    if (!tagIndexes) {
+    const tagIDs = tagIndexes.map((d) => d.id);
+    if (tagIDs.length === 0) {
       return { data: [], total: 0 };
     }
-    const tagIDs = tagIndexes.map((d) => d.id);
     const tagList = await db
       .selectDistinct({ mid: schema.chiiTagList.mainID })
       .from(schema.chiiTagList)
@@ -318,6 +322,9 @@ export async function fetchSubjectIDsByFilter(
           op.inArray(schema.chiiTagList.tagID, tagIDs),
         ),
       );
+    if (tagList.length === 0) {
+      return { data: [], total: 0 };
+    }
     const subjectIDs = tagList.map((d) => d.mid);
     if (filter.ids) {
       filter.ids = filter.ids.filter((id) => subjectIDs.includes(id));
