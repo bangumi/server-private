@@ -11,12 +11,14 @@ import { LikeType, Reaction } from '@app/lib/like';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByID, fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
+import { handleTimelineSSE } from '@app/lib/timeline/sse.ts';
 import { TimelineCat } from '@app/lib/timeline/type';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { fetchFriends } from '@app/lib/user/utils';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -281,6 +283,56 @@ export async function setup(app: App) {
         uid: auth.userID,
       });
       return {};
+    },
+  );
+
+  app.get(
+    '/timeline/-/events',
+    {
+      sse: true,
+      schema: {
+        summary: '时间线事件流 (SSE)',
+        operationId: 'getTimelineEvents',
+        tags: [Tag.Timeline],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          cat: t.Optional(
+            req.Ref(req.TimelineCat, { description: '时间线类型，不传则订阅所有类型' }),
+          ),
+          mode: t.Optional(
+            req.Ref(req.FilterMode, {
+              description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
+            }),
+          ),
+        }),
+        response: {
+          200: {
+            description: 'Server-Sent Events stream',
+            type: 'string',
+          },
+        },
+      },
+      preHandler: [requireLogin('subscribing to timeline events')],
+    },
+    async (request, reply) => {
+      const { auth, headers, query } = request;
+      const filterCat = query.cat;
+      const mode = query.mode ?? req.IFilterMode.Friends;
+
+      if (!reply.sse || !headers.accept?.includes('text/event-stream')) {
+        throw new BadRequestError('Accept header must include text/event-stream');
+      }
+
+      let friendIDs: Set<number> | null = null;
+      if (mode === req.IFilterMode.Friends) {
+        const friends = await fetchFriends(auth.userID);
+        friendIDs = new Set(friends);
+        friendIDs.add(auth.userID);
+      }
+
+      reply.sse.keepAlive();
+
+      await handleTimelineSSE(request, reply, filterCat, mode, friendIDs);
     },
   );
 }
