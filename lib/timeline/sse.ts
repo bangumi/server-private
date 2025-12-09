@@ -28,7 +28,24 @@ interface SSEContext {
 
 const BATCH_SIZE = 10;
 const BATCH_DELAY = 3000;
-const subscribedChannels = new Set<string>();
+let timelineSubscribePromise: Promise<void> | null = null;
+
+async function ensureTimelineSubscribed(subscriber: Redis) {
+  if (!timelineSubscribePromise) {
+    timelineSubscribePromise = (async () => {
+      if (subscriber.status === 'end' || subscriber.status === 'wait') {
+        await subscriber.connect();
+      }
+      await subscriber.subscribe(TIMELINE_EVENT_CHANNEL);
+    })();
+  }
+  try {
+    await timelineSubscribePromise;
+  } catch (error) {
+    timelineSubscribePromise = null;
+    throw error;
+  }
+}
 
 async function processBatch(context: SSEContext, ids: number[]): Promise<res.ITimeline[]> {
   if (ids.length === 0) {
@@ -159,20 +176,8 @@ export async function handleTimelineSSE(
       onClose: (fn: () => void) => void;
     };
   };
-  const channel = TIMELINE_EVENT_CHANNEL;
   const subscriber = Subscriber;
-  if (subscriber.status === 'end' || subscriber.status === 'wait') {
-    await subscriber.connect();
-  }
-  if (!subscribedChannels.has(channel)) {
-    subscribedChannels.add(channel);
-    try {
-      await subscriber.subscribe(channel);
-    } catch (error) {
-      subscribedChannels.delete(channel);
-      throw error;
-    }
-  }
+  await ensureTimelineSubscribed(subscriber);
   sseReply.sse.keepAlive();
 
   const context: SSEContext = {
@@ -187,7 +192,7 @@ export async function handleTimelineSSE(
     sseReply,
   };
 
-  const callback = createMessageCallback(context, channel);
+  const callback = createMessageCallback(context, TIMELINE_EVENT_CHANNEL);
   const cleanup = createCleanup(context, callback);
 
   subscriber.addListener('message', callback);
