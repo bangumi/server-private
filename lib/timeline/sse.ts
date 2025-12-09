@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { Redis } from 'ioredis';
+import type { Redis } from 'ioredis';
 
-import { redisOption } from '@app/lib/redis.ts';
+import { Subscriber } from '@app/lib/redis.ts';
 import { TIMELINE_EVENT_CHANNEL } from '@app/lib/timeline/cache';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -28,6 +28,7 @@ interface SSEContext {
 
 const BATCH_SIZE = 10;
 const BATCH_DELAY = 3000;
+const subscribedChannels = new Set<string>();
 
 async function processBatch(context: SSEContext, ids: number[]): Promise<res.ITimeline[]> {
   if (ids.length === 0) {
@@ -109,23 +110,13 @@ function createMessageCallback(context: SSEContext, channel: string) {
   };
 }
 
-function createCleanup(
-  context: SSEContext,
-  callback: (ch: string, msg: string) => void,
-  channel: string,
-) {
+function createCleanup(context: SSEContext, callback: (ch: string, msg: string) => void) {
   return () => {
     if (context.batchTimer) {
       clearTimeout(context.batchTimer);
       context.batchTimer = null;
     }
     context.subscriber.removeListener('message', callback);
-    context.subscriber.unsubscribe(channel).catch(() => {
-      // ignore unsubscribe errors
-    });
-    context.subscriber.quit().catch(() => {
-      // ignore quit errors
-    });
   };
 }
 
@@ -169,8 +160,19 @@ export async function handleTimelineSSE(
     };
   };
   const channel = TIMELINE_EVENT_CHANNEL;
-  const subscriber = new Redis(redisOption);
-  await subscriber.connect();
+  const subscriber = Subscriber;
+  if (subscriber.status === 'end' || subscriber.status === 'wait') {
+    await subscriber.connect();
+  }
+  if (!subscribedChannels.has(channel)) {
+    subscribedChannels.add(channel);
+    try {
+      await subscriber.subscribe(channel);
+    } catch (error) {
+      subscribedChannels.delete(channel);
+      throw error;
+    }
+  }
   sseReply.sse.keepAlive();
 
   const context: SSEContext = {
@@ -186,9 +188,8 @@ export async function handleTimelineSSE(
   };
 
   const callback = createMessageCallback(context, channel);
-  const cleanup = createCleanup(context, callback, channel);
+  const cleanup = createCleanup(context, callback);
 
-  await subscriber.subscribe(channel);
   subscriber.addListener('message', callback);
 
   request.raw.on('close', cleanup);
