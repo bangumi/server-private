@@ -1,14 +1,6 @@
-import MockRedis from 'ioredis-mock';
 import { afterAll, beforeAll, vi } from 'vitest';
 
 import { AppDataSource } from '@app/lib/orm/index.ts';
-
-vi.mock('@app/lib/redis', () => {
-  return {
-    default: new MockRedis(),
-    Subscriber: new MockRedis(),
-  };
-});
 
 vi.mock('@app/lib/externals/turnstile', () => {
   return {

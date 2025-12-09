@@ -8,6 +8,7 @@ import {
   getItemCacheKey,
   getUserCacheKey,
   getUserVisitCacheKey,
+  TIMELINE_EVENT_CHANNEL,
 } from '@app/lib/timeline/cache';
 import { fetchFollowers } from '@app/lib/user/utils';
 
@@ -20,6 +21,7 @@ interface Key {
 interface TimelineItem {
   tml_id: number;
   tml_uid: number;
+  tml_cat: number;
   tml_dateline: number;
 }
 
@@ -65,6 +67,10 @@ export async function handle({ key, value }: KafkaMessage) {
           }
         }
       }
+      await redis.publish(
+        TIMELINE_EVENT_CHANNEL,
+        JSON.stringify({ tml_id: tml.tml_id, cat: tml.tml_cat, uid: tml.tml_uid }),
+      );
       break;
     }
     case EventOp.Delete: {

@@ -1,3 +1,5 @@
+export const TIMELINE_EVENT_CHANNEL = 'events:tml:create';
+
 export function getItemCacheKey(id: number): string {
   return `tml:v4:item:${id}`;
 }
