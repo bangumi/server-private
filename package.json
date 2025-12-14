@@ -41,7 +41,7 @@
     "@fastify/type-provider-typebox": "6.1.0",
     "@fastify/view": "11.1.1",
     "@node-rs/bcrypt": "1.10.7",
-    "@sentry/node": "10.27.0",
+    "@sentry/node": "10.30.0",
     "@trim21/php-serialize": "0.2.2",
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1",
@@ -77,9 +77,9 @@
     "reflect-metadata": "0.2.2",
     "socket.io": "4.8.1",
     "socks-proxy-agent": "8.0.5",
-    "typebox": "1.0.35",
-    "typeorm": "0.3.27",
-    "yaml": "2.8.1"
+    "typebox": "1.0.62",
+    "typeorm": "0.3.28",
+    "yaml": "2.8.2"
   },
   "devDependencies": {
     "@eslint/js": "9.39.2",
