@@ -1,4 +1,4 @@
-FROM node:22.20.0-slim@sha256:d943bf20249f8b92eff6f605362df2ee9cf2d6ce2ea771a8886e126ec8714f08 AS base
+FROM node:24-slim AS base
 
 WORKDIR /app
 
@@ -21,7 +21,7 @@ COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
 COPY . ./
 
-FROM gcr.io/distroless/nodejs22-debian12@sha256:4457cf5f47fa4bc2d3a3733feb08180bdbd5fd0ee176da532984ab2444b76fcc
+FROM gcr.io/distroless/nodejs24-debian13
 
 WORKDIR /app
 
