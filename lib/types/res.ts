@@ -14,6 +14,7 @@ import {
   Ref,
   RevisionType,
   SubjectType,
+  TimelineCat,
 } from '@app/lib/types/common.ts';
 import * as examples from '@app/lib/types/examples.ts';
 
@@ -1098,36 +1099,6 @@ export const TimelineMemo = t.Object(
   },
   { $id: 'TimelineMemo', title: 'TimelineMemo' },
 );
-
-export const TimelineCat = t.Integer({
-  $id: 'TimelineCat',
-  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-  'x-ms-enum': {
-    name: 'TimelineCat',
-    modelAsString: false,
-  },
-  'x-enum-varnames': [
-    'Daily',
-    'Wiki',
-    'Subject',
-    'Progress',
-    'Status',
-    'Blog',
-    'Index',
-    'Mono',
-    'Doujin',
-  ],
-  description: `时间线类型
-  - 1 = 日常行为
-  - 2 = 维基操作
-  - 3 = 收藏条目
-  - 4 = 收视进度
-  - 5 = 状态
-  - 6 = 日志
-  - 7 = 目录
-  - 8 = 人物
-  - 9 = 天窗`,
-});
 
 export type ITimelineSource = Static<typeof TimelineSource>;
 export const TimelineSource = t.Object(

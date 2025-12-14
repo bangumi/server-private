@@ -8459,6 +8459,38 @@ paths:
       summary: 发送时间线吐槽
       tags:
         - timeline
+  /p1/timeline/-/events:
+    get:
+      operationId: getTimelineEvents
+      parameters:
+        - in: query
+          name: cat
+          schema:
+            $ref: '#/components/schemas/TimelineCat'
+        - in: query
+          name: mode
+          schema:
+            $ref: '#/components/schemas/FilterMode'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: Server-Sent Events stream
+                type: string
+          description: Server-Sent Events stream
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 时间线事件流 (SSE)
+      tags:
+        - timeline
   /p1/timeline/{timelineID}:
     delete:
       operationId: deleteTimeline

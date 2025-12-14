@@ -21,6 +21,7 @@ function addCommonSchemas(app: App) {
   app.addSchema(common.ReportType);
   app.addSchema(common.RevisionType);
   app.addSchema(common.SubjectType);
+  app.addSchema(common.TimelineCat);
 }
 
 function addRequestSchemas(app: App) {
@@ -116,7 +117,6 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.SubjectTag);
   app.addSchema(res.SubjectTopic);
   app.addSchema(res.Timeline);
-  app.addSchema(res.TimelineCat);
   app.addSchema(res.TimelineMemo);
   app.addSchema(res.TimelineSource);
   app.addSchema(res.Topic);
