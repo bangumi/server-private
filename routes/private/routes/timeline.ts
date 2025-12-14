@@ -292,6 +292,10 @@ export async function setup(app: App) {
       sse: true,
       schema: {
         summary: '时间线事件流 (SSE)',
+        description:
+          '这是一个 SSE (Server-Sent Events) 流，不是普通的 JSON 响应。' +
+          '客户端需要使用 EventSource 或类似的 SSE 客户端来订阅此接口。' +
+          '每个事件以 `data: {...}\\n\\n` 格式发送。',
         operationId: 'getTimelineEvents',
         tags: [Tag.Timeline],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -311,7 +315,7 @@ export async function setup(app: App) {
               event: t.String({ description: "事件类型: 'connected' | 'timeline'" }),
               timeline: t.Optional(res.Ref(res.Timeline)),
             },
-            { description: 'Server-Sent Events stream' },
+            { description: 'SSE 事件数据' },
           ),
         },
       },
