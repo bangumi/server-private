@@ -124,6 +124,7 @@
     "p-limit": "7.2.0",
     "prettier": "3.7.4",
     "prettier-plugin-jsdoc": "1.8.0",
+    "rimraf": "^6.1.2",
     "std-env": "3.10.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
