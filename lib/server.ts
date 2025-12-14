@@ -91,7 +91,8 @@ export async function createServer(
       return;
     }
 
-    if (typeof error.statusCode !== 'number' || error.statusCode === 500) {
+    const statusCode = (error as { statusCode: unknown }).statusCode;
+    if (typeof statusCode !== 'number' || statusCode === 500) {
       logger.error(error);
       void reply.status(500).send({
         error: 'Internal Server Error',
