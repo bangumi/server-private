@@ -194,7 +194,7 @@ describe('should get timeline events', () => {
       );
     });
 
-    expect(body).toContain('data: {"type":"connected"}');
+    expect(body).toContain('data: {"event":"connected"}');
     expect(body).toContain(String(firstID));
     expect(body).toContain(String(secondID));
   }, 15000);
@@ -224,7 +224,7 @@ describe('should get timeline events', () => {
       );
     });
 
-    expect(body).toContain('data: {"type":"connected"}');
+    expect(body).toContain('data: {"event":"connected"}');
     expect(body).toContain(String(statusID));
     expect(body).not.toContain('999999');
   }, 15000);
