@@ -1,6 +1,6 @@
-import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
+import t from 'typebox';
 
 import { db } from '@app/drizzle';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
@@ -28,7 +28,7 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: res.Ref(res.EpisodeWikiInfo, {
             examples: [
@@ -83,7 +83,7 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String(),

@@ -12,6 +12,7 @@ import { logger } from '@app/lib/logger.ts';
 import { AppDataSource } from '@app/lib/orm/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
+import { initTimelineSubscriber } from '@app/lib/timeline/sse.ts';
 
 async function main() {
   if (process.argv.includes('--help') || process.argv.includes('-h')) {
@@ -41,6 +42,7 @@ async function main() {
     await Promise.all([
       producer.initialize(),
       Subscriber.psubscribe(`event-user-notify-*`),
+      initTimelineSubscriber(),
       AppDataSource.initialize(),
     ]);
   });

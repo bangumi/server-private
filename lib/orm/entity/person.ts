@@ -130,6 +130,9 @@ export class PersonSubjects {
   @Column('tinyint', { name: 'subject_type_id', unsigned: true })
   subjectTypeID!: number;
 
+  @Column('mediumtext', { name: 'prsn_appear_eps' })
+  appearEps!: string;
+
   @Column('mediumtext', { name: 'summary' })
   summary!: string;
 

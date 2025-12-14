@@ -14,10 +14,9 @@ export async function updateSubjectCollectionCounts(
   if (oldType && oldType === newType) {
     return;
   }
-  const toUpdate: Record<string, op.SQL> = {};
-  toUpdate[getCollectionTypeField(newType)] = incr(
-    schema.chiiSubjects[getCollectionTypeField(newType)],
-  );
+  const toUpdate: Record<string, op.SQL> = {
+    [getCollectionTypeField(newType)]: incr(schema.chiiSubjects[getCollectionTypeField(newType)]),
+  };
   if (oldType) {
     toUpdate[getCollectionTypeField(oldType)] = decr(
       schema.chiiSubjects[getCollectionTypeField(oldType)],

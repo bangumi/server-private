@@ -280,12 +280,20 @@ Object {
 }
 `;
 
+exports[`person > should get person indexes 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`person > should get person works 1`] = `
 Object {
   "data": Array [
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "开发",
@@ -332,6 +340,7 @@ Object {
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "游戏设计师",

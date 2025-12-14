@@ -1,5 +1,5 @@
 import { db, op, schema } from '@app/drizzle';
-import { IndexType } from '@app/lib/index/types.ts';
+import { IndexPrivacy, IndexType } from '@app/lib/index/types.ts';
 import redis from '@app/lib/redis';
 import { CollectionPrivacy, CollectionType, SubjectType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -66,7 +66,7 @@ export async function countUserIndex(uid: number): Promise<res.IUserIndexStats> 
     .where(
       op.and(
         op.eq(schema.chiiIndexes.uid, uid),
-        op.eq(schema.chiiIndexes.ban, 0),
+        op.eq(schema.chiiIndexes.ban, IndexPrivacy.Normal),
         op.eq(schema.chiiIndexes.type, IndexType.User),
       ),
     );

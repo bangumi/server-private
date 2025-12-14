@@ -1,5 +1,4 @@
 import fastifyRequestContextPlugin from '@fastify/request-context';
-import type { Static } from '@sinclair/typebox';
 import type Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { DrizzleError } from 'drizzle-orm';
@@ -8,6 +7,7 @@ import { fastify } from 'fastify';
 import type { FastifySchemaValidationError } from 'fastify/types/schema.d.ts';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
+import type { Static } from 'typebox';
 import { TypeORMError } from 'typeorm';
 
 import { fastifyAltairPlugin } from '@app/lib/graphql/ui.ts';
@@ -91,7 +91,8 @@ export async function createServer(
       return;
     }
 
-    if (typeof error.statusCode !== 'number' || error.statusCode === 500) {
+    const statusCode = (error as { statusCode: unknown }).statusCode;
+    if (typeof statusCode !== 'number' || statusCode === 500) {
       logger.error(error);
       void reply.status(500).send({
         error: 'Internal Server Error',

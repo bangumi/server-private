@@ -1,5 +1,5 @@
-import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';

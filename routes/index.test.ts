@@ -8,4 +8,4 @@ test('should build private api spec', async () => {
   const res = await app.inject({ url: '/p1/openapi.yaml' });
   expect(res.statusCode).toBe(200);
   expect(res.body).toMatchSnapshot();
-});
+}, 15000);

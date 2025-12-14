@@ -2,7 +2,7 @@ inputs:
   node-version:
     description: 'node version'
     required: false
-    default: '^22.11.0'
+    default: '^24.0.0'
 
 name: 'Setup Node and run npm ci'
 description: 'setup node env'
@@ -10,9 +10,10 @@ runs:
   using: 'composite'
   steps:
     - name: Setup Node
-      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      uses: actions/setup-node@v6
       with:
         node-version: '${{ inputs.node-version }}'
+        package-manager-cache: false
 
     - run: |
         npm i -g corepack
@@ -22,7 +23,7 @@ runs:
       shell: bash
       name: install pnpm
 
-    - uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4
+    - uses: actions/cache@v4
       with:
         path: ~/.local/share/pnpm/store/
         key: ${{ runner.os }}-1-node${{ inputs.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}

@@ -1,10 +1,11 @@
-import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
+import t from 'typebox';
 
 import { db, op, type orm, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
+import { IndexRelatedCategory } from '@app/lib/index/types';
 import { LikeType, Reaction } from '@app/lib/like';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -173,7 +174,7 @@ export async function setup(app: App) {
     '/subjects/:subjectID/episodes',
     {
       schema: {
-        summary: '获取条目的剧集',
+        summary: '获取条目的章节',
         operationId: 'getSubjectEpisodes',
         tags: [Tag.Subject],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
@@ -464,6 +465,7 @@ export async function setup(app: App) {
         const positions = relations[r.personID] || [];
         positions.push({
           type: convert.toSubjectStaffPositionType(r.subjectType, r.position),
+          appearEps: r.appearEps,
           summary: r.summary,
         });
         relations[r.personID] = positions;
@@ -556,6 +558,7 @@ export async function setup(app: App) {
         staffs.push({
           person: person,
           summary: r.summary,
+          appearEps: r.appearEps,
         });
         relations[r.position] = staffs;
       }
@@ -782,6 +785,72 @@ export async function setup(app: App) {
       }
       return {
         data: reviews,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/indexes',
+    {
+      schema: {
+        summary: '获取条目关联的目录',
+        operationId: 'getSubjectIndexes',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.SlimIndex)),
+        },
+      },
+    },
+    async ({ auth, params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiIndexRelated.sid, subjectID),
+        op.eq(schema.chiiIndexRelated.ban, 0),
+        op.eq(schema.chiiIndexRelated.cat, IndexRelatedCategory.Subject),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiIndexRelated)
+        .where(condition);
+      const data = await db
+        .select({ indexID: schema.chiiIndexRelated.rid })
+        .from(schema.chiiIndexRelated)
+        .where(condition)
+        .orderBy(op.desc(schema.chiiIndexRelated.id))
+        .limit(limit)
+        .offset(offset);
+      const indexIDs = data.map((d) => d.indexID);
+      const fetched = await fetcher.fetchSlimIndexesByIDs(indexIDs);
+      const uids = Object.values(fetched).map((index) => index.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const indexes: res.ISlimIndex[] = [];
+      for (const indexID of indexIDs) {
+        const index = fetched[indexID];
+        if (!index) {
+          continue;
+        }
+        if (index.private && (!auth || index.uid !== auth.userID)) {
+          continue;
+        }
+        index.user = users[index.uid];
+        indexes.push(index);
+      }
+      return {
+        data: indexes,
         total: count,
       };
     },
@@ -1110,7 +1179,7 @@ export async function setup(app: App) {
         display = TopicDisplay.Review;
       }
 
-      await rateLimit(LimitAction.Subject, auth.userID);
+      await rateLimit(LimitAction.Topic, auth.userID);
       const now = DateTime.now().toUnixInteger();
 
       let topicID = 0;
@@ -1596,7 +1665,7 @@ export async function setup(app: App) {
         notifyUserID = parent.uid;
       }
 
-      await rateLimit(LimitAction.Subject, auth.userID);
+      await rateLimit(LimitAction.Reply, auth.userID);
 
       const createdAt = DateTime.now().toUnixInteger();
 

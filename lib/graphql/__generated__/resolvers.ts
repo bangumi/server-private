@@ -568,8 +568,8 @@ export type CharacterResolvers<
 
 export type CharacterRelatedPersonResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['CharacterRelatedPerson'] = ResolversParentTypes['CharacterRelatedPerson'],
+  ParentType extends ResolversParentTypes['CharacterRelatedPerson'] =
+    ResolversParentTypes['CharacterRelatedPerson'],
 > = {
   person?: Resolver<ResolversTypes['SlimPerson'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
@@ -579,8 +579,8 @@ export type CharacterRelatedPersonResolvers<
 
 export type CharacterRelatedSubjectResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['CharacterRelatedSubject'] = ResolversParentTypes['CharacterRelatedSubject'],
+  ParentType extends ResolversParentTypes['CharacterRelatedSubject'] =
+    ResolversParentTypes['CharacterRelatedSubject'],
 > = {
   order?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
@@ -669,8 +669,8 @@ export type PersonResolvers<
 
 export type PersonRelatedCharacterResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['PersonRelatedCharacter'] = ResolversParentTypes['PersonRelatedCharacter'],
+  ParentType extends ResolversParentTypes['PersonRelatedCharacter'] =
+    ResolversParentTypes['PersonRelatedCharacter'],
 > = {
   character?: Resolver<ResolversTypes['SlimCharacter'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
@@ -680,8 +680,8 @@ export type PersonRelatedCharacterResolvers<
 
 export type PersonRelatedSubjectResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['PersonRelatedSubject'] = ResolversParentTypes['PersonRelatedSubject'],
+  ParentType extends ResolversParentTypes['PersonRelatedSubject'] =
+    ResolversParentTypes['PersonRelatedSubject'],
 > = {
   position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
@@ -839,8 +839,8 @@ export type SubjectResolvers<
 
 export type SubjectAirtimeResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['SubjectAirtime'] = ResolversParentTypes['SubjectAirtime'],
+  ParentType extends ResolversParentTypes['SubjectAirtime'] =
+    ResolversParentTypes['SubjectAirtime'],
 > = {
   date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   month?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -851,8 +851,8 @@ export type SubjectAirtimeResolvers<
 
 export type SubjectCollectionResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['SubjectCollection'] = ResolversParentTypes['SubjectCollection'],
+  ParentType extends ResolversParentTypes['SubjectCollection'] =
+    ResolversParentTypes['SubjectCollection'],
 > = {
   collect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   doing?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -876,8 +876,8 @@ export type SubjectImagesResolvers<
 
 export type SubjectPlatformResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['SubjectPlatform'] = ResolversParentTypes['SubjectPlatform'],
+  ParentType extends ResolversParentTypes['SubjectPlatform'] =
+    ResolversParentTypes['SubjectPlatform'],
 > = {
   alias?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -899,8 +899,8 @@ export type SubjectRatingResolvers<
 
 export type SubjectRelatedCharacterResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['SubjectRelatedCharacter'] = ResolversParentTypes['SubjectRelatedCharacter'],
+  ParentType extends ResolversParentTypes['SubjectRelatedCharacter'] =
+    ResolversParentTypes['SubjectRelatedCharacter'],
 > = {
   character?: Resolver<ResolversTypes['SlimCharacter'], ParentType, ContextType>;
   order?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -910,8 +910,8 @@ export type SubjectRelatedCharacterResolvers<
 
 export type SubjectRelatedPersonResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['SubjectRelatedPerson'] = ResolversParentTypes['SubjectRelatedPerson'],
+  ParentType extends ResolversParentTypes['SubjectRelatedPerson'] =
+    ResolversParentTypes['SubjectRelatedPerson'],
 > = {
   person?: Resolver<ResolversTypes['SlimPerson'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -920,8 +920,8 @@ export type SubjectRelatedPersonResolvers<
 
 export type SubjectRelationResolvers<
   ContextType = Context,
-  ParentType extends
-    ResolversParentTypes['SubjectRelation'] = ResolversParentTypes['SubjectRelation'],
+  ParentType extends ResolversParentTypes['SubjectRelation'] =
+    ResolversParentTypes['SubjectRelation'],
 > = {
   order?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   relation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

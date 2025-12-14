@@ -102,6 +102,7 @@ export interface TimelineMessage {
     cat: TimelineMonoCat;
     type: TimelineMonoType;
     id: number;
+    name: string;
     createdAt: number;
     source: number;
   };
@@ -303,7 +304,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     }
   },
 
-  /** 进度 - 剧集 */
+  /** 进度 - 章节 */
   async progressEpisode(payload: TimelineMessage['progressEpisode']): Promise<number> {
     if (payload.episode.status === EpisodeCollectionStatus.None) {
       throw new BadRequestError('episode status is none');
@@ -470,6 +471,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     const detail: memo.MonoSingle = {
       cat: payload.cat,
       id: payload.id,
+      name: payload.name,
     };
     const [previous] = await db
       .select()

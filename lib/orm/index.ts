@@ -140,6 +140,7 @@ export interface ISubject {
   platform: number;
   metaTags: string;
   summary: string;
+  series: boolean;
   nsfw: boolean;
   date: string;
   redirect: number;
@@ -171,6 +172,7 @@ export async function fetchSubjectByID(id: number): Promise<ISubject | null> {
     platform: subject.platform,
     metaTags: subject.metaTags,
     summary: subject.fieldSummary,
+    series: subject.subjectSeries,
     nsfw: subject.subjectNsfw,
     date: f.date,
     redirect: f.fieldRedirect,

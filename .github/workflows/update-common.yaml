@@ -15,14 +15,14 @@ jobs:
   update:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
 
       - uses: ./.github/actions/setup-js-env
 
       - run: git reset --hard origin/master
-        working-directory: ./vendor/common
+        working-directory: ./upstream/common
 
       - run: pnpm run build-common
       - run: pnpm run format

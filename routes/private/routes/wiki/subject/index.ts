@@ -1,9 +1,9 @@
 import { parseToMap } from '@bgm38/wiki';
-import type { Static } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
 import type { ResultSetHeader } from 'mysql2';
+import type { Static } from 'typebox';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { HeaderInvalidError, NotAllowedError } from '@app/lib/auth/index.ts';
@@ -12,7 +12,7 @@ import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
 import { RevType } from '@app/lib/orm/entity';
-import { AppDataSource, SubjectRevRepo } from '@app/lib/orm/index.ts';
+import { AppDataSource } from '@app/lib/orm/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import * as Subject from '@app/lib/subject/index.ts';
@@ -72,6 +72,7 @@ export const SubjectNew = t.Object(
     type: res.Ref(res.SubjectType),
     platform: t.Integer(),
     infobox: t.String({ minLength: 1 }),
+    series: t.Optional(t.Boolean()),
     nsfw: t.Boolean(),
     metaTags: t.Array(t.String()),
     summary: t.String(),
@@ -87,6 +88,7 @@ export const SubjectEdit = t.Object(
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
     platform: t.Integer(),
+    series: t.Optional(t.Boolean()),
     nsfw: t.Boolean(),
     date: t.Optional(
       t.String({
@@ -141,6 +143,7 @@ export const SubjectWikiInfo = t.Object(
     availablePlatform: t.Array(res.Ref(Platform)),
     metaTags: t.Array(t.String()),
     summary: t.String(),
+    series: t.Optional(t.Boolean()),
     nsfw: t.Boolean(),
   },
   { $id: 'SubjectWikiInfo' },
@@ -152,7 +155,7 @@ export const EpsisodesNew = t.Object(
   {
     episodes: t.Array(
       // EpisodePartial with required ep
-      t.Composite([t.Omit(EpisodePartial, ['ep']), t.Object({ ep: t.Number() })]),
+      t.Interface([t.Omit(EpisodePartial, ['ep']), t.Object({ ep: t.Number() })], {}),
     ),
   },
   { $id: 'EpsisodesNew' },
@@ -163,7 +166,7 @@ export const EpsisodesEdit = t.Object(
     commitMessage: t.String(),
     episodes: t.Array(
       // EpisodePartial with required id
-      t.Composite([EpisodePartial, t.Object({ id: t.Integer() })]),
+      t.Interface([EpisodePartial, t.Object({ id: t.Integer() })], {}),
     ),
     expectedRevision: t.Optional(t.Array(req.EpisodeExpected)),
   },
@@ -184,15 +187,18 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectInfo',
-        description: ['获取当前的 wiki 信息'].join('\n\n'),
+        summary: '获取条目当前的 wiki 信息',
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: req.Ref(SubjectWikiInfo),
           401: req.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+          404: req.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
           }),
         },
       },
@@ -221,6 +227,7 @@ export async function setup(app: App) {
           text: x.type_cn,
           wiki_tpl: x.wiki_tpl,
         })),
+        ...(s.typeID === SubjectType.Book && { series: s.series }),
         nsfw: s.nsfw,
         typeID: s.typeID,
       };
@@ -281,8 +288,9 @@ export async function setup(app: App) {
         platform: body.platform,
         fieldInfobox: body.infobox,
         typeID: body.type,
-        metaTags: body.metaTags.sort().join(' '),
+        metaTags: body.metaTags.toSorted().join(' '),
         fieldSummary: body.summary,
+        subjectSeries: body.series,
         subjectNsfw: body.nsfw,
         fieldEps: eps,
         updatedAt: DateTime.now().toUnixInteger(),
@@ -354,22 +362,55 @@ export async function setup(app: App) {
     },
   );
 
-  type IHistorySummary = Static<typeof HistorySummary>;
-  const HistorySummary = t.Object(
+  const SubjectRevisionWikiInfo = t.Object(
     {
-      creator: t.Object({
-        username: t.String(),
-      }),
-      type: t.Integer({
-        description: '修改类型。`1` 正常修改， `11` 合并，`103` 锁定/解锁 `104` 未知',
-      }),
-      commitMessage: t.String(),
-      createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+      id: t.Integer(),
+      name: t.String(),
+      infobox: t.String(),
+      metaTags: t.Array(t.String()),
+      summary: t.String(),
     },
-    { $id: 'HistorySummary' },
+    { $id: 'SubjectRevisionWikiInfo' },
   );
+  app.addSchema(SubjectRevisionWikiInfo);
 
-  app.addSchema(HistorySummary);
+  app.get(
+    '/subjects/-/revisions/:revisionID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectRevisionInfo',
+        summary: '获取条目历史版本 wiki 信息',
+        params: t.Object({
+          revisionID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: req.Ref(SubjectRevisionWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('revision')),
+          }),
+        },
+      },
+    },
+    async ({ params: { revisionID } }): Promise<Static<typeof SubjectRevisionWikiInfo>> => {
+      const [r] = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.revId, revisionID));
+      if (!r) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      return {
+        id: r.subjectID,
+        name: r.name,
+        infobox: r.infobox,
+        metaTags: r.metaTags ? r.metaTags.split(' ') : [],
+        summary: r.summary,
+      };
+    },
+  );
 
   app.get(
     '/subjects/:subjectID/history-summary',
@@ -377,25 +418,26 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'subjectEditHistorySummary',
-        description: ['获取当前的 wiki 信息'].join('\n\n'),
+        summary: '获取条目 wiki 历史编辑摘要',
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: t.Array(res.Ref(HistorySummary)),
+          200: t.Array(res.Ref(res.RevisionHistory)),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },
     },
-    async ({ params: { subjectID } }): Promise<IHistorySummary[]> => {
-      const history = await SubjectRevRepo.find({
-        take: 10,
-        order: { id: 'desc' },
-        where: { subjectID },
-      });
+    async ({ params: { subjectID } }) => {
+      const history = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.subjectID, subjectID))
+        .orderBy(op.desc(schema.chiiSubjectRev.revId))
+        .limit(10);
 
       if (history.length === 0) {
         return [];
@@ -405,13 +447,14 @@ export async function setup(app: App) {
 
       return history.map((x) => {
         return {
+          id: x.revId,
           creator: {
             username: users[x.creatorID]?.username ?? '',
           },
           type: x.type,
           createdAt: x.createdAt,
           commitMessage: x.commitMessage,
-        } satisfies IHistorySummary;
+        } satisfies res.IRevisionHistory;
       });
     },
   );
@@ -426,7 +469,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
@@ -479,6 +522,7 @@ export async function setup(app: App) {
         date: body.date,
         metaTags: body.metaTags,
         summary: body.summary,
+        series: body.series,
         nsfw: body.nsfw,
         userID: auth.userID,
         now: DateTime.now(),
@@ -497,7 +541,7 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
@@ -557,6 +601,7 @@ export async function setup(app: App) {
         platform = s.platform,
         metaTags = s.metaTags ? s.metaTags.split(' ') : [],
         summary = s.summary,
+        series = s.series,
         nsfw = s.nsfw,
         date,
       }: Partial<Static<typeof SubjectEdit>> = input;
@@ -565,8 +610,9 @@ export async function setup(app: App) {
         infobox === s.infobox &&
         name === s.name &&
         platform === s.platform &&
-        metaTags.sort().join(' ') === s.metaTags &&
+        metaTags.toSorted().join(' ') === s.metaTags &&
         summary === s.summary &&
+        series === s.series &&
         nsfw === s.nsfw &&
         date === undefined
       ) {
@@ -597,6 +643,7 @@ export async function setup(app: App) {
         platform: platform,
         metaTags: metaTags,
         summary: summary,
+        series,
         nsfw,
         date,
         userID: finalAuthorID,
@@ -845,6 +892,85 @@ export async function setup(app: App) {
           comment: commitMessage,
         });
       });
+    },
+  );
+
+  type IUserSubjectContribution = Static<typeof UserSubjectContribution>;
+  const UserSubjectContribution = t.Object(
+    {
+      id: t.Integer(),
+      type: t.Integer({
+        description: '修改类型。`1` 正常修改， `11` 合并，`103` 锁定/解锁 `104` 未知',
+      }),
+      subjectID: t.Integer(),
+      name: t.String(),
+      commitMessage: t.String(),
+      createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+    },
+    { $id: 'UserSubjectContribution' },
+  );
+
+  app.addSchema(UserSubjectContribution);
+
+  app.get(
+    '/users/:username/contributions/subjects',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getUserContributedSubjects',
+        summary: '获取用户 wiki 条目编辑记录',
+        params: t.Object({
+          username: t.String(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Paged(res.Ref(UserSubjectContribution)),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('user')),
+          }),
+        },
+      },
+    },
+    async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
+      const user = await fetcher.fetchSlimUserByUsername(username);
+      if (!user) {
+        throw new NotFoundError('user');
+      }
+
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count(schema.chiiSubjectRev.subjectID) })
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.creatorID, user.id));
+
+      const history = await db
+        .select()
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.creatorID, user.id))
+        .orderBy(op.desc(schema.chiiSubjectRev.revId))
+        .offset(offset)
+        .limit(limit);
+
+      const revisions = history.map((r) => {
+        return {
+          id: r.revId,
+          type: r.type,
+          subjectID: r.subjectID,
+          name: r.name,
+          commitMessage: r.commitMessage,
+          createdAt: r.createdAt,
+        } satisfies IUserSubjectContribution;
+      });
+
+      return {
+        total: count,
+        data: revisions,
+      };
     },
   );
 }

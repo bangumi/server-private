@@ -27,7 +27,7 @@ export const db = drizzle(poolConnection, {
     testing || developing
       ? {
           logQuery(query: string, params: unknown[]) {
-            logger.trace('query', { query, params });
+            logger.trace({ query, params }, 'query');
           },
         }
       : undefined,

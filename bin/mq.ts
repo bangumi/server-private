@@ -75,14 +75,14 @@ async function onBinlogMessage(msg: KafkaMessage) {
       // catch on each handler to it doesn't get swallowed by Promise.all.
       ts.push(
         h(msg).catch((error) => {
-          logger.error('failed to handle event from %s: %o', payload.source.table, error);
+          logger.error('failed to handle event from %s: %o', payload.source.table, error as object);
         }),
       );
     }
     await Promise.all(ts);
   } else {
     await handler(msg).catch((error) => {
-      logger.error('failed to handle event from %s: %o', payload.source.table, error);
+      logger.error('failed to handle event from %s: %o', payload.source.table, error as object);
     });
   }
 }
@@ -97,7 +97,7 @@ async function onServiceMessage(msg: KafkaMessage) {
     return;
   }
   await handler(msg).catch((error) => {
-    logger.error('failed to handle event from %s: %o', msg.topic, error);
+    logger.error('failed to handle event from %s: %o', msg.topic, error as object);
   });
 }
 

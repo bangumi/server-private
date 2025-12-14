@@ -500,6 +500,13 @@ Object {
 }
 `;
 
+exports[`subject > should get subject indexes 1`] = `
+Object {
+  "data": Array [],
+  "total": 0,
+}
+`;
+
 exports[`subject > should get subject recs 1`] = `
 Object {
   "data": Array [],
@@ -600,6 +607,7 @@ Object {
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "原作",
@@ -610,6 +618,11 @@ Object {
         },
       ],
       "staff": Object {
+        "career": Array [
+          "producer",
+          "mangaka",
+          "mangaka",
+        ],
         "comment": 59,
         "id": 39,
         "images": Object {
@@ -629,6 +642,7 @@ Object {
     Object {
       "positions": Array [
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "导演",
@@ -638,6 +652,7 @@ Object {
           },
         },
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "分镜",
@@ -647,6 +662,7 @@ Object {
           },
         },
         Object {
+          "appearEps": "",
           "summary": "",
           "type": Object {
             "cn": "演出",
@@ -657,6 +673,9 @@ Object {
         },
       ],
       "staff": Object {
+        "career": Array [
+          "producer",
+        ],
         "comment": 100,
         "id": 40,
         "images": Object {
@@ -690,7 +709,13 @@ Object {
       },
       "staffs": Array [
         Object {
+          "appearEps": "",
           "person": Object {
+            "career": Array [
+              "producer",
+              "mangaka",
+              "mangaka",
+            ],
             "comment": 59,
             "id": 39,
             "images": Object {
@@ -719,7 +744,11 @@ Object {
       },
       "staffs": Array [
         Object {
+          "appearEps": "",
           "person": Object {
+            "career": Array [
+              "producer",
+            ],
             "comment": 100,
             "id": 40,
             "images": Object {

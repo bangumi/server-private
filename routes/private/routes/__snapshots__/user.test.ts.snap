@@ -145,10 +145,17 @@ Object {
     Object {
       "createdAt": 1352366596,
       "id": 15045,
+      "private": false,
+      "stats": Object {
+        "subject": Object {
+          "anime": 101,
+        },
+      },
       "title": "日本动画最高收视率TOP100",
       "total": 101,
       "type": 0,
       "uid": 14127,
+      "updatedAt": 1020240000,
     },
   ],
   "total": 1,

@@ -17,14 +17,21 @@ function addCommonSchemas(app: App) {
   app.addSchema(common.GroupMemberRole);
   app.addSchema(common.IndexRelatedCategory);
   app.addSchema(common.IndexType);
+  app.addSchema(common.ReportReason);
+  app.addSchema(common.ReportType);
+  app.addSchema(common.RevisionType);
   app.addSchema(common.SubjectType);
+  app.addSchema(common.TimelineCat);
 }
 
 function addRequestSchemas(app: App) {
   app.addSchema(req.CharacterSearchFilter);
   app.addSchema(req.CollectSubject);
   app.addSchema(req.CreateContent);
+  app.addSchema(req.CreateIndex);
+  app.addSchema(req.CreateIndexRelated);
   app.addSchema(req.CreateReply);
+  app.addSchema(req.CreateReport);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.FilterMode);
   app.addSchema(req.GroupFilterMode);
@@ -40,6 +47,8 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateEpisodeProgress);
+  app.addSchema(req.UpdateIndex);
+  app.addSchema(req.UpdateIndexRelated);
   app.addSchema(req.UpdateSubjectProgress);
   app.addSchema(req.UpdateTopic);
 }
@@ -76,6 +85,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
   app.addSchema(res.ReplyBase);
+  app.addSchema(res.RevisionHistory);
   app.addSchema(res.SimpleUser);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
@@ -107,7 +117,6 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.SubjectTag);
   app.addSchema(res.SubjectTopic);
   app.addSchema(res.Timeline);
-  app.addSchema(res.TimelineCat);
   app.addSchema(res.TimelineMemo);
   app.addSchema(res.TimelineSource);
   app.addSchema(res.Topic);

@@ -3,6 +3,8 @@ import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
 import { type orm } from '@app/drizzle';
 import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
+import { parseIndexStats } from '@app/lib/index/stats';
+import { IndexPrivacy } from '@app/lib/index/types';
 import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
 import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
@@ -24,23 +26,6 @@ export function splitTags(tags: string): string[] {
 
 export function extractNameCN(infobox: res.IInfobox): string {
   return infobox.find((x) => ['中文名', '简体中文名'].includes(x.key))?.values[0]?.v ?? '';
-}
-
-export function toIndexStats(stats: string): res.IIndexStats {
-  const result: Record<number, number> = {};
-  if (!stats) {
-    return result;
-  }
-  const statList = decode(stats) as Record<number, string>;
-  for (const [key, value] of Object.entries(statList)) {
-    const k = Number.parseInt(key);
-    const v = Number.parseInt(value);
-    if (Number.isNaN(k) || Number.isNaN(v)) {
-      continue;
-    }
-    result[k] = v;
-  }
-  return result;
 }
 
 export function toSubjectTags(tags: string): res.ISubjectTag[] {
@@ -351,6 +336,7 @@ export function toBlogEntry(entry: orm.IBlogEntry, user: orm.IUser): res.IBlogEn
   return {
     id: entry.id,
     type: entry.type,
+    uid: entry.uid,
     user: toSlimUser(user),
     title: entry.title,
     icon: blogIcon(entry.icon),
@@ -441,23 +427,7 @@ export function toCharacter(character: orm.ICharacter): res.ICharacter {
   };
 }
 
-export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
-  const infobox = toInfobox(person.infobox);
-  return {
-    id: person.id,
-    name: person.name,
-    nameCN: extractNameCN(infobox),
-    type: person.type,
-    info: getPersonInfoboxSummary(infobox),
-    images: personImages(person.img),
-    comment: person.comment,
-    nsfw: person.nsfw,
-    lock: Boolean(person.lock),
-  };
-}
-
-export function toPerson(person: orm.IPerson): res.IPerson {
-  const infobox = toInfobox(person.infobox);
+function parsePersonCareer(person: orm.IPerson): string[] {
   const career = [];
   if (person.producer) {
     career.push('producer');
@@ -483,13 +453,34 @@ export function toPerson(person: orm.IPerson): res.IPerson {
   if (person.actor) {
     career.push('actor');
   }
+  return career;
+}
+
+export function toSlimPerson(person: orm.IPerson): res.ISlimPerson {
+  const infobox = toInfobox(person.infobox);
+  return {
+    id: person.id,
+    name: person.name,
+    nameCN: extractNameCN(infobox),
+    type: person.type,
+    info: getPersonInfoboxSummary(infobox),
+    career: parsePersonCareer(person),
+    images: personImages(person.img),
+    comment: person.comment,
+    nsfw: person.nsfw,
+    lock: Boolean(person.lock),
+  };
+}
+
+export function toPerson(person: orm.IPerson): res.IPerson {
+  const infobox = toInfobox(person.infobox);
   return {
     id: person.id,
     name: person.name,
     nameCN: extractNameCN(infobox),
     type: person.type,
     infobox: infobox,
-    career,
+    career: parsePersonCareer(person),
     summary: person.summary,
     info: getPersonInfoboxSummary(infobox),
     images: personImages(person.img),
@@ -507,8 +498,11 @@ export function toSlimIndex(index: orm.IIndex): res.ISlimIndex {
     uid: index.uid,
     type: index.type,
     title: index.title,
+    private: index.ban === IndexPrivacy.Private,
     total: index.total,
+    stats: parseIndexStats(index.stats),
     createdAt: index.createdAt,
+    updatedAt: index.updatedAt,
   };
 }
 
@@ -519,10 +513,11 @@ export function toIndex(index: orm.IIndex): res.IIndex {
     type: index.type,
     title: index.title,
     desc: index.desc,
+    private: index.ban === 2,
     replies: index.replies,
     total: index.total,
     collects: index.collects,
-    stats: toIndexStats(index.stats),
+    stats: parseIndexStats(index.stats),
     award: index.award,
     createdAt: index.createdAt,
     updatedAt: index.updatedAt,

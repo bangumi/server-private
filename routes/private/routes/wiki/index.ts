@@ -1,5 +1,5 @@
-import type { Static } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import type { Static } from 'typebox';
+import t from 'typebox';
 
 import { Tag } from '@app/lib/openapi/index.ts';
 import { RevType } from '@app/lib/orm/entity/index.ts';
@@ -7,12 +7,14 @@ import * as orm from '@app/lib/orm/index.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
+import * as character from './character/index.ts';
 import * as person from './person/index.ts';
 import * as ep from './subject/ep.ts';
 import * as subject from './subject/index.ts';
 
 export async function setup(app: App) {
   await app.register(subject.setup);
+  await app.register(character.setup);
   await app.register(person.setup);
   await app.register(ep.setup);
   await app.register(setupRecentChangeList);

@@ -26,7 +26,7 @@ export function validateTags(tags: string[]): string[] {
       break;
     }
   }
-  return [...result].sort();
+  return [...result].toSorted();
 }
 
 /**
@@ -61,7 +61,7 @@ export async function insertUserTags(
     );
 
   const tagIDs = await ensureTags(t, cat, type, tags);
-  const tids = Object.values(tagIDs).sort();
+  const tids = Object.values(tagIDs).toSorted();
 
   if (tids.length > 0) {
     const now = DateTime.now().toUnixInteger();

@@ -39,6 +39,7 @@ interface Create {
   userID: number;
   date?: string;
   now: DateTime;
+  series?: boolean;
   nsfw?: boolean;
   metaTags?: string[];
   expectedRevision?: Partial<{
@@ -58,6 +59,7 @@ export async function edit({
   commitMessage,
   metaTags,
   date,
+  series,
   nsfw,
   userID,
   now = DateTime.now(),
@@ -116,13 +118,17 @@ export async function edit({
         name: s.name,
         infobox: s.infobox,
         summary: s.summary,
-        metaTags: s.metaTags.split(' ').sort(),
+        metaTags: s.metaTags.split(' ').toSorted(),
       });
     }
 
     const nameCN: string = extractNameCN(w);
 
     logger.info('user %d edit subject %d', userID, subjectID);
+
+    if (series && s.typeID !== SubjectType.Book) {
+      series = false;
+    }
 
     let vol, episodes;
     if (s.typeID === SubjectType.Book) {
@@ -197,6 +203,7 @@ export async function edit({
         metaTags: newMetaTags,
         volumes: vol,
         summary,
+        series,
         nsfw,
         infobox,
       })
@@ -373,7 +380,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
         rank: toRank((votes[image.id] ?? []).map((x) => x.user)),
       };
     })
-    .sort((a, b) => {
+    .toSorted((a, b) => {
       for (let i = 0; i < subjectImageVoteOrder.length + 1; i++) {
         const va = a.rank[i] ?? 0;
         const vb = b.rank[i] ?? 0;

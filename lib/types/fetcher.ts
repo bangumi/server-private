@@ -9,6 +9,8 @@ import {
   getTopicCacheKey as getGroupTopicCacheKey,
 } from '@app/lib/group/cache.ts';
 import { getSlimCacheKey as getIndexSlimCacheKey } from '@app/lib/index/cache.ts';
+import { IndexPrivacy } from '@app/lib/index/types.ts';
+import { logger } from '@app/lib/logger.ts';
 import { getSlimCacheKey as getPersonSlimCacheKey } from '@app/lib/person/cache.ts';
 import redis from '@app/lib/redis.ts';
 import {
@@ -29,7 +31,7 @@ import { TagCat } from '@app/lib/tag.ts';
 import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
-import { isFriends } from '@app/lib/user/utils.ts';
+import { fetchFriends, isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -275,6 +277,12 @@ export async function fetchSubjectIDsByFilter(
   sort: SubjectSort,
   page: number,
 ): Promise<res.IPaged<number>> {
+  if (filter.tags) {
+    const normalizedTags = filter.tags
+      .map((tag) => tag.trim().normalize('NFKC'))
+      .filter((tag) => tag.length > 0);
+    filter.tags = normalizedTags;
+  }
   const cacheKey = getSubjectListCacheKey(filter, sort, page);
   const cached = await redis.get(cacheKey);
   if (cached) {
@@ -289,7 +297,7 @@ export async function fetchSubjectIDsByFilter(
     const ids = JSON.parse(data) as TrendingItem[];
     filter.ids = ids.map((item) => item.id);
   }
-  if (filter.tags) {
+  if (filter.tags?.length) {
     const tagIndexes = await db
       .select({ id: schema.chiiTagIndex.id })
       .from(schema.chiiTagIndex)
@@ -297,18 +305,24 @@ export async function fetchSubjectIDsByFilter(
         op.and(
           op.eq(schema.chiiTagIndex.cat, TagCat.Subject),
           op.eq(schema.chiiTagIndex.type, filter.type),
-          op.inArray(
-            schema.chiiTagIndex.name,
-            filter.tags.map((t) => t.normalize('NFKC')),
-          ),
+          op.inArray(schema.chiiTagIndex.name, filter.tags),
         ),
       );
-    if (!tagIndexes) {
+    if (tagIndexes.length === 0) {
       return { data: [], total: 0 };
     }
-    const tagIDs = tagIndexes.map((d) => d.id);
-    const tagList = await db
-      .selectDistinct({ mid: schema.chiiTagList.mainID })
+    const tagIDs = lo.uniq(tagIndexes.map((d) => d.id));
+    if (tagIndexes.length > tagIDs.length) {
+      logger.warn(
+        `[SubjectFetcher] Duplicate tag index IDs detected for tags: ${filter.tags?.join(', ')}. This may indicate a data or normalization issue.`,
+      );
+    }
+
+    const tagRows = await db
+      .select({
+        subjectID: schema.chiiTagList.mainID,
+        tagID: schema.chiiTagList.tagID,
+      })
       .from(schema.chiiTagList)
       .where(
         op.and(
@@ -317,12 +331,40 @@ export async function fetchSubjectIDsByFilter(
           op.inArray(schema.chiiTagList.tagID, tagIDs),
         ),
       );
-    const subjectIDs = tagList.map((d) => d.mid);
-    if (filter.ids) {
-      filter.ids = filter.ids.filter((id) => subjectIDs.includes(id));
-    } else {
-      filter.ids = subjectIDs;
+    if (tagRows.length === 0) {
+      return { data: [], total: 0 };
     }
+    const subjectTagMap = new Map<number, Set<number>>();
+    for (const row of tagRows) {
+      let tagsForSubject = subjectTagMap.get(row.subjectID);
+      if (!tagsForSubject) {
+        tagsForSubject = new Set<number>();
+        subjectTagMap.set(row.subjectID, tagsForSubject);
+      }
+      tagsForSubject.add(row.tagID);
+    }
+    const subjectIDs: number[] = [];
+    for (const [subjectID, subjectTags] of subjectTagMap) {
+      let hasAllTags = true;
+      for (const tagID of tagIDs) {
+        if (!subjectTags.has(tagID)) {
+          hasAllTags = false;
+          break;
+        }
+      }
+      if (hasAllTags) {
+        subjectIDs.push(subjectID);
+      }
+    }
+    if (subjectIDs.length === 0) {
+      return { data: [], total: 0 };
+    }
+    const subjectIDSet = new Set(subjectIDs);
+    const mergedIDs = filter.ids ? filter.ids.filter((id) => subjectIDSet.has(id)) : subjectIDs;
+    if (mergedIDs.length === 0) {
+      return { data: [], total: 0 };
+    }
+    filter.ids = mergedIDs;
   }
 
   const conditions = [
@@ -478,6 +520,10 @@ export async function fetchSubjectInterest(
 
 /** Cached */
 export async function fetchSubjectTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  if (ids.length === 0) {
+    return {};
+  }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getSubjectTopicCacheKey(id)));
   const result: Record<number, res.ITopic> = {};
   const missing = [];
@@ -524,6 +570,10 @@ export async function fetchEpisodeByID(episodeID: number): Promise<res.IEpisode 
 export async function fetchEpisodesByIDs(
   episodeIDs: number[],
 ): Promise<Record<number, res.IEpisode>> {
+  if (episodeIDs.length === 0) {
+    return {};
+  }
+  episodeIDs = lo.uniq(episodeIDs);
   const cached = await redis.mget(episodeIDs.map((id) => getSubjectEpCacheKey(id)));
   const result: Record<number, res.IEpisode> = {};
   const missing = [];
@@ -803,13 +853,55 @@ export async function fetchSlimIndexByID(indexID: number): Promise<res.ISlimInde
   const [data] = await db
     .select()
     .from(schema.chiiIndexes)
-    .where(op.and(op.eq(schema.chiiIndexes.id, indexID), op.ne(schema.chiiIndexes.ban, 1)));
+    .where(
+      op.and(
+        op.eq(schema.chiiIndexes.id, indexID),
+        op.ne(schema.chiiIndexes.ban, IndexPrivacy.Ban),
+      ),
+    );
   if (!data) {
     return;
   }
   const item = convert.toSlimIndex(data);
   await redis.setex(getIndexSlimCacheKey(indexID), ONE_MONTH, JSON.stringify(item));
   return item;
+}
+
+/** Cached */
+export async function fetchSlimIndexesByIDs(
+  indexIDs: number[],
+): Promise<Record<number, res.ISlimIndex>> {
+  if (indexIDs.length === 0) {
+    return {};
+  }
+  indexIDs = lo.uniq(indexIDs);
+  const cached = await redis.mget(indexIDs.map((id) => getIndexSlimCacheKey(id)));
+  const result: Record<number, res.ISlimIndex> = {};
+  const missing = [];
+  for (const [idx, id] of indexIDs.entries()) {
+    if (cached[idx]) {
+      result[id] = JSON.parse(cached[idx]) as res.ISlimIndex;
+    } else {
+      missing.push(id);
+    }
+  }
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiIndexes)
+      .where(
+        op.and(
+          op.inArray(schema.chiiIndexes.id, missing),
+          op.ne(schema.chiiIndexes.ban, IndexPrivacy.Ban),
+        ),
+      );
+    for (const d of data) {
+      const slim = convert.toSlimIndex(d);
+      await redis.setex(getIndexSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
+      result[d.id] = slim;
+    }
+  }
+  return result;
 }
 
 export async function fetchSlimGroupByName(
@@ -902,6 +994,10 @@ export async function fetchSlimGroupsByIDs(
 
 /** Cached */
 export async function fetchGroupTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
+  if (ids.length === 0) {
+    return {};
+  }
+  ids = lo.uniq(ids);
   const cached = await redis.mget(ids.map((id) => getGroupTopicCacheKey(id)));
   const result: Record<number, res.ITopic> = {};
   const missing = [];
@@ -954,4 +1050,49 @@ export async function fetchSlimBlogEntryByID(
     return;
   }
   return slim;
+}
+
+/** Cached */
+export async function fetchSlimBlogEntriesByIDs(
+  entryIDs: number[],
+  uid: number,
+): Promise<Record<number, res.ISlimBlogEntry>> {
+  if (entryIDs.length === 0) {
+    return {};
+  }
+  entryIDs = lo.uniq(entryIDs);
+  const cached = await redis.mget(entryIDs.map((id) => getBlogSlimCacheKey(id)));
+  const result: Record<number, res.ISlimBlogEntry> = {};
+  const missing = [];
+  const friends = await fetchFriends(uid);
+
+  for (const [idx, id] of entryIDs.entries()) {
+    if (cached[idx]) {
+      const slim = JSON.parse(cached[idx]) as res.ISlimBlogEntry;
+      const isFriend = friends.includes(slim.uid);
+      if (slim.public || slim.uid === uid || isFriend) {
+        result[id] = slim;
+      }
+    } else {
+      missing.push(id);
+    }
+  }
+
+  if (missing.length > 0) {
+    const data = await db
+      .select()
+      .from(schema.chiiBlogEntries)
+      .where(op.inArray(schema.chiiBlogEntries.id, missing));
+
+    for (const d of data) {
+      const slim = convert.toSlimBlogEntry(d);
+      await redis.setex(getBlogSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
+      const isFriend = friends.includes(slim.uid);
+      if (slim.public || slim.uid === uid || isFriend) {
+        result[d.id] = slim;
+      }
+    }
+  }
+
+  return result;
 }

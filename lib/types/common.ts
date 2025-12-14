@@ -1,10 +1,15 @@
-import type { Static, TRefUnsafe, TSchema, UnsafeOptions } from '@sinclair/typebox';
-import { Type as t } from '@sinclair/typebox';
+import type { Static, TSchema, TSchemaOptions, TUnsafe } from 'typebox';
+import t from 'typebox';
+import { Unsafe } from 'typebox';
 
 import { datePattern } from '@app/lib/utils/date.ts';
 
-export function Ref<T extends TSchema>(T: T, options?: UnsafeOptions): TRefUnsafe<T> {
-  return t.Unsafe<Static<T>>({ $ref: T.$id, ...options });
+export function Ref<T extends TSchema>(t: T, options: TSchemaOptions = {}): TUnsafe<Static<T>> {
+  const id = (t as unknown as Record<string, string | undefined>).$id;
+  if (!id) {
+    throw new Error('missing ID on schema');
+  }
+  return Unsafe<Static<T>>({ ...t, $ref: id, $id: undefined, ...options });
 }
 
 export const SubjectType = t.Integer({
@@ -61,17 +66,28 @@ export const CollectionType = t.Integer({
 
 export const IndexRelatedCategory = t.Integer({
   $id: 'IndexRelatedCategory',
-  enum: [0, 1, 2, 3],
+  enum: [0, 1, 2, 3, 4, 5, 6],
   'x-ms-enum': {
     name: 'IndexRelatedCategory',
     modelAsString: false,
   },
-  'x-enum-varnames': ['Subject', 'Character', 'Person', 'Episode'],
+  'x-enum-varnames': [
+    'Subject',
+    'Character',
+    'Person',
+    'Episode',
+    'Blog',
+    'GroupTopic',
+    'SubjectTopic',
+  ],
   description: `目录关联类型
   - 0 = 条目
   - 1 = 角色
   - 2 = 人物
-  - 3 = 剧集`,
+  - 3 = 章节
+  - 4 = 日志
+  - 5 = 小组话题
+  - 6 = 条目讨论`,
 });
 
 export const EpisodeCollectionStatus = t.Integer({
@@ -82,7 +98,7 @@ export const EpisodeCollectionStatus = t.Integer({
     modelAsString: false,
   },
   'x-enum-varnames': ['None', 'Wish', 'Done', 'Dropped'],
-  description: `剧集收藏状态
+  description: `章节收藏状态
   - 0 = 撤消/删除
   - 1 = 想看
   - 2 = 看过
@@ -144,3 +160,174 @@ export const EpisodeWikiInfo = t.Object(
     $id: 'EpisodeWikiInfo',
   },
 );
+
+export const ReportReason = t.Integer({
+  $id: 'ReportReason',
+  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 99],
+  'x-ms-enum': {
+    name: 'ReportReason',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'Abuse',
+    'Spam',
+    'Political',
+    'Illegal',
+    'Privacy',
+    'CheatScore',
+    'Flame',
+    'Advertisement',
+    'Spoiler',
+    'Other',
+  ],
+  description: `举报原因
+  - 1 = 辱骂、人身攻击
+  - 2 = 刷屏、无关内容
+  - 3 = 政治相关
+  - 4 = 违法信息
+  - 5 = 泄露隐私
+  - 6 = 涉嫌刷分
+  - 7 = 引战
+  - 8 = 广告
+  - 9 = 剧透
+  - 99 = 其他`,
+});
+
+export const ReportType = t.Integer({
+  $id: 'ReportType',
+  enum: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+  'x-ms-enum': {
+    name: 'ReportType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'User',
+    'GroupTopic',
+    'GroupReply',
+    'SubjectTopic',
+    'SubjectReply',
+    'EpisodeReply',
+    'CharacterReply',
+    'PersonReply',
+    'Blog',
+    'BlogReply',
+    'Timeline',
+    'TimelineReply',
+    'Index',
+    'IndexReply',
+  ],
+  description: `举报类型
+  - 6 = 用户
+  - 7 = 小组话题
+  - 8 = 小组回复
+  - 9 = 条目话题
+  - 10 = 条目回复
+  - 11 = 章节回复
+  - 12 = 角色回复
+  - 13 = 人物回复
+  - 14 = 日志
+  - 15 = 日志回复
+  - 16 = 时间线
+  - 17 = 时间线回复
+  - 18 = 目录
+  - 19 = 目录回复`,
+});
+
+export const RevisionType = t.Integer({
+  $id: 'RevisionType',
+  enum: [
+    1, 103, 104, 11, 12, 17, 5, 6, 10, 2, 13, 14, 4, 7, 3, 15, 16, 8, 9, 18, 181, 182, 183, 184,
+    185,
+  ],
+  'x-ms-enum': {
+    name: 'RevisionType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'SubjectEdit',
+    'SubjectLock',
+    'SubjectUnlock',
+    'SubjectMerge',
+    'SubjectErase',
+    'SubjectRelation',
+    'SubjectCharacterRelation',
+    'SubjectCastRelation',
+    'SubjectPersonRelation',
+    'CharacterEdit',
+    'CharacterMerge',
+    'CharacterErase',
+    'CharacterSubjectRelation',
+    'CharacterCastRelation',
+    'PersonEdit',
+    'PersonMerge',
+    'PersonErase',
+    'PersonCastRelation',
+    'PersonSubjectRelation',
+    'EpisodeEdit',
+    'EpisodeMerge',
+    'EpisodeMove',
+    'EpisodeLock',
+    'EpisodeUnlock',
+    'EpisodeErase',
+  ],
+  description: `修订类型
+  - 1 = 条目编辑
+  - 103 = 条目锁定
+  - 104 = 条目解锁
+  - 11 = 条目合体
+  - 12 = 条目删除
+  - 17 = 条目关联
+  - 5 = 条目->角色关联
+  - 6 = 条目->声优关联
+  - 10 = 条目->人物关联
+ 
+  - 2 = 角色编辑
+  - 13 = 角色合体
+  - 14 = 角色删除
+  - 4 = 角色->条目关联
+  - 7 = 角色->声优关联
+ 
+  - 3 = 人物编辑
+  - 15 = 人物合体
+  - 16 = 人物删除
+  - 8 = 人物->声优关联
+  - 9 = 人物->条目关联
+ 
+  - 18 = 章节编辑
+  - 181 = 章节合体
+  - 182 = 章节移动
+  - 183 = 章节锁定
+  - 184 = 章节解锁
+  - 185 = 章节删除
+`,
+});
+
+export const TimelineCat = t.Integer({
+  $id: 'TimelineCat',
+  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  'x-ms-enum': {
+    name: 'TimelineCat',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'Daily',
+    'Wiki',
+    'Subject',
+    'Progress',
+    'Status',
+    'Blog',
+    'Index',
+    'Mono',
+    'Doujin',
+  ],
+  description: `时间线类型
+  - 1 = 日常行为
+  - 2 = 维基操作
+  - 3 = 收藏条目
+  - 4 = 收视进度
+  - 5 = 状态
+  - 6 = 日志
+  - 7 = 目录
+  - 8 = 人物
+  - 9 = 天窗`,
+});

@@ -1,8 +1,9 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 
 import { db, op, type orm, schema } from '@app/drizzle';
 import { CommentWithState } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
+import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
 import { getPersonCollect } from '@app/lib/person/utils.ts';
@@ -18,6 +19,7 @@ function toPersonSubjectRelation(relation: orm.IPersonSubject): res.ISubjectStaf
   return {
     summary: relation.summary,
     type: convert.toSubjectStaffPositionType(relation.subjectType, relation.position),
+    appearEps: relation.appearEps,
   };
 }
 
@@ -347,6 +349,72 @@ export async function setup(app: App) {
         throw new NotFoundError(`person ${personID}`);
       }
       return await comment.getAll(personID);
+    },
+  );
+
+  app.get(
+    '/persons/:personID/indexes',
+    {
+      schema: {
+        summary: '获取人物关联的目录',
+        operationId: 'getPersonIndexes',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.SlimIndex)),
+        },
+      },
+    },
+    async ({ auth, params: { personID }, query: { limit = 20, offset = 0 } }) => {
+      const person = await fetcher.fetchSlimPersonByID(personID, auth.allowNsfw);
+      if (!person) {
+        throw new NotFoundError(`person ${personID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiIndexRelated.sid, personID),
+        op.eq(schema.chiiIndexRelated.ban, 0),
+        op.eq(schema.chiiIndexRelated.cat, IndexRelatedCategory.Person),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiIndexRelated)
+        .where(condition);
+      const data = await db
+        .select({ indexID: schema.chiiIndexRelated.rid })
+        .from(schema.chiiIndexRelated)
+        .where(condition)
+        .orderBy(op.desc(schema.chiiIndexRelated.id))
+        .limit(limit)
+        .offset(offset);
+      const indexIDs = data.map((d) => d.indexID);
+      const fetched = await fetcher.fetchSlimIndexesByIDs(indexIDs);
+      const uids = Object.values(fetched).map((index) => index.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const indexes: res.ISlimIndex[] = [];
+      for (const indexID of indexIDs) {
+        const index = fetched[indexID];
+        if (!index) {
+          continue;
+        }
+        if (index.private && (!auth || index.uid !== auth.userID)) {
+          continue;
+        }
+        index.user = users[index.uid];
+        indexes.push(index);
+      }
+      return {
+        data: indexes,
+        total: count,
+      };
     },
   );
 

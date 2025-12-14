@@ -1,5 +1,5 @@
-import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
@@ -472,7 +472,7 @@ export async function setup(app: App) {
         display = TopicDisplay.Review;
       }
 
-      await rateLimit(LimitAction.Group, auth.userID);
+      await rateLimit(LimitAction.Topic, auth.userID);
       const now = DateTime.now().toUnixInteger();
 
       let topicID = 0;
@@ -969,7 +969,7 @@ export async function setup(app: App) {
         notifyUserID = parent.uid;
       }
 
-      await rateLimit(LimitAction.Group, auth.userID);
+      await rateLimit(LimitAction.Reply, auth.userID);
 
       const createdAt = DateTime.now().toUnixInteger();
 

@@ -1,4 +1,4 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 
 import { production } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';

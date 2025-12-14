@@ -32,7 +32,7 @@ export async function parseTimelineMemo(
           if (batch) {
             const info = decode(data) as memo.UserBatch;
             const us = await fetcher.fetchSlimUsersByIDs(Object.keys(info).map(Number));
-            for (const id of Object.keys(info).map(Number).sort()) {
+            for (const id of Object.keys(info).map(Number).toSorted()) {
               const user = us[id];
               if (user) {
                 users.push(user);
@@ -60,7 +60,7 @@ export async function parseTimelineMemo(
               Object.keys(info).map(Number),
               auth.allowNsfw,
             );
-            for (const id of Object.keys(info).map(Number).sort()) {
+            for (const id of Object.keys(info).map(Number).toSorted()) {
               const group = gs[id];
               if (group) {
                 groups.push(group);
@@ -101,7 +101,7 @@ export async function parseTimelineMemo(
           Object.keys(info).map(Number),
           auth.allowNsfw,
         );
-        for (const id of Object.keys(info).map(Number).sort()) {
+        for (const id of Object.keys(info).map(Number).toSorted()) {
           const subject = ss[id];
           const v = info[id];
           if (!subject) {
@@ -374,21 +374,32 @@ export async function fetchTimelineByIDs(
   }
 
   const collectIDs: Record<number, number> = {};
+  const statusIDs: number[] = [];
   for (const [tid, item] of Object.entries(result)) {
-    if (item.cat !== TimelineCat.Subject) {
-      continue;
-    }
-    if (item.batch) {
-      continue;
-    }
-    const subject = item.memo.subject?.[0];
-    if (!subject) {
-      continue;
-    }
-    if (subject.comment && subject.collectID) {
-      collectIDs[Number(tid)] = subject.collectID;
+    switch (item.cat) {
+      case TimelineCat.Status: {
+        statusIDs.push(item.id);
+        break;
+      }
+      case TimelineCat.Subject: {
+        if (item.batch) {
+          continue;
+        }
+        const subject = item.memo.subject?.[0];
+        if (!subject) {
+          continue;
+        }
+        if (subject.comment && subject.collectID) {
+          collectIDs[Number(tid)] = subject.collectID;
+        }
+        break;
+      }
+      default: {
+        break;
+      }
     }
   }
+  const statusReactions = await Reaction.fetchByRelatedIDs(LikeType.TimelineStatus, statusIDs);
   const collectReactions = await Reaction.fetchByRelatedIDs(
     LikeType.SubjectCollect,
     Object.values(collectIDs),
@@ -406,7 +417,18 @@ export async function fetchTimelineByIDs(
     if (!subject) {
       continue;
     }
-    subject.reactions = reactions;
+    item.reactions = reactions;
+  }
+  for (const tid of statusIDs) {
+    const reactions = statusReactions[tid];
+    if (!reactions) {
+      continue;
+    }
+    const item = result[tid];
+    if (!item) {
+      continue;
+    }
+    item.reactions = reactions;
   }
   return result;
 }

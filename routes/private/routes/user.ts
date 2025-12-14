@@ -1,8 +1,8 @@
-import { Type as t } from '@sinclair/typebox';
+import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';
-import { IndexType } from '@app/lib/index/types';
+import { IndexPrivacy, IndexType } from '@app/lib/index/types';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
 import { CollectionPrivacy } from '@app/lib/subject/type.ts';
@@ -439,7 +439,7 @@ export async function setup(app: App) {
       const conditions = op.and(
         op.eq(schema.chiiIndexes.type, IndexType.User),
         op.eq(schema.chiiIndexCollects.uid, user.id),
-        op.ne(schema.chiiIndexes.ban, 1),
+        op.eq(schema.chiiIndexes.ban, IndexPrivacy.Normal),
       );
 
       const [{ count = 0 } = {}] = await db
@@ -456,7 +456,14 @@ export async function setup(app: App) {
         .orderBy(op.desc(schema.chiiIndexCollects.createdAt))
         .limit(limit)
         .offset(offset);
-      const collection = data.map((d) => convert.toSlimIndex(d.chii_index));
+
+      const uids = data.map((d) => d.chii_index.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const collection = data.map((d) => {
+        const index = convert.toSlimIndex(d.chii_index);
+        index.user = users[index.uid];
+        return index;
+      });
 
       return {
         data: collection,
@@ -545,27 +552,31 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { username }, query: { limit = 20, offset = 0 } }) => {
+    async ({ auth, params: { username }, query: { limit = 20, offset = 0 } }) => {
       const user = await fetcher.fetchSlimUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
 
-      const conditions = op.and(
+      const conditions = [
         op.eq(schema.chiiIndexes.type, IndexType.User),
         op.eq(schema.chiiIndexes.uid, user.id),
-        op.ne(schema.chiiIndexes.ban, 1),
-      );
+      ];
+      if (auth.userID === user.id) {
+        conditions.push(op.ne(schema.chiiIndexes.ban, IndexPrivacy.Ban));
+      } else {
+        conditions.push(op.eq(schema.chiiIndexes.ban, IndexPrivacy.Normal));
+      }
 
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiIndexes)
-        .where(conditions);
+        .where(op.and(...conditions));
 
       const data = await db
         .select()
         .from(schema.chiiIndexes)
-        .where(conditions)
+        .where(op.and(...conditions))
         .orderBy(op.desc(schema.chiiIndexes.createdAt))
         .limit(limit)
         .offset(offset);

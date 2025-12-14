@@ -1,5 +1,5 @@
-import { Type as t } from '@sinclair/typebox';
 import { DateTime } from 'luxon';
+import t from 'typebox';
 
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Tag } from '@app/lib/openapi/index.ts';

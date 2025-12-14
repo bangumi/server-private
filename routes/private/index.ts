@@ -1,5 +1,6 @@
 import Cookie from '@fastify/cookie';
-import { Type as t } from '@sinclair/typebox';
+import fastifySSE from '@fastify/sse';
+import t from 'typebox';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import { production } from '@app/lib/config.ts';
@@ -19,6 +20,7 @@ import * as index from './routes/index.ts';
 import * as misc from './routes/misc.ts';
 import * as person from './routes/person.ts';
 import * as friend from './routes/relationship.ts';
+import * as report from './routes/report.ts';
 import * as search from './routes/search.ts';
 import * as subject from './routes/subject.ts';
 import * as timeline from './routes/timeline.ts';
@@ -46,6 +48,8 @@ export async function setup(app: App) {
   });
 
   void app.addHook('preHandler', Auth);
+
+  await app.register(fastifySSE);
 
   await app.register(API);
 }
@@ -81,8 +85,9 @@ async function API(app: App) {
   await app.register(group.setup);
   await app.register(index.setup);
   await app.register(misc.setup);
-  await app.register(search.setup);
   await app.register(person.setup);
+  await app.register(report.setup);
+  await app.register(search.setup);
   await app.register(subject.setup);
   await app.register(timeline.setup);
   await app.register(trending.setup);

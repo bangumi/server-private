@@ -1,5 +1,5 @@
-import { Type as t } from '@sinclair/typebox';
 import * as lo from 'lodash-es';
+import t from 'typebox';
 
 import type { EpTextRev } from '@app/lib/orm/entity/index.ts';
 import { RevHistory, RevText } from '@app/lib/orm/entity/index.ts';
@@ -102,7 +102,7 @@ export async function setup(app: App) {
 
       return await res.view('admin/episode-history', {
         ep,
-        histories: histories.sort((a, b) => a.revDateline - b.revDateline),
+        histories: histories.toSorted((a, b) => a.revDateline - b.revDateline),
       });
     },
   );
