@@ -35,7 +35,7 @@ importers:
         specifier: 6.2.1
         version: 6.2.1
       '@fastify/sse':
-        specifier: ^0.4.0
+        specifier: 0.4.0
         version: 0.4.0(fastify@5.6.2)
       '@fastify/static':
         specifier: 8.3.0
