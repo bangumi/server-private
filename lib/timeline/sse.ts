@@ -81,16 +81,5 @@ export async function handleTimelineSSE(
 
   await sseReply.sse.send({ data: { type: 'connected' } });
 
-  const heartbeatInterval = setInterval(() => {
-    if (sseReply.sse.isConnected) {
-      void sseReply.sse.send({ data: { type: 'heartbeat' } }).catch(() => {
-        // ignore
-      });
-    }
-  }, 30000);
-
-  sseReply.sse.onClose(() => {
-    clearInterval(heartbeatInterval);
-    cleanup();
-  });
+  sseReply.sse.onClose(cleanup);
 }
