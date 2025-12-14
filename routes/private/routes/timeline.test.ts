@@ -7,6 +7,7 @@ import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import redis from '@app/lib/redis.ts';
 import { TIMELINE_EVENT_CHANNEL } from '@app/lib/timeline/cache';
+import { initTimelineSubscriber } from '@app/lib/timeline/sse.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './timeline.ts';
@@ -153,6 +154,7 @@ describe('should get timeline events', () => {
   const createdTimelineIDs: number[] = [];
 
   beforeEach(async () => {
+    await initTimelineSubscriber();
     await redis.flushdb();
   });
 

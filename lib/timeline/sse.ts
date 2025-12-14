@@ -31,17 +31,26 @@ class TimelineEventTarget extends EventTarget {
 
 export const timelineEvents = new TimelineEventTarget();
 
-// Parse Redis message once and emit to all listeners
-TimelineSubscriber.on('message', (ch: string, msg: string) => {
-  if (ch !== TIMELINE_EVENT_CHANNEL) return;
+let initialized = false;
 
-  try {
-    const event = JSON.parse(msg) as TimelineEvent;
-    timelineEvents.emit(event);
-  } catch (error) {
-    logger.error({ error, msg }, 'failed to parse timeline event');
-  }
-});
+export async function initTimelineSubscriber() {
+  if (initialized) return;
+  initialized = true;
+
+  await TimelineSubscriber.subscribe(TIMELINE_EVENT_CHANNEL);
+
+  // Parse Redis message once and emit to all listeners
+  TimelineSubscriber.on('message', (ch: string, msg: string) => {
+    if (ch !== TIMELINE_EVENT_CHANNEL) return;
+
+    try {
+      const event = JSON.parse(msg) as TimelineEvent;
+      timelineEvents.emit(event);
+    } catch (error) {
+      logger.error({ error, msg }, 'failed to parse timeline event');
+    }
+  });
+}
 
 export async function handleTimelineSSE(
   request: FastifyRequest,

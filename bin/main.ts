@@ -10,9 +10,9 @@ import config, { production, stage } from '@app/lib/config.ts';
 import { producer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger.ts';
 import { AppDataSource } from '@app/lib/orm/index.ts';
-import { Subscriber, TimelineSubscriber } from '@app/lib/redis.ts';
+import { Subscriber } from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
-import { TIMELINE_EVENT_CHANNEL } from '@app/lib/timeline/cache';
+import { initTimelineSubscriber } from '@app/lib/timeline/sse.ts';
 
 async function main() {
   if (process.argv.includes('--help') || process.argv.includes('-h')) {
@@ -42,7 +42,7 @@ async function main() {
     await Promise.all([
       producer.initialize(),
       Subscriber.psubscribe(`event-user-notify-*`),
-      TimelineSubscriber.subscribe(TIMELINE_EVENT_CHANNEL),
+      initTimelineSubscriber(),
       AppDataSource.initialize(),
     ]);
   });
