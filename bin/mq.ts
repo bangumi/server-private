@@ -24,7 +24,7 @@ import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
 const TOPICS = [
   'timeline',
-  'notify',
+  'notify.v1',
 
   // 'debezium.chii.bangumi.chii_pms',
   // 'debezium.chii.bangumi.chii_subject_revisions',
