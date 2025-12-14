@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
 import { logger } from '@app/lib/logger.ts';
-import { Subscriber } from '@app/lib/redis.ts';
+import { TimelineSubscriber } from '@app/lib/redis.ts';
 import { TIMELINE_EVENT_CHANNEL } from '@app/lib/timeline/cache';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -52,13 +52,13 @@ export async function handleTimelineSSE(
   const messageHandler = (ch: string, msg: string) => {
     void onMessage(ch, msg);
   };
-  Subscriber.addListener('message', messageHandler);
+  TimelineSubscriber.addListener('message', messageHandler);
 
   let cleaned = false;
   const cleanup = () => {
     if (cleaned) return;
     cleaned = true;
-    Subscriber.removeListener('message', messageHandler);
+    TimelineSubscriber.removeListener('message', messageHandler);
   };
 
   request.raw.once('close', cleanup);
