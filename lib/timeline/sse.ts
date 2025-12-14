@@ -7,6 +7,42 @@ import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 
+export interface TimelineEvent {
+  tml_id: number;
+  cat: number;
+  uid: number;
+}
+
+class TimelineEventTarget extends EventTarget {
+  emit(event: TimelineEvent) {
+    this.dispatchEvent(new CustomEvent('timeline', { detail: event }));
+  }
+
+  on(handler: (event: TimelineEvent) => void) {
+    const listener = (e: Event) => handler((e as CustomEvent<TimelineEvent>).detail);
+    this.addEventListener('timeline', listener);
+    return listener;
+  }
+
+  off(listener: (e: Event) => void) {
+    this.removeEventListener('timeline', listener);
+  }
+}
+
+export const timelineEvents = new TimelineEventTarget();
+
+// Parse Redis message once and emit to all listeners
+TimelineSubscriber.on('message', (ch: string, msg: string) => {
+  if (ch !== TIMELINE_EVENT_CHANNEL) return;
+
+  try {
+    const event = JSON.parse(msg) as TimelineEvent;
+    timelineEvents.emit(event);
+  } catch (error) {
+    logger.error({ error, msg }, 'failed to parse timeline event');
+  }
+});
+
 export async function handleTimelineSSE(
   request: FastifyRequest,
   reply: FastifyReply,
@@ -25,11 +61,11 @@ export async function handleTimelineSSE(
 
   sseReply.sse.keepAlive();
 
-  const onMessage = async (ch: string, msg: string) => {
-    if (ch !== TIMELINE_EVENT_CHANNEL || !sseReply.sse.isConnected) return;
+  const onEvent = async (event: TimelineEvent) => {
+    if (!sseReply.sse.isConnected) return;
 
     try {
-      const { tml_id, cat, uid } = JSON.parse(msg) as { tml_id: number; cat: number; uid: number };
+      const { tml_id, cat, uid } = event;
 
       if (filterCat !== undefined && cat !== filterCat) return;
       if (mode === req.IFilterMode.Friends && friendIDs && !friendIDs.has(uid)) return;
@@ -45,20 +81,19 @@ export async function handleTimelineSSE(
         await sseReply.sse.send({ data: timeline });
       }
     } catch (error) {
-      logger.error({ error, msg }, 'failed to process timeline SSE message');
+      logger.error({ error, event }, 'failed to process timeline SSE event');
     }
   };
 
-  const messageHandler = (ch: string, msg: string) => {
-    void onMessage(ch, msg);
-  };
-  TimelineSubscriber.addListener('message', messageHandler);
+  const listener = timelineEvents.on((event) => {
+    void onEvent(event);
+  });
 
   let cleaned = false;
   const cleanup = () => {
     if (cleaned) return;
     cleaned = true;
-    TimelineSubscriber.removeListener('message', messageHandler);
+    timelineEvents.off(listener);
   };
 
   request.raw.once('close', cleanup);
