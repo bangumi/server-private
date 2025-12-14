@@ -465,6 +465,7 @@ export async function setup(app: App) {
         const positions = relations[r.personID] || [];
         positions.push({
           type: convert.toSubjectStaffPositionType(r.subjectType, r.position),
+          appearEps: r.appearEps,
           summary: r.summary,
         });
         relations[r.personID] = positions;
@@ -557,6 +558,7 @@ export async function setup(app: App) {
         staffs.push({
           person: person,
           summary: r.summary,
+          appearEps: r.appearEps,
         });
         relations[r.position] = staffs;
       }
@@ -833,6 +835,8 @@ export async function setup(app: App) {
         .offset(offset);
       const indexIDs = data.map((d) => d.indexID);
       const fetched = await fetcher.fetchSlimIndexesByIDs(indexIDs);
+      const uids = Object.values(fetched).map((index) => index.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
       const indexes: res.ISlimIndex[] = [];
       for (const indexID of indexIDs) {
         const index = fetched[indexID];
@@ -842,6 +846,7 @@ export async function setup(app: App) {
         if (index.private && (!auth || index.uid !== auth.userID)) {
           continue;
         }
+        index.user = users[index.uid];
         indexes.push(index);
       }
       return {
@@ -1174,7 +1179,7 @@ export async function setup(app: App) {
         display = TopicDisplay.Review;
       }
 
-      await rateLimit(LimitAction.Subject, auth.userID);
+      await rateLimit(LimitAction.Topic, auth.userID);
       const now = DateTime.now().toUnixInteger();
 
       let topicID = 0;
@@ -1660,7 +1665,7 @@ export async function setup(app: App) {
         notifyUserID = parent.uid;
       }
 
-      await rateLimit(LimitAction.Subject, auth.userID);
+      await rateLimit(LimitAction.Reply, auth.userID);
 
       const createdAt = DateTime.now().toUnixInteger();
 

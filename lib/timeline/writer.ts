@@ -102,6 +102,7 @@ export interface TimelineMessage {
     cat: TimelineMonoCat;
     type: TimelineMonoType;
     id: number;
+    name: string;
     createdAt: number;
     source: number;
   };
@@ -470,6 +471,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
     const detail: memo.MonoSingle = {
       cat: payload.cat,
       id: payload.id,
+      name: payload.name,
     };
     const [previous] = await db
       .select()

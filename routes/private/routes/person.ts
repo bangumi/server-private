@@ -19,6 +19,7 @@ function toPersonSubjectRelation(relation: orm.IPersonSubject): res.ISubjectStaf
   return {
     summary: relation.summary,
     type: convert.toSubjectStaffPositionType(relation.subjectType, relation.position),
+    appearEps: relation.appearEps,
   };
 }
 
@@ -396,6 +397,8 @@ export async function setup(app: App) {
         .offset(offset);
       const indexIDs = data.map((d) => d.indexID);
       const fetched = await fetcher.fetchSlimIndexesByIDs(indexIDs);
+      const uids = Object.values(fetched).map((index) => index.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
       const indexes: res.ISlimIndex[] = [];
       for (const indexID of indexIDs) {
         const index = fetched[indexID];
@@ -405,6 +408,7 @@ export async function setup(app: App) {
         if (index.private && (!auth || index.uid !== auth.userID)) {
           continue;
         }
+        index.user = users[index.uid];
         indexes.push(index);
       }
       return {

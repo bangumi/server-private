@@ -28,7 +28,7 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: res.Ref(res.EpisodeWikiInfo, {
             examples: [
@@ -83,7 +83,7 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [] }],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         body: t.Object(
           {
             commitMessage: t.String(),

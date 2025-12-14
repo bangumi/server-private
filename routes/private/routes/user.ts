@@ -456,7 +456,14 @@ export async function setup(app: App) {
         .orderBy(op.desc(schema.chiiIndexCollects.createdAt))
         .limit(limit)
         .offset(offset);
-      const collection = data.map((d) => convert.toSlimIndex(d.chii_index));
+
+      const uids = data.map((d) => d.chii_index.uid);
+      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const collection = data.map((d) => {
+        const index = convert.toSlimIndex(d.chii_index);
+        index.user = users[index.uid];
+        return index;
+      });
 
       return {
         data: collection,

@@ -7,9 +7,11 @@ import { NotAllowedError } from '@app/lib/auth';
 import { CommentWithoutState } from '@app/lib/comment';
 import { Dam } from '@app/lib/dam';
 import { BadRequestError, NotFoundError } from '@app/lib/error';
+import { LikeType, Reaction } from '@app/lib/like';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByID, fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
+import { TimelineCat } from '@app/lib/timeline/type';
 import { TimelineWriter } from '@app/lib/timeline/writer';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -205,6 +207,80 @@ export async function setup(app: App) {
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { timelineID } }) => {
       return await comment.create(auth, timelineID, content, replyTo);
+    },
+  );
+
+  app.put(
+    '/timeline/:timelineID/like',
+    {
+      schema: {
+        summary: '给时间线吐槽点赞',
+        operationId: 'likeTimeline',
+        tags: [Tag.Timeline],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          timelineID: t.Integer(),
+        }),
+        body: t.Object({
+          value: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('liking a timeline')],
+    },
+    async ({ auth, params: { timelineID }, body: { value } }) => {
+      const timeline = await fetchTimelineByID(auth, timelineID);
+      if (!timeline) {
+        throw new NotFoundError('timeline');
+      }
+      if (timeline.cat !== TimelineCat.Status) {
+        throw new BadRequestError('timeline is not a status');
+      }
+      await Reaction.add({
+        type: LikeType.TimelineStatus,
+        mid: timeline.uid,
+        rid: timeline.id,
+        uid: auth.userID,
+        value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/timeline/:timelineID/like',
+    {
+      schema: {
+        summary: '取消时间线吐槽点赞',
+        operationId: 'unlikeTimeline',
+        tags: [Tag.Timeline],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          timelineID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a timeline')],
+    },
+    async ({ auth, params: { timelineID } }) => {
+      const timeline = await fetchTimelineByID(auth, timelineID);
+      if (!timeline) {
+        throw new NotFoundError('timeline');
+      }
+      if (timeline.cat !== TimelineCat.Status) {
+        throw new BadRequestError('timeline is not a status');
+      }
+      await Reaction.delete({
+        type: LikeType.TimelineStatus,
+        rid: timeline.id,
+        uid: auth.userID,
+      });
+      return {};
     },
   );
 }

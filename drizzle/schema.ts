@@ -422,6 +422,7 @@ export const chiiPersonSubjects = mysqlTable('chii_person_cs_index', {
   personType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
   personID: mediumint('prsn_id').notNull(),
   position: smallint('prsn_position').notNull(),
+  appearEps: mediumtext('prsn_appear_eps').notNull(),
   subjectID: mediumint('subject_id').notNull(),
   subjectType: tinyint('subject_type_id').notNull(),
   summary: htmlEscapedString('mediumtext')('summary').notNull(),
@@ -738,4 +739,17 @@ export const chiiBlogPhotos = mysqlTable('chii_blog_photo', {
   target: varchar('photo_target', { length: 255 }).notNull(),
   vote: mediumint('photo_vote').notNull(),
   createdAt: int('photo_dateline').notNull(),
+});
+
+export const chiiIssues = mysqlTable('chii_issues', {
+  id: mediumint('isu_id').autoincrement().notNull(),
+  type: tinyint('isu_type').notNull(),
+  mid: mediumint('isu_main_id').notNull(),
+  value: mediumint('isu_value').notNull(),
+  creator: mediumint('isu_creator').notNull(),
+  operator: mediumint('isu_operator').notNull(),
+  status: tinyint('isu_status').notNull(),
+  reason: htmlEscapedString('mediumtext')('isu_reason').notNull(),
+  related: mediumint('isu_related').notNull(),
+  createdAt: int('isu_dateline').notNull(),
 });

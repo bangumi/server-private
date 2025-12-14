@@ -835,9 +835,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "ctr_appear_eps": {
+        "crt_appear_eps": {
           "autoincrement": false,
-          "name": "ctr_appear_eps",
+          "name": "crt_appear_eps",
           "type": "mediumtext",
           "primaryKey": false,
           "notNull": true
@@ -902,9 +902,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "ctr_appear_eps": {
+        "crt_appear_eps": {
           "autoincrement": false,
-          "name": "ctr_appear_eps",
+          "name": "crt_appear_eps",
           "type": "mediumtext",
           "primaryKey": false,
           "notNull": true

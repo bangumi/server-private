@@ -17,6 +17,9 @@ function addCommonSchemas(app: App) {
   app.addSchema(common.GroupMemberRole);
   app.addSchema(common.IndexRelatedCategory);
   app.addSchema(common.IndexType);
+  app.addSchema(common.ReportReason);
+  app.addSchema(common.ReportType);
+  app.addSchema(common.RevisionType);
   app.addSchema(common.SubjectType);
 }
 
@@ -27,6 +30,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CreateIndex);
   app.addSchema(req.CreateIndexRelated);
   app.addSchema(req.CreateReply);
+  app.addSchema(req.CreateReport);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.FilterMode);
   app.addSchema(req.GroupFilterMode);
@@ -80,6 +84,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
   app.addSchema(res.ReplyBase);
+  app.addSchema(res.RevisionHistory);
   app.addSchema(res.SimpleUser);
   app.addSchema(res.SlimBlogEntry);
   app.addSchema(res.SlimCharacter);
