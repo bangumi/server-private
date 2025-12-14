@@ -18,6 +18,8 @@ jobs:
         uses: kenji-miyake/setup-git-cliff@v2
 
       - run: git cliff --current -o changelog.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Upload GitHub Release
         run: gh release create "${GITHUB_REF}" -F changelog.md
