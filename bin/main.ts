@@ -41,6 +41,7 @@ async function main() {
     await Promise.all([
       producer.initialize(),
       Subscriber.psubscribe(`event-user-notify-*`),
+      Subscriber.subscribe('events:tml:create'),
       AppDataSource.initialize(),
     ]);
   });

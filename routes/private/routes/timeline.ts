@@ -330,8 +330,6 @@ export async function setup(app: App) {
         friendIDs.add(auth.userID);
       }
 
-      reply.sse.keepAlive();
-
       await handleTimelineSSE(request, reply, filterCat, mode, friendIDs);
     },
   );

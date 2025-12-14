@@ -1,29 +1,11 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
+import { logger } from '@app/lib/logger.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import { TIMELINE_EVENT_CHANNEL } from '@app/lib/timeline/cache';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
-
-let timelineSubscribePromise: Promise<void> | null = null;
-
-async function ensureTimelineSubscribed() {
-  if (!timelineSubscribePromise) {
-    timelineSubscribePromise = (async () => {
-      if (Subscriber.status === 'end' || Subscriber.status === 'wait') {
-        await Subscriber.connect();
-      }
-      await Subscriber.subscribe(TIMELINE_EVENT_CHANNEL);
-    })();
-  }
-  try {
-    await timelineSubscribePromise;
-  } catch (error) {
-    timelineSubscribePromise = null;
-    throw error;
-  }
-}
 
 export async function handleTimelineSSE(
   request: FastifyRequest,
@@ -41,7 +23,6 @@ export async function handleTimelineSSE(
     };
   };
 
-  await ensureTimelineSubscribed();
   sseReply.sse.keepAlive();
 
   const onMessage = async (ch: string, msg: string) => {
@@ -63,8 +44,8 @@ export async function handleTimelineSSE(
       if (sseReply.sse.isConnected) {
         await sseReply.sse.send({ data: timeline });
       }
-    } catch {
-      // ignore errors
+    } catch (error) {
+      logger.error({ error, msg }, 'failed to process timeline SSE message');
     }
   };
 
@@ -73,11 +54,14 @@ export async function handleTimelineSSE(
   };
   Subscriber.addListener('message', messageHandler);
 
+  let cleaned = false;
   const cleanup = () => {
+    if (cleaned) return;
+    cleaned = true;
     Subscriber.removeListener('message', messageHandler);
   };
 
-  request.raw.on('close', cleanup);
+  request.raw.once('close', cleanup);
 
   await sseReply.sse.send({ data: { type: 'connected' } });
 
