@@ -8477,7 +8477,15 @@ paths:
             application/json:
               schema:
                 description: Server-Sent Events stream
-                type: string
+                properties:
+                  event:
+                    description: '事件类型: ''connected'' | ''timeline'''
+                    type: string
+                  timeline:
+                    $ref: '#/components/schemas/Timeline'
+                required:
+                  - event
+                type: object
           description: Server-Sent Events stream
         '500':
           content:

@@ -306,10 +306,13 @@ export async function setup(app: App) {
           ),
         }),
         response: {
-          200: {
-            description: 'Server-Sent Events stream',
-            type: 'string',
-          },
+          200: t.Object(
+            {
+              event: t.String({ description: "事件类型: 'connected' | 'timeline'" }),
+              timeline: t.Optional(res.Ref(res.Timeline)),
+            },
+            { description: 'Server-Sent Events stream' },
+          ),
         },
       },
       preHandler: [requireLogin('subscribing to timeline events')],

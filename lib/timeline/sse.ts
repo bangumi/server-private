@@ -85,7 +85,7 @@ export async function handleTimelineSSE(
       timeline.user = await fetcher.fetchSlimUserByID(timeline.uid);
 
       if (sseReply.sse.isConnected) {
-        await sseReply.sse.send({ data: timeline });
+        await sseReply.sse.send({ data: { event: 'timeline', timeline } });
       }
     } catch (error) {
       logger.error({ error, event }, 'failed to process timeline SSE event');
@@ -105,7 +105,7 @@ export async function handleTimelineSSE(
 
   request.raw.once('close', cleanup);
 
-  await sseReply.sse.send({ data: { type: 'connected' } });
+  await sseReply.sse.send({ data: { event: 'connected' } });
 
   sseReply.sse.onClose(cleanup);
 }
