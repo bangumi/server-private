@@ -6,6 +6,7 @@ import {
   handleTopic as handleGroupTopicEvent,
 } from '@app/event/group';
 import { handle as handleIndexEvent } from '@app/event/index';
+import { handle as handleNotifyEvent } from '@app/event/notify';
 import { handle as handlePersonEvent } from '@app/event/person';
 import {
   handle as handleSubjectEvent,
@@ -23,6 +24,7 @@ import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
 const TOPICS = [
   'timeline',
+  'notify',
 
   // 'debezium.chii.bangumi.chii_pms',
   // 'debezium.chii.bangumi.chii_subject_revisions',
@@ -89,6 +91,7 @@ async function onBinlogMessage(msg: KafkaMessage) {
 
 const serviceHandlers: Record<string, Handler> = {
   timeline: handleTimelineMessage,
+  notify: handleNotifyEvent,
 };
 
 async function onServiceMessage(msg: KafkaMessage) {
