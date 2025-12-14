@@ -28,12 +28,14 @@ export function requirePermission(s: string, allowed: (auth: IAuth) => boolean |
   };
 }
 
+async function turnstileTokenMiddleware({ body }: { body: { turnstileToken: string } }) {
+  if (!(await turnstile.verify(body.turnstileToken))) {
+    throw new CaptchaError();
+  }
+}
+
 export function requireTurnstileToken() {
-  return async ({ body }: { body: { turnstileToken: string } }) => {
-    if (!(await turnstile.verify(body.turnstileToken))) {
-      throw new CaptchaError();
-    }
-  };
+  return turnstileTokenMiddleware;
 }
 
 const legacySessionCache = TypedCache<number, { password: string }>(
