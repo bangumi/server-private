@@ -3,7 +3,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import { logger } from '@app/lib/logger.ts';
 import { TimelineSubscriber } from '@app/lib/redis.ts';
 import { TIMELINE_EVENT_CHANNEL } from '@app/lib/timeline/cache';
-import { fetchTimelineByIDs } from '@app/lib/timeline/item.ts';
+import { fetchTimelineByID } from '@app/lib/timeline/item.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 
@@ -70,12 +70,10 @@ export async function handleTimelineSSE(
       if (filterCat !== undefined && cat !== filterCat) return;
       if (mode === req.IFilterMode.Friends && friendIDs && !friendIDs.has(uid)) return;
 
-      const timelines = await fetchTimelineByIDs(request.auth, [tml_id]);
-      const timeline = timelines[tml_id];
+      const timeline = await fetchTimelineByID(request.auth, tml_id);
       if (!timeline) return;
 
-      const users = await fetcher.fetchSlimUsersByIDs([timeline.uid]);
-      timeline.user = users[timeline.uid];
+      timeline.user = await fetcher.fetchSlimUserByID(timeline.uid);
 
       if (sseReply.sse.isConnected) {
         await sseReply.sse.send({ data: timeline });
