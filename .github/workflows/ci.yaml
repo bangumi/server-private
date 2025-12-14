@@ -17,7 +17,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: 'true'
       - uses: ./.github/actions/setup-js-env
@@ -34,7 +34,7 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: 'bangumi/dev-env'
           path: 'dev-env'
@@ -42,7 +42,7 @@ jobs:
       - run: mv dev-env $HOME/dev-env
       - run: cd ~/dev-env && docker compose up -d
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-js-env
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
@@ -60,7 +60,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - run: docker build -t tmp -f Dockerfile .
       - run: docker run tmp ./dist/index.mjs --help
 
