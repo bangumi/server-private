@@ -72,7 +72,7 @@ jobs:
           mv tmp package.json
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.PAT }}
           title: 'bump: ${{ env.NEW_VERSION }}'
