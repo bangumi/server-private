@@ -10,6 +10,7 @@
     "node": "^24.0"
   },
   "scripts": {
+    "generate:pb": "rimraf vendor/proto && buf generate upstream/proto",
     "drizzle-pull": "drizzle-kit introspect",
     "format": "prettier --list-different -w ./",
     "tsc": "tsc",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.948.0",
     "@bgm38/wiki": "0.3.3",
+    "@bufbuild/protobuf": "^2.6.3",
     "@confluentinc/kafka-javascript": "1.7.0",
     "@fastify/cookie": "11.0.2",
     "@fastify/error": "4.2.0",
@@ -82,6 +84,8 @@
     "yaml": "2.8.2"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.56.0",
+    "@bufbuild/protoc-gen-es": "^2.6.3",
     "@eslint/js": "9.39.2",
     "@graphql-codegen/cli": "6.1.0",
     "@graphql-codegen/introspection": "5.0.0",
@@ -120,6 +124,7 @@
     "p-limit": "7.2.0",
     "prettier": "3.7.4",
     "prettier-plugin-jsdoc": "1.8.0",
+    "rimraf": "^6.1.2",
     "std-env": "3.10.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
@@ -164,6 +169,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@bufbuild/buf",
       "@confluentinc/kafka-javascript",
       "esbuild"
     ],

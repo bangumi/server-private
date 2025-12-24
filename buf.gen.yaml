@@ -1,0 +1,6 @@
+version: v1
+
+plugins:
+  - plugin: es
+    out: vendor/proto
+    opt: target=ts
