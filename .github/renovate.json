@@ -10,7 +10,7 @@
   "postUpdateOptions": ["pnpmDedupe"],
   "rangeStrategy": "pin",
   "dockerfile": {
-    "managerFilePatterns": ["/.*dockerfile$/"],
+    "managerFilePatterns": ["Dockerfile"],
     "enabled": true
   },
   "docker-compose": {
