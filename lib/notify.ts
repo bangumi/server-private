@@ -488,7 +488,8 @@ const _settings: Record<number, setting> = {
   '22': {
     url: `${siteUrl}/user/chobits_user/timeline/status/`,
     anchor: '#post_',
-    prefix: '回复了你的 <a href="%2$s%3$s" class="nt_link link_%4$s" target="_blank">吐槽</a>',
+    // util.format expects args: url, path, hash
+    prefix: '回复了你的 <a href="%s%s" class="nt_link link_%s" target="_blank">吐槽</a>',
     suffix: '',
     id: 22,
     hash: 22,
@@ -612,7 +613,9 @@ const _settings: Record<number, setting> = {
   '35': {
     url: 'https://patch.bgm38.tv/s/',
     anchor: '#',
-    prefix: '你的 patch 已经被接受',
+    // util.format expects args: url, path, hash, title
+    prefix:
+      '你的条目 patch <a href="%s%s" class="nt_link link_%s" target="_blank">%s</a> 已经被接受',
     suffix: '',
     id: 35,
     hash: 21,
@@ -621,7 +624,9 @@ const _settings: Record<number, setting> = {
   '36': {
     url: 'https://patch.bgm38.tv/e/',
     anchor: '#',
-    prefix: '你的 patch 已经被接受',
+    // util.format expects args: url, path, hash, title
+    prefix:
+      '你的章节 patch <a href="%s%s" class="nt_link link_%s" target="_blank">%s</a> 已经被接受',
     suffix: '',
     id: 36,
     hash: 22,
@@ -630,37 +635,43 @@ const _settings: Record<number, setting> = {
   '37': {
     url: 'https://patch.bgm38.tv/s/',
     anchor: '#',
-    prefix: '你的 patch 已经被拒绝',
+    // util.format expects args: url, path, hash, title
+    prefix:
+      '你的条目 patch <a href="%s%s" class="nt_link link_%s" target="_blank">%s</a> 已经被拒绝',
     suffix: '',
     id: 37,
-    hash: 23,
+    hash: 21,
     merge: 1,
   },
   '38': {
     url: 'https://patch.bgm38.tv/e/',
     anchor: '#',
-    prefix: '你的 patch 已经被拒绝',
+    // util.format expects args: url, path, hash, title
+    prefix:
+      '你的章节 patch <a href="%s%s" class="nt_link link_%s" target="_blank">%s</a> 已经被拒绝',
     suffix: '',
     id: 38,
-    hash: 24,
+    hash: 22,
     merge: 1,
   },
   '39': {
     url: 'https://patch.bgm38.tv/s/',
     anchor: '#',
-    prefix: '你的 patch 已经过期',
+    // util.format expects args: url, path, hash, title
+    prefix: '你的条目 patch <a href="%s%s" class="nt_link link_%s" target="_blank">%s</a> 已经过期',
     suffix: '',
     id: 39,
-    hash: 25,
+    hash: 21,
     merge: 1,
   },
   '40': {
     url: 'https://patch.bgm38.tv/e/',
     anchor: '#',
-    prefix: '你的 patch 已经过期',
+    // util.format expects args: url, path, hash, title
+    prefix: '你的章节 patch <a href="%s%s" class="nt_link link_%s" target="_blank">%s</a> 已经过期',
     suffix: '',
     id: 40,
-    hash: 26,
+    hash: 22,
     merge: 1,
   },
 };
