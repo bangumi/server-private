@@ -20,8 +20,8 @@ importers:
         specifier: 0.3.3
         version: 0.3.3
       '@confluentinc/kafka-javascript':
-        specifier: 1.8.0-rc1
-        version: 1.8.0-rc1
+        specifier: 1.8.0-rc2
+        version: 1.8.0-rc2
       '@fastify/cookie':
         specifier: 11.0.2
         version: 11.0.2
@@ -45,7 +45,7 @@ importers:
         version: 9.6.1
       '@fastify/type-provider-typebox':
         specifier: 6.1.0
-        version: 6.1.0(typebox@1.0.67)
+        version: 6.1.0(typebox@1.0.71)
       '@fastify/view':
         specifier: 11.1.1
         version: 11.1.1
@@ -89,8 +89,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(patch_hash=5d0b9e07e81266f8ac4b5cea2f9f5c8ec46f7e62958394df3d45fd497061679c)(fastify@5.6.2)(socket.io@4.8.3)
       got:
-        specifier: 14.6.5
-        version: 14.6.5
+        specifier: 14.6.6
+        version: 14.6.6
       graphql:
         specifier: 16.12.0
         version: 16.12.0
@@ -161,8 +161,8 @@ importers:
         specifier: 8.0.5
         version: 8.0.5
       typebox:
-        specifier: 1.0.67
-        version: 1.0.67
+        specifier: 1.0.71
+        version: 1.0.71
       typeorm:
         specifier: 0.3.28
         version: 0.3.28(ioredis@5.8.2)(mysql2@3.16.0)
@@ -581,8 +581,8 @@ packages:
     resolution: {integrity: sha512-Extj5fsFmH8pqh+XYYjRDUm5Ar1c2KX6Jup4p198sm2Xmjsc/XK83wP71If2wStd3rf7stSgK7ADE/daX/lglA==}
     engines: {node: '>=18'}
 
-  '@confluentinc/kafka-javascript@1.8.0-rc1':
-    resolution: {integrity: sha512-6J2dQ5QyJe79ACX1LUBKsjo2cdAPF01HvyUXCqkXYQZnXx4GY0LZ47HpypwYX68+00CLRIeDDHRV2qXm5vh+Qg==}
+  '@confluentinc/kafka-javascript@1.8.0-rc2':
+    resolution: {integrity: sha512-giDGMlRVh8R8yOXBhvjcuy/bUZ2ZuPjXxZXOOR1yvbEXpJ+OiPTAKCyfI71SW08XXAoGbWOORD1gl3UD33wQBg==}
     engines: {node: '>=18.0.0'}
 
   '@drizzle-team/brocli@0.10.2':
@@ -3704,8 +3704,8 @@ packages:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
 
-  got@14.6.5:
-    resolution: {integrity: sha512-Su87c0NNeg97de1sO02gy9I8EmE7DCJ1gzcFLcgGpYeq2PnLg4xz73MWrp6HjqbSsjb6Glf4UBDW6JNyZA6uSg==}
+  got@14.6.6:
+    resolution: {integrity: sha512-QLV1qeYSo5l13mQzWgP/y0LbMr5Plr5fJilgAIwgnwseproEbtNym8xpLsDzeZ6MWXgNE6kdWGBjdh3zT/Qerg==}
     engines: {node: '>=20'}
 
   graphql-config@5.1.5:
@@ -5242,8 +5242,8 @@ packages:
     resolution: {integrity: sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==}
     engines: {node: '>=16'}
 
-  typebox@1.0.67:
-    resolution: {integrity: sha512-ltyUXOtUw5JjEwRpTIyny6qVaUEMNtGhWkBSP4T+j4yA2aHY6QzpObn7v50FAmzlDovKonhlkkzhTfzF+94y2A==}
+  typebox@1.0.71:
+    resolution: {integrity: sha512-hdMrMqeQUm3Kxkie9dP9sJa2if7KKSnE/D3mogrYCfupYUDP2KLf8wAhMXvyR8oeiduSkXTJCSnugv8iS/Mqiw==}
 
   typed-array-buffer@1.0.3:
     resolution: {integrity: sha512-nAYYwfY3qnzX30IkA6AQZjVbtK6duGontcQm1WSG1MD94YLqK0515GNApXkoxKOWMusVssAHWLh9SeaoefYFGw==}
@@ -5470,6 +5470,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -6218,7 +6219,7 @@ snapshots:
 
   '@bgm38/wiki@0.3.3': {}
 
-  '@confluentinc/kafka-javascript@1.8.0-rc1':
+  '@confluentinc/kafka-javascript@1.8.0-rc2':
     dependencies:
       '@mapbox/node-pre-gyp': 1.0.11
       bindings: 1.5.0
@@ -6619,9 +6620,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@fastify/type-provider-typebox@6.1.0(typebox@1.0.67)':
+  '@fastify/type-provider-typebox@6.1.0(typebox@1.0.71)':
     dependencies:
-      typebox: 1.0.67
+      typebox: 1.0.71
 
   '@fastify/view@11.1.1':
     dependencies:
@@ -9710,7 +9711,7 @@ snapshots:
 
   gopd@1.2.0: {}
 
-  got@14.6.5:
+  got@14.6.6:
     dependencies:
       '@sindresorhus/is': 7.1.1
       byte-counter: 0.1.0
@@ -11301,7 +11302,7 @@ snapshots:
 
   type-fest@4.41.0: {}
 
-  typebox@1.0.67: {}
+  typebox@1.0.71: {}
 
   typed-array-buffer@1.0.3:
     dependencies:
