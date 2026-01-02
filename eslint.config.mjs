@@ -123,6 +123,7 @@ export default defineConfig(
       '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/no-unsafe-enum-comparison': 'off',
       '@typescript-eslint/restrict-plus-operands': ['error', { skipCompoundAssignments: false }],
+      '@typescript-eslint/prefer-optional-chain': 'off',
       '@typescript-eslint/no-floating-promises': ['error', { ignoreVoid: true }],
       '@typescript-eslint/object-curly-spacing': ['error', 'always'], // 'import/consistent-type-specifier-style': ['error', 'prefer-top-level'],
       '@typescript-eslint/consistent-type-imports': [
