@@ -67,8 +67,12 @@ export async function parseTimelineMemo(
               }
             }
           } else {
-            const info = decode(data) as memo.Group;
-            const group = await fetcher.fetchSlimGroupByID(Number(info.grp_id));
+            const info = decode(data) as { grp_id?: number; grp_name: string };
+
+            const group = info.grp_id
+              ? await fetcher.fetchSlimGroupByID(Number(info.grp_id))
+              : await fetcher.fetchSlimGroupByName(info.grp_name);
+
             if (group) {
               groups.push(group);
             }
@@ -374,21 +378,32 @@ export async function fetchTimelineByIDs(
   }
 
   const collectIDs: Record<number, number> = {};
+  const statusIDs: number[] = [];
   for (const [tid, item] of Object.entries(result)) {
-    if (item.cat !== TimelineCat.Subject) {
-      continue;
-    }
-    if (item.batch) {
-      continue;
-    }
-    const subject = item.memo.subject?.[0];
-    if (!subject) {
-      continue;
-    }
-    if (subject.comment && subject.collectID) {
-      collectIDs[Number(tid)] = subject.collectID;
+    switch (item.cat) {
+      case TimelineCat.Status: {
+        statusIDs.push(item.id);
+        break;
+      }
+      case TimelineCat.Subject: {
+        if (item.batch) {
+          continue;
+        }
+        const subject = item.memo.subject?.[0];
+        if (!subject) {
+          continue;
+        }
+        if (subject.comment && subject.collectID) {
+          collectIDs[Number(tid)] = subject.collectID;
+        }
+        break;
+      }
+      default: {
+        break;
+      }
     }
   }
+  const statusReactions = await Reaction.fetchByRelatedIDs(LikeType.TimelineStatus, statusIDs);
   const collectReactions = await Reaction.fetchByRelatedIDs(
     LikeType.SubjectCollect,
     Object.values(collectIDs),
@@ -406,7 +421,18 @@ export async function fetchTimelineByIDs(
     if (!subject) {
       continue;
     }
-    subject.reactions = reactions;
+    item.reactions = reactions;
+  }
+  for (const tid of statusIDs) {
+    const reactions = statusReactions[tid];
+    if (!reactions) {
+      continue;
+    }
+    const item = result[tid];
+    if (!item) {
+      continue;
+    }
+    item.reactions = reactions;
   }
   return result;
 }

@@ -1,4 +1,5 @@
 import Cookie from '@fastify/cookie';
+import fastifySSE from '@fastify/sse';
 import t from 'typebox';
 
 import { cookiesPluginOption } from '@app/lib/auth/session.ts';
@@ -47,6 +48,8 @@ export async function setup(app: App) {
   });
 
   void app.addHook('preHandler', Auth);
+
+  await app.register(fastifySSE);
 
   await app.register(API);
 }

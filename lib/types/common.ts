@@ -246,3 +246,102 @@ export const ReportType = t.Integer({
   - 18 = 目录
   - 19 = 目录回复`,
 });
+
+export const RevisionType = t.Integer({
+  $id: 'RevisionType',
+  enum: [
+    1, 103, 104, 11, 12, 17, 5, 6, 10, 2, 13, 14, 4, 7, 3, 15, 16, 8, 9, 18, 181, 182, 183, 184,
+    185,
+  ],
+  'x-ms-enum': {
+    name: 'RevisionType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'SubjectEdit',
+    'SubjectLock',
+    'SubjectUnlock',
+    'SubjectMerge',
+    'SubjectErase',
+    'SubjectRelation',
+    'SubjectCharacterRelation',
+    'SubjectCastRelation',
+    'SubjectPersonRelation',
+    'CharacterEdit',
+    'CharacterMerge',
+    'CharacterErase',
+    'CharacterSubjectRelation',
+    'CharacterCastRelation',
+    'PersonEdit',
+    'PersonMerge',
+    'PersonErase',
+    'PersonCastRelation',
+    'PersonSubjectRelation',
+    'EpisodeEdit',
+    'EpisodeMerge',
+    'EpisodeMove',
+    'EpisodeLock',
+    'EpisodeUnlock',
+    'EpisodeErase',
+  ],
+  description: `修订类型
+  - 1 = 条目编辑
+  - 103 = 条目锁定
+  - 104 = 条目解锁
+  - 11 = 条目合体
+  - 12 = 条目删除
+  - 17 = 条目关联
+  - 5 = 条目->角色关联
+  - 6 = 条目->声优关联
+  - 10 = 条目->人物关联
+ 
+  - 2 = 角色编辑
+  - 13 = 角色合体
+  - 14 = 角色删除
+  - 4 = 角色->条目关联
+  - 7 = 角色->声优关联
+ 
+  - 3 = 人物编辑
+  - 15 = 人物合体
+  - 16 = 人物删除
+  - 8 = 人物->声优关联
+  - 9 = 人物->条目关联
+ 
+  - 18 = 章节编辑
+  - 181 = 章节合体
+  - 182 = 章节移动
+  - 183 = 章节锁定
+  - 184 = 章节解锁
+  - 185 = 章节删除
+`,
+});
+
+export const TimelineCat = t.Integer({
+  $id: 'TimelineCat',
+  enum: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  'x-ms-enum': {
+    name: 'TimelineCat',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'Daily',
+    'Wiki',
+    'Subject',
+    'Progress',
+    'Status',
+    'Blog',
+    'Index',
+    'Mono',
+    'Doujin',
+  ],
+  description: `时间线类型
+  - 1 = 日常行为
+  - 2 = 维基操作
+  - 3 = 收藏条目
+  - 4 = 收视进度
+  - 5 = 状态
+  - 6 = 日志
+  - 7 = 目录
+  - 8 = 人物
+  - 9 = 天窗`,
+});

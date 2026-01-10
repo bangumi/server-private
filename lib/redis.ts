@@ -20,3 +20,4 @@ export const redisOption = {
 const redis = new Redis(redisOption);
 export default redis;
 export const Subscriber = new Redis(redisOption);
+export const TimelineSubscriber = new Redis(redisOption);

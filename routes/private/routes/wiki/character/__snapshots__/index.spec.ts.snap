@@ -1,0 +1,353 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`edit character  > should get current wiki info 1`] = `
+Object {
+  "id": 1,
+  "infobox": "{{Infobox Crt
+|简体中文名= 鲁路修·兰佩路基
+|别名={
+[L.L.]
+[勒鲁什]
+[鲁鲁修]
+[ゼロ]
+[Zero]
+[英文名|Lelouch Lamperouge]
+[第二中文名|鲁路修·冯·布里塔尼亚]
+[英文名二|Lelouch Vie Britannia]
+[日文名|ルルーシュ・ヴィ・ブリタニア]
+[纯假名|]
+[罗马字|]
+[昵称|]
+[其他名义|]
+}
+|性别= 男
+|生日= 12月5日
+|血型= A型
+|身高= 178cm→181cm
+|体重= 54kg
+|BWH=
+|引用来源= Wikipedia
+}}",
+  "name": "ルルーシュ・ランペルージ",
+  "summary": "鲁路修·兰佩洛基是日本动画《Code Geass 反叛的鲁路修》中的主角。
+
+一年前的东京攻略战中，黑色骑士团因为首领Zero的离开而最终战败。之后一年间，鲁路修的Geass能力被人封印而平静的生活在阿什弗德学园，在第二季开头，鲁路修重新与C.C相遇之后，Geass封印被解开，鲁路修也恢复了记忆。
+一年前最后的神根岛之战，鲁路修被朱雀制服，并被押到其父不列颠皇帝面前，被皇帝施以Geass封印一切记忆。
+封印解除之后，Geass能力恢复到封印之前的状态，依然暴走，无法关闭，为了防止尤菲米雅的悲剧再次上演，C.C给了鲁路修特制的隐形眼镜来应对暴走的Geass能力。",
+}
+`;
+
+exports[`view history  > should get history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "恢复版本",
+      "createdAt": 1603420176,
+      "creator": Object {
+        "username": "422132",
+      },
+      "id": 1198747,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "手贱弄错了条目，已报错，等管理员恢复版本",
+      "createdAt": 1603386845,
+      "creator": Object {
+        "username": "261227",
+      },
+      "id": 1198707,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "bgm_wikihelper脚本替换条目",
+      "createdAt": 1603385600,
+      "creator": Object {
+        "username": "261227",
+      },
+      "id": 1198703,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "新肖像",
+      "createdAt": 1600152396,
+      "creator": Object {
+        "username": "422132",
+      },
+      "id": 1187023,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "恢复版本",
+      "createdAt": 1600152367,
+      "creator": Object {
+        "username": "422132",
+      },
+      "id": 1187022,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "bgm_wikihelper脚本替换条目",
+      "createdAt": 1600152056,
+      "creator": Object {
+        "username": "422132",
+      },
+      "id": 1187019,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "新肖像",
+      "createdAt": 1587935961,
+      "creator": Object {
+        "username": "324690",
+      },
+      "id": 1116750,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "内容扩充",
+      "createdAt": 1579361701,
+      "creator": Object {
+        "username": "106437",
+      },
+      "id": 1077009,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "",
+      "createdAt": 1576812712,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1065946,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "换本篇形象。",
+      "createdAt": 1574167800,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1056694,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "新肖像",
+      "createdAt": 1573888588,
+      "creator": Object {
+        "username": "101885",
+      },
+      "id": 1055655,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "新肖像",
+      "createdAt": 1573445261,
+      "creator": Object {
+        "username": "67314",
+      },
+      "id": 1054344,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "",
+      "createdAt": 1570719964,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1040383,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "",
+      "createdAt": 1570719952,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1040382,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "新肖像",
+      "createdAt": 1570506251,
+      "creator": Object {
+        "username": "67314",
+      },
+      "id": 1039734,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "修饰语句",
+      "createdAt": 1568277118,
+      "creator": Object {
+        "username": "67314",
+      },
+      "id": 1030590,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "新肖像",
+      "createdAt": 1521108505,
+      "creator": Object {
+        "username": "57439",
+      },
+      "id": 838973,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "",
+      "createdAt": 1458391510,
+      "creator": Object {
+        "username": "183052",
+      },
+      "id": 498968,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "引用来源不能引用自身啊=_,=",
+      "createdAt": 1389727628,
+      "creator": Object {
+        "username": "14382",
+      },
+      "id": 190704,
+      "type": 2,
+    },
+    Object {
+      "commitMessage": "新肖像",
+      "createdAt": 1296258610,
+      "creator": Object {
+        "username": "1",
+      },
+      "id": 2183,
+      "type": 2,
+    },
+  ],
+  "total": 27,
+}
+`;
+
+exports[`view history  > should get revision 1`] = `
+Object {
+  "extra": Object {
+    "img": "7b/3a/1_crt_EcUzC.jpg",
+  },
+  "infobox": "{{Infobox Crt
+|简体中文名= 鲁路修·兰佩路基
+|别名={
+[L.L.]
+[勒鲁什]
+[鲁鲁修]
+[ゼロ]
+[Zero]
+[英文名|Lelouch Lamperouge]
+[第二中文名|鲁路修·冯·布里塔尼亚]
+[英文名二|Lelouch Vie Britannia]
+[日文名|ルルーシュ・ヴィ・ブリタニア]
+[纯假名|]
+[罗马字|]
+[昵称|]
+[其他名义|]
+}
+|性别= 男
+|生日= 12月5日
+|血型= A型
+|身高= 178cm→181cm
+|体重= 54kg
+|BWH= 
+|引用来源= Wikipedia
+}}",
+  "name": "ルルーシュ・ランペルージ",
+  "summary": "鲁路修·兰佩洛基是日本动画《Code Geass 反叛的鲁路修》中的主角。
+
+一年前的东京攻略战中，黑色骑士团因为首领Zero的离开而最终战败。之后一年间，鲁路修的Geass能力被人封印而平静的生活在阿什弗德学园，在第二季开头，鲁路修重新与C.C相遇之后，Geass封印被解开，鲁路修也恢复了记忆。
+一年前最后的神根岛之战，鲁路修被朱雀制服，并被押到其父不列颠皇帝面前，被皇帝施以Geass封印一切记忆。
+封印解除之后，Geass能力恢复到封印之前的状态，依然暴走，无法关闭，为了防止尤菲米雅的悲剧再次上演，C.C给了鲁路修特制的隐形眼镜来应对暴走的Geass能力。",
+}
+`;
+
+exports[`view history  > should get user contribution 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "characterID": 1,
+      "commitMessage": "新肖像",
+      "createdAt": 1296258610,
+      "id": 2183,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+    Object {
+      "characterID": 1,
+      "commitMessage": "新肖像",
+      "createdAt": 1296258562,
+      "id": 2182,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+    Object {
+      "characterID": 3,
+      "commitMessage": "维基化",
+      "createdAt": 1296176145,
+      "id": 19,
+      "name": "C.C.",
+      "type": 2,
+    },
+    Object {
+      "characterID": 8,
+      "commitMessage": "",
+      "createdAt": 1296174187,
+      "id": 17,
+      "name": "坂上智代",
+      "type": 2,
+    },
+    Object {
+      "characterID": 1,
+      "commitMessage": "新肖像",
+      "createdAt": 1296151570,
+      "id": 7,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+    Object {
+      "characterID": 1,
+      "commitMessage": "",
+      "createdAt": 1286307560,
+      "id": 5,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+    Object {
+      "characterID": 1,
+      "commitMessage": "",
+      "createdAt": 1286307240,
+      "id": 4,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+    Object {
+      "characterID": 1,
+      "commitMessage": "",
+      "createdAt": 1286307230,
+      "id": 3,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+    Object {
+      "characterID": 1,
+      "commitMessage": "",
+      "createdAt": 1286307101,
+      "id": 2,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+    Object {
+      "characterID": 1,
+      "commitMessage": "",
+      "createdAt": 1286307038,
+      "id": 1,
+      "name": "ルルーシュ・ランペルージ",
+      "type": 2,
+    },
+  ],
+  "total": 10,
+}
+`;

@@ -170,6 +170,25 @@ exports[`should build private api spec 1`] = `
         - character
         - relation
       type: object
+    CharacterRevisionWikiInfo:
+      properties:
+        extra:
+          properties:
+            img:
+              type: string
+          type: object
+        infobox:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+      required:
+        - name
+        - infobox
+        - summary
+        - extra
+      type: object
     CharacterSearchFilter:
       properties:
         nsfw:
@@ -203,6 +222,22 @@ exports[`should build private api spec 1`] = `
       required:
         - subject
         - type
+      type: object
+    CharacterWikiInfo:
+      properties:
+        id:
+          type: integer
+        infobox:
+          type: string
+        name:
+          type: string
+        summary:
+          type: string
+      required:
+        - id
+        - name
+        - infobox
+        - summary
       type: object
     CollectSubject:
       properties:
@@ -844,32 +879,6 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: true
         name: GroupTopicFilterMode
-    HistorySummary:
-      properties:
-        commitMessage:
-          type: string
-        createdAt:
-          description: unix timestamp seconds
-          type: integer
-        creator:
-          properties:
-            username:
-              type: string
-          required:
-            - username
-          type: object
-        id:
-          type: integer
-        type:
-          description: 修改类型。\`1\` 正常修改， \`11\` 合并，\`103\` 锁定/解锁 \`104\` 未知
-          type: integer
-      required:
-        - id
-        - creator
-        - type
-        - commitMessage
-        - createdAt
-      type: object
     Index:
       properties:
         award:
@@ -1604,6 +1613,118 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: ReportType
+    RevisionHistory:
+      properties:
+        commitMessage:
+          type: string
+        createdAt:
+          description: unix timestamp seconds
+          type: integer
+        creator:
+          properties:
+            username:
+              type: string
+          required:
+            - username
+          type: object
+        id:
+          type: integer
+        type:
+          $ref: '#/components/schemas/RevisionType'
+      required:
+        - id
+        - creator
+        - type
+        - commitMessage
+        - createdAt
+      type: object
+    RevisionType:
+      description: |
+        修订类型
+          - 1 = 条目编辑
+          - 103 = 条目锁定
+          - 104 = 条目解锁
+          - 11 = 条目合体
+          - 12 = 条目删除
+          - 17 = 条目关联
+          - 5 = 条目->角色关联
+          - 6 = 条目->声优关联
+          - 10 = 条目->人物关联
+         
+          - 2 = 角色编辑
+          - 13 = 角色合体
+          - 14 = 角色删除
+          - 4 = 角色->条目关联
+          - 7 = 角色->声优关联
+         
+          - 3 = 人物编辑
+          - 15 = 人物合体
+          - 16 = 人物删除
+          - 8 = 人物->声优关联
+          - 9 = 人物->条目关联
+         
+          - 18 = 章节编辑
+          - 181 = 章节合体
+          - 182 = 章节移动
+          - 183 = 章节锁定
+          - 184 = 章节解锁
+          - 185 = 章节删除
+      enum:
+        - 1
+        - 103
+        - 104
+        - 11
+        - 12
+        - 17
+        - 5
+        - 6
+        - 10
+        - 2
+        - 13
+        - 14
+        - 4
+        - 7
+        - 3
+        - 15
+        - 16
+        - 8
+        - 9
+        - 18
+        - 181
+        - 182
+        - 183
+        - 184
+        - 185
+      type: integer
+      x-enum-varnames:
+        - SubjectEdit
+        - SubjectLock
+        - SubjectUnlock
+        - SubjectMerge
+        - SubjectErase
+        - SubjectRelation
+        - SubjectCharacterRelation
+        - SubjectCastRelation
+        - SubjectPersonRelation
+        - CharacterEdit
+        - CharacterMerge
+        - CharacterErase
+        - CharacterSubjectRelation
+        - CharacterCastRelation
+        - PersonEdit
+        - PersonMerge
+        - PersonErase
+        - PersonCastRelation
+        - PersonSubjectRelation
+        - EpisodeEdit
+        - EpisodeMerge
+        - EpisodeMove
+        - EpisodeLock
+        - EpisodeUnlock
+        - EpisodeErase
+      x-ms-enum:
+        modelAsString: false
+        name: RevisionType
     SearchCharacter:
       properties:
         filter:
@@ -1770,6 +1891,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         updatedAt:
           type: integer
+        user:
+          $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - uid
@@ -2712,6 +2835,10 @@ exports[`should build private api spec 1`] = `
           type: integer
         memo:
           $ref: '#/components/schemas/TimelineMemo'
+        reactions:
+          items:
+            $ref: '#/components/schemas/Reaction'
+          type: array
         replies:
           type: integer
         source:
@@ -2857,10 +2984,6 @@ exports[`should build private api spec 1`] = `
                 type: string
               rate:
                 type: number
-              reactions:
-                items:
-                  $ref: '#/components/schemas/Reaction'
-                type: array
               subject:
                 $ref: '#/components/schemas/SlimSubject'
             required:
@@ -3079,6 +3202,30 @@ exports[`should build private api spec 1`] = `
         - stats
       title: User
       type: object
+    UserCharacterContribution:
+      properties:
+        characterID:
+          type: integer
+        commitMessage:
+          type: string
+        createdAt:
+          description: unix timestamp seconds
+          type: integer
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          description: 2 = 角色编辑
+          type: integer
+      required:
+        - id
+        - type
+        - characterID
+        - name
+        - commitMessage
+        - createdAt
+      type: object
     UserHomepage:
       properties:
         left:
@@ -3217,6 +3364,30 @@ exports[`should build private api spec 1`] = `
           type: integer
         type: object
       title: UserSubjectCollectionStats
+      type: object
+    UserSubjectContribution:
+      properties:
+        commitMessage:
+          type: string
+        createdAt:
+          description: unix timestamp seconds
+          type: integer
+        id:
+          type: integer
+        name:
+          type: string
+        subjectID:
+          type: integer
+        type:
+          description: 修改类型。\`1\` 正常修改， \`11\` 合并，\`103\` 锁定/解锁 \`104\` 未知
+          type: integer
+      required:
+        - id
+        - type
+        - subjectID
+        - name
+        - commitMessage
+        - createdAt
       type: object
     WikiPlatform:
       properties:
@@ -8375,6 +8546,49 @@ paths:
       summary: 发送时间线吐槽
       tags:
         - timeline
+  /p1/timeline/-/events:
+    get:
+      description: >-
+        这是一个 SSE (Server-Sent Events) 流，不是普通的 JSON 响应。客户端需要使用 EventSource 或类似的
+        SSE 客户端来订阅此接口。每个事件以 \`data: {...}\\n\\n\` 格式发送。
+      operationId: getTimelineEvents
+      parameters:
+        - in: query
+          name: cat
+          schema:
+            $ref: '#/components/schemas/TimelineCat'
+        - in: query
+          name: mode
+          schema:
+            $ref: '#/components/schemas/FilterMode'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                description: SSE 事件数据
+                properties:
+                  event:
+                    description: '事件类型: ''connected'' | ''timeline'''
+                    type: string
+                  timeline:
+                    $ref: '#/components/schemas/Timeline'
+                required:
+                  - event
+                type: object
+          description: SSE 事件数据
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 时间线事件流 (SSE)
+      tags:
+        - timeline
   /p1/timeline/{timelineID}:
     delete:
       operationId: deleteTimeline
@@ -8402,6 +8616,80 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 删除时间线
+      tags:
+        - timeline
+  /p1/timeline/{timelineID}/like:
+    delete:
+      operationId: unlikeTimeline
+      parameters:
+        - in: path
+          name: timelineID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 取消时间线吐槽点赞
+      tags:
+        - timeline
+    put:
+      operationId: likeTimeline
+      parameters:
+        - in: path
+          name: timelineID
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                value:
+                  type: integer
+              required:
+                - value
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties: {}
+                type: object
+          description: Default Response
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 给时间线吐槽点赞
       tags:
         - timeline
   /p1/timeline/{timelineID}/replies:
@@ -9250,6 +9538,139 @@ paths:
       summary: 获取用户时间胶囊
       tags:
         - user
+  /p1/wiki/characters/-/revisions/{revisionID}:
+    get:
+      operationId: getCharacterRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacterRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色历史版本 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/characters/{characterID}:
+    get:
+      operationId: getCharacterWikiInfo
+      parameters:
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacterWikiInfo'
+          description: Default Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色当前的 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/characters/{characterID}/history-summary:
+    get:
+      operationId: subjectEditHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色 wiki 历史编辑摘要
+      tags:
+        - wiki
   /p1/wiki/ep/{episodeID}:
     get:
       operationId: getEpisodeWikiInfo
@@ -9744,7 +10165,7 @@ paths:
           HTTPBearer: []
       tags:
         - wiki
-  /p1/wiki/subjects/revisions/{revisionID}:
+  /p1/wiki/subjects/-/revisions/{revisionID}:
     get:
       operationId: getSubjectRevisionInfo
       parameters:
@@ -10444,7 +10865,7 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/HistorySummary'
+                  $ref: '#/components/schemas/RevisionHistory'
                 type: array
           description: Default Response
         '401':
@@ -10499,9 +10920,9 @@ paths:
           description: 意料之外的服务器错误
       tags:
         - wiki
-  /p1/wiki/users/{username}/contributions/persons:
+  /p1/wiki/users/{username}/contributions/characters:
     get:
-      operationId: getUserContributedPersons
+      operationId: getUserContributedcharacters
       parameters:
         - description: max 100
           in: query
@@ -10533,7 +10954,7 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/UserPersonContribution'
+                      $ref: '#/components/schemas/UserCharacterContribution'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -10558,7 +10979,69 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 获取用户 wiki 人物编辑记录
+      summary: 获取用户 wiki 角色编辑记录
+      tags:
+        - wiki
+  /p1/wiki/users/{username}/contributions/subjects:
+    get:
+      operationId: getUserContributedSubjects
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UserSubjectContribution'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户 wiki 条目编辑记录
       tags:
         - wiki
 "
