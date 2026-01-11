@@ -56,22 +56,6 @@ export const PersonEdit = t.Object(
   },
 );
 
-type IPersonHistorySummary = Static<typeof PersonHistorySummary>;
-export const PersonHistorySummary = t.Object(
-  {
-    id: t.Integer(),
-    creator: t.Object({
-      username: t.String(),
-    }),
-    type: t.Integer({
-      description: '3 = 人物编辑，15 = 合并，16 = 删除',
-    }),
-    commitMessage: t.String(),
-    createdAt: t.Integer({ description: 'unix timestamp seconds' }),
-  },
-  { $id: 'PersonHistorySummary' },
-);
-
 type IPersonRevisionWikiInfo = Static<typeof PersonRevisionWikiInfo>;
 export const PersonRevisionWikiInfo = t.Object(
   {
@@ -106,7 +90,6 @@ const UserPersonContribution = t.Object(
 export async function setup(app: App) {
   app.addSchema(res.PersonType);
   app.addSchema(PersonWikiInfo);
-  app.addSchema(PersonHistorySummary);
   app.addSchema(PersonRevisionWikiInfo);
   app.addSchema(UserPersonContribution);
 
@@ -257,7 +240,7 @@ export async function setup(app: App) {
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'subjectEditHistorySummary',
+        operationId: 'personEditHistorySummary',
         summary: '获取人物 wiki 历史编辑摘要',
         params: t.Object({
           personID: t.Integer({ minimum: 1 }),
@@ -270,7 +253,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Paged(res.Ref(PersonHistorySummary)),
+          200: res.Paged(res.Ref(res.RevisionHistory)),
         },
       },
     },
@@ -309,7 +292,7 @@ export async function setup(app: App) {
           type: x.revType,
           createdAt: x.createdAt,
           commitMessage: x.revEditSummary,
-        } satisfies IPersonHistorySummary;
+        } satisfies res.IRevisionHistory;
       });
 
       return {

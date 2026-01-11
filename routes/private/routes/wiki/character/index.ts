@@ -123,7 +123,7 @@ export async function setup(app: App) {
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'subjectEditHistorySummary',
+        operationId: 'characterEditHistorySummary',
         summary: '获取角色 wiki 历史编辑摘要',
         params: t.Object({
           characterID: t.Integer({ minimum: 1 }),
@@ -238,7 +238,7 @@ export async function setup(app: App) {
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'getUserContributedcharacters',
+        operationId: 'getUserContributedCharacters',
         summary: '获取用户 wiki 角色编辑记录',
         params: t.Object({
           username: t.String(),
