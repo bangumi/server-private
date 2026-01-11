@@ -33,6 +33,17 @@ export const PersonEditTypes = [
   RevType.personMerge,
 ] as const;
 
+export const PersonProfessions = t.Object({
+  producer: t.Optional(t.Boolean()),
+  mangaka: t.Optional(t.Boolean()),
+  artist: t.Optional(t.Boolean()),
+  seiyu: t.Optional(t.Boolean()),
+  writer: t.Optional(t.Boolean()),
+  illustrator: t.Optional(t.Boolean()),
+  actor: t.Optional(t.Boolean()),
+});
+
+type IPersonWikiInfo = Static<typeof PersonWikiInfo>;
 export const PersonWikiInfo = t.Object(
   {
     id: t.Integer(),
@@ -40,6 +51,7 @@ export const PersonWikiInfo = t.Object(
     typeID: res.Ref(res.PersonType),
     infobox: t.String(),
     summary: t.String(),
+    profession: PersonProfessions,
   },
   { $id: 'PersonWikiInfo' },
 );
@@ -62,6 +74,7 @@ export const PersonRevisionWikiInfo = t.Object(
     name: t.String(),
     infobox: t.String(),
     summary: t.String(),
+    profession: PersonProfessions,
     extra: t.Object({
       img: t.Optional(t.String()),
     }),
@@ -85,6 +98,8 @@ const UserPersonContribution = t.Object(
   },
   { $id: 'UserPersonContribution' },
 );
+export type IPagedUserPersonContribution = Static<typeof PagedUserPersonContribution>;
+const PagedUserPersonContribution = res.Paged(res.Ref(UserPersonContribution));
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -115,7 +130,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { personID } }): Promise<Static<typeof PersonWikiInfo>> => {
+    async ({ params: { personID } }): Promise<IPersonWikiInfo> => {
       const [p] = await db
         .select()
         .from(schema.chiiPersons)
@@ -130,12 +145,21 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a locked person');
       }
 
+      const profession = PersonCareers.reduce(
+        (acc, c) => {
+          if (p[c]) acc[c] = true;
+          return acc;
+        },
+        {} as IPersonWikiInfo['profession'],
+      );
+
       return {
         id: p.id,
         name: p.name,
         infobox: p.infobox,
         summary: p.summary,
         typeID: p.type,
+        profession,
       };
     },
   );
@@ -253,7 +277,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Paged(res.Ref(res.RevisionHistory)),
+          200: res.PagedRevisionHistory,
         },
       },
     },
@@ -303,7 +327,7 @@ export async function setup(app: App) {
   );
 
   app.get(
-    '/persons/revisions/:revisionID',
+    '/persons/-/revisions/:revisionID',
     {
       schema: {
         tags: [Tag.Wiki],
@@ -345,6 +369,9 @@ export async function setup(app: App) {
         name: revContent.prsn_name,
         infobox: revContent.prsn_infobox,
         summary: revContent.prsn_summary,
+        profession: Object.fromEntries(
+          Object.entries(revContent.profession).map(([p, b]) => [p, !!b]),
+        ),
         extra: revContent.extra,
       };
     },
@@ -368,7 +395,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Paged(res.Ref(UserPersonContribution)),
+          200: PagedUserPersonContribution,
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('user')),
           }),

@@ -1241,32 +1241,6 @@ exports[`should build private api spec 1`] = `
         - user
         - createdAt
       type: object
-    PersonHistorySummary:
-      properties:
-        commitMessage:
-          type: string
-        createdAt:
-          description: unix timestamp seconds
-          type: integer
-        creator:
-          properties:
-            username:
-              type: string
-          required:
-            - username
-          type: object
-        id:
-          type: integer
-        type:
-          description: 3 = 人物编辑，15 = 合并，16 = 删除
-          type: integer
-      required:
-        - id
-        - creator
-        - type
-        - commitMessage
-        - createdAt
-      type: object
     PersonImages:
       properties:
         grid:
@@ -1306,12 +1280,30 @@ exports[`should build private api spec 1`] = `
           type: string
         name:
           type: string
+        profession:
+          properties:
+            actor:
+              type: boolean
+            artist:
+              type: boolean
+            illustrator:
+              type: boolean
+            mangaka:
+              type: boolean
+            producer:
+              type: boolean
+            seiyu:
+              type: boolean
+            writer:
+              type: boolean
+          type: object
         summary:
           type: string
       required:
         - name
         - infobox
         - summary
+        - profession
         - extra
       type: object
     PersonSearchFilter:
@@ -1358,6 +1350,23 @@ exports[`should build private api spec 1`] = `
           type: string
         name:
           type: string
+        profession:
+          properties:
+            actor:
+              type: boolean
+            artist:
+              type: boolean
+            illustrator:
+              type: boolean
+            mangaka:
+              type: boolean
+            producer:
+              type: boolean
+            seiyu:
+              type: boolean
+            writer:
+              type: boolean
+          type: object
         summary:
           type: string
         typeID:
@@ -1368,6 +1377,7 @@ exports[`should build private api spec 1`] = `
         - typeID
         - infobox
         - summary
+        - profession
       type: object
     PersonWork:
       properties:
@@ -9616,7 +9626,7 @@ paths:
         - wiki
   /p1/wiki/characters/{characterID}/history-summary:
     get:
-      operationId: subjectEditHistorySummary
+      operationId: characterEditHistorySummary
       parameters:
         - description: max 100
           in: query
@@ -9842,7 +9852,7 @@ paths:
           description: 意料之外的服务器错误
       tags:
         - wiki
-  /p1/wiki/persons/revisions/{revisionID}:
+  /p1/wiki/persons/-/revisions/{revisionID}:
     get:
       operationId: getPersonRevisionInfo
       parameters:
@@ -10000,7 +10010,7 @@ paths:
         - wiki
   /p1/wiki/persons/{personID}/history-summary:
     get:
-      operationId: subjectEditHistorySummary
+      operationId: personEditHistorySummary
       parameters:
         - description: max 100
           in: query
@@ -10033,7 +10043,7 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/PersonHistorySummary'
+                      $ref: '#/components/schemas/RevisionHistory'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -10922,7 +10932,7 @@ paths:
         - wiki
   /p1/wiki/users/{username}/contributions/characters:
     get:
-      operationId: getUserContributedcharacters
+      operationId: getUserContributedCharacters
       parameters:
         - description: max 100
           in: query
@@ -10980,6 +10990,68 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取用户 wiki 角色编辑记录
+      tags:
+        - wiki
+  /p1/wiki/users/{username}/contributions/persons:
+    get:
+      operationId: getUserContributedPersons
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/UserPersonContribution'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取用户 wiki 人物编辑记录
       tags:
         - wiki
   /p1/wiki/users/{username}/contributions/subjects:

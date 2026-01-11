@@ -136,7 +136,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Paged(res.Ref(res.RevisionHistory)),
+          200: res.PagedRevisionHistory,
         },
       },
     },
