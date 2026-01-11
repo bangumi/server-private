@@ -409,7 +409,7 @@ export async function setup(app: App) {
       }
 
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.countDistinct(schema.chiiRevHistory.revId) })
+        .select({ count: op.count(schema.chiiRevHistory.revId) })
         .from(schema.chiiRevHistory)
         .where(
           op.and(
