@@ -285,14 +285,15 @@ export async function setup(app: App) {
         op.eq(schema.chiiIndexRelated.cat, IndexRelatedCategory.Character),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiIndexRelated.rid) })
         .from(schema.chiiIndexRelated)
         .where(condition);
       const data = await db
         .select({ indexID: schema.chiiIndexRelated.rid })
         .from(schema.chiiIndexRelated)
         .where(condition)
-        .orderBy(op.desc(schema.chiiIndexRelated.id))
+        .groupBy(schema.chiiIndexRelated.rid)
+        .orderBy(op.desc(op.max(schema.chiiIndexRelated.id)))
         .limit(limit)
         .offset(offset);
       const indexIDs = data.map((d) => d.indexID);
