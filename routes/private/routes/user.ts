@@ -437,7 +437,6 @@ export async function setup(app: App) {
       }
 
       const conditions = op.and(
-        op.eq(schema.chiiIndexes.type, IndexType.User),
         op.eq(schema.chiiIndexCollects.uid, user.id),
         op.eq(schema.chiiIndexes.ban, IndexPrivacy.Normal),
       );
