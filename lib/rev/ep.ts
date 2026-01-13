@@ -1,7 +1,7 @@
 import { db, op, schema, type Txn } from '@app/drizzle';
-import type { EpTextRev, RevHistory } from '@app/lib/orm/entity/index.ts';
-import { RevType } from '@app/lib/orm/entity/index.ts';
-import * as entity from '@app/lib/orm/entity/index.ts';
+import type { EpTextRev, RevHistory } from '@app/lib/rev/type.ts';
+import { RevType } from '@app/lib/rev/type.ts';
+import { deserializeRevText, serializeRevText } from '@app/lib/rev/utils.ts';
 
 export async function pushRev(
   t: Txn,
@@ -91,8 +91,8 @@ async function updatePreviousRevRecords({
     revEditSummary: comment,
   });
 
-  revText.revText = await entity.RevText.serialize({
-    ...(await entity.RevText.deserialize(revText.revText)),
+  revText.revText = await serializeRevText({
+    ...(await deserializeRevText(revText.revText)),
     [revId]: rev,
   });
   await t
@@ -119,7 +119,7 @@ async function createRevRecords({
   comment: string;
 }) {
   const [{ insertId: revTextId }] = await t.insert(schema.chiiRevText).values({
-    revText: await entity.RevText.serialize({}),
+    revText: await serializeRevText({}),
   });
 
   const [{ insertId: revId }] = await t.insert(schema.chiiRevHistory).values({
@@ -131,7 +131,7 @@ async function createRevRecords({
     revEditSummary: comment,
   });
 
-  const revText = await entity.RevText.serialize({ [revId]: rev });
+  const revText = await serializeRevText({ [revId]: rev });
   await t
     .update(schema.chiiRevText)
     .set({

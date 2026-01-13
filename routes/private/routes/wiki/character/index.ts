@@ -5,9 +5,9 @@ import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import type { CharacterRev } from '@app/lib/orm/entity/index.ts';
-import { RevType } from '@app/lib/orm/entity/index.ts';
-import * as entity from '@app/lib/orm/entity/index.ts';
+import type { CharacterRev } from '@app/lib/rev/type.ts';
+import { RevType } from '@app/lib/rev/type.ts';
+import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -221,7 +221,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`RevText ${r.revTextId}`);
       }
 
-      const revRecord = await entity.RevText.deserialize(revText.revText);
+      const revRecord = await deserializeRevText(revText.revText);
       const revContent = revRecord[revisionID] as CharacterRev;
 
       return {

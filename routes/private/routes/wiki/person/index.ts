@@ -5,10 +5,10 @@ import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import type { PersonRev } from '@app/lib/orm/entity/index.ts';
-import { createRevision, RevType } from '@app/lib/orm/entity/index.ts';
-import * as entity from '@app/lib/orm/entity/index.ts';
-import { AppDataSource } from '@app/lib/orm/index.ts';
+import { createRevision } from '@app/lib/rev/common.ts';
+import type { PersonRev } from '@app/lib/rev/type.ts';
+import { RevType } from '@app/lib/rev/type.ts';
+import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -212,9 +212,13 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit person');
       }
 
-      await AppDataSource.transaction(async (t) => {
-        const PersonRepo = t.getRepository(entity.Person);
-        const p = await PersonRepo.findOneBy({ id: personID });
+      await db.transaction(async (t) => {
+        const [p] = await t
+          .select()
+          .from(schema.chiiPersons)
+          .where(op.eq(schema.chiiPersons.id, personID))
+          .limit(1);
+
         if (!p) {
           throw new NotFoundError(`person ${personID}`);
         }
@@ -224,11 +228,17 @@ export async function setup(app: App) {
 
         matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
 
-        p.infobox = input.infobox ?? p.infobox;
-        p.name = input.name ?? p.name;
-        p.summary = input.summary ?? p.summary;
+        const updated = {
+          infobox: input.infobox ?? p.infobox,
+          name: input.name ?? p.name,
+          summary: input.summary ?? p.summary,
+        };
 
-        await PersonRepo.save(p);
+        await t
+          .update(schema.chiiPersons)
+          .set(updated)
+          .where(op.eq(schema.chiiPersons.id, personID))
+          .limit(1);
 
         const profession = PersonCareers.reduce(
           (acc, c) => {
@@ -242,9 +252,9 @@ export async function setup(app: App) {
           mid: personID,
           type: RevType.personEdit,
           rev: {
-            prsn_name: p.name,
-            prsn_infobox: p.infobox,
-            prsn_summary: p.summary,
+            prsn_name: updated.name,
+            prsn_infobox: updated.infobox,
+            prsn_summary: updated.summary,
             profession,
             extra: {
               img: p.img,
@@ -362,7 +372,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`RevText ${r.revTextId}`);
       }
 
-      const revRecord = await entity.RevText.deserialize(revText.revText);
+      const revRecord = await deserializeRevText(revText.revText);
       const revContent = revRecord[revisionID] as PersonRev;
 
       return {
