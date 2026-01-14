@@ -142,7 +142,7 @@ export async function setup(app: App) {
     },
     async ({ params: { characterID }, query: { limit = 20, offset = 0 } }) => {
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.countDistinct(schema.chiiRevHistory.revId) })
+        .select({ count: op.count() })
         .from(schema.chiiRevHistory)
         .where(
           op.and(
@@ -216,7 +216,8 @@ export async function setup(app: App) {
       const [revText] = await db
         .select()
         .from(schema.chiiRevText)
-        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId));
+        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId))
+        .limit(1);
       if (!revText) {
         throw new NotFoundError(`RevText ${r.revTextId}`);
       }

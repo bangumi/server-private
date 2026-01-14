@@ -293,7 +293,7 @@ export async function setup(app: App) {
     },
     async ({ params: { personID }, query: { limit = 20, offset = 0 } }) => {
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.countDistinct(schema.chiiRevHistory.revId) })
+        .select({ count: op.count() })
         .from(schema.chiiRevHistory)
         .where(
           op.and(
@@ -359,7 +359,8 @@ export async function setup(app: App) {
       const [r] = await db
         .select()
         .from(schema.chiiRevHistory)
-        .where(op.eq(schema.chiiRevHistory.revId, revisionID));
+        .where(op.eq(schema.chiiRevHistory.revId, revisionID))
+        .limit(1);
       if (!r) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
@@ -367,7 +368,8 @@ export async function setup(app: App) {
       const [revText] = await db
         .select()
         .from(schema.chiiRevText)
-        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId));
+        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId))
+        .limit(1);
       if (!revText) {
         throw new NotFoundError(`RevText ${r.revTextId}`);
       }
@@ -380,7 +382,7 @@ export async function setup(app: App) {
         infobox: revContent.prsn_infobox,
         summary: revContent.prsn_summary,
         profession: Object.fromEntries(
-          Object.entries(revContent.profession).map(([p, b]) => [p, !!b]),
+          Object.entries(revContent.profession || {}).map(([p, b]) => [p, !!b]),
         ),
         extra: revContent.extra,
       };
