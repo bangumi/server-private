@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
-import { RevType } from '@app/lib/orm/entity/index.ts';
+import { RevType } from '@app/lib/rev/type.ts';
 
 import { pushRev } from './ep.ts';
 

@@ -2,8 +2,8 @@ import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { Tag } from '@app/lib/openapi/index.ts';
-import { RevType } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
+import { RevType } from '@app/lib/rev/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 

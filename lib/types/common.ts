@@ -30,6 +30,20 @@ export const SubjectType = t.Integer({
   没有 5`,
 });
 
+export const PersonType = t.Integer({
+  $id: 'PersonType',
+  enum: [1, 2, 3],
+  'x-ms-enum': {
+    name: 'PersonType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['Individual', 'Company', 'Group'],
+  description: `人物类型
+  - 1 = 个人
+  - 2 = 公司
+  - 3 = 组合`,
+});
+
 export const EpisodeType = t.Integer({
   $id: 'EpisodeType',
   enum: [0, 1, 2, 3, 4, 5, 6],

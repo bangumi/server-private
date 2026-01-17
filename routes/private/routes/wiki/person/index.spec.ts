@@ -4,6 +4,8 @@ import { describe, expect, test } from 'vitest';
 
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
+import type * as res from '@app/lib/types/res.ts';
+import type { IPagedUserPersonContribution } from '@app/routes/private/routes/wiki/person/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './index.ts';
@@ -58,6 +60,9 @@ describe('edit person ', () => {
       }
       }}",
         "name": "渡辺英俊",
+        "profession": Object {
+          "producer": true,
+        },
         "summary": "",
         "typeID": 1,
       }
@@ -136,7 +141,7 @@ describe('edit person ', () => {
     expect(res.statusCode).toBe(403);
   });
 
-  test('should update person', async () => {
+  test('should update person and history', async () => {
     const app = await testApp();
 
     const res = await app.inject({
@@ -161,8 +166,37 @@ describe('edit person ', () => {
         "id": 3214,
         "infobox": "i",
         "name": "n",
+        "profession": Object {
+          "producer": true,
+        },
         "summary": "s",
         "typeID": 1,
+      }
+    `);
+
+    const history = await app.inject('/persons/3214/history-summary');
+    const contribution = await app.inject('/users/1/contributions/persons');
+
+    const revisionRes: res.IPagedRevisionHistory = history.json();
+    const revisionID = revisionRes.data[0]?.id;
+
+    const contributionRes: IPagedUserPersonContribution = contribution.json();
+    const contributionID = contributionRes.data[0]?.id;
+
+    expect(revisionID).toBe(contributionID);
+
+    const revision = await app.inject(`/persons/-/revisions/${revisionID}`);
+    expect(revision.json()).toMatchInlineSnapshot(`
+      Object {
+        "extra": Object {
+          "img": "89/d4/3214_prsn_anidb.jpg",
+        },
+        "infobox": "i",
+        "name": "n",
+        "profession": Object {
+          "producer": true,
+        },
+        "summary": "s",
       }
     `);
   });
