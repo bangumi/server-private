@@ -82,6 +82,8 @@ export const SubjectSort = Object.freeze({
 });
 export type SubjectSort = (typeof SubjectSort)[keyof typeof SubjectSort];
 
+export type SubjectTagsCategory = 'meta' | 'subject';
+
 export interface SubjectFilter {
   type: SubjectType;
   nsfw: boolean;
@@ -90,6 +92,7 @@ export interface SubjectFilter {
   year?: number;
   month?: number;
   tags?: string[];
+  tagsCat?: SubjectTagsCategory;
   ids?: number[];
 }
 

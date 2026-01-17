@@ -298,12 +298,13 @@ export async function fetchSubjectIDsByFilter(
     filter.ids = ids.map((item) => item.id);
   }
   if (filter.tags?.length) {
+    const tagCat = filter.tagsCat === 'subject' ? TagCat.Subject : TagCat.Meta;
     const tagIndexes = await db
       .select({ id: schema.chiiTagIndex.id })
       .from(schema.chiiTagIndex)
       .where(
         op.and(
-          op.eq(schema.chiiTagIndex.cat, TagCat.Subject),
+          op.eq(schema.chiiTagIndex.cat, tagCat),
           op.eq(schema.chiiTagIndex.type, filter.type),
           op.inArray(schema.chiiTagIndex.name, filter.tags),
         ),
@@ -326,9 +327,10 @@ export async function fetchSubjectIDsByFilter(
       .from(schema.chiiTagList)
       .where(
         op.and(
-          op.eq(schema.chiiTagList.cat, TagCat.Subject),
+          op.eq(schema.chiiTagList.cat, tagCat),
           op.eq(schema.chiiTagList.type, filter.type),
           op.inArray(schema.chiiTagList.tagID, tagIDs),
+          tagCat === TagCat.Meta ? op.eq(schema.chiiTagList.userID, 0) : undefined,
         ),
       );
     if (tagRows.length === 0) {
