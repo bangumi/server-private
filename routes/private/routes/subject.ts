@@ -130,7 +130,16 @@ export async function setup(app: App) {
           year: t.Optional(t.Integer({ description: '年份' })),
           month: t.Optional(t.Integer({ description: '月份' })),
           tags: t.Optional(
-            t.Array(t.String({ description: 'wiki 标签，包括 分类/来源/类型/题材/地区/受众 等' })),
+            t.Array(
+              t.String({
+                description: '标签。默认按 wiki/meta 标签查询，结合 tagsCat 可切换为用户标签。',
+              }),
+            ),
+          ),
+          tagsCat: t.Optional(
+            t.Union([t.Literal('meta'), t.Literal('subject')], {
+              description: 'tags 过滤类别：meta=wiki 标签（默认），subject=用户标签',
+            }),
           ),
         }),
         response: {
@@ -138,7 +147,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { type, cat, series, year, month, sort, tags, page = 1 } }) => {
+    async ({ auth, query: { type, cat, series, year, month, sort, tags, tagsCat, page = 1 } }) => {
       const filter = {
         type,
         nsfw: auth.allowNsfw,
@@ -147,6 +156,7 @@ export async function setup(app: App) {
         year,
         month,
         tags,
+        tagsCat,
       } satisfies SubjectFilter;
       const result = await fetcher.fetchSubjectIDsByFilter(filter, sort as SubjectSort, page);
       if (result.data.length === 0) {
