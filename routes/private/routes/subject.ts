@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { DateTime } from 'luxon';
 import t from 'typebox';
 
@@ -904,6 +905,9 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+      const tableWithHint =
+        sql`chii_subject_interests FORCE INDEX(subject_lasttouch)` as unknown as typeof schema.chiiSubjectInterests;
+
       const condition = [
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
         op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
@@ -919,11 +923,11 @@ export async function setup(app: App) {
       }
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
-        .from(schema.chiiSubjectInterests)
+        .from(tableWithHint)
         .where(op.and(...condition));
       const data = await db
         .select()
-        .from(schema.chiiSubjectInterests)
+        .from(tableWithHint)
         .where(op.and(...condition))
         .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
         .limit(limit)
