@@ -888,7 +888,9 @@ export async function setup(app: App) {
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+          offset: t.Optional(
+            t.Integer({ default: 0, minimum: 0, maximum: 500, description: 'min 0' }),
+          ),
         }),
         response: {
           200: res.Paged(res.Ref(res.SubjectCollect)),
