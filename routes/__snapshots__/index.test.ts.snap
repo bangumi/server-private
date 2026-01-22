@@ -49,7 +49,8 @@ exports[`should build private api spec 1`] = `
         updatedAt:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
         views:
           type: integer
       required:
@@ -95,7 +96,8 @@ exports[`should build private api spec 1`] = `
         items:
           properties:
             subject:
-              $ref: '#/components/schemas/SlimSubject'
+              allOf:
+                - $ref: '#/components/schemas/SlimSubject'
             watchers:
               type: integer
           required:
@@ -107,7 +109,8 @@ exports[`should build private api spec 1`] = `
     CalendarItem:
       properties:
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
         watchers:
           type: integer
       required:
@@ -125,11 +128,13 @@ exports[`should build private api spec 1`] = `
         id:
           type: integer
         images:
-          $ref: '#/components/schemas/PersonImages'
+          allOf:
+            - $ref: '#/components/schemas/PersonImages'
         info:
           type: string
         infobox:
-          $ref: '#/components/schemas/Infobox'
+          allOf:
+            - $ref: '#/components/schemas/Infobox'
         lock:
           type: boolean
         name:
@@ -162,7 +167,8 @@ exports[`should build private api spec 1`] = `
     CharacterRelation:
       properties:
         character:
-          $ref: '#/components/schemas/SlimCharacter'
+          allOf:
+            - $ref: '#/components/schemas/SlimCharacter'
         relation:
           description: '角色关系: 任职于,从属,聘用,嫁给...'
           type: integer
@@ -202,10 +208,12 @@ exports[`should build private api spec 1`] = `
       properties:
         actors:
           items:
-            $ref: '#/components/schemas/SlimPerson'
+            allOf:
+              - $ref: '#/components/schemas/SlimPerson'
           type: array
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
         type:
           type: integer
       required:
@@ -216,7 +224,8 @@ exports[`should build private api spec 1`] = `
     CharacterSubjectRelation:
       properties:
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
         type:
           type: integer
       required:
@@ -264,7 +273,8 @@ exports[`should build private api spec 1`] = `
             type: string
           type: array
         type:
-          $ref: '#/components/schemas/CollectionType'
+          allOf:
+            - $ref: '#/components/schemas/CollectionType'
       type: object
     CollectionType:
       description: |-
@@ -305,14 +315,16 @@ exports[`should build private api spec 1`] = `
               type: integer
             reactions:
               items:
-                $ref: '#/components/schemas/Reaction'
+                allOf:
+                  - $ref: '#/components/schemas/Reaction'
               type: array
             relatedID:
               type: integer
             state:
               type: integer
             user:
-              $ref: '#/components/schemas/SlimUser'
+              allOf:
+                - $ref: '#/components/schemas/SlimUser'
           required:
             - id
             - mainID
@@ -325,7 +337,8 @@ exports[`should build private api spec 1`] = `
         - properties:
             replies:
               items:
-                $ref: '#/components/schemas/CommentBase'
+                allOf:
+                  - $ref: '#/components/schemas/CommentBase'
               type: array
           required:
             - replies
@@ -344,14 +357,16 @@ exports[`should build private api spec 1`] = `
           type: integer
         reactions:
           items:
-            $ref: '#/components/schemas/Reaction'
+            allOf:
+              - $ref: '#/components/schemas/Reaction'
           type: array
         relatedID:
           type: integer
         state:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - mainID
@@ -392,7 +407,8 @@ exports[`should build private api spec 1`] = `
         award:
           type: string
         cat:
-          $ref: '#/components/schemas/IndexRelatedCategory'
+          allOf:
+            - $ref: '#/components/schemas/IndexRelatedCategory'
         comment:
           type: string
         order:
@@ -427,9 +443,11 @@ exports[`should build private api spec 1`] = `
           minimum: 1
           type: integer
         type:
-          $ref: '#/components/schemas/ReportType'
+          allOf:
+            - $ref: '#/components/schemas/ReportType'
         value:
-          $ref: '#/components/schemas/ReportReason'
+          allOf:
+            - $ref: '#/components/schemas/ReportReason'
       required:
         - type
         - id
@@ -456,7 +474,8 @@ exports[`should build private api spec 1`] = `
         collection:
           properties:
             status:
-              $ref: '#/components/schemas/EpisodeCollectionStatus'
+              allOf:
+                - $ref: '#/components/schemas/EpisodeCollectionStatus'
             updatedAt:
               type: integer
           required:
@@ -479,11 +498,13 @@ exports[`should build private api spec 1`] = `
         sort:
           type: number
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
         subjectID:
           type: integer
         type:
-          $ref: '#/components/schemas/EpisodeType'
+          allOf:
+            - $ref: '#/components/schemas/EpisodeType'
       required:
         - id
         - subjectID
@@ -574,7 +595,8 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         type:
-          $ref: '#/components/schemas/EpisodeType'
+          allOf:
+            - $ref: '#/components/schemas/EpisodeType'
       required:
         - id
         - subjectID
@@ -613,7 +635,8 @@ exports[`should build private api spec 1`] = `
               summary:
                 type: string
               type:
-                $ref: '#/components/schemas/EpisodeType'
+                allOf:
+                  - $ref: '#/components/schemas/EpisodeType'
             required:
               - id
             type: object
@@ -661,7 +684,8 @@ exports[`should build private api spec 1`] = `
               summary:
                 type: string
               type:
-                $ref: '#/components/schemas/EpisodeType'
+                allOf:
+                  - $ref: '#/components/schemas/EpisodeType'
             required:
               - ep
             type: object
@@ -710,7 +734,8 @@ exports[`should build private api spec 1`] = `
         grade:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - user
         - grade
@@ -727,19 +752,22 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
         creatorID:
           type: integer
         description:
           type: string
         icon:
-          $ref: '#/components/schemas/Avatar'
+          allOf:
+            - $ref: '#/components/schemas/Avatar'
         id:
           type: integer
         members:
           type: integer
         membership:
-          $ref: '#/components/schemas/GroupMember'
+          allOf:
+            - $ref: '#/components/schemas/GroupMember'
         name:
           type: string
         nsfw:
@@ -789,11 +817,13 @@ exports[`should build private api spec 1`] = `
         joinedAt:
           type: integer
         role:
-          $ref: '#/components/schemas/GroupMemberRole'
+          allOf:
+            - $ref: '#/components/schemas/GroupMemberRole'
         uid:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - uid
         - role
@@ -845,13 +875,16 @@ exports[`should build private api spec 1`] = `
       type: string
     GroupTopic:
       allOf:
-        - $ref: '#/components/schemas/Topic'
+        - allOf:
+            - $ref: '#/components/schemas/Topic'
         - properties:
             group:
-              $ref: '#/components/schemas/SlimGroup'
+              allOf:
+                - $ref: '#/components/schemas/SlimGroup'
             replies:
               items:
-                $ref: '#/components/schemas/Reply'
+                allOf:
+                  - $ref: '#/components/schemas/Reply'
               type: array
           required:
             - group
@@ -898,19 +931,22 @@ exports[`should build private api spec 1`] = `
         replies:
           type: integer
         stats:
-          $ref: '#/components/schemas/IndexStats'
+          allOf:
+            - $ref: '#/components/schemas/IndexStats'
         title:
           type: string
         total:
           type: integer
         type:
-          $ref: '#/components/schemas/IndexType'
+          allOf:
+            - $ref: '#/components/schemas/IndexType'
         uid:
           type: integer
         updatedAt:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - uid
@@ -932,33 +968,41 @@ exports[`should build private api spec 1`] = `
         award:
           type: string
         blog:
-          $ref: '#/components/schemas/SlimBlogEntry'
+          allOf:
+            - $ref: '#/components/schemas/SlimBlogEntry'
         cat:
-          $ref: '#/components/schemas/IndexRelatedCategory'
+          allOf:
+            - $ref: '#/components/schemas/IndexRelatedCategory'
         character:
-          $ref: '#/components/schemas/SlimCharacter'
+          allOf:
+            - $ref: '#/components/schemas/SlimCharacter'
         comment:
           type: string
         createdAt:
           type: integer
         episode:
-          $ref: '#/components/schemas/Episode'
+          allOf:
+            - $ref: '#/components/schemas/Episode'
         groupTopic:
-          $ref: '#/components/schemas/GroupTopic'
+          allOf:
+            - $ref: '#/components/schemas/GroupTopic'
         id:
           type: integer
         order:
           type: integer
         person:
-          $ref: '#/components/schemas/SlimPerson'
+          allOf:
+            - $ref: '#/components/schemas/SlimPerson'
         rid:
           type: integer
         sid:
           type: integer
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
         subjectTopic:
-          $ref: '#/components/schemas/SubjectTopic'
+          allOf:
+            - $ref: '#/components/schemas/SubjectTopic'
         type:
           type: integer
       required:
@@ -1140,7 +1184,8 @@ exports[`should build private api spec 1`] = `
           description: 对应的 postID ...
           type: integer
         sender:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
         title:
           type: string
         type:
@@ -1184,11 +1229,13 @@ exports[`should build private api spec 1`] = `
         id:
           type: integer
         images:
-          $ref: '#/components/schemas/PersonImages'
+          allOf:
+            - $ref: '#/components/schemas/PersonImages'
         info:
           type: string
         infobox:
-          $ref: '#/components/schemas/Infobox'
+          allOf:
+            - $ref: '#/components/schemas/Infobox'
         lock:
           type: boolean
         name:
@@ -1222,10 +1269,12 @@ exports[`should build private api spec 1`] = `
     PersonCharacter:
       properties:
         character:
-          $ref: '#/components/schemas/SlimCharacter'
+          allOf:
+            - $ref: '#/components/schemas/SlimCharacter'
         relations:
           items:
-            $ref: '#/components/schemas/CharacterSubjectRelation'
+            allOf:
+              - $ref: '#/components/schemas/CharacterSubjectRelation'
           type: array
       required:
         - character
@@ -1236,7 +1285,8 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - user
         - createdAt
@@ -1261,7 +1311,8 @@ exports[`should build private api spec 1`] = `
     PersonRelation:
       properties:
         person:
-          $ref: '#/components/schemas/SlimPerson'
+          allOf:
+            - $ref: '#/components/schemas/SlimPerson'
         relation:
           description: '人物关系: 任职于,从属,聘用,嫁给...'
           type: integer
@@ -1370,7 +1421,8 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         typeID:
-          $ref: '#/components/schemas/PersonType'
+          allOf:
+            - $ref: '#/components/schemas/PersonType'
       required:
         - id
         - name
@@ -1383,10 +1435,12 @@ exports[`should build private api spec 1`] = `
       properties:
         positions:
           items:
-            $ref: '#/components/schemas/SubjectStaffPosition'
+            allOf:
+              - $ref: '#/components/schemas/SubjectStaffPosition'
           type: array
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
       required:
         - subject
         - positions
@@ -1398,7 +1452,8 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
         creatorID:
           type: integer
         id:
@@ -1406,7 +1461,8 @@ exports[`should build private api spec 1`] = `
         state:
           type: integer
         topic:
-          $ref: '#/components/schemas/Topic'
+          allOf:
+            - $ref: '#/components/schemas/Topic'
       required:
         - id
         - creatorID
@@ -1420,7 +1476,8 @@ exports[`should build private api spec 1`] = `
     Profile:
       properties:
         avatar:
-          $ref: '#/components/schemas/Avatar'
+          allOf:
+            - $ref: '#/components/schemas/Avatar'
         group:
           type: integer
         id:
@@ -1432,7 +1489,8 @@ exports[`should build private api spec 1`] = `
         nickname:
           type: string
         permissions:
-          $ref: '#/components/schemas/Permissions'
+          allOf:
+            - $ref: '#/components/schemas/Permissions'
         sign:
           type: string
         site:
@@ -1456,7 +1514,8 @@ exports[`should build private api spec 1`] = `
       properties:
         users:
           items:
-            $ref: '#/components/schemas/SimpleUser'
+            allOf:
+              - $ref: '#/components/schemas/SimpleUser'
           type: array
         value:
           type: integer
@@ -1497,11 +1556,13 @@ exports[`should build private api spec 1`] = `
       type: object
     Reply:
       allOf:
-        - $ref: '#/components/schemas/ReplyBase'
+        - allOf:
+            - $ref: '#/components/schemas/ReplyBase'
         - properties:
             replies:
               items:
-                $ref: '#/components/schemas/ReplyBase'
+                allOf:
+                  - $ref: '#/components/schemas/ReplyBase'
               type: array
           required:
             - replies
@@ -1514,14 +1575,16 @@ exports[`should build private api spec 1`] = `
         createdAt:
           type: integer
         creator:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
         creatorID:
           type: integer
         id:
           type: integer
         reactions:
           items:
-            $ref: '#/components/schemas/Reaction'
+            allOf:
+              - $ref: '#/components/schemas/Reaction'
           type: array
         state:
           type: integer
@@ -1640,7 +1703,8 @@ exports[`should build private api spec 1`] = `
         id:
           type: integer
         type:
-          $ref: '#/components/schemas/RevisionType'
+          allOf:
+            - $ref: '#/components/schemas/RevisionType'
       required:
         - id
         - creator
@@ -1738,7 +1802,8 @@ exports[`should build private api spec 1`] = `
     SearchCharacter:
       properties:
         filter:
-          $ref: '#/components/schemas/CharacterSearchFilter'
+          allOf:
+            - $ref: '#/components/schemas/CharacterSearchFilter'
         keyword:
           description: 搜索关键词
           type: string
@@ -1748,7 +1813,8 @@ exports[`should build private api spec 1`] = `
     SearchPerson:
       properties:
         filter:
-          $ref: '#/components/schemas/PersonSearchFilter'
+          allOf:
+            - $ref: '#/components/schemas/PersonSearchFilter'
         keyword:
           description: 搜索关键词
           type: string
@@ -1758,12 +1824,14 @@ exports[`should build private api spec 1`] = `
     SearchSubject:
       properties:
         filter:
-          $ref: '#/components/schemas/SubjectSearchFilter'
+          allOf:
+            - $ref: '#/components/schemas/SubjectSearchFilter'
         keyword:
           description: 搜索关键词
           type: string
         sort:
-          $ref: '#/components/schemas/SubjectSearchSort'
+          allOf:
+            - $ref: '#/components/schemas/SubjectSearchSort'
       required:
         - keyword
       type: object
@@ -1804,7 +1872,8 @@ exports[`should build private api spec 1`] = `
         updatedAt:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - type
@@ -1825,7 +1894,8 @@ exports[`should build private api spec 1`] = `
         id:
           type: integer
         images:
-          $ref: '#/components/schemas/PersonImages'
+          allOf:
+            - $ref: '#/components/schemas/PersonImages'
         info:
           type: string
         lock:
@@ -1858,7 +1928,8 @@ exports[`should build private api spec 1`] = `
         creatorID:
           type: integer
         icon:
-          $ref: '#/components/schemas/Avatar'
+          allOf:
+            - $ref: '#/components/schemas/Avatar'
         id:
           type: integer
         members:
@@ -1890,19 +1961,22 @@ exports[`should build private api spec 1`] = `
         private:
           type: boolean
         stats:
-          $ref: '#/components/schemas/IndexStats'
+          allOf:
+            - $ref: '#/components/schemas/IndexStats'
         title:
           type: string
         total:
           type: integer
         type:
-          $ref: '#/components/schemas/IndexType'
+          allOf:
+            - $ref: '#/components/schemas/IndexType'
         uid:
           type: integer
         updatedAt:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - uid
@@ -1928,7 +2002,8 @@ exports[`should build private api spec 1`] = `
         id:
           type: integer
         images:
-          $ref: '#/components/schemas/PersonImages'
+          allOf:
+            - $ref: '#/components/schemas/PersonImages'
         info:
           type: string
         lock:
@@ -1971,11 +2046,13 @@ exports[`should build private api spec 1`] = `
         id:
           type: integer
         images:
-          $ref: '#/components/schemas/SubjectImages'
+          allOf:
+            - $ref: '#/components/schemas/SubjectImages'
         info:
           type: string
         interest:
-          $ref: '#/components/schemas/SlimSubjectInterest'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubjectInterest'
         locked:
           type: boolean
         name:
@@ -1985,9 +2062,11 @@ exports[`should build private api spec 1`] = `
         nsfw:
           type: boolean
         rating:
-          $ref: '#/components/schemas/SubjectRating'
+          allOf:
+            - $ref: '#/components/schemas/SubjectRating'
         type:
-          $ref: '#/components/schemas/SubjectType'
+          allOf:
+            - $ref: '#/components/schemas/SubjectType'
       required:
         - id
         - name
@@ -2012,7 +2091,8 @@ exports[`should build private api spec 1`] = `
             type: string
           type: array
         type:
-          $ref: '#/components/schemas/CollectionType'
+          allOf:
+            - $ref: '#/components/schemas/CollectionType'
         updatedAt:
           type: integer
       required:
@@ -2027,7 +2107,8 @@ exports[`should build private api spec 1`] = `
     SlimUser:
       properties:
         avatar:
-          $ref: '#/components/schemas/Avatar'
+          allOf:
+            - $ref: '#/components/schemas/Avatar'
         group:
           type: integer
         id:
@@ -2161,21 +2242,26 @@ exports[`should build private api spec 1`] = `
         volumes: 0
       properties:
         airtime:
-          $ref: '#/components/schemas/SubjectAirtime'
+          allOf:
+            - $ref: '#/components/schemas/SubjectAirtime'
         collection:
-          $ref: '#/components/schemas/SubjectCollection'
+          allOf:
+            - $ref: '#/components/schemas/SubjectCollection'
         eps:
           type: integer
         id:
           type: integer
         images:
-          $ref: '#/components/schemas/SubjectImages'
+          allOf:
+            - $ref: '#/components/schemas/SubjectImages'
         info:
           type: string
         infobox:
-          $ref: '#/components/schemas/Infobox'
+          allOf:
+            - $ref: '#/components/schemas/Infobox'
         interest:
-          $ref: '#/components/schemas/SubjectInterest'
+          allOf:
+            - $ref: '#/components/schemas/SubjectInterest'
         locked:
           type: boolean
         metaTags:
@@ -2189,9 +2275,11 @@ exports[`should build private api spec 1`] = `
         nsfw:
           type: boolean
         platform:
-          $ref: '#/components/schemas/SubjectPlatform'
+          allOf:
+            - $ref: '#/components/schemas/SubjectPlatform'
         rating:
-          $ref: '#/components/schemas/SubjectRating'
+          allOf:
+            - $ref: '#/components/schemas/SubjectRating'
         redirect:
           type: integer
         series:
@@ -2202,10 +2290,12 @@ exports[`should build private api spec 1`] = `
           type: string
         tags:
           items:
-            $ref: '#/components/schemas/SubjectTag'
+            allOf:
+              - $ref: '#/components/schemas/SubjectTag'
           type: array
         type:
-          $ref: '#/components/schemas/SubjectType'
+          allOf:
+            - $ref: '#/components/schemas/SubjectType'
         volumes:
           type: integer
       required:
@@ -2277,10 +2367,12 @@ exports[`should build private api spec 1`] = `
       properties:
         actors:
           items:
-            $ref: '#/components/schemas/SlimPerson'
+            allOf:
+              - $ref: '#/components/schemas/SlimPerson'
           type: array
         character:
-          $ref: '#/components/schemas/SlimCharacter'
+          allOf:
+            - $ref: '#/components/schemas/SlimCharacter'
         order:
           type: integer
         type:
@@ -2294,9 +2386,11 @@ exports[`should build private api spec 1`] = `
     SubjectCollect:
       properties:
         interest:
-          $ref: '#/components/schemas/SlimSubjectInterest'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubjectInterest'
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - user
         - interest
@@ -2409,7 +2503,8 @@ exports[`should build private api spec 1`] = `
             type: string
           type: array
         type:
-          $ref: '#/components/schemas/CollectionType'
+          allOf:
+            - $ref: '#/components/schemas/CollectionType'
         updatedAt:
           type: integer
         volStatus:
@@ -2436,14 +2531,17 @@ exports[`should build private api spec 1`] = `
           type: integer
         reactions:
           items:
-            $ref: '#/components/schemas/Reaction'
+            allOf:
+              - $ref: '#/components/schemas/Reaction'
           type: array
         type:
-          $ref: '#/components/schemas/CollectionType'
+          allOf:
+            - $ref: '#/components/schemas/CollectionType'
         updatedAt:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - user
@@ -2474,7 +2572,8 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         type:
-          $ref: '#/components/schemas/SubjectType'
+          allOf:
+            - $ref: '#/components/schemas/SubjectType'
       required:
         - name
         - type
@@ -2516,10 +2615,12 @@ exports[`should build private api spec 1`] = `
     SubjectPosition:
       properties:
         position:
-          $ref: '#/components/schemas/SubjectStaffPositionType'
+          allOf:
+            - $ref: '#/components/schemas/SubjectStaffPositionType'
         staffs:
           items:
-            $ref: '#/components/schemas/SubjectPositionStaff'
+            allOf:
+              - $ref: '#/components/schemas/SubjectPositionStaff'
           type: array
       required:
         - position
@@ -2530,7 +2631,8 @@ exports[`should build private api spec 1`] = `
         appearEps:
           type: string
         person:
-          $ref: '#/components/schemas/SlimPerson'
+          allOf:
+            - $ref: '#/components/schemas/SlimPerson'
         summary:
           type: string
       required:
@@ -2564,7 +2666,8 @@ exports[`should build private api spec 1`] = `
         sim:
           type: number
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
       required:
         - subject
         - sim
@@ -2576,9 +2679,11 @@ exports[`should build private api spec 1`] = `
         order:
           type: integer
         relation:
-          $ref: '#/components/schemas/SubjectRelationType'
+          allOf:
+            - $ref: '#/components/schemas/SubjectRelationType'
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
       required:
         - subject
         - relation
@@ -2606,11 +2711,13 @@ exports[`should build private api spec 1`] = `
     SubjectReview:
       properties:
         entry:
-          $ref: '#/components/schemas/SlimBlogEntry'
+          allOf:
+            - $ref: '#/components/schemas/SlimBlogEntry'
         id:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - user
@@ -2678,7 +2785,10 @@ exports[`should build private api spec 1`] = `
           type: array
         type:
           items:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
+            description: 条目类型, 可以多次出现。多值之间为 \`或\` 关系。
+            example: 2
           type: array
       type: object
     SubjectSearchSort:
@@ -2707,10 +2817,12 @@ exports[`should build private api spec 1`] = `
       properties:
         positions:
           items:
-            $ref: '#/components/schemas/SubjectStaffPosition'
+            allOf:
+              - $ref: '#/components/schemas/SubjectStaffPosition'
           type: array
         staff:
-          $ref: '#/components/schemas/SlimPerson'
+          allOf:
+            - $ref: '#/components/schemas/SlimPerson'
       required:
         - staff
         - positions
@@ -2722,7 +2834,8 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         type:
-          $ref: '#/components/schemas/SubjectStaffPositionType'
+          allOf:
+            - $ref: '#/components/schemas/SubjectStaffPositionType'
       required:
         - type
         - summary
@@ -2757,14 +2870,17 @@ exports[`should build private api spec 1`] = `
       type: object
     SubjectTopic:
       allOf:
-        - $ref: '#/components/schemas/Topic'
+        - allOf:
+            - $ref: '#/components/schemas/Topic'
         - properties:
             replies:
               items:
-                $ref: '#/components/schemas/Reply'
+                allOf:
+                  - $ref: '#/components/schemas/Reply'
               type: array
             subject:
-              $ref: '#/components/schemas/SlimSubject'
+              allOf:
+                - $ref: '#/components/schemas/SlimSubject'
           required:
             - subject
             - replies
@@ -2800,7 +2916,8 @@ exports[`should build private api spec 1`] = `
       properties:
         availablePlatform:
           items:
-            $ref: '#/components/schemas/WikiPlatform'
+            allOf:
+              - $ref: '#/components/schemas/WikiPlatform'
           type: array
         id:
           type: integer
@@ -2821,7 +2938,8 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         typeID:
-          $ref: '#/components/schemas/SubjectType'
+          allOf:
+            - $ref: '#/components/schemas/SubjectType'
       required:
         - id
         - name
@@ -2838,27 +2956,32 @@ exports[`should build private api spec 1`] = `
         batch:
           type: boolean
         cat:
-          $ref: '#/components/schemas/TimelineCat'
+          allOf:
+            - $ref: '#/components/schemas/TimelineCat'
         createdAt:
           type: integer
         id:
           type: integer
         memo:
-          $ref: '#/components/schemas/TimelineMemo'
+          allOf:
+            - $ref: '#/components/schemas/TimelineMemo'
         reactions:
           items:
-            $ref: '#/components/schemas/Reaction'
+            allOf:
+              - $ref: '#/components/schemas/Reaction'
           type: array
         replies:
           type: integer
         source:
-          $ref: '#/components/schemas/TimelineSource'
+          allOf:
+            - $ref: '#/components/schemas/TimelineSource'
         type:
           type: integer
         uid:
           type: integer
         user:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
       required:
         - id
         - uid
@@ -2910,29 +3033,35 @@ exports[`should build private api spec 1`] = `
     TimelineMemo:
       properties:
         blog:
-          $ref: '#/components/schemas/SlimBlogEntry'
+          allOf:
+            - $ref: '#/components/schemas/SlimBlogEntry'
         daily:
           properties:
             groups:
               items:
-                $ref: '#/components/schemas/SlimGroup'
+                allOf:
+                  - $ref: '#/components/schemas/SlimGroup'
               type: array
             users:
               items:
-                $ref: '#/components/schemas/SlimUser'
+                allOf:
+                  - $ref: '#/components/schemas/SlimUser'
               type: array
           type: object
         index:
-          $ref: '#/components/schemas/SlimIndex'
+          allOf:
+            - $ref: '#/components/schemas/SlimIndex'
         mono:
           properties:
             characters:
               items:
-                $ref: '#/components/schemas/SlimCharacter'
+                allOf:
+                  - $ref: '#/components/schemas/SlimCharacter'
               type: array
             persons:
               items:
-                $ref: '#/components/schemas/SlimPerson'
+                allOf:
+                  - $ref: '#/components/schemas/SlimPerson'
               type: array
           required:
             - characters
@@ -2947,7 +3076,8 @@ exports[`should build private api spec 1`] = `
                 epsUpdate:
                   type: integer
                 subject:
-                  $ref: '#/components/schemas/SlimSubject'
+                  allOf:
+                    - $ref: '#/components/schemas/SlimSubject'
                 volsTotal:
                   type: string
                 volsUpdate:
@@ -2960,9 +3090,11 @@ exports[`should build private api spec 1`] = `
             single:
               properties:
                 episode:
-                  $ref: '#/components/schemas/Episode'
+                  allOf:
+                    - $ref: '#/components/schemas/Episode'
                 subject:
-                  $ref: '#/components/schemas/SlimSubject'
+                  allOf:
+                    - $ref: '#/components/schemas/SlimSubject'
               required:
                 - episode
                 - subject
@@ -2995,7 +3127,8 @@ exports[`should build private api spec 1`] = `
               rate:
                 type: number
               subject:
-                $ref: '#/components/schemas/SlimSubject'
+                allOf:
+                  - $ref: '#/components/schemas/SlimSubject'
             required:
               - subject
               - comment
@@ -3004,7 +3137,8 @@ exports[`should build private api spec 1`] = `
         wiki:
           properties:
             subject:
-              $ref: '#/components/schemas/SlimSubject'
+              allOf:
+                - $ref: '#/components/schemas/SlimSubject'
           type: object
       title: TimelineMemo
       type: object
@@ -3024,7 +3158,8 @@ exports[`should build private api spec 1`] = `
           description: 发帖时间，unix time stamp in seconds
           type: integer
         creator:
-          $ref: '#/components/schemas/SlimUser'
+          allOf:
+            - $ref: '#/components/schemas/SlimUser'
         creatorID:
           type: integer
         display:
@@ -3060,7 +3195,8 @@ exports[`should build private api spec 1`] = `
         count:
           type: integer
         subject:
-          $ref: '#/components/schemas/SlimSubject'
+          allOf:
+            - $ref: '#/components/schemas/SlimSubject'
       required:
         - subject
         - count
@@ -3093,7 +3229,8 @@ exports[`should build private api spec 1`] = `
           description: 是否批量更新(看到当前章节), 批量更新时 type 无效
           type: boolean
         type:
-          $ref: '#/components/schemas/EpisodeCollectionStatus'
+          allOf:
+            - $ref: '#/components/schemas/EpisodeCollectionStatus'
       type: object
     UpdateIndex:
       properties:
@@ -3148,13 +3285,15 @@ exports[`should build private api spec 1`] = `
     User:
       properties:
         avatar:
-          $ref: '#/components/schemas/Avatar'
+          allOf:
+            - $ref: '#/components/schemas/Avatar'
         bio:
           type: string
         group:
           type: integer
         homepage:
-          $ref: '#/components/schemas/UserHomepage'
+          allOf:
+            - $ref: '#/components/schemas/UserHomepage'
         id:
           example: 1
           type: integer
@@ -3192,7 +3331,8 @@ exports[`should build private api spec 1`] = `
         site:
           type: string
         stats:
-          $ref: '#/components/schemas/UserStats'
+          allOf:
+            - $ref: '#/components/schemas/UserStats'
         username:
           example: sai
           type: string
@@ -3240,11 +3380,13 @@ exports[`should build private api spec 1`] = `
       properties:
         left:
           items:
-            $ref: '#/components/schemas/UserHomepageSection'
+            allOf:
+              - $ref: '#/components/schemas/UserHomepageSection'
           type: array
         right:
           items:
-            $ref: '#/components/schemas/UserHomepageSection'
+            allOf:
+              - $ref: '#/components/schemas/UserHomepageSection'
           type: array
       required:
         - left
@@ -3354,11 +3496,14 @@ exports[`should build private api spec 1`] = `
         group:
           type: integer
         index:
-          $ref: '#/components/schemas/UserIndexStats'
+          allOf:
+            - $ref: '#/components/schemas/UserIndexStats'
         mono:
-          $ref: '#/components/schemas/UserMonoCollectionStats'
+          allOf:
+            - $ref: '#/components/schemas/UserMonoCollectionStats'
         subject:
-          $ref: '#/components/schemas/UserSubjectCollectionStats'
+          allOf:
+            - $ref: '#/components/schemas/UserSubjectCollectionStats'
       required:
         - subject
         - mono
@@ -3450,7 +3595,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3485,13 +3632,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3525,13 +3675,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3560,7 +3713,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3580,7 +3735,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContent'
+              allOf:
+                - $ref: '#/components/schemas/UpdateContent'
       responses:
         '200':
           content:
@@ -3593,7 +3749,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3615,13 +3773,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BlogEntry'
+                allOf:
+                  - $ref: '#/components/schemas/BlogEntry'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3658,14 +3819,16 @@ paths:
                           type: integer
                         reactions:
                           items:
-                            $ref: '#/components/schemas/Reaction'
+                            allOf:
+                              - $ref: '#/components/schemas/Reaction'
                           type: array
                         relatedID:
                           type: integer
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/SlimUser'
+                          allOf:
+                            - $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - mainID
@@ -3678,7 +3841,8 @@ paths:
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/CommentBase'
+                            allOf:
+                              - $ref: '#/components/schemas/CommentBase'
                           type: array
                       required:
                         - replies
@@ -3688,14 +3852,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: blog entry not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3716,8 +3890,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -3735,13 +3911,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3783,7 +3962,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/BlogPhoto'
+                      allOf:
+                        - $ref: '#/components/schemas/BlogPhoto'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -3797,7 +3977,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3820,14 +4002,17 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/SlimSubject'
+                  allOf:
+                    - $ref: '#/components/schemas/SlimSubject'
                 type: array
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3843,13 +4028,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Calendar'
+                allOf:
+                  - $ref: '#/components/schemas/Calendar'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3878,7 +4066,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3898,7 +4088,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContent'
+              allOf:
+                - $ref: '#/components/schemas/UpdateContent'
       responses:
         '200':
           content:
@@ -3911,7 +4102,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3933,19 +4126,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Character'
+                allOf:
+                  - $ref: '#/components/schemas/Character'
           description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -3959,8 +4163,10 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
           in: query
           name: type
@@ -3997,7 +4203,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/CharacterSubject'
+                      allOf:
+                        - $ref: '#/components/schemas/CharacterSubject'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -4010,14 +4217,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4059,7 +4276,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/PersonCollect'
+                      allOf:
+                        - $ref: '#/components/schemas/PersonCollect'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -4072,14 +4290,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4116,14 +4344,16 @@ paths:
                           type: integer
                         reactions:
                           items:
-                            $ref: '#/components/schemas/Reaction'
+                            allOf:
+                              - $ref: '#/components/schemas/Reaction'
                           type: array
                         relatedID:
                           type: integer
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/SlimUser'
+                          allOf:
+                            - $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - mainID
@@ -4136,7 +4366,8 @@ paths:
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/CommentBase'
+                            allOf:
+                              - $ref: '#/components/schemas/CommentBase'
                           type: array
                       required:
                         - replies
@@ -4146,14 +4377,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4174,8 +4415,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -4193,13 +4436,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4241,7 +4487,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimIndex'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimIndex'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -4255,7 +4502,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4300,7 +4549,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4337,7 +4588,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Character'
+                      allOf:
+                        - $ref: '#/components/schemas/Character'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -4351,7 +4603,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4380,13 +4634,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4414,13 +4671,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4441,7 +4701,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateEpisodeProgress'
+              allOf:
+                - $ref: '#/components/schemas/UpdateEpisodeProgress'
       responses:
         '200':
           content:
@@ -4454,13 +4715,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4497,7 +4761,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Index'
+                      allOf:
+                        - $ref: '#/components/schemas/Index'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -4511,7 +4776,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4540,13 +4807,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4574,13 +4844,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4617,7 +4890,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Person'
+                      allOf:
+                        - $ref: '#/components/schemas/Person'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -4631,7 +4905,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4660,13 +4936,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4694,13 +4973,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4714,12 +4996,16 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
+          required: false
           schema:
-            $ref: '#/components/schemas/CollectionType'
+            allOf:
+              - $ref: '#/components/schemas/CollectionType'
         - description: 起始时间戳
           in: query
           name: since
@@ -4752,7 +5038,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Subject'
+                      allOf:
+                        - $ref: '#/components/schemas/Subject'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -4766,7 +5053,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4787,7 +5076,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateSubjectProgress'
+              allOf:
+                - $ref: '#/components/schemas/UpdateSubjectProgress'
       responses:
         '200':
           content:
@@ -4800,13 +5090,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4826,7 +5119,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CollectSubject'
+              allOf:
+                - $ref: '#/components/schemas/CollectSubject'
       responses:
         '200':
           content:
@@ -4839,13 +5133,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4867,7 +5164,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: debug
   /p1/episodes/-/comments/{commentID}:
@@ -4892,7 +5191,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4913,7 +5214,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContent'
+              allOf:
+                - $ref: '#/components/schemas/UpdateContent'
       responses:
         '200':
           content:
@@ -4926,7 +5228,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4955,7 +5259,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -4994,13 +5300,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5023,13 +5332,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Episode'
+                allOf:
+                  - $ref: '#/components/schemas/Episode'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5067,14 +5379,16 @@ paths:
                           type: integer
                         reactions:
                           items:
-                            $ref: '#/components/schemas/Reaction'
+                            allOf:
+                              - $ref: '#/components/schemas/Reaction'
                           type: array
                         relatedID:
                           type: integer
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/SlimUser'
+                          allOf:
+                            - $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - mainID
@@ -5087,7 +5401,8 @@ paths:
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/CommentBase'
+                            allOf:
+                              - $ref: '#/components/schemas/CommentBase'
                           type: array
                       required:
                         - replies
@@ -5098,7 +5413,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取条目的章节吐槽箱
       tags:
@@ -5117,8 +5434,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -5136,13 +5455,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5179,7 +5501,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Friend'
+                      allOf:
+                        - $ref: '#/components/schemas/Friend'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -5193,7 +5516,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5222,7 +5547,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5259,7 +5586,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Friend'
+                      allOf:
+                        - $ref: '#/components/schemas/Friend'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -5273,7 +5601,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5302,13 +5632,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5336,13 +5669,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5356,12 +5692,16 @@ paths:
       parameters:
         - in: query
           name: mode
+          required: false
           schema:
-            $ref: '#/components/schemas/GroupFilterMode'
+            allOf:
+              - $ref: '#/components/schemas/GroupFilterMode'
         - in: query
           name: sort
+          required: true
           schema:
-            $ref: '#/components/schemas/GroupSort'
+            allOf:
+              - $ref: '#/components/schemas/GroupSort'
         - in: query
           name: limit
           required: false
@@ -5383,7 +5723,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimGroup'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimGroup'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -5397,7 +5738,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5426,7 +5769,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5447,13 +5792,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
+                allOf:
+                  - $ref: '#/components/schemas/Post'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取小组话题回复详情
       tags:
@@ -5470,7 +5818,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContent'
+              allOf:
+                - $ref: '#/components/schemas/UpdateContent'
       responses:
         '200':
           content:
@@ -5483,7 +5832,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5512,7 +5863,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5551,13 +5904,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5569,10 +5925,13 @@ paths:
     get:
       operationId: getRecentGroupTopics
       parameters:
-        - in: query
+        - description: 登录时默认为 joined, 未登录或没有加入小组时始终为 all
+          in: query
           name: mode
+          required: true
           schema:
-            $ref: '#/components/schemas/GroupTopicFilterMode'
+            allOf:
+              - $ref: '#/components/schemas/GroupTopicFilterMode'
         - in: query
           name: limit
           required: false
@@ -5594,7 +5953,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/GroupTopic'
+                      allOf:
+                        - $ref: '#/components/schemas/GroupTopic'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -5608,7 +5968,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5630,13 +5992,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GroupTopic'
+                allOf:
+                  - $ref: '#/components/schemas/GroupTopic'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5657,7 +6022,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateTopic'
+              allOf:
+                - $ref: '#/components/schemas/UpdateTopic'
       responses:
         '200':
           content:
@@ -5670,7 +6036,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5691,8 +6059,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -5709,13 +6079,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5738,13 +6111,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Group'
+                allOf:
+                  - $ref: '#/components/schemas/Group'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5758,8 +6134,10 @@ paths:
       parameters:
         - in: query
           name: role
+          required: false
           schema:
-            $ref: '#/components/schemas/GroupMemberRole'
+            allOf:
+              - $ref: '#/components/schemas/GroupMemberRole'
         - in: query
           name: limit
           required: false
@@ -5787,7 +6165,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/GroupMember'
+                      allOf:
+                        - $ref: '#/components/schemas/GroupMember'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -5801,7 +6180,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5840,7 +6221,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Topic'
+                      allOf:
+                        - $ref: '#/components/schemas/Topic'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -5854,7 +6236,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5876,8 +6260,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateTopic'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateTopic'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -5895,13 +6281,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5916,7 +6305,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateIndex'
+              allOf:
+                - $ref: '#/components/schemas/CreateIndex'
       responses:
         '200':
           content:
@@ -5933,7 +6323,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5962,7 +6354,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -5982,7 +6376,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContent'
+              allOf:
+                - $ref: '#/components/schemas/UpdateContent'
       responses:
         '200':
           content:
@@ -5995,7 +6390,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6024,7 +6421,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6045,13 +6444,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Index'
+                allOf:
+                  - $ref: '#/components/schemas/Index'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6071,7 +6473,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateIndex'
+              allOf:
+                - $ref: '#/components/schemas/UpdateIndex'
       responses:
         '200':
           content:
@@ -6084,7 +6487,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6121,14 +6526,16 @@ paths:
                           type: integer
                         reactions:
                           items:
-                            $ref: '#/components/schemas/Reaction'
+                            allOf:
+                              - $ref: '#/components/schemas/Reaction'
                           type: array
                         relatedID:
                           type: integer
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/SlimUser'
+                          allOf:
+                            - $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - mainID
@@ -6141,7 +6548,8 @@ paths:
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/CommentBase'
+                            allOf:
+                              - $ref: '#/components/schemas/CommentBase'
                           type: array
                       required:
                         - replies
@@ -6151,14 +6559,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: index not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6179,8 +6597,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -6198,13 +6618,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6218,12 +6641,16 @@ paths:
       parameters:
         - in: query
           name: cat
+          required: false
           schema:
-            $ref: '#/components/schemas/IndexRelatedCategory'
+            allOf:
+              - $ref: '#/components/schemas/IndexRelatedCategory'
         - in: query
           name: type
+          required: false
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - description: max 100
           in: query
           name: limit
@@ -6254,7 +6681,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/IndexRelated'
+                      allOf:
+                        - $ref: '#/components/schemas/IndexRelated'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -6268,7 +6696,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6288,7 +6718,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateIndexRelated'
+              allOf:
+                - $ref: '#/components/schemas/CreateIndexRelated'
       responses:
         '200':
           content:
@@ -6305,7 +6736,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6339,7 +6772,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6364,7 +6799,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateIndexRelated'
+              allOf:
+                - $ref: '#/components/schemas/UpdateIndexRelated'
       responses:
         '200':
           content:
@@ -6377,7 +6813,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6401,13 +6839,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequestBody'
+              allOf:
+                - $ref: '#/components/schemas/LoginRequestBody'
       responses:
         '200':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SlimUser'
+                allOf:
+                  - $ref: '#/components/schemas/SlimUser'
           description: Default Response
           headers:
             Set-Cookie:
@@ -6418,13 +6858,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: request validation error
           description: request validation error
         '401':
           content:
             application/json:
+              examples:
+                CAPTCHA_ERROR:
+                  value:
+                    code: CAPTCHA_ERROR
+                    error: Unauthorized
+                    message: wrong captcha
+                    statusCode: 401
+                EMAIL_PASSWORD_ERROR:
+                  value:
+                    code: EMAIL_PASSWORD_ERROR
+                    error: Unauthorized
+                    message: email does not exists or email and password not match
+                    statusCode: 401
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 验证码错误/账号密码不匹配
           description: 验证码错误/账号密码不匹配
           headers:
             X-RateLimit-Limit:
@@ -6442,8 +6899,15 @@ paths:
         '429':
           content:
             application/json:
+              example:
+                code: TOO_MANY_REQUESTS
+                error: Too Many Requests
+                message: too many failed login attempts
+                statusCode: 429
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 失败次数太多，需要过一段时间再重试
           description: 失败次数太多，需要过一段时间再重试
           headers:
             X-RateLimit-Limit:
@@ -6462,7 +6926,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - auth
@@ -6485,14 +6951,25 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                NeedLoginError:
+                  value:
+                    code: NEED_LOGIN
+                    error: Unauthorized
+                    message: you need to login before logout
+                    statusCode: 401
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 未登录
           description: 未登录
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - auth
@@ -6504,19 +6981,28 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Profile'
+                allOf:
+                  - $ref: '#/components/schemas/Profile'
           description: Default Response
         '401':
           content:
             application/json:
+              example:
+                code: NEED_LOGIN
+                error: Unauthorized
+                message: you need to login before get current user
+                statusCode: 401
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6548,7 +7034,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Notice'
+                      allOf:
+                        - $ref: '#/components/schemas/Notice'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -6562,7 +7049,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6591,7 +7080,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6611,7 +7102,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContent'
+              allOf:
+                - $ref: '#/components/schemas/UpdateContent'
       responses:
         '200':
           content:
@@ -6624,7 +7116,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6646,19 +7140,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Person'
+                allOf:
+                  - $ref: '#/components/schemas/Person'
           description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6672,8 +7177,10 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
           in: query
           name: type
@@ -6710,7 +7217,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/PersonCharacter'
+                      allOf:
+                        - $ref: '#/components/schemas/PersonCharacter'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -6723,14 +7231,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6772,7 +7290,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/PersonCollect'
+                      allOf:
+                        - $ref: '#/components/schemas/PersonCollect'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -6785,14 +7304,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6829,14 +7358,16 @@ paths:
                           type: integer
                         reactions:
                           items:
-                            $ref: '#/components/schemas/Reaction'
+                            allOf:
+                              - $ref: '#/components/schemas/Reaction'
                           type: array
                         relatedID:
                           type: integer
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/SlimUser'
+                          allOf:
+                            - $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - mainID
@@ -6849,7 +7380,8 @@ paths:
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/CommentBase'
+                            allOf:
+                              - $ref: '#/components/schemas/CommentBase'
                           type: array
                       required:
                         - replies
@@ -6859,14 +7391,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6887,8 +7429,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -6906,13 +7450,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6954,7 +7501,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimIndex'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimIndex'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -6968,7 +7516,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -6982,8 +7532,10 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - description: 职位
           in: query
           name: position
@@ -7020,7 +7572,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/PersonWork'
+                      allOf:
+                        - $ref: '#/components/schemas/PersonWork'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7033,14 +7586,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: person not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7055,7 +7618,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateReport'
+              allOf:
+                - $ref: '#/components/schemas/CreateReport'
       responses:
         '200':
           content:
@@ -7072,13 +7636,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7111,7 +7678,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SearchCharacter'
+              allOf:
+                - $ref: '#/components/schemas/SearchCharacter'
       responses:
         '200':
           content:
@@ -7120,7 +7688,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimCharacter'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimCharacter'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7134,7 +7703,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7167,7 +7738,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SearchPerson'
+              allOf:
+                - $ref: '#/components/schemas/SearchPerson'
       responses:
         '200':
           content:
@@ -7176,7 +7748,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimPerson'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimPerson'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7190,7 +7763,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7223,7 +7798,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SearchSubject'
+              allOf:
+                - $ref: '#/components/schemas/SearchSubject'
       responses:
         '200':
           content:
@@ -7232,7 +7808,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimSubject'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimSubject'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7246,7 +7823,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7260,12 +7839,16 @@ paths:
       parameters:
         - in: query
           name: type
+          required: true
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - in: query
           name: sort
+          required: true
           schema:
-            $ref: '#/components/schemas/SubjectBrowseSort'
+            allOf:
+              - $ref: '#/components/schemas/SubjectBrowseSort'
         - description: min 1
           in: query
           name: page
@@ -7328,7 +7911,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimSubject'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimSubject'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7342,7 +7926,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7371,7 +7957,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7410,13 +7998,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7445,7 +8036,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7466,13 +8059,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Post'
+                allOf:
+                  - $ref: '#/components/schemas/Post'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取条目讨论回复详情
       tags:
@@ -7489,7 +8085,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateContent'
+              allOf:
+                - $ref: '#/components/schemas/UpdateContent'
       responses:
         '200':
           content:
@@ -7502,7 +8099,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7531,7 +8130,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7570,13 +8171,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7613,7 +8217,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectTopic'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectTopic'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7627,7 +8232,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7649,13 +8256,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubjectTopic'
+                allOf:
+                  - $ref: '#/components/schemas/SubjectTopic'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7701,7 +8311,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7723,8 +8335,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -7741,13 +8355,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7769,13 +8386,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Subject'
+                allOf:
+                  - $ref: '#/components/schemas/Subject'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7823,7 +8443,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectCharacter'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectCharacter'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7837,7 +8458,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7851,12 +8474,17 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
-            $ref: '#/components/schemas/CollectionType'
-        - in: query
+            allOf:
+              - $ref: '#/components/schemas/CollectionType'
+        - description: 默认为 all, 未登录或没有好友时始终为 all
+          in: query
           name: mode
+          required: false
           schema:
-            $ref: '#/components/schemas/FilterMode'
+            allOf:
+              - $ref: '#/components/schemas/FilterMode'
         - description: max 100
           in: query
           name: limit
@@ -7888,7 +8516,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectCollect'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectCollect'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7902,7 +8531,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7916,8 +8547,10 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
-            $ref: '#/components/schemas/CollectionType'
+            allOf:
+              - $ref: '#/components/schemas/CollectionType'
         - description: max 100
           in: query
           name: limit
@@ -7948,7 +8581,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectInterestComment'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectInterestComment'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -7962,7 +8596,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -7976,8 +8612,10 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
-            $ref: '#/components/schemas/EpisodeType'
+            allOf:
+              - $ref: '#/components/schemas/EpisodeType'
         - description: max 1000
           in: query
           name: limit
@@ -8008,7 +8646,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Episode'
+                      allOf:
+                        - $ref: '#/components/schemas/Episode'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8022,7 +8661,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8064,7 +8705,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimIndex'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimIndex'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8078,7 +8720,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8120,7 +8764,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectRec'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectRec'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8134,7 +8779,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8148,8 +8795,10 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - description: 是否单行本
           in: query
           name: offprint
@@ -8187,7 +8836,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectRelation'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectRelation'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8201,7 +8851,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8243,7 +8895,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectReview'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectReview'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8257,7 +8910,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8305,7 +8960,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectStaff'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectStaff'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8319,7 +8975,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8361,7 +9019,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectPosition'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectPosition'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8375,7 +9034,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8417,7 +9078,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/Topic'
+                      allOf:
+                        - $ref: '#/components/schemas/Topic'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8431,7 +9093,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8453,8 +9117,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateTopic'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateTopic'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -8472,13 +9138,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8490,10 +9159,20 @@ paths:
     get:
       operationId: getTimeline
       parameters:
-        - in: query
+        - description: 登录时默认为 friends, 未登录或没有好友时始终为 all
+          in: query
           name: mode
+          required: false
           schema:
-            $ref: '#/components/schemas/FilterMode'
+            allOf:
+              - $ref: '#/components/schemas/FilterMode'
+        - description: 时间线类型，不传则查询所有类型
+          in: query
+          name: cat
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/TimelineCat'
         - description: min 1, max 20
           in: query
           name: limit
@@ -8515,14 +9194,17 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/Timeline'
+                  allOf:
+                    - $ref: '#/components/schemas/Timeline'
                 type: array
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8537,8 +9219,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateContent'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateContent'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -8555,13 +9239,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8576,14 +9263,20 @@ paths:
         SSE 客户端来订阅此接口。每个事件以 \`data: {...}\\n\\n\` 格式发送。
       operationId: getTimelineEvents
       parameters:
-        - in: query
+        - description: 时间线类型，不传则订阅所有类型
+          in: query
           name: cat
+          required: false
           schema:
-            $ref: '#/components/schemas/TimelineCat'
-        - in: query
+            allOf:
+              - $ref: '#/components/schemas/TimelineCat'
+        - description: 登录时默认为 friends, 未登录或没有好友时始终为 all
+          in: query
           name: mode
+          required: false
           schema:
-            $ref: '#/components/schemas/FilterMode'
+            allOf:
+              - $ref: '#/components/schemas/FilterMode'
       responses:
         '200':
           content:
@@ -8595,7 +9288,8 @@ paths:
                     description: '事件类型: ''connected'' | ''timeline'''
                     type: string
                   timeline:
-                    $ref: '#/components/schemas/Timeline'
+                    allOf:
+                      - $ref: '#/components/schemas/Timeline'
                 required:
                   - event
                 type: object
@@ -8604,7 +9298,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8633,7 +9329,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8662,7 +9360,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8701,13 +9401,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8744,14 +9447,16 @@ paths:
                           type: integer
                         reactions:
                           items:
-                            $ref: '#/components/schemas/Reaction'
+                            allOf:
+                              - $ref: '#/components/schemas/Reaction'
                           type: array
                         relatedID:
                           type: integer
                         state:
                           type: integer
                         user:
-                          $ref: '#/components/schemas/SlimUser'
+                          allOf:
+                            - $ref: '#/components/schemas/SlimUser'
                       required:
                         - id
                         - mainID
@@ -8764,7 +9469,8 @@ paths:
                     - properties:
                         replies:
                           items:
-                            $ref: '#/components/schemas/CommentBase'
+                            allOf:
+                              - $ref: '#/components/schemas/CommentBase'
                           type: array
                       required:
                         - replies
@@ -8774,14 +9480,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: timeline not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8802,8 +9518,10 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/CreateReply'
-                - $ref: '#/components/schemas/TurnstileToken'
+                - allOf:
+                    - $ref: '#/components/schemas/CreateReply'
+                - allOf:
+                    - $ref: '#/components/schemas/TurnstileToken'
       responses:
         '200':
           content:
@@ -8820,13 +9538,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8840,8 +9561,10 @@ paths:
       parameters:
         - in: query
           name: type
+          required: true
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - description: max 100
           in: query
           name: limit
@@ -8867,7 +9590,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/TrendingSubject'
+                      allOf:
+                        - $ref: '#/components/schemas/TrendingSubject'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8881,7 +9605,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8918,7 +9644,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SubjectTopic'
+                      allOf:
+                        - $ref: '#/components/schemas/SubjectTopic'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -8932,7 +9659,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -8963,7 +9692,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 获取 Turnstile 令牌
       tags:
@@ -8982,13 +9713,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                allOf:
+                  - $ref: '#/components/schemas/User'
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9031,7 +9765,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimBlogEntry'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimBlogEntry'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9045,7 +9780,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9088,7 +9825,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimCharacter'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimCharacter'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9102,7 +9840,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9145,7 +9885,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimIndex'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimIndex'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9159,7 +9900,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9202,7 +9945,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimPerson'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimPerson'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9216,7 +9960,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9230,12 +9976,16 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
-            $ref: '#/components/schemas/SubjectType'
+            allOf:
+              - $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
+          required: false
           schema:
-            $ref: '#/components/schemas/CollectionType'
+            allOf:
+              - $ref: '#/components/schemas/CollectionType'
         - description: max 100
           in: query
           name: limit
@@ -9267,7 +10017,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimSubject'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimSubject'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9281,7 +10032,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9323,7 +10076,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimUser'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimUser'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9337,7 +10091,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9379,7 +10135,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimUser'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimUser'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9393,7 +10150,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9436,7 +10195,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimGroup'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimGroup'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9450,7 +10210,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9493,7 +10255,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/SlimIndex'
+                      allOf:
+                        - $ref: '#/components/schemas/SlimIndex'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9507,7 +10270,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9546,14 +10311,17 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/Timeline'
+                  allOf:
+                    - $ref: '#/components/schemas/Timeline'
                 type: array
           description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9576,19 +10344,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CharacterRevisionWikiInfo'
+                allOf:
+                  - $ref: '#/components/schemas/CharacterRevisionWikiInfo'
           description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: revision not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9611,25 +10390,44 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CharacterWikiInfo'
+                allOf:
+                  - $ref: '#/components/schemas/CharacterWikiInfo'
           description: Default Response
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: character not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9672,7 +10470,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/RevisionHistory'
+                      allOf:
+                        - $ref: '#/components/schemas/RevisionHistory'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -9686,7 +10485,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9708,20 +10509,42 @@ paths:
         '200':
           content:
             application/json:
+              example:
+                date: '2012-12-23'
+                duration: '00:23:37'
+                ep: 60
+                id: 1148124
+                name: キマリ×ト×ハジマリ
+                nameCN: 结末×与×开始
+                subjectID: 65536
+                summary: >-
+                  ゴンとキルアはG.I.プレイヤー選考会にいよいよ挑戦する。審査を担当するツェズゲラから提示された合格の条件はただ一つ「練を見せる」こと。合格できる者は200人中32名という狭き門だが、ゴンとキルアはくぐり抜けることができるのか！？
+                type: 0
               schema:
-                $ref: '#/components/schemas/EpisodeWikiInfo'
+                allOf:
+                  - $ref: '#/components/schemas/EpisodeWikiInfo'
           description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: episode not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9780,7 +10603,8 @@ paths:
                     summary:
                       type: string
                     type:
-                      $ref: '#/components/schemas/EpisodeType'
+                      allOf:
+                        - $ref: '#/components/schemas/EpisodeType'
                   type: object
                 expectedRevision:
                   properties:
@@ -9812,19 +10636,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: invalid input
           description: invalid input
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: episode 1 not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9861,7 +10697,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -9880,19 +10718,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PersonRevisionWikiInfo'
+                allOf:
+                  - $ref: '#/components/schemas/PersonRevisionWikiInfo'
           description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: revision not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -9915,25 +10764,38 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PersonWikiInfo'
+                allOf:
+                  - $ref: '#/components/schemas/PersonWikiInfo'
           description: Default Response
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '404':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 人物不存在
           description: 人物不存在
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10001,20 +10863,38 @@ paths:
         '400':
           content:
             application/json:
+              examples:
+                WIKI_CHANGED:
+                  value:
+                    code: WIKI_CHANGED
+                    error: Bad Request
+                    message: "expected data doesn't match\\nIndex: name\\n===================================================================\\n--- name\\texpected\\n+++ name\\tcurrent\\n@@ -1,1 +1,1 @@\\n-1234\\n+水樹奈々\\n"
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10056,7 +10936,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/RevisionHistory'
+                      allOf:
+                        - $ref: '#/components/schemas/RevisionHistory'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -10070,7 +10951,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10098,19 +10981,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RecentWikiChange'
+                allOf:
+                  - $ref: '#/components/schemas/RecentWikiChange'
           description: Default Response
         '401':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -10142,7 +11029,8 @@ paths:
                 summary:
                   type: string
                 type:
-                  $ref: '#/components/schemas/SubjectType'
+                  allOf:
+                    - $ref: '#/components/schemas/SubjectType'
               required:
                 - name
                 - type
@@ -10168,20 +11056,31 @@ paths:
         '400':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '401':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10203,19 +11102,30 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubjectRevisionWikiInfo'
+                allOf:
+                  - $ref: '#/components/schemas/SubjectRevisionWikiInfo'
           description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: revision not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10238,25 +11148,44 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SubjectWikiInfo'
+                allOf:
+                  - $ref: '#/components/schemas/SubjectWikiInfo'
           description: Default Response
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: subject not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10377,14 +11306,24 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10473,7 +11412,8 @@ paths:
                           type: string
                   type: object
                 subject:
-                  $ref: '#/components/schemas/SubjectEdit'
+                  allOf:
+                    - $ref: '#/components/schemas/SubjectEdit'
               required:
                 - commitMessage
                 - subject
@@ -10485,14 +11425,24 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10521,7 +11471,8 @@ paths:
                         creator:
                           properties:
                             avatar:
-                              $ref: '#/components/schemas/Avatar'
+                              allOf:
+                                - $ref: '#/components/schemas/Avatar'
                             group:
                               type: integer
                             id:
@@ -10584,7 +11535,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -10621,20 +11574,44 @@ paths:
         '400':
           content:
             application/json:
+              examples:
+                IMAGE_FILE_TOO_LARGE:
+                  value:
+                    code: IMAGE_FILE_TOO_LARGE
+                    error: Bad Request
+                    message: uploaded image file is too large
+                    statusCode: 400
+                IMAGE_FORMAT_NOT_SUPPORT:
+                  value:
+                    code: IMAGE_FORMAT_NOT_SUPPORT
+                    error: Bad Request
+                    message: not valid image file, only support jpeg, jpg, png, webp
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '403':
           content:
             application/json:
+              examples:
+                NOT_ALLOWED:
+                  value:
+                    code: NOT_ALLOWED
+                    error: Forbidden
+                    message: you don't have permission to non sandbox subject
+                    statusCode: 403
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -10667,7 +11644,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 撤消条目封面投票
       tags:
@@ -10700,7 +11679,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       summary: 为条目封面投票
       tags:
@@ -10748,7 +11729,8 @@ paths:
                       summary:
                         type: string
                       type:
-                        $ref: '#/components/schemas/EpisodeType'
+                        allOf:
+                          - $ref: '#/components/schemas/EpisodeType'
                     required:
                       - id
                     type: object
@@ -10779,14 +11761,24 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10831,7 +11823,8 @@ paths:
                       summary:
                         type: string
                       type:
-                        $ref: '#/components/schemas/EpisodeType'
+                        allOf:
+                          - $ref: '#/components/schemas/EpisodeType'
                     required:
                       - ep
                     type: object
@@ -10857,14 +11850,24 @@ paths:
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10888,20 +11891,31 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/RevisionHistory'
+                  allOf:
+                    - $ref: '#/components/schemas/RevisionHistory'
                 type: array
           description: Default Response
         '401':
           content:
             application/json:
+              examples:
+                INVALID_SYNTAX_ERROR:
+                  value:
+                    code: INVALID_SYNTAX_ERROR
+                    error: Bad Request
+                    message: '%s'
+                    statusCode: 400
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -10939,7 +11953,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       tags:
         - wiki
@@ -10977,7 +11993,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/UserCharacterContribution'
+                      allOf:
+                        - $ref: '#/components/schemas/UserCharacterContribution'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -10990,14 +12007,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: user not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -11039,7 +12066,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/UserPersonContribution'
+                      allOf:
+                        - $ref: '#/components/schemas/UserPersonContribution'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -11052,14 +12080,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: user not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []
@@ -11101,7 +12139,8 @@ paths:
                 properties:
                   data:
                     items:
-                      $ref: '#/components/schemas/UserSubjectContribution'
+                      allOf:
+                        - $ref: '#/components/schemas/UserSubjectContribution'
                     type: array
                   total:
                     description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
@@ -11114,14 +12153,24 @@ paths:
         '404':
           content:
             application/json:
+              examples:
+                NOT_FOUND:
+                  value:
+                    code: NOT_FOUND
+                    error: Not Found
+                    message: user not found
+                    statusCode: 404
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-          description: default error response type
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+          description: Default Response
         '500':
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                allOf:
+                  - $ref: '#/components/schemas/ErrorResponse'
+                description: 意料之外的服务器错误
           description: 意料之外的服务器错误
       security:
         - CookiesSession: []

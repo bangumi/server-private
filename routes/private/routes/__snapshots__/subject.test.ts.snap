@@ -415,27 +415,6 @@ Object {
     Object {
       "actors": Array [],
       "character": Object {
-        "comment": 56,
-        "id": 32,
-        "images": Object {
-          "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
-          "large": "https://lain.bgm.tv/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
-          "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
-          "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
-        },
-        "info": "性别 女 / 生日 4月13日 / 身高 152cm",
-        "lock": false,
-        "name": "ちぃ",
-        "nameCN": "小叽",
-        "nsfw": false,
-        "role": 1,
-      },
-      "order": 0,
-      "type": 1,
-    },
-    Object {
-      "actors": Array [],
-      "character": Object {
         "comment": 10,
         "id": 33,
         "images": Object {
@@ -448,6 +427,27 @@ Object {
         "lock": false,
         "name": "本須和秀樹",
         "nameCN": "本须和秀树",
+        "nsfw": false,
+        "role": 1,
+      },
+      "order": 0,
+      "type": 1,
+    },
+    Object {
+      "actors": Array [],
+      "character": Object {
+        "comment": 56,
+        "id": 32,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+          "large": "https://lain.bgm.tv/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+          "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+          "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+        },
+        "info": "性别 女 / 生日 4月13日 / 身高 152cm",
+        "lock": false,
+        "name": "ちぃ",
+        "nameCN": "小叽",
         "nsfw": false,
         "role": 1,
       },
