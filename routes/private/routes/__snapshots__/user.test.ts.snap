@@ -1149,7 +1149,7 @@ Array [
 exports[`user relations > should get followers 1`] = `
 Object {
   "data": Array [],
-  "total": 1,
+  "total": 0,
 }
 `;
 
