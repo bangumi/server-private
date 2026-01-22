@@ -888,7 +888,9 @@ export async function setup(app: App) {
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+          offset: t.Optional(
+            t.Integer({ default: 0, minimum: 0, maximum: 500, description: 'min 0' }),
+          ),
         }),
         response: {
           200: res.Paged(res.Ref(res.SubjectCollect)),
@@ -904,6 +906,7 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+
       const condition = [
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
         op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
@@ -919,11 +922,11 @@ export async function setup(app: App) {
       }
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
-        .from(schema.chiiSubjectInterests)
+        .from(schema.chiiSubjectInterests, { forceIndex: 'subject_lasttouch' })
         .where(op.and(...condition));
       const data = await db
         .select()
-        .from(schema.chiiSubjectInterests)
+        .from(schema.chiiSubjectInterests, { forceIndex: 'subject_lasttouch' })
         .where(op.and(...condition))
         .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
         .limit(limit)

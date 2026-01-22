@@ -94,6 +94,7 @@ commit_parsers = [
   { message = "^fix", group = "<!-- 1 --> Bug Fixes" },
   { message = "^revert", group = "<!-- 2 --> Revert" },
   { message = "^build", group = "<!-- 3 --> Dependency" },
+  { message = "^perf", group = "<!-- 4 --> Optimize" },
 ]
 # filter out the commits that are not matched by commit parsers
 filter_commits = true

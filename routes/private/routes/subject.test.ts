@@ -116,6 +116,43 @@ describe('subject', () => {
     });
     expect(res.json()).toMatchSnapshot();
   });
+
+  test('should get subject collects', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/subjects/12/collects',
+      query: { limit: '2', offset: '0' },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+
+    expect(body).toMatchObject({
+      data: expect.any(Array),
+      total: expect.any(Number),
+    });
+    expect(body.data.length).toBeLessThanOrEqual(2);
+    expect(body.total).toBeGreaterThanOrEqual(body.data.length);
+
+    for (const collect of body.data) {
+      expect(collect).toMatchObject({
+        user: expect.objectContaining({
+          id: expect.any(Number),
+          username: expect.any(String),
+        }),
+        interest: expect.objectContaining({
+          id: expect.any(Number),
+          type: expect.any(Number),
+          rate: expect.any(Number),
+          comment: expect.any(String),
+          tags: expect.any(Array),
+          updatedAt: expect.any(Number),
+        }),
+      });
+    }
+  });
 });
 
 describe('subject topics', () => {
