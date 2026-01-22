@@ -5,9 +5,9 @@ import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import type { CharacterRev } from '@app/lib/orm/entity/index.ts';
-import { RevType } from '@app/lib/orm/entity/index.ts';
-import * as entity from '@app/lib/orm/entity/index.ts';
+import type { CharacterRev } from '@app/lib/rev/type.ts';
+import { RevType } from '@app/lib/rev/type.ts';
+import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -123,7 +123,7 @@ export async function setup(app: App) {
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'subjectEditHistorySummary',
+        operationId: 'characterEditHistorySummary',
         summary: '获取角色 wiki 历史编辑摘要',
         params: t.Object({
           characterID: t.Integer({ minimum: 1 }),
@@ -136,13 +136,13 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Paged(res.Ref(res.RevisionHistory)),
+          200: res.PagedRevisionHistory,
         },
       },
     },
     async ({ params: { characterID }, query: { limit = 20, offset = 0 } }) => {
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.countDistinct(schema.chiiRevHistory.revId) })
+        .select({ count: op.count() })
         .from(schema.chiiRevHistory)
         .where(
           op.and(
@@ -216,12 +216,13 @@ export async function setup(app: App) {
       const [revText] = await db
         .select()
         .from(schema.chiiRevText)
-        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId));
+        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId))
+        .limit(1);
       if (!revText) {
         throw new NotFoundError(`RevText ${r.revTextId}`);
       }
 
-      const revRecord = await entity.RevText.deserialize(revText.revText);
+      const revRecord = await deserializeRevText(revText.revText);
       const revContent = revRecord[revisionID] as CharacterRev;
 
       return {
@@ -238,7 +239,7 @@ export async function setup(app: App) {
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'getUserContributedcharacters',
+        operationId: 'getUserContributedCharacters',
         summary: '获取用户 wiki 角色编辑记录',
         params: t.Object({
           username: t.String(),

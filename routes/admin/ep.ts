@@ -1,10 +1,11 @@
 import * as lo from 'lodash-es';
 import t from 'typebox';
 
-import type { EpTextRev } from '@app/lib/orm/entity/index.ts';
-import { RevHistory, RevText } from '@app/lib/orm/entity/index.ts';
 import * as orm from '@app/lib/orm/index.ts';
 import { EpisodeRepo, EpRevRepo, RevHistoryRepo, RevTextRepo } from '@app/lib/orm/index.ts';
+import type { EpTextRev } from '@app/lib/rev/type.ts';
+import { EpisodeEditTypes } from '@app/lib/rev/type.ts';
+import { parseRevTexts } from '@app/lib/rev/utils.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import type { App } from '@app/routes/type.ts';
@@ -30,7 +31,7 @@ export async function setup(app: App) {
 
       const o = await RevHistoryRepo.findBy({
         revMid: episodeID,
-        revType: orm.In(RevHistory.episodeTypes),
+        revType: orm.In(EpisodeEditTypes),
       });
 
       // const revs: {
@@ -65,7 +66,7 @@ export async function setup(app: App) {
         revTextId: orm.In(lo.uniq(o.map((x) => x.revTextId))),
       });
 
-      const revText = await RevText.parse<EpTextRev>(revTexts);
+      const revText = await parseRevTexts<EpTextRev>(revTexts);
       const revData = Object.fromEntries(revText.map((x) => [x.id, x.data]));
 
       const uids = o.map((x) => x.revCreator);

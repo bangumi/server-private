@@ -1155,3 +1155,5 @@ export const RevisionHistory = t.Object(
   },
   { $id: 'RevisionHistory' },
 );
+export type IPagedRevisionHistory = Static<typeof PagedRevisionHistory>;
+export const PagedRevisionHistory = Paged(Ref(RevisionHistory));
