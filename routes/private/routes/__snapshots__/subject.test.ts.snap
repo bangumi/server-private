@@ -415,27 +415,6 @@ Object {
     Object {
       "actors": Array [],
       "character": Object {
-        "comment": 10,
-        "id": 33,
-        "images": Object {
-          "grid": "https://lain.bgm.tv/pic/crt/g/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
-          "large": "https://lain.bgm.tv/pic/crt/l/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
-          "medium": "https://lain.bgm.tv/pic/crt/m/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
-          "small": "https://lain.bgm.tv/pic/crt/s/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
-        },
-        "info": "性别 男 / 生日 9月3日 / 身高 180cm",
-        "lock": false,
-        "name": "本須和秀樹",
-        "nameCN": "本须和秀树",
-        "nsfw": false,
-        "role": 1,
-      },
-      "order": 0,
-      "type": 1,
-    },
-    Object {
-      "actors": Array [],
-      "character": Object {
         "comment": 56,
         "id": 32,
         "images": Object {
@@ -448,6 +427,27 @@ Object {
         "lock": false,
         "name": "ちぃ",
         "nameCN": "小叽",
+        "nsfw": false,
+        "role": 1,
+      },
+      "order": 0,
+      "type": 1,
+    },
+    Object {
+      "actors": Array [],
+      "character": Object {
+        "comment": 10,
+        "id": 33,
+        "images": Object {
+          "grid": "https://lain.bgm.tv/pic/crt/g/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+          "large": "https://lain.bgm.tv/pic/crt/l/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+          "medium": "https://lain.bgm.tv/pic/crt/m/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+          "small": "https://lain.bgm.tv/pic/crt/s/18/2b/33_0c5cdcd5072bb1864cdee4d3d6e_yyZGp.jpg",
+        },
+        "info": "性别 男 / 生日 9月3日 / 身高 180cm",
+        "lock": false,
+        "name": "本須和秀樹",
+        "nameCN": "本须和秀树",
         "nsfw": false,
         "role": 1,
       },
