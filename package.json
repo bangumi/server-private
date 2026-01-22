@@ -62,7 +62,7 @@
     "js-yaml": "4.1.1",
     "keyv": "5.5.5",
     "liquidjs": "10.24.0",
-    "lodash-es": "4.17.22",
+    "lodash-es": "4.17.23",
     "luxon": "3.7.2",
     "meilisearch": "0.55.0",
     "mercurius": "16.6.0",
