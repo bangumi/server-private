@@ -12,8 +12,8 @@ export function getUserVisitCacheKey(uid: number) {
   return `tml:visit:user:${uid}`;
 }
 
-export function getInboxCacheKey(uid: number | string) {
-  return `tml:v3:inbox:${uid}`;
+export function getInboxCacheKey(uid: number | string, cat?: number) {
+  return cat === undefined ? `tml:v3:inbox:${uid}` : `tml:v3:inbox:${uid}:${cat}`;
 }
 
 export function getInboxVisitCacheKey(uid: number) {

@@ -7,10 +7,11 @@ import { getInboxCacheKey, getInboxVisitCacheKey } from './cache.ts';
 
 export async function getTimelineInbox(
   uid: number,
+  cat: number,
   limit: number,
   until?: number,
 ): Promise<number[]> {
-  const cacheKey = getInboxCacheKey(uid);
+  const cacheKey = getInboxCacheKey(uid, cat);
   const ids = [];
   const max_id = until ? until - 1 : '+inf';
   const cached = await redis.zrevrangebyscore(cacheKey, max_id, '-inf', 'LIMIT', 0, limit);
@@ -26,11 +27,14 @@ export async function getTimelineInbox(
     .then((data) => data.map((d) => d.fid));
   // 对于没有好友的用户，返回全站时间线
   if (friendIDs.length === 0) {
-    return getTimelineInbox(0, limit, until);
+    return getTimelineInbox(0, cat, limit, until);
   }
   // 自己的动态也在需要首页显示
   friendIDs.push(uid);
   conditions.push(op.inArray(schema.chiiTimeline.uid, friendIDs));
+  if (cat != 0) {
+    conditions.push(op.eq(schema.chiiTimeline.cat, cat));
+  }
   if (until) {
     conditions.push(op.lt(schema.chiiTimeline.id, until));
   }
