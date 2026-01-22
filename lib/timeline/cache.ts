@@ -4,8 +4,8 @@ export function getItemCacheKey(id: number): string {
   return `tml:v4:item:${id}`;
 }
 
-export function getUserCacheKey(uid: number | string) {
-  return `tml:v3:user:${uid}`;
+export function getUserCacheKey(uid: number | string, cat?: number) {
+  return cat === undefined ? `tml:v3:user:${uid}` : `tml:v3:user:${uid}:${cat}`;
 }
 
 export function getUserVisitCacheKey(uid: number) {
