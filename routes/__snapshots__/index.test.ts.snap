@@ -10284,6 +10284,13 @@ paths:
     get:
       operationId: getUserTimeline
       parameters:
+        - description: 时间线类型，不传则查询所有类型
+          in: query
+          name: cat
+          required: false
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/TimelineCat'
         - description: min 1, max 20
           in: query
           name: limit
