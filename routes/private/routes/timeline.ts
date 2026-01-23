@@ -43,7 +43,7 @@ export async function setup(app: App) {
             }),
           ),
           cat: t.Optional(
-            req.Ref(req.TimelineCat, { description: '时间线类型，不传则查询所有类型' }),
+            req.Ref(req.TimelineCat, { description: '时间线类型，不传或0则查询所有类型' }),
           ),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 20, description: 'min 1, max 20' }),
@@ -55,7 +55,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { mode = req.IFilterMode.Friends, cat, limit = 20, until } }) => {
+    async ({ auth, query: { mode = req.IFilterMode.Friends, cat = 0, limit = 20, until } }) => {
       const ids = [];
       switch (mode) {
         case req.IFilterMode.Friends: {

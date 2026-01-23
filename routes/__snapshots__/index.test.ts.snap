@@ -9166,7 +9166,7 @@ paths:
           schema:
             allOf:
               - $ref: '#/components/schemas/FilterMode'
-        - description: 时间线类型，不传则查询所有类型
+        - description: 时间线类型，不传或0则查询所有类型
           in: query
           name: cat
           required: false
@@ -10284,7 +10284,7 @@ paths:
     get:
       operationId: getUserTimeline
       parameters:
-        - description: 时间线类型，不传则查询所有类型
+        - description: 时间线类型，不传或0则查询所有类型
           in: query
           name: cat
           required: false

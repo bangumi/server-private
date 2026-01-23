@@ -7,11 +7,11 @@ import { getInboxCacheKey, getInboxVisitCacheKey } from './cache.ts';
 
 export async function getTimelineInbox(
   uid: number,
-  cat: number | undefined,
+  cat: number,
   limit: number,
   until?: number,
 ): Promise<number[]> {
-  const cacheKey = getInboxCacheKey(uid, cat || 0);
+  const cacheKey = getInboxCacheKey(uid, cat);
   const ids = [];
   const max_id = until ? until - 1 : '+inf';
   const cached = await redis.zrevrangebyscore(cacheKey, max_id, '-inf', 'LIMIT', 0, limit);
@@ -52,6 +52,6 @@ export async function getTimelineInbox(
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
   const ttl = DateTime.now().toUnixInteger() + 1209600;
-  await redis.setex(getInboxVisitCacheKey(uid, cat || 0), 1209600, ttl);
+  await redis.setex(getInboxVisitCacheKey(uid, cat), 1209600, ttl);
   return ids;
 }
