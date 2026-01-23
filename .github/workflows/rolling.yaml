@@ -15,7 +15,7 @@ permissions:
 jobs:
   auto-tag:
     if: ${{ github.repository_owner == 'bangumi' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: actions/checkout@v6
         with:
@@ -41,7 +41,7 @@ jobs:
 
   github:
     if: ${{ github.repository_owner == 'bangumi' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     needs:
       - auto-tag
     steps:
