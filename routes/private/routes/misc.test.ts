@@ -32,7 +32,7 @@ describe('notify', () => {
       });
     });
 
-    const app = await createTestServer({
+    const app = createTestServer({
       auth: {
         ...emptyAuth(),
         login: true,
