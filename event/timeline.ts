@@ -70,10 +70,12 @@ export async function handle({ key, value }: KafkaMessage) {
             }
           }
         }
-        await redis.publish(
-          TIMELINE_EVENT_CHANNEL,
-          JSON.stringify({ tml_id: tml.tml_id, cat: tml.tml_cat, uid: tml.tml_uid }),
-        );
+        if (tml.tml_cat != 0) {
+          await redis.publish(
+            TIMELINE_EVENT_CHANNEL,
+            JSON.stringify({ tml_id: tml.tml_id, cat: tml.tml_cat, uid: tml.tml_uid }),
+          );
+        }
       }
       const tml = payload.after;
       await createTimeline(tml);
