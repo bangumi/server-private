@@ -25,7 +25,7 @@ export async function getTimelineUser(
     ].filter(Boolean);
 
     // 只有 cat 有值才添加
-    if (cat != undefined) {
+    if (cat != 0) {
       conditions.push(op.eq(schema.chiiTimeline.cat, cat));
     }
 
