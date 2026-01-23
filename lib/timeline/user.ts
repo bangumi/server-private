@@ -44,6 +44,6 @@ export async function getTimelineUser(
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
   const ttl = DateTime.now().toUnixInteger() + 1209600;
-  await redis.setex(getUserVisitCacheKey(uid), 1209600, ttl);
+  await redis.setex(getUserVisitCacheKey(uid, cat), 1209600, ttl);
   return ids;
 }

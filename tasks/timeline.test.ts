@@ -15,7 +15,7 @@ describe('truncate timeline cache', () => {
   });
 
   test('should truncate global cache', async () => {
-    const cacheKey = getInboxCacheKey(0);
+    const cacheKey = getInboxCacheKey(0, 0);
     // generate 1500 members
     const members = Array.from({ length: 1500 }, (_, i) => i + 1);
     await redis.zadd(cacheKey, ...members.flatMap((m) => [m, m]));
@@ -40,7 +40,7 @@ describe('truncate timeline cache', () => {
   });
 
   test('should truncate user inbox cache', async () => {
-    const cacheKey = getInboxCacheKey(1);
+    const cacheKey = getInboxCacheKey(1, 0);
     // generate 400 members
     const members = Array.from({ length: 400 }, (_, i) => i + 1);
     await redis.zadd(cacheKey, ...members.flatMap((m) => [m, m]));

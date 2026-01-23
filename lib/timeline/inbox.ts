@@ -52,6 +52,6 @@ export async function getTimelineInbox(
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
   const ttl = DateTime.now().toUnixInteger() + 1209600;
-  await redis.setex(getInboxVisitCacheKey(uid), 1209600, ttl);
+  await redis.setex(getInboxVisitCacheKey(uid, cat), 1209600, ttl);
   return ids;
 }
