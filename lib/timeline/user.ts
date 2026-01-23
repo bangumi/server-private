@@ -7,11 +7,11 @@ import { getUserCacheKey, getUserVisitCacheKey } from './cache.ts';
 
 export async function getTimelineUser(
   uid: number,
-  cat: number,
+  cat: number | undefined,
   limit: number,
   until?: number,
 ): Promise<number[]> {
-  const cacheKey = getUserCacheKey(uid, cat);
+  const cacheKey = getUserCacheKey(uid, cat || 0);
   const ids = [];
   const max_id = until ? until - 1 : '+inf';
   const cached = await redis.zrevrangebyscore(cacheKey, max_id, '-inf', 'LIMIT', 0, limit);
@@ -25,7 +25,7 @@ export async function getTimelineUser(
     ].filter(Boolean);
 
     // 只有 cat 有值才添加
-    if (cat != 0) {
+    if (cat != undefined) {
       conditions.push(op.eq(schema.chiiTimeline.cat, cat));
     }
 
@@ -44,6 +44,6 @@ export async function getTimelineUser(
   }
   // 标记访问，用于 debezium 判断是否需要更新 timeline 缓存
   const ttl = DateTime.now().toUnixInteger() + 1209600;
-  await redis.setex(getUserVisitCacheKey(uid, cat), 1209600, ttl);
+  await redis.setex(getUserVisitCacheKey(uid, cat || 0), 1209600, ttl);
   return ids;
 }
