@@ -7,7 +7,7 @@ import { getInboxCacheKey, getInboxVisitCacheKey } from './cache.ts';
 
 export async function getTimelineInbox(
   uid: number,
-  cat: number,
+  cat: number | undefined,
   limit: number,
   until?: number,
 ): Promise<number[]> {
@@ -32,7 +32,7 @@ export async function getTimelineInbox(
   // 自己的动态也在需要首页显示
   friendIDs.push(uid);
   conditions.push(op.inArray(schema.chiiTimeline.uid, friendIDs));
-  if (cat != 0) {
+  if (cat != undefined && cat > 0) {
     conditions.push(op.eq(schema.chiiTimeline.cat, cat));
   }
   if (until) {

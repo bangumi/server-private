@@ -7,7 +7,7 @@ import { getUserCacheKey, getUserVisitCacheKey } from './cache.ts';
 
 export async function getTimelineUser(
   uid: number,
-  cat: number,
+  cat: number | undefined,
   limit: number,
   until?: number,
 ): Promise<number[]> {
@@ -25,7 +25,7 @@ export async function getTimelineUser(
     ].filter(Boolean);
 
     // 只有 cat 有值才添加
-    if (cat != 0) {
+    if (cat != undefined && cat > 0) {
       conditions.push(op.eq(schema.chiiTimeline.cat, cat));
     }
 

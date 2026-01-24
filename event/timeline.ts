@@ -42,7 +42,7 @@ export async function handle({ key, value }: KafkaMessage) {
         return;
       }
 
-      async function cacheTimeline(tml: TimelineItem, cacheKeyCat: number) {
+      async function cacheTimeline(tml: TimelineItem, cacheKeyCat?: number) {
         // 始终写入全站时间线
         await redis.zadd(getInboxCacheKey(0, cacheKeyCat), tml.tml_id, tml.tml_id);
 
@@ -78,7 +78,7 @@ export async function handle({ key, value }: KafkaMessage) {
         }
       }
       const tml = payload.after;
-      await cacheTimeline(tml, 0);
+      await cacheTimeline(tml);
       await cacheTimeline(tml, tml.tml_cat);
       break;
     }
@@ -87,7 +87,7 @@ export async function handle({ key, value }: KafkaMessage) {
         logger.error({ payload }, 'invalid timeline payload for delete');
         return;
       }
-      async function deleteTimeline(tml: TimelineItem, cacheKeyCat: number) {
+      async function deleteTimeline(tml: TimelineItem, cacheKeyCat?: number) {
         logger.info(`process timeline delete event: ${tml.tml_id}`);
         // 始终尝试从全站时间线中删除
         await redis.zrem(getInboxCacheKey(0, cacheKeyCat), tml.tml_id);
@@ -105,7 +105,7 @@ export async function handle({ key, value }: KafkaMessage) {
       }
 
       const tml = payload.before;
-      await deleteTimeline(tml, 0);
+      await deleteTimeline(tml);
       await deleteTimeline(tml, tml.tml_cat);
       break;
     }

@@ -668,7 +668,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { username }, query: { cat = 0, limit = 20, until } }) => {
+    async ({ auth, params: { username }, query: { cat, limit = 20, until } }) => {
       const user = await fetcher.fetchSlimUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');

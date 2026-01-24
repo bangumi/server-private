@@ -55,7 +55,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { mode = req.IFilterMode.Friends, cat = 0, limit = 20, until } }) => {
+    async ({ auth, query: { mode = req.IFilterMode.Friends, cat, limit = 20, until } }) => {
       const ids = [];
       switch (mode) {
         case req.IFilterMode.Friends: {

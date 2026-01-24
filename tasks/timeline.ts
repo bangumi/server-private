@@ -1,11 +1,10 @@
 import { logger } from '@app/lib/logger';
 import redis from '@app/lib/redis.ts';
 import { getInboxCacheKey, getUserCacheKey } from '@app/lib/timeline/cache';
-import { TimelineCat } from '@app/lib/types/common.ts';
 
 export async function truncateGlobalCache() {
   logger.info('Truncating global timeline cache...');
-  const cats = [0, ...(Object.values(TimelineCat) as number[])];
+  const cats = [undefined, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   for (const cat of cats) {
     const cacheKey = getInboxCacheKey(0, cat);
     logger.info(`Truncating timeline cache with key: ${cacheKey}`);
