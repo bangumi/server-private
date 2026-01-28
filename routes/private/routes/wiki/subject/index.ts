@@ -12,7 +12,6 @@ import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import * as entity from '@app/lib/orm/entity';
 import { AppDataSource } from '@app/lib/orm/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import { RevType } from '@app/lib/rev/type.ts';
 import * as Subject from '@app/lib/subject/index.ts';
@@ -204,13 +203,28 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { subjectID } }): Promise<Static<typeof SubjectWikiInfo>> => {
-      const s = await orm.fetchSubjectByID(subjectID);
+      const [s] = await db
+        .select()
+        .from(schema.chiiSubjects)
+        .where(op.eq(schema.chiiSubjects.id, subjectID))
+        .limit(1);
+
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      if (s.locked) {
-        throw new NotAllowedError('edit a locked subject');
+      const [f] = await db
+        .select()
+        .from(schema.chiiSubjectFields)
+        .where(op.eq(schema.chiiSubjectFields.id, subjectID))
+        .limit(1);
+
+      if (!f) {
+        throw new NotFoundError(`subject field ${subjectID}`);
+      }
+
+      if (s.ban === 2 || f.redirect) {
+        throw new LockedError();
       }
 
       const availablePlatforms = getSubjectPlatforms(s.typeID);
@@ -503,12 +517,27 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
-      const s = await fetcher.fetchSlimSubjectByID(subjectID);
+      const [s] = await db
+        .select()
+        .from(schema.chiiSubjects)
+        .where(op.eq(schema.chiiSubjects.id, subjectID))
+        .limit(1);
+
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      if (s.locked) {
+      const [f] = await db
+        .select()
+        .from(schema.chiiSubjectFields)
+        .where(op.eq(schema.chiiSubjectFields.id, subjectID))
+        .limit(1);
+
+      if (!f) {
+        throw new NotFoundError(`subject field ${subjectID}`);
+      }
+
+      if (s.ban === 2 || f.redirect) {
         throw new LockedError();
       }
 
@@ -586,12 +615,27 @@ export async function setup(app: App) {
         return;
       }
 
-      const s = await orm.fetchSubjectByID(subjectID);
+      const [s] = await db
+        .select()
+        .from(schema.chiiSubjects)
+        .where(op.eq(schema.chiiSubjects.id, subjectID))
+        .limit(1);
+
       if (!s) {
-        throw new BadRequestError(`subject ${subjectID}`);
+        throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      if (s.locked || s.redirect) {
+      const [f] = await db
+        .select()
+        .from(schema.chiiSubjectFields)
+        .where(op.eq(schema.chiiSubjectFields.id, subjectID))
+        .limit(1);
+
+      if (!f) {
+        throw new NotFoundError(`subject field ${subjectID}`);
+      }
+
+      if (s.ban === 2 || f.redirect) {
         throw new LockedError();
       }
 
