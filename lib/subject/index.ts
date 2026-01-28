@@ -35,7 +35,6 @@ interface Create {
   infobox: string;
   platform: number;
   summary: string;
-  commitMessage: string;
   userID: number;
   date?: string;
   now: DateTime;
@@ -71,7 +70,6 @@ export async function create({
   infobox,
   platform,
   summary,
-  commitMessage,
   metaTags,
   date,
   series,
@@ -193,7 +191,7 @@ export async function create({
       nameCN,
       metaTags: newMetaTags,
       createdAt: now.toUnixInteger(),
-      commitMessage,
+      commitMessage: '新条目',
     } satisfies typeof schema.chiiSubjectRev.$inferInsert);
 
     const d: DATE = date ? DATE.parse(date) : extractDate(w, typeID, platform);

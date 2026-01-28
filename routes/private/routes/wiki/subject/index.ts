@@ -259,10 +259,7 @@ export async function setup(app: App) {
         operationId: 'createNewSubject',
         summary: '创建新条目',
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: t.Object({
-          commitMessage: t.String({ minLength: 1 }),
-          subject: req.Ref(SubjectNew),
-        }),
+        body: SubjectNew,
         response: {
           200: t.Object({ subjectID: t.Number() }),
           [StatusCodes.BAD_REQUEST]: res.Ref(res.Error, {
@@ -272,12 +269,10 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, body: { commitMessage, subject: input } }) => {
+    async ({ auth, body }) => {
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
-
-      const body: Static<typeof SubjectNew> = input;
 
       const subjectID = await Subject.create({
         typeID: body.type,
@@ -291,7 +286,6 @@ export async function setup(app: App) {
         nsfw: body.nsfw,
         userID: auth.userID,
         now: DateTime.now(),
-        commitMessage,
       });
 
       return { subjectID };

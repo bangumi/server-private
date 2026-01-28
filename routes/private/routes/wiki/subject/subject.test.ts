@@ -43,19 +43,16 @@ describe('create subject', () => {
       url: '/subjects',
       method: 'post',
       payload: {
-        subject: {
-          name: 'New Subject',
-          infobox: `{{Infobox
-          | 话数 = 10
-          }}`,
-          type: SubjectType.Anime,
-          platform: 0,
-          metaTags: ['WEB'],
-          summary: 'A brief summary of the subject',
-          nsfw: false,
-        } satisfies ISubjectNew,
-        commitMessage: 'c',
-      },
+        name: 'New Subject',
+        infobox: `{{Infobox
+        | 话数 = 10
+        }}`,
+        type: SubjectType.Anime,
+        platform: 0,
+        metaTags: ['WEB'],
+        summary: 'A brief summary of the subject',
+        nsfw: false,
+      } satisfies ISubjectNew,
     });
 
     expect(res.statusCode).toBe(200);
@@ -71,18 +68,15 @@ describe('create subject', () => {
       url: '/subjects',
       method: 'post',
       payload: {
-        subject: {
-          name: 'New Subject',
-          infobox: `{{Infobox
-          | 话数 = 10
-          }}`,
-          type: 0,
-          platform: 0,
-          metaTags: ['WEB', '3D'],
-          summary: 'A brief summary of the subject',
-          nsfw: false,
-        },
-        commitMessage: 'c',
+        name: 'New Subject',
+        infobox: `{{Infobox
+        | 话数 = 10
+        }}`,
+        type: 0,
+        platform: 0,
+        metaTags: ['WEB', '3D'],
+        summary: 'A brief summary of the subject',
+        nsfw: false,
       },
     });
 
@@ -92,7 +86,7 @@ describe('create subject', () => {
       Object {
         "code": "REQUEST_VALIDATION_ERROR",
         "error": "Bad Request",
-        "message": "body/subject/type must be equal to one of the allowed values",
+        "message": "body/type must be equal to one of the allowed values",
         "statusCode": 400,
       }
     `);
@@ -104,18 +98,15 @@ describe('create subject', () => {
       url: '/subjects',
       method: 'post',
       payload: {
-        subject: {
-          name: 'New Subject',
-          infobox: `{{Infobox
-          | 话数 = 10
-          }}`,
-          type: SubjectType.Anime,
-          platform: 777777888,
-          metaTags: ['WEB', '3D'],
-          summary: 'A brief summary of the subject',
-          nsfw: false,
-        },
-        commitMessage: 'c',
+        name: 'New Subject',
+        infobox: `{{Infobox
+        | 话数 = 10
+        }}`,
+        type: SubjectType.Anime,
+        platform: 777777888,
+        metaTags: ['WEB', '3D'],
+        summary: 'A brief summary of the subject',
+        nsfw: false,
       },
     });
 
