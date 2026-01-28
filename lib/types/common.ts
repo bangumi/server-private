@@ -9,7 +9,11 @@ export function Ref<T extends TSchema>(t: T, options: TSchemaOptions = {}): TUns
   if (!id) {
     throw new Error('missing ID on schema');
   }
-  return Unsafe<Static<T>>({ ...t, $ref: id, $id: undefined, ...options });
+
+  return Unsafe<Static<T>>({
+    allOf: [{ $ref: id }],
+    ...options,
+  });
 }
 
 export const SubjectType = t.Integer({

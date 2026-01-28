@@ -655,6 +655,9 @@ export async function setup(app: App) {
           username: t.String({ minLength: 1 }),
         }),
         querystring: t.Object({
+          cat: t.Optional(
+            req.Ref(req.TimelineCat, { description: '时间线类型，不传或0则查询所有类型' }),
+          ),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 20, description: 'min 1, max 20' }),
           ),
@@ -665,13 +668,13 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, params: { username }, query: { limit = 20, until } }) => {
+    async ({ auth, params: { username }, query: { cat, limit = 20, until } }) => {
       const user = await fetcher.fetchSlimUserByUsername(username);
       if (!user) {
         throw new NotFoundError('user');
       }
 
-      const ids = await getTimelineUser(user.id, limit, until);
+      const ids = await getTimelineUser(user.id, cat, limit, until);
       const result = await fetchTimelineByIDs(auth, ids);
       const items = [];
       for (const tid of ids) {
