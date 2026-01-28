@@ -3,8 +3,9 @@ import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { NotFoundError } from '@app/lib/error.ts';
+import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { createRevision } from '@app/lib/rev/common.ts';
 import type { CharacterRev } from '@app/lib/rev/type.ts';
 import { RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
@@ -13,6 +14,8 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
+import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
+import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 export const CharacterWikiInfo = t.Object(
@@ -66,6 +69,8 @@ const UserCharacterContribution = t.Object(
   },
   { $id: 'UserCharacterContribution' },
 );
+export type IPagedUserCharacterContribution = Static<typeof PagedUserCharacterContribution>;
+const PagedUserCharacterContribution = res.Paged(res.Ref(UserCharacterContribution));
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -115,6 +120,106 @@ export async function setup(app: App) {
         infobox: c.infobox,
         summary: c.summary,
       };
+    },
+  );
+
+  app.patch(
+    '/characters/:characterID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'patchCharacterInfo',
+        summary: '编辑角色',
+        params: t.Object({
+          characterID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            commitMessage: t.String({ minLength: 1 }),
+            expectedRevision: t.Partial(CharacterEdit, {
+              default: {},
+              additionalProperties: false,
+            }),
+            character: t.Partial(CharacterEdit, { additionalProperties: false }),
+          },
+          { additionalProperties: false },
+        ),
+        response: {
+          200: t.Object({}),
+          400: res.Ref(res.Error, {
+            'x-examples': formatErrors(
+              new WikiChangedError(`Index: name
+===================================================================
+--- name	expected
++++ name	current
+@@ -1,1 +1,1 @@
+-1234
++水樹奈々
+`),
+            ),
+          }),
+          401: res.Ref(res.Error, {
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('editing a subject info')],
+    },
+    async ({
+      auth,
+      body: { commitMessage, character: input, expectedRevision },
+      params: { characterID },
+    }) => {
+      if (!auth.permission.mono_edit) {
+        throw new NotAllowedError('edit character');
+      }
+
+      await db.transaction(async (t) => {
+        const [p] = await t
+          .select()
+          .from(schema.chiiCharacters)
+          .where(op.eq(schema.chiiCharacters.id, characterID))
+          .limit(1);
+
+        if (!p) {
+          throw new NotFoundError(`character ${characterID}`);
+        }
+        if (p.lock || p.redirect) {
+          throw new LockedError();
+        }
+
+        matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
+
+        const updated = {
+          infobox: input.infobox ?? p.infobox,
+          name: input.name ?? p.name,
+          summary: input.summary ?? p.summary,
+        };
+
+        await t
+          .update(schema.chiiCharacters)
+          .set(updated)
+          .where(op.eq(schema.chiiCharacters.id, characterID))
+          .limit(1);
+
+        await createRevision(t, {
+          mid: characterID,
+          type: RevType.characterEdit,
+          rev: {
+            crt_name: updated.name,
+            crt_infobox: updated.infobox,
+            crt_summary: updated.summary,
+            extra: {
+              img: p.img,
+            },
+          } satisfies CharacterRev,
+          creator: auth.userID,
+          comment: commitMessage,
+        });
+      });
+
+      return {};
     },
   );
 
@@ -252,7 +357,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Paged(res.Ref(UserCharacterContribution)),
+          200: PagedUserCharacterContribution,
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('user')),
           }),

@@ -170,6 +170,7 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'patchPersonInfo',
+        summary: '编辑人物',
         params: t.Object({
           personID: t.Integer({ minimum: 1 }),
         }),
