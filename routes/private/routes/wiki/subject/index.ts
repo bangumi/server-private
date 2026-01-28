@@ -1,7 +1,5 @@
-import { parseToMap } from '@bgm38/wiki';
 import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
-import type { ResultSetHeader } from 'mysql2';
 import type { Static } from 'typebox';
 import t from 'typebox';
 
@@ -10,13 +8,10 @@ import { HeaderInvalidError, NotAllowedError } from '@app/lib/auth/index.ts';
 import config from '@app/lib/config.ts';
 import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import * as entity from '@app/lib/orm/entity';
-import { AppDataSource } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
-import { RevType } from '@app/lib/rev/type.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
-import { SubjectType, SubjectTypeValues } from '@app/lib/subject/type.ts';
+import { SubjectType } from '@app/lib/subject/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -75,6 +70,12 @@ export const SubjectNew = t.Object(
     nsfw: t.Boolean(),
     metaTags: t.Array(t.String()),
     summary: t.String(),
+    date: t.Optional(
+      t.String({
+        pattern: String.raw`^\d{4}-\d{2}-\d{2}$`,
+        examples: ['0000-00-00', '2007-01-30'],
+      }),
+    ),
   },
   {
     $id: 'SubjectNew',
@@ -256,9 +257,12 @@ export async function setup(app: App) {
       schema: {
         tags: [Tag.Wiki],
         operationId: 'createNewSubject',
-        description: '创建新条目',
+        summary: '创建新条目',
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: SubjectNew,
+        body: t.Object({
+          commitMessage: t.String({ minLength: 1 }),
+          subject: req.Ref(SubjectNew),
+        }),
         response: {
           200: t.Object({ subjectID: t.Number() }),
           [StatusCodes.BAD_REQUEST]: res.Ref(res.Error, {
@@ -268,108 +272,26 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, body }) => {
+    async ({ auth, body: { commitMessage, subject: input } }) => {
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
 
-      if (!SubjectTypeValues.has(body.type)) {
-        throw new BadRequestError(`条目类型错误`);
-      }
+      const body: Static<typeof SubjectNew> = input;
 
-      const platforms = getSubjectPlatforms(body.type);
-      if (!(body.platform in platforms)) {
-        throw new BadRequestError(`条目分类错误`);
-      }
-
-      let w;
-      try {
-        w = parseToMap(body.infobox);
-      } catch (error) {
-        throw new BadRequestError(`infobox 包含语法错误 ${error}`);
-      }
-
-      let eps = 0;
-      if (body.type === SubjectType.Anime) {
-        eps = Number.parseInt((w.data.get('话数') as string) ?? '0') || 0;
-      } else if (body.type === SubjectType.Real) {
-        eps = Number.parseInt((w.data.get('集数') as string) ?? '0') || 0;
-      }
-
-      const newSubject: Partial<entity.Subject> = {
-        name: body.name,
-        nameCN: (w.data.get('中文名') as string) ?? '',
-        platform: body.platform,
-        fieldInfobox: body.infobox,
+      const subjectID = await Subject.create({
         typeID: body.type,
-        metaTags: body.metaTags.toSorted().join(' '),
-        fieldSummary: body.summary,
-        subjectSeries: body.series,
-        subjectNsfw: body.nsfw,
-        fieldEps: eps,
-        updatedAt: DateTime.now().toUnixInteger(),
-      };
-
-      const subjectID = await AppDataSource.transaction(async (txn) => {
-        const s = await txn
-          .getRepository(entity.Subject)
-          .createQueryBuilder()
-          .insert()
-          .values(newSubject)
-          .execute();
-
-        const r = s.raw as ResultSetHeader;
-
-        await txn
-          .getRepository(entity.SubjectFields)
-          .createQueryBuilder()
-          .insert()
-          .values({ subjectID: r.insertId })
-          .execute();
-
-        if (eps) {
-          // avoid create too many episodes, 50 is enough.
-          eps = Math.min(eps, 50);
-
-          const episodes = Array.from({ length: eps })
-            .fill(null)
-            .map((_, index) => {
-              return {
-                subjectID: r.insertId,
-                sort: index + 1,
-                type: 0,
-              };
-            });
-
-          await txn
-            .getRepository(entity.Episode)
-            .createQueryBuilder()
-            .insert()
-            .values(episodes)
-            .execute();
-        }
-
-        await txn
-          .getRepository(entity.SubjectRev)
-          .createQueryBuilder()
-          .insert()
-          .values({
-            subjectID: r.insertId,
-            type: RevType.subjectEdit,
-            name: newSubject.name,
-            nameCN: newSubject.nameCN,
-            infobox: newSubject.fieldInfobox,
-            metaTags: newSubject.metaTags,
-            summary: newSubject.fieldSummary,
-            createdAt: newSubject.updatedAt,
-            typeID: newSubject.typeID,
-            platform: newSubject.platform,
-            eps: eps,
-            creatorID: auth.userID,
-          })
-          .execute();
-
-        return r.insertId;
+        name: body.name,
+        infobox: body.infobox,
+        platform: body.platform,
+        date: body.date,
+        metaTags: body.metaTags,
+        summary: body.summary,
+        series: body.series,
+        nsfw: body.nsfw,
+        userID: auth.userID,
+        now: DateTime.now(),
+        commitMessage,
       });
 
       return { subjectID };

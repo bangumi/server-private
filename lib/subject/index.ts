@@ -30,6 +30,21 @@ export const InvalidWikiSyntaxError = createError(
 );
 
 interface Create {
+  typeID: number;
+  name: string;
+  infobox: string;
+  platform: number;
+  summary: string;
+  commitMessage: string;
+  userID: number;
+  date?: string;
+  now: DateTime;
+  series?: boolean;
+  nsfw?: boolean;
+  metaTags?: string[];
+}
+
+interface Edit {
   subjectID: number;
   name: string;
   infobox: string;
@@ -50,6 +65,180 @@ interface Create {
   }>;
 }
 
+export async function create({
+  typeID,
+  name,
+  infobox,
+  platform,
+  summary,
+  commitMessage,
+  metaTags,
+  date,
+  series,
+  nsfw,
+  userID,
+  now = DateTime.now(),
+}: Create): Promise<number> {
+  let w: Wiki;
+  try {
+    w = parse(infobox);
+  } catch (error) {
+    if (error instanceof WikiSyntaxError) {
+      let l = '';
+      if (error.line) {
+        l = `line: ${error.line}`;
+        if (error.lino) {
+          l += `:${error.lino}`;
+        }
+      }
+
+      if (l) {
+        l = ' (' + l + ')';
+      }
+
+      throw new InvalidWikiSyntaxError(`${error.message}${l}`);
+    }
+
+    throw error;
+  }
+
+  metaTags?.sort();
+
+  return await db.transaction(async (t) => {
+    const nameCN: string = extractNameCN(w);
+
+    // only validate platform when it changed.
+    // sometimes main website will add new platform, and our config maybe out-dated.
+    const availablePlatforms = getSubjectPlatforms(typeID);
+
+    if (!availablePlatforms.map((x) => x.id).includes(platform)) {
+      throw new BadRequestError(`platform ${platform} is not a valid platform for subject`);
+    }
+
+    if (series && typeID !== SubjectType.Book) {
+      series = false;
+    }
+
+    let vol, episodes;
+    if (typeID === SubjectType.Book) {
+      [episodes, vol] = extractBookProgress(w);
+    } else {
+      episodes = extractEpisode(w);
+    }
+
+    const newMetaTags = metaTags ? metaTags.join(' ') : '';
+
+    const [{ insertId: subjectID }] = await t.insert(schema.chiiSubjects).values({
+      typeID,
+      name,
+      nameCN,
+      Uid: '',
+      creatorID: userID,
+      createdAt: now.toUnixInteger(),
+      image: '',
+      platform,
+      metaTags: newMetaTags,
+      infobox,
+      summary,
+      field5: '',
+      volumes: vol || 0,
+      eps: episodes,
+      series: series ?? false,
+      seriesEntry: 0,
+      idxCN: '',
+      airtime: 0,
+      nsfw: nsfw ?? false,
+    } satisfies typeof schema.chiiSubjects.$inferInsert);
+
+    logger.info('user %d create subject %d', userID, subjectID);
+
+    if (metaTags) {
+      const allowedTags = await getAllowedTagList(t, typeID);
+
+      const newTags: number[] = [];
+      for (const tag of metaTags) {
+        const id = allowedTags.get(tag.toLocaleLowerCase());
+        if (!id) {
+          throw BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
+        }
+
+        newTags.push(id);
+      }
+
+      if (newTags.length > 0) {
+        await t.insert(schema.chiiTagList).values(
+          newTags.map((tag) => {
+            return {
+              tagID: tag,
+              mainID: subjectID,
+              cat: TagCat.Meta,
+              userID: 0,
+              type: typeID,
+              createdAt: now.toUnixInteger(),
+            } satisfies typeof schema.chiiTagList.$inferInsert;
+          }),
+        );
+      }
+    }
+
+    await t.insert(schema.chiiSubjectRev).values({
+      subjectID,
+      summary,
+      infobox,
+      creatorID: userID,
+      type: RevType.subjectEdit,
+      typeID,
+      name,
+      platform,
+      nameCN,
+      metaTags: newMetaTags,
+      createdAt: now.toUnixInteger(),
+      commitMessage,
+    } satisfies typeof schema.chiiSubjectRev.$inferInsert);
+
+    const d: DATE = date ? DATE.parse(date) : extractDate(w, typeID, platform);
+
+    await t.insert(schema.chiiSubjectFields).values({
+      date: d.toString(),
+      year: d.year,
+      month: d.month,
+      tags: '',
+      airtime: 0,
+      weekday: 0,
+      redirect: 0,
+      tid: 0,
+    } satisfies typeof schema.chiiSubjectFields.$inferInsert);
+
+    if (episodes) {
+      // avoid create too many episodes, 50 is enough.
+      episodes = Math.min(episodes, 50);
+
+      const eps = Array.from({ length: episodes }, (_, index) => {
+        return {
+          subjectID,
+          sort: index + 1,
+          type: 0,
+          name: '',
+          nameCN: '',
+          rate: 0,
+          duration: '',
+          airdate: '',
+          online: '',
+          comment: 0,
+          resources: 0,
+          desc: '',
+          createdAt: now.toUnixInteger(),
+          updatedAt: 0,
+        } satisfies typeof schema.chiiEpisodes.$inferInsert;
+      });
+
+      await t.insert(schema.chiiEpisodes).values(eps);
+    }
+
+    return subjectID;
+  });
+}
+
 export async function edit({
   subjectID,
   name,
@@ -64,7 +253,7 @@ export async function edit({
   userID,
   now = DateTime.now(),
   expectedRevision,
-}: Create): Promise<void> {
+}: Edit): Promise<void> {
   let w: Wiki;
   try {
     w = parse(infobox);
