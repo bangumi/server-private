@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import type { Static } from 'typebox';
 import t from 'typebox';
 
@@ -195,6 +196,7 @@ export async function setup(app: App) {
           infobox: input.infobox ?? p.infobox,
           name: input.name ?? p.name,
           summary: input.summary ?? p.summary,
+          updatedAt: DateTime.now().toUnixInteger(),
         };
 
         await t
