@@ -1,36 +1,30 @@
 import * as path from 'node:path';
 
+import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
 import fastifyView from '@fastify/view';
-import type Ajv from 'ajv';
-import addFormats from 'ajv-formats';
 import type { FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
 import { Liquid } from 'liquidjs';
 
+import { buildAjvOptions } from '@app/lib/ajv.ts';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import { production, projectRoot } from '@app/lib/config';
 import { defaultSchemaErrorFormatter } from '@app/lib/server.ts';
 import { addSchemas } from '@app/routes/schemas';
+import type { App } from '@app/routes/type.ts';
 
 export function createTestServer({
   auth = {},
   ...opt
 }: { auth?: Partial<IAuth> } & FastifyServerOptions = {}) {
-  const app = fastify({
+  const app: App = fastify({
     ...opt,
     schemaErrorFormatter: defaultSchemaErrorFormatter,
     ajv: {
-      plugins: [
-        addFormats,
-        function (ajv: Ajv) {
-          ajv.addKeyword({ keyword: 'x-examples' });
-          ajv.addKeyword({ keyword: 'x-ms-enum' });
-          ajv.addKeyword({ keyword: 'x-enum-varnames' });
-        },
-      ],
+      ...buildAjvOptions(),
     },
-  });
+  }).withTypeProvider<TypeBoxTypeProvider>();
 
   if (auth) {
     app.addHook('preHandler', (req, res, done) => {

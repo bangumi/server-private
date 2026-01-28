@@ -41,7 +41,7 @@ jobs:
 
   github:
     if: ${{ github.repository_owner == 'bangumi' }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     needs:
       - auto-tag
     steps:
@@ -54,6 +54,9 @@ jobs:
         uses: kenji-miyake/setup-git-cliff@v2
 
       - run: echo "NEW_TAG=$(git cliff --bumped-version)" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: '${{ github.token }}'
+
       - run: echo "NEW_VERSION=${NEW_TAG#v}" >> $GITHUB_ENV
 
       - run: git cliff --unreleased -o changelog.md
