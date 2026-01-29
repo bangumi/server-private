@@ -220,10 +220,10 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       try {
         new URL(redirectUri);
       } catch {
-        throw BadRequestError('Invalid redirect URI.');
+        throw new BadRequestError('Invalid redirect URI.');
       }
       if (!allowedRedirectUris.some((allowedUri) => redirectUri.startsWith(allowedUri))) {
-        throw BadRequestError(
+        throw new BadRequestError(
           `Redirect URI is not in the whitelist, you can PR your redirect URI.`,
         );
       }

@@ -49,7 +49,7 @@ describe('create subject', () => {
         }}`,
         type: SubjectType.Anime,
         platform: 0,
-        metaTags: ['WEB', '3D'],
+        metaTags: ['WEB'],
         summary: 'A brief summary of the subject',
         nsfw: false,
       } satisfies ISubjectNew,
@@ -74,7 +74,7 @@ describe('create subject', () => {
         }}`,
         type: 0,
         platform: 0,
-        metaTags: ['WEB', '3D'],
+        metaTags: ['WEB'],
         summary: 'A brief summary of the subject',
         nsfw: false,
       },
@@ -104,7 +104,7 @@ describe('create subject', () => {
         }}`,
         type: SubjectType.Anime,
         platform: 777777888,
-        metaTags: ['WEB', '3D'],
+        metaTags: ['WEB'],
         summary: 'A brief summary of the subject',
         nsfw: false,
       },
@@ -116,7 +116,7 @@ describe('create subject', () => {
       Object {
         "code": "BAD_REQUEST",
         "error": "Bad Request",
-        "message": "条目分类错误",
+        "message": "platform 777777888 is not a valid platform for subject",
         "statusCode": 400,
       }
     `);
