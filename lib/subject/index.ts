@@ -155,7 +155,7 @@ export async function create({
       for (const tag of metaTags) {
         const id = allowedTags.get(tag.toLocaleLowerCase());
         if (!id) {
-          throw BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
+          throw new BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
         }
 
         newTags.push(id);
@@ -283,7 +283,7 @@ export async function edit({
       .limit(1);
 
     if (!s) {
-      throw UnexpectedNotFoundError(`subject ${subjectID}`);
+      throw new UnexpectedNotFoundError(`subject ${subjectID}`);
     }
 
     // only validate platform when it changed.
@@ -329,7 +329,7 @@ export async function edit({
       for (const tag of metaTags) {
         const id = allowedTags.get(tag.toLocaleLowerCase());
         if (!id) {
-          throw BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
+          throw new BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
         }
 
         newTags.push(id);
