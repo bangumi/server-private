@@ -203,6 +203,16 @@ export async function create({
       weekday: 0,
       redirect: 0,
       tid: 0,
+      rate1: 0,
+      rate2: 0,
+      rate3: 0,
+      rate4: 0,
+      rate5: 0,
+      rate6: 0,
+      rate7: 0,
+      rate8: 0,
+      rate9: 0,
+      rate10: 0,
     } satisfies typeof schema.chiiSubjectFields.$inferInsert);
 
     if ([SubjectType.Anime, SubjectType.Real].includes(typeID) && episodes) {
