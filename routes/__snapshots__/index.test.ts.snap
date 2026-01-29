@@ -2455,6 +2455,10 @@ exports[`should build private api spec 1`] = `
       type: object
     SubjectNew:
       properties:
+        date:
+          example: '0000-00-00'
+          pattern: ^\\d{4}-\\d{2}-\\d{2}$
+          type: string
         infobox:
           minLength: 1
           type: string
@@ -10198,13 +10202,16 @@ paths:
         - wiki
   /p1/wiki/subjects:
     post:
-      description: 创建新条目
       operationId: createNewSubject
       requestBody:
         content:
           application/json:
             schema:
               properties:
+                date:
+                  example: '0000-00-00'
+                  pattern: ^\\d{4}-\\d{2}-\\d{2}$
+                  type: string
                 infobox:
                   minLength: 1
                   type: string
@@ -10268,6 +10275,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
+      summary: 创建新条目
       tags:
         - wiki
   /p1/wiki/subjects/-/revisions/{revisionID}:
