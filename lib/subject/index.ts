@@ -105,8 +105,6 @@ export async function create({
   return await db.transaction(async (t) => {
     const nameCN: string = extractNameCN(w);
 
-    // only validate platform when it changed.
-    // sometimes main website will add new platform, and our config maybe out-dated.
     const availablePlatforms = getSubjectPlatforms(typeID);
 
     if (!availablePlatforms.map((x) => x.id).includes(platform)) {
@@ -207,7 +205,7 @@ export async function create({
       tid: 0,
     } satisfies typeof schema.chiiSubjectFields.$inferInsert);
 
-    if (episodes) {
+    if ([SubjectType.Anime, SubjectType.Real].includes(typeID) && episodes) {
       // avoid create too many episodes, 50 is enough.
       episodes = Math.min(episodes, 50);
 
