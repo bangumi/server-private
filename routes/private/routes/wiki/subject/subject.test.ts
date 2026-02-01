@@ -703,3 +703,22 @@ describe('patch episodes', () => {
     });
   });
 });
+
+describe('subject relations', () => {
+  test('should get subject relation revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/subjects/-/relations/revisions/920431');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/relations/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+});

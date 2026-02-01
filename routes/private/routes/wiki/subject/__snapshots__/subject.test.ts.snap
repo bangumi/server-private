@@ -239,3 +239,266 @@ Object {
   "total": 2,
 }
 `;
+
+exports[`subject relations > should get subject relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1538735733,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 920431,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1538735710,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 920430,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1521262534,
+      "creator": Object {
+        "username": "213723",
+      },
+      "id": 839911,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1518264070,
+      "creator": Object {
+        "username": "273803",
+      },
+      "id": 823483,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1516043521,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 813021,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1515057017,
+      "creator": Object {
+        "username": "279427",
+      },
+      "id": 808252,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1508671780,
+      "creator": Object {
+        "username": "265239",
+      },
+      "id": 781521,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1508565225,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 781048,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1508565156,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 781045,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1501218509,
+      "creator": Object {
+        "username": "265239",
+      },
+      "id": 742823,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1482214372,
+      "creator": Object {
+        "username": "26862",
+      },
+      "id": 631769,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1469993486,
+      "creator": Object {
+        "username": "229195",
+      },
+      "id": 563926,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1469991869,
+      "creator": Object {
+        "username": "229195",
+      },
+      "id": 563908,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1457162584,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 489665,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1450235756,
+      "creator": Object {
+        "username": "209098",
+      },
+      "id": 455662,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1422275679,
+      "creator": Object {
+        "username": "50094",
+      },
+      "id": 315271,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1422275239,
+      "creator": Object {
+        "username": "50094",
+      },
+      "id": 315264,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1419133176,
+      "creator": Object {
+        "username": "159245",
+      },
+      "id": 302125,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1419133079,
+      "creator": Object {
+        "username": "159245",
+      },
+      "id": 302124,
+      "type": 17,
+    },
+    Object {
+      "commitMessage": "条目关联修改",
+      "createdAt": 1395393197,
+      "creator": Object {
+        "username": "21804",
+      },
+      "id": 213326,
+      "type": 17,
+    },
+  ],
+  "total": 23,
+}
+`;
+
+exports[`subject relations > should get subject relation revision wiki info 1`] = `
+Array [
+  Object {
+    "order": 0,
+    "relationType": 2,
+    "subject": Object {
+      "id": 793,
+      "name": "",
+      "nameCN": "",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "order": 0,
+    "relationType": 8,
+    "subject": Object {
+      "id": 24593,
+      "name": "",
+      "nameCN": "",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "order": 0,
+    "relationType": 11,
+    "subject": Object {
+      "id": 35866,
+      "name": "",
+      "nameCN": "",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "order": 0,
+    "relationType": 4,
+    "subject": Object {
+      "id": 99952,
+      "name": "",
+      "nameCN": "",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "order": 1,
+    "relationType": 10,
+    "subject": Object {
+      "id": 199229,
+      "name": "",
+      "nameCN": "",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "order": 2,
+    "relationType": 10,
+    "subject": Object {
+      "id": 199230,
+      "name": "",
+      "nameCN": "",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "order": 3,
+    "relationType": 10,
+    "subject": Object {
+      "id": 199231,
+      "name": "",
+      "nameCN": "",
+      "typeID": 2,
+    },
+  },
+]
+`;

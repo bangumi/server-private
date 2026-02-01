@@ -9,6 +9,9 @@ import config from '@app/lib/config.ts';
 import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
+import type { SubjectRelationRev } from '@app/lib/rev/type.ts';
+import { RevType } from '@app/lib/rev/type.ts';
+import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
@@ -16,6 +19,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { validateDuration } from '@app/lib/utils/index.ts';
 import { matchExpected } from '@app/lib/wiki';
@@ -149,6 +153,23 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
+type ISubjectRelationWikiInfo = Static<typeof SubjectRelationWikiInfo>;
+export const SubjectRelationWikiInfo = t.Array(
+  t.Object({
+    subject: t.Object({
+      id: t.Integer(),
+      typeID: t.Integer(),
+      name: t.String(),
+      nameCN: t.String(),
+    }),
+    relationType: t.Integer(),
+    order: t.Integer(),
+  }),
+  {
+    $id: 'SubjectRelationWikiInfo',
+  },
+);
+
 const EpisodePartial = t.Partial(t.Omit(req.EpisodeWikiInfo, ['id', 'subjectID']));
 
 export const EpsisodesNew = t.Object(
@@ -180,6 +201,7 @@ export async function setup(app: App) {
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
   app.addSchema(SubjectWikiInfo);
+  app.addSchema(SubjectRelationWikiInfo);
 
   app.get(
     '/subjects/:subjectID',
@@ -852,6 +874,136 @@ export async function setup(app: App) {
           comment: commitMessage,
         });
       });
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/relations/history-summary',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectRelationHistorySummary',
+        summary: '获取条目关联 wiki 历史编辑摘要',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.PagedRevisionHistory,
+        },
+      },
+    },
+    async ({ params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectRelation),
+          ),
+        );
+
+      const history = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectRelation),
+          ),
+        )
+        .orderBy(op.desc(schema.chiiRevHistory.revId))
+        .offset(offset)
+        .limit(limit);
+
+      const users = await fetcher.fetchSlimUsersByIDs(history.map((x) => x.revCreator));
+
+      const revisions = history.map((x) => {
+        return {
+          id: x.revId,
+          creator: {
+            username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+          },
+          type: x.revType,
+          createdAt: x.createdAt,
+          commitMessage: x.revEditSummary,
+        } satisfies res.IRevisionHistory;
+      });
+
+      return {
+        total: count,
+        data: revisions,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/-/relations/revisions/:revisionID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectRelationRevisionInfo',
+        summary: '获取条目关联历史版本 wiki 信息',
+        params: t.Object({
+          revisionID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Ref(SubjectRelationWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('revision')),
+          }),
+        },
+      },
+    },
+    async ({ params: { revisionID } }): Promise<ISubjectRelationWikiInfo> => {
+      const [r] = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(op.eq(schema.chiiRevHistory.revId, revisionID))
+        .limit(1);
+      if (!r) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      const [revText] = await db
+        .select()
+        .from(schema.chiiRevText)
+        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId))
+        .limit(1);
+      if (!revText) {
+        throw new NotFoundError(`RevText ${r.revTextId}`);
+      }
+
+      const revRecord = await deserializeRevText(revText.revText);
+      const revContent = revRecord[revisionID] as SubjectRelationRev;
+      const rels = Object.values(revContent.self);
+      const subjectIDs = rels.map((rel) => +rel.related_subject_id);
+      const subjectsMap = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, true);
+
+      const relations = rels.map((rel) => {
+        const subjectID = +rel.related_subject_id;
+        const subject = subjectsMap[subjectID];
+        return {
+          subject: {
+            id: subjectID,
+            typeID: +rel.related_subject_type_id,
+            name: subject?.name || '',
+            nameCN: subject?.nameCN || '',
+          },
+          relationType: +rel.relation_type,
+          order: +rel.relation_order,
+        };
+      });
+
+      return relations;
     },
   );
 
