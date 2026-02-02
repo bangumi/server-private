@@ -104,19 +104,39 @@ export interface SubjectRelationRev {
       related_subject_type_id: string;
     }
   >;
-  // remote: [
-  //   {
-  //     subject_id: string;
-  //     subject_type_id: string;
-  //     relation_type: string;
-  //     related_subject_id: string;
-  //     related_subject_type_id: string;
-  //   }
-  // ]
+  remote: Record<
+    string,
+    {
+      subject_id: string;
+      subject_type_id: string;
+      relation_type: string;
+      related_subject_id: string;
+      related_subject_type_id: string;
+    }
+  >;
 }
 
+export type SubjectCharacterRev = Record<
+  string,
+  {
+    subject_id: string;
+    crt_type: string;
+    crt_id: string;
+    crt_order: number;
+  }
+>;
+
+export type SubjectPersonRev = Record<
+  string,
+  {
+    subject_id: string;
+    position: string;
+    prsn_id: string;
+  }
+>;
+
 export type PersonSubjectRev = Record<
-  number,
+  string,
   {
     subject_id: string;
     position: string;
@@ -124,31 +144,32 @@ export type PersonSubjectRev = Record<
   }
 >;
 
-export type PersonCharacterRev = Record<
-  number,
+export type PersonCastRev = Record<
+  string,
   {
     subject_id: string;
     crt_id: string;
-    // summary: string | null;
+    prsn_id: number;
+    summary: string | null;
   }
 >;
 
 export type CharacterSubjectRev = Record<
-  number,
+  string,
   {
     subject_id: string;
     crt_type: string;
-    // crt_id: number;
-    // crt_order: number;
+    crt_id: number;
+    crt_order: number;
   }
 >;
 
-export type CharacterPersonRev = Record<
-  number,
+export type CharacterCastRev = Record<
+  string,
   {
     subject_id: string;
     prsn_id: string;
-    // crt_id: number;
-    // summary: string | null;
+    crt_id: number;
+    summary: string | null;
   }
 >;
