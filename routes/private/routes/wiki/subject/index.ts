@@ -157,8 +157,8 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
-type ISubjectRelationWikiInfo = Static<typeof SubjectRelationWikiInfo>;
-export const SubjectRelationWikiInfo = t.Array(
+type ISubjectRelationRevisionWikiInfo = Static<typeof SubjectRelationRevisionWikiInfo>;
+export const SubjectRelationRevisionWikiInfo = t.Array(
   t.Object({
     subject: t.Object({
       id: t.Integer(),
@@ -170,12 +170,12 @@ export const SubjectRelationWikiInfo = t.Array(
     order: t.Integer(),
   }),
   {
-    $id: 'SubjectRelationWikiInfo',
+    $id: 'SubjectRelationRevisionWikiInfo',
   },
 );
 
-type ISubjectCharacterWikiInfo = Static<typeof SubjectCharacterWikiInfo>;
-export const SubjectCharacterWikiInfo = t.Array(
+type ISubjectCharacterRevisionWikiInfo = Static<typeof SubjectCharacterRevisionWikiInfo>;
+export const SubjectCharacterRevisionWikiInfo = t.Array(
   t.Object({
     character: t.Object({
       id: t.Integer(),
@@ -186,12 +186,12 @@ export const SubjectCharacterWikiInfo = t.Array(
     order: t.Integer(),
   }),
   {
-    $id: 'SubjectCharacterWikiInfo',
+    $id: 'SubjectCharacterRevisionWikiInfo',
   },
 );
 
-type ISubjectPersonWikiInfo = Static<typeof SubjectPersonWikiInfo>;
-export const SubjectPersonWikiInfo = t.Array(
+type ISubjectPersonRevisionWikiInfo = Static<typeof SubjectPersonRevisionWikiInfo>;
+export const SubjectPersonRevisionWikiInfo = t.Array(
   t.Object({
     person: t.Object({
       id: t.Integer(),
@@ -201,7 +201,7 @@ export const SubjectPersonWikiInfo = t.Array(
     position: t.Integer(),
   }),
   {
-    $id: 'SubjectPersonWikiInfo',
+    $id: 'SubjectPersonRevisionWikiInfo',
   },
 );
 
@@ -236,9 +236,9 @@ export async function setup(app: App) {
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
   app.addSchema(SubjectWikiInfo);
-  app.addSchema(SubjectRelationWikiInfo);
-  app.addSchema(SubjectCharacterWikiInfo);
-  app.addSchema(SubjectPersonWikiInfo);
+  app.addSchema(SubjectRelationRevisionWikiInfo);
+  app.addSchema(SubjectCharacterRevisionWikiInfo);
+  app.addSchema(SubjectPersonRevisionWikiInfo);
 
   app.get(
     '/subjects/:subjectID',
@@ -993,14 +993,14 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(SubjectRelationWikiInfo),
+          200: res.Ref(SubjectRelationRevisionWikiInfo),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('revision')),
           }),
         },
       },
     },
-    async ({ params: { revisionID } }): Promise<ISubjectRelationWikiInfo> => {
+    async ({ params: { revisionID } }): Promise<ISubjectRelationRevisionWikiInfo> => {
       const [r] = await db
         .select()
         .from(schema.chiiRevHistory)
@@ -1123,14 +1123,14 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(SubjectCharacterWikiInfo),
+          200: res.Ref(SubjectCharacterRevisionWikiInfo),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('revision')),
           }),
         },
       },
     },
-    async ({ params: { revisionID } }): Promise<ISubjectCharacterWikiInfo> => {
+    async ({ params: { revisionID } }): Promise<ISubjectCharacterRevisionWikiInfo> => {
       const [r] = await db
         .select()
         .from(schema.chiiRevHistory)
@@ -1252,14 +1252,14 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(SubjectPersonWikiInfo),
+          200: res.Ref(SubjectPersonRevisionWikiInfo),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('revision')),
           }),
         },
       },
     },
-    async ({ params: { revisionID } }): Promise<ISubjectPersonWikiInfo> => {
+    async ({ params: { revisionID } }): Promise<ISubjectPersonRevisionWikiInfo> => {
       const [r] = await db
         .select()
         .from(schema.chiiRevHistory)
