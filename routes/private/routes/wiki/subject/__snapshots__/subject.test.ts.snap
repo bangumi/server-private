@@ -240,6 +240,748 @@ Object {
 }
 `;
 
+exports[`subject relations > should get subject character relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1573783161,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1055411,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1571118707,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1042400,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1570889138,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1041208,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1570872664,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1041131,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1570872040,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1041128,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1413182492,
+      "creator": Object {
+        "username": "209098",
+      },
+      "id": 275525,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1399227001,
+      "creator": Object {
+        "username": "32374",
+      },
+      "id": 227069,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1399226533,
+      "creator": Object {
+        "username": "32374",
+      },
+      "id": 227066,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1399225560,
+      "creator": Object {
+        "username": "32374",
+      },
+      "id": 227051,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1399224927,
+      "creator": Object {
+        "username": "32374",
+      },
+      "id": 227045,
+      "type": 5,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1309061365,
+      "creator": Object {
+        "username": "2813",
+      },
+      "id": 23053,
+      "type": 5,
+    },
+  ],
+  "total": 11,
+}
+`;
+
+exports[`subject relations > should get subject character relation revision wiki info 1`] = `
+Array [
+  Object {
+    "character": Object {
+      "id": 2,
+      "name": "枢木スザク",
+      "nameCN": "枢木朱雀",
+    },
+    "order": 2,
+    "type": 1,
+  },
+  Object {
+    "character": Object {
+      "id": 3116,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 5,
+    "type": 1,
+  },
+  Object {
+    "character": Object {
+      "id": 2243,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 4,
+    "type": 1,
+  },
+  Object {
+    "character": Object {
+      "id": 1,
+      "name": "ルルーシュ・ランペルージ",
+      "nameCN": "鲁路修·兰佩路基",
+    },
+    "order": 1,
+    "type": 1,
+  },
+  Object {
+    "character": Object {
+      "id": 3,
+      "name": "C.C.",
+      "nameCN": "C.C.",
+    },
+    "order": 3,
+    "type": 1,
+  },
+  Object {
+    "character": Object {
+      "id": 24805,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 8632,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 22,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 24806,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 8,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 22862,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3437,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 10,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3451,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3464,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3454,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 21,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3447,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3444,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 6,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3272,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 23,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 8239,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 35854,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3456,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 11,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3461,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 12,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3441,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 20,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3438,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 9,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 39610,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 24,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 39611,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 13,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 39612,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 39613,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 39615,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 13349,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 26,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 72153,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 14,
+    "type": 2,
+  },
+  Object {
+    "character": Object {
+      "id": 3448,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 7481,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 7369,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 3445,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 24807,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 3462,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 7480,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 10956,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+  Object {
+    "character": Object {
+      "id": 68291,
+      "name": "",
+      "nameCN": "",
+    },
+    "order": 0,
+    "type": 3,
+  },
+]
+`;
+
+exports[`subject relations > should get subject person relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1585395467,
+      "creator": Object {
+        "username": "461536",
+      },
+      "id": 1104160,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1585236366,
+      "creator": Object {
+        "username": "461536",
+      },
+      "id": 1103741,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1585196553,
+      "creator": Object {
+        "username": "461536",
+      },
+      "id": 1103572,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1499757401,
+      "creator": Object {
+        "username": "275163",
+      },
+      "id": 735082,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1486972153,
+      "creator": Object {
+        "username": "213047",
+      },
+      "id": 662827,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1464503649,
+      "creator": Object {
+        "username": "183052",
+      },
+      "id": 535472,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1464503460,
+      "creator": Object {
+        "username": "183052",
+      },
+      "id": 535469,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1461241165,
+      "creator": Object {
+        "username": "153502",
+      },
+      "id": 516096,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1458744097,
+      "creator": Object {
+        "username": "183052",
+      },
+      "id": 500859,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1450578445,
+      "creator": Object {
+        "username": "153502",
+      },
+      "id": 457912,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1447469828,
+      "creator": Object {
+        "username": "153502",
+      },
+      "id": 439746,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1446140392,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 432539,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1366088014,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 109635,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1360166401,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 91779,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1357185167,
+      "creator": Object {
+        "username": "104510",
+      },
+      "id": 83058,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1357185085,
+      "creator": Object {
+        "username": "104510",
+      },
+      "id": 83057,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1349061145,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 65078,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1347777405,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 62793,
+      "type": 10,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1330441184,
+      "creator": Object {
+        "username": "9023",
+      },
+      "id": 39570,
+      "type": 10,
+    },
+  ],
+  "total": 19,
+}
+`;
+
+exports[`subject relations > should get subject person revision wiki info 1`] = `
+Array [
+  Object {
+    "person": Object {
+      "id": 185,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 1,
+  },
+  Object {
+    "person": Object {
+      "id": 389,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 1,
+  },
+  Object {
+    "person": Object {
+      "id": 185,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 2,
+  },
+  Object {
+    "person": Object {
+      "id": 846,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 6,
+  },
+  Object {
+    "person": Object {
+      "id": 2383,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 6,
+  },
+  Object {
+    "person": Object {
+      "id": 39,
+      "name": "CLAMP",
+      "nameCN": "",
+    },
+    "position": 7,
+  },
+  Object {
+    "person": Object {
+      "id": 419,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 8,
+  },
+  Object {
+    "person": Object {
+      "id": 389,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 10,
+  },
+  Object {
+    "person": Object {
+      "id": 187,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 13,
+  },
+  Object {
+    "person": Object {
+      "id": 1127,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 17,
+  },
+  Object {
+    "person": Object {
+      "id": 2847,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 63,
+  },
+  Object {
+    "person": Object {
+      "id": 1723,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 3,
+  },
+  Object {
+    "person": Object {
+      "id": 389,
+      "name": "",
+      "nameCN": "",
+    },
+    "position": 3,
+  },
+]
+`;
+
 exports[`subject relations > should get subject relation history 1`] = `
 Object {
   "data": Array [
