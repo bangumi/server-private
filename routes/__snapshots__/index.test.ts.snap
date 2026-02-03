@@ -2612,8 +2612,6 @@ exports[`should build private api spec 1`] = `
         properties:
           order:
             type: integer
-          relationType:
-            type: integer
           subject:
             properties:
               id:
@@ -2623,16 +2621,18 @@ exports[`should build private api spec 1`] = `
               nameCN:
                 type: string
               typeID:
-                type: integer
+                $ref: '#/components/schemas/SubjectType'
             required:
               - id
               - typeID
               - name
               - nameCN
             type: object
+          type:
+            type: integer
         required:
           - subject
-          - relationType
+          - type
           - order
         type: object
       type: array

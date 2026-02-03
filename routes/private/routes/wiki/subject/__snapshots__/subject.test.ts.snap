@@ -432,73 +432,73 @@ exports[`subject relations > should get subject relation revision wiki info 1`] 
 Array [
   Object {
     "order": 0,
-    "relationType": 2,
     "subject": Object {
       "id": 793,
       "name": "",
       "nameCN": "",
       "typeID": 2,
     },
+    "type": 2,
   },
   Object {
     "order": 0,
-    "relationType": 8,
     "subject": Object {
       "id": 24593,
       "name": "",
       "nameCN": "",
       "typeID": 2,
     },
+    "type": 8,
   },
   Object {
     "order": 0,
-    "relationType": 11,
     "subject": Object {
       "id": 35866,
       "name": "",
       "nameCN": "",
       "typeID": 2,
     },
+    "type": 11,
   },
   Object {
     "order": 0,
-    "relationType": 4,
     "subject": Object {
       "id": 99952,
       "name": "",
       "nameCN": "",
       "typeID": 2,
     },
+    "type": 4,
   },
   Object {
     "order": 1,
-    "relationType": 10,
     "subject": Object {
       "id": 199229,
       "name": "",
       "nameCN": "",
       "typeID": 2,
     },
+    "type": 10,
   },
   Object {
     "order": 2,
-    "relationType": 10,
     "subject": Object {
       "id": 199230,
       "name": "",
       "nameCN": "",
       "typeID": 2,
     },
+    "type": 10,
   },
   Object {
     "order": 3,
-    "relationType": 10,
     "subject": Object {
       "id": 199231,
       "name": "",
       "nameCN": "",
       "typeID": 2,
     },
+    "type": 10,
   },
 ]
 `;

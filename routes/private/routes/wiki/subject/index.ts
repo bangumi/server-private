@@ -158,11 +158,11 @@ export const SubjectRelationWikiInfo = t.Array(
   t.Object({
     subject: t.Object({
       id: t.Integer(),
-      typeID: t.Integer(),
+      typeID: res.Ref(res.SubjectType),
       name: t.String(),
       nameCN: t.String(),
     }),
-    relationType: t.Integer(),
+    type: t.Integer(),
     order: t.Integer(),
   }),
   {
@@ -998,7 +998,7 @@ export async function setup(app: App) {
             name: subject?.name || '',
             nameCN: subject?.nameCN || '',
           },
-          relationType: +rel.relation_type,
+          type: +rel.relation_type,
           order: +rel.relation_order,
         };
       });
