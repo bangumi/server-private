@@ -41,36 +41,45 @@ export async function handle({ key, value }: KafkaMessage) {
         logger.error({ payload }, 'invalid timeline payload for create');
         return;
       }
-      const tml = payload.after;
-      // 始终写入全站时间线
-      await redis.zadd(getInboxCacheKey(0), tml.tml_id, tml.tml_id);
 
-      const now = DateTime.now().toUnixInteger();
-      const ttlUser = Number(await redis.get(getUserVisitCacheKey(tml.tml_uid)));
-      if (ttlUser > 0) {
-        const userCacheKey = getUserCacheKey(tml.tml_uid);
-        await redis.zadd(userCacheKey, tml.tml_id, tml.tml_id);
-        // 将 cache key 的过期时间设置为与 visit key 一致
-        await redis.expire(userCacheKey, ttlUser - now);
-      }
-      const followerIDs = await fetchFollowers(tml.tml_uid);
-      if (followerIDs.length > 0) {
-        // 写入自己的首页时间线
-        followerIDs.push(tml.tml_uid);
-        const ttlInbox = await redis.mget(followerIDs.map((fid) => getInboxVisitCacheKey(fid)));
-        for (const [idx, fid] of followerIDs.entries()) {
-          const ttl = Number(ttlInbox[idx]);
-          if (ttl > 0) {
-            const inboxCacheKey = getInboxCacheKey(fid);
-            await redis.zadd(inboxCacheKey, tml.tml_id, tml.tml_id);
-            await redis.expire(inboxCacheKey, ttl - now);
+      async function cacheTimeline(tml: TimelineItem, cacheKeyCat?: number) {
+        // 始终写入全站时间线
+        await redis.zadd(getInboxCacheKey(0, cacheKeyCat), tml.tml_id, tml.tml_id);
+
+        const now = DateTime.now().toUnixInteger();
+        const ttlUser = Number(await redis.get(getUserVisitCacheKey(tml.tml_uid, cacheKeyCat)));
+        if (ttlUser > 0) {
+          const userCacheKey = getUserCacheKey(tml.tml_uid, cacheKeyCat);
+          await redis.zadd(userCacheKey, tml.tml_id, tml.tml_id);
+          // 将 cache key 的过期时间设置为与 visit key 一致
+          await redis.expire(userCacheKey, ttlUser - now);
+        }
+        const followerIDs = await fetchFollowers(tml.tml_uid);
+        if (followerIDs.length > 0) {
+          // 写入自己的首页时间线
+          followerIDs.push(tml.tml_uid);
+          const ttlInbox = await redis.mget(
+            followerIDs.map((fid) => getInboxVisitCacheKey(fid, cacheKeyCat)),
+          );
+          for (const [idx, fid] of followerIDs.entries()) {
+            const ttl = Number(ttlInbox[idx]);
+            if (ttl > 0) {
+              const inboxCacheKey = getInboxCacheKey(fid, cacheKeyCat);
+              await redis.zadd(inboxCacheKey, tml.tml_id, tml.tml_id);
+              await redis.expire(inboxCacheKey, ttl - now);
+            }
           }
         }
+        if (cacheKeyCat != 0) {
+          await redis.publish(
+            TIMELINE_EVENT_CHANNEL,
+            JSON.stringify({ tml_id: tml.tml_id, cat: tml.tml_cat, uid: tml.tml_uid }),
+          );
+        }
       }
-      await redis.publish(
-        TIMELINE_EVENT_CHANNEL,
-        JSON.stringify({ tml_id: tml.tml_id, cat: tml.tml_cat, uid: tml.tml_uid }),
-      );
+      const tml = payload.after;
+      await cacheTimeline(tml);
+      await cacheTimeline(tml, tml.tml_cat);
       break;
     }
     case EventOp.Delete: {
@@ -78,21 +87,26 @@ export async function handle({ key, value }: KafkaMessage) {
         logger.error({ payload }, 'invalid timeline payload for delete');
         return;
       }
-      const tml = payload.before;
-      logger.info(`process timeline delete event: ${tml.tml_id}`);
-      // 始终尝试从全站时间线中删除
-      await redis.zrem(getInboxCacheKey(0), tml.tml_id);
+      async function deleteTimeline(tml: TimelineItem, cacheKeyCat?: number) {
+        logger.info(`process timeline delete event: ${tml.tml_id}`);
+        // 始终尝试从全站时间线中删除
+        await redis.zrem(getInboxCacheKey(0, cacheKeyCat), tml.tml_id);
 
-      await redis.zrem(getUserCacheKey(tml.tml_uid), tml.tml_id);
-      const followerIDs = await fetchFollowers(tml.tml_uid);
-      if (followerIDs.length > 0) {
-        // 也从自己的首页时间线中删除
-        followerIDs.push(tml.tml_uid);
-        for (const fid of followerIDs) {
-          await redis.zrem(getInboxCacheKey(fid), tml.tml_id);
+        await redis.zrem(getUserCacheKey(tml.tml_uid, cacheKeyCat), tml.tml_id);
+        const followerIDs = await fetchFollowers(tml.tml_uid);
+        if (followerIDs.length > 0) {
+          // 也从自己的首页时间线中删除
+          followerIDs.push(tml.tml_uid);
+          for (const fid of followerIDs) {
+            await redis.zrem(getInboxCacheKey(fid, cacheKeyCat), tml.tml_id);
+          }
         }
+        await redis.del(getItemCacheKey(idx.tml_id));
       }
-      await redis.del(getItemCacheKey(idx.tml_id));
+
+      const tml = payload.before;
+      await deleteTimeline(tml);
+      await deleteTimeline(tml, tml.tml_cat);
       break;
     }
     case EventOp.Update: {

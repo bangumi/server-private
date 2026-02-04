@@ -42,6 +42,9 @@ export async function setup(app: App) {
               description: '登录时默认为 friends, 未登录或没有好友时始终为 all',
             }),
           ),
+          cat: t.Optional(
+            req.Ref(req.TimelineCat, { description: '时间线类型，不传或0则查询所有类型' }),
+          ),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 20, description: 'min 1, max 20' }),
           ),
@@ -52,16 +55,16 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { mode = req.IFilterMode.Friends, limit = 20, until } }) => {
+    async ({ auth, query: { mode = req.IFilterMode.Friends, cat, limit = 20, until } }) => {
       const ids = [];
       switch (mode) {
         case req.IFilterMode.Friends: {
-          const ret = await getTimelineInbox(auth.userID, limit, until);
+          const ret = await getTimelineInbox(auth.userID, cat, limit, until);
           ids.push(...ret);
           break;
         }
         case req.IFilterMode.All: {
-          const ret = await getTimelineInbox(0, limit, until);
+          const ret = await getTimelineInbox(0, cat, limit, until);
           ids.push(...ret);
           break;
         }
