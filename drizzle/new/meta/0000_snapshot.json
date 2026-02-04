@@ -589,6 +589,13 @@
     "chii_crt_cast_index": {
       "name": "chii_crt_cast_index",
       "columns": {
+        "rlt_type": {
+          "autoincrement": false,
+          "name": "rlt_type",
+          "type": "mediumint(8) unsigned",
+          "primaryKey": false,
+          "notNull": true
+        },
         "crt_id": {
           "autoincrement": false,
           "name": "crt_id",

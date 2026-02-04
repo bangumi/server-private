@@ -741,7 +741,7 @@ export async function fetchCastsBySubjectAndCharacterIDs(
   subjectID: number,
   characterIDs: number[],
   allowNsfw: boolean,
-): Promise<Record<number, res.ISlimPerson[]>> {
+): Promise<Record<number, res.ICharacterCast[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -757,11 +757,15 @@ export async function fetchCastsBySubjectAndCharacterIDs(
         allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
     );
-  const result: Record<number, res.ISlimPerson[]> = {};
+  const result: Record<number, res.ICharacterCast[]> = {};
   for (const d of data) {
-    const person = convert.toSlimPerson(d.chii_persons);
+    const cast: res.ICharacterCast = {
+      person: convert.toSlimPerson(d.chii_persons),
+      relation: d.chii_crt_cast_index.relation,
+      summary: d.chii_crt_cast_index.summary,
+    };
     const list = result[d.chii_crt_cast_index.characterID] || [];
-    list.push(person);
+    list.push(cast);
     result[d.chii_crt_cast_index.characterID] = list;
   }
   return result;
@@ -771,7 +775,7 @@ export async function fetchCastsByCharacterAndSubjectIDs(
   characterID: number,
   subjectIDs: number[],
   allowNsfw: boolean,
-): Promise<Record<number, res.ISlimPerson[]>> {
+): Promise<Record<number, res.ICharacterCast[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -787,11 +791,15 @@ export async function fetchCastsByCharacterAndSubjectIDs(
         allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
     );
-  const result: Record<number, res.ISlimPerson[]> = {};
+  const result: Record<number, res.ICharacterCast[]> = {};
   for (const d of data) {
-    const person = convert.toSlimPerson(d.chii_persons);
+    const cast: res.ICharacterCast = {
+      person: convert.toSlimPerson(d.chii_persons),
+      relation: d.chii_crt_cast_index.relation,
+      summary: d.chii_crt_cast_index.summary,
+    };
     const list = result[d.chii_crt_cast_index.subjectID] || [];
-    list.push(person);
+    list.push(cast);
     result[d.chii_crt_cast_index.subjectID] = list;
   }
   return result;

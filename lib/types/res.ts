@@ -5,6 +5,7 @@ import type { Static, TSchema } from 'typebox';
 import t from 'typebox';
 
 import {
+  CharacterCastType,
   CollectionType,
   EpisodeCollectionStatus,
   EpisodeType,
@@ -693,11 +694,21 @@ export const SubjectRelation = t.Object(
   { $id: 'SubjectRelation' },
 );
 
+export type ICharacterCast = Static<typeof CharacterCast>;
+export const CharacterCast = t.Object(
+  {
+    person: Ref(SlimPerson),
+    relation: Ref(CharacterCastType),
+    summary: t.String(),
+  },
+  { $id: 'CharacterCast' },
+);
+
 export type ISubjectCharacter = Static<typeof SubjectCharacter>;
 export const SubjectCharacter = t.Object(
   {
     character: Ref(SlimCharacter),
-    actors: t.Array(Ref(SlimPerson)),
+    casts: t.Array(Ref(CharacterCast)),
     type: t.Integer(),
     order: t.Integer(),
   },
@@ -776,7 +787,7 @@ export type ICharacterSubject = Static<typeof CharacterSubject>;
 export const CharacterSubject = t.Object(
   {
     subject: Ref(SlimSubject),
-    actors: t.Array(Ref(SlimPerson)),
+    casts: t.Array(Ref(CharacterCast)),
     type: t.Integer(),
   },
   { $id: 'CharacterSubject' },

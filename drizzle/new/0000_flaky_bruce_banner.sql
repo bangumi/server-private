@@ -80,6 +80,7 @@ CREATE TABLE `chii_characters` (
 );
 --> statement-breakpoint
 CREATE TABLE `chii_crt_cast_index` (
+	`rlt_type` mediumint(8) unsigned NOT NULL,
 	`crt_id` mediumint(9) unsigned NOT NULL,
 	`prsn_id` mediumint(9) unsigned NOT NULL,
 	`subject_id` mediumint(9) unsigned NOT NULL,

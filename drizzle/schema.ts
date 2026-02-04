@@ -97,6 +97,7 @@ export const chiiCharacters = mysqlTable('chii_characters', {
 });
 
 export const chiiCharacterCasts = mysqlTable('chii_crt_cast_index', {
+  relation: mediumint('rlt_type').notNull(),
   characterID: mediumint('crt_id').notNull(),
   personID: mediumint('prsn_id').notNull(),
   subjectID: mediumint('subject_id').notNull(),
