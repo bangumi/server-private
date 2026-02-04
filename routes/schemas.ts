@@ -10,6 +10,7 @@ export function addSchemas(app: App) {
 }
 
 function addCommonSchemas(app: App) {
+  app.addSchema(common.CharacterCastType);
   app.addSchema(common.CollectionType);
   app.addSchema(common.EpisodeCollectionStatus);
   app.addSchema(common.EpisodeType);
@@ -58,6 +59,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.BlogEntry);
   app.addSchema(res.BlogPhoto);
   app.addSchema(res.Character);
+  app.addSchema(res.CharacterCast);
   app.addSchema(res.CharacterRelation);
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);
