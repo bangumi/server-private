@@ -19,11 +19,11 @@ function toCharacterSubject(
   subject: orm.ISubject,
   fields: orm.ISubjectFields,
   relation: orm.ICharacterSubject,
-  actors: res.ISlimPerson[],
+  casts: res.ICharacterCast[],
 ): res.ICharacterSubject {
   return {
     subject: convert.toSlimSubject(subject, fields),
-    actors: actors,
+    casts: casts,
     type: relation.type,
   };
 }

@@ -44,6 +44,24 @@ export const PersonType = t.Integer({
   - 3 = 组合`,
 });
 
+export const CharacterCastType = t.Integer({
+  $id: 'CharacterCastType',
+  enum: [0, 2, 1, 3, 4, 5, 6],
+  'x-ms-enum': {
+    name: 'CharacterCastType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': ['CV', 'Actor', 'Dub', 'ChineseDub', 'JapaneseDub', 'EnglishDub', 'KoreanDub'],
+  description: `Character cast relation type
+  - 0 = CV
+  - 1 = Dub
+  - 2 = Actor
+  - 3 = Chinese dub
+  - 4 = Japanese dub
+  - 5 = English dub
+  - 6 = Korean dub`,
+});
+
 export const EpisodeType = t.Integer({
   $id: 'EpisodeType',
   enum: [0, 1, 2, 3, 4, 5, 6],

@@ -272,6 +272,13 @@ export async function fetchSubjectsByIDs(
 }
 
 /** Cached */
+/**
+ * NOTE: This endpoint intentionally diverges from legacy PHP tag browse.
+ *
+ * - Sort=collects orders by subject_collect, not tag-count order.
+ * - Sort=rank does not apply tag-count filtering. Reasons: avoid expensive tag-count aggregation
+ *   while keeping API semantics stable.
+ */
 export async function fetchSubjectIDsByFilter(
   filter: SubjectFilter,
   sort: SubjectSort,
@@ -279,7 +286,7 @@ export async function fetchSubjectIDsByFilter(
 ): Promise<res.IPaged<number>> {
   if (filter.tags) {
     const normalizedTags = filter.tags
-      .map((tag) => tag.trim().normalize('NFKC'))
+      .map((tag) => tag.trim().normalize('NFKC').toLowerCase())
       .filter((tag) => tag.length > 0);
     filter.tags = normalizedTags;
   }
@@ -298,7 +305,8 @@ export async function fetchSubjectIDsByFilter(
     filter.ids = ids.map((item) => item.id);
   }
   if (filter.tags?.length) {
-    const tagCat = filter.tagsCat === 'subject' ? TagCat.Subject : TagCat.Meta;
+    const isMetaTag = filter.tagsCat !== 'subject';
+    const tagCat = TagCat.Subject;
     const tagIndexes = await db
       .select({ id: schema.chiiTagIndex.id })
       .from(schema.chiiTagIndex)
@@ -330,20 +338,21 @@ export async function fetchSubjectIDsByFilter(
           op.eq(schema.chiiTagList.cat, tagCat),
           op.eq(schema.chiiTagList.type, filter.type),
           op.inArray(schema.chiiTagList.tagID, tagIDs),
-          tagCat === TagCat.Meta ? op.eq(schema.chiiTagList.userID, 0) : undefined,
+          isMetaTag ? op.eq(schema.chiiTagList.userID, 0) : undefined,
         ),
-      );
+      )
+      .groupBy(schema.chiiTagList.mainID, schema.chiiTagList.tagID);
     if (tagRows.length === 0) {
       return { data: [], total: 0 };
     }
-    const subjectTagMap = new Map<number, Set<number>>();
+    const subjectTagMap = new Map<number, Map<number, number>>();
     for (const row of tagRows) {
       let tagsForSubject = subjectTagMap.get(row.subjectID);
       if (!tagsForSubject) {
-        tagsForSubject = new Set<number>();
+        tagsForSubject = new Map<number, number>();
         subjectTagMap.set(row.subjectID, tagsForSubject);
       }
-      tagsForSubject.add(row.tagID);
+      tagsForSubject.set(row.tagID, 1);
     }
     const subjectIDs: number[] = [];
     for (const [subjectID, subjectTags] of subjectTagMap) {
@@ -741,7 +750,7 @@ export async function fetchCastsBySubjectAndCharacterIDs(
   subjectID: number,
   characterIDs: number[],
   allowNsfw: boolean,
-): Promise<Record<number, res.ISlimPerson[]>> {
+): Promise<Record<number, res.ICharacterCast[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -757,11 +766,15 @@ export async function fetchCastsBySubjectAndCharacterIDs(
         allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
     );
-  const result: Record<number, res.ISlimPerson[]> = {};
+  const result: Record<number, res.ICharacterCast[]> = {};
   for (const d of data) {
-    const person = convert.toSlimPerson(d.chii_persons);
+    const cast: res.ICharacterCast = {
+      person: convert.toSlimPerson(d.chii_persons),
+      relation: d.chii_crt_cast_index.relation,
+      summary: d.chii_crt_cast_index.summary,
+    };
     const list = result[d.chii_crt_cast_index.characterID] || [];
-    list.push(person);
+    list.push(cast);
     result[d.chii_crt_cast_index.characterID] = list;
   }
   return result;
@@ -771,7 +784,7 @@ export async function fetchCastsByCharacterAndSubjectIDs(
   characterID: number,
   subjectIDs: number[],
   allowNsfw: boolean,
-): Promise<Record<number, res.ISlimPerson[]>> {
+): Promise<Record<number, res.ICharacterCast[]>> {
   const data = await db
     .select()
     .from(schema.chiiCharacterCasts)
@@ -787,11 +800,15 @@ export async function fetchCastsByCharacterAndSubjectIDs(
         allowNsfw ? undefined : op.eq(schema.chiiPersons.nsfw, false),
       ),
     );
-  const result: Record<number, res.ISlimPerson[]> = {};
+  const result: Record<number, res.ICharacterCast[]> = {};
   for (const d of data) {
-    const person = convert.toSlimPerson(d.chii_persons);
+    const cast: res.ICharacterCast = {
+      person: convert.toSlimPerson(d.chii_persons),
+      relation: d.chii_crt_cast_index.relation,
+      summary: d.chii_crt_cast_index.summary,
+    };
     const list = result[d.chii_crt_cast_index.subjectID] || [];
-    list.push(person);
+    list.push(cast);
     result[d.chii_crt_cast_index.subjectID] = list;
   }
   return result;
