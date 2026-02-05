@@ -133,7 +133,7 @@ export const PersonCastRevisionWikiInfo = t.Array(
     }),
   }),
   {
-    $id: 'CharacterCastRevisionWikiInfo',
+    $id: 'PersonCastRevisionWikiInfo',
   },
 );
 
