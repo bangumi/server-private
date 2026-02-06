@@ -1,4 +1,5 @@
 import { services } from './common/network_services.json';
+import { relations as personRelations } from './common/person_relations.json';
 import * as platforms from './common/subject_platforms.json';
 import { relations } from './common/subject_relations.json';
 import { staffs } from './common/subject_staffs.json';
@@ -67,6 +68,22 @@ export function findSubjectRelationType(
 ): SubjectRelationType | undefined {
   const types = relations as Record<string, Record<string, SubjectRelationType>>;
   return types[subjectType]?.[relationType];
+}
+
+export interface PersonRelationType {
+  cn: string;
+  desc?: string;
+  vice_versa_to?: number;
+  skip_vice_versa?: boolean;
+  primary?: boolean;
+}
+
+export function findPersonRelationType(
+  personType: 'prsn' | 'crt' | 'prsn_cv',
+  relationType: number,
+): PersonRelationType | undefined {
+  const types = personRelations as Record<string, Record<string, PersonRelationType>>;
+  return types[personType]?.[relationType];
 }
 
 export interface SubjectStaffPosition {

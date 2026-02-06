@@ -81,6 +81,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.PersonCollect);
   app.addSchema(res.PersonImages);
   app.addSchema(res.PersonRelation);
+  app.addSchema(res.PersonRelationType);
   app.addSchema(res.PersonWork);
   app.addSchema(res.Post);
   app.addSchema(res.Profile);
