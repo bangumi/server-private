@@ -1542,6 +1542,7 @@ export const chiiPersonRelations = mysqlTable(
   },
 );
 
+/** @deprecated Use chiiPersonRelations. */
 export const chiiPersonRelationship = mysqlTable(
   'chii_person_relationship',
   {
