@@ -214,14 +214,11 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/PersonRelationType'
         spoiler:
           type: boolean
-        viceVersa:
-          type: boolean
       required:
         - character
         - relation
         - spoiler
         - ended
-        - viceVersa
         - comment
       type: object
     CharacterRevisionWikiInfo:
@@ -1324,14 +1321,11 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/PersonRelationType'
         spoiler:
           type: boolean
-        viceVersa:
-          type: boolean
       required:
         - person
         - relation
         - spoiler
         - ended
-        - viceVersa
         - comment
       type: object
     PersonRelationType:

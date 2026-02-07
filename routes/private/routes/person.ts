@@ -39,7 +39,6 @@ function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): r
     relation: convert.toPersonRelationType(relation),
     spoiler: relation.spoiler,
     ended: relation.ended,
-    viceVersa: relation.viceVersa,
     comment: relation.comment,
   };
 }
