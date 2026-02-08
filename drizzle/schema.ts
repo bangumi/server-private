@@ -451,15 +451,6 @@ export const chiiPersonRelations = mysqlTable('chii_person_relations', {
   comment: htmlEscapedString('text')('rlt_comment').notNull(),
 });
 
-/** @deprecated Use chiiPersonRelations. */
-export const chiiPersonRelationship = mysqlTable('chii_person_relationship', {
-  type: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
-  id: mediumint('prsn_id').notNull(),
-  relatedType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
-  relatedID: mediumint('relat_prsn_id').notNull(),
-  relation: smallint('relat_type').notNull(),
-});
-
 export const chiiPms = mysqlTable('chii_pms', {
   msgId: int('msg_id').autoincrement().notNull(),
   msgSid: mediumint('msg_sid').notNull(),

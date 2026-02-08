@@ -1542,24 +1542,6 @@ export const chiiPersonRelations = mysqlTable(
   },
 );
 
-/** @deprecated Use chiiPersonRelations. */
-export const chiiPersonRelationship = mysqlTable(
-  'chii_person_relationship',
-  {
-    prsnType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
-    prsnId: mediumint('prsn_id').notNull(),
-    relatPrsnType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
-    relatPrsnId: mediumint('relat_prsn_id').notNull(),
-    relatType: smallint('relat_type').notNull(),
-  },
-  (table) => {
-    return {
-      prsnType: index('prsn_type').on(table.prsnType, table.prsnId),
-      relatPrsnType: index('relat_prsn_type').on(table.relatPrsnType, table.relatPrsnId),
-    };
-  },
-);
-
 export const chiiPms = mysqlTable(
   'chii_pms',
   {
