@@ -1,0 +1,882 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`person relations > should get person character relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1407073073,
+      "creator": Object {
+        "username": "18215",
+      },
+      "id": 253524,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1392929834,
+      "creator": Object {
+        "username": "106866",
+      },
+      "id": 204186,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1358325032,
+      "creator": Object {
+        "username": "50094",
+      },
+      "id": 87355,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1341711793,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 50866,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297812968,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8354,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297812602,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8352,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297812584,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8351,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296835082,
+      "creator": Object {
+        "username": "9105",
+      },
+      "id": 5909,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296500374,
+      "creator": Object {
+        "username": "2978",
+      },
+      "id": 4159,
+      "type": 8,
+    },
+  ],
+  "total": 9,
+}
+`;
+
+exports[`person relations > should get person character relation revision wiki info 1`] = `
+Array [
+  Object {
+    "character": Object {
+      "id": 10645,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2089,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 1807,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3183,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 329,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 993,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 1243,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2474,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 296,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 292,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 2792,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 1263,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10848,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3690,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10865,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 4124,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10867,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 4124,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10685,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 1428,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10567,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 8474,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 3966,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 283,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 6845,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3625,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10806,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2425,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10806,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2427,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10806,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3018,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10310,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2129,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 6540,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2782,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+]
+`;
+
+exports[`person relations > should get person subject relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1561903186,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1005137,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297820724,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8364,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297053421,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 6653,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297053366,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 6651,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296812072,
+      "creator": Object {
+        "username": "14459",
+      },
+      "id": 5780,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296586071,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 4708,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365688,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2804,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365654,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2800,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365640,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2799,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365628,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2797,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365604,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2796,
+      "type": 9,
+    },
+  ],
+  "total": 11,
+}
+`;
+
+exports[`person relations > should get person subject revision wiki info 1`] = `
+Array [
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 25834,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 10278,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 50811,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 110867,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 90512,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 150746,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 4480,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 70131,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 1263,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 1264,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 2474,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 3014,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 2475,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 1262,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 14427,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 2128,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 25834,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 10278,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 3485,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 56951,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 23626,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 54552,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 993,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 74906,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 23681,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 50811,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 54942,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 110867,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 90512,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 4221,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 150746,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 109948,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 68284,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 163711,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 2586,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 220187,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 1263,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 1264,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 993,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 25834,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 50811,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 90512,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 150746,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 68284,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 163711,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 68284,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 33,
+    "subject": Object {
+      "id": 220403,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 34,
+    "subject": Object {
+      "id": 220403,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+  Object {
+    "position": 32,
+    "subject": Object {
+      "id": 220403,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+]
+`;

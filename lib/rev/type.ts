@@ -91,3 +91,85 @@ export interface PersonRev {
     img?: string;
   };
 }
+
+export interface SubjectRelationRev {
+  self: Record<
+    string,
+    {
+      subject_id: string;
+      subject_type_id: string;
+      relation_type: string;
+      relation_order: string;
+      related_subject_id: string;
+      related_subject_type_id: string;
+    }
+  >;
+  remote: Record<
+    string,
+    {
+      subject_id: string;
+      subject_type_id: string;
+      relation_type: string;
+      related_subject_id: string;
+      related_subject_type_id: string;
+    }
+  >;
+}
+
+export type SubjectCharacterRev = Record<
+  string,
+  {
+    subject_id: string;
+    crt_type: string;
+    crt_id: string;
+    crt_order: number;
+  }
+>;
+
+export type SubjectPersonRev = Record<
+  string,
+  {
+    subject_id: string;
+    position: string;
+    prsn_id: string;
+  }
+>;
+
+export type PersonSubjectRev = Record<
+  string,
+  {
+    subject_id: string;
+    position: string;
+    prsn_id: number;
+  }
+>;
+
+export type PersonCastRev = Record<
+  string,
+  {
+    subject_id: string;
+    crt_id: string;
+    prsn_id: number;
+    summary: string | null;
+  }
+>;
+
+export type CharacterSubjectRev = Record<
+  string,
+  {
+    subject_id: string;
+    crt_type: string;
+    crt_id: number;
+    crt_order: number;
+  }
+>;
+
+export type CharacterCastRev = Record<
+  string,
+  {
+    subject_id: string;
+    prsn_id: string;
+    crt_id: number;
+    summary: string | null;
+  }
+>;
