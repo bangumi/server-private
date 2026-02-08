@@ -276,7 +276,7 @@ export async function fetchSubjectsByIDs(
  * NOTE: Tag filtering mostly follows legacy PHP tag browse behavior.
  *
  * - When sort=rank and tagsCat=subject with a single tag, apply tag-count threshold filtering.
- * - When sort=collects with a single tag, paginate by tag-count order then sort by subject_collect.
+ * - When sort=collects with a single tag, paginate and order by tag-count order.
  */
 export async function fetchSubjectIDsByFilter(
   filter: SubjectFilter,
@@ -404,6 +404,7 @@ export async function fetchSubjectIDsByFilter(
 
   let pageForQuery = page;
   let totalOverride: number | undefined;
+  let collectOrderedIDs: number[] | undefined;
   if (
     sort === SubjectSort.Collects &&
     tagOrderedIDs &&
@@ -420,6 +421,7 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: totalOverride };
     }
     filter.ids = pageIDs;
+    collectOrderedIDs = pageIDs;
     pageForQuery = 1;
   }
 
@@ -457,7 +459,9 @@ export async function fetchSubjectIDsByFilter(
       break;
     }
     case SubjectSort.Collects: {
-      sorts.push(op.desc(schema.chiiSubjects.collect));
+      if (!collectOrderedIDs) {
+        sorts.push(op.desc(schema.chiiSubjects.collect));
+      }
       break;
     }
     case SubjectSort.Date: {
@@ -495,6 +499,8 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
     query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${filter.ids.join(',')})`);
+  } else if (sort === SubjectSort.Collects && collectOrderedIDs) {
+    query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${collectOrderedIDs.join(',')})`);
   } else {
     query.orderBy(...sorts);
   }
