@@ -6,3 +6,20 @@ pull_request_rules:
       label:
         toggle:
           - conflict
+
+  - name: Automatic merge on approval
+    conditions:
+      - base=master
+      - or:
+          - '#approved-reviews-by>=1'
+          - label=ci:auto-merge
+      - or:
+          - author != renovate[bot]
+          - 'created-at<=24h ago'
+      - check-success=lint
+      - check-success=test
+      - check-success=build
+      - check-success=analyze
+    actions:
+      merge:
+        method: squash
