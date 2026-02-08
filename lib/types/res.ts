@@ -774,11 +774,27 @@ export const SubjectRec = t.Object(
   { $id: 'SubjectRec', title: 'SubjectRec' },
 );
 
+export type IPersonRelationType = Static<typeof PersonRelationType>;
+export const PersonRelationType = t.Object(
+  {
+    id: t.Integer(),
+    cn: t.String(),
+    desc: t.String(),
+    viceVersaTo: t.Optional(t.Integer()),
+    skipViceVersa: t.Optional(t.Boolean()),
+    primary: t.Optional(t.Boolean()),
+  },
+  { $id: 'PersonRelationType' },
+);
+
 export type ICharacterRelation = Static<typeof CharacterRelation>;
 export const CharacterRelation = t.Object(
   {
     character: Ref(SlimCharacter),
-    relation: t.Integer({ description: '角色关系: 任职于,从属,聘用,嫁给...' }),
+    relation: Ref(PersonRelationType),
+    spoiler: t.Boolean(),
+    ended: t.Boolean(),
+    comment: t.String(),
   },
   { $id: 'CharacterRelation' },
 );
@@ -806,7 +822,10 @@ export type IPersonRelation = Static<typeof PersonRelation>;
 export const PersonRelation = t.Object(
   {
     person: Ref(SlimPerson),
-    relation: t.Integer({ description: '人物关系: 任职于,从属,聘用,嫁给...' }),
+    relation: Ref(PersonRelationType),
+    spoiler: t.Boolean(),
+    ended: t.Boolean(),
+    comment: t.String(),
   },
   { $id: 'PersonRelation' },
 );

@@ -1520,19 +1520,24 @@ export const chiiPersonFields = mysqlTable(
   },
 );
 
-export const chiiPersonRelationship = mysqlTable(
-  'chii_person_relationship',
+export const chiiPersonRelations = mysqlTable(
+  'chii_person_relations',
   {
+    rltId: mediumint('rlt_id').notNull(),
     prsnType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
     prsnId: mediumint('prsn_id').notNull(),
-    relatPrsnType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
-    relatPrsnId: mediumint('relat_prsn_id').notNull(),
-    relatType: smallint('relat_type').notNull(),
+    rltPrsnType: mysqlEnum('rlt_prsn_type', ['prsn', 'crt']).notNull(),
+    rltPrsnId: int('rlt_prsn_id').notNull(),
+    rltType: int('rlt_type').notNull(),
+    rltSpoiler: tinyint('rlt_spoiler').notNull(),
+    rltEnded: tinyint('rlt_ended').notNull(),
+    rltViceVersa: tinyint('rlt_vice_versa').notNull(),
+    rltComment: text('rlt_comment').notNull(),
   },
   (table) => {
     return {
       prsnType: index('prsn_type').on(table.prsnType, table.prsnId),
-      relatPrsnType: index('relat_prsn_type').on(table.relatPrsnType, table.relatPrsnId),
+      rltPrsnType: index('rlt_prsn_type').on(table.rltPrsnType, table.rltPrsnId),
     };
   },
 );
