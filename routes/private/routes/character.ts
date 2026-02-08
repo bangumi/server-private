@@ -28,6 +28,19 @@ function toCharacterSubject(
   };
 }
 
+function toCharacterRelation(
+  character: orm.ICharacter,
+  relation: orm.IPersonRelation,
+): res.ICharacterRelation {
+  return {
+    character: convert.toSlimCharacter(character),
+    relation: convert.toPersonRelationType(relation),
+    spoiler: relation.spoiler,
+    ended: relation.ended,
+    comment: relation.comment,
+  };
+}
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   const comment = new CommentWithState(schema.chiiCrtComments);
@@ -74,6 +87,74 @@ export async function setup(app: App) {
         }
       }
       return character;
+    },
+  );
+
+  app.get(
+    '/characters/:characterID/relations',
+    {
+      schema: {
+        summary: '获取角色关联角色',
+        operationId: 'getCharacterRelations',
+        tags: [Tag.Character],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          characterID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.CharacterRelation)),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('character')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { characterID }, query: { limit = 20, offset = 0 } }) => {
+      if (!(await fetcher.fetchSlimCharacterByID(characterID, auth.allowNsfw))) {
+        throw new NotFoundError(`character ${characterID}`);
+      }
+      const condition = op.and(
+        op.eq(schema.chiiPersonRelations.personType, PersonCat.Character),
+        op.eq(schema.chiiPersonRelations.personID, characterID),
+        op.eq(schema.chiiPersonRelations.relatedType, PersonCat.Character),
+        op.ne(schema.chiiCharacters.ban, 1),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiCharacters.nsfw, false),
+      );
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiPersonRelations)
+        .innerJoin(
+          schema.chiiCharacters,
+          op.eq(schema.chiiPersonRelations.relatedID, schema.chiiCharacters.id),
+        )
+        .where(condition);
+      const data = await db
+        .select()
+        .from(schema.chiiPersonRelations)
+        .innerJoin(
+          schema.chiiCharacters,
+          op.eq(schema.chiiPersonRelations.relatedID, schema.chiiCharacters.id),
+        )
+        .where(condition)
+        .orderBy(
+          op.asc(schema.chiiPersonRelations.relation),
+          op.asc(schema.chiiPersonRelations.relatedID),
+        )
+        .limit(limit)
+        .offset(offset);
+      const relations = data.map((d) =>
+        toCharacterRelation(d.chii_characters, d.chii_person_relations),
+      );
+      return {
+        total: count,
+        data: relations,
+      };
     },
   );
 
