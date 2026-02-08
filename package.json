@@ -82,7 +82,7 @@
     "yaml": "2.8.2"
   },
   "devDependencies": {
-    "@eslint/js": "9.39.2",
+    "@eslint/js": "10.0.1",
     "@graphql-codegen/cli": "6.1.1",
     "@graphql-codegen/introspection": "5.0.0",
     "@graphql-codegen/typescript": "5.0.7",
@@ -103,7 +103,7 @@
     "drizzle-kit": "0.31.8",
     "esbuild": "0.27.2",
     "esbuild-node-externals": "1.20.1",
-    "eslint": "9.39.2",
+    "eslint": "10.0.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-erasable-syntax-only": "0.4.0",
     "eslint-plugin-promise": "7.2.1",
