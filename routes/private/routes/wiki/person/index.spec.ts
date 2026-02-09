@@ -239,3 +239,39 @@ describe('edit person ', () => {
     expect(res.statusCode).toBe(400);
   });
 });
+
+describe('person relations', () => {
+  test('should get person character relation revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/persons/-/casts/revisions/5909');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get person character relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/persons/1/casts/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get person subject revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/persons/-/subjects/revisions/1005137');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get person subject relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/persons/1/subjects/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+});

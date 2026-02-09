@@ -1,0 +1,220 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`character relations > should get character person relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1571313950,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1043188,
+      "type": 7,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1570973932,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1041740,
+      "type": 7,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1564455411,
+      "creator": Object {
+        "username": "133702",
+      },
+      "id": 1015845,
+      "type": 7,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1521109909,
+      "creator": Object {
+        "username": "57439",
+      },
+      "id": 838997,
+      "type": 7,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1432363510,
+      "creator": Object {
+        "username": "220431",
+      },
+      "id": 371577,
+      "type": 7,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1432363448,
+      "creator": Object {
+        "username": "220431",
+      },
+      "id": 371575,
+      "type": 7,
+    },
+  ],
+  "total": 6,
+}
+`;
+
+exports[`character relations > should get character person relation revision wiki info 1`] = `
+Array [
+  Object {
+    "person": Object {
+      "id": 3818,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 209563,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+  },
+]
+`;
+
+exports[`character relations > should get character subject relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1600152058,
+      "creator": Object {
+        "username": "422132",
+      },
+      "id": 1187020,
+      "type": 4,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1567566999,
+      "creator": Object {
+        "username": "67314",
+      },
+      "id": 1027816,
+      "type": 4,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1521109800,
+      "creator": Object {
+        "username": "57439",
+      },
+      "id": 838990,
+      "type": 4,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1432363497,
+      "creator": Object {
+        "username": "220431",
+      },
+      "id": 371576,
+      "type": 4,
+    },
+  ],
+  "total": 4,
+}
+`;
+
+exports[`character relations > should get character subject revision wiki info 1`] = `
+Array [
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 8,
+      "name": "コードギアス 反逆のルルーシュR2",
+      "nameCN": "Code Geass 反叛的鲁路修R2",
+      "typeID": 2,
+    },
+    "type": 1,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 199229,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 1,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 35866,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 1,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 793,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 1,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 86773,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 3,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 63130,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 3,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 199230,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 1,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 199231,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 1,
+  },
+  Object {
+    "order": 0,
+    "subject": Object {
+      "id": 199228,
+      "name": "",
+      "nameCN": "",
+      "typeID": 5,
+    },
+    "type": 1,
+  },
+]
+`;
