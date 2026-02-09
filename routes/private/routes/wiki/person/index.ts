@@ -6,7 +6,7 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
-import type { PersonRev } from '@app/lib/rev/type.ts';
+import type { CharacterRev, PersonRev } from '@app/lib/rev/type.ts';
 import { RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
@@ -376,14 +376,14 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as PersonRev;
+      const revContent = revRecord[revisionID] as PersonRev | CharacterRev;
 
       return {
-        name: revContent.prsn_name,
-        infobox: revContent.prsn_infobox,
-        summary: revContent.prsn_summary,
+        name: (revContent as PersonRev).prsn_name ?? (revContent as CharacterRev).crt_name,
+        infobox: (revContent as PersonRev).prsn_infobox ?? (revContent as CharacterRev).crt_infobox,
+        summary: (revContent as PersonRev).prsn_summary ?? (revContent as CharacterRev).crt_summary,
         profession: Object.fromEntries(
-          Object.entries(revContent.profession || {}).map(([p, b]) => [p, !!b]),
+          Object.entries((revContent as PersonRev).profession || {}).map(([p, b]) => [p, !!b]),
         ),
         extra: revContent.extra,
       };
