@@ -60,19 +60,19 @@ Migrate from TypeScript to Rust incrementally.
 
 Reference files:
 
-- [bin/cron.ts](bin/cron.ts)
-- [tasks/heartbeat.ts](tasks/heartbeat.ts)
-- [tasks/timeline.ts](tasks/timeline.ts)
-- [lib/timeline/cache.ts](lib/timeline/cache.ts)
-- [bin/mq.ts](bin/mq.ts)
-- [lib/kafka.ts](lib/kafka.ts)
+- [bin/cron.ts](../bin/cron.ts)
+- [tasks/heartbeat.ts](../tasks/heartbeat.ts)
+- [tasks/timeline.ts](../tasks/timeline.ts)
+- [lib/timeline/cache.ts](../lib/timeline/cache.ts)
+- [bin/mq.ts](../bin/mq.ts)
+- [lib/kafka.ts](../lib/kafka.ts)
 
 ## Rust implementation status
 
-- Binary crate: [crates/backend](crates/backend)
-- CLI entry: [crates/backend/src/main.rs](crates/backend/src/main.rs)
-- Usage notes: [crates/backend/README.md](crates/backend/README.md)
-- Split crates: [crates/api](crates/api), [crates/cron](crates/cron), [crates/mq](crates/mq), [crates/config](crates/config)
+- Binary crate: [crates/backend](../crates/backend)
+- CLI entry: [crates/backend/src/main.rs](../crates/backend/src/main.rs)
+- Usage notes: [crates/backend/README.md](../crates/backend/README.md)
+- Split crates: [crates/api](../crates/api), [crates/cron](../crates/cron), [crates/mq](../crates/mq), [crates/config](../crates/config)
 
 Current commands:
 
