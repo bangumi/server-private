@@ -1,0 +1,14 @@
+[package]
+name = "bgm-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+clap = { version = "4.5", features = ["derive"] }
+bgm-api = { path = "../api" }
+bgm-config = { path = "../config" }
+bgm-cron = { path = "../cron" }
+bgm-mq = { path = "../mq" }
+spdlog-rs = { version = "0.4", features = ["serde_json"] }
+tokio = { version = "1.43", features = ["macros", "rt-multi-thread", "time"] }

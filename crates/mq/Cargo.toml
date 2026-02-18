@@ -1,0 +1,9 @@
+[package]
+name = "bgm-mq"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+bgm-config = { path = "../config" }
+spdlog-rs = "0.4"

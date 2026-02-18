@@ -2,13 +2,11 @@ import { CronJob } from 'cron';
 
 import { logger } from '@app/lib/logger';
 import { heartbeat } from '@app/tasks/heartbeat';
-import { cleanupExpiredAccessTokens, cleanupExpiredRefreshTokens } from '@app/tasks/oauth';
 import {
   truncateGlobalCache as truncateTimelineGlobalCache,
   truncateInboxCache as truncateTimelineInboxCache,
   truncateUserCache as truncateTimelineUserCache,
 } from '@app/tasks/timeline';
-import { trendingSubjects, trendingSubjectTopics } from '@app/tasks/trending';
 
 // field          allowed values
 // -----          --------------
@@ -48,13 +46,15 @@ function newCronJob(
 function main() {
   const jobs: CronJob<null, CronJobContext>[] = [
     newCronJob('heartbeat', '*/10 * * * * *', heartbeat),
-    newCronJob('trendingSubjects', '0 0 3 * * *', trendingSubjects),
-    newCronJob('trendingSubjectTopics', '0 */10 * * * *', trendingSubjectTopics),
+    // Disabled in TS: trending cron has been migrated to Rust cron.
+    // Use `cargo run -p bgm-backend -- cron trending-subjects-once`
+    // and `cargo run -p bgm-backend -- cron trending-subject-topics-once`.
     newCronJob('truncateTimelineGlobalCache', '*/10 * * * *', truncateTimelineGlobalCache),
     newCronJob('truncateTimelineInboxCache', '0 0 4 * * *', truncateTimelineInboxCache),
     newCronJob('truncateTimelineUserCache', '0 0 5 * * *', truncateTimelineUserCache),
-    newCronJob('cleanupExpiredAccessTokens', '0 0 6 * * *', cleanupExpiredAccessTokens),
-    newCronJob('cleanupExpiredRefreshTokens', '0 0 7 * * *', cleanupExpiredRefreshTokens),
+    // Disabled in TS: oauth cleanup has been migrated to Rust cron.
+    // Use `cargo run -p bgm-backend -- cron cleanup-expired-access-tokens-once`
+    // and `cargo run -p bgm-backend -- cron cleanup-expired-refresh-tokens-once`.
   ];
   for (const job of jobs) {
     logger.info(`Cronjob: ${job.context.name} @ ${job.cronTime.source}`);
