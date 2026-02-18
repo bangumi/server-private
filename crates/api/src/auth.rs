@@ -59,11 +59,17 @@ pub(crate) async fn auth_middleware(
   Ok(next.run(req).await)
 }
 
-async fn authenticate(state: &AppState, headers: &HeaderMap) -> Result<AuthContext, AppError> {
+async fn authenticate(
+  state: &AppState,
+  headers: &HeaderMap,
+) -> Result<AuthContext, AppError> {
   if let Some(authorization) = headers.get(header::AUTHORIZATION) {
-    return authenticate_bearer(state, authorization.to_str().map_err(|_| {
-      AppError::unauthorized("authorization header contains invalid utf8")
-    })?)
+    return authenticate_bearer(
+      state,
+      authorization.to_str().map_err(|_| {
+        AppError::unauthorized("authorization header contains invalid utf8")
+      })?,
+    )
     .await;
   }
 
@@ -78,7 +84,10 @@ async fn authenticate(state: &AppState, headers: &HeaderMap) -> Result<AuthConte
   Ok(AuthContext::anonymous())
 }
 
-async fn authenticate_bearer(state: &AppState, authorization: &str) -> Result<AuthContext, AppError> {
+async fn authenticate_bearer(
+  state: &AppState,
+  authorization: &str,
+) -> Result<AuthContext, AppError> {
   if !authorization.starts_with(TOKEN_PREFIX) {
     return Err(AppError::unauthorized(
       "authorization header should have \"Bearer ${TOKEN}\" format",
@@ -99,9 +108,9 @@ async fn authenticate_bearer(state: &AppState, authorization: &str) -> Result<Au
   .map_err(|error| AppError::internal(format!("failed to check bearer token: {error}")))?
   .ok_or_else(|| AppError::unauthorized("can't find access token or it has been expired"))?;
 
-  let user_id = user_id_raw.parse::<i64>().map_err(|_| {
-    AppError::internal("access token row has invalid user_id format")
-  })?;
+  let user_id = user_id_raw
+    .parse::<i64>()
+    .map_err(|_| AppError::internal("access token row has invalid user_id format"))?;
 
   fetch_user_auth(state, user_id).await
 }
@@ -160,9 +169,9 @@ async fn authenticate_legacy_session(
     return Ok(None);
   };
 
-  let user_id = user_id_raw.parse::<i64>().map_err(|_| {
-    AppError::bad_request("legacy session contains invalid user id")
-  })?;
+  let user_id = user_id_raw
+    .parse::<i64>()
+    .map_err(|_| AppError::bad_request("legacy session contains invalid user id"))?;
 
   let db_password = sqlx::query_scalar::<_, String>(
     "select password_crypt from chii_members where uid = ? limit 1",
@@ -170,7 +179,9 @@ async fn authenticate_legacy_session(
   .bind(user_id)
   .fetch_optional(&state.mysql_pool)
   .await
-  .map_err(|error| AppError::internal(format!("failed to check legacy session: {error}")))?;
+  .map_err(|error| {
+    AppError::internal(format!("failed to check legacy session: {error}"))
+  })?;
 
   if db_password.as_deref() != Some(password_crypt) {
     return Ok(None);
@@ -179,7 +190,10 @@ async fn authenticate_legacy_session(
   fetch_user_auth(state, user_id).await.map(Some)
 }
 
-async fn fetch_user_auth(state: &AppState, user_id: i64) -> Result<AuthContext, AppError> {
+async fn fetch_user_auth(
+  state: &AppState,
+  user_id: i64,
+) -> Result<AuthContext, AppError> {
   let user = sqlx::query_as::<_, UserRow>(
     "select uid, groupid, regdate from chii_members where uid = ? limit 1",
   )

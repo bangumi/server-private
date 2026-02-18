@@ -14,8 +14,7 @@ pub fn export_openapi_json() -> Result<String> {
 pub async fn run_server(config: AppConfig) -> Result<()> {
   info!(
     "starting rust api server at {}:{}",
-    config.server.host,
-    config.server.port
+    config.server.host, config.server.port
   );
   server::run(config).await
 }

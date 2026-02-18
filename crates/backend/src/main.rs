@@ -92,15 +92,15 @@ async fn run(cli: Cli) -> Result<()> {
         let config = AppConfig::load()?;
         info!(
           "config loaded for server subcommand, host={}, port={}",
-          config.server.host,
-          config.server.port
+          config.server.host, config.server.port
         );
         bangumi_api::run_server(config).await?;
       }
       ServerCommand::ExportOpenapiJson { output } => {
         let json = bangumi_api::export_openapi_json()?;
-        std::fs::write(&output, json)
-          .with_context(|| format!("failed to write openapi json to {}", output.display()))?;
+        std::fs::write(&output, json).with_context(|| {
+          format!("failed to write openapi json to {}", output.display())
+        })?;
         info!("openapi json exported to {}", output.display());
       }
     },

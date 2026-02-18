@@ -124,7 +124,9 @@ async fn oauth_placeholder(
   let html = state
     .templates
     .render("oauth/authorize.html", &view)
-    .map_err(|error| AppError::internal(format!("failed to render oauth template: {error}")))?;
+    .map_err(|error| {
+      AppError::internal(format!("failed to render oauth template: {error}"))
+    })?;
 
   Ok(Html(html))
 }
@@ -154,7 +156,7 @@ mod tests {
   use sqlx::mysql::MySqlPoolOptions;
   use tower::util::ServiceExt;
 
-  use super::{build_router, api_template_root, AppState, TemplateEngine};
+  use super::{api_template_root, build_router, AppState, TemplateEngine};
 
   fn test_config() -> AppConfig {
     AppConfig {
@@ -171,7 +173,8 @@ mod tests {
         password: "password".to_owned(),
         db: "bangumi".to_owned(),
       },
-      cookie_secret_token: "insecure-cookie-secret-token-change-me-in-production".to_owned(),
+      cookie_secret_token: "insecure-cookie-secret-token-change-me-in-production"
+        .to_owned(),
       php_session_secret_key: "default-secret-key-not-safe-in-production".to_owned(),
     }
   }
@@ -181,8 +184,8 @@ mod tests {
     let mysql_pool = MySqlPoolOptions::new()
       .connect_lazy(&config.mysql.database_url())
       .expect("mysql url should be valid for lazy pool");
-    let templates =
-      TemplateEngine::new(api_template_root()).expect("template engine should load test templates");
+    let templates = TemplateEngine::new(api_template_root())
+      .expect("template engine should load test templates");
 
     AppState {
       config,
@@ -196,7 +199,12 @@ mod tests {
     let app = build_router(test_state());
 
     let response = app
-      .oneshot(Request::builder().uri("/openapi.json").body(Body::empty()).expect("request"))
+      .oneshot(
+        Request::builder()
+          .uri("/openapi.json")
+          .body(Body::empty())
+          .expect("request"),
+      )
       .await
       .expect("openapi route should respond");
 
@@ -204,7 +212,8 @@ mod tests {
     let body = to_bytes(response.into_body(), usize::MAX)
       .await
       .expect("response body should be readable");
-    let parsed: Value = serde_json::from_slice(&body).expect("openapi json should parse");
+    let parsed: Value =
+      serde_json::from_slice(&body).expect("openapi json should parse");
 
     assert_eq!(parsed["openapi"], "3.1.0");
     assert!(parsed["paths"].get("/openapi.json").is_some());
@@ -229,7 +238,8 @@ mod tests {
     let body = to_bytes(response.into_body(), usize::MAX)
       .await
       .expect("response body should be readable");
-    let parsed: Value = serde_json::from_slice(&body).expect("health json should parse");
+    let parsed: Value =
+      serde_json::from_slice(&body).expect("health json should parse");
 
     assert_eq!(parsed["ok"], true);
     assert_eq!(parsed["login"], false);
