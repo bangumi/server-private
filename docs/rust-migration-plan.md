@@ -218,22 +218,22 @@ Use this section as a lightweight checklist when opening migration PRs.
 
 ### Worker track
 
-| Unit | TS owner | Rust owner | Status | Rust command | TS handoff | Rollback command |
-| --- | --- | --- | --- | --- | --- | --- |
-| cron heartbeat | TODO | TODO | in-progress | `cargo run -p bangumi-backend -- cron heartbeat-once` | partial | enable heartbeat in [bin/cron.ts](../bin/cron.ts), stop rust cron worker |
-| cron timeline truncate | TODO | TODO | migrated | `cargo run -p bangumi-backend -- cron truncate-global-once` / `truncate-user-once` / `truncate-inbox-once` | done | re-enable timeline jobs in [bin/cron.ts](../bin/cron.ts), stop rust cron worker |
-| cron trending | TODO | TODO | migrated | `cargo run -p bangumi-backend -- cron trending-subjects-once` / `trending-subject-topics-once` | done | re-enable trending jobs in [bin/cron.ts](../bin/cron.ts), stop rust cron worker |
-| cron oauth cleanup | TODO | TODO | migrated (manual command) | `cargo run -p bangumi-backend -- cron cleanup-expired-access-tokens-once` / `cleanup-expired-refresh-tokens-once` | done | re-enable oauth cleanup in [bin/cron.ts](../bin/cron.ts), stop rust cron worker |
-| mq placeholder -> real handlers | TODO | TODO | not-started | `cargo run -p bangumi-backend -- mq placeholder` | n/a | stop rust mq, resume TS mq consumer |
+| Unit                            | TS owner | Rust owner | Status                    | Rust command                                                                                                      | TS handoff | Rollback command                                                                |
+| ------------------------------- | -------- | ---------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------- |
+| cron heartbeat                  | TODO     | TODO       | in-progress               | `cargo run -p bangumi-backend -- cron heartbeat-once`                                                             | partial    | enable heartbeat in [bin/cron.ts](../bin/cron.ts), stop rust cron worker        |
+| cron timeline truncate          | TODO     | TODO       | migrated                  | `cargo run -p bangumi-backend -- cron truncate-global-once` / `truncate-user-once` / `truncate-inbox-once`        | done       | re-enable timeline jobs in [bin/cron.ts](../bin/cron.ts), stop rust cron worker |
+| cron trending                   | TODO     | TODO       | migrated                  | `cargo run -p bangumi-backend -- cron trending-subjects-once` / `trending-subject-topics-once`                    | done       | re-enable trending jobs in [bin/cron.ts](../bin/cron.ts), stop rust cron worker |
+| cron oauth cleanup              | TODO     | TODO       | migrated (manual command) | `cargo run -p bangumi-backend -- cron cleanup-expired-access-tokens-once` / `cleanup-expired-refresh-tokens-once` | done       | re-enable oauth cleanup in [bin/cron.ts](../bin/cron.ts), stop rust cron worker |
+| mq placeholder -> real handlers | TODO     | TODO       | not-started               | `cargo run -p bangumi-backend -- mq placeholder`                                                                  | n/a        | stop rust mq, resume TS mq consumer                                             |
 
 ### API track
 
-| Route group | TS owner | Rust owner | Status | Rust command / endpoint | TS handoff | Rollback command |
-| --- | --- | --- | --- | --- | --- | --- |
-| oauth authorize | TODO | TODO | migrated (core) | `GET/POST /oauth/authorize` | pending gateway split | route `/oauth/*` back to TS server |
-| oauth access token | TODO | TODO | migrated (core) | `POST /oauth/access_token` | pending gateway split | route `/oauth/*` back to TS server |
-| openapi json | TODO | TODO | migrated | `GET /openapi.json` / `cargo run -p bangumi-backend -- server export-openapi-json -o ./openapi.json` | n/a | switch OpenAPI source back to TS export |
-| oauth e2e parity (db+redis) | TODO | TODO | in-progress | Rust integration tests (to be added in CI) | n/a | keep TS oauth route as primary until parity tests pass |
+| Route group                 | TS owner | Rust owner | Status          | Rust command / endpoint                                                                              | TS handoff            | Rollback command                                       |
+| --------------------------- | -------- | ---------- | --------------- | ---------------------------------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------ |
+| oauth authorize             | TODO     | TODO       | migrated (core) | `GET/POST /oauth/authorize`                                                                          | pending gateway split | route `/oauth/*` back to TS server                     |
+| oauth access token          | TODO     | TODO       | migrated (core) | `POST /oauth/access_token`                                                                           | pending gateway split | route `/oauth/*` back to TS server                     |
+| openapi json                | TODO     | TODO       | migrated        | `GET /openapi.json` / `cargo run -p bangumi-backend -- server export-openapi-json -o ./openapi.json` | n/a                   | switch OpenAPI source back to TS export                |
+| oauth e2e parity (db+redis) | TODO     | TODO       | in-progress     | Rust integration tests (to be added in CI)                                                           | n/a                   | keep TS oauth route as primary until parity tests pass |
 
 Legend:
 
