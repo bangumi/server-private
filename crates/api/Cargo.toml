@@ -6,16 +6,22 @@ edition = "2021"
 [dependencies]
 anyhow = { workspace = true }
 axum = { version = "0.8", features = ["macros"] }
+axum-extra = { version = "0.10", features = ["cookie", "cookie-signed"] }
 bangumi-config = { workspace = true }
 base64 = "0.22"
+bb8 = { workspace = true }
+bb8-redis = { workspace = true }
 chrono = { workspace = true }
 md5 = "0.7"
+rand = "0.8"
 serde = { workspace = true }
 serde_json = { workspace = true }
 sqlx = { workspace = true }
 spdlog-rs = { workspace = true }
 tera = "1.20"
 tokio = { workspace = true }
+url = "2"
+urlencoding = "2"
 utoipa = { version = "5", features = ["axum_extras"] }
 
 [dev-dependencies]

@@ -4,6 +4,7 @@ use spdlog::info;
 
 mod auth;
 mod error;
+mod oauth;
 mod server;
 mod template;
 
