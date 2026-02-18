@@ -65,10 +65,7 @@ pub(crate) async fn authorize_get(
   };
 
   if query.response_type != "code" {
-    let html = render_authorize(
-      &state,
-      AuthorizeTemplateView::error("Invalid response type"),
-    )?;
+    let html = render_authorize_error(&state, "Invalid response type")?;
     return Ok(html.into_response());
   }
 
@@ -98,25 +95,18 @@ pub(crate) async fn authorize_get(
   })?;
 
   let Some(client) = client else {
-    let html =
-      render_authorize(&state, AuthorizeTemplateView::error("App does not exist"))?;
+    let html = render_authorize_error(&state, "App does not exist")?;
     return Ok(html.into_response());
   };
 
   if client.redirect_uri.is_empty() {
-    let html = render_authorize(
-      &state,
-      AuthorizeTemplateView::error("client missing redirect_uri config"),
-    )?;
+    let html = render_authorize_error(&state, "client missing redirect_uri config")?;
     return Ok(html.into_response());
   }
 
   if let Some(redirect_uri) = &query.redirect_uri {
     if redirect_uri != &client.redirect_uri {
-      let html = render_authorize(
-        &state,
-        AuthorizeTemplateView::error("Redirect URI mismatch"),
-      )?;
+      let html = render_authorize_error(&state, "Redirect URI mismatch")?;
       return Ok(html.into_response());
     }
   }
@@ -126,31 +116,30 @@ pub(crate) async fn authorize_get(
 
   let (jar, cookie_value) = issue_or_get_csrf_cookie(jar, auth.user_id);
 
-  let html = render_authorize(
+  let html = render_authorize_ready(
     &state,
-    AuthorizeTemplateView {
+    AuthorizeReadyView {
       title: "授权应用访问",
-      error: None,
-      app: Some(AppView {
+      app: AppView {
         app_name: client.app_name,
         app_desc: client.app_desc,
         app_created_at: client.app_timestamp,
-      }),
-      client: Some(ClientView {
+      },
+      client: ClientView {
         client_id: client.client_id,
         redirect_uri: client.redirect_uri,
-      }),
-      creator: Some(UserView {
+      },
+      creator: UserView {
         username: client.creator_username,
         nickname: client.creator_nickname,
         avatar: client.creator_avatar,
-      }),
-      user: Some(UserView {
+      },
+      user: UserView {
         username: user.username,
         nickname: user.nickname,
         avatar: user.avatar,
-      }),
-      csrf_token: Some(cookie_value.clone()),
+      },
+      csrf_token: cookie_value.clone(),
       state: query.state,
       scope_raw: requested_scope,
       scopes: scope_message(&parsed_scope),
@@ -272,13 +261,32 @@ fn login_redirect(uri: &axum::http::Uri) -> Redirect {
   Redirect::to(&format!("/login?backTo={}", urlencoding::encode(&back_to)))
 }
 
-fn render_authorize(
+fn render_authorize_ready(
   state: &AppState,
-  view: AuthorizeTemplateView,
+  view: AuthorizeReadyView,
 ) -> Result<Html<String>, AppError> {
   let html = state
     .templates
     .render("oauth/authorize.html", &view)
+    .map_err(|error| {
+      AppError::internal(format!("failed to render oauth template: {error}"))
+    })?;
+  Ok(Html(html))
+}
+
+fn render_authorize_error(
+  state: &AppState,
+  message: &str,
+) -> Result<Html<String>, AppError> {
+  let html = state
+    .templates
+    .render(
+      "oauth/error.html",
+      &AuthorizeErrorView {
+        title: "授权应用访问",
+        error: message.to_owned(),
+      },
+    )
     .map_err(|error| {
       AppError::internal(format!("failed to render oauth template: {error}"))
     })?;
@@ -689,34 +697,22 @@ enum AppNotFound {
 }
 
 #[derive(Debug, Serialize)]
-struct AuthorizeTemplateView {
+struct AuthorizeReadyView {
   title: &'static str,
-  error: Option<String>,
-  app: Option<AppView>,
-  client: Option<ClientView>,
-  creator: Option<UserView>,
-  user: Option<UserView>,
-  csrf_token: Option<String>,
+  app: AppView,
+  client: ClientView,
+  creator: UserView,
+  user: UserView,
+  csrf_token: String,
   state: Option<String>,
   scope_raw: String,
   scopes: Vec<ScopeMessage>,
 }
 
-impl AuthorizeTemplateView {
-  fn error(message: &str) -> Self {
-    Self {
-      title: "授权应用访问",
-      error: Some(message.to_owned()),
-      app: None,
-      client: None,
-      creator: None,
-      user: None,
-      csrf_token: None,
-      state: None,
-      scope_raw: String::new(),
-      scopes: Vec::new(),
-    }
-  }
+#[derive(Debug, Serialize)]
+struct AuthorizeErrorView {
+  title: &'static str,
+  error: String,
 }
 
 #[derive(Debug, Serialize)]

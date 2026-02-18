@@ -58,10 +58,6 @@
   <body>
     <main class="container">
       <h1 class="title">{{ title }}</h1>
-
-      {% if error %}
-      <p class="error">{{ error }}</p>
-      {% else %} {% if app and user and creator and client and csrf_token %}
       <p>
         <strong>{{ app.app_name }}</strong>
         <span class="muted">by {{ creator.nickname }}</span>
@@ -94,9 +90,6 @@
         {% endif %}
         <button type="submit">授权</button>
       </form>
-      {% else %}
-      <p class="error">OAuth authorize page missing required context.</p>
-      {% endif %} {% endif %}
     </main>
   </body>
 </html>
