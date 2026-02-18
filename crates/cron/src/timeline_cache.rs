@@ -41,23 +41,8 @@ pub(crate) async fn truncate_user(ctx: &CronContext) -> Result<()> {
     .get()
     .await
     .context("failed to get redis connection from pool")?;
-  let keys = scan_zset_keys(&mut redis, TIMELINE_USER_KEY_PATTERN).await?;
-
-  for key in keys {
-    info!("truncating user timeline cache, key={}", key);
-    let removed: i64 = redis::cmd("ZREMRANGEBYRANK")
-      .arg(&key)
-      .arg(0)
-      .arg(-201)
-      .query_async(&mut *redis)
-      .await
-      .with_context(|| format!("failed to truncate user timeline cache key={key}"))?;
-
-    info!(
-      "user timeline cache truncated, key={}, removed={}",
-      key, removed
-    );
-  }
+  scan_and_truncate_zset_keys(&mut redis, TIMELINE_USER_KEY_PATTERN, -201, "user")
+    .await?;
 
   Ok(())
 }
@@ -68,32 +53,18 @@ pub(crate) async fn truncate_inbox(ctx: &CronContext) -> Result<()> {
     .get()
     .await
     .context("failed to get redis connection from pool")?;
-  let keys = scan_zset_keys(&mut redis, TIMELINE_INBOX_KEY_PATTERN).await?;
-
-  for key in keys {
-    info!("truncating inbox timeline cache, key={}", key);
-    let removed: i64 = redis::cmd("ZREMRANGEBYRANK")
-      .arg(&key)
-      .arg(0)
-      .arg(-201)
-      .query_async(&mut *redis)
-      .await
-      .with_context(|| format!("failed to truncate inbox timeline cache key={key}"))?;
-
-    info!(
-      "inbox timeline cache truncated, key={}, removed={}",
-      key, removed
-    );
-  }
+  scan_and_truncate_zset_keys(&mut redis, TIMELINE_INBOX_KEY_PATTERN, -201, "inbox")
+    .await?;
 
   Ok(())
 }
 
-async fn scan_zset_keys(
+async fn scan_and_truncate_zset_keys(
   redis: &mut bb8::PooledConnection<'_, RedisConnectionManager>,
   pattern: &str,
-) -> Result<Vec<String>> {
-  let mut keys = Vec::new();
+  stop_rank: i32,
+  timeline_kind: &str,
+) -> Result<()> {
   let mut cursor: u64 = 0;
 
   loop {
@@ -107,12 +78,29 @@ async fn scan_zset_keys(
       .await
       .with_context(|| format!("failed to scan redis keys with pattern={pattern}"))?;
 
-    keys.extend(batch);
+    for key in batch {
+      info!("truncating {} timeline cache, key={}", timeline_kind, key);
+      let removed: i64 = redis::cmd("ZREMRANGEBYRANK")
+        .arg(&key)
+        .arg(0)
+        .arg(stop_rank)
+        .query_async(&mut **redis)
+        .await
+        .with_context(|| {
+          format!("failed to truncate {} timeline cache key={key}", timeline_kind)
+        })?;
+
+      info!(
+        "{} timeline cache truncated, key={}, removed={}",
+        timeline_kind, key, removed
+      );
+    }
+
     if next_cursor == 0 {
       break;
     }
     cursor = next_cursor;
   }
 
-  Ok(keys)
+  Ok(())
 }
