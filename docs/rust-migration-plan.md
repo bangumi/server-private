@@ -76,17 +76,17 @@ Reference files:
 
 Current commands:
 
-- `cargo run -p bgm-backend -- server placeholder`
-- `cargo run -p bgm-backend -- cron heartbeat-once`
-- `cargo run -p bgm-backend -- cron trending-subjects-once`
-- `cargo run -p bgm-backend -- cron trending-subject-topics-once`
-- `cargo run -p bgm-backend -- cron truncate-global-once`
-- `cargo run -p bgm-backend -- cron truncate-inbox-once`
-- `cargo run -p bgm-backend -- cron truncate-user-once`
-- `cargo run -p bgm-backend -- cron cleanup-expired-access-tokens-once`
-- `cargo run -p bgm-backend -- cron cleanup-expired-refresh-tokens-once`
-- `cargo run -p bgm-backend -- cron run-default-schedule`
-- `cargo run -p bgm-backend -- mq placeholder`
+- `cargo run -p bangumi-backend -- server placeholder`
+- `cargo run -p bangumi-backend -- cron heartbeat-once`
+- `cargo run -p bangumi-backend -- cron trending-subjects-once`
+- `cargo run -p bangumi-backend -- cron trending-subject-topics-once`
+- `cargo run -p bangumi-backend -- cron truncate-global-once`
+- `cargo run -p bangumi-backend -- cron truncate-inbox-once`
+- `cargo run -p bangumi-backend -- cron truncate-user-once`
+- `cargo run -p bangumi-backend -- cron cleanup-expired-access-tokens-once`
+- `cargo run -p bangumi-backend -- cron cleanup-expired-refresh-tokens-once`
+- `cargo run -p bangumi-backend -- cron run-default-schedule`
+- `cargo run -p bangumi-backend -- mq placeholder`
 
 Scheduler note:
 
@@ -94,18 +94,23 @@ Scheduler note:
 
 TS handoff rule:
 
-- When a cron task is migrated to Rust, disable the corresponding job registration in [bin/cron.ts](bin/cron.ts).
+- When a cron task is migrated to Rust, disable the corresponding job registration in [bin/cron.ts](../bin/cron.ts).
 - At the disabled location, add a short comment pointing to the Rust command used to run that task.
 - Goal: avoid duplicate execution while keeping rollback path explicit.
 
 PR checklist template (per migrated cron task):
 
-- [ ] Rust implementation added and callable via `cargo run -p bgm-backend -- cron <task>-once`
-- [ ] TS registration removed/disabled in [bin/cron.ts](bin/cron.ts)
+- [ ] Rust implementation added and callable via `cargo run -p bangumi-backend -- cron <task>-once`
+- [ ] TS registration removed/disabled in [bin/cron.ts](../bin/cron.ts)
 - [ ] Inline handoff comment added in TS with Rust command
 - [ ] Rust scheduler enable/disable state explicitly documented
 - [ ] Manual run completed in staging and output verified
 - [ ] Rollback command/path documented in PR description
+
+Current TS status:
+
+- TS cron keeps `heartbeat` enabled.
+- TS cron registrations for `trending`, `timeline truncate`, and `oauth cleanup` are disabled with Rust handoff comments.
 
 ## Acceptance checklist (Phase 1)
 

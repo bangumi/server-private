@@ -10,9 +10,9 @@ The executable is organized as one binary with multiple subcommands:
 
 Current scope:
 
-- dispatches `cron` commands to `bgm-cron` crate
-- dispatches `mq` commands to `bgm-mq` crate
-- loads shared config from `bgm-config` crate
+- dispatches `cron` commands to `bangumi-cron` crate
+- dispatches `mq` commands to `bangumi-mq` crate
+- loads shared config from `bangumi-config` crate
 - `server` placeholder command for future path-splitting HTTP entrypoint
 
 Current migration priority:
@@ -48,9 +48,11 @@ MQ placeholder:
 
 ## Environment
 
-- `REDIS_URI` (default: `redis://127.0.0.1:3306/0`, matching current TS config default)
+- `REDIS_URI` (default: `redis://127.0.0.1:3306/0`)
 - `NODE_ENV` (`production` => json log; other values => text log)
 - `LOG_FORMAT` (`json|text`, overrides `NODE_ENV`)
+- `TOKIO_RUNTIME` (`current|current_thread|single|single_thread|multi|multi_thread`)
+- `TOKIO_WORKER_THREADS` (only effective when runtime mode is multi-thread)
 
 ## Behavior alignment targets
 
