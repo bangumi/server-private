@@ -43,7 +43,7 @@
     "@node-rs/bcrypt": "1.10.7",
     "@sentry/node": "10.38.0",
     "@trim21/php-serialize": "0.2.2",
-    "ajv": "8.17.1",
+    "ajv": "8.18.0",
     "ajv-formats": "3.0.1",
     "ajv-keywords": "5.1.0",
     "altair-static": "8.5.1",
