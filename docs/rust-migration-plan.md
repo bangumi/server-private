@@ -43,6 +43,12 @@ Migrate from TypeScript to Rust incrementally.
 - Cron: oauth cleanup commands (`cleanupExpiredAccessTokens`, `cleanupExpiredRefreshTokens`) migrated as manual commands
 - MQ: keep placeholder entrypoint only (no behavior migration in this phase)
 
+Migration note (temporary decision):
+
+- `subject date updater` is currently handled by JS broker.
+- JS side keeps only required binlog subscriptions for this path: `debezium.chii.bangumi.chii_subjects` and `debezium.chii.bangumi.chii_subject_revisions`.
+- Rust side keeps parser infrastructure only (`crates/wiki-parser`) and related tests, but runtime event handling in Rust mq is intentionally disabled until later migration stage.
+
 ### Excluded
 
 - GraphQL and REST handlers

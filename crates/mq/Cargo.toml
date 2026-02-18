@@ -6,4 +6,25 @@ edition = "2021"
 [dependencies]
 anyhow = { workspace = true }
 bangumi-config = { workspace = true }
+bangumi-wiki-parser = { workspace = true }
+bb8 = { workspace = true }
+bb8-redis = { workspace = true }
+chrono = { workspace = true }
+regex = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
 spdlog-rs = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+rdkafka = { workspace = true, features = ["cmake-build"] }
+
+[target.'cfg(unix)'.dependencies]
+rdkafka = { workspace = true, features = [
+	"cmake-build",
+	"static-linking",
+	"ssl-vendored",
+	"curl-static",
+	"libz-static",
+] }
