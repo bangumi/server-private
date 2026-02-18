@@ -2,11 +2,6 @@ import { CronJob } from 'cron';
 
 import { logger } from '@app/lib/logger';
 import { heartbeat } from '@app/tasks/heartbeat';
-import {
-  truncateGlobalCache as truncateTimelineGlobalCache,
-  truncateInboxCache as truncateTimelineInboxCache,
-  truncateUserCache as truncateTimelineUserCache,
-} from '@app/tasks/timeline';
 
 // field          allowed values
 // -----          --------------
@@ -49,9 +44,10 @@ function main() {
     // Disabled in TS: trending cron has been migrated to Rust cron.
     // Use `cargo run -p bgm-backend -- cron trending-subjects-once`
     // and `cargo run -p bgm-backend -- cron trending-subject-topics-once`.
-    newCronJob('truncateTimelineGlobalCache', '*/10 * * * *', truncateTimelineGlobalCache),
-    newCronJob('truncateTimelineInboxCache', '0 0 4 * * *', truncateTimelineInboxCache),
-    newCronJob('truncateTimelineUserCache', '0 0 5 * * *', truncateTimelineUserCache),
+    // Disabled in TS: timeline truncate cron has been migrated to Rust cron.
+    // Use `cargo run -p bgm-backend -- cron truncate-global-once`,
+    // `cargo run -p bgm-backend -- cron truncate-inbox-once`,
+    // and `cargo run -p bgm-backend -- cron truncate-user-once`.
     // Disabled in TS: oauth cleanup has been migrated to Rust cron.
     // Use `cargo run -p bgm-backend -- cron cleanup-expired-access-tokens-once`
     // and `cargo run -p bgm-backend -- cron cleanup-expired-refresh-tokens-once`.

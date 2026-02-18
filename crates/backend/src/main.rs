@@ -1,8 +1,9 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use bgm_config::AppConfig;
 use clap::{Parser, Subcommand};
 use spdlog::formatter::JsonFormatter;
 use spdlog::info;
+use tokio::runtime::Runtime;
 
 #[derive(Parser, Debug)]
 #[command(name = "bgm-backend")]
@@ -51,11 +52,31 @@ enum MqCommand {
   Placeholder,
 }
 
-#[tokio::main]
-async fn main() -> Result<()> {
+#[derive(Clone, Copy)]
+enum RuntimeKind {
+  CurrentThread,
+  MultiThread,
+}
+
+impl RuntimeKind {
+  fn as_str(self) -> &'static str {
+    match self {
+      RuntimeKind::CurrentThread => "current_thread",
+      RuntimeKind::MultiThread => "multi_thread",
+    }
+  }
+}
+
+fn main() -> Result<()> {
   init_logger_by_env();
 
   let cli = Cli::parse();
+
+  let runtime = build_runtime(&cli.command)?;
+  runtime.block_on(run(cli))
+}
+
+async fn run(cli: Cli) -> Result<()> {
   match cli.command {
     TopCommand::Server { command } => match command {
       ServerCommand::Placeholder => {
@@ -108,6 +129,69 @@ async fn main() -> Result<()> {
   }
 
   Ok(())
+}
+
+fn build_runtime(command: &TopCommand) -> Result<Runtime> {
+  let default_kind = default_runtime_kind(command);
+  let env_kind = runtime_kind_from_env();
+  let runtime_kind = env_kind.unwrap_or(default_kind);
+
+  let mut builder = match runtime_kind {
+    RuntimeKind::CurrentThread => tokio::runtime::Builder::new_current_thread(),
+    RuntimeKind::MultiThread => tokio::runtime::Builder::new_multi_thread(),
+  };
+  builder.enable_all();
+
+  let mut worker_threads = None;
+  if matches!(runtime_kind, RuntimeKind::MultiThread) {
+    worker_threads = worker_threads_from_env();
+    if let Some(threads) = worker_threads {
+      builder.worker_threads(threads);
+    }
+  }
+
+  let runtime = builder.build().context("failed to build tokio runtime")?;
+
+  let source = if env_kind.is_some() {
+    "TOKIO_RUNTIME"
+  } else {
+    "command default"
+  };
+  info!(
+    "tokio runtime selected, mode={}, source={}, worker_threads={:?}",
+    runtime_kind.as_str(),
+    source,
+    worker_threads
+  );
+
+  Ok(runtime)
+}
+
+fn default_runtime_kind(command: &TopCommand) -> RuntimeKind {
+  match command {
+    TopCommand::Cron { .. } => RuntimeKind::CurrentThread,
+    TopCommand::Server { .. } | TopCommand::Mq { .. } => RuntimeKind::MultiThread,
+  }
+}
+
+fn runtime_kind_from_env() -> Option<RuntimeKind> {
+  let value = std::env::var("TOKIO_RUNTIME").ok()?;
+  match value.to_ascii_lowercase().as_str() {
+    "current" | "current_thread" | "single" | "single_thread" => {
+      Some(RuntimeKind::CurrentThread)
+    }
+    "multi" | "multi_thread" => Some(RuntimeKind::MultiThread),
+    _ => None,
+  }
+}
+
+fn worker_threads_from_env() -> Option<usize> {
+  let value = std::env::var("TOKIO_WORKER_THREADS").ok()?;
+  let parsed = value.parse::<usize>().ok()?;
+  if parsed == 0 {
+    return None;
+  }
+  Some(parsed)
 }
 
 fn init_logger_by_env() {
