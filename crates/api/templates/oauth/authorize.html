@@ -6,7 +6,14 @@
     <title>{{ title }}</title>
     <style>
       body {
-        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
         margin: 0;
         background: #f5f5f5;
         color: #1f2937;
@@ -54,48 +61,42 @@
 
       {% if error %}
       <p class="error">{{ error }}</p>
-      {% else %}
-        {% if app and user and creator and client and csrf_token %}
-          <p>
-            <strong>{{ app.app_name }}</strong>
-            <span class="muted">by {{ creator.nickname }}</span>
-          </p>
-          <p class="muted">{{ app.app_desc }}</p>
+      {% else %} {% if app and user and creator and client and csrf_token %}
+      <p>
+        <strong>{{ app.app_name }}</strong>
+        <span class="muted">by {{ creator.nickname }}</span>
+      </p>
+      <p class="muted">{{ app.app_desc }}</p>
 
-          <p>
-            即将授权访问用户
-            <strong>{{ user.nickname }}</strong>
-            的账户信息。
-          </p>
+      <p>
+        即将授权访问用户
+        <strong>{{ user.nickname }}</strong>
+        的账户信息。
+      </p>
 
-          <ul class="scope">
-            <li>读取账户基本信息</li>
-            {% for scope in scopes %}
-              <li>
-                {% if scope.mode == "write" %}
-                  [读写]
-                {% else %}
-                  [只读]
-                {% endif %}
-                {{ scope.description }}
-              </li>
-            {% endfor %}
-          </ul>
+      <ul class="scope">
+        <li>读取账户基本信息</li>
+        {% for scope in scopes %}
+        <li>
+          {% if scope.mode == "write" %} [读写] {% else %} [只读] {% endif %} {{ scope.description
+          }}
+        </li>
+        {% endfor %}
+      </ul>
 
-          <form method="post" action="/oauth/authorize">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
-            <input type="hidden" name="client_id" value="{{ client.client_id }}" />
-            <input type="hidden" name="redirect_uri" value="{{ client.redirect_uri }}" />
-            <input type="hidden" name="scope" value="{{ scope_raw }}" />
-            {% if state %}
-              <input type="hidden" name="state" value="{{ state }}" />
-            {% endif %}
-            <button type="submit">授权</button>
-          </form>
-        {% else %}
-          <p class="error">OAuth authorize page missing required context.</p>
+      <form method="post" action="/oauth/authorize">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <input type="hidden" name="client_id" value="{{ client.client_id }}" />
+        <input type="hidden" name="redirect_uri" value="{{ client.redirect_uri }}" />
+        <input type="hidden" name="scope" value="{{ scope_raw }}" />
+        {% if state %}
+        <input type="hidden" name="state" value="{{ state }}" />
         {% endif %}
-      {% endif %}
+        <button type="submit">授权</button>
+      </form>
+      {% else %}
+      <p class="error">OAuth authorize page missing required context.</p>
+      {% endif %} {% endif %}
     </main>
   </body>
 </html>
