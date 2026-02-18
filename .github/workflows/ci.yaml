@@ -74,6 +74,18 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  rust-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - uses: taiki-e/install-action@nextest
+
+      - run: cargo nextest run --workspace --locked
+
   build:
     runs-on: ubuntu-24.04
     steps:

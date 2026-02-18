@@ -3,6 +3,7 @@ use bangumi_config::AppConfig;
 use clap::{Parser, Subcommand};
 use spdlog::formatter::JsonFormatter;
 use spdlog::info;
+use std::path::PathBuf;
 use tokio::runtime::Runtime;
 
 #[derive(Parser, Debug)]
@@ -32,6 +33,11 @@ enum TopCommand {
 #[derive(Subcommand, Debug)]
 enum ServerCommand {
   Placeholder,
+  Run,
+  ExportOpenapiJson {
+    #[arg(long, short = 'o', default_value = "openapi.json")]
+    output: PathBuf,
+  },
 }
 
 #[derive(Subcommand, Debug)]
@@ -81,6 +87,21 @@ async fn run(cli: Cli) -> Result<()> {
     TopCommand::Server { command } => match command {
       ServerCommand::Placeholder => {
         bangumi_api::server_placeholder().await?;
+      }
+      ServerCommand::Run => {
+        let config = AppConfig::load()?;
+        info!(
+          "config loaded for server subcommand, host={}, port={}",
+          config.server.host,
+          config.server.port
+        );
+        bangumi_api::run_server(config).await?;
+      }
+      ServerCommand::ExportOpenapiJson { output } => {
+        let json = bangumi_api::export_openapi_json()?;
+        std::fs::write(&output, json)
+          .with_context(|| format!("failed to write openapi json to {}", output.display()))?;
+        info!("openapi json exported to {}", output.display());
       }
     },
     TopCommand::Cron { command } => {
