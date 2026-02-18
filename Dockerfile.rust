@@ -1,0 +1,23 @@
+FROM rust:slim-bookworm AS build
+
+ARG TARGET=x86_64-unknown-linux-gnu
+
+WORKDIR /app
+
+RUN rustup target add ${TARGET}
+
+COPY Cargo.toml Cargo.lock ./
+COPY crates ./crates
+
+RUN cargo build --release --locked --target ${TARGET} -p bgm-backend
+
+FROM gcr.io/distroless/cc-debian12:nonroot
+
+ARG TARGET=x86_64-unknown-linux-gnu
+
+WORKDIR /app
+
+COPY --from=build /app/target/${TARGET}/release/bgm-backend /app/bgm-backend
+
+ENTRYPOINT ["/app/bgm-backend"]
+CMD ["--help"]
