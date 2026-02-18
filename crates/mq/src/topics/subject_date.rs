@@ -172,13 +172,13 @@ fn patterns() -> &'static [Regex] {
   static PATTERNS: OnceLock<Vec<Regex>> = OnceLock::new();
   PATTERNS.get_or_init(|| {
     vec![
-      Regex::new(r"(?P<year>\d{4})年(?:(?P<month>\d{1,2})月)?(?:(?P<day>\d{1,2})日)?")
-        .expect("valid regex"),
       Regex::new(r"(?P<year>\d{4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})")
         .expect("valid regex"),
       Regex::new(r"(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<day>\d{1,2})")
         .expect("valid regex"),
       Regex::new(r"(?P<year>\d{4})\.(?P<month>\d{1,2})\.(?P<day>\d{1,2})")
+        .expect("valid regex"),
+      Regex::new(r"(?P<year>\d{4})年(?:(?P<month>\d{1,2})月)?(?:(?P<day>\d{1,2})日)?")
         .expect("valid regex"),
     ]
   })
