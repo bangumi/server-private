@@ -1,18 +1,18 @@
 [package]
-name = "bgm-cron"
+name = "bangumi-cron"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0"
-bgm-config = { path = "../config" }
-bb8 = "0.8"
-bb8-redis = "0.15"
-chrono = { version = "0.4", default-features = false, features = ["clock"] }
-chrono-tz = "0.10"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "mysql", "chrono", "macros"] }
-spdlog-rs = "0.4"
-tokio = { version = "1.43", features = ["time"] }
-tokio-cron-scheduler = "0.13"
+anyhow = { workspace = true }
+bangumi-config = { workspace = true }
+bb8 = { workspace = true }
+bb8-redis = { workspace = true }
+chrono = { workspace = true }
+chrono-tz = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sqlx = { workspace = true }
+spdlog-rs = { workspace = true }
+tokio = { workspace = true }
+tokio-cron-scheduler = { workspace = true }

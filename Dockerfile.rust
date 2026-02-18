@@ -4,7 +4,7 @@ ARG TARGET=x86_64-unknown-linux-gnu
 
 WORKDIR /app
 
-COPY target/${TARGET}/release/bgm-backend /app/bgm-backend
+COPY target/${TARGET}/release/bangumi-backend /app/bangumi-backend
 
-ENTRYPOINT ["/app/bgm-backend"]
+ENTRYPOINT ["/app/bangumi-backend"]
 CMD ["--help"]

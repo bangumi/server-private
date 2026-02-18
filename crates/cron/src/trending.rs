@@ -97,7 +97,7 @@ pub(crate) async fn trending_subject_topics(
     .arg(1)
     .arg("EX")
     .arg(60)
-    .query_async::<_, ()>(&mut *redis)
+    .query_async::<()>(&mut *redis)
     .await
     .with_context(|| format!("failed to set redis lock key={lock_key}"))?;
 
@@ -183,7 +183,7 @@ async fn update_trending_subjects(
     .arg(1)
     .arg("EX")
     .arg(3600)
-    .query_async::<_, ()>(&mut *redis)
+    .query_async::<()>(&mut *redis)
     .await
     .with_context(|| format!("failed to set redis lock key={lock_key}"))?;
 

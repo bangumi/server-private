@@ -1,5 +1,5 @@
 use anyhow::Result;
-use bgm_config::AppConfig;
+use bangumi_config::AppConfig;
 use spdlog::info;
 
 pub async fn placeholder(config: &AppConfig) -> Result<()> {

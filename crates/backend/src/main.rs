@@ -1,12 +1,12 @@
 use anyhow::{Context, Result};
-use bgm_config::AppConfig;
+use bangumi_config::AppConfig;
 use clap::{Parser, Subcommand};
 use spdlog::formatter::JsonFormatter;
 use spdlog::info;
 use tokio::runtime::Runtime;
 
 #[derive(Parser, Debug)]
-#[command(name = "bgm-backend")]
+#[command(name = "bangumi-backend")]
 #[command(about = "Unified Rust executable for server/mq/cron migration")]
 struct Cli {
   #[command(subcommand)]
@@ -80,7 +80,7 @@ async fn run(cli: Cli) -> Result<()> {
   match cli.command {
     TopCommand::Server { command } => match command {
       ServerCommand::Placeholder => {
-        bgm_api::server_placeholder().await?;
+        bangumi_api::server_placeholder().await?;
       }
     },
     TopCommand::Cron { command } => {
@@ -91,28 +91,30 @@ async fn run(cli: Cli) -> Result<()> {
       );
 
       match command {
-        CronCommand::HeartbeatOnce => bgm_cron::heartbeat_once(&config).await?,
+        CronCommand::HeartbeatOnce => bangumi_cron::heartbeat_once(&config).await?,
         CronCommand::TrendingSubjectsOnce => {
-          bgm_cron::trending_subjects_once(&config).await?
+          bangumi_cron::trending_subjects_once(&config).await?
         }
         CronCommand::TrendingSubjectTopicsOnce => {
-          bgm_cron::trending_subject_topics_once(&config).await?
+          bangumi_cron::trending_subject_topics_once(&config).await?
         }
         CronCommand::TruncateGlobalOnce => {
-          bgm_cron::truncate_global_once(&config).await?
+          bangumi_cron::truncate_global_once(&config).await?
         }
         CronCommand::TruncateInboxOnce => {
-          bgm_cron::truncate_inbox_once(&config).await?
+          bangumi_cron::truncate_inbox_once(&config).await?
         }
-        CronCommand::TruncateUserOnce => bgm_cron::truncate_user_once(&config).await?,
+        CronCommand::TruncateUserOnce => {
+          bangumi_cron::truncate_user_once(&config).await?
+        }
         CronCommand::CleanupExpiredAccessTokensOnce => {
-          bgm_cron::cleanup_expired_access_tokens_once(&config).await?
+          bangumi_cron::cleanup_expired_access_tokens_once(&config).await?
         }
         CronCommand::CleanupExpiredRefreshTokensOnce => {
-          bgm_cron::cleanup_expired_refresh_tokens_once(&config).await?
+          bangumi_cron::cleanup_expired_refresh_tokens_once(&config).await?
         }
         CronCommand::RunDefaultSchedule => {
-          bgm_cron::run_default_schedule(&config).await?
+          bangumi_cron::run_default_schedule(&config).await?
         }
       }
     }
@@ -123,7 +125,7 @@ async fn run(cli: Cli) -> Result<()> {
           "config loaded for mq subcommand, redis_uri={}",
           config.redis_uri
         );
-        bgm_mq::placeholder(&config).await?;
+        bangumi_mq::placeholder(&config).await?;
       }
     },
   }

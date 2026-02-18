@@ -6,7 +6,7 @@ mod timeline_cache;
 mod trending;
 
 use anyhow::Result;
-use bgm_config::AppConfig;
+use bangumi_config::AppConfig;
 use context::CronContext;
 use trending::TrendingPeriod;
 

@@ -1,8 +1,8 @@
 [package]
-name = "bgm-api"
+name = "bangumi-api"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0"
-spdlog-rs = "0.4"
+anyhow = { workspace = true }
+spdlog-rs = { workspace = true }

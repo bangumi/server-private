@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
+use bangumi_config::AppConfig;
 use bb8::Pool;
 use bb8_redis::RedisConnectionManager;
-use bgm_config::AppConfig;
 use sqlx::mysql::MySqlPoolOptions;
 use sqlx::MySqlPool;
 
