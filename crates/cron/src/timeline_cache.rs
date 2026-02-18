@@ -16,7 +16,10 @@ pub(crate) async fn truncate_global(ctx: &CronContext) -> Result<()> {
         .await
         .context("failed to get redis connection from pool")?;
 
-    info!("truncating global timeline cache, key={}", TIMELINE_GLOBAL_KEY);
+    info!(
+        "truncating global timeline cache, key={}",
+        TIMELINE_GLOBAL_KEY
+    );
     let removed: i64 = redis::cmd("ZREMRANGEBYRANK")
         .arg(TIMELINE_GLOBAL_KEY)
         .arg(0)
@@ -27,8 +30,7 @@ pub(crate) async fn truncate_global(ctx: &CronContext) -> Result<()> {
 
     info!(
         "global timeline cache truncated, key={}, removed={}",
-        TIMELINE_GLOBAL_KEY,
-        removed
+        TIMELINE_GLOBAL_KEY, removed
     );
     Ok(())
 }
@@ -51,7 +53,10 @@ pub(crate) async fn truncate_user(ctx: &CronContext) -> Result<()> {
             .await
             .with_context(|| format!("failed to truncate user timeline cache key={key}"))?;
 
-        info!("user timeline cache truncated, key={}, removed={}", key, removed);
+        info!(
+            "user timeline cache truncated, key={}, removed={}",
+            key, removed
+        );
     }
 
     Ok(())
@@ -75,7 +80,10 @@ pub(crate) async fn truncate_inbox(ctx: &CronContext) -> Result<()> {
             .await
             .with_context(|| format!("failed to truncate inbox timeline cache key={key}"))?;
 
-        info!("inbox timeline cache truncated, key={}, removed={}", key, removed);
+        info!(
+            "inbox timeline cache truncated, key={}, removed={}",
+            key, removed
+        );
     }
 
     Ok(())

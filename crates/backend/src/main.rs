@@ -64,11 +64,16 @@ async fn main() -> Result<()> {
         },
         TopCommand::Cron { command } => {
             let config = AppConfig::load()?;
-            info!("config loaded for cron subcommand, redis_uri={}", config.redis_uri);
+            info!(
+                "config loaded for cron subcommand, redis_uri={}",
+                config.redis_uri
+            );
 
             match command {
                 CronCommand::HeartbeatOnce => bgm_cron::heartbeat_once(&config).await?,
-                CronCommand::TrendingSubjectsOnce => bgm_cron::trending_subjects_once(&config).await?,
+                CronCommand::TrendingSubjectsOnce => {
+                    bgm_cron::trending_subjects_once(&config).await?
+                }
                 CronCommand::TrendingSubjectTopicsOnce => {
                     bgm_cron::trending_subject_topics_once(&config).await?
                 }
@@ -87,7 +92,10 @@ async fn main() -> Result<()> {
         TopCommand::Mq { command } => match command {
             MqCommand::Placeholder => {
                 let config = AppConfig::load()?;
-                info!("config loaded for mq subcommand, redis_uri={}", config.redis_uri);
+                info!(
+                    "config loaded for mq subcommand, redis_uri={}",
+                    config.redis_uri
+                );
                 bgm_mq::placeholder(&config).await?;
             }
         },
@@ -112,7 +120,10 @@ fn init_logger_by_env() {
                 return;
             }
             _ => {
-                info!("unknown LOG_FORMAT value: {}, fallback to NODE_ENV", log_format);
+                info!(
+                    "unknown LOG_FORMAT value: {}, fallback to NODE_ENV",
+                    log_format
+                );
             }
         }
     }

@@ -24,7 +24,10 @@ pub(crate) async fn cleanup_expired_access_tokens(ctx: &CronContext) -> Result<(
             break;
         }
 
-        info!("Deleted expired access tokens, affected_rows={}", affected_rows);
+        info!(
+            "Deleted expired access tokens, affected_rows={}",
+            affected_rows
+        );
         tokio::time::sleep(Duration::from_secs(1)).await;
     }
 
@@ -48,7 +51,10 @@ pub(crate) async fn cleanup_expired_refresh_tokens(ctx: &CronContext) -> Result<
             break;
         }
 
-        info!("Deleted expired refresh tokens, affected_rows={}", affected_rows);
+        info!(
+            "Deleted expired refresh tokens, affected_rows={}",
+            affected_rows
+        );
         tokio::time::sleep(Duration::from_secs(1)).await;
     }
 

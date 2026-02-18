@@ -44,8 +44,7 @@ pub(crate) async fn run_default_schedule(ctx: CronContext) -> Result<()> {
         if !spec.enabled {
             info!(
                 "cron job disabled in rust server, job={}, cron={}",
-                spec.name,
-                spec.cron_expr
+                spec.name, spec.cron_expr
             );
             continue;
         }
@@ -72,9 +71,7 @@ pub(crate) async fn run_default_schedule(ctx: CronContext) -> Result<()> {
 
         info!(
             "cron job registered, job={}, cron={}, timezone={}",
-            name,
-            cron_expr,
-            timezone
+            name, cron_expr, timezone
         );
     }
 
@@ -150,7 +147,11 @@ async fn run_task(ctx: &CronContext, task: CronTask) -> Result<()> {
         CronTask::TruncateGlobalCache => timeline_cache::truncate_global(ctx).await,
         CronTask::TruncateInboxCache => timeline_cache::truncate_inbox(ctx).await,
         CronTask::TruncateUserCache => timeline_cache::truncate_user(ctx).await,
-        CronTask::CleanupExpiredAccessTokens => oauth_cleanup::cleanup_expired_access_tokens(ctx).await,
-        CronTask::CleanupExpiredRefreshTokens => oauth_cleanup::cleanup_expired_refresh_tokens(ctx).await,
+        CronTask::CleanupExpiredAccessTokens => {
+            oauth_cleanup::cleanup_expired_access_tokens(ctx).await
+        }
+        CronTask::CleanupExpiredRefreshTokens => {
+            oauth_cleanup::cleanup_expired_refresh_tokens(ctx).await
+        }
     }
 }
