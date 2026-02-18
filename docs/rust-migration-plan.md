@@ -45,7 +45,8 @@ Migrate from TypeScript to Rust incrementally.
 
 Migration note (temporary decision):
 
-- `subject date updater` remains handled by JS mq for now.
+- `subject date updater` is currently handled by JS broker.
+- JS side keeps only required binlog subscriptions for this path: `debezium.chii.bangumi.chii_subjects` and `debezium.chii.bangumi.chii_subject_revisions`.
 - Rust side keeps parser infrastructure only (`crates/wiki-parser`) and related tests, but runtime event handling in Rust mq is intentionally disabled until later migration stage.
 
 ### Excluded

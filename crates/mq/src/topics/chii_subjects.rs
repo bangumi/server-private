@@ -31,7 +31,7 @@ pub async fn handle(ctx: &MqContext, msg: &KafkaMessageOwned) -> Result<()> {
 
   if payload.op == "c" || payload.op == "u" {
     warn!(
-      "subject date updater is intentionally kept on JS mq for now, topic={}, key={}",
+      "subject date updater is currently disabled in Rust mq (deferred migration), topic={}, key={}",
       msg.topic, msg.key
     );
   }

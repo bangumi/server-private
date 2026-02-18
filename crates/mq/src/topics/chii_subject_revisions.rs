@@ -12,7 +12,7 @@ pub async fn handle(
   let payload: DebeziumPayload<Value> = parse_debezium_payload(&msg.value)?;
   if payload.op == "c" || payload.op == "u" {
     warn!(
-      "subject date updater is intentionally kept on JS mq for now, topic={}, key={}",
+      "subject date updater is currently disabled in Rust mq (deferred migration), topic={}, key={}",
       msg.topic, msg.key
     );
   }
