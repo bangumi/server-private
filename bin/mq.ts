@@ -23,24 +23,6 @@ import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
 const TOPICS = [
   'timeline',
-
-  // 'debezium.chii.bangumi.chii_pms',
-  // 'debezium.chii.bangumi.chii_subject_revisions',
-  'debezium.chii.bangumi.chii_blog_entry',
-  'debezium.chii.bangumi.chii_characters',
-  'debezium.chii.bangumi.chii_episodes',
-  'debezium.chii.bangumi.chii_groups',
-  'debezium.chii.bangumi.chii_group_members',
-  'debezium.chii.bangumi.chii_group_topics',
-  'debezium.chii.bangumi.chii_index',
-  'debezium.chii.bangumi.chii_members',
-  'debezium.chii.bangumi.chii_friends',
-  'debezium.chii.bangumi.chii_persons',
-  'debezium.chii.bangumi.chii_subject_fields',
-  'debezium.chii.bangumi.chii_subject_topics',
-  'debezium.chii.bangumi.chii_subjects',
-  'debezium.chii.bangumi.chii_timeline',
-  'debezium.chii.bangumi.chii_subject_revisions',
 ];
 
 type Handler = (msg: KafkaMessage) => Promise<void>;

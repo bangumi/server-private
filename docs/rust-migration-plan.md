@@ -43,6 +43,11 @@ Migrate from TypeScript to Rust incrementally.
 - Cron: oauth cleanup commands (`cleanupExpiredAccessTokens`, `cleanupExpiredRefreshTokens`) migrated as manual commands
 - MQ: keep placeholder entrypoint only (no behavior migration in this phase)
 
+Migration note (temporary decision):
+
+- `subject date updater` remains handled by JS mq for now.
+- Rust side keeps parser infrastructure only (`crates/wiki-parser`) and related tests, but runtime event handling in Rust mq is intentionally disabled until later migration stage.
+
 ### Excluded
 
 - GraphQL and REST handlers

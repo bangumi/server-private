@@ -12,6 +12,8 @@ clap = { version = "4.5", features = ["derive"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_yaml = "0.9"
+regex = "1.11"
+rdkafka = { version = "0.38", features = ["cmake-build"] }
 spdlog-rs = { version = "0.5", features = ["serde_json"] }
 sqlx = { version = "0.8", default-features = false, features = ["runtime-tokio-rustls", "mysql", "chrono", "macros"] }
 tokio = { version = "1.49", features = ["macros", "rt-multi-thread", "time"] }
@@ -21,3 +23,4 @@ bangumi-api = { path = "crates/api" }
 bangumi-config = { path = "crates/config" }
 bangumi-cron = { path = "crates/cron" }
 bangumi-mq = { path = "crates/mq" }
+bangumi-wiki-parser = { path = "crates/wiki-parser" }
