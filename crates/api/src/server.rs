@@ -151,7 +151,7 @@ fn api_template_root() -> PathBuf {
 mod tests {
   use axum::body::{to_bytes, Body};
   use axum::http::{Request, StatusCode};
-  use bangumi_config::{AppConfig, MySqlConfig, ServerConfig};
+  use bangumi_config::AppConfig;
   use serde_json::Value;
   use sqlx::mysql::MySqlPoolOptions;
   use tower::util::ServiceExt;
@@ -159,24 +159,7 @@ mod tests {
   use super::{api_template_root, build_router, AppState, TemplateEngine};
 
   fn test_config() -> AppConfig {
-    AppConfig {
-      server: ServerConfig {
-        host: "127.0.0.1".to_owned(),
-        port: 4000,
-      },
-      redis_uri: "redis://127.0.0.1:6379/0".to_owned(),
-      kafka_brokers: "127.0.0.1:9092".to_owned(),
-      mysql: MySqlConfig {
-        host: "127.0.0.1".to_owned(),
-        port: 3306,
-        user: "user".to_owned(),
-        password: "password".to_owned(),
-        db: "bangumi".to_owned(),
-      },
-      cookie_secret_token: "insecure-cookie-secret-token-change-me-in-production"
-        .to_owned(),
-      php_session_secret_key: "default-secret-key-not-safe-in-production".to_owned(),
-    }
+    AppConfig::load().expect("test config should load from env/file defaults")
   }
 
   fn test_state() -> AppState {
