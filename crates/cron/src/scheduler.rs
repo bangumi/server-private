@@ -106,7 +106,7 @@ fn default_schedule_specs() -> [CronJobSpec; 8] {
     },
     CronJobSpec {
       name: "truncateTimelineGlobalCache",
-      cron_expr: "*/10 * * * *",
+      cron_expr: "0 */10 * * * *",
       task: CronTask::TruncateGlobalCache,
       enabled: true,
     },
