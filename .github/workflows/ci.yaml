@@ -31,7 +31,7 @@ jobs:
 
       - run: cargo fmt --all --check
       - run: cargo clippy --workspace --all-targets --locked
-      - run: cargo build --release --locked --target $TARGET -p bgm-backend
+      - run: cargo build --release --locked --target $TARGET -p bangumi-backend
 
       - run: docker build --build-arg TARGET=$TARGET -t tmp-rust -f Dockerfile.rust .
       - run: docker run --rm tmp-rust --help

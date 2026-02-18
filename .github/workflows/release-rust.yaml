@@ -27,7 +27,7 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
 
-      - run: cargo build --release --locked --target $TARGET -p bgm-backend
+      - run: cargo build --release --locked --target $TARGET -p bangumi-backend
 
       - uses: docker/login-action@v3
         with:
