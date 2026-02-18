@@ -87,7 +87,10 @@ async fn scan_and_truncate_zset_keys(
         .query_async(&mut **redis)
         .await
         .with_context(|| {
-          format!("failed to truncate {} timeline cache key={key}", timeline_kind)
+          format!(
+            "failed to truncate {} timeline cache key={key}",
+            timeline_kind
+          )
         })?;
 
       info!(
