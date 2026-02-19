@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,32 +19,77 @@
         color: #1f2937;
       }
       .container {
-        max-width: 640px;
-        margin: 48px auto;
+        max-width: 720px;
+        margin: 40px auto;
         background: #fff;
         border-radius: 12px;
         box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
         padding: 24px;
       }
-      .meta {
-        margin-top: 12px;
+      .title {
+        margin: 0 0 12px;
+      }
+      .muted {
         color: #6b7280;
       }
-      .chip {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 999px;
-        background: #e5e7eb;
-        font-size: 12px;
+      .error {
+        color: #b91c1c;
+        background: #fee2e2;
+        padding: 10px 12px;
+        border-radius: 8px;
+      }
+      .scope {
+        margin: 8px 0;
+        padding-left: 18px;
+      }
+      .scope li {
+        margin: 6px 0;
+      }
+      button {
+        background: #f09199;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 14px;
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
     <main class="container">
-      <span class="chip">PR-1 foundation</span>
-      <h1>{{ title }}</h1>
-      <p>{{ note }}</p>
-      <p class="meta">login={{ login }}, user_id={{ user_id }}</p>
+      <h1 class="title">{{ title }}</h1>
+      <p>
+        <strong>{{ app.app_name }}</strong>
+        <span class="muted">by {{ creator.nickname }}</span>
+      </p>
+      <p class="muted">{{ app.app_desc }}</p>
+
+      <p>
+        即将授权访问用户
+        <strong>{{ user.nickname }}</strong>
+        的账户信息。
+      </p>
+
+      <ul class="scope">
+        <li>读取账户基本信息</li>
+        {% for scope in scopes %}
+        <li>
+          {% if scope.mode == "write" %} [读写] {% else %} [只读] {% endif %} {{ scope.description
+          }}
+        </li>
+        {% endfor %}
+      </ul>
+
+      <form method="post" action="/oauth/authorize">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <input type="hidden" name="client_id" value="{{ client.client_id }}" />
+        <input type="hidden" name="redirect_uri" value="{{ client.redirect_uri }}" />
+        <input type="hidden" name="scope" value="{{ scope_raw }}" />
+        {% if state %}
+        <input type="hidden" name="state" value="{{ state }}" />
+        {% endif %}
+        <button type="submit">授权</button>
+      </form>
     </main>
   </body>
 </html>
