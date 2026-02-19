@@ -25,4 +25,4 @@ urlencoding = "2"
 utoipa = { version = "5", features = ["axum_extras"] }
 
 [dev-dependencies]
-tower = "0.5"
+tower = "=0.5.3"
