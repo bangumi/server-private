@@ -535,8 +535,10 @@ fn issue_or_get_csrf_cookie(
   mut jar: SignedCookieJar,
   user_id: i64,
 ) -> (SignedCookieJar, String) {
-  if let Some(current) = jar.get("csrf-secret") {
-    return (jar, current.value().to_owned());
+  if jar.get("csrf-secret").is_some() {
+    if let Some(raw) = raw_cookie_value(&jar, "csrf-secret") {
+      return (jar, raw);
+    }
   }
 
   let payload = format!("{user_id}:{}", random_base64url(30));
@@ -548,19 +550,32 @@ fn issue_or_get_csrf_cookie(
     .build();
 
   jar = jar.add(cookie);
-  (jar, payload)
+  let form_token =
+    raw_cookie_value(&jar, "csrf-secret").unwrap_or_else(|| payload.clone());
+  (jar, form_token)
 }
 
 fn verify_csrf_form(jar: &SignedCookieJar, form_token: &str, user_id: i64) -> bool {
-  let Some(cookie) = jar.get("csrf-secret") else {
+  let Some(raw_cookie) = raw_cookie_value(jar, "csrf-secret") else {
     return false;
   };
-  let value = cookie.value();
-  if value != form_token {
+  if raw_cookie != form_token {
     return false;
   }
 
+  let Some(cookie) = jar.get("csrf-secret") else {
+    return false;
+  };
+
+  let value = cookie.value();
   value.starts_with(&format!("{user_id}:"))
+}
+
+fn raw_cookie_value(jar: &SignedCookieJar, name: &str) -> Option<String> {
+  jar
+    .iter()
+    .find(|cookie| cookie.name() == name)
+    .map(|cookie| cookie.value().to_owned())
 }
 
 fn random_base64url(size: usize) -> String {
@@ -635,7 +650,7 @@ where
 {
   sqlx::query_as::<_, RefreshTokenRow>(
     r#"
-      SELECT refresh_token, client_id, user_id, expires, scope
+      SELECT user_id, scope
       FROM chii_oauth_refresh_tokens
       WHERE refresh_token = ? collate utf8mb4_bin AND expires > now()
       LIMIT 1
@@ -743,6 +758,7 @@ struct UserView {
 
 #[derive(Debug, Deserialize, Serialize)]
 struct AuthCodeInfo {
+  #[serde(rename = "userID", alias = "user_id")]
   user_id: String,
   scope: Vec<String>,
 }
@@ -826,7 +842,8 @@ mod tests {
   use tower::util::ServiceExt;
 
   use super::{
-    app_not_found_error, parse_scope, AppNotFound, TokenResponse, DEFAULT_SCOPES,
+    app_not_found_error, parse_scope, AppNotFound, AuthCodeInfo, TokenResponse,
+    DEFAULT_SCOPES,
   };
   use crate::server::build_test_router;
 
@@ -871,6 +888,24 @@ mod tests {
     let invalid_client = app_not_found_error(AppNotFound::InvalidClientId);
     assert_eq!(invalid_client.status, StatusCode::BAD_REQUEST);
     assert_eq!(invalid_client.message, "Invalid client ID");
+  }
+
+  #[test]
+  fn auth_code_info_deserializes_both_ts_and_rust_field_names() {
+    let ts_payload = r#"{"userID":"123","scope":["read:collection"]}"#;
+    let rust_payload = r#"{"user_id":"456","scope":["read:indices"]}"#;
+
+    let ts: AuthCodeInfo =
+      serde_json::from_str(ts_payload).expect("ts payload should parse");
+    let rust: AuthCodeInfo =
+      serde_json::from_str(rust_payload).expect("rust payload should parse");
+
+    assert_eq!(ts.user_id, "123");
+    assert_eq!(rust.user_id, "456");
+
+    let encoded = serde_json::to_string(&ts).expect("payload should serialize");
+    assert!(encoded.contains("\"userID\""));
+    assert!(!encoded.contains("\"user_id\""));
   }
 
   #[tokio::test]
