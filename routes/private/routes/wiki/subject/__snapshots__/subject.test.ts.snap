@@ -1176,8 +1176,8 @@ Array [
     "order": 0,
     "subject": Object {
       "id": 793,
-      "name": "",
-      "nameCN": "",
+      "name": "コードギアス 反逆のルルーシュ",
+      "nameCN": "Code Geass 反叛的鲁路修",
       "typeID": 2,
     },
     "type": 2,
@@ -1196,8 +1196,8 @@ Array [
     "order": 0,
     "subject": Object {
       "id": 35866,
-      "name": "",
-      "nameCN": "",
+      "name": "コードギアス 反逆のルルーシュ ナナリーinワンダーランド",
+      "nameCN": "Code Geass 反叛的鲁路修 娜娜莉梦游仙境",
       "typeID": 2,
     },
     "type": 11,
@@ -1216,8 +1216,8 @@ Array [
     "order": 1,
     "subject": Object {
       "id": 199229,
-      "name": "",
-      "nameCN": "",
+      "name": "コードギアス 反逆のルルーシュ I 興道",
+      "nameCN": "Code Geass 反叛的鲁路修 I 兴道",
       "typeID": 2,
     },
     "type": 10,

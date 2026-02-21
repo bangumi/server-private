@@ -99,9 +99,9 @@ Array [
     },
     "subject": Object {
       "id": 2089,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "イタズラなKiss",
+      "nameCN": "恶作剧之吻",
+      "typeID": 2,
     },
   },
   Object {
@@ -112,9 +112,9 @@ Array [
     },
     "subject": Object {
       "id": 3183,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "劇場版“文学少女”",
+      "nameCN": "文学少女 剧场版",
+      "typeID": 2,
     },
   },
   Object {
@@ -125,9 +125,9 @@ Array [
     },
     "subject": Object {
       "id": 993,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "WHITE ALBUM",
+      "nameCN": "白色相簿",
+      "typeID": 2,
     },
   },
   Object {
@@ -138,9 +138,9 @@ Array [
     },
     "subject": Object {
       "id": 2474,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "ロザリオとバンパイア",
+      "nameCN": "十字架与吸血鬼",
+      "typeID": 2,
     },
   },
   Object {
@@ -151,9 +151,9 @@ Array [
     },
     "subject": Object {
       "id": 292,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "DARKER THAN BLACK -黒の契約者-",
+      "nameCN": "DARKER THAN BLACK -黑之契约者-",
+      "typeID": 2,
     },
   },
   Object {
@@ -164,9 +164,9 @@ Array [
     },
     "subject": Object {
       "id": 1263,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "魔法少女リリカルなのはA's",
+      "nameCN": "魔法少女奈叶A's",
+      "typeID": 2,
     },
   },
   Object {
@@ -177,9 +177,9 @@ Array [
     },
     "subject": Object {
       "id": 3690,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "シスター・プリンセス",
+      "nameCN": "妹妹公主",
+      "typeID": 2,
     },
   },
   Object {
@@ -190,9 +190,9 @@ Array [
     },
     "subject": Object {
       "id": 4124,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "ハートキャッチプリキュア!",
+      "nameCN": "Heart Catch 光之美少女！",
+      "typeID": 2,
     },
   },
   Object {
@@ -203,9 +203,9 @@ Array [
     },
     "subject": Object {
       "id": 4124,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "ハートキャッチプリキュア!",
+      "nameCN": "Heart Catch 光之美少女！",
+      "typeID": 2,
     },
   },
   Object {
@@ -216,9 +216,9 @@ Array [
     },
     "subject": Object {
       "id": 1428,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "鋼の錬金術師 FULLMETAL ALCHEMIST",
+      "nameCN": "钢之炼金术师 FULLMETAL ALCHEMIST",
+      "typeID": 2,
     },
   },
   Object {
@@ -229,9 +229,9 @@ Array [
     },
     "subject": Object {
       "id": 8474,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "放浪息子",
+      "nameCN": "放浪男孩",
+      "typeID": 2,
     },
   },
   Object {
@@ -242,9 +242,9 @@ Array [
     },
     "subject": Object {
       "id": 283,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "みなみけ",
+      "nameCN": "南家三姐妹",
+      "typeID": 2,
     },
   },
   Object {
@@ -255,9 +255,9 @@ Array [
     },
     "subject": Object {
       "id": 3625,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "火影忍者",
+      "nameCN": "火影忍者",
+      "typeID": 2,
     },
   },
   Object {
@@ -268,9 +268,9 @@ Array [
     },
     "subject": Object {
       "id": 2425,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "しゅごキャラ!!どきっ",
+      "nameCN": "守护甜心!!心跳",
+      "typeID": 2,
     },
   },
   Object {
@@ -281,9 +281,9 @@ Array [
     },
     "subject": Object {
       "id": 2427,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "しゅごキャラ!",
+      "nameCN": "守护甜心！",
+      "typeID": 2,
     },
   },
   Object {
@@ -294,9 +294,9 @@ Array [
     },
     "subject": Object {
       "id": 3018,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "しゅごキャラ!パーティー!",
+      "nameCN": "守护甜心！派对！",
+      "typeID": 2,
     },
   },
   Object {
@@ -307,9 +307,9 @@ Array [
     },
     "subject": Object {
       "id": 2129,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "けんぷファー",
+      "nameCN": "肯普法",
+      "typeID": 2,
     },
   },
   Object {
@@ -320,9 +320,9 @@ Array [
     },
     "subject": Object {
       "id": 2782,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "NARUTO -ナルト- 疾風伝",
+      "nameCN": "火影忍者疾风传",
+      "typeID": 2,
     },
   },
 ]
@@ -441,18 +441,18 @@ Array [
     "position": 2003,
     "subject": Object {
       "id": 22273,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "星界の紋章",
+      "nameCN": "星界的纹章",
+      "typeID": 1,
     },
   },
   Object {
     "position": 2003,
     "subject": Object {
       "id": 22267,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
+      "name": "星界の戦旗",
+      "nameCN": "星界的战旗",
+      "typeID": 1,
     },
   },
 ]

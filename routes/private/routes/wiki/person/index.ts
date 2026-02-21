@@ -10,6 +10,7 @@ import type { PersonCastRev, PersonRev, PersonSubjectRev } from '@app/lib/rev/ty
 import { RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
+import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -537,20 +538,37 @@ export async function setup(app: App) {
       const revContent = revRecord[revisionID] as PersonSubjectRev;
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
-      const subjectsMap = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, true);
+      const subjectsMap: Record<number, res.ISubject> = {};
+      const data = await db
+        .select()
+        .from(schema.chiiSubjects)
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
+        .where(op.inArray(schema.chiiSubjects.id, subjectIDs));
+      for (const d of data) {
+        const item = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
+        subjectsMap[item.id] = item;
+      }
 
-      const relations = rels.map((rel) => {
+      const relations = rels.flatMap((rel) => {
         const subjectID = +rel.subject_id;
         const subject = subjectsMap[subjectID];
-        return {
-          subject: {
-            id: subjectID,
-            typeID: subject?.type || 5,
-            name: subject?.name || '',
-            nameCN: subject?.nameCN || '',
+
+        if (!subject) return [];
+
+        return [
+          {
+            subject: {
+              id: subjectID,
+              typeID: subject.type,
+              name: subject.name,
+              nameCN: subject.nameCN,
+            },
+            position: +rel.position,
           },
-          position: +rel.position,
-        };
+        ];
       });
 
       return relations;
@@ -666,28 +684,46 @@ export async function setup(app: App) {
       const revContent = revRecord[revisionID] as PersonCastRev;
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
-      const subjectsMap = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, true);
+      const subjectsMap: Record<number, res.ISubject> = {};
+      const data = await db
+        .select()
+        .from(schema.chiiSubjects)
+        .innerJoin(
+          schema.chiiSubjectFields,
+          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+        )
+        .where(op.inArray(schema.chiiSubjects.id, subjectIDs));
+      for (const d of data) {
+        const item = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
+        subjectsMap[item.id] = item;
+      }
       const characterIDs = rels.map((rel) => +rel.crt_id);
       const charactersMap = await fetcher.fetchSlimCharactersByIDs(characterIDs, true);
 
-      const relations = rels.map((rel) => {
+      const relations = rels.flatMap((rel) => {
         const subjectID = +rel.subject_id;
         const characterID = +rel.crt_id;
+
         const subject = subjectsMap[subjectID];
         const character = charactersMap[characterID];
-        return {
-          subject: {
-            id: subjectID,
-            typeID: subject?.type || 5,
-            name: subject?.name || '',
-            nameCN: subject?.nameCN || '',
+
+        if (!subject) return [];
+
+        return [
+          {
+            subject: {
+              id: subjectID,
+              typeID: subject.type,
+              name: subject.name,
+              nameCN: subject.nameCN,
+            },
+            character: {
+              id: characterID,
+              name: character?.name || '',
+              nameCN: character?.nameCN || '',
+            },
           },
-          character: {
-            id: characterID,
-            name: character?.name || '',
-            nameCN: character?.nameCN || '',
-          },
-        };
+        ];
       });
 
       return relations;
