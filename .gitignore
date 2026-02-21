@@ -16,3 +16,7 @@ static/style
 !.yarn/releases
 !.yarn/plugins
 changelog.md
+
+# Rust
+target/
+crates/*/target/

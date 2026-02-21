@@ -243,12 +243,20 @@ exports[`should build private api spec 1`] = `
       properties:
         character:
           $ref: '#/components/schemas/SlimCharacter'
+        comment:
+          type: string
+        ended:
+          type: boolean
         relation:
-          description: '角色关系: 任职于,从属,聘用,嫁给...'
-          type: integer
+          $ref: '#/components/schemas/PersonRelationType'
+        spoiler:
+          type: boolean
       required:
         - character
         - relation
+        - spoiler
+        - ended
+        - comment
       type: object
     CharacterRevisionWikiInfo:
       properties:
@@ -1406,14 +1414,41 @@ exports[`should build private api spec 1`] = `
       type: object
     PersonRelation:
       properties:
+        comment:
+          type: string
+        ended:
+          type: boolean
         person:
           $ref: '#/components/schemas/SlimPerson'
         relation:
-          description: '人物关系: 任职于,从属,聘用,嫁给...'
-          type: integer
+          $ref: '#/components/schemas/PersonRelationType'
+        spoiler:
+          type: boolean
       required:
         - person
         - relation
+        - spoiler
+        - ended
+        - comment
+      type: object
+    PersonRelationType:
+      properties:
+        cn:
+          type: string
+        desc:
+          type: string
+        id:
+          type: integer
+        primary:
+          type: boolean
+        skipViceVersa:
+          type: boolean
+        viceVersaTo:
+          type: integer
+      required:
+        - id
+        - cn
+        - desc
       type: object
     PersonRevisionWikiInfo:
       properties:
@@ -4517,6 +4552,68 @@ paths:
       summary: 获取角色关联的目录
       tags:
         - character
+  /p1/characters/{characterID}/relations:
+    get:
+      operationId: getCharacterRelations
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/CharacterRelation'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色关联角色
+      tags:
+        - character
   /p1/clear-notify:
     post:
       description: |-
@@ -7228,6 +7325,68 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取人物关联的目录
+      tags:
+        - person
+  /p1/persons/{personID}/relations:
+    get:
+      operationId: getPersonRelations
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/PersonRelation'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物关联人物
       tags:
         - person
   /p1/persons/{personID}/works:

@@ -1,0 +1,32 @@
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.dependencies]
+anyhow = "=1.0.101"
+bb8 = "=0.9.1"
+bb8-redis = "=0.26.0"
+chrono = { version = "=0.4.43", default-features = false, features = ["clock"] }
+chrono-tz = "=0.10.4"
+clap = { version = "=4.5.59", features = ["derive"] }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.149"
+serde_yaml = "=0.9.34+deprecated"
+regex = "=1.12.3"
+
+spdlog-rs = { version = "=0.5.2", features = ["serde_json"] }
+sqlx = { version = "=0.8.6", default-features = false, features = [
+  "runtime-tokio-rustls",
+  "mysql",
+  "chrono",
+  "macros"
+] }
+tokio = { version = "=1.49.0", features = ["macros", "rt-multi-thread", "time"] }
+tokio-cron-scheduler = "=0.15.1"
+bangumi-api = { path = "crates/api" }
+bangumi-config = { path = "crates/config" }
+bangumi-cron = { path = "crates/cron" }
+bangumi-mq = { path = "crates/mq" }
+bangumi-wiki-parser = { path = "crates/wiki-parser" }
+
+rdkafka = "=0.38.0"

@@ -273,17 +273,17 @@ export async function fetchSubjectsByIDs(
 
 /** Cached */
 /**
- * NOTE: This endpoint intentionally diverges from legacy PHP tag browse.
+ * NOTE: Tag filtering mostly follows legacy PHP tag browse behavior.
  *
- * - Sort=collects orders by subject_collect, not tag-count order.
- * - Sort=rank does not apply tag-count filtering. Reasons: avoid expensive tag-count aggregation
- *   while keeping API semantics stable.
+ * - When sort=rank and tagsCat=subject with a single tag, apply tag-count threshold filtering.
+ * - When sort=collects with a single tag, paginate and order by tag-count order.
  */
 export async function fetchSubjectIDsByFilter(
   filter: SubjectFilter,
   sort: SubjectSort,
   page: number,
 ): Promise<res.IPaged<number>> {
+  const pageSize = 24;
   if (filter.tags) {
     const normalizedTags = filter.tags
       .map((tag) => tag.trim().normalize('NFKC').toLowerCase())
@@ -304,6 +304,7 @@ export async function fetchSubjectIDsByFilter(
     const ids = JSON.parse(data) as TrendingItem[];
     filter.ids = ids.map((item) => item.id);
   }
+  let tagOrderedIDs: number[] | undefined;
   if (filter.tags?.length) {
     const isMetaTag = filter.tagsCat !== 'subject';
     const tagCat = TagCat.Subject;
@@ -327,10 +328,13 @@ export async function fetchSubjectIDsByFilter(
       );
     }
 
+    const isSingleTag = tagIDs.length === 1;
+    const tagCounts = isSingleTag ? new Map<number, number>() : undefined;
     const tagRows = await db
       .select({
         subjectID: schema.chiiTagList.mainID,
         tagID: schema.chiiTagList.tagID,
+        count: op.count(),
       })
       .from(schema.chiiTagList)
       .where(
@@ -353,8 +357,11 @@ export async function fetchSubjectIDsByFilter(
         subjectTagMap.set(row.subjectID, tagsForSubject);
       }
       tagsForSubject.set(row.tagID, 1);
+      if (tagCounts && row.tagID === tagIDs[0]) {
+        tagCounts.set(row.subjectID, Number(row.count ?? 0));
+      }
     }
-    const subjectIDs: number[] = [];
+    let subjectIDs: number[] = [];
     for (const [subjectID, subjectTags] of subjectTagMap) {
       let hasAllTags = true;
       for (const tagID of tagIDs) {
@@ -370,12 +377,52 @@ export async function fetchSubjectIDsByFilter(
     if (subjectIDs.length === 0) {
       return { data: [], total: 0 };
     }
+
+    if (sort === SubjectSort.Rank && !isMetaTag && tagCounts) {
+      const counts = subjectIDs.map((id) => tagCounts.get(id) ?? 0);
+      const uniqCounts = [...new Set(counts)].toSorted((a, b) => a - b);
+      const thresholdIndex = Math.ceil(uniqCounts.length * 0.6);
+      const threshold = uniqCounts[thresholdIndex] ?? 0;
+      subjectIDs = subjectIDs.filter((id) => {
+        const count = tagCounts.get(id) ?? 0;
+        return count >= threshold || count >= 50;
+      });
+    }
+
     const subjectIDSet = new Set(subjectIDs);
     const mergedIDs = filter.ids ? filter.ids.filter((id) => subjectIDSet.has(id)) : subjectIDs;
     if (mergedIDs.length === 0) {
       return { data: [], total: 0 };
     }
     filter.ids = mergedIDs;
+    if (tagCounts) {
+      tagOrderedIDs = mergedIDs.toSorted(
+        (a, b) => (tagCounts.get(b) ?? 0) - (tagCounts.get(a) ?? 0) || a - b,
+      );
+    }
+  }
+
+  let pageForQuery = page;
+  let totalOverride: number | undefined;
+  let collectOrderedIDs: number[] | undefined;
+  if (
+    sort === SubjectSort.Collects &&
+    tagOrderedIDs &&
+    filter.tags?.length === 1 &&
+    !filter.cat &&
+    filter.series === undefined &&
+    !filter.year &&
+    !filter.month
+  ) {
+    totalOverride = Math.ceil(tagOrderedIDs.length / pageSize);
+    const start = (page - 1) * pageSize;
+    const pageIDs = tagOrderedIDs.slice(start, start + pageSize);
+    if (pageIDs.length === 0) {
+      return { data: [], total: totalOverride };
+    }
+    filter.ids = pageIDs;
+    collectOrderedIDs = pageIDs;
+    pageForQuery = 1;
   }
 
   const conditions = [
@@ -412,7 +459,9 @@ export async function fetchSubjectIDsByFilter(
       break;
     }
     case SubjectSort.Collects: {
-      sorts.push(op.desc(schema.chiiSubjects.collect));
+      if (!collectOrderedIDs) {
+        sorts.push(op.desc(schema.chiiSubjects.collect));
+      }
       break;
     }
     case SubjectSort.Date: {
@@ -424,15 +473,21 @@ export async function fetchSubjectIDsByFilter(
       break;
     }
   }
-  const [{ count = 0 } = {}] = await db
-    .select({ count: op.count() })
-    .from(schema.chiiSubjects)
-    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
-    .where(op.and(...conditions));
-  if (count === 0) {
-    return { data: [], total: 0 };
+  let total = totalOverride ?? 0;
+  if (totalOverride === undefined) {
+    const [{ count = 0 } = {}] = await db
+      .select({ count: op.count() })
+      .from(schema.chiiSubjects)
+      .innerJoin(
+        schema.chiiSubjectFields,
+        op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
+      )
+      .where(op.and(...conditions));
+    if (count === 0) {
+      return { data: [], total: 0 };
+    }
+    total = Math.ceil(count / pageSize);
   }
-  const total = Math.ceil(count / 24);
 
   const query = db
     .select({ id: schema.chiiSubjects.id })
@@ -444,10 +499,12 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
     query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${filter.ids.join(',')})`);
+  } else if (sort === SubjectSort.Collects && collectOrderedIDs) {
+    query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${collectOrderedIDs.join(',')})`);
   } else {
     query.orderBy(...sorts);
   }
-  const data = await query.limit(24).offset((page - 1) * 24);
+  const data = await query.limit(pageSize).offset((pageForQuery - 1) * pageSize);
   const result = { data: data.map((d) => d.id), total };
   if (page === 1) {
     await redis.setex(cacheKey, 86400, JSON.stringify(result));
