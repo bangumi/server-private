@@ -139,7 +139,7 @@ Array [
   Object {
     "order": 0,
     "subject": Object {
-      "id": 199229,
+      "id": 793,
       "name": "",
       "nameCN": "",
       "typeID": 5,
@@ -154,17 +154,7 @@ Array [
       "nameCN": "",
       "typeID": 5,
     },
-    "type": 1,
-  },
-  Object {
-    "order": 0,
-    "subject": Object {
-      "id": 793,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
-    },
-    "type": 1,
+    "type": 2,
   },
   Object {
     "order": 0,
@@ -179,37 +169,7 @@ Array [
   Object {
     "order": 0,
     "subject": Object {
-      "id": 63130,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
-    },
-    "type": 3,
-  },
-  Object {
-    "order": 0,
-    "subject": Object {
-      "id": 199230,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
-    },
-    "type": 1,
-  },
-  Object {
-    "order": 0,
-    "subject": Object {
-      "id": 199231,
-      "name": "",
-      "nameCN": "",
-      "typeID": 5,
-    },
-    "type": 1,
-  },
-  Object {
-    "order": 0,
-    "subject": Object {
-      "id": 199228,
+      "id": 199229,
       "name": "",
       "nameCN": "",
       "typeID": 5,

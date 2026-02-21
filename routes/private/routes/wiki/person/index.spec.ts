@@ -261,7 +261,7 @@ describe('person relations', () => {
   test('should get person subject revision wiki info', async () => {
     const app = await testApp({});
 
-    const res = await app.inject('/persons/-/subjects/revisions/1005137');
+    const res = await app.inject('/persons/-/subjects/revisions/70822');
 
     expect(res.json()).toMatchSnapshot();
   });

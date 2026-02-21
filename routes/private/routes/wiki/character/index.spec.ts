@@ -250,7 +250,7 @@ describe('character relations', () => {
   test('should get character subject revision wiki info', async () => {
     const app = await testApp({});
 
-    const res = await app.inject('/characters/-/subjects/revisions/1027816');
+    const res = await app.inject('/characters/-/subjects/revisions/838999');
 
     expect(res.json()).toMatchSnapshot();
   });
