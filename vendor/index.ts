@@ -59,6 +59,7 @@ export interface SubjectRelationType {
   cn: string;
   jp: string;
   desc: string;
+  skip_vice_versa?: boolean;
 }
 
 export function findSubjectRelationType(
