@@ -10,7 +10,6 @@ import type { PersonCastRev, PersonRev, PersonSubjectRev } from '@app/lib/rev/ty
 import { RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
-import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -538,18 +537,26 @@ export async function setup(app: App) {
       const revContent = revRecord[revisionID] as PersonSubjectRev;
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
-      const subjectsMap: Record<number, res.ISubject> = {};
+      const subjectsMap: Record<
+        number,
+        {
+          id: number;
+          type: number;
+          name: string;
+          nameCN: string;
+        }
+      > = {};
       const data = await db
         .select()
         .from(schema.chiiSubjects)
-        .innerJoin(
-          schema.chiiSubjectFields,
-          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
-        )
         .where(op.inArray(schema.chiiSubjects.id, subjectIDs));
       for (const d of data) {
-        const item = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
-        subjectsMap[item.id] = item;
+        subjectsMap[d.id] = {
+          id: d.id,
+          type: d.typeID,
+          name: d.name,
+          nameCN: d.nameCN,
+        };
       }
 
       const relations = rels.flatMap((rel) => {
@@ -684,18 +691,26 @@ export async function setup(app: App) {
       const revContent = revRecord[revisionID] as PersonCastRev;
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
-      const subjectsMap: Record<number, res.ISubject> = {};
+      const subjectsMap: Record<
+        number,
+        {
+          id: number;
+          type: number;
+          name: string;
+          nameCN: string;
+        }
+      > = {};
       const data = await db
         .select()
         .from(schema.chiiSubjects)
-        .innerJoin(
-          schema.chiiSubjectFields,
-          op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id),
-        )
         .where(op.inArray(schema.chiiSubjects.id, subjectIDs));
       for (const d of data) {
-        const item = convert.toSubject(d.chii_subjects, d.chii_subject_fields);
-        subjectsMap[item.id] = item;
+        subjectsMap[d.id] = {
+          id: d.id,
+          type: d.typeID,
+          name: d.name,
+          nameCN: d.nameCN,
+        };
       }
       const characterIDs = rels.map((rel) => +rel.crt_id);
       const charactersMap = await fetcher.fetchSlimCharactersByIDs(characterIDs, true);
