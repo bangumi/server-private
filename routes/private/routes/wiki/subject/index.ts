@@ -1006,7 +1006,7 @@ export async function setup(app: App) {
         .from(schema.chiiRevHistory)
         .where(op.eq(schema.chiiRevHistory.revId, revisionID))
         .limit(1);
-      if (!r) {
+      if (!r || r.revType !== RevType.subjectRelation) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
 
@@ -1136,7 +1136,7 @@ export async function setup(app: App) {
         .from(schema.chiiRevHistory)
         .where(op.eq(schema.chiiRevHistory.revId, revisionID))
         .limit(1);
-      if (!r) {
+      if (!r || r.revType !== RevType.subjectCharacterRelation) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
 
@@ -1265,7 +1265,7 @@ export async function setup(app: App) {
         .from(schema.chiiRevHistory)
         .where(op.eq(schema.chiiRevHistory.revId, revisionID))
         .limit(1);
-      if (!r) {
+      if (!r || r.revType !== RevType.subjectPersonRelation) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
 
