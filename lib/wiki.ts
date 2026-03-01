@@ -43,7 +43,7 @@ function readableDiff<T extends string | string[]>(name: string, expected: T, cu
   return diff.createPatch(name, `${expected}\n`, `${current}\n`, 'expected', 'current');
 }
 
-export const retroRelations = {
+export const reverseRelations = {
   2: [
     // 动画-动画
     [2, 3], // 前传-续集
@@ -78,18 +78,18 @@ export function isRelationViceVersa(subjectType: number, relationType: number): 
   return !rtype.skip_vice_versa;
 }
 
-export function getRetroRelation(
+export function getReverseRelation(
   subjectType: SubjectType,
   relatedType: SubjectType,
   relationType: number,
 ): number {
   if (relatedType !== subjectType) return 1;
-  for (const duo of retroRelations[subjectType]) {
+  for (const duo of reverseRelations[subjectType]) {
     const relatedIndex = duo.indexOf(relationType);
     if (!(relatedIndex + 1)) continue;
-    const retroRelationType = duo[+!!relatedIndex];
-    if (retroRelationType) {
-      return retroRelationType;
+    const reverseRelationType = duo[+!!relatedIndex];
+    if (reverseRelationType) {
+      return reverseRelationType;
     } else {
       break;
     }

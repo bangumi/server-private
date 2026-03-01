@@ -25,7 +25,7 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { validateDuration } from '@app/lib/utils/index.ts';
-import { getRetroRelation, isRelationViceVersa, matchExpected } from '@app/lib/wiki';
+import { getReverseRelation, isRelationViceVersa, matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { findSubjectRelationType } from '@app/vendor';
@@ -173,19 +173,28 @@ export const SubjectRelationWikiInfo = t.Array(
   },
 );
 
-type ISubjectRelationWikiEditSingle = Static<typeof SubjectRelationWikiEditSingle>;
-export const SubjectRelationWikiEditSingle = t.Object({
-  subjectID: t.Integer(),
+type ISubjectRelationWikiEdit = Static<typeof SubjectRelationWikiEdit>;
+export const SubjectRelationWikiEdit = t.Object({
+  subject: t.Object({
+    id: t.Integer(),
+  }),
   type: t.Integer(),
   order: t.Optional(t.Integer()),
 });
 
-export const SubjectRelationWikiEdit = t.Object({
-  commitMessage: t.String(),
-  relations: t.Array(SubjectRelationWikiEditSingle, {
-    $id: 'SubjectRelationWikiEdit',
-  }),
-});
+const SubjectRelationExpected = t.Optional(
+  t.Object(
+    {
+      subject: t.Object({ id: t.Integer() }),
+      type: t.Integer(),
+      order: t.Integer(),
+    },
+    {
+      additionalProperties: false,
+      description: 'a optional object to check if input is changed by others',
+    },
+  ),
+);
 
 const EpisodePartial = t.Partial(t.Omit(req.EpisodeWikiInfo, ['id', 'subjectID']));
 
@@ -963,7 +972,13 @@ export async function setup(app: App) {
         querystring: t.Object({
           type: req.Ref(req.SubjectType),
         }),
-        body: SubjectRelationWikiEdit,
+        body: t.Object({
+          commitMessage: t.String(),
+          relations: t.Array(SubjectRelationWikiEdit, {
+            $id: 'SubjectRelationWikiEdit',
+          }),
+          expectedRevision: t.Optional(t.Array(SubjectRelationExpected)),
+        }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Null(),
@@ -978,7 +993,7 @@ export async function setup(app: App) {
       params: { subjectID },
       query: { type: relatedType },
       auth,
-      body: { commitMessage, relations: relationEdits },
+      body: { commitMessage, relations: relationEdits, expectedRevision },
     }) => {
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
@@ -992,7 +1007,7 @@ export async function setup(app: App) {
         throw new BadRequestError(`relation type ${invalidRelationTypes.join(', ')} is not valid`);
       }
 
-      if (relationEdits.some((r) => r.subjectID === subjectID)) {
+      if (relationEdits.some((r) => r.subject.id === subjectID)) {
         throw new BadRequestError('self relation is not allowed');
       }
 
@@ -1014,27 +1029,46 @@ export async function setup(app: App) {
           )
           .where(condition);
         const oldRelations = data.map((d) => ({
-          subjectID: d.chii_subjects.id,
+          subject: {
+            id: d.chii_subjects.id,
+          },
           type: d.chii_subject_relations.relation,
           order: d.chii_subject_relations.order,
         }));
 
-        const makeMap = (arr: ISubjectRelationWikiEditSingle[]) =>
+        if (expectedRevision?.length) {
+          for (const old of oldRelations) {
+            const expectedOld = expectedRevision?.find((r) => r.subject.id === old.subject.id);
+            if (!expectedOld) continue;
+            matchExpected(
+              {
+                type: String(expectedOld.type),
+                order: String(expectedOld.order),
+              },
+              {
+                type: String(old.type),
+                order: String(old.order),
+              },
+            );
+          }
+        }
+
+        const makeMap = (arr: ISubjectRelationWikiEdit[]) =>
           arr.reduce(
             (map, r) => {
-              map[r.subjectID] = r;
+              map[r.subject.id] = r;
               return map;
             },
-            {} as Record<number, ISubjectRelationWikiEditSingle>,
+            {} as Record<number, ISubjectRelationWikiEdit>,
           );
         const relationEditMap = makeMap(relationEdits);
         const oldRelationMap = makeMap(oldRelations);
 
-        const deleteRelationEdit: ISubjectRelationWikiEditSingle[] = [];
-        const newRelationEdit: ISubjectRelationWikiEditSingle[] = [];
-        const existingRelationEdit: ISubjectRelationWikiEditSingle[] = [];
+        const deleteRelationEdit: ISubjectRelationWikiEdit[] = [];
+        const newRelationEdit: ISubjectRelationWikiEdit[] = [];
+        const existingRelationEdit: ISubjectRelationWikiEdit[] = [];
         for (const r of relationEdits) {
-          const old = oldRelationMap[r.subjectID];
+          const old = oldRelationMap[r.subject.id];
           if (!old) {
             newRelationEdit.push(r);
           } else if (old.type !== r.type || old.order !== r.order) {
@@ -1043,15 +1077,15 @@ export async function setup(app: App) {
         }
 
         for (const r of oldRelations) {
-          const edit = relationEditMap[r.subjectID];
+          const edit = relationEditMap[r.subject.id];
           if (!edit) {
             deleteRelationEdit.push(r);
           }
         }
 
         if (existingRelationEdit.length > 0 || newRelationEdit.length > 0) {
-          const existingRelatedIDs = existingRelationEdit.map((r) => r.subjectID);
-          const newRelatedIDs = newRelationEdit.map((r) => r.subjectID);
+          const existingRelatedIDs = existingRelationEdit.map((r) => r.subject.id);
+          const newRelatedIDs = newRelationEdit.map((r) => r.subject.id);
           const relatedSubjects = await fetcher.fetchSubjectsByIDs(
             [...newRelatedIDs, ...existingRelatedIDs],
             true,
@@ -1075,13 +1109,13 @@ export async function setup(app: App) {
             const viceVersa = isRelationViceVersa(relatedType, r.type);
             let condition = op.and(
               op.eq(schema.chiiSubjectRelations.id, subjectID),
-              op.eq(schema.chiiSubjectRelations.relatedID, r.subjectID),
+              op.eq(schema.chiiSubjectRelations.relatedID, r.subject.id),
             );
             if (viceVersa) {
               condition = op.or(
                 condition,
                 op.and(
-                  op.eq(schema.chiiSubjectRelations.id, r.subjectID),
+                  op.eq(schema.chiiSubjectRelations.id, r.subject.id),
                   op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
                 ),
               );
@@ -1095,16 +1129,16 @@ export async function setup(app: App) {
         if (existingRelationEdit.length > 0) {
           for (const r of existingRelationEdit) {
             const viceVersa = isRelationViceVersa(relatedType, r.type);
-            const retroRelationType = getRetroRelation(subject.type, relatedType, r.type);
+            const reverseRelationType = getReverseRelation(subject.type, relatedType, r.type);
             await txn
               .update(schema.chiiSubjectRelations)
               .set({
-                relation: retroRelationType,
+                relation: reverseRelationType,
                 viceVersa: +viceVersa,
               })
               .where(
                 op.and(
-                  op.eq(schema.chiiSubjectRelations.id, r.subjectID),
+                  op.eq(schema.chiiSubjectRelations.id, r.subject.id),
                   op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
                 ),
               );
@@ -1118,7 +1152,7 @@ export async function setup(app: App) {
               .where(
                 op.and(
                   op.eq(schema.chiiSubjectRelations.id, subjectID),
-                  op.eq(schema.chiiSubjectRelations.relatedID, r.subjectID),
+                  op.eq(schema.chiiSubjectRelations.relatedID, r.subject.id),
                 ),
               );
           }
@@ -1132,17 +1166,17 @@ export async function setup(app: App) {
               id: subjectID,
               type: subject.type,
               relation: r.type,
-              relatedID: r.subjectID,
+              relatedID: r.subject.id,
               relatedType,
               viceVersa: +viceVersa,
               order: r.order ?? 0,
             });
             if (viceVersa) {
-              const retroRelationType = getRetroRelation(subject.type, relatedType, r.type);
+              const reverseRelationType = getReverseRelation(subject.type, relatedType, r.type);
               insertData.push({
-                id: r.subjectID,
+                id: r.subject.id,
                 type: relatedType,
-                relation: retroRelationType,
+                relation: reverseRelationType,
                 relatedID: subjectID,
                 relatedType: subject.type,
                 viceVersa: 1,
@@ -1165,7 +1199,7 @@ export async function setup(app: App) {
                   subject_type_id: String(subject.type),
                   relation_type: String(r.type),
                   relation_order: String(r.order),
-                  related_subject_id: String(r.subjectID),
+                  related_subject_id: String(r.subject.id),
                   related_subject_type_id: String(relatedType),
                 };
                 return obj;
@@ -1175,9 +1209,9 @@ export async function setup(app: App) {
             remote: relationEdits.reduce(
               (obj, r, index) => {
                 obj[String(index)] = {
-                  subject_id: String(r.subjectID),
+                  subject_id: String(r.subject.id),
                   subject_type_id: String(relatedType),
-                  relation_type: String(getRetroRelation(subject.type, relatedType, r.type)),
+                  relation_type: String(getReverseRelation(subject.type, relatedType, r.type)),
                   related_subject_id: String(subjectID),
                   related_subject_type_id: String(subject.type),
                 };
