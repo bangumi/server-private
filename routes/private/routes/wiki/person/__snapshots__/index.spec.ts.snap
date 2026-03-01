@@ -1,0 +1,459 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`person relations > should get person character relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1407073073,
+      "creator": Object {
+        "username": "18215",
+      },
+      "id": 253524,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1392929834,
+      "creator": Object {
+        "username": "106866",
+      },
+      "id": 204186,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1358325032,
+      "creator": Object {
+        "username": "50094",
+      },
+      "id": 87355,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1341711793,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 50866,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297812968,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8354,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297812602,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8352,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297812584,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8351,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296835082,
+      "creator": Object {
+        "username": "9105",
+      },
+      "id": 5909,
+      "type": 8,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296500374,
+      "creator": Object {
+        "username": "2978",
+      },
+      "id": 4159,
+      "type": 8,
+    },
+  ],
+  "total": 9,
+}
+`;
+
+exports[`person relations > should get person character relation revision wiki info 1`] = `
+Array [
+  Object {
+    "character": Object {
+      "id": 10645,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2089,
+      "name": "イタズラなKiss",
+      "nameCN": "恶作剧之吻",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 1807,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3183,
+      "name": "劇場版“文学少女”",
+      "nameCN": "文学少女 剧场版",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 329,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 993,
+      "name": "WHITE ALBUM",
+      "nameCN": "白色相簿",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 1243,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2474,
+      "name": "ロザリオとバンパイア",
+      "nameCN": "十字架与吸血鬼",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 296,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 292,
+      "name": "DARKER THAN BLACK -黒の契約者-",
+      "nameCN": "DARKER THAN BLACK -黑之契约者-",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 2792,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 1263,
+      "name": "魔法少女リリカルなのはA's",
+      "nameCN": "魔法少女奈叶A's",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10848,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3690,
+      "name": "シスター・プリンセス",
+      "nameCN": "妹妹公主",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10865,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 4124,
+      "name": "ハートキャッチプリキュア!",
+      "nameCN": "Heart Catch 光之美少女！",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10867,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 4124,
+      "name": "ハートキャッチプリキュア!",
+      "nameCN": "Heart Catch 光之美少女！",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10685,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 1428,
+      "name": "鋼の錬金術師 FULLMETAL ALCHEMIST",
+      "nameCN": "钢之炼金术师 FULLMETAL ALCHEMIST",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10567,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 8474,
+      "name": "放浪息子",
+      "nameCN": "放浪男孩",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 3966,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 283,
+      "name": "みなみけ",
+      "nameCN": "南家三姐妹",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 6845,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3625,
+      "name": "火影忍者",
+      "nameCN": "火影忍者",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10806,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2425,
+      "name": "しゅごキャラ!!どきっ",
+      "nameCN": "守护甜心!!心跳",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10806,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2427,
+      "name": "しゅごキャラ!",
+      "nameCN": "守护甜心！",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10806,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 3018,
+      "name": "しゅごキャラ!パーティー!",
+      "nameCN": "守护甜心！派对！",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 10310,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2129,
+      "name": "けんぷファー",
+      "nameCN": "肯普法",
+      "typeID": 2,
+    },
+  },
+  Object {
+    "character": Object {
+      "id": 6540,
+      "name": "",
+      "nameCN": "",
+    },
+    "subject": Object {
+      "id": 2782,
+      "name": "NARUTO -ナルト- 疾風伝",
+      "nameCN": "火影忍者疾风传",
+      "typeID": 2,
+    },
+  },
+]
+`;
+
+exports[`person relations > should get person subject relation history 1`] = `
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1561903186,
+      "creator": Object {
+        "username": "318251",
+      },
+      "id": 1005137,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297820724,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 8364,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297053421,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 6653,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1297053366,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 6651,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296812072,
+      "creator": Object {
+        "username": "14459",
+      },
+      "id": 5780,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296586071,
+      "creator": Object {
+        "username": "12367",
+      },
+      "id": 4708,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365688,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2804,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365654,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2800,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365640,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2799,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365628,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2797,
+      "type": 9,
+    },
+    Object {
+      "commitMessage": "关联修改",
+      "createdAt": 1296365604,
+      "creator": Object {
+        "username": "14432",
+      },
+      "id": 2796,
+      "type": 9,
+    },
+  ],
+  "total": 11,
+}
+`;
+
+exports[`person relations > should get person subject revision wiki info 1`] = `
+Array [
+  Object {
+    "position": 2003,
+    "subject": Object {
+      "id": 22273,
+      "name": "星界の紋章",
+      "nameCN": "星界的纹章",
+      "typeID": 1,
+    },
+  },
+  Object {
+    "position": 2003,
+    "subject": Object {
+      "id": 22267,
+      "name": "星界の戦旗",
+      "nameCN": "星界的战旗",
+      "typeID": 1,
+    },
+  },
+]
+`;

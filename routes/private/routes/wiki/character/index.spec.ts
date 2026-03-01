@@ -228,3 +228,39 @@ describe('edit character ', () => {
     expect(res.statusCode).toBe(400);
   });
 });
+
+describe('character relations', () => {
+  test('should get character person relation revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/characters/-/casts/revisions/1015845');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get character person relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/characters/1/casts/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get character subject revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/characters/-/subjects/revisions/838999');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get character subject relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/characters/1/subjects/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+});
