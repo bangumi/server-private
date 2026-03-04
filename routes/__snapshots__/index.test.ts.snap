@@ -3663,6 +3663,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -3800,6 +3801,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -3981,6 +3983,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -4041,6 +4044,7 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
@@ -4258,6 +4262,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -4432,6 +4437,7 @@ paths:
                     type: integer
                   type: array
               type: object
+        required: true
       responses:
         '200':
           content:
@@ -4586,6 +4592,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateEpisodeProgress'
+        required: true
       responses:
         '200':
           content:
@@ -4858,10 +4865,12 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: 起始时间戳
@@ -4932,6 +4941,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateSubjectProgress'
+        required: true
       responses:
         '200':
           content:
@@ -4971,6 +4981,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectSubject'
+        required: true
       responses:
         '200':
           content:
@@ -5058,6 +5069,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -5263,6 +5275,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -5500,10 +5513,12 @@ paths:
       parameters:
         - in: query
           name: mode
+          required: false
           schema:
             $ref: '#/components/schemas/GroupFilterMode'
         - in: query
           name: sort
+          required: true
           schema:
             $ref: '#/components/schemas/GroupSort'
         - in: query
@@ -5615,6 +5630,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -5715,6 +5731,7 @@ paths:
       parameters:
         - in: query
           name: mode
+          required: true
           schema:
             $ref: '#/components/schemas/GroupTopicFilterMode'
         - in: query
@@ -5802,6 +5819,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateTopic'
+        required: true
       responses:
         '200':
           content:
@@ -5837,6 +5855,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -5902,6 +5921,7 @@ paths:
       parameters:
         - in: query
           name: role
+          required: false
           schema:
             $ref: '#/components/schemas/GroupMemberRole'
         - in: query
@@ -6022,6 +6042,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateTopic'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -6061,6 +6082,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateIndex'
+        required: true
       responses:
         '200':
           content:
@@ -6127,6 +6149,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -6216,6 +6239,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateIndex'
+        required: true
       responses:
         '200':
           content:
@@ -6325,6 +6349,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -6362,10 +6387,12 @@ paths:
       parameters:
         - in: query
           name: cat
+          required: false
           schema:
             $ref: '#/components/schemas/IndexRelatedCategory'
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: max 100
@@ -6433,6 +6460,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateIndexRelated'
+        required: true
       responses:
         '200':
           content:
@@ -6509,6 +6537,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateIndexRelated'
+        required: true
       responses:
         '200':
           content:
@@ -6546,6 +6575,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/LoginRequestBody'
+        required: true
       responses:
         '200':
           content:
@@ -6620,6 +6650,7 @@ paths:
             schema:
               properties: {}
               type: object
+        required: true
       responses:
         '200':
           content:
@@ -6756,6 +6787,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -6816,6 +6848,7 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
@@ -7033,6 +7066,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -7188,6 +7222,7 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: 职位
@@ -7262,6 +7297,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateReport'
+        required: true
       responses:
         '200':
           content:
@@ -7318,6 +7354,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SearchCharacter'
+        required: true
       responses:
         '200':
           content:
@@ -7374,6 +7411,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SearchPerson'
+        required: true
       responses:
         '200':
           content:
@@ -7430,6 +7468,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SearchSubject'
+        required: true
       responses:
         '200':
           content:
@@ -7466,10 +7505,12 @@ paths:
       parameters:
         - in: query
           name: type
+          required: true
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: sort
+          required: true
           schema:
             $ref: '#/components/schemas/SubjectBrowseSort'
         - description: min 1
@@ -7696,6 +7737,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -7931,6 +7973,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -8057,10 +8100,12 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - in: query
           name: mode
+          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
         - description: max 100
@@ -8122,6 +8167,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: max 100
@@ -8182,6 +8228,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/EpisodeType'
         - description: max 1000
@@ -8354,6 +8401,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: 是否单行本
@@ -8661,6 +8709,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateTopic'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -8698,6 +8747,7 @@ paths:
       parameters:
         - in: query
           name: mode
+          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
         - description: min 1, max 20
@@ -8745,6 +8795,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateContent'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -8784,10 +8835,12 @@ paths:
       parameters:
         - in: query
           name: cat
+          required: false
           schema:
             $ref: '#/components/schemas/TimelineCat'
         - in: query
           name: mode
+          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
       responses:
@@ -9010,6 +9063,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -9046,6 +9100,7 @@ paths:
       parameters:
         - in: query
           name: type
+          required: true
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: max 100
@@ -9436,10 +9491,12 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: max 100
