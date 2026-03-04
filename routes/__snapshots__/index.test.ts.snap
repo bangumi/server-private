@@ -3663,6 +3663,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -3800,6 +3801,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -3981,6 +3983,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -4041,6 +4044,7 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
@@ -4258,6 +4262,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
@@ -4432,6 +4437,7 @@ paths:
                     type: integer
                   type: array
               type: object
+        required: true
       responses:
         '200':
           content:
@@ -4586,6 +4592,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateEpisodeProgress'
+        required: true
       responses:
         '200':
           content:
@@ -4858,10 +4865,12 @@ paths:
       parameters:
         - in: query
           name: subjectType
+          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
+          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: 起始时间戳
@@ -4932,6 +4941,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateSubjectProgress'
+        required: true
       responses:
         '200':
           content:
@@ -4971,6 +4981,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectSubject'
+        required: true
       responses:
         '200':
           content:
@@ -5058,6 +5069,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
+        required: true
       responses:
         '200':
           content:
@@ -5263,6 +5275,7 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
+        required: true
       responses:
         '200':
           content:
