@@ -15,8 +15,8 @@ pull_request_rules:
           - label=ci:auto-merge
       - not:
           and:
-            - "head*=renovate/lockfile-maintenance-*"
-            - "created-at>24h ago"
+            - 'head*=renovate/lockfile-maintenance-*'
+            - 'created-at>24h ago'
       - check-success=lint
       - check-success=test
       - check-success=build
