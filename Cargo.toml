@@ -3,7 +3,7 @@ members = ["crates/*"]
 resolver = "2"
 
 [workspace.dependencies]
-anyhow = "=1.0.101"
+anyhow = "=1.0.102"
 bb8 = "=0.9.1"
 bb8-redis = "=0.26.0"
 chrono = { version = "=0.4.43", default-features = false, features = ["clock"] }
