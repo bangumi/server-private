@@ -87,6 +87,18 @@ async function collectSSEBody(
 }
 
 describe('timeline', () => {
+  beforeEach(async () => {
+    await db
+      .delete(schema.chiiTimeline)
+      .where(op.and(op.eq(schema.chiiTimeline.uid, 287622), op.eq(schema.chiiTimeline.cat, 5)));
+  });
+
+  afterEach(async () => {
+    await db
+      .delete(schema.chiiTimeline)
+      .where(op.and(op.eq(schema.chiiTimeline.uid, 287622), op.eq(schema.chiiTimeline.cat, 5)));
+  });
+
   test('should get friends', async () => {
     const app = createTestServer({
       auth: {
