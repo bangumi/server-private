@@ -6,6 +6,7 @@ import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
 const TOPICS = [
   'timeline',
+  'debezium.chii.bangumi.chii_timeline',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_subject_revisions',
 ];
