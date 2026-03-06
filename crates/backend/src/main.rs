@@ -126,7 +126,9 @@ async fn run(cli: Cli) -> Result<()> {
         None | Some(CronCommand::RunDefaultSchedule) => {
           bangumi_cron::run_default_schedule(&config).await?
         }
-        Some(CronCommand::HeartbeatOnce) => bangumi_cron::heartbeat_once(&config).await?,
+        Some(CronCommand::HeartbeatOnce) => {
+          bangumi_cron::heartbeat_once(&config).await?
+        }
         Some(CronCommand::TrendingSubjectsOnce) => {
           bangumi_cron::trending_subjects_once(&config).await?
         }
