@@ -65,7 +65,7 @@
     "lodash-es": "4.17.23",
     "luxon": "3.7.2",
     "meilisearch": "0.55.0",
-    "mercurius": "16.7.0",
+    "mercurius": "16.8.0",
     "micromatch": "4.0.8",
     "mime-types": "3.0.2",
     "mysql2": "3.18.2",
