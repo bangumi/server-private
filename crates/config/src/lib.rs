@@ -162,7 +162,7 @@ fn read_file_config(path: &PathBuf) -> Result<FileConfig> {
     .with_context(|| format!("failed to read config file: {}", path.display()))?;
 
   let parsed: FileConfig =
-    serde_yaml::from_str(&content).context("failed to parse yaml config file")?;
+    yaml_serde::from_str(&content).context("failed to parse yaml config file")?;
 
   Ok(parsed)
 }
