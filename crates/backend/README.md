@@ -8,6 +8,11 @@ The executable is organized as one binary with multiple subcommands:
 - `mq ...`
 - `cron ...`
 
+If no subcommand is provided, it starts both daemons:
+
+- cron default scheduler
+- mq worker
+
 Current scope:
 
 - dispatches `cron` commands to `bangumi-cron` crate
@@ -38,11 +43,15 @@ Run minimal loop:
 
 - `cargo run -- cron run-default-schedule`
 
+Run both daemons (default mode, no subcommand):
+
+- `cargo run --`
+
 Notes:
 
 - `cleanupExpiredAccessTokens` and `cleanupExpiredRefreshTokens` are implemented in Rust but disabled in default scheduler to avoid duplicate execution during migration.
 
-MQ placeholder:
+MQ worker:
 
 - `cargo run -- mq placeholder`
 
@@ -66,5 +75,5 @@ MQ placeholder:
 - `crates/backend`: binary entrypoint and subcommand dispatch
 - `crates/config`: loads YAML + env config (`CHII_CONFIG_FILE`, `REDIS_URI`, `KAFKA_BROKERS`)
 - `crates/cron`: cron task implementations
-- `crates/mq`: mq task implementations (placeholder)
+- `crates/mq`: mq task implementations
 - `crates/api`: api placeholder crate

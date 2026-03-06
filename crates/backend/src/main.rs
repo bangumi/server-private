@@ -11,7 +11,7 @@ use tokio::runtime::Runtime;
 #[command(about = "Unified Rust executable for server/mq/cron migration")]
 struct Cli {
   #[command(subcommand)]
-  command: TopCommand,
+  command: Option<TopCommand>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -78,13 +78,24 @@ fn main() -> Result<()> {
 
   let cli = Cli::parse();
 
-  let runtime = build_runtime(&cli.command)?;
+  let runtime = build_runtime(cli.command.as_ref())?;
   runtime.block_on(run(cli))
 }
 
 async fn run(cli: Cli) -> Result<()> {
   match cli.command {
-    TopCommand::Server { command } => match command {
+    None => {
+      let config = AppConfig::load()?;
+      info!(
+        "config loaded for default startup, running cron and mq daemons, redis_uri={}",
+        config.redis_uri
+      );
+      tokio::try_join!(
+        bangumi_cron::run_default_schedule(&config),
+        bangumi_mq::run(&config)
+      )?;
+    }
+    Some(TopCommand::Server { command }) => match command {
       ServerCommand::Placeholder => {
         bangumi_api::server_placeholder().await?;
       }
@@ -104,7 +115,7 @@ async fn run(cli: Cli) -> Result<()> {
         info!("openapi json exported to {}", output.display());
       }
     },
-    TopCommand::Cron { command } => {
+    Some(TopCommand::Cron { command }) => {
       let config = AppConfig::load()?;
       info!(
         "config loaded for cron subcommand, redis_uri={}",
@@ -139,7 +150,7 @@ async fn run(cli: Cli) -> Result<()> {
         }
       }
     }
-    TopCommand::Mq { command } => match command {
+    Some(TopCommand::Mq { command }) => match command {
       MqCommand::Placeholder => {
         let config = AppConfig::load()?;
         info!(
@@ -154,7 +165,7 @@ async fn run(cli: Cli) -> Result<()> {
   Ok(())
 }
 
-fn build_runtime(command: &TopCommand) -> Result<Runtime> {
+fn build_runtime(command: Option<&TopCommand>) -> Result<Runtime> {
   let default_kind = default_runtime_kind(command);
   let env_kind = runtime_kind_from_env();
   let runtime_kind = env_kind.unwrap_or(default_kind);
@@ -190,10 +201,12 @@ fn build_runtime(command: &TopCommand) -> Result<Runtime> {
   Ok(runtime)
 }
 
-fn default_runtime_kind(command: &TopCommand) -> RuntimeKind {
+fn default_runtime_kind(command: Option<&TopCommand>) -> RuntimeKind {
   match command {
-    TopCommand::Cron { .. } => RuntimeKind::CurrentThread,
-    TopCommand::Server { .. } | TopCommand::Mq { .. } => RuntimeKind::MultiThread,
+    Some(TopCommand::Cron { .. }) => RuntimeKind::CurrentThread,
+    Some(TopCommand::Server { .. }) | Some(TopCommand::Mq { .. }) | None => {
+      RuntimeKind::MultiThread
+    }
   }
 }
 
