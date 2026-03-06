@@ -22,11 +22,11 @@ enum TopCommand {
   },
   Cron {
     #[command(subcommand)]
-    command: CronCommand,
+    command: Option<CronCommand>,
   },
   Mq {
     #[command(subcommand)]
-    command: MqCommand,
+    command: Option<MqCommand>,
   },
 }
 
@@ -123,35 +123,37 @@ async fn run(cli: Cli) -> Result<()> {
       );
 
       match command {
-        CronCommand::HeartbeatOnce => bangumi_cron::heartbeat_once(&config).await?,
-        CronCommand::TrendingSubjectsOnce => {
+        None | Some(CronCommand::RunDefaultSchedule) => {
+          bangumi_cron::run_default_schedule(&config).await?
+        }
+        Some(CronCommand::HeartbeatOnce) => {
+          bangumi_cron::heartbeat_once(&config).await?
+        }
+        Some(CronCommand::TrendingSubjectsOnce) => {
           bangumi_cron::trending_subjects_once(&config).await?
         }
-        CronCommand::TrendingSubjectTopicsOnce => {
+        Some(CronCommand::TrendingSubjectTopicsOnce) => {
           bangumi_cron::trending_subject_topics_once(&config).await?
         }
-        CronCommand::TruncateGlobalOnce => {
+        Some(CronCommand::TruncateGlobalOnce) => {
           bangumi_cron::truncate_global_once(&config).await?
         }
-        CronCommand::TruncateInboxOnce => {
+        Some(CronCommand::TruncateInboxOnce) => {
           bangumi_cron::truncate_inbox_once(&config).await?
         }
-        CronCommand::TruncateUserOnce => {
+        Some(CronCommand::TruncateUserOnce) => {
           bangumi_cron::truncate_user_once(&config).await?
         }
-        CronCommand::CleanupExpiredAccessTokensOnce => {
+        Some(CronCommand::CleanupExpiredAccessTokensOnce) => {
           bangumi_cron::cleanup_expired_access_tokens_once(&config).await?
         }
-        CronCommand::CleanupExpiredRefreshTokensOnce => {
+        Some(CronCommand::CleanupExpiredRefreshTokensOnce) => {
           bangumi_cron::cleanup_expired_refresh_tokens_once(&config).await?
-        }
-        CronCommand::RunDefaultSchedule => {
-          bangumi_cron::run_default_schedule(&config).await?
         }
       }
     }
     Some(TopCommand::Mq { command }) => match command {
-      MqCommand::Placeholder => {
+      None | Some(MqCommand::Placeholder) => {
         let config = AppConfig::load()?;
         info!(
           "config loaded for mq subcommand, redis_uri={}",
