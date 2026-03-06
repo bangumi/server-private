@@ -41,6 +41,7 @@ Run once:
 
 Run minimal loop:
 
+- `cargo run -- cron`
 - `cargo run -- cron run-default-schedule`
 
 Run both daemons (default mode, no subcommand):
@@ -53,6 +54,7 @@ Notes:
 
 MQ worker:
 
+- `cargo run -- mq`
 - `cargo run -- mq placeholder`
 
 ## Environment
