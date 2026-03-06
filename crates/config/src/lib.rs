@@ -33,7 +33,7 @@ pub struct MySqlConfig {
 impl MySqlConfig {
   pub fn database_url(&self) -> String {
     format!(
-      "mysql://{}:{}@{}:{}/{}",
+      "mysql://{}:{}@{}:{}/{}?ssl-mode=DISABLED",
       self.user, self.password, self.host, self.port, self.db
     )
   }
@@ -165,4 +165,25 @@ fn read_file_config(path: &PathBuf) -> Result<FileConfig> {
     yaml_serde::from_str(&content).context("failed to parse yaml config file")?;
 
   Ok(parsed)
+}
+
+#[cfg(test)]
+mod tests {
+  use super::MySqlConfig;
+
+  #[test]
+  fn mysql_database_url_disables_ssl_by_default() {
+    let config = MySqlConfig {
+      host: "127.0.0.1".to_owned(),
+      port: 3306,
+      user: "user".to_owned(),
+      password: "password".to_owned(),
+      db: "bangumi".to_owned(),
+    };
+
+    assert_eq!(
+      config.database_url(),
+      "mysql://user:password@127.0.0.1:3306/bangumi?ssl-mode=DISABLED"
+    );
+  }
 }
