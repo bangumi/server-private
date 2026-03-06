@@ -13,9 +13,10 @@ pull_request_rules:
       - or:
           - '#approved-reviews-by>=1'
           - label=ci:auto-merge
-      - or:
-          - author != renovate[bot]
-          - 'created-at<=24h ago'
+      - not:
+          and:
+            - 'head*=renovate/lockfile-maintenance-*'
+            - 'created-at>24h ago'
       - check-success=lint
       - check-success=test
       - check-success=build
