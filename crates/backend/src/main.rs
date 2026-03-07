@@ -158,8 +158,7 @@ async fn run(cli: Cli) -> Result<()> {
         let config = AppConfig::load()?;
         info!(
           "config loaded for mq subcommand, redis_uri={}, rust_mq_group_id={}",
-          config.redis_uri,
-          config.kafka_rust_mq_group_id
+          config.redis_uri, config.kafka_rust_mq_group_id
         );
         bangumi_mq::placeholder(&config).await?;
       }
