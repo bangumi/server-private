@@ -13,7 +13,6 @@ use context::MqContext;
 use helpers::parse_json;
 use types::{DebeziumEnvelope, KafkaMessageOwned};
 
-const MQ_GROUP_ID: &str = "server-private";
 const TOPICS: &[&str] = &[
   "debezium.chii.bangumi.chii_blog_entry",
   "debezium.chii.bangumi.chii_characters",
@@ -45,7 +44,7 @@ pub async fn run(config: &AppConfig) -> Result<()> {
   info!(
     "mq worker started, kafka_brokers={}, group_id={}, topics={}",
     config.kafka_brokers,
-    MQ_GROUP_ID,
+    config.kafka_rust_mq_group_id,
     TOPICS.join(",")
   );
 
@@ -82,7 +81,7 @@ fn new_consumer(config: &AppConfig) -> Result<StreamConsumer> {
 
   let consumer: StreamConsumer = ClientConfig::new()
     .set("bootstrap.servers", &config.kafka_brokers)
-    .set("group.id", MQ_GROUP_ID)
+    .set("group.id", &config.kafka_rust_mq_group_id)
     .set("auto.offset.reset", "latest")
     .set("enable.auto.commit", "true")
     .create()

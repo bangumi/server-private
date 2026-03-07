@@ -10,6 +10,7 @@ pub struct AppConfig {
   pub server: ServerConfig,
   pub redis_uri: String,
   pub kafka_brokers: String,
+  pub kafka_rust_mq_group_id: String,
   pub mysql: MySqlConfig,
   pub cookie_secret_token: String,
   pub php_session_secret_key: String,
@@ -46,6 +47,8 @@ struct FileConfig {
   redis_uri: Option<String>,
   #[serde(rename = "kafkaBrokers")]
   kafka_brokers: Option<String>,
+  #[serde(rename = "kafkaRustMqGroupId")]
+  kafka_rust_mq_group_id: Option<String>,
   mysql: Option<FileMySqlConfig>,
   cookie_secret_token: Option<String>,
   php_session_secret_key: Option<String>,
@@ -94,6 +97,11 @@ impl AppConfig {
       .or(file_config.kafka_brokers.clone())
       .unwrap_or_else(|| "127.0.0.1:9092".to_owned());
 
+    let kafka_rust_mq_group_id = env::var("KAFKA_RUST_MQ_GROUP_ID")
+      .ok()
+      .or(file_config.kafka_rust_mq_group_id.clone())
+      .unwrap_or_else(|| "server-private-rust-mq".to_owned());
+
     let mysql_from_file = file_config.mysql.clone().unwrap_or_default();
     let mysql = MySqlConfig {
       host: env::var("MYSQL_HOST")
@@ -135,6 +143,7 @@ impl AppConfig {
       server,
       redis_uri,
       kafka_brokers,
+      kafka_rust_mq_group_id,
       mysql,
       cookie_secret_token,
       php_session_secret_key,

@@ -110,6 +110,11 @@ export const schema = Obj({
 
   kafkaBrokers: t.String({ default: '127.0.0.1:9092', env: 'KAFKA_BROKERS' }),
 
+  kafkaJsMqGroupId: t.String({
+    default: 'server-private',
+    env: 'KAFKA_JS_MQ_GROUP_ID',
+  }),
+
   meilisearch: Obj({
     url: t.String({ default: 'http://127.0.0.1:7700/', env: 'MEILISEARCH_URL' }),
     key: t.String({ default: 'meilisearch-api-key', env: 'MEILISEARCH_KEY' }),

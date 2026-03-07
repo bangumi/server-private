@@ -130,6 +130,9 @@ Current TS status:
 - Keep TS cron/mq runnable at all times during migration.
 - If Rust worker shows divergence, stop Rust worker and resume TS worker immediately.
 - Do not run both workers on the same Kafka consumer group for cutover.
+- If JS mq and Rust mq run in parallel, assign distinct consumer groups so both workers receive the shared Debezium topics they each still depend on.
+- Until the Rust mq worker reaches parity for the `timeline` service topic and `chii_timeline` Debezium handling, keep the JS mq worker responsible for those handlers.
+- Recommended default during migration: JS mq keeps the legacy `server-private` group, Rust mq uses `server-private-rust-mq`.
 
 ## Context ledger (for future LLM sessions)
 

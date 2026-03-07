@@ -87,8 +87,9 @@ async fn run(cli: Cli) -> Result<()> {
     None => {
       let config = AppConfig::load()?;
       info!(
-        "config loaded for default startup, running cron and mq daemons, redis_uri={}",
-        config.redis_uri
+        "config loaded for default startup, running cron and mq daemons, redis_uri={}, rust_mq_group_id={}",
+        config.redis_uri,
+        config.kafka_rust_mq_group_id
       );
       tokio::try_join!(
         bangumi_cron::run_default_schedule(&config),
@@ -156,8 +157,9 @@ async fn run(cli: Cli) -> Result<()> {
       None | Some(MqCommand::Placeholder) => {
         let config = AppConfig::load()?;
         info!(
-          "config loaded for mq subcommand, redis_uri={}",
-          config.redis_uri
+          "config loaded for mq subcommand, redis_uri={}, rust_mq_group_id={}",
+          config.redis_uri,
+          config.kafka_rust_mq_group_id
         );
         bangumi_mq::placeholder(&config).await?;
       }
