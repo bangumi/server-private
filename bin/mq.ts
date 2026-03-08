@@ -1,4 +1,5 @@
 import { handleSubjectDate } from '@app/event/subject';
+import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { KafkaMessage, Payload } from '@app/event/type';
 import { newConsumer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
@@ -6,6 +7,7 @@ import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
 const TOPICS = [
   'timeline',
+  'debezium.chii.bangumi.chii_timeline',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_subject_revisions',
 ];
@@ -15,6 +17,7 @@ type Handler = (msg: KafkaMessage) => Promise<void>;
 const binlogHandlers: Record<string, Handler | Handler[]> = {
   chii_subjects: handleSubjectDate,
   chii_subject_revisions: handleSubjectDate,
+  chii_timeline: handleTimelineEvent,
 };
 
 async function onBinlogMessage(msg: KafkaMessage) {
