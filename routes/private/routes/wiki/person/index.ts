@@ -6,8 +6,8 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
-import type { PersonCastRev, PersonRev, PersonSubjectRev } from '@app/lib/rev/type.ts';
-import { RevType } from '@app/lib/rev/type.ts';
+import type { IPersonRev } from '@app/lib/rev/type.ts';
+import { PersonCastRev, PersonRev, PersonSubjectRev, RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -17,6 +17,7 @@ import { ghostUser } from '@app/lib/user/utils';
 import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+import { assertValue } from '@app/vendor/validate.ts';
 
 export const PersonCareers = [
   'producer',
@@ -284,7 +285,7 @@ export async function setup(app: App) {
             if (p[c]) acc[c] = '1';
             return acc;
           },
-          {} as PersonRev['profession'],
+          {} as IPersonRev['profession'],
         );
 
         await createRevision(t, {
@@ -298,7 +299,7 @@ export async function setup(app: App) {
             extra: {
               img: p.img,
             },
-          } satisfies PersonRev,
+          } satisfies IPersonRev,
           creator: auth.userID,
           comment: commitMessage,
         });
@@ -414,7 +415,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as PersonRev;
+      const revContent = revRecord[revisionID];
+      assertValue(PersonRev, revContent, `revRecord[${revisionID}]`);
 
       return {
         name: revContent.prsn_name,
@@ -534,7 +536,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as PersonSubjectRev;
+      const revContent = revRecord[revisionID];
+      assertValue(PersonSubjectRev, revContent, `revRecord[${revisionID}]`);
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
       const subjectsMap: Record<
@@ -688,7 +691,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as PersonCastRev;
+      const revContent = revRecord[revisionID];
+      assertValue(PersonCastRev, revContent, `revRecord[${revisionID}]`);
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
       const subjectsMap: Record<

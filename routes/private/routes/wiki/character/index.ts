@@ -6,8 +6,8 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
-import type { CharacterCastRev, CharacterRev, CharacterSubjectRev } from '@app/lib/rev/type.ts';
-import { RevType } from '@app/lib/rev/type.ts';
+import type { ICharacterRev } from '@app/lib/rev/type.ts';
+import { CharacterCastRev, CharacterRev, CharacterSubjectRev, RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -17,6 +17,7 @@ import { ghostUser } from '@app/lib/user/utils';
 import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+import { assertValue } from '@app/vendor/validate.ts';
 
 export const CharacterWikiInfo = t.Object(
   {
@@ -252,7 +253,7 @@ export async function setup(app: App) {
             extra: {
               img: p.img,
             },
-          } satisfies CharacterRev,
+          } satisfies ICharacterRev,
           creator: auth.userID,
           comment: commitMessage,
         });
@@ -367,7 +368,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as CharacterRev;
+      const revContent = revRecord[revisionID];
+      assertValue(CharacterRev, revContent, `revRecord[${revisionID}]`);
 
       return {
         name: revContent.crt_name,
@@ -484,7 +486,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as CharacterSubjectRev;
+      const revContent = revRecord[revisionID];
+      assertValue(CharacterSubjectRev, revContent, `revRecord[${revisionID}]`);
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
       const subjectsMap: Record<
@@ -638,7 +641,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as CharacterCastRev;
+      const revContent = revRecord[revisionID];
+      assertValue(CharacterCastRev, revContent, `revRecord[${revisionID}]`);
       const rels = Object.values(revContent);
       const subjectIDs = rels.map((rel) => +rel.subject_id);
       const subjectsMap: Record<

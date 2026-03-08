@@ -9,12 +9,12 @@ import config from '@app/lib/config.ts';
 import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
-import type {
+import {
+  RevType,
   SubjectCharacterRev,
   SubjectPersonRev,
   SubjectRelationRev,
 } from '@app/lib/rev/type.ts';
-import { RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
@@ -30,6 +30,7 @@ import { matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
+import { assertValue } from '@app/vendor/validate.ts';
 
 import * as imageRoutes from './image.ts';
 import * as manageRoutes from './mgr.ts';
@@ -1020,7 +1021,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as SubjectRelationRev;
+      const revContent = revRecord[revisionID];
+      assertValue(SubjectRelationRev, revContent, `revRecord[${revisionID}]`);
       const rels = Object.values(revContent.self);
       const subjectIDs = rels.map((rel) => +rel.related_subject_id);
       const subjectsMap = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, true);
@@ -1150,7 +1152,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as SubjectCharacterRev;
+      const revContent = revRecord[revisionID];
+      assertValue(SubjectCharacterRev, revContent, `revRecord[${revisionID}]`);
       const rels = Object.values(revContent);
       const characterIDs = rels.map((rel) => +rel.crt_id);
       const charactersMap = await fetcher.fetchSlimCharactersByIDs(characterIDs, true);
@@ -1279,7 +1282,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID] as SubjectPersonRev;
+      const revContent = revRecord[revisionID];
+      assertValue(SubjectPersonRev, revContent, `revRecord[${revisionID}]`);
       const rels = Object.values(revContent);
       const personIDs = rels.map((rel) => +rel.prsn_id);
       const personsMap = await fetcher.fetchSlimPersonsByIDs(personIDs, true);

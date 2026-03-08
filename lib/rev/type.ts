@@ -1,3 +1,6 @@
+import type { Static } from 'typebox';
+import t from 'typebox';
+
 export interface RevHistory {
   revId: number;
   revType: number;
@@ -65,111 +68,134 @@ export interface EpTextRev {
   ep_desc: string;
 }
 
-export interface CharacterRev {
-  crt_name: string;
-  crt_infobox: string;
-  crt_summary: string;
-  extra: {
-    img?: string;
-  };
-}
-
-export interface PersonRev {
-  prsn_name: string;
-  prsn_infobox: string;
-  prsn_summary: string;
-  profession: {
-    producer?: string;
-    mangaka?: string;
-    artist?: string;
-    seiyu?: string;
-    writer?: string;
-    illustrator?: string;
-    actor?: string;
-  };
-  extra: {
-    img?: string;
-  };
-}
-
-export interface SubjectRelationRev {
-  self: Record<
-    string,
-    {
-      subject_id: string;
-      subject_type_id: string;
-      relation_type: string;
-      relation_order: string;
-      related_subject_id: string;
-      related_subject_type_id: string;
-    }
-  >;
-  remote: Record<
-    string,
-    {
-      subject_id: string;
-      subject_type_id: string;
-      relation_type: string;
-      related_subject_id: string;
-      related_subject_type_id: string;
-    }
-  >;
-}
-
-export type SubjectCharacterRev = Record<
-  string,
+export type ICharacterRev = Static<typeof CharacterRev>;
+export const CharacterRev = t.Object(
   {
-    subject_id: string;
-    crt_type: string;
-    crt_id: string;
-    crt_order: number;
-  }
->;
+    crt_name: t.String(),
+    crt_infobox: t.String(),
+    crt_summary: t.String(),
+    extra: t.Object({
+      img: t.Optional(t.String()),
+    }),
+  },
+  { $id: 'CharacterRev' },
+);
 
-export type SubjectPersonRev = Record<
-  string,
+export type IPersonRev = Static<typeof PersonRev>;
+export const PersonRev = t.Object(
   {
-    subject_id: string;
-    position: string;
-    prsn_id: string;
-  }
->;
+    prsn_name: t.String(),
+    prsn_infobox: t.String(),
+    prsn_summary: t.String(),
+    profession: t.Object({
+      producer: t.Optional(t.String()),
+      mangaka: t.Optional(t.String()),
+      artist: t.Optional(t.String()),
+      seiyu: t.Optional(t.String()),
+      writer: t.Optional(t.String()),
+      illustrator: t.Optional(t.String()),
+      actor: t.Optional(t.String()),
+    }),
+    extra: t.Object({
+      img: t.Optional(t.String()),
+    }),
+  },
+  { $id: 'PersonRev' },
+);
 
-export type PersonSubjectRev = Record<
-  string,
+const SubjectRelationRevSelf = t.Object({
+  subject_id: t.String(),
+  subject_type_id: t.String(),
+  relation_type: t.String(),
+  relation_order: t.Integer(),
+  related_subject_id: t.String(),
+  related_subject_type_id: t.String(),
+});
+const SubjectRelationRevRemote = t.Object({
+  subject_id: t.String(),
+  subject_type_id: t.String(),
+  relation_type: t.Union([t.String(), t.Integer()]),
+  related_subject_id: t.String(),
+  related_subject_type_id: t.String(),
+});
+export type ISubjectRelationRev = Static<typeof SubjectRelationRev>;
+export const SubjectRelationRev = t.Object(
   {
-    subject_id: string;
-    position: string;
-    prsn_id: number;
-  }
->;
+    self: t.Union([t.Array(SubjectRelationRevSelf), t.Record(t.String(), SubjectRelationRevSelf)]),
+    remote: t.Union([
+      t.Array(SubjectRelationRevRemote),
+      t.Record(t.String(), SubjectRelationRevRemote),
+    ]),
+  },
+  { $id: 'SubjectRelationRev' },
+);
 
-export type PersonCastRev = Record<
-  string,
-  {
-    subject_id: string;
-    crt_id: string;
-    prsn_id: number;
-    summary: string | null;
-  }
->;
+const SubjectCharacterRevSingle = t.Object({
+  subject_id: t.String(),
+  crt_type: t.String(),
+  crt_id: t.String(),
+  crt_order: t.Integer(),
+});
+export type ISubjectCharacterRev = Static<typeof SubjectCharacterRev>;
+export const SubjectCharacterRev = t.Union(
+  [t.Record(t.String(), SubjectCharacterRevSingle), t.Array(SubjectCharacterRevSingle)],
+  { $id: 'SubjectCharacterRev' },
+);
 
-export type CharacterSubjectRev = Record<
-  string,
-  {
-    subject_id: string;
-    crt_type: string;
-    crt_id: number;
-    crt_order: number;
-  }
->;
+export type ISubjectPersonRev = Static<typeof SubjectPersonRev>;
+const SubjectPersonRevSingle = t.Object({
+  subject_id: t.String(),
+  position: t.String(),
+  prsn_id: t.String(),
+});
+export const SubjectPersonRev = t.Union(
+  [t.Record(t.String(), SubjectPersonRevSingle), t.Array(SubjectPersonRevSingle)],
+  { $id: 'SubjectPersonRev' },
+);
 
-export type CharacterCastRev = Record<
-  string,
-  {
-    subject_id: string;
-    prsn_id: string;
-    crt_id: number;
-    summary: string | null;
-  }
->;
+export type IPersonSubjectRev = Static<typeof PersonSubjectRev>;
+const PersonSubjectRevSingle = t.Object({
+  subject_id: t.String(),
+  position: t.String(),
+  prsn_id: t.Integer(),
+});
+export const PersonSubjectRev = t.Union(
+  [t.Record(t.String(), PersonSubjectRevSingle), t.Array(PersonSubjectRevSingle)],
+  { $id: 'PersonSubjectRev' },
+);
+
+export type IPersonCastRev = Static<typeof PersonCastRev>;
+const PersonCastRevSingle = t.Object({
+  subject_id: t.String(),
+  crt_id: t.String(),
+  prsn_id: t.Integer(),
+  summary: t.Union([t.String(), t.Null()]),
+});
+export const PersonCastRev = t.Union(
+  [t.Record(t.String(), PersonCastRevSingle), t.Array(PersonCastRevSingle)],
+  { $id: 'PersonCastRev' },
+);
+
+export type ICharacterSubjectRev = Static<typeof CharacterSubjectRev>;
+const CharacterSubjectRevSingle = t.Object({
+  subject_id: t.String(),
+  crt_type: t.String(),
+  crt_id: t.Integer(),
+  crt_order: t.Integer(),
+});
+export const CharacterSubjectRev = t.Union(
+  [t.Record(t.String(), CharacterSubjectRevSingle), t.Array(CharacterSubjectRevSingle)],
+  { $id: 'CharacterSubjectRev' },
+);
+
+export type ICharacterCastRev = Static<typeof CharacterCastRev>;
+const CharacterCastRevSingle = t.Object({
+  subject_id: t.String(),
+  prsn_id: t.String(),
+  crt_id: t.Integer(),
+  summary: t.Union([t.String(), t.Null()]),
+});
+export const CharacterCastRev = t.Union(
+  [t.Record(t.String(), CharacterCastRevSingle), t.Array(CharacterCastRevSingle)],
+  { $id: 'CharacterCastRev' },
+);
