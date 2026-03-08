@@ -172,6 +172,43 @@ exports[`should build private api spec 1`] = `
         - relation
         - summary
       type: object
+    CharacterCastRevisionWikiInfo:
+      items:
+        properties:
+          person:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+            required:
+              - id
+              - name
+              - nameCN
+            type: object
+          subject:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+              typeID:
+                $ref: '#/components/schemas/SubjectType'
+            required:
+              - id
+              - typeID
+              - name
+              - nameCN
+            type: object
+        required:
+          - subject
+          - person
+        type: object
+      type: array
     CharacterCastType:
       description: |-
         Character cast relation type
@@ -274,6 +311,35 @@ exports[`should build private api spec 1`] = `
         - subject
         - type
       type: object
+    CharacterSubjectRevisionWikiInfo:
+      items:
+        properties:
+          order:
+            type: integer
+          subject:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+              typeID:
+                $ref: '#/components/schemas/SubjectType'
+            required:
+              - id
+              - typeID
+              - name
+              - nameCN
+            type: object
+          type:
+            type: integer
+        required:
+          - subject
+          - type
+          - order
+        type: object
+      type: array
     CharacterWikiInfo:
       properties:
         id:
@@ -1270,6 +1336,43 @@ exports[`should build private api spec 1`] = `
         - nsfw
       title: Person
       type: object
+    PersonCastRevisionWikiInfo:
+      items:
+        properties:
+          character:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+            required:
+              - id
+              - name
+              - nameCN
+            type: object
+          subject:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+              typeID:
+                $ref: '#/components/schemas/SubjectType'
+            required:
+              - id
+              - typeID
+              - name
+              - nameCN
+            type: object
+        required:
+          - subject
+          - character
+        type: object
+      type: array
     PersonCharacter:
       properties:
         character:
@@ -1402,6 +1505,32 @@ exports[`should build private api spec 1`] = `
             type: string
           type: array
       type: object
+    PersonSubjectRevisionWikiInfo:
+      items:
+        properties:
+          position:
+            type: integer
+          subject:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+              typeID:
+                $ref: '#/components/schemas/SubjectType'
+            required:
+              - id
+              - typeID
+              - name
+              - nameCN
+            type: object
+        required:
+          - subject
+          - position
+        type: object
+      type: array
     PersonType:
       description: |-
         人物类型
@@ -2369,6 +2498,32 @@ exports[`should build private api spec 1`] = `
         - type
         - order
       type: object
+    SubjectCharacterRevisionWikiInfo:
+      items:
+        properties:
+          character:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+            required:
+              - id
+              - name
+              - nameCN
+            type: object
+          order:
+            type: integer
+          type:
+            type: integer
+        required:
+          - character
+          - type
+          - order
+        type: object
+      type: array
     SubjectCollect:
       properties:
         interest:
@@ -2394,13 +2549,13 @@ exports[`should build private api spec 1`] = `
           }
           |话数= 7
           |放送开始= 0000-10-06
-          |放送星期= 
-          |官方网站= 
-          |播放电视台= 
-          |其他电视台= 
-          |播放结束= 
-          |其他= 
-          |Copyright= 
+          |放送星期=
+          |官方网站=
+          |播放电视台=
+          |其他电视台=
+          |播放结束=
+          |其他=
+          |Copyright=
           |平台={
           [龟壳]
           [Xbox Series S]
@@ -2566,6 +2721,29 @@ exports[`should build private api spec 1`] = `
         - metaTags
         - summary
       type: object
+    SubjectPersonRevisionWikiInfo:
+      items:
+        properties:
+          person:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+            required:
+              - id
+              - name
+              - nameCN
+            type: object
+          position:
+            type: integer
+        required:
+          - person
+          - position
+        type: object
+      type: array
     SubjectPlatform:
       properties:
         alias:
@@ -2666,6 +2844,35 @@ exports[`should build private api spec 1`] = `
         - relation
         - order
       type: object
+    SubjectRelationRevisionWikiInfo:
+      items:
+        properties:
+          order:
+            type: integer
+          subject:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+              typeID:
+                $ref: '#/components/schemas/SubjectType'
+            required:
+              - id
+              - typeID
+              - name
+              - nameCN
+            type: object
+          type:
+            type: integer
+        required:
+          - subject
+          - type
+          - order
+        type: object
+      type: array
     SubjectRelationType:
       properties:
         cn:
@@ -3663,7 +3870,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
-        required: true
       responses:
         '200':
           content:
@@ -3801,7 +4007,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -3983,7 +4188,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
-        required: true
       responses:
         '200':
           content:
@@ -4044,7 +4248,6 @@ paths:
       parameters:
         - in: query
           name: subjectType
-          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
@@ -4262,7 +4465,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -4437,7 +4639,6 @@ paths:
                     type: integer
                   type: array
               type: object
-        required: true
       responses:
         '200':
           content:
@@ -4592,7 +4793,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateEpisodeProgress'
-        required: true
       responses:
         '200':
           content:
@@ -4865,12 +5065,10 @@ paths:
       parameters:
         - in: query
           name: subjectType
-          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
-          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: 起始时间戳
@@ -4941,7 +5139,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateSubjectProgress'
-        required: true
       responses:
         '200':
           content:
@@ -4981,7 +5178,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CollectSubject'
-        required: true
       responses:
         '200':
           content:
@@ -5069,7 +5265,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
-        required: true
       responses:
         '200':
           content:
@@ -5275,7 +5470,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -5513,12 +5707,10 @@ paths:
       parameters:
         - in: query
           name: mode
-          required: false
           schema:
             $ref: '#/components/schemas/GroupFilterMode'
         - in: query
           name: sort
-          required: true
           schema:
             $ref: '#/components/schemas/GroupSort'
         - in: query
@@ -5630,7 +5822,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
-        required: true
       responses:
         '200':
           content:
@@ -5731,7 +5922,6 @@ paths:
       parameters:
         - in: query
           name: mode
-          required: true
           schema:
             $ref: '#/components/schemas/GroupTopicFilterMode'
         - in: query
@@ -5819,7 +6009,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateTopic'
-        required: true
       responses:
         '200':
           content:
@@ -5855,7 +6044,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -5921,7 +6109,6 @@ paths:
       parameters:
         - in: query
           name: role
-          required: false
           schema:
             $ref: '#/components/schemas/GroupMemberRole'
         - in: query
@@ -6042,7 +6229,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateTopic'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -6082,7 +6268,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateIndex'
-        required: true
       responses:
         '200':
           content:
@@ -6149,7 +6334,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
-        required: true
       responses:
         '200':
           content:
@@ -6239,7 +6423,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateIndex'
-        required: true
       responses:
         '200':
           content:
@@ -6349,7 +6532,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -6387,12 +6569,10 @@ paths:
       parameters:
         - in: query
           name: cat
-          required: false
           schema:
             $ref: '#/components/schemas/IndexRelatedCategory'
         - in: query
           name: type
-          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: max 100
@@ -6460,7 +6640,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateIndexRelated'
-        required: true
       responses:
         '200':
           content:
@@ -6537,7 +6716,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateIndexRelated'
-        required: true
       responses:
         '200':
           content:
@@ -6575,7 +6753,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/LoginRequestBody'
-        required: true
       responses:
         '200':
           content:
@@ -6650,7 +6827,6 @@ paths:
             schema:
               properties: {}
               type: object
-        required: true
       responses:
         '200':
           content:
@@ -6787,7 +6963,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
-        required: true
       responses:
         '200':
           content:
@@ -6848,7 +7023,6 @@ paths:
       parameters:
         - in: query
           name: subjectType
-          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: '角色出场类型: 主角，配角，客串'
@@ -7066,7 +7240,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -7222,7 +7395,6 @@ paths:
       parameters:
         - in: query
           name: subjectType
-          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: 职位
@@ -7297,7 +7469,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateReport'
-        required: true
       responses:
         '200':
           content:
@@ -7354,7 +7525,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SearchCharacter'
-        required: true
       responses:
         '200':
           content:
@@ -7411,7 +7581,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SearchPerson'
-        required: true
       responses:
         '200':
           content:
@@ -7468,7 +7637,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SearchSubject'
-        required: true
       responses:
         '200':
           content:
@@ -7505,12 +7673,10 @@ paths:
       parameters:
         - in: query
           name: type
-          required: true
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: sort
-          required: true
           schema:
             $ref: '#/components/schemas/SubjectBrowseSort'
         - description: min 1
@@ -7737,7 +7903,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/UpdateContent'
-        required: true
       responses:
         '200':
           content:
@@ -7973,7 +8138,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -8100,12 +8264,10 @@ paths:
       parameters:
         - in: query
           name: type
-          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - in: query
           name: mode
-          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
         - description: max 100
@@ -8167,7 +8329,6 @@ paths:
       parameters:
         - in: query
           name: type
-          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: max 100
@@ -8228,7 +8389,6 @@ paths:
       parameters:
         - in: query
           name: type
-          required: false
           schema:
             $ref: '#/components/schemas/EpisodeType'
         - description: max 1000
@@ -8401,7 +8561,6 @@ paths:
       parameters:
         - in: query
           name: type
-          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: 是否单行本
@@ -8709,7 +8868,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateTopic'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -8747,7 +8905,6 @@ paths:
       parameters:
         - in: query
           name: mode
-          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
         - description: min 1, max 20
@@ -8795,7 +8952,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateContent'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -8835,12 +8991,10 @@ paths:
       parameters:
         - in: query
           name: cat
-          required: false
           schema:
             $ref: '#/components/schemas/TimelineCat'
         - in: query
           name: mode
-          required: false
           schema:
             $ref: '#/components/schemas/FilterMode'
       responses:
@@ -9063,7 +9217,6 @@ paths:
               allOf:
                 - $ref: '#/components/schemas/CreateReply'
                 - $ref: '#/components/schemas/TurnstileToken'
-        required: true
       responses:
         '200':
           content:
@@ -9100,7 +9253,6 @@ paths:
       parameters:
         - in: query
           name: type
-          required: true
           schema:
             $ref: '#/components/schemas/SubjectType'
         - description: max 100
@@ -9491,12 +9643,10 @@ paths:
       parameters:
         - in: query
           name: subjectType
-          required: false
           schema:
             $ref: '#/components/schemas/SubjectType'
         - in: query
           name: type
-          required: false
           schema:
             $ref: '#/components/schemas/CollectionType'
         - description: max 100
@@ -9824,6 +9974,41 @@ paths:
       summary: 获取用户时间胶囊
       tags:
         - user
+  /p1/wiki/characters/-/casts/revisions/{revisionID}:
+    get:
+      operationId: getCharacterCastRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacterCastRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色-人物关联历史版本 wiki 信息
+      tags:
+        - wiki
   /p1/wiki/characters/-/revisions/{revisionID}:
     get:
       operationId: getCharacterRevisionInfo
@@ -9857,6 +10042,41 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取角色历史版本 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/characters/-/subjects/revisions/{revisionID}:
+    get:
+      operationId: getCharacterSubjectRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CharacterSubjectRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色-条目关联历史版本 wiki 信息
       tags:
         - wiki
   /p1/wiki/characters/{characterID}:
@@ -9981,6 +10201,63 @@ paths:
       summary: 编辑角色
       tags:
         - wiki
+  /p1/wiki/characters/{characterID}/casts/history-summary:
+    get:
+      operationId: characterCastHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色-人物关联 wiki 历史编辑摘要
+      tags:
+        - wiki
   /p1/wiki/characters/{characterID}/history-summary:
     get:
       operationId: characterEditHistorySummary
@@ -10036,6 +10313,63 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取角色 wiki 历史编辑摘要
+      tags:
+        - wiki
+  /p1/wiki/characters/{characterID}/subjects/history-summary:
+    get:
+      operationId: characterSubjectHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取角色-条目关联 wiki 历史编辑摘要
       tags:
         - wiki
   /p1/wiki/ep/{episodeID}:
@@ -10209,6 +10543,41 @@ paths:
           description: 意料之外的服务器错误
       tags:
         - wiki
+  /p1/wiki/persons/-/casts/revisions/{revisionID}:
+    get:
+      operationId: getPersonCastRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonCastRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物-角色关联历史版本 wiki 信息
+      tags:
+        - wiki
   /p1/wiki/persons/-/revisions/{revisionID}:
     get:
       operationId: getPersonRevisionInfo
@@ -10242,6 +10611,41 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取人物历史版本 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/persons/-/subjects/revisions/{revisionID}:
+    get:
+      operationId: getPersonSubjectRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonSubjectRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物-条目关联历史版本 wiki 信息
       tags:
         - wiki
   /p1/wiki/persons/{personID}:
@@ -10366,6 +10770,63 @@ paths:
       summary: 编辑人物
       tags:
         - wiki
+  /p1/wiki/persons/{personID}/casts/history-summary:
+    get:
+      operationId: personCastHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物-角色关联 wiki 历史编辑摘要
+      tags:
+        - wiki
   /p1/wiki/persons/{personID}/history-summary:
     get:
       operationId: personEditHistorySummary
@@ -10421,6 +10882,63 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取人物 wiki 历史编辑摘要
+      tags:
+        - wiki
+  /p1/wiki/persons/{personID}/subjects/history-summary:
+    get:
+      operationId: personSubjectHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: personID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物-条目关联 wiki 历史编辑摘要
       tags:
         - wiki
   /p1/wiki/recent:
@@ -10537,6 +11055,111 @@ paths:
       summary: 创建新条目
       tags:
         - wiki
+  /p1/wiki/subjects/-/characters/revisions/{revisionID}:
+    get:
+      operationId: getSubjectCharacterRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectCharacterRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目-角色关联历史版本 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/subjects/-/persons/revisions/{revisionID}:
+    get:
+      operationId: getSubjectPersonRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectPersonRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目-人物关联历史版本 wiki 信息
+      tags:
+        - wiki
+  /p1/wiki/subjects/-/relations/revisions/{revisionID}:
+    get:
+      operationId: getSubjectRelationRevisionInfo
+      parameters:
+        - in: path
+          name: revisionID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectRelationRevisionWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目关联历史版本 wiki 信息
+      tags:
+        - wiki
   /p1/wiki/subjects/-/revisions/{revisionID}:
     get:
       operationId: getSubjectRevisionInfo
@@ -10635,13 +11258,13 @@ paths:
                   }
                   |话数= 7
                   |放送开始= 0000-10-06
-                  |放送星期= 
-                  |官方网站= 
-                  |播放电视台= 
-                  |其他电视台= 
-                  |播放结束= 
-                  |其他= 
-                  |Copyright= 
+                  |放送星期=
+                  |官方网站=
+                  |播放电视台=
+                  |其他电视台=
+                  |播放结束=
+                  |其他=
+                  |Copyright=
                   |平台={
                   [龟壳]
                   [Xbox Series S]
@@ -10763,13 +11386,13 @@ paths:
                   }
                   |话数= 7
                   |放送开始= 0000-10-06
-                  |放送星期= 
-                  |官方网站= 
-                  |播放电视台= 
-                  |其他电视台= 
-                  |播放结束= 
-                  |其他= 
-                  |Copyright= 
+                  |放送星期=
+                  |官方网站=
+                  |播放电视台=
+                  |其他电视台=
+                  |播放结束=
+                  |其他=
+                  |Copyright=
                   |平台={
                   [龟壳]
                   [Xbox Series S]
@@ -10846,6 +11469,63 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
+      tags:
+        - wiki
+  /p1/wiki/subjects/{subjectID}/characters/history-summary:
+    get:
+      operationId: subjectCharacterHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目-角色关联 wiki 历史编辑摘要
       tags:
         - wiki
   /p1/wiki/subjects/{subjectID}/covers:
@@ -11256,6 +11936,120 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取条目 wiki 历史编辑摘要
+      tags:
+        - wiki
+  /p1/wiki/subjects/{subjectID}/persons/history-summary:
+    get:
+      operationId: subjectPersonHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目-人物关联 wiki 历史编辑摘要
+      tags:
+        - wiki
+  /p1/wiki/subjects/{subjectID}/relations/history-summary:
+    get:
+      operationId: subjectRelationHistorySummary
+      parameters:
+        - description: max 100
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: min 0
+          in: query
+          name: offset
+          required: false
+          schema:
+            default: 0
+            minimum: 0
+            type: integer
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/RevisionHistory'
+                    type: array
+                  total:
+                    description: limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数
+                    type: integer
+                required:
+                  - data
+                  - total
+                type: object
+          description: Default Response
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目关联 wiki 历史编辑摘要
       tags:
         - wiki
   /p1/wiki/unlock/subjects:
