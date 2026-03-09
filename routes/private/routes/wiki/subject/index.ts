@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { DateTime } from 'luxon';
-import type { Record, Static } from 'typebox';
+import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
@@ -185,18 +185,16 @@ export const SubjectRelationWikiEdit = t.Object({
   order: t.Optional(t.Integer()),
 });
 
-const SubjectRelationExpected = t.Optional(
-  t.Object(
-    {
-      subject: t.Object({ id: t.Integer() }),
-      type: t.Integer(),
-      order: t.Integer(),
-    },
-    {
-      additionalProperties: false,
-      description: 'a optional object to check if input is changed by others',
-    },
-  ),
+const SubjectRelationExpected = t.Object(
+  {
+    subject: t.Object({ id: t.Integer() }),
+    type: t.Integer(),
+    order: t.Integer(),
+  },
+  {
+    additionalProperties: false,
+    description: 'a optional object to check if input is changed by others',
+  },
 );
 
 type ISubjectRelationRevisionWikiInfo = Static<typeof SubjectRelationRevisionWikiInfo>;
@@ -984,6 +982,9 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+      if (subject.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
       const condition = op.and(
         op.eq(schema.chiiSubjectRelations.id, subjectID),
         op.eq(schema.chiiSubjectRelations.relatedType, type),
@@ -1176,6 +1177,7 @@ export async function setup(app: App) {
           }),
           400: res.Ref(res.Error, { description: 'invalid input' }),
         },
+        preHandler: [requireLogin('editing subect relations')],
       },
     },
     async ({
@@ -1200,10 +1202,18 @@ export async function setup(app: App) {
         throw new BadRequestError('self relation is not allowed');
       }
 
+      const relationSubjectIDs = relationEdits.map((r) => r.subject.id);
+      if (new Set(relationSubjectIDs).size !== relationSubjectIDs.length) {
+        throw new BadRequestError('duplicate subject in relations is not allowed');
+      }
+
       await db.transaction(async (txn) => {
         const subject = await fetcher.fetchSlimSubjectByID(subjectID, true);
         if (!subject) {
           throw new NotFoundError(`subject ${subjectID}`);
+        }
+        if (subject.locked) {
+          throw new NotAllowedError('edit a locked subject');
         }
         const condition = op.and(
           op.eq(schema.chiiSubjectRelations.id, subjectID),
@@ -1273,21 +1283,21 @@ export async function setup(app: App) {
         if (existingRelationEdit.length > 0 || newRelationEdit.length > 0) {
           const existingRelatedIDs = existingRelationEdit.map((r) => r.subject.id);
           const newRelatedIDs = newRelationEdit.map((r) => r.subject.id);
-          const relatedSubjects = await fetcher.fetchSubjectsByIDs(
-            [...newRelatedIDs, ...existingRelatedIDs],
-            true,
-          );
+          const relatedIDs = [...new Set([...newRelatedIDs, ...existingRelatedIDs])];
+          const relatedSubjects = await fetcher.fetchSubjectsByIDs(relatedIDs, true);
           const lostIDs = newRelatedIDs.filter((id) => !relatedSubjects[id]);
           if (lostIDs.length > 0) {
             throw new NotFoundError(`related subject ${lostIDs.join(', ')}`);
           }
-          const falseTypedRelated = Object.values(relatedSubjects).filter(
-            (s) => s.type !== relatedType,
-          );
-          if (falseTypedRelated.length > 0) {
-            throw new BadRequestError(
-              `subject ${falseTypedRelated.map((s) => s.id).join(', ')} type not match`,
-            );
+          const lockedIDs = relatedIDs.filter((id) => relatedSubjects[id]?.locked);
+          if (lockedIDs.length > 0) {
+            throw new NotAllowedError(`relate locked subject ${lockedIDs.join(', ')}`);
+          }
+          const falseTypedIDs = Object.values(relatedSubjects)
+            .filter((s) => s.type !== relatedType)
+            .map((s) => s.id);
+          if (falseTypedIDs.length > 0) {
+            throw new BadRequestError(`subject ${falseTypedIDs.join(', ')} type not match`);
           }
         }
 
@@ -1348,7 +1358,7 @@ export async function setup(app: App) {
               if (old) {
                 const oldViceVersa = isRelationViceVersa(relatedType, old.type);
                 if (oldViceVersa) {
-                  txn
+                  await txn
                     .delete(schema.chiiSubjectRelations)
                     .where(
                       op.and(
@@ -1407,6 +1417,7 @@ export async function setup(app: App) {
               }))
               .toSorted((a, b) => a.related_subject_id - b.related_subject_id),
             remote: relationEdits
+              .filter((r) => isRelationViceVersa(relatedType, r.type))
               .map((r) => ({
                 subject_id: r.subject.id,
                 subject_type_id: relatedType,

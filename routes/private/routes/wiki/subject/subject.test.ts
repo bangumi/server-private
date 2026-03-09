@@ -745,7 +745,7 @@ describe('subject relations edit', () => {
     expect(res.statusCode).toBe(403);
   });
 
-  describe('should update subject relations', async () => {
+  test('should update subject relations', async () => {
     const payload = {
       commitMessage: 'update relations',
       relations: [
@@ -783,58 +783,51 @@ describe('subject relations edit', () => {
       payload,
     });
 
-    test('should get updated subject relations', async () => {
-      expect(res.statusCode).toBe(200);
-      const afterEdit = await app.inject('/subjects/8/relations?type=2');
-      expect(afterEdit.json()).toMatchSnapshot();
-    });
+    expect(res.statusCode).toBe(200);
+    const afterEdit = await app.inject('/subjects/8/relations?type=2');
+    expect(afterEdit.json()).toMatchSnapshot();
 
-    test('should delete reverse subject relations', async () => {
-      const afterDeleteReverse = await app.inject('/subjects/199229/relations?type=2');
-      expect(afterDeleteReverse.json()).toMatchInlineSnapshot(`Array []`);
-    });
+    const afterDeleteReverse = await app.inject('/subjects/199229/relations?type=2');
+    expect(afterDeleteReverse.json()).toMatchInlineSnapshot(`Array []`);
 
-    test('should update reverse subject relations', async () => {
-      const afterEditReverse = await app.inject('/subjects/793/relations?type=2');
-      expect(afterEditReverse.json()).toMatchSnapshot();
-    });
+    const afterEditReverse = await app.inject('/subjects/793/relations?type=2');
+    expect(afterEditReverse.json()).toMatchSnapshot();
 
-    test('should not update reverse subject relations if skip vice versa', async () => {
-      const afterEditShouldNotReverse = await app.inject('/subjects/993/relations?type=2');
-      expect(afterEditShouldNotReverse.json()).toMatchInlineSnapshot(`Array []`);
-    });
+    const afterEditShouldNotReverse = await app.inject('/subjects/993/relations?type=2');
+    expect(afterEditShouldNotReverse.json()).toMatchInlineSnapshot(`Array []`);
+  });
+});
+
+test('should handle self relation error', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: { id: 1 },
+        type: 1,
+        order: 1,
+      },
+    ],
+  };
+  const app = await testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
   });
 
-  test('should handle self relation error', async () => {
-    const payload = {
-      commitMessage: 'update relations',
-      relations: [
-        {
-          subject: { id: 1 },
-          type: 1,
-          order: 1,
-        },
-      ],
-    };
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+  const res = await app.inject({
+    url: '/subjects/1/relations?type=1',
+    method: 'put',
+    payload,
+  });
 
-    const res = await app.inject({
-      url: '/subjects/1/relations?type=1',
-      method: 'put',
-      payload,
-    });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.json()).toMatchInlineSnapshot(`
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
       Object {
         "code": "BAD_REQUEST",
         "error": "Bad Request",
@@ -842,38 +835,38 @@ describe('subject relations edit', () => {
         "statusCode": 400,
       }
     `);
+});
+
+test('should handle invalid relation type', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: { id: 8 },
+        type: 1002,
+        order: 1,
+      },
+    ],
+  };
+  const app = await testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
   });
 
-  test('should handle invalid relation type', async () => {
-    const payload = {
-      commitMessage: 'update relations',
-      relations: [
-        {
-          subject: { id: 8 },
-          type: 1002,
-          order: 1,
-        },
-      ],
-    };
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+  const res = await app.inject({
+    url: '/subjects/1/relations?type=2',
+    method: 'put',
+    payload,
+  });
 
-    const res = await app.inject({
-      url: '/subjects/1/relations?type=2',
-      method: 'put',
-      payload,
-    });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.json()).toMatchInlineSnapshot(`
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
       Object {
         "code": "BAD_REQUEST",
         "error": "Bad Request",
@@ -881,38 +874,38 @@ describe('subject relations edit', () => {
         "statusCode": 400,
       }
     `);
+});
+
+test('should handle wrong subject type', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: { id: 8 },
+        type: 1,
+        order: 1,
+      },
+    ],
+  };
+  const app = await testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
   });
 
-  test('should handle wrong subject type', async () => {
-    const payload = {
-      commitMessage: 'update relations',
-      relations: [
-        {
-          subject: { id: 8 },
-          type: 1,
-          order: 1,
-        },
-      ],
-    };
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+  const res = await app.inject({
+    url: '/subjects/1/relations?type=1',
+    method: 'put',
+    payload,
+  });
 
-    const res = await app.inject({
-      url: '/subjects/1/relations?type=1',
-      method: 'put',
-      payload,
-    });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.json()).toMatchInlineSnapshot(`
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
       Object {
         "code": "BAD_REQUEST",
         "error": "Bad Request",
@@ -920,7 +913,6 @@ describe('subject relations edit', () => {
         "statusCode": 400,
       }
     `);
-  });
 });
 
 describe('subject relations revision', () => {

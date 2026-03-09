@@ -240,7 +240,7 @@ Object {
 }
 `;
 
-exports[`subject relations edit > should update subject relations > should get updated subject relations 1`] = `
+exports[`subject relations edit > should update subject relations 1`] = `
 Array [
   Object {
     "order": 2,
@@ -263,7 +263,7 @@ Array [
 ]
 `;
 
-exports[`subject relations edit > should update subject relations > should update reverse subject relations 1`] = `
+exports[`subject relations edit > should update subject relations 3`] = `
 Array [
   Object {
     "order": 0,
