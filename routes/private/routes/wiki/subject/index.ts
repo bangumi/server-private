@@ -25,12 +25,11 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
-import { validateDuration } from '@app/lib/utils/index.ts';
+import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
 import { matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
-import { assertValue } from '@app/vendor/validate.ts';
 
 import * as imageRoutes from './image.ts';
 import * as manageRoutes from './mgr.ts';
@@ -1021,24 +1020,24 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(SubjectRelationRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(SubjectRelationRev, revContentRaw);
       const rels = Object.values(revContent.self);
-      const subjectIDs = rels.map((rel) => +rel.related_subject_id);
+      const subjectIDs = rels.map((rel) => rel.related_subject_id);
       const subjectsMap = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, true);
 
       const relations = rels.map((rel) => {
-        const subjectID = +rel.related_subject_id;
+        const subjectID = rel.related_subject_id;
         const subject = subjectsMap[subjectID];
         return {
           subject: {
             id: subjectID,
-            typeID: +rel.related_subject_type_id,
+            typeID: rel.related_subject_type_id,
             name: subject?.name || '',
             nameCN: subject?.nameCN || '',
           },
-          type: +rel.relation_type,
-          order: +rel.relation_order,
+          type: rel.relation_type,
+          order: rel.relation_order,
         };
       });
 
@@ -1152,14 +1151,14 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(SubjectCharacterRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(SubjectCharacterRev, revContentRaw);
       const rels = Object.values(revContent);
-      const characterIDs = rels.map((rel) => +rel.crt_id);
+      const characterIDs = rels.map((rel) => rel.crt_id);
       const charactersMap = await fetcher.fetchSlimCharactersByIDs(characterIDs, true);
 
       const relations = rels.map((rel) => {
-        const characterID = +rel.crt_id;
+        const characterID = rel.crt_id;
         const character = charactersMap[characterID];
         return {
           character: {
@@ -1167,8 +1166,8 @@ export async function setup(app: App) {
             name: character?.name || '',
             nameCN: character?.nameCN || '',
           },
-          type: +rel.crt_type,
-          order: +rel.crt_order,
+          type: rel.crt_type,
+          order: rel.crt_order,
         };
       });
 
@@ -1282,14 +1281,14 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(SubjectPersonRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(SubjectPersonRev, revContentRaw);
       const rels = Object.values(revContent);
-      const personIDs = rels.map((rel) => +rel.prsn_id);
+      const personIDs = rels.map((rel) => rel.prsn_id);
       const personsMap = await fetcher.fetchSlimPersonsByIDs(personIDs, true);
 
       const relations = rels.map((rel) => {
-        const personID = +rel.prsn_id;
+        const personID = rel.prsn_id;
         const person = personsMap[personID];
         return {
           person: {
@@ -1297,7 +1296,7 @@ export async function setup(app: App) {
             name: person?.name || '',
             nameCN: person?.nameCN || '',
           },
-          position: +rel.position,
+          position: rel.position,
         };
       });
 

@@ -104,36 +104,36 @@ export const PersonRev = t.Object(
 );
 
 const SubjectRelationRevSelf = t.Object({
-  subject_id: t.String(),
-  subject_type_id: t.String(),
-  relation_type: t.String(),
+  subject_id: t.Integer(),
+  subject_type_id: t.Integer(),
+  relation_type: t.Integer(),
   relation_order: t.Integer(),
-  related_subject_id: t.String(),
-  related_subject_type_id: t.String(),
+  related_subject_id: t.Integer(),
+  related_subject_type_id: t.Integer(),
 });
 const SubjectRelationRevRemote = t.Object({
-  subject_id: t.String(),
-  subject_type_id: t.String(),
-  relation_type: t.Union([t.String(), t.Integer()]),
-  related_subject_id: t.String(),
-  related_subject_type_id: t.String(),
+  subject_id: t.Integer(),
+  subject_type_id: t.Integer(),
+  relation_type: t.Integer(),
+  related_subject_id: t.Integer(),
+  related_subject_type_id: t.Integer(),
 });
 export type ISubjectRelationRev = Static<typeof SubjectRelationRev>;
 export const SubjectRelationRev = t.Object(
   {
-    self: t.Union([t.Array(SubjectRelationRevSelf), t.Record(t.String(), SubjectRelationRevSelf)]),
+    self: t.Union([t.Record(t.String(), SubjectRelationRevSelf), t.Array(SubjectRelationRevSelf)]),
     remote: t.Union([
-      t.Array(SubjectRelationRevRemote),
       t.Record(t.String(), SubjectRelationRevRemote),
+      t.Array(SubjectRelationRevRemote),
     ]),
   },
   { $id: 'SubjectRelationRev' },
 );
 
 const SubjectCharacterRevSingle = t.Object({
-  subject_id: t.String(),
-  crt_type: t.String(),
-  crt_id: t.String(),
+  subject_id: t.Integer(),
+  crt_type: t.Integer(),
+  crt_id: t.Integer(),
   crt_order: t.Integer(),
 });
 export type ISubjectCharacterRev = Static<typeof SubjectCharacterRev>;
@@ -144,9 +144,9 @@ export const SubjectCharacterRev = t.Union(
 
 export type ISubjectPersonRev = Static<typeof SubjectPersonRev>;
 const SubjectPersonRevSingle = t.Object({
-  subject_id: t.String(),
-  position: t.String(),
-  prsn_id: t.String(),
+  subject_id: t.Integer(),
+  position: t.Integer(),
+  prsn_id: t.Integer(),
 });
 export const SubjectPersonRev = t.Union(
   [t.Record(t.String(), SubjectPersonRevSingle), t.Array(SubjectPersonRevSingle)],
@@ -155,8 +155,8 @@ export const SubjectPersonRev = t.Union(
 
 export type IPersonSubjectRev = Static<typeof PersonSubjectRev>;
 const PersonSubjectRevSingle = t.Object({
-  subject_id: t.String(),
-  position: t.String(),
+  subject_id: t.Integer(),
+  position: t.Integer(),
   prsn_id: t.Integer(),
 });
 export const PersonSubjectRev = t.Union(
@@ -166,8 +166,8 @@ export const PersonSubjectRev = t.Union(
 
 export type IPersonCastRev = Static<typeof PersonCastRev>;
 const PersonCastRevSingle = t.Object({
-  subject_id: t.String(),
-  crt_id: t.String(),
+  subject_id: t.Integer(),
+  crt_id: t.Integer(),
   prsn_id: t.Integer(),
   summary: t.Union([t.String(), t.Null()]),
 });
@@ -178,8 +178,8 @@ export const PersonCastRev = t.Union(
 
 export type ICharacterSubjectRev = Static<typeof CharacterSubjectRev>;
 const CharacterSubjectRevSingle = t.Object({
-  subject_id: t.String(),
-  crt_type: t.String(),
+  subject_id: t.Integer(),
+  crt_type: t.Integer(),
   crt_id: t.Integer(),
   crt_order: t.Integer(),
 });
@@ -190,8 +190,8 @@ export const CharacterSubjectRev = t.Union(
 
 export type ICharacterCastRev = Static<typeof CharacterCastRev>;
 const CharacterCastRevSingle = t.Object({
-  subject_id: t.String(),
-  prsn_id: t.String(),
+  subject_id: t.Integer(),
+  prsn_id: t.Integer(),
   crt_id: t.Integer(),
   summary: t.Union([t.String(), t.Null()]),
 });

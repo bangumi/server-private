@@ -14,10 +14,10 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
+import { parseConvertedValue } from '@app/lib/utils/index.ts';
 import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
-import { assertValue } from '@app/vendor/validate.ts';
 
 export const CharacterWikiInfo = t.Object(
   {
@@ -368,8 +368,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(CharacterRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(CharacterRev, revContentRaw);
 
       return {
         name: revContent.crt_name,
@@ -486,10 +486,10 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(CharacterSubjectRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(CharacterSubjectRev, revContentRaw);
       const rels = Object.values(revContent);
-      const subjectIDs = rels.map((rel) => +rel.subject_id);
+      const subjectIDs = rels.map((rel) => rel.subject_id);
       const subjectsMap: Record<
         number,
         {
@@ -513,7 +513,7 @@ export async function setup(app: App) {
       }
 
       const relations = rels.flatMap((rel) => {
-        const subjectID = +rel.subject_id;
+        const subjectID = rel.subject_id;
         const subject = subjectsMap[subjectID];
         if (!subject) return [];
 
@@ -525,8 +525,8 @@ export async function setup(app: App) {
               name: subject.name,
               nameCN: subject.nameCN,
             },
-            type: +rel.crt_type,
-            order: +rel.crt_order,
+            type: rel.crt_type,
+            order: rel.crt_order,
           },
         ];
       });
@@ -641,10 +641,10 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(CharacterCastRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(CharacterCastRev, revContentRaw);
       const rels = Object.values(revContent);
-      const subjectIDs = rels.map((rel) => +rel.subject_id);
+      const subjectIDs = rels.map((rel) => rel.subject_id);
       const subjectsMap: Record<
         number,
         {
@@ -667,12 +667,12 @@ export async function setup(app: App) {
         };
       }
 
-      const personIDs = rels.map((rel) => +rel.prsn_id);
+      const personIDs = rels.map((rel) => rel.prsn_id);
       const personsMap = await fetcher.fetchSlimPersonsByIDs(personIDs, true);
 
       const relations = rels.flatMap((rel) => {
-        const subjectID = +rel.subject_id;
-        const personID = +rel.prsn_id;
+        const subjectID = rel.subject_id;
+        const personID = rel.prsn_id;
 
         const subject = subjectsMap[subjectID];
         const person = personsMap[personID];

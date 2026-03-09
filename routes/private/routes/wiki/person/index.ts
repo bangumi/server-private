@@ -14,10 +14,10 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
+import { parseConvertedValue } from '@app/lib/utils/index.ts';
 import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
-import { assertValue } from '@app/vendor/validate.ts';
 
 export const PersonCareers = [
   'producer',
@@ -415,8 +415,8 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(PersonRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(PersonRev, revContentRaw);
 
       return {
         name: revContent.prsn_name,
@@ -536,10 +536,10 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(PersonSubjectRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(PersonSubjectRev, revContentRaw);
       const rels = Object.values(revContent);
-      const subjectIDs = rels.map((rel) => +rel.subject_id);
+      const subjectIDs = rels.map((rel) => rel.subject_id);
       const subjectsMap: Record<
         number,
         {
@@ -563,7 +563,7 @@ export async function setup(app: App) {
       }
 
       const relations = rels.flatMap((rel) => {
-        const subjectID = +rel.subject_id;
+        const subjectID = rel.subject_id;
         const subject = subjectsMap[subjectID];
 
         if (!subject) return [];
@@ -576,7 +576,7 @@ export async function setup(app: App) {
               name: subject.name,
               nameCN: subject.nameCN,
             },
-            position: +rel.position,
+            position: rel.position,
           },
         ];
       });
@@ -691,10 +691,10 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContent = revRecord[revisionID];
-      assertValue(PersonCastRev, revContent, `revRecord[${revisionID}]`);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(PersonCastRev, revContentRaw);
       const rels = Object.values(revContent);
-      const subjectIDs = rels.map((rel) => +rel.subject_id);
+      const subjectIDs = rels.map((rel) => rel.subject_id);
       const subjectsMap: Record<
         number,
         {
@@ -716,12 +716,12 @@ export async function setup(app: App) {
           nameCN: d.nameCN,
         };
       }
-      const characterIDs = rels.map((rel) => +rel.crt_id);
+      const characterIDs = rels.map((rel) => rel.crt_id);
       const charactersMap = await fetcher.fetchSlimCharactersByIDs(characterIDs, true);
 
       const relations = rels.flatMap((rel) => {
-        const subjectID = +rel.subject_id;
-        const characterID = +rel.crt_id;
+        const subjectID = rel.subject_id;
+        const characterID = rel.crt_id;
 
         const subject = subjectsMap[subjectID];
         const character = charactersMap[characterID];
