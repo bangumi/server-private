@@ -703,3 +703,56 @@ describe('patch episodes', () => {
     });
   });
 });
+
+describe('subject relations', () => {
+  test('should get subject relation revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/subjects/-/relations/revisions/920431');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/relations/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject character relation revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/subjects/-/characters/revisions/1041128');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject character relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/characters/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject person revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/subjects/-/persons/revisions/62793');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject person relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/persons/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+});
