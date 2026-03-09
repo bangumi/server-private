@@ -206,7 +206,7 @@ export const relationMappings = {
   },
 };
 
-export function isRelationViceVersa(subjectType: number, relationType: number): boolean {
+export function isRelationViceVersa(subjectType: SubjectType, relationType: number): boolean {
   const rtype = findSubjectRelationType(subjectType, relationType);
   if (!rtype) return true;
   return !rtype.skip_vice_versa;
@@ -222,7 +222,7 @@ export function getReverseRelation(
   }
   if (subjectType === SubjectType.Real) subjectType = SubjectType.Anime;
   if (relatedType === SubjectType.Real) relatedType = SubjectType.Anime;
-  const mappingKey = `${subjectType}-${relatedType}`;
+  const mappingKey = `${relatedType}-${subjectType}`;
   const mapping = relationMappings[mappingKey as keyof typeof relationMappings];
 
   const reverseRelation = mapping[relationType as keyof typeof mapping];
