@@ -977,7 +977,11 @@ export async function setup(app: App) {
           relations: t.Array(SubjectRelationWikiEdit, {
             $id: 'SubjectRelationWikiEdit',
           }),
-          expectedRevision: t.Optional(t.Array(SubjectRelationExpected)),
+          expectedRevision: t.Optional(
+            t.Array(SubjectRelationExpected, {
+              $id: 'SubjectRelationExpected',
+            }),
+          ),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
@@ -1053,21 +1057,19 @@ export async function setup(app: App) {
           }
         }
 
-        const makeMap = (arr: ISubjectRelationWikiEdit[]) =>
-          arr.reduce(
-            (map, r) => {
-              map[r.subject.id] = r;
-              return map;
-            },
-            {} as Record<number, ISubjectRelationWikiEdit>,
-          );
-        const relationEditMap = makeMap(relationEdits);
-        const oldRelationMap = makeMap(oldRelations);
-
+        const relationEditMap: Record<number, ISubjectRelationWikiEdit> = {};
+        const oldRelationMap: Record<number, ISubjectRelationWikiEdit> = {};
         const deleteRelationEdit: ISubjectRelationWikiEdit[] = [];
         const newRelationEdit: ISubjectRelationWikiEdit[] = [];
         const existingRelationEdit: ISubjectRelationWikiEdit[] = [];
+
+        for (const r of oldRelations) {
+          oldRelationMap[r.subject.id] = r;
+        }
+
         for (const r of relationEdits) {
+          relationEditMap[r.subject.id] = r;
+
           const old = oldRelationMap[r.subject.id];
           if (!old) {
             newRelationEdit.push(r);
