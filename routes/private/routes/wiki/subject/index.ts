@@ -1286,7 +1286,7 @@ export async function setup(app: App) {
           );
           if (falseTypedRelated.length > 0) {
             throw new BadRequestError(
-              `subject ${falseTypedRelated.map((s) => s.type).join(', ')} type don't match`,
+              `subject ${falseTypedRelated.map((s) => s.id).join(', ')} type not match`,
             );
           }
         }
@@ -1316,19 +1316,6 @@ export async function setup(app: App) {
         if (existingRelationEdit.length > 0) {
           for (const r of existingRelationEdit) {
             const viceVersa = isRelationViceVersa(relatedType, r.type);
-            const reverseRelationType = getReverseRelation(subject.type, relatedType, r.type);
-            await txn
-              .update(schema.chiiSubjectRelations)
-              .set({
-                relation: reverseRelationType,
-                viceVersa: +viceVersa,
-              })
-              .where(
-                op.and(
-                  op.eq(schema.chiiSubjectRelations.id, r.subject.id),
-                  op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
-                ),
-              );
             await txn
               .update(schema.chiiSubjectRelations)
               .set({
@@ -1342,6 +1329,36 @@ export async function setup(app: App) {
                   op.eq(schema.chiiSubjectRelations.relatedID, r.subject.id),
                 ),
               );
+            if (viceVersa) {
+              const reverseRelationType = getReverseRelation(subject.type, relatedType, r.type);
+              await txn
+                .update(schema.chiiSubjectRelations)
+                .set({
+                  relation: reverseRelationType,
+                  viceVersa: +viceVersa,
+                })
+                .where(
+                  op.and(
+                    op.eq(schema.chiiSubjectRelations.id, r.subject.id),
+                    op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
+                  ),
+                );
+            } else {
+              const old = oldRelationMap[r.subject.id];
+              if (old) {
+                const oldViceVersa = isRelationViceVersa(relatedType, old.type);
+                if (oldViceVersa) {
+                  txn
+                    .delete(schema.chiiSubjectRelations)
+                    .where(
+                      op.and(
+                        op.eq(schema.chiiSubjectRelations.id, r.subject.id),
+                        op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
+                      ),
+                    );
+                }
+              }
+            }
           }
         }
 
@@ -1379,21 +1396,25 @@ export async function setup(app: App) {
           mid: subjectID,
           type: RevType.subjectRelation,
           rev: {
-            self: relationEdits.map((r) => ({
-              subject_id: subjectID,
-              subject_type_id: subject.type,
-              relation_type: r.type,
-              relation_order: r.order ?? 0,
-              related_subject_id: r.subject.id,
-              related_subject_type_id: relatedType,
-            })),
-            remote: relationEdits.map((r) => ({
-              subject_id: r.subject.id,
-              subject_type_id: relatedType,
-              relation_type: getReverseRelation(subject.type, relatedType, r.type),
-              related_subject_id: subjectID,
-              related_subject_type_id: subject.type,
-            })),
+            self: relationEdits
+              .map((r) => ({
+                subject_id: subjectID,
+                subject_type_id: subject.type,
+                relation_type: r.type,
+                relation_order: r.order ?? 0,
+                related_subject_id: r.subject.id,
+                related_subject_type_id: relatedType,
+              }))
+              .toSorted((a, b) => a.related_subject_id - b.related_subject_id),
+            remote: relationEdits
+              .map((r) => ({
+                subject_id: r.subject.id,
+                subject_type_id: relatedType,
+                relation_type: getReverseRelation(subject.type, relatedType, r.type),
+                related_subject_id: subjectID,
+                related_subject_type_id: subject.type,
+              }))
+              .toSorted((a, b) => a.subject_id - b.subject_id),
           } satisfies ISubjectRelationRev,
           creator: auth.userID,
           comment: commitMessage,
