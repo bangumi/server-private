@@ -125,7 +125,7 @@ exports[`character > should get character casts 1`] = `
 Object {
   "data": Array [
     Object {
-      "actors": Array [],
+      "casts": Array [],
       "subject": Object {
         "id": 12,
         "images": Object {

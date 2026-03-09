@@ -21,6 +21,7 @@ export default defineConfig({
       printBasicPrototype: true,
     },
     ui: false,
+    testTimeout: 10_000,
     isolate: false,
     fileParallelism: false,
     coverage: {

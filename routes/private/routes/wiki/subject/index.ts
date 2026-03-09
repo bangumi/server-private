@@ -10,12 +10,14 @@ import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
-import type {
+import type { ISubjectRelationRev } from '@app/lib/rev/type.ts';
+import {
+  RevType,
+  SubjectCharacterRev,
+  SubjectPersonRev,
   SubjectRelationRev,
-  SubjectRelationRevRemote,
-  SubjectRelationRevSelf,
 } from '@app/lib/rev/type.ts';
-import { RevType } from '@app/lib/rev/type.ts';
+import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
@@ -23,8 +25,9 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
-import { validateDuration } from '@app/lib/utils/index.ts';
+import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
 import { getReverseRelation, isRelationViceVersa, matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -196,6 +199,54 @@ const SubjectRelationExpected = t.Optional(
   ),
 );
 
+type ISubjectRelationRevisionWikiInfo = Static<typeof SubjectRelationRevisionWikiInfo>;
+export const SubjectRelationRevisionWikiInfo = t.Array(
+  t.Object({
+    subject: t.Object({
+      id: t.Integer(),
+      typeID: res.Ref(res.SubjectType),
+      name: t.String(),
+      nameCN: t.String(),
+    }),
+    type: t.Integer(),
+    order: t.Integer(),
+  }),
+  {
+    $id: 'SubjectRelationRevisionWikiInfo',
+  },
+);
+
+type ISubjectCharacterRevisionWikiInfo = Static<typeof SubjectCharacterRevisionWikiInfo>;
+export const SubjectCharacterRevisionWikiInfo = t.Array(
+  t.Object({
+    character: t.Object({
+      id: t.Integer(),
+      name: t.String(),
+      nameCN: t.String(),
+    }),
+    type: t.Integer(),
+    order: t.Integer(),
+  }),
+  {
+    $id: 'SubjectCharacterRevisionWikiInfo',
+  },
+);
+
+type ISubjectPersonRevisionWikiInfo = Static<typeof SubjectPersonRevisionWikiInfo>;
+export const SubjectPersonRevisionWikiInfo = t.Array(
+  t.Object({
+    person: t.Object({
+      id: t.Integer(),
+      name: t.String(),
+      nameCN: t.String(),
+    }),
+    position: t.Integer(),
+  }),
+  {
+    $id: 'SubjectPersonRevisionWikiInfo',
+  },
+);
+
 const EpisodePartial = t.Partial(t.Omit(req.EpisodeWikiInfo, ['id', 'subjectID']));
 
 export const EpsisodesNew = t.Object(
@@ -228,6 +279,9 @@ export async function setup(app: App) {
   app.addSchema(Platform);
   app.addSchema(SubjectWikiInfo);
   app.addSchema(SubjectRelationWikiInfo);
+  app.addSchema(SubjectRelationRevisionWikiInfo);
+  app.addSchema(SubjectCharacterRevisionWikiInfo);
+  app.addSchema(SubjectPersonRevisionWikiInfo);
 
   app.get(
     '/subjects/:subjectID',
@@ -959,6 +1013,137 @@ export async function setup(app: App) {
     },
   );
 
+  app.get(
+    '/subjects/:subjectID/relations/history-summary',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectRelationHistorySummary',
+        summary: '获取条目关联 wiki 历史编辑摘要',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.PagedRevisionHistory,
+        },
+      },
+    },
+    async ({ params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectRelation),
+          ),
+        );
+
+      const history = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectRelation),
+          ),
+        )
+        .orderBy(op.desc(schema.chiiRevHistory.revId))
+        .offset(offset)
+        .limit(limit);
+
+      const users = await fetcher.fetchSlimUsersByIDs(history.map((x) => x.revCreator));
+
+      const revisions = history.map((x) => {
+        return {
+          id: x.revId,
+          creator: {
+            username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+          },
+          type: x.revType,
+          createdAt: x.createdAt,
+          commitMessage: x.revEditSummary,
+        } satisfies res.IRevisionHistory;
+      });
+
+      return {
+        total: count,
+        data: revisions,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/-/relations/revisions/:revisionID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectRelationRevisionInfo',
+        summary: '获取条目关联历史版本 wiki 信息',
+        params: t.Object({
+          revisionID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Ref(SubjectRelationRevisionWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('revision')),
+          }),
+        },
+      },
+    },
+    async ({ params: { revisionID } }): Promise<ISubjectRelationRevisionWikiInfo> => {
+      const [r] = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(op.eq(schema.chiiRevHistory.revId, revisionID))
+        .limit(1);
+      if (!r || r.revType !== RevType.subjectRelation) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      const [revText] = await db
+        .select()
+        .from(schema.chiiRevText)
+        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId))
+        .limit(1);
+      if (!revText) {
+        throw new NotFoundError(`RevText ${r.revTextId}`);
+      }
+
+      const revRecord = await deserializeRevText(revText.revText);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(SubjectRelationRev, revContentRaw);
+      const rels = Object.values(revContent.self);
+      const subjectIDs = rels.map((rel) => rel.related_subject_id);
+      const subjectsMap = await fetcher.fetchSlimSubjectsByIDs(subjectIDs, true);
+
+      const relations = rels.map((rel) => {
+        const subjectID = rel.related_subject_id;
+        const subject = subjectsMap[subjectID];
+        return {
+          subject: {
+            id: subjectID,
+            typeID: rel.related_subject_type_id,
+            name: subject?.name || '',
+            nameCN: subject?.nameCN || '',
+          },
+          type: rel.relation_type,
+          order: rel.relation_order,
+        };
+      });
+
+      return relations;
+    },
+  );
+
   app.put(
     '/subjects/:subjectID/relations',
     {
@@ -1194,38 +1379,285 @@ export async function setup(app: App) {
           mid: subjectID,
           type: RevType.subjectRelation,
           rev: {
-            self: relationEdits.reduce(
-              (obj, r, index) => {
-                obj[String(index)] = {
-                  subject_id: String(subjectID),
-                  subject_type_id: String(subject.type),
-                  relation_type: String(r.type),
-                  relation_order: String(r.order),
-                  related_subject_id: String(r.subject.id),
-                  related_subject_type_id: String(relatedType),
-                };
-                return obj;
-              },
-              {} as Record<string, SubjectRelationRevSelf>,
-            ),
-            remote: relationEdits.reduce(
-              (obj, r, index) => {
-                obj[String(index)] = {
-                  subject_id: String(r.subject.id),
-                  subject_type_id: String(relatedType),
-                  relation_type: String(getReverseRelation(subject.type, relatedType, r.type)),
-                  related_subject_id: String(subjectID),
-                  related_subject_type_id: String(subject.type),
-                };
-                return obj;
-              },
-              {} as Record<string, SubjectRelationRevRemote>,
-            ),
-          } satisfies SubjectRelationRev,
+            self: relationEdits.map((r) => ({
+              subject_id: subjectID,
+              subject_type_id: subject.type,
+              relation_type: r.type,
+              relation_order: r.order ?? 0,
+              related_subject_id: r.subject.id,
+              related_subject_type_id: relatedType,
+            })),
+            remote: relationEdits.map((r) => ({
+              subject_id: r.subject.id,
+              subject_type_id: relatedType,
+              relation_type: getReverseRelation(subject.type, relatedType, r.type),
+              related_subject_id: subjectID,
+              related_subject_type_id: subject.type,
+            })),
+          } satisfies ISubjectRelationRev,
           creator: auth.userID,
           comment: commitMessage,
         });
       });
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/characters/history-summary',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectCharacterHistorySummary',
+        summary: '获取条目-角色关联 wiki 历史编辑摘要',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.PagedRevisionHistory,
+        },
+      },
+    },
+    async ({ params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectCharacterRelation),
+          ),
+        );
+
+      const history = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectCharacterRelation),
+          ),
+        )
+        .orderBy(op.desc(schema.chiiRevHistory.revId))
+        .offset(offset)
+        .limit(limit);
+
+      const users = await fetcher.fetchSlimUsersByIDs(history.map((x) => x.revCreator));
+
+      const revisions = history.map((x) => {
+        return {
+          id: x.revId,
+          creator: {
+            username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+          },
+          type: x.revType,
+          createdAt: x.createdAt,
+          commitMessage: x.revEditSummary,
+        } satisfies res.IRevisionHistory;
+      });
+
+      return {
+        total: count,
+        data: revisions,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/-/characters/revisions/:revisionID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectCharacterRevisionInfo',
+        summary: '获取条目-角色关联历史版本 wiki 信息',
+        params: t.Object({
+          revisionID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Ref(SubjectCharacterRevisionWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('revision')),
+          }),
+        },
+      },
+    },
+    async ({ params: { revisionID } }): Promise<ISubjectCharacterRevisionWikiInfo> => {
+      const [r] = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(op.eq(schema.chiiRevHistory.revId, revisionID))
+        .limit(1);
+      if (!r || r.revType !== RevType.subjectCharacterRelation) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      const [revText] = await db
+        .select()
+        .from(schema.chiiRevText)
+        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId))
+        .limit(1);
+      if (!revText) {
+        throw new NotFoundError(`RevText ${r.revTextId}`);
+      }
+
+      const revRecord = await deserializeRevText(revText.revText);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(SubjectCharacterRev, revContentRaw);
+      const rels = Object.values(revContent);
+      const characterIDs = rels.map((rel) => rel.crt_id);
+      const charactersMap = await fetcher.fetchSlimCharactersByIDs(characterIDs, true);
+
+      const relations = rels.map((rel) => {
+        const characterID = rel.crt_id;
+        const character = charactersMap[characterID];
+        return {
+          character: {
+            id: characterID,
+            name: character?.name || '',
+            nameCN: character?.nameCN || '',
+          },
+          type: rel.crt_type,
+          order: rel.crt_order,
+        };
+      });
+
+      return relations;
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/persons/history-summary',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'subjectPersonHistorySummary',
+        summary: '获取条目-人物关联 wiki 历史编辑摘要',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.PagedRevisionHistory,
+        },
+      },
+    },
+    async ({ params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectPersonRelation),
+          ),
+        );
+
+      const history = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, subjectID),
+            op.eq(schema.chiiRevHistory.revType, RevType.subjectPersonRelation),
+          ),
+        )
+        .orderBy(op.desc(schema.chiiRevHistory.revId))
+        .offset(offset)
+        .limit(limit);
+
+      const users = await fetcher.fetchSlimUsersByIDs(history.map((x) => x.revCreator));
+
+      const revisions = history.map((x) => {
+        return {
+          id: x.revId,
+          creator: {
+            username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+          },
+          type: x.revType,
+          createdAt: x.createdAt,
+          commitMessage: x.revEditSummary,
+        } satisfies res.IRevisionHistory;
+      });
+
+      return {
+        total: count,
+        data: revisions,
+      };
+    },
+  );
+
+  app.get(
+    '/subjects/-/persons/revisions/:revisionID',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectPersonRevisionInfo',
+        summary: '获取条目-人物关联历史版本 wiki 信息',
+        params: t.Object({
+          revisionID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Ref(SubjectPersonRevisionWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('revision')),
+          }),
+        },
+      },
+    },
+    async ({ params: { revisionID } }): Promise<ISubjectPersonRevisionWikiInfo> => {
+      const [r] = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(op.eq(schema.chiiRevHistory.revId, revisionID))
+        .limit(1);
+      if (!r || r.revType !== RevType.subjectPersonRelation) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      const [revText] = await db
+        .select()
+        .from(schema.chiiRevText)
+        .where(op.eq(schema.chiiRevText.revTextId, r.revTextId))
+        .limit(1);
+      if (!revText) {
+        throw new NotFoundError(`RevText ${r.revTextId}`);
+      }
+
+      const revRecord = await deserializeRevText(revText.revText);
+      const revContentRaw = revRecord[revisionID];
+      const revContent = parseConvertedValue(SubjectPersonRev, revContentRaw);
+      const rels = Object.values(revContent);
+      const personIDs = rels.map((rel) => rel.prsn_id);
+      const personsMap = await fetcher.fetchSlimPersonsByIDs(personIDs, true);
+
+      const relations = rels.map((rel) => {
+        const personID = rel.prsn_id;
+        const person = personsMap[personID];
+        return {
+          person: {
+            id: personID,
+            name: person?.name || '',
+            nameCN: person?.nameCN || '',
+          },
+          position: rel.position,
+        };
+      });
+
+      return relations;
     },
   );
 

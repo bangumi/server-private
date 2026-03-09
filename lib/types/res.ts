@@ -5,6 +5,7 @@ import type { Static, TSchema } from 'typebox';
 import t from 'typebox';
 
 import {
+  CharacterCastType,
   CollectionType,
   EpisodeCollectionStatus,
   EpisodeType,
@@ -693,11 +694,21 @@ export const SubjectRelation = t.Object(
   { $id: 'SubjectRelation' },
 );
 
+export type ICharacterCast = Static<typeof CharacterCast>;
+export const CharacterCast = t.Object(
+  {
+    person: Ref(SlimPerson),
+    relation: Ref(CharacterCastType),
+    summary: t.String(),
+  },
+  { $id: 'CharacterCast' },
+);
+
 export type ISubjectCharacter = Static<typeof SubjectCharacter>;
 export const SubjectCharacter = t.Object(
   {
     character: Ref(SlimCharacter),
-    actors: t.Array(Ref(SlimPerson)),
+    casts: t.Array(Ref(CharacterCast)),
     type: t.Integer(),
     order: t.Integer(),
   },
@@ -763,11 +774,27 @@ export const SubjectRec = t.Object(
   { $id: 'SubjectRec', title: 'SubjectRec' },
 );
 
+export type IPersonRelationType = Static<typeof PersonRelationType>;
+export const PersonRelationType = t.Object(
+  {
+    id: t.Integer(),
+    cn: t.String(),
+    desc: t.String(),
+    viceVersaTo: t.Optional(t.Integer()),
+    skipViceVersa: t.Optional(t.Boolean()),
+    primary: t.Optional(t.Boolean()),
+  },
+  { $id: 'PersonRelationType' },
+);
+
 export type ICharacterRelation = Static<typeof CharacterRelation>;
 export const CharacterRelation = t.Object(
   {
     character: Ref(SlimCharacter),
-    relation: t.Integer({ description: '角色关系: 任职于,从属,聘用,嫁给...' }),
+    relation: Ref(PersonRelationType),
+    spoiler: t.Boolean(),
+    ended: t.Boolean(),
+    comment: t.String(),
   },
   { $id: 'CharacterRelation' },
 );
@@ -776,7 +803,7 @@ export type ICharacterSubject = Static<typeof CharacterSubject>;
 export const CharacterSubject = t.Object(
   {
     subject: Ref(SlimSubject),
-    actors: t.Array(Ref(SlimPerson)),
+    casts: t.Array(Ref(CharacterCast)),
     type: t.Integer(),
   },
   { $id: 'CharacterSubject' },
@@ -795,7 +822,10 @@ export type IPersonRelation = Static<typeof PersonRelation>;
 export const PersonRelation = t.Object(
   {
     person: Ref(SlimPerson),
-    relation: t.Integer({ description: '人物关系: 任职于,从属,聘用,嫁给...' }),
+    relation: Ref(PersonRelationType),
+    spoiler: t.Boolean(),
+    ended: t.Boolean(),
+    comment: t.String(),
   },
   { $id: 'PersonRelation' },
 );

@@ -12,6 +12,7 @@ import type * as res from '@app/lib/types/res.ts';
 import { decode } from '@app/lib/utils';
 import {
   findNetworkService,
+  findPersonRelationType,
   findSubjectPlatform,
   findSubjectRelationType,
   findSubjectStaffPosition,
@@ -313,6 +314,21 @@ export function toSubjectRelationType(relation: orm.ISubjectRelation): res.ISubj
     cn: rtype.cn,
     jp: rtype.jp,
     desc: rtype.desc,
+  };
+}
+
+export function toPersonRelationType(relation: orm.IPersonRelation): res.IPersonRelationType {
+  const rtype = findPersonRelationType(relation.personType, relation.relation);
+  if (!rtype) {
+    return { id: relation.relation, cn: '', desc: '' };
+  }
+  return {
+    id: relation.relation,
+    cn: rtype.cn ?? '',
+    desc: rtype.desc ?? '',
+    viceVersaTo: rtype.vice_versa_to,
+    skipViceVersa: rtype.skip_vice_versa,
+    primary: rtype.primary,
   };
 }
 

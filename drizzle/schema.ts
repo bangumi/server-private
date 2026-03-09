@@ -97,6 +97,7 @@ export const chiiCharacters = mysqlTable('chii_characters', {
 });
 
 export const chiiCharacterCasts = mysqlTable('chii_crt_cast_index', {
+  relation: mediumint('rlt_type').notNull(),
   characterID: mediumint('crt_id').notNull(),
   personID: mediumint('prsn_id').notNull(),
   subjectID: mediumint('subject_id').notNull(),
@@ -437,12 +438,17 @@ export const chiiPersonFields = mysqlTable('chii_person_fields', {
   birthDay: tinyint('birth_day').notNull(),
 });
 
-export const chiiPersonRelations = mysqlTable('chii_person_relationship', {
-  type: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
-  id: mediumint('prsn_id').notNull(),
-  relatedType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
-  relatedID: mediumint('relat_prsn_id').notNull(),
-  relation: smallint('relat_type').notNull(),
+export const chiiPersonRelations = mysqlTable('chii_person_relations', {
+  relationID: mediumint('rlt_id').notNull(),
+  personType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
+  personID: mediumint('prsn_id').notNull(),
+  relatedType: mysqlEnum('rlt_prsn_type', ['prsn', 'crt']).notNull(),
+  relatedID: int('rlt_prsn_id').notNull(),
+  relation: int('rlt_type').notNull(),
+  spoiler: customBoolean('rlt_spoiler').notNull(),
+  ended: customBoolean('rlt_ended').notNull(),
+  viceVersa: customBoolean('rlt_vice_versa').notNull(),
+  comment: htmlEscapedString('text')('rlt_comment').notNull(),
 });
 
 export const chiiPms = mysqlTable('chii_pms', {

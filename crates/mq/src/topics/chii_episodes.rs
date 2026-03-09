@@ -1,0 +1,24 @@
+use anyhow::Result;
+use serde::Deserialize;
+use serde_json::Value;
+
+use crate::context::MqContext;
+use crate::helpers::{
+  del_keys, is_update_or_delete, parse_debezium_payload, parse_json,
+};
+use crate::types::{DebeziumPayload, KafkaMessageOwned};
+
+#[derive(Debug, Deserialize)]
+struct EpisodeKey {
+  ep_id: i64,
+}
+
+pub async fn handle(ctx: &MqContext, msg: &KafkaMessageOwned) -> Result<()> {
+  let payload: DebeziumPayload<Value> = parse_debezium_payload(&msg.value)?;
+  if !is_update_or_delete(&payload.op) {
+    return Ok(());
+  }
+
+  let key: EpisodeKey = parse_json(&msg.key, "episode key")?;
+  del_keys(ctx, &[format!("sbj:v2:ep:{}", key.ep_id)]).await
+}

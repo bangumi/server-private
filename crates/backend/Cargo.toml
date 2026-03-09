@@ -1,0 +1,14 @@
+[package]
+name = "bangumi-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+bangumi-api = { workspace = true }
+bangumi-config = { workspace = true }
+bangumi-cron = { workspace = true }
+bangumi-mq = { workspace = true }
+spdlog-rs = { workspace = true }
+tokio = { workspace = true }

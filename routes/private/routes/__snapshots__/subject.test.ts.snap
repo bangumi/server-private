@@ -413,7 +413,7 @@ exports[`subject > should get subject characters 1`] = `
 Object {
   "data": Array [
     Object {
-      "actors": Array [],
+      "casts": Array [],
       "character": Object {
         "comment": 56,
         "id": 32,
@@ -434,7 +434,7 @@ Object {
       "type": 1,
     },
     Object {
-      "actors": Array [],
+      "casts": Array [],
       "character": Object {
         "comment": 10,
         "id": 33,

@@ -40,11 +40,11 @@ function toSubjectRelation(
 function toSubjectCharacter(
   character: orm.ICharacter,
   relation: orm.ICharacterSubject,
-  actors: res.ISlimPerson[],
+  casts: res.ICharacterCast[],
 ): res.ISubjectCharacter {
   return {
     character: convert.toSlimCharacter(character),
-    actors: actors,
+    casts: casts,
     type: relation.type,
     order: relation.order,
   };

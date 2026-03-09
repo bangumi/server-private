@@ -2,6 +2,8 @@ import * as crypto from 'node:crypto';
 
 import * as php from '@trim21/php-serialize';
 import _parseDuration from 'parse-duration';
+import type { Static, TSchema } from 'typebox';
+import { Value } from 'typebox/value';
 
 import { BadRequestError } from '@app/lib/error.ts';
 
@@ -192,4 +194,12 @@ export function decode(s: string | Buffer): unknown {
   }
 
   return JSON.parse(buf.toString('utf8'));
+}
+
+export function parseConvertedValue<T extends TSchema>(schema: T, value: unknown): Static<T> {
+  const converted = Value.Convert(schema, value);
+  const result = Value.Parse(schema, converted);
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return result;
 }
