@@ -20,7 +20,7 @@ import {
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
-import { SubjectType } from '@app/lib/subject/type.ts';
+import { SubjectType, SubjectTypeCN } from '@app/lib/subject/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -1402,6 +1402,13 @@ export async function setup(app: App) {
           await txn.insert(schema.chiiSubjectRelations).values(insertData);
         }
 
+        const comment = `${SubjectTypeCN(relatedType) || '条目'}关联${
+          newRelationEdit.length === 0 &&
+          existingRelationEdit.length === 0 &&
+          deleteRelationEdit.length > 0
+            ? '删除'
+            : '修改'
+        }${commitMessage ? ` - ${commitMessage}` : ''}`;
         await createRevision(txn, {
           mid: subjectID,
           type: RevType.subjectRelation,
@@ -1428,7 +1435,7 @@ export async function setup(app: App) {
               .toSorted((a, b) => a.subject_id - b.subject_id),
           } satisfies ISubjectRelationRev,
           creator: auth.userID,
-          comment: commitMessage,
+          comment,
         });
       });
     },
