@@ -115,9 +115,6 @@ export const relationMappings = {
     [RelationTypes.ANIME_SIDE_STORY]: RelationTypes.ANIME_PARENT_STORY, // 番外篇 -> 主线故事
     [RelationTypes.ANIME_SPIN_OFF]: RelationTypes.ANIME_PARENT_STORY, // 衍生 -> 主线故事
     [RelationTypes.ANIME_PARENT_STORY]: RelationTypes.ANIME_SIDE_STORY, // 主线故事 -> 番外篇
-    [RelationTypes.ANIME_CHARACTER]: RelationTypes.ANIME_CHARACTER, // 角色出演 -> 角色出演
-    [RelationTypes.ANIME_SAME_SETTING]: RelationTypes.ANIME_SAME_SETTING, // 相同世界观 -> 相同世界观
-    [RelationTypes.ANIME_ALTERNATIVE_SETTING]: RelationTypes.ANIME_ALTERNATIVE_SETTING, // 不同世界观 -> 不同世界观
   },
   [`${SubjectType.Anime}-${SubjectType.Book}`]: {
     [RelationTypes.ANIME_PREQUEL]: RelationTypes.BOOK_SEQUEL, // 前传 -> 续集
@@ -147,11 +144,6 @@ export const relationMappings = {
     [RelationTypes.BOOK_SEQUEL]: RelationTypes.BOOK_PREQUEL, // 续集 -> 前传
     [RelationTypes.BOOK_SIDE_STORY]: RelationTypes.BOOK_PARENT_STORY, // 番外篇 -> 主线故事
     [RelationTypes.BOOK_PARENT_STORY]: RelationTypes.BOOK_SIDE_STORY, // 主线故事 -> 番外篇
-    [RelationTypes.BOOK_CHARACTER]: RelationTypes.BOOK_CHARACTER, // 角色出演 -> 角色出演
-    [RelationTypes.BOOK_SAME_SETTING]: RelationTypes.BOOK_SAME_SETTING, // 相同世界观 -> 相同世界观
-    [RelationTypes.BOOK_ALTERNATIVE_SETTING]: RelationTypes.BOOK_ALTERNATIVE_SETTING, // 不同世界观 -> 不同世界观
-    [RelationTypes.BOOK_ALTERNATIVE_VERSION]: RelationTypes.BOOK_ALTERNATIVE_VERSION, // 不同演绎 -> 不同演绎
-    [RelationTypes.BOOK_VERSION]: RelationTypes.BOOK_VERSION, // 不同版本 -> 不同版本
   },
   [`${SubjectType.Book}-${SubjectType.Anime}`]: {
     [RelationTypes.BOOK_PREQUEL]: RelationTypes.ANIME_SEQUEL, // 前传 -> 续集
@@ -177,11 +169,6 @@ export const relationMappings = {
     [RelationTypes.GAME_SEQUEL]: RelationTypes.GAME_PREQUEL, // 续集 -> 前传
     [RelationTypes.GAME_SIDE_STORY]: RelationTypes.GAME_PARENT_STORY, // 外传 -> 主线故事
     [RelationTypes.GAME_PARENT_STORY]: RelationTypes.GAME_SIDE_STORY, // 主线故事 -> 外传
-    [RelationTypes.GAME_CHARACTER]: RelationTypes.GAME_CHARACTER, // 角色出演 -> 角色出演
-    [RelationTypes.GAME_SAME_SETTING]: RelationTypes.GAME_SAME_SETTING, // 相同世界观 -> 相同世界观
-    [RelationTypes.GAME_ALTERNATIVE_SETTING]: RelationTypes.GAME_ALTERNATIVE_SETTING, // 不同世界观 -> 不同世界观
-    [RelationTypes.GAME_ALTERNATIVE_VERSION]: RelationTypes.GAME_ALTERNATIVE_VERSION, // 不同演绎 -> 不同演绎
-    [RelationTypes.GAME_VERSION]: RelationTypes.GAME_VERSION, // 不同版本 -> 不同版本
     [RelationTypes.GAME_MAIN_VERSION]: RelationTypes.GAME_VERSION, // 主版本 -> 不同版本
     [RelationTypes.GAME_COLLECTION]: RelationTypes.GAME_IN_COLLECTION, // 合集 -> 收录作品
     [RelationTypes.GAME_IN_COLLECTION]: RelationTypes.GAME_COLLECTION, // 收录作品 -> 合集
@@ -220,17 +207,17 @@ export function getReverseRelation(
   if ([subjectType, relatedType].includes(SubjectType.Music)) {
     return relationType;
   }
-  if (subjectType === SubjectType.Real) subjectType = SubjectType.Anime;
-  if (relatedType === SubjectType.Real) relatedType = SubjectType.Anime;
-  const mappingKey = `${relatedType}-${subjectType}`;
-  const mapping = relationMappings[mappingKey as keyof typeof relationMappings];
-
-  const reverseRelation = mapping[relationType as keyof typeof mapping];
-  if (reverseRelation) {
-    return reverseRelation;
-  }
 
   if (subjectType === relatedType) {
+    if (subjectType === SubjectType.Real) subjectType = SubjectType.Anime;
+    if (relatedType === SubjectType.Real) relatedType = SubjectType.Anime;
+    const mappingKey = `${relatedType}-${subjectType}`;
+    const mapping = relationMappings[mappingKey as keyof typeof relationMappings];
+
+    const reverseRelation = mapping[relationType as keyof typeof mapping];
+    if (reverseRelation) {
+      return reverseRelation;
+    }
     return relationType;
   } else {
     return RelationTypes.ADAPTATION;
