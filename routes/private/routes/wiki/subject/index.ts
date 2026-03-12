@@ -10,7 +10,11 @@ import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
-import type { ISubjectRelationRev } from '@app/lib/rev/type.ts';
+import type {
+  ISubjectRelationRev,
+  ISubjectRelationRevRemote,
+  ISubjectRelationRevSelf,
+} from '@app/lib/rev/type.ts';
 import {
   RevType,
   SubjectCharacterRev,
@@ -1414,25 +1418,37 @@ export async function setup(app: App) {
           type: RevType.subjectRelation,
           rev: {
             self: relationEdits
-              .map((r) => ({
-                subject_id: subjectID,
-                subject_type_id: subject.type,
-                relation_type: r.type,
-                relation_order: r.order ?? 0,
-                related_subject_id: r.subject.id,
-                related_subject_type_id: relatedType,
-              }))
-              .toSorted((a, b) => a.related_subject_id - b.related_subject_id),
+              .toSorted((a, b) => a.subject.id - b.subject.id)
+              .reduce(
+                (acc, r, i) => {
+                  acc[String(i)] = {
+                    subject_id: subjectID,
+                    subject_type_id: subject.type,
+                    relation_type: r.type,
+                    relation_order: r.order ?? 0,
+                    related_subject_id: r.subject.id,
+                    related_subject_type_id: relatedType,
+                  };
+                  return acc;
+                },
+                {} as Record<string, ISubjectRelationRevSelf>,
+              ),
             remote: relationEdits
               .filter((r) => isRelationViceVersa(relatedType, r.type))
-              .map((r) => ({
-                subject_id: r.subject.id,
-                subject_type_id: relatedType,
-                relation_type: getReverseRelation(subject.type, relatedType, r.type),
-                related_subject_id: subjectID,
-                related_subject_type_id: subject.type,
-              }))
-              .toSorted((a, b) => a.subject_id - b.subject_id),
+              .toSorted((a, b) => a.subject.id - b.subject.id)
+              .reduce(
+                (acc, r, i) => {
+                  acc[String(i)] = {
+                    subject_id: r.subject.id,
+                    subject_type_id: relatedType,
+                    relation_type: getReverseRelation(subject.type, relatedType, r.type),
+                    related_subject_id: subjectID,
+                    related_subject_type_id: subject.type,
+                  };
+                  return acc;
+                },
+                {} as Record<string, ISubjectRelationRevRemote>,
+              ),
           } satisfies ISubjectRelationRev,
           creator: auth.userID,
           comment,
