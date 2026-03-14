@@ -1,6 +1,8 @@
 import type { Static } from 'typebox';
 import t from 'typebox';
 
+import type { SubjectType } from '@app/lib/subject';
+
 import { staffs } from './common/subject_staffs.json';
 import { assertValue } from './validate';
 
@@ -34,7 +36,7 @@ const checkedSubjectStaffs = checkedSubjectStaffsRaw;
 export type SubjectStaffPosition = Static<typeof SubjectStaffPositionSchema>;
 
 export function findSubjectStaffPosition(
-  subjectType: number,
+  subjectType: SubjectType,
   position: number,
 ): SubjectStaffPosition | undefined {
   return checkedSubjectStaffs[subjectType]?.[position];

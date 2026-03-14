@@ -8,6 +8,16 @@ export enum SubjectType {
 }
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
 
+export function SubjectTypeCN(typeID: SubjectType) {
+  return {
+    1: '书籍',
+    2: '动画',
+    3: '音乐',
+    4: '游戏',
+    6: '三次元',
+  }[typeID];
+}
+
 export const EpisodeType = Object.freeze({
   /** 本篇 */
   Normal: 0,
