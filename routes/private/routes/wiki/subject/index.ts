@@ -10,7 +10,7 @@ import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
-import type { ISubjectPersonRev } from '@app/lib/rev/type.ts';
+import type { ISubjectPersonRevSingle } from '@app/lib/rev/type.ts';
 import {
   RevType,
   SubjectCharacterRev,
@@ -1570,11 +1570,23 @@ export async function setup(app: App) {
         await createRevision(txn, {
           mid: subjectID,
           type: RevType.subjectPersonRelation,
-          rev: relationEdits.map((r) => ({
-            subject_id: subjectID,
-            prsn_id: r.person.id,
-            position: r.position,
-          })) satisfies ISubjectPersonRev,
+          rev: relationEdits
+            .toSorted((a, b) => {
+              const s = a.position - b.position;
+              if (s !== 0) return s;
+              return a.person.id - b.person.id;
+            })
+            .reduce(
+              (acc, r, i) => {
+                acc[String(i)] = {
+                  subject_id: subjectID,
+                  prsn_id: r.person.id,
+                  position: r.position,
+                };
+                return acc;
+              },
+              {} as Record<string, ISubjectPersonRevSingle>,
+            ),
           creator: auth.userID,
           comment,
         });
