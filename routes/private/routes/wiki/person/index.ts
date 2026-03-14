@@ -3,21 +3,23 @@ import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { LockedError, NotFoundError } from '@app/lib/error.ts';
+import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
-import type { IPersonRev } from '@app/lib/rev/type.ts';
+import type { IPersonRev, IPersonSubjectRev } from '@app/lib/rev/type.ts';
 import { PersonCastRev, PersonRev, PersonSubjectRev, RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
-import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
+import { genRelationComment, matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+import { findSubjectStaffPosition } from '@app/vendor';
 
 export const PersonCareers = [
   'producer',
@@ -102,6 +104,45 @@ const UserPersonContribution = t.Object(
 export type IPagedUserPersonContribution = Static<typeof PagedUserPersonContribution>;
 const PagedUserPersonContribution = res.Paged(res.Ref(UserPersonContribution));
 
+type IPersonSubjectWikiInfo = Static<typeof PersonSubjectWikiInfo>;
+export const PersonSubjectWikiInfo = t.Array(
+  t.Object({
+    subject: t.Object({
+      id: t.Integer(),
+      name: t.String(),
+      nameCN: t.String(),
+    }),
+    position: t.Integer(),
+    appearEps: t.String(),
+  }),
+  {
+    $id: 'PersonSubjectWikiInfo',
+  },
+);
+
+type IPersonSubjectWikiEdit = Static<typeof PersonSubjectWikiEdit>;
+export const PersonSubjectWikiEdit = t.Object({
+  subject: t.Object({
+    id: t.Integer(),
+  }),
+  position: t.Integer(),
+  appearEps: t.Optional(t.String({ default: '' })),
+});
+
+const PersonSubjectExpected = t.Optional(
+  t.Object(
+    {
+      subject: t.Object({ id: t.Integer() }),
+      position: t.Integer(),
+      appearEps: t.String(),
+    },
+    {
+      additionalProperties: false,
+      description: 'a optional object to check if input is changed by others',
+    },
+  ),
+);
+
 type IPersonSubjectRevisionWikiInfo = Static<typeof PersonSubjectRevisionWikiInfo>;
 export const PersonSubjectRevisionWikiInfo = t.Array(
   t.Object({
@@ -146,6 +187,7 @@ export async function setup(app: App) {
   app.addSchema(UserPersonContribution);
   app.addSchema(PersonSubjectRevisionWikiInfo);
   app.addSchema(PersonCastRevisionWikiInfo);
+  app.addSchema(PersonSubjectWikiInfo);
 
   app.get(
     '/persons/:personID',
@@ -820,6 +862,271 @@ export async function setup(app: App) {
         total: count,
         data: revisions,
       };
+    },
+  );
+
+  app.get(
+    '/persons/:personID/subjects',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getPersonSubjectWikiInfo',
+        summary: '获取人物-条目关联当前 wiki 信息',
+        params: t.Object({
+          personID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          type: req.Ref(req.SubjectType),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Ref(PersonSubjectWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('person')),
+          }),
+        },
+      },
+    },
+    async ({
+      params: { personID },
+      query: { type: subjectType },
+    }): Promise<IPersonSubjectWikiInfo> => {
+      const person = await fetcher.fetchSlimPersonByID(personID, true);
+      if (!person) {
+        throw new NotFoundError(`person ${personID}`);
+      }
+      const data = await db
+        .select()
+        .from(schema.chiiPersonSubjects)
+        .where(
+          op.and(
+            op.eq(schema.chiiPersonSubjects.personID, personID),
+            op.eq(schema.chiiPersonSubjects.subjectType, subjectType),
+          ),
+        )
+        .orderBy(
+          op.asc(schema.chiiPersonSubjects.position),
+          op.asc(schema.chiiPersonSubjects.subjectID),
+        );
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(
+        data.map((d) => d.subjectID),
+        true,
+      );
+      const relations = data.map((d) => ({
+        subject: {
+          id: d.subjectID,
+          name: subjects[d.subjectID]?.name ?? '',
+          nameCN: subjects[d.subjectID]?.nameCN ?? '',
+        },
+        position: d.position,
+        appearEps: d.appearEps,
+      }));
+      return relations;
+    },
+  );
+
+  app.put(
+    '/persons/:personID/subjects',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'putPersonSubjectWikiInfo',
+        summary: '修改人物-条目关联当前 wiki 信息',
+        params: t.Object({
+          personID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          type: req.Ref(req.SubjectType),
+        }),
+        body: t.Object({
+          commitMessage: t.String(),
+          relations: t.Array(PersonSubjectWikiEdit, {
+            $id: 'PersonSubjectWikiEdit',
+          }),
+          expectedRevision: t.Optional(
+            t.Array(PersonSubjectExpected, {
+              $id: 'PersonSubjectExpected',
+            }),
+          ),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Null(),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('person')),
+          }),
+          400: res.Ref(res.Error, { description: 'invalid input' }),
+        },
+        preHandler: [requireLogin('editing person-subject relations')],
+      },
+    },
+    async ({
+      params: { personID },
+      query: { type: subjectType },
+      auth,
+      body: { commitMessage, relations: relationEdits, expectedRevision },
+    }) => {
+      if (!auth.permission.subject_edit) {
+        throw new NotAllowedError('edit subject');
+      }
+
+      const person = await fetcher.fetchSlimPersonByID(personID, true);
+      if (!person) {
+        throw new NotFoundError(`person ${personID}`);
+      }
+      const positions = relationEdits.map((r) => r.position);
+      const invalidPositions = positions.filter((p) => !findSubjectStaffPosition(subjectType, p));
+      if (invalidPositions.length > 0) {
+        throw new BadRequestError(`position ${invalidPositions.join(', ')} is not valid`);
+      }
+
+      await db.transaction(async (txn) => {
+        const data = await txn
+          .select()
+          .from(schema.chiiPersonSubjects)
+          .where(
+            op.and(
+              op.eq(schema.chiiPersonSubjects.personID, personID),
+              op.eq(schema.chiiPersonSubjects.subjectType, subjectType),
+            ),
+          );
+        const oldRelations = data.map((d) => ({
+          subject: {
+            id: d.subjectID,
+          },
+          position: d.position,
+          appearEps: d.appearEps,
+        }));
+
+        if (expectedRevision?.length) {
+          for (const old of oldRelations) {
+            const expectedOld = expectedRevision?.find(
+              (r) => r.subject.id === old.subject.id && r.position === old.position,
+            );
+            if (!expectedOld) continue;
+            matchExpected(
+              {
+                appearEps: String(expectedOld.appearEps),
+              },
+              {
+                appearEps: String(old.appearEps),
+              },
+            );
+          }
+        }
+
+        const relationEditMap: Record<string, IPersonSubjectWikiEdit> = {};
+        const oldRelationMap: Record<string, IPersonSubjectWikiEdit> = {};
+        const deleteRelationEdit: IPersonSubjectWikiEdit[] = [];
+        const newRelationEdit: IPersonSubjectWikiEdit[] = [];
+        const existingRelationEdit: IPersonSubjectWikiEdit[] = [];
+
+        for (const r of oldRelations) {
+          oldRelationMap[`${r.subject.id}p${r.position}`] = r;
+        }
+
+        for (const r of relationEdits) {
+          relationEditMap[`${r.subject.id}p${r.position}`] = r;
+
+          const old = oldRelationMap[`${r.subject.id}p${r.position}`];
+          if (!old) {
+            newRelationEdit.push(r);
+          } else if (old.appearEps !== r.appearEps) {
+            existingRelationEdit.push(r);
+          }
+        }
+
+        for (const r of oldRelations) {
+          const edit = relationEditMap[`${r.subject.id}p${r.position}`];
+          if (!edit) {
+            deleteRelationEdit.push(r);
+          }
+        }
+
+        if (deleteRelationEdit.length > 0) {
+          const deleteConditions = deleteRelationEdit.map((r) => {
+            const condition = op.and(
+              op.eq(schema.chiiPersonSubjects.personID, personID),
+              op.eq(schema.chiiPersonSubjects.subjectID, r.subject.id),
+              op.eq(schema.chiiPersonSubjects.position, r.position),
+            );
+            return condition;
+          });
+
+          await txn.delete(schema.chiiPersonSubjects).where(op.or(...deleteConditions));
+        }
+
+        if (existingRelationEdit.length > 0) {
+          for (const r of existingRelationEdit) {
+            await txn
+              .update(schema.chiiPersonSubjects)
+              .set({
+                appearEps: r.appearEps,
+              })
+              .where(
+                op.and(
+                  op.eq(schema.chiiPersonSubjects.personID, personID),
+                  op.eq(schema.chiiPersonSubjects.subjectID, r.subject.id),
+                  op.eq(schema.chiiPersonSubjects.position, r.position),
+                ),
+              );
+          }
+        }
+
+        if (newRelationEdit.length > 0) {
+          const newRelatedIDs = [...new Set(newRelationEdit.map((r) => r.subject.id))];
+          const relatedSubjects = await fetcher.fetchSlimSubjectsByIDs(newRelatedIDs, true);
+          const lostIDs = [],
+            invalidIDs = [];
+          for (const id of newRelatedIDs) {
+            const relatedSubject = relatedSubjects[id];
+            if (!relatedSubject) {
+              lostIDs.push(id);
+            } else if (relatedSubject.type !== subjectType) {
+              invalidIDs.push(id);
+            }
+          }
+          if (lostIDs.length > 0) {
+            throw new NotFoundError(`related subject ${lostIDs.join(', ')}`);
+          }
+          if (invalidIDs.length > 0) {
+            throw new BadRequestError(`related subject ${invalidIDs.join(', ')} type not match`);
+          }
+
+          await txn.insert(schema.chiiPersonSubjects).values(
+            newRelationEdit.map((r) => {
+              return {
+                subjectID: r.subject.id,
+                personID: personID,
+                position: r.position,
+                appearEps: r.appearEps ?? '',
+                personType: 'prsn',
+                subjectType: subjectType,
+                summary: '',
+              } satisfies typeof schema.chiiPersonSubjects.$inferInsert;
+            }),
+          );
+        }
+
+        const comment = genRelationComment(
+          subjectType,
+          commitMessage,
+          newRelationEdit,
+          existingRelationEdit,
+          deleteRelationEdit,
+        );
+        await createRevision(txn, {
+          mid: personID,
+          type: RevType.subjectPersonRelation,
+          rev: relationEdits.map((r) => ({
+            subject_id: r.subject.id,
+            prsn_id: personID,
+            position: r.position,
+          })) satisfies IPersonSubjectRev,
+          creator: auth.userID,
+          comment,
+        });
+      });
     },
   );
 }

@@ -1531,6 +1531,32 @@ exports[`should build private api spec 1`] = `
           - position
         type: object
       type: array
+    PersonSubjectWikiInfo:
+      items:
+        properties:
+          appearEps:
+            type: string
+          position:
+            type: integer
+          subject:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+            required:
+              - id
+              - name
+              - nameCN
+            type: object
+        required:
+          - subject
+          - position
+          - appearEps
+        type: object
+      type: array
     PersonType:
       description: |-
         人物类型
@@ -2742,6 +2768,29 @@ exports[`should build private api spec 1`] = `
         required:
           - person
           - position
+        type: object
+      type: array
+    SubjectPersonWikiInfo:
+      items:
+        properties:
+          appearEps:
+            type: string
+          person:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+            required:
+              - id
+              - name
+            type: object
+          position:
+            type: integer
+        required:
+          - person
+          - position
+          - appearEps
         type: object
       type: array
     SubjectPlatform:
@@ -10941,6 +10990,141 @@ paths:
       summary: 获取人物 wiki 历史编辑摘要
       tags:
         - wiki
+  /p1/wiki/persons/{personID}/subjects:
+    get:
+      operationId: getPersonSubjectWikiInfo
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: '#/components/schemas/SubjectType'
+        - in: path
+          name: personID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PersonSubjectWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取人物-条目关联当前 wiki 信息
+      tags:
+        - wiki
+    put:
+      operationId: putPersonSubjectWikiInfo
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: '#/components/schemas/SubjectType'
+        - in: path
+          name: personID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                commitMessage:
+                  type: string
+                expectedRevision:
+                  items:
+                    additionalProperties: false
+                    description: a optional object to check if input is changed by others
+                    properties:
+                      appearEps:
+                        type: string
+                      position:
+                        type: integer
+                      subject:
+                        properties:
+                          id:
+                            type: integer
+                        required:
+                          - id
+                        type: object
+                    required:
+                      - subject
+                      - position
+                      - appearEps
+                    type: object
+                  type: array
+                relations:
+                  items:
+                    properties:
+                      appearEps:
+                        default: ''
+                        type: string
+                      position:
+                        type: integer
+                      subject:
+                        properties:
+                          id:
+                            type: integer
+                        required:
+                          - id
+                        type: object
+                    required:
+                      - subject
+                      - position
+                    type: object
+                  type: array
+              required:
+                - commitMessage
+                - relations
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Default Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: invalid input
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 修改人物-条目关联当前 wiki 信息
+      tags:
+        - wiki
   /p1/wiki/persons/{personID}/subjects/history-summary:
     get:
       operationId: personSubjectHistorySummary
@@ -11993,6 +12177,131 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取条目 wiki 历史编辑摘要
+      tags:
+        - wiki
+  /p1/wiki/subjects/{subjectID}/persons:
+    get:
+      operationId: getSubjectPersonWikiInfo
+      parameters:
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectPersonWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目-人物关联当前 wiki 信息
+      tags:
+        - wiki
+    put:
+      operationId: putSubjectPersonWikiInfo
+      parameters:
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                commitMessage:
+                  type: string
+                expectedRevision:
+                  items:
+                    additionalProperties: false
+                    description: a optional object to check if input is changed by others
+                    properties:
+                      appearEps:
+                        type: string
+                      person:
+                        properties:
+                          id:
+                            type: integer
+                        required:
+                          - id
+                        type: object
+                      position:
+                        type: integer
+                    required:
+                      - person
+                      - position
+                      - appearEps
+                    type: object
+                  type: array
+                relations:
+                  items:
+                    properties:
+                      appearEps:
+                        default: ''
+                        type: string
+                      person:
+                        properties:
+                          id:
+                            type: integer
+                        required:
+                          - id
+                        type: object
+                      position:
+                        type: integer
+                    required:
+                      - person
+                      - position
+                    type: object
+                  type: array
+              required:
+                - commitMessage
+                - relations
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Default Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: invalid input
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 修改条目-人物关联当前 wiki 信息
       tags:
         - wiki
   /p1/wiki/subjects/{subjectID}/persons/history-summary:
