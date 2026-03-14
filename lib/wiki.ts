@@ -3,7 +3,7 @@ import * as diff from 'diff';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { SubjectType } from '@app/lib/subject/type.ts';
+import { SubjectType, SubjectTypeCN } from '@app/lib/subject/type.ts';
 import { findSubjectRelationType } from '@app/vendor';
 
 export const WikiChangedError = createError<[string]>(
@@ -222,4 +222,20 @@ export function getReverseRelation(
   } else {
     return RelationTypes.ADAPTATION;
   }
+}
+
+export function genRelationComment(
+  relatedType: SubjectType,
+  commitMessage: string,
+  newRelationEdit: unknown[],
+  existingRelationEdit: unknown[],
+  deleteRelationEdit: unknown[],
+) {
+  return `${SubjectTypeCN(relatedType) || '条目'}关联${
+    newRelationEdit.length === 0 &&
+    existingRelationEdit.length === 0 &&
+    deleteRelationEdit.length > 0
+      ? '删除'
+      : '修改'
+  }${commitMessage ? ` - ${commitMessage}` : ''}`;
 }

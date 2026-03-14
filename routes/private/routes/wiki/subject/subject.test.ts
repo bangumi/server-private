@@ -917,7 +917,8 @@ test('should handle wrong subject type', async () => {
 
 describe('subject relations revision', () => {
   test('should get subject relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/relations/revisions/920431');
 
@@ -934,7 +935,8 @@ describe('subject relations revision', () => {
   });
 
   test('should get subject character relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/characters/revisions/1041128');
 
@@ -951,7 +953,8 @@ describe('subject relations revision', () => {
   });
 
   test('should get subject person revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/persons/revisions/62793');
 

@@ -12165,6 +12165,7 @@ paths:
                   items:
                     properties:
                       order:
+                        default: 0
                         type: integer
                       subject:
                         properties:

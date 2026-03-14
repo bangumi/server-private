@@ -24,7 +24,7 @@ import {
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
-import { SubjectType, SubjectTypeCN } from '@app/lib/subject/type.ts';
+import { SubjectType } from '@app/lib/subject/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -32,7 +32,12 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
-import { getReverseRelation, isRelationViceVersa, matchExpected } from '@app/lib/wiki';
+import {
+  genRelationComment,
+  getReverseRelation,
+  isRelationViceVersa,
+  matchExpected,
+} from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { findSubjectRelationType } from '@app/vendor';
@@ -186,7 +191,7 @@ export const SubjectRelationWikiEdit = t.Object({
     id: t.Integer(),
   }),
   type: t.Integer(),
-  order: t.Optional(t.Integer()),
+  order: t.Optional(t.Integer({ default: 0 })),
 });
 
 const SubjectRelationExpected = t.Object(
@@ -1406,13 +1411,13 @@ export async function setup(app: App) {
           await txn.insert(schema.chiiSubjectRelations).values(insertData);
         }
 
-        const comment = `${SubjectTypeCN(relatedType) || '条目'}关联${
-          newRelationEdit.length === 0 &&
-          existingRelationEdit.length === 0 &&
-          deleteRelationEdit.length > 0
-            ? '删除'
-            : '修改'
-        }${commitMessage ? ` - ${commitMessage}` : ''}`;
+        const comment = genRelationComment(
+          relatedType,
+          commitMessage,
+          newRelationEdit,
+          existingRelationEdit,
+          deleteRelationEdit,
+        );
         await createRevision(txn, {
           mid: subjectID,
           type: RevType.subjectRelation,
