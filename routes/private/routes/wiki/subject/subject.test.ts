@@ -14,6 +14,7 @@ import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
 import type { Permission } from '@app/lib/user/perm.ts';
+import { setup as setupPerson } from '@app/routes/private/routes/wiki/person/index.ts';
 import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
@@ -704,9 +705,83 @@ describe('patch episodes', () => {
   });
 });
 
+test('should update subject-person relations', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        person: {
+          id: 1,
+          name: '水樹奈々',
+        },
+        position: 1001,
+        appearEps: '',
+      },
+      {
+        person: {
+          id: 3,
+        },
+        position: 1005,
+      },
+    ],
+  };
+  const app = await newSubjectApp();
+
+  const res = await app.inject({
+    url: '/subjects/4/persons',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(200);
+  const afterEdit = await app.inject('/subjects/4/persons');
+  expect(afterEdit.json()).toMatchSnapshot();
+
+  const personApp = createTestServer();
+  await personApp.register(setupPerson);
+
+  const afterDeleteReverse = await personApp.inject('/persons/2/subjects?type=4');
+  expect(afterDeleteReverse.json()).toMatchSnapshot();
+
+  const afterAddReverse = await personApp.inject('/persons/3/subjects?type=4');
+  expect(afterAddReverse.json()).toMatchSnapshot();
+});
+
+test('should handle invalid person relation type', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        person: {
+          id: 3,
+        },
+        position: 3001,
+      },
+    ],
+  };
+  const app = await newSubjectApp();
+
+  const res = await app.inject({
+    url: '/subjects/4/persons',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
+    Object {
+      "code": "BAD_REQUEST",
+      "error": "Bad Request",
+      "message": "position 3001 is not valid",
+      "statusCode": 400,
+    }
+  `);
+});
+
 describe('subject relations', () => {
   test('should get subject relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/relations/revisions/920431');
 
@@ -723,7 +798,8 @@ describe('subject relations', () => {
   });
 
   test('should get subject character relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/characters/revisions/1041128');
 
@@ -740,7 +816,8 @@ describe('subject relations', () => {
   });
 
   test('should get subject person revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/persons/revisions/62793');
 
