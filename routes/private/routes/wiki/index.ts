@@ -43,11 +43,11 @@ export async function setupRecentChangeList(app: App) {
   app.addSchema(RecentWikiChange);
 
   app.get(
-    '/recent',
+    '/recent/subjects',
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'getRecentWiki',
+        operationId: 'getRecentSubjectWiki',
         description: '获取最近两天的wiki更新',
         params: t.Object({
           since: t.Integer({
