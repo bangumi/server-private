@@ -283,7 +283,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject field ${subjectID}`);
       }
 
-      if (s.ban === 2 || f.redirect) {
+      if (s.ban !== 0 || f.redirect !== 0) {
         throw new LockedError();
       }
 
@@ -512,7 +512,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject field ${subjectID}`);
       }
 
-      if (s.ban === 2 || f.redirect) {
+      if (s.ban !== 0 || f.redirect !== 0) {
         throw new LockedError();
       }
 
@@ -610,7 +610,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject field ${subjectID}`);
       }
 
-      if (s.ban === 2 || f.redirect) {
+      if (s.ban !== 0 || f.redirect !== 0) {
         throw new LockedError();
       }
 
