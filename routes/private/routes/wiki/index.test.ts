@@ -7,7 +7,7 @@ test('test recent change list', async () => {
   const app = createTestServer();
   await app.register(setup);
 
-  const res = await app.inject('/recent');
+  const res = await app.inject('/recent/subjects');
 
   expect(res.statusCode).toBe(200);
 });

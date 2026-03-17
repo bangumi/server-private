@@ -1,8 +1,8 @@
 import type { Static } from 'typebox';
 import t from 'typebox';
 
+import { db, op, schema } from '@app/drizzle';
 import { Tag } from '@app/lib/openapi/index.ts';
-import * as orm from '@app/lib/orm/index.ts';
 import { RevType } from '@app/lib/rev/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
@@ -30,14 +30,24 @@ export async function setupRecentChangeList(app: App) {
     { $id: 'RecentWikiChange' },
   );
 
+  const RecentItem = t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() }));
+
+  const sinceParam = t.Object({
+    since: t.Integer({
+      default: 0,
+      description:
+        'unix time stamp, only return last update time >= since\n\nonly allow recent 2 days',
+    }),
+  });
+
   app.addSchema(RecentWikiChange);
 
   app.get(
-    '/recent',
+    '/recent/subjects',
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'getRecentWiki',
+        operationId: 'getRecentSubjectWiki',
         description: '获取最近两天的wiki更新',
         params: t.Object({
           since: t.Integer({
@@ -55,26 +65,32 @@ export async function setupRecentChangeList(app: App) {
     async ({ params: { since } }): Promise<Static<typeof RecentWikiChange>> => {
       since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
 
-      const subjects = await orm.SubjectRevRepo.find({
-        select: ['subjectID', 'createdAt', 'commitMessage'],
-        where: {
-          createdAt: orm.Gte(since),
-        },
-        order: {
-          createdAt: 'DESC',
-        },
-      });
+      const subjects = await db
+        .select({
+          subjectID: schema.chiiSubjectRev.subjectID,
+          createdAt: schema.chiiSubjectRev.createdAt,
+        })
+        .from(schema.chiiSubjectRev)
+        .where(op.gte(schema.chiiSubjectRev.createdAt, since))
+        .orderBy(op.desc(schema.chiiSubjectRev.createdAt));
 
-      const persons = await orm.RevHistoryRepo.find({
-        select: ['revMid', 'createdAt'],
-        where: {
-          createdAt: orm.Gte(since),
-          revType: orm.In([RevType.personEdit, RevType.personMerge, RevType.personErase]),
-        },
-        order: {
-          createdAt: 'DESC',
-        },
-      });
+      const persons = await db
+        .select({
+          revMid: schema.chiiRevHistory.revMid,
+          createdAt: schema.chiiRevHistory.createdAt,
+        })
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.gte(schema.chiiRevHistory.createdAt, since),
+            op.inArray(schema.chiiRevHistory.revType, [
+              RevType.personEdit,
+              RevType.personMerge,
+              RevType.personErase,
+            ]),
+          ),
+        )
+        .orderBy(op.desc(schema.chiiRevHistory.createdAt));
 
       return {
         subject: subjects.map((o) => {
@@ -84,6 +100,120 @@ export async function setupRecentChangeList(app: App) {
           return { id: o.revMid, createdAt: o.createdAt };
         }),
       };
+    },
+  );
+
+  app.get(
+    '/recent/persons',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getRecentPersonWiki',
+        description: '获取最近两天的人物wiki更新',
+        params: sinceParam,
+        response: {
+          200: RecentItem,
+          401: res.Ref(res.Error),
+        },
+      },
+    },
+    async ({ params: { since } }): Promise<Static<typeof RecentItem>> => {
+      since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
+
+      const persons = await db
+        .select({
+          revMid: schema.chiiRevHistory.revMid,
+          createdAt: schema.chiiRevHistory.createdAt,
+        })
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.gte(schema.chiiRevHistory.createdAt, since),
+            op.inArray(schema.chiiRevHistory.revType, [
+              RevType.personEdit,
+              RevType.personMerge,
+              RevType.personErase,
+            ]),
+          ),
+        )
+        .orderBy(op.desc(schema.chiiRevHistory.createdAt));
+
+      return persons.map((o) => {
+        return { id: o.revMid, createdAt: o.createdAt };
+      });
+    },
+  );
+
+  app.get(
+    '/recent/characters',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getRecentCharacterWiki',
+        description: '获取最近两天的角色wiki更新',
+        params: sinceParam,
+        response: {
+          200: RecentItem,
+          401: res.Ref(res.Error),
+        },
+      },
+    },
+    async ({ params: { since } }): Promise<Static<typeof RecentItem>> => {
+      since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
+
+      const characters = await db
+        .select({
+          revMid: schema.chiiRevHistory.revMid,
+          createdAt: schema.chiiRevHistory.createdAt,
+        })
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.gte(schema.chiiRevHistory.createdAt, since),
+            op.inArray(schema.chiiRevHistory.revType, [
+              RevType.characterEdit,
+              RevType.characterMerge,
+              RevType.characterErase,
+            ]),
+          ),
+        )
+        .orderBy(op.desc(schema.chiiRevHistory.createdAt));
+
+      return characters.map((o) => {
+        return { id: o.revMid, createdAt: o.createdAt };
+      });
+    },
+  );
+
+  app.get(
+    '/recent/episodes',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getRecentEpisodeWiki',
+        description: '获取最近两天的章节wiki更新',
+        params: sinceParam,
+        response: {
+          200: RecentItem,
+          401: res.Ref(res.Error),
+        },
+      },
+    },
+    async ({ params: { since } }): Promise<Static<typeof RecentItem>> => {
+      since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
+
+      const episodes = await db
+        .select({
+          revSid: schema.chiiEpRevisions.revSid,
+          revDateline: schema.chiiEpRevisions.revDateline,
+        })
+        .from(schema.chiiEpRevisions)
+        .where(op.gte(schema.chiiEpRevisions.revDateline, since))
+        .orderBy(op.desc(schema.chiiEpRevisions.revDateline));
+
+      return episodes.map((o) => {
+        return { id: o.revSid, createdAt: o.revDateline };
+      });
     },
   );
 }
