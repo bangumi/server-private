@@ -142,6 +142,63 @@ describe('edit subject ', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should return locked subject info', async () => {
+    const app = await testApp({});
+    const selectSpy = vi
+      .spyOn(db, 'select')
+      .mockReturnValueOnce({
+        from: () => ({
+          where: () => ({
+            limit: vi.fn().mockResolvedValue([
+              {
+                id: 184017,
+                name: 'sandbox',
+                infobox: 'i',
+                metaTags: 'WEB ONA',
+                summary: 's',
+                platform: 5,
+                series: 0,
+                nsfw: false,
+                typeID: SubjectType.Anime,
+                ban: 1,
+              },
+            ]),
+          }),
+        }),
+      } as never)
+      .mockReturnValueOnce({
+        from: () => ({
+          where: () => ({
+            limit: vi.fn().mockResolvedValue([
+              {
+                id: 184017,
+                redirect: 0,
+              },
+            ]),
+          }),
+        }),
+      } as never);
+
+    const res = await app.inject('/subjects/184017');
+
+    selectSpy.mockRestore();
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      id: 184017,
+      name: 'sandbox',
+      infobox: 'i',
+      locked: true,
+      redirect: 0,
+      metaTags: ['WEB', 'ONA'],
+      summary: 's',
+      platform: 5,
+      availablePlatform: expect.any(Array),
+      nsfw: false,
+      typeID: SubjectType.Anime,
+    });
+  });
+
   test('should get subject revision wiki info', async () => {
     const app = await testApp({});
 

@@ -1,7 +1,8 @@
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
+import { db } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -59,14 +60,64 @@ describe('edit person ', () => {
       |引用来源={
       }
       }}",
+        "locked": false,
         "name": "渡辺英俊",
         "profession": Object {
           "producer": true,
         },
+        "redirect": 0,
         "summary": "",
         "typeID": 1,
       }
     `);
+  });
+
+  test('should return locked person info', async () => {
+    const app = await testApp({});
+    const limit = vi.fn().mockResolvedValue([
+      {
+        id: 65425,
+        name: '一花',
+        type: 1,
+        infobox: 'i',
+        summary: 's',
+        ban: 1,
+        lock: 0,
+        redirect: 0,
+        producer: 0,
+        mangaka: 0,
+        artist: 1,
+        seiyu: 0,
+        writer: 0,
+        illustrator: 0,
+        actor: 0,
+      },
+    ]);
+    const selectSpy = vi.spyOn(db, 'select').mockReturnValue({
+      from: () => ({
+        where: () => ({
+          limit,
+        }),
+      }),
+    } as never);
+
+    const res = await app.inject('/persons/65425');
+
+    selectSpy.mockRestore();
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      id: 65425,
+      name: '一花',
+      typeID: 1,
+      infobox: 'i',
+      summary: 's',
+      locked: true,
+      redirect: 0,
+      profession: {
+        artist: true,
+      },
+    });
   });
 
   test('should need authorization', async () => {
@@ -165,10 +216,12 @@ describe('edit person ', () => {
       Object {
         "id": 3214,
         "infobox": "i",
+        "locked": false,
         "name": "n",
         "profession": Object {
           "producer": true,
         },
+        "redirect": 0,
         "summary": "s",
         "typeID": 1,
       }
