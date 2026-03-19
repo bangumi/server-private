@@ -346,8 +346,12 @@ exports[`should build private api spec 1`] = `
           type: integer
         infobox:
           type: string
+        locked:
+          type: boolean
         name:
           type: string
+        redirect:
+          type: integer
         summary:
           type: string
       required:
@@ -355,6 +359,8 @@ exports[`should build private api spec 1`] = `
         - name
         - infobox
         - summary
+        - locked
+        - redirect
       type: object
     CollectSubject:
       properties:

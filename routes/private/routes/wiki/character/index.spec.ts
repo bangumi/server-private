@@ -59,7 +59,9 @@ describe('edit character ', () => {
       }
       |声优=
       }}",
+        "locked": false,
         "name": "坂上智代",
+        "redirect": 0,
         "summary": "朋也的后辈……虽说应当是如此，说起话来的口气却像是个前辈一样。她待人很好，又有领导才能，因此在她的身边很自然地就聚集起了许多人。她的目标是成为学生会的会长，但这却成为了她与朋也之间的鸿沟……",
       }
     `);
@@ -161,7 +163,9 @@ describe('edit character ', () => {
       Object {
         "id": 40,
         "infobox": "i",
+        "locked": false,
         "name": "n",
+        "redirect": 0,
         "summary": "s",
       }
     `);
