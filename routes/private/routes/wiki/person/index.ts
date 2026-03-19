@@ -52,6 +52,8 @@ export const PersonWikiInfo = t.Object(
     typeID: res.Ref(res.PersonType),
     infobox: t.String(),
     summary: t.String(),
+    locked: t.Boolean(),
+    redirect: t.Integer(),
     profession: PersonProfessions,
   },
   { $id: 'PersonWikiInfo' },
@@ -180,10 +182,6 @@ export async function setup(app: App) {
         throw new NotFoundError(`person ${personID}`);
       }
 
-      if (p.lock) {
-        throw new NotAllowedError('edit a locked person');
-      }
-
       const profession = PersonCareers.reduce(
         (acc, c) => {
           if (p[c]) acc[c] = true;
@@ -197,6 +195,8 @@ export async function setup(app: App) {
         name: p.name,
         infobox: p.infobox,
         summary: p.summary,
+        locked: Boolean(p.ban),
+        redirect: p.redirect,
         typeID: p.type,
         profession,
       };
