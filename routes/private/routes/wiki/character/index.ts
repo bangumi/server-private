@@ -25,6 +25,8 @@ export const CharacterWikiInfo = t.Object(
     name: t.String(),
     infobox: t.String(),
     summary: t.String(),
+    locked: t.Boolean(),
+    redirect: t.Integer(),
   },
   { $id: 'CharacterWikiInfo' },
 );
@@ -150,15 +152,13 @@ export async function setup(app: App) {
         throw new NotFoundError(`character ${characterID}`);
       }
 
-      if (c.lock) {
-        throw new NotAllowedError('edit a locked character');
-      }
-
       return {
         id: c.id,
         name: c.name,
         infobox: c.infobox,
         summary: c.summary,
+        locked: Boolean(c.ban),
+        redirect: c.redirect,
       };
     },
   );
