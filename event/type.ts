@@ -19,5 +19,5 @@ export interface Payload {
 export interface KafkaMessage {
   topic: string;
   key: string;
-  value: string;
+  value: Buffer;
 }

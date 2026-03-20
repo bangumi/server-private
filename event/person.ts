@@ -13,7 +13,7 @@ interface Payload {
 
 export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as PersonKey;
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value.toString()) as Payload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
