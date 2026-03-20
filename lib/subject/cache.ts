@@ -31,7 +31,8 @@ export function getListCacheKey(filter: SubjectFilter, sort: SubjectSort, page: 
     key += `:month:${filter.month}`;
   }
   if (filter.tags) {
-    key += `:tags:${filter.tags.toSorted().join(',')}`;
+    const tagCat = filter.tagsCat ?? 'meta';
+    key += `:tags:${tagCat}:${filter.tags.toSorted().join(',')}`;
   }
   key += `:page:${page}`;
   return key;

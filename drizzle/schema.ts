@@ -97,6 +97,7 @@ export const chiiCharacters = mysqlTable('chii_characters', {
 });
 
 export const chiiCharacterCasts = mysqlTable('chii_crt_cast_index', {
+  relation: mediumint('rlt_type').notNull(),
   characterID: mediumint('crt_id').notNull(),
   personID: mediumint('prsn_id').notNull(),
   subjectID: mediumint('subject_id').notNull(),
@@ -437,12 +438,17 @@ export const chiiPersonFields = mysqlTable('chii_person_fields', {
   birthDay: tinyint('birth_day').notNull(),
 });
 
-export const chiiPersonRelations = mysqlTable('chii_person_relationship', {
-  type: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
-  id: mediumint('prsn_id').notNull(),
-  relatedType: mysqlEnum('relat_prsn_type', ['prsn', 'crt']).notNull(),
-  relatedID: mediumint('relat_prsn_id').notNull(),
-  relation: smallint('relat_type').notNull(),
+export const chiiPersonRelations = mysqlTable('chii_person_relations', {
+  relationID: mediumint('rlt_id').notNull(),
+  personType: mysqlEnum('prsn_type', ['prsn', 'crt']).notNull(),
+  personID: mediumint('prsn_id').notNull(),
+  relatedType: mysqlEnum('rlt_prsn_type', ['prsn', 'crt']).notNull(),
+  relatedID: int('rlt_prsn_id').notNull(),
+  relation: int('rlt_type').notNull(),
+  spoiler: customBoolean('rlt_spoiler').notNull(),
+  ended: customBoolean('rlt_ended').notNull(),
+  viceVersa: customBoolean('rlt_vice_versa').notNull(),
+  comment: htmlEscapedString('text')('rlt_comment').notNull(),
 });
 
 export const chiiPms = mysqlTable('chii_pms', {
@@ -501,13 +507,13 @@ export const chiiSubjects = mysqlTable('chii_subjects', {
   field5: mediumtext('field_5').notNull(),
   volumes: mediumint('field_volumes').notNull(),
   eps: mediumint('field_eps').notNull(),
-  wish: mediumint('subject_wish').notNull(),
-  collect: mediumint('subject_collect').notNull(),
-  doing: mediumint('subject_doing').notNull(),
-  onHold: mediumint('subject_on_hold').notNull(),
-  dropped: mediumint('subject_dropped').notNull(),
+  wish: mediumint('subject_wish').default(0).notNull(),
+  collect: mediumint('subject_collect').default(0).notNull(),
+  doing: mediumint('subject_doing').default(0).notNull(),
+  onHold: mediumint('subject_on_hold').default(0).notNull(),
+  dropped: mediumint('subject_dropped').default(0).notNull(),
   series: customBoolean('subject_series').notNull(),
-  seriesEntry: mediumint('subject_series_entry').notNull(),
+  seriesEntry: mediumint('subject_series_entry').default(0).notNull(),
   idxCN: varchar('subject_idx_cn', { length: 1 }).notNull(),
   airtime: tinyint('subject_airtime').notNull(),
   nsfw: customBoolean('subject_nsfw').notNull(),

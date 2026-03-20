@@ -49,7 +49,7 @@ describe('create subject', () => {
         }}`,
         type: SubjectType.Anime,
         platform: 0,
-        metaTags: ['WEB', '3D'],
+        metaTags: ['WEB'],
         summary: 'A brief summary of the subject',
         nsfw: false,
       } satisfies ISubjectNew,
@@ -74,7 +74,7 @@ describe('create subject', () => {
         }}`,
         type: 0,
         platform: 0,
-        metaTags: ['WEB', '3D'],
+        metaTags: ['WEB'],
         summary: 'A brief summary of the subject',
         nsfw: false,
       },
@@ -104,7 +104,7 @@ describe('create subject', () => {
         }}`,
         type: SubjectType.Anime,
         platform: 777777888,
-        metaTags: ['WEB', '3D'],
+        metaTags: ['WEB'],
         summary: 'A brief summary of the subject',
         nsfw: false,
       },
@@ -116,7 +116,7 @@ describe('create subject', () => {
       Object {
         "code": "BAD_REQUEST",
         "error": "Bad Request",
-        "message": "条目分类错误",
+        "message": "platform 777777888 is not a valid platform for subject",
         "statusCode": 400,
       }
     `);
@@ -140,6 +140,63 @@ describe('edit subject ', () => {
     const res = await app.inject('/subjects/8');
 
     expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should return locked subject info', async () => {
+    const app = await testApp({});
+    const selectSpy = vi
+      .spyOn(db, 'select')
+      .mockReturnValueOnce({
+        from: () => ({
+          where: () => ({
+            limit: vi.fn().mockResolvedValue([
+              {
+                id: 184017,
+                name: 'sandbox',
+                infobox: 'i',
+                metaTags: 'WEB ONA',
+                summary: 's',
+                platform: 5,
+                series: 0,
+                nsfw: false,
+                typeID: SubjectType.Anime,
+                ban: 1,
+              },
+            ]),
+          }),
+        }),
+      } as never)
+      .mockReturnValueOnce({
+        from: () => ({
+          where: () => ({
+            limit: vi.fn().mockResolvedValue([
+              {
+                id: 184017,
+                redirect: 0,
+              },
+            ]),
+          }),
+        }),
+      } as never);
+
+    const res = await app.inject('/subjects/184017');
+
+    selectSpy.mockRestore();
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      id: 184017,
+      name: 'sandbox',
+      infobox: 'i',
+      locked: true,
+      redirect: 0,
+      metaTags: ['WEB', 'ONA'],
+      summary: 's',
+      platform: 5,
+      availablePlatform: expect.any(Array),
+      nsfw: false,
+      typeID: SubjectType.Anime,
+    });
   });
 
   test('should get subject revision wiki info', async () => {
@@ -701,5 +758,58 @@ describe('patch episodes', () => {
       code: 'BAD_REQUEST',
       message: expect.stringContaining('not for subject'),
     });
+  });
+});
+
+describe('subject relations', () => {
+  test('should get subject relation revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/subjects/-/relations/revisions/920431');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/relations/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject character relation revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/subjects/-/characters/revisions/1041128');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject character relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/characters/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject person revision wiki info', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/subjects/-/persons/revisions/62793');
+
+    expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get subject person relation history', async () => {
+    const app = createTestServer({});
+    await app.register(setup);
+
+    const res = await app.inject('/subjects/8/persons/history-summary');
+
+    expect(res.json()).toMatchSnapshot();
   });
 });

@@ -14,7 +14,7 @@ export class Character {
   @Column('varchar', { name: 'crt_name', length: 255 })
   name!: string;
 
-  @Column('tinyint', {
+  @Column('mediumint', {
     name: 'crt_role',
     comment: '角色，机体，组织。。',
     unsigned: true,
@@ -114,6 +114,13 @@ export class Cast {
     unsigned: true,
   })
   subjectTypeID!: number;
+
+  @Column('tinyint', {
+    name: 'rlt_type',
+    comment: 'Cast relation type: CV, dub, actor',
+    unsigned: true,
+  })
+  relation!: number;
 
   @Column('varchar', {
     name: 'summary',

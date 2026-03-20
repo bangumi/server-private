@@ -40,11 +40,11 @@ function toSubjectRelation(
 function toSubjectCharacter(
   character: orm.ICharacter,
   relation: orm.ICharacterSubject,
-  actors: res.ISlimPerson[],
+  casts: res.ICharacterCast[],
 ): res.ISubjectCharacter {
   return {
     character: convert.toSlimCharacter(character),
-    actors: actors,
+    casts: casts,
     type: relation.type,
     order: relation.order,
   };
@@ -130,7 +130,16 @@ export async function setup(app: App) {
           year: t.Optional(t.Integer({ description: '年份' })),
           month: t.Optional(t.Integer({ description: '月份' })),
           tags: t.Optional(
-            t.Array(t.String({ description: 'wiki 标签，包括 分类/来源/类型/题材/地区/受众 等' })),
+            t.Array(
+              t.String({
+                description: '标签。默认按 wiki/meta 标签查询，结合 tagsCat 可切换为用户标签。',
+              }),
+            ),
+          ),
+          tagsCat: t.Optional(
+            t.Union([t.Literal('meta'), t.Literal('subject')], {
+              description: 'tags 过滤类别：meta=wiki 标签（默认），subject=用户标签',
+            }),
           ),
         }),
         response: {
@@ -138,7 +147,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ auth, query: { type, cat, series, year, month, sort, tags, page = 1 } }) => {
+    async ({ auth, query: { type, cat, series, year, month, sort, tags, tagsCat, page = 1 } }) => {
       const filter = {
         type,
         nsfw: auth.allowNsfw,
@@ -147,6 +156,7 @@ export async function setup(app: App) {
         year,
         month,
         tags,
+        tagsCat,
       } satisfies SubjectFilter;
       const result = await fetcher.fetchSubjectIDsByFilter(filter, sort as SubjectSort, page);
       if (result.data.length === 0) {
@@ -823,14 +833,15 @@ export async function setup(app: App) {
         op.eq(schema.chiiIndexRelated.cat, IndexRelatedCategory.Subject),
       );
       const [{ count = 0 } = {}] = await db
-        .select({ count: op.count() })
+        .select({ count: op.countDistinct(schema.chiiIndexRelated.rid) })
         .from(schema.chiiIndexRelated)
         .where(condition);
       const data = await db
         .select({ indexID: schema.chiiIndexRelated.rid })
         .from(schema.chiiIndexRelated)
         .where(condition)
-        .orderBy(op.desc(schema.chiiIndexRelated.id))
+        .groupBy(schema.chiiIndexRelated.rid)
+        .orderBy(op.desc(op.max(schema.chiiIndexRelated.id)))
         .limit(limit)
         .offset(offset);
       const indexIDs = data.map((d) => d.indexID);
@@ -877,7 +888,9 @@ export async function setup(app: App) {
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
-          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+          offset: t.Optional(
+            t.Integer({ default: 0, minimum: 0, maximum: 500, description: 'min 0' }),
+          ),
         }),
         response: {
           200: res.Paged(res.Ref(res.SubjectCollect)),
@@ -893,6 +906,7 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
+
       const condition = [
         op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
         op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
@@ -908,11 +922,11 @@ export async function setup(app: App) {
       }
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
-        .from(schema.chiiSubjectInterests)
+        .from(schema.chiiSubjectInterests, { forceIndex: 'subject_lasttouch' })
         .where(op.and(...condition));
       const data = await db
         .select()
-        .from(schema.chiiSubjectInterests)
+        .from(schema.chiiSubjectInterests, { forceIndex: 'subject_lasttouch' })
         .where(op.and(...condition))
         .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
         .limit(limit)

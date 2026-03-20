@@ -67,8 +67,12 @@ export async function parseTimelineMemo(
               }
             }
           } else {
-            const info = decode(data) as memo.Group;
-            const group = await fetcher.fetchSlimGroupByID(Number(info.grp_id));
+            const info = decode(data) as { grp_id?: number; grp_name: string };
+
+            const group = info.grp_id
+              ? await fetcher.fetchSlimGroupByID(Number(info.grp_id))
+              : await fetcher.fetchSlimGroupByName(info.grp_name);
+
             if (group) {
               groups.push(group);
             }

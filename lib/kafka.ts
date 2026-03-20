@@ -61,7 +61,7 @@ export async function newConsumer(topics: string[]) {
   }
   const consumer = kafka.consumer({
     'bootstrap.servers': config.kafkaBrokers,
-    'group.id': 'server-private',
+    'group.id': config.kafkaJsMqGroupId,
   });
   await consumer.connect();
   await consumer.subscribe({ topics });

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
+import { PersonCat } from '@app/lib/person/type.ts';
 import redis from '@app/lib/redis.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -78,6 +79,59 @@ describe('person', () => {
       query: { limit: '2', offset: '0' },
     });
     expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get person relations', async () => {
+    const relation = {
+      relationID: 999999,
+      personType: PersonCat.Person,
+      personID: 7,
+      relatedType: PersonCat.Person,
+      relatedID: 900,
+      relation: 1002,
+      spoiler: false,
+      ended: false,
+      viceVersa: true,
+      comment: '',
+    } as const;
+    const condition = op.and(
+      op.eq(schema.chiiPersonRelations.personType, relation.personType),
+      op.eq(schema.chiiPersonRelations.personID, relation.personID),
+      op.eq(schema.chiiPersonRelations.relatedType, relation.relatedType),
+      op.eq(schema.chiiPersonRelations.relatedID, relation.relatedID),
+      op.eq(schema.chiiPersonRelations.relation, relation.relation),
+    );
+    const [existing] = await db.select().from(schema.chiiPersonRelations).where(condition).limit(1);
+    if (!existing) {
+      await db.insert(schema.chiiPersonRelations).values(relation);
+    }
+
+    try {
+      const app = createTestServer({ auth: { allowNsfw: true } });
+      await app.register(setup);
+      const res = await app.inject({
+        method: 'get',
+        url: '/persons/7/relations',
+        query: { limit: '10', offset: '0' },
+      });
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.total).toBeGreaterThan(0);
+      expect(body.data).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            person: expect.objectContaining({ id: 900 }),
+            relation: expect.objectContaining({ id: 1002, cn: '配偶' }),
+          }),
+        ]),
+      );
+    } finally {
+      if (!existing) {
+        await db
+          .delete(schema.chiiPersonRelations)
+          .where(op.eq(schema.chiiPersonRelations.relationID, relation.relationID));
+      }
+    }
   });
 });
 

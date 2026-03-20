@@ -1,6 +1,4 @@
 import fastifyRequestContextPlugin from '@fastify/request-context';
-import type Ajv from 'ajv';
-import addFormats from 'ajv-formats';
 import { DrizzleError } from 'drizzle-orm';
 import type { FastifyInstance, FastifyRequest, FastifyServerOptions } from 'fastify';
 import { fastify } from 'fastify';
@@ -13,6 +11,7 @@ import { TypeORMError } from 'typeorm';
 import { fastifyAltairPlugin } from '@app/lib/graphql/ui.ts';
 import * as routes from '@app/routes/index.ts';
 
+import { buildAjvOptions } from './ajv.ts';
 import { emptyAuth } from './auth/index.ts';
 import * as auth from './auth/index.ts';
 import config, { testing, VERSION } from './config.ts';
@@ -59,16 +58,7 @@ export async function createServer(
     'onProtoPoisoning' | 'ajv' | 'schemaErrorFormatter' | 'requestIdHeader'
   > = {},
 ): Promise<FastifyInstance> {
-  const ajv: FastifyServerOptions['ajv'] = {
-    plugins: [
-      function (ajv: Ajv) {
-        ajv.addKeyword({ keyword: 'x-examples' });
-        ajv.addKeyword({ keyword: 'x-ms-enum' });
-        ajv.addKeyword({ keyword: 'x-enum-varnames' });
-      },
-      addFormats,
-    ],
-  };
+  const ajv = buildAjvOptions();
 
   const server = fastify({
     ...opts,

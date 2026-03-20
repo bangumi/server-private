@@ -8,6 +8,7 @@ import { ConflictError, NotFoundError } from '@app/lib/error.ts';
 import { getSlimCacheKey } from '@app/lib/index/cache';
 import { updateIndexStats } from '@app/lib/index/stats';
 import { IndexPrivacy, IndexRelatedCategory } from '@app/lib/index/types.ts';
+import { getIndexCollect } from '@app/lib/index/utils';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import redis from '@app/lib/redis';
 import * as convert from '@app/lib/types/convert.ts';
@@ -103,6 +104,14 @@ export async function setup(app: App) {
       if (user) {
         index.user = user;
       }
+
+      if (auth.login) {
+        const collectedAt = await getIndexCollect(auth.userID, indexID);
+        if (collectedAt) {
+          index.collectedAt = collectedAt;
+        }
+      }
+
       return index;
     },
   );
