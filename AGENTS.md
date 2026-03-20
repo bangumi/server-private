@@ -9,6 +9,8 @@ Entry points in `bin/`:
 - `main.ts` — REST + GraphQL server
 - `cron.ts` — scheduled tasks
 - `mq.ts` — Kafka consumer (message queue processor)
+- `export-openapi.ts` — OpenAPI spec export
+- `fix-date.ts` — date fix utility
 
 Key infrastructure: MySQL (TypeORM), Redis (ioredis), Kafka (@confluentinc/kafka-javascript), Meilisearch.
 
