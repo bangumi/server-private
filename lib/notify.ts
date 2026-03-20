@@ -48,6 +48,12 @@ export const NotifyType = Object.freeze({
   _32: 32,
   _33: 33,
   _34: 34,
+  SubjectPatchAccepted: 35,
+  EpisodePatchAccepted: 36,
+  SubjectPatchRejected: 37,
+  EpisodePatchRejected: 38,
+  SubjectPatchExpired: 39,
+  EpisodePatchExpired: 40,
 });
 
 export type NotifyType = (typeof NotifyType)[keyof typeof NotifyType];
