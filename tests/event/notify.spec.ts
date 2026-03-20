@@ -7,12 +7,10 @@ import { NotifySchema } from '@app/vendor/proto/mq/v1/notify_pb.ts';
 
 beforeEach(async () => {
   await db.delete(schema.chiiNotify);
-  await db.delete(schema.chiiNotifyField);
 });
 
 afterEach(async () => {
   await db.delete(schema.chiiNotify);
-  await db.delete(schema.chiiNotifyField);
 });
 
 test('should handle event notify event', async () => {
@@ -22,7 +20,13 @@ test('should handle event notify event', async () => {
     value: Buffer.from(
       toBinary(
         NotifySchema,
-        create(NotifySchema, { mid: 1, title: 'fake title', type: 35, userId: 4, fromUserId: 0 }),
+        create(NotifySchema, {
+          mid: 1,
+          title: 'fake title',
+          type: 35,
+          userId: 382951,
+          fromUserId: 287622,
+        }),
       ),
     ).toString('utf8'),
   });
