@@ -23,7 +23,7 @@ const binlogHandlers: Record<string, Handler | Handler[]> = {
 };
 
 async function onBinlogMessage(msg: KafkaMessage) {
-  const payload = JSON.parse(msg.value) as Payload;
+  const payload = JSON.parse(msg.value.toString()) as Payload;
   const handler = binlogHandlers[payload.source.table];
   if (!handler) {
     return;
@@ -82,13 +82,13 @@ async function main() {
           await onBinlogMessage({
             topic: topic,
             key: message.key.toString(),
-            value: message.value.toString(),
+            value: message.value,
           });
         } else {
           await onServiceMessage({
             topic: topic,
             key: message.key.toString(),
-            value: message.value.toString(),
+            value: message.value,
           });
         }
       } catch (error) {

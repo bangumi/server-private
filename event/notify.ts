@@ -8,7 +8,7 @@ import { NotifySchema } from '@app/vendor/proto/mq/v1/notify_pb.ts';
 import { type KafkaMessage } from './type';
 
 export async function handle({ value }: KafkaMessage) {
-  const payload = fromBinary(NotifySchema, Buffer.from(value, 'utf8'));
+  const payload = fromBinary(NotifySchema, value);
 
   await db.transaction(async (t) => {
     await Notify.create(t, {
