@@ -297,7 +297,7 @@ describe('edit subject ', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(editSubject).toBeCalledWith({
+    expect(editSubject).toHaveBeenCalledWith({
       commitMessage: 'c',
       infobox: 'i',
       name: 'n',
@@ -411,7 +411,7 @@ describe('should upload image', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(uploadImageMock).toBeCalledWith(
+    expect(uploadImageMock).toHaveBeenCalledWith(
       expect.stringMatching(/.*\.jpe?g$/),
       expect.objectContaining({}),
     );
