@@ -2904,6 +2904,32 @@ exports[`should build private api spec 1`] = `
         - jp
         - desc
       type: object
+    SubjectRelationWikiInfo:
+      items:
+        properties:
+          order:
+            type: integer
+          subject:
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+              nameCN:
+                type: string
+            required:
+              - id
+              - name
+              - nameCN
+            type: object
+          type:
+            type: integer
+        required:
+          - subject
+          - type
+          - order
+        type: object
+      type: array
     SubjectReview:
       properties:
         entry:
@@ -12206,6 +12232,141 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取条目-人物关联 wiki 历史编辑摘要
+      tags:
+        - wiki
+  /p1/wiki/subjects/{subjectID}/relations:
+    get:
+      operationId: getSubjectRelationWikiInfo
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: '#/components/schemas/SubjectType'
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectRelationWikiInfo'
+          description: Default Response
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 获取条目关联当前 wiki 信息
+      tags:
+        - wiki
+    put:
+      operationId: putSubjectRelationWikiInfo
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: '#/components/schemas/SubjectType'
+        - in: path
+          name: subjectID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                commitMessage:
+                  type: string
+                expectedRevision:
+                  items:
+                    additionalProperties: false
+                    description: a optional object to check if input is changed by others
+                    properties:
+                      order:
+                        type: integer
+                      subject:
+                        properties:
+                          id:
+                            type: integer
+                        required:
+                          - id
+                        type: object
+                      type:
+                        type: integer
+                    required:
+                      - subject
+                      - type
+                      - order
+                    type: object
+                  type: array
+                relations:
+                  items:
+                    properties:
+                      order:
+                        default: 0
+                        type: integer
+                      subject:
+                        properties:
+                          id:
+                            type: integer
+                        required:
+                          - id
+                        type: object
+                      type:
+                        type: integer
+                    required:
+                      - subject
+                      - type
+                    type: object
+                  type: array
+              required:
+                - commitMessage
+                - relations
+              type: object
+        required: true
+      responses:
+        '200':
+          description: Default Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: invalid input
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 修改条目关联当前 wiki 信息
       tags:
         - wiki
   /p1/wiki/subjects/{subjectID}/relations/history-summary:
