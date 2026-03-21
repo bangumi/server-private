@@ -10213,6 +10213,12 @@ paths:
                 character:
                   additionalProperties: false
                   properties:
+                    img:
+                      description: >-
+                        base64 encoded raw bytes, 4mb size limit on **decoded**
+                        size
+                      format: byte
+                      type: string
                     infobox:
                       minLength: 1
                       type: string
@@ -10259,6 +10265,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
         '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '403':
           content:
             application/json:
               schema:
@@ -10798,6 +10810,12 @@ paths:
                 person:
                   additionalProperties: false
                   properties:
+                    img:
+                      description: >-
+                        base64 encoded raw bytes, 4mb size limit on **decoded**
+                        size
+                      format: byte
+                      type: string
                     infobox:
                       minLength: 1
                       type: string

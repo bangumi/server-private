@@ -179,7 +179,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['tests/**/*', '**/*.test.ts'],
+    files: ['tests/**/*', '**/*.test.ts', '**/*.spec.ts'],
     rules: {
       '@typescript-eslint/consistent-type-imports': ['error', { disallowTypeAnnotations: false }],
       '@typescript-eslint/require-await': 'off',
