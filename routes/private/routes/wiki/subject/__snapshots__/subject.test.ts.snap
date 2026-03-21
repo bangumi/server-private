@@ -242,6 +242,52 @@ Object {
 }
 `;
 
+exports[`should update subject-person relations 1`] = `
+Array [
+  Object {
+    "appearEps": "",
+    "person": Object {
+      "id": 1,
+      "name": "水樹奈々",
+    },
+    "position": 1001,
+  },
+  Object {
+    "appearEps": "",
+    "person": Object {
+      "id": 3,
+      "name": "和田薫",
+    },
+    "position": 1005,
+  },
+]
+`;
+
+exports[`should update subject-person relations 2`] = `Array []`;
+
+exports[`should update subject-person relations 3`] = `
+Array [
+  Object {
+    "appearEps": "",
+    "position": 1005,
+    "subject": Object {
+      "id": 4,
+      "name": "メタルスラッグ7",
+      "nameCN": "合金弹头7",
+    },
+  },
+  Object {
+    "appearEps": "",
+    "position": 1006,
+    "subject": Object {
+      "id": 119463,
+      "name": "",
+      "nameCN": "",
+    },
+  },
+]
+`;
+
 exports[`subject relations > should get subject character relation history 1`] = `
 Object {
   "data": Array [
