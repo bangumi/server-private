@@ -17,6 +17,40 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './index.ts';
 
+// only allow images in ./fixtures/
+vi.mock('@app/lib/services/imaginary', async () => {
+  const mod = await vi.importActual<typeof import('@app/lib/services/imaginary.ts')>(
+    '@app/lib/services/imaginary',
+  );
+
+  const images = await Promise.all(
+    ['webp', 'jpg'].map(async (ext) => {
+      return {
+        ext,
+        content: await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${ext}`)),
+      };
+    }),
+  );
+
+  expect(images).toHaveLength(2);
+
+  return {
+    default: {
+      async info(img: Buffer) {
+        const i = images.find((x) => x.content.equals(img));
+        if (i) {
+          return { type: i.ext } as Info;
+        }
+        throw new mod.NotValidImageError();
+      },
+
+      convert(): Promise<Buffer<ArrayBuffer>> {
+        return Promise.resolve(Buffer.from(''));
+      },
+    } satisfies IImaginary,
+  };
+});
+
 beforeAll(async () => {
   await fs.rm('./tmp', { recursive: true, force: true });
 });
@@ -46,40 +80,6 @@ async function testApp({ auth }: { auth?: Partial<IAuth> } = {}) {
 }
 
 describe('edit character ', () => {
-  // only allow images in ./fixtures/
-  vi.mock('@app/lib/services/imaginary', async () => {
-    const mod = await vi.importActual<typeof import('@app/lib/services/imaginary.ts')>(
-      '@app/lib/services/imaginary',
-    );
-
-    const images = await Promise.all(
-      ['webp', 'jpg'].map(async (ext) => {
-        return {
-          ext,
-          content: await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${ext}`)),
-        };
-      }),
-    );
-
-    expect(images).toHaveLength(2);
-
-    return {
-      default: {
-        async info(img: Buffer) {
-          const i = images.find((x) => x.content.equals(img));
-          if (i) {
-            return { type: i.ext } as Info;
-          }
-          throw new mod.NotValidImageError();
-        },
-
-        convert(): Promise<Buffer<ArrayBuffer>> {
-          return Promise.resolve(Buffer.from(''));
-        },
-      } satisfies IImaginary,
-    };
-  });
-
   test('should get current wiki info', async () => {
     const app = await testApp({});
 
