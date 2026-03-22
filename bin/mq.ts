@@ -92,7 +92,10 @@ async function main() {
           });
         }
       } catch (error) {
-        logger.error(error, `error processing message ${message.key?.toString() ?? ''}`);
+        logger.error(
+          error,
+          `error processing message ${topic} ${message.offset} ${message.key?.toString() ?? ''}`,
+        );
       }
     },
   });
