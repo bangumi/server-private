@@ -85,9 +85,12 @@ async function main() {
             value: message.value,
           });
         } else {
+          const key = message.key?.toString() ?? '';
+          logger.info(`processing message ${topic} ${message.offset} ${key}`);
+
           await onServiceMessage({
             topic: topic,
-            key: message.key?.toString() ?? '',
+            key,
             value: message.value,
           });
         }
