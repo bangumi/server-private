@@ -1,14 +1,25 @@
+import * as crypto from 'node:crypto';
+
 import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
+import {
+  deleteMonoImage,
+  ImageFileTooLarge,
+  ImageTypeCanBeUploaded,
+  sizeLimit,
+  UnsupportedImageFormat,
+  uploadMonoImage,
+} from '@app/lib/image/index.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
 import type { IPersonRev } from '@app/lib/rev/type.ts';
 import { PersonCastRev, PersonRev, PersonSubjectRev, RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
+import imaginary from '@app/lib/services/imaginary.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -34,56 +45,19 @@ export const PersonEditTypes = [
   RevType.personMerge,
 ] as const;
 
-export const PersonProfessions = t.Object({
-  producer: t.Optional(t.Boolean()),
-  mangaka: t.Optional(t.Boolean()),
-  artist: t.Optional(t.Boolean()),
-  seiyu: t.Optional(t.Boolean()),
-  writer: t.Optional(t.Boolean()),
-  illustrator: t.Optional(t.Boolean()),
-  actor: t.Optional(t.Boolean()),
-});
-
-type IPersonWikiInfo = Static<typeof PersonWikiInfo>;
-export const PersonWikiInfo = t.Object(
-  {
-    id: t.Integer(),
-    name: t.String(),
-    typeID: res.Ref(res.PersonType),
-    infobox: t.String(),
-    summary: t.String(),
-    locked: t.Boolean(),
-    redirect: t.Integer(),
-    profession: PersonProfessions,
-  },
-  { $id: 'PersonWikiInfo' },
-);
-
 export const PersonEdit = t.Object(
   {
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
     summary: t.String(),
+    img: t.String({
+      format: 'byte',
+      description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
+    }),
   },
   {
     $id: 'PersonEdit',
     additionalProperties: false,
-  },
-);
-
-type IPersonRevisionWikiInfo = Static<typeof PersonRevisionWikiInfo>;
-export const PersonRevisionWikiInfo = t.Object(
-  {
-    name: t.String(),
-    infobox: t.String(),
-    summary: t.String(),
-    profession: PersonProfessions,
-    extra: t.Object({
-      img: t.Optional(t.String()),
-    }),
-  },
-  {
-    $id: 'PersonRevisionWikiInfo',
   },
 );
 
@@ -143,8 +117,6 @@ export const PersonCastRevisionWikiInfo = t.Array(
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   app.addSchema(res.PersonType);
-  app.addSchema(PersonWikiInfo);
-  app.addSchema(PersonRevisionWikiInfo);
   app.addSchema(UserPersonContribution);
   app.addSchema(PersonSubjectRevisionWikiInfo);
   app.addSchema(PersonCastRevisionWikiInfo);
@@ -161,7 +133,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(PersonWikiInfo),
+          200: res.Ref(res.PersonWikiInfo),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
@@ -171,7 +143,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { personID } }): Promise<IPersonWikiInfo> => {
+    async ({ params: { personID } }): Promise<res.IPersonWikiInfo> => {
       const [p] = await db
         .select()
         .from(schema.chiiPersons)
@@ -187,7 +159,7 @@ export async function setup(app: App) {
           if (p[c]) acc[c] = true;
           return acc;
         },
-        {} as IPersonWikiInfo['profession'],
+        {} as res.IPersonWikiInfo['profession'],
       );
 
       return {
@@ -217,7 +189,17 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
-            expectedRevision: t.Partial(PersonEdit, { default: {}, additionalProperties: false }),
+            expectedRevision: t.Partial(
+              t.Object({
+                name: t.String({ minLength: 1 }),
+                infobox: t.String({ minLength: 1 }),
+                summary: t.String(),
+              }),
+              {
+                default: {},
+                additionalProperties: false,
+              },
+            ),
             person: t.Partial(PersonEdit, { additionalProperties: false }),
           },
           { additionalProperties: false },
@@ -239,6 +221,11 @@ export async function setup(app: App) {
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
+          ...res.errorResponses(
+            ImageFileTooLarge(),
+            UnsupportedImageFormat(),
+            new NotAllowedError('non sandbox subject'),
+          ),
         },
       },
       preHandler: [requireLogin('editing a subject info')],
@@ -268,41 +255,88 @@ export async function setup(app: App) {
 
         matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
 
-        const updated = {
-          infobox: input.infobox ?? p.infobox,
-          name: input.name ?? p.name,
-          summary: input.summary ?? p.summary,
-        };
+        let filename;
+        if (input.img) {
+          let raw = Buffer.from(input.img, 'base64');
+          // 4mb
+          if (raw.length > sizeLimit) {
+            throw new ImageFileTooLarge();
+          }
 
-        await t
-          .update(schema.chiiPersons)
-          .set(updated)
-          .where(op.eq(schema.chiiPersons.id, personID))
-          .limit(1);
+          // validate image
+          const resp = await imaginary.info(raw);
+          const format = resp.type;
 
-        const profession = PersonCareers.reduce(
-          (acc, c) => {
-            if (p[c]) acc[c] = '1';
-            return acc;
-          },
-          {} as IPersonRev['profession'],
-        );
+          if (!format) {
+            throw new UnsupportedImageFormat();
+          }
 
-        await createRevision(t, {
-          mid: personID,
-          type: RevType.personEdit,
-          rev: {
-            prsn_name: updated.name,
-            prsn_infobox: updated.infobox,
-            prsn_summary: updated.summary,
-            profession,
-            extra: {
-              img: p.img,
+          if (!ImageTypeCanBeUploaded.includes(format)) {
+            throw new UnsupportedImageFormat();
+          }
+
+          // convert webp to jpeg
+          let ext = format;
+          if (format === 'webp') {
+            raw = await imaginary.convert(raw, { format: 'jpeg' });
+            if (raw.length > sizeLimit) {
+              throw new ImageFileTooLarge();
+            }
+            ext = 'jpeg';
+          }
+
+          // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
+          const h = crypto.randomUUID();
+
+          // for example raw/36/b8/${person_id}_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+          filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${personID}_${h}.${ext}`;
+
+          await uploadMonoImage(filename, raw);
+        }
+
+        try {
+          const updated = {
+            infobox: input.infobox ?? p.infobox,
+            name: input.name ?? p.name,
+            summary: input.summary ?? p.summary,
+            img: input.img ? filename : p.img,
+          };
+
+          await t
+            .update(schema.chiiPersons)
+            .set(updated)
+            .where(op.eq(schema.chiiPersons.id, personID))
+            .limit(1);
+
+          const profession = PersonCareers.reduce(
+            (acc, c) => {
+              if (p[c]) acc[c] = '1';
+              return acc;
             },
-          } satisfies IPersonRev,
-          creator: auth.userID,
-          comment: commitMessage,
-        });
+            {} as IPersonRev['profession'],
+          );
+
+          await createRevision(t, {
+            mid: personID,
+            type: RevType.personEdit,
+            rev: {
+              prsn_name: updated.name,
+              prsn_infobox: updated.infobox,
+              prsn_summary: updated.summary,
+              profession,
+              extra: {
+                img: updated.img,
+              },
+            } satisfies IPersonRev,
+            creator: auth.userID,
+            comment: commitMessage,
+          });
+        } catch (error) {
+          if (input.img && filename) {
+            await deleteMonoImage(filename);
+          }
+          throw error;
+        }
       });
 
       return {};
@@ -388,14 +422,14 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(PersonRevisionWikiInfo),
+          200: res.Ref(res.PersonRevisionWikiInfo),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('revision')),
           }),
         },
       },
     },
-    async ({ params: { revisionID } }): Promise<IPersonRevisionWikiInfo> => {
+    async ({ params: { revisionID } }): Promise<res.IPersonRevisionWikiInfo> => {
       const [r] = await db
         .select()
         .from(schema.chiiRevHistory)
