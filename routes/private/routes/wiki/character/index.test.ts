@@ -155,11 +155,6 @@ describe('edit character ', () => {
   test('should update character and history', async () => {
     const app = await testApp();
 
-    const uploadImageMock = vi.fn();
-    vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
-
-    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
-
     const res = await app.inject({
       url: '/characters/40',
       method: 'PATCH',
@@ -168,7 +163,6 @@ describe('edit character ', () => {
           name: 'n',
           infobox: 'i',
           summary: 's',
-          img: raw.toString('base64'),
         },
         commitMessage: 'c',
       },
@@ -202,16 +196,78 @@ describe('edit character ', () => {
     const revision = await app.inject(`/characters/-/revisions/${revisionID}`);
     expect(revision.statusCode).toBe(200);
     const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
-    expect(revisionData.extra).toHaveProperty('img');
-    expect(typeof revisionData.extra.img).toBe('string');
     expect(revisionData.infobox).toBe('i');
     expect(revisionData.name).toBe('n');
     expect(revisionData.summary).toBe('s');
+  });
+
+  test('should upload character image and create revision', async () => {
+    const app = await testApp();
+
+    const uploadImageMock = vi.fn();
+    vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/characters/40/img',
+      method: 'POST',
+      payload: {
+        img: raw.toString('base64'),
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const imageRes = res.json();
+    expect(imageRes.img).toMatch(/^raw(?:\/\w{2}){2}\/40_.*\.jpe?g$/);
 
     expect(uploadImageMock).toHaveBeenCalledWith(
       expect.stringMatching(/.*\.jpe?g$/),
       expect.any(Buffer),
     );
+  });
+
+  test('should handle image upload failure', async () => {
+    const app = await testApp();
+
+    vi.spyOn(image, 'uploadMonoImage').mockRejectedValueOnce(new Error('Image processing failed'));
+    vi.spyOn(common, 'createRevision');
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/characters/40/img',
+      method: 'POST',
+      payload: {
+        img: raw.toString('base64'),
+      },
+    });
+
+    expect(res.statusCode).toBe(500);
+    expect(common.createRevision).not.toHaveBeenCalled();
+  });
+
+  test('should cleanup when image upload revision creation fails', async () => {
+    const app = await testApp();
+
+    const uploadImageMock = vi.fn();
+    const deleteImageMock = vi.fn();
+    vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
+    vi.spyOn(image, 'deleteMonoImage').mockImplementationOnce(deleteImageMock);
+    vi.spyOn(common, 'createRevision').mockRejectedValueOnce(new Error('createRevision failed'));
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/characters/40/img',
+      method: 'POST',
+      payload: {
+        img: raw.toString('base64'),
+      },
+    });
+
+    expect(res.statusCode).toBe(500);
+    expect(deleteImageMock).toHaveBeenCalled();
   });
 
   test('should expected current character', async () => {
@@ -250,59 +306,6 @@ describe('edit character ', () => {
       }
     `);
     expect(res.statusCode).toBe(400);
-  });
-
-  test('should handle image processing failure', async () => {
-    const app = await testApp();
-
-    vi.spyOn(image, 'uploadMonoImage').mockRejectedValueOnce(new Error('Image processing failed'));
-    vi.spyOn(common, 'createRevision');
-
-    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
-
-    const res = await app.inject({
-      url: '/characters/40',
-      method: 'PATCH',
-      payload: {
-        character: {
-          name: 'n',
-          infobox: 'i',
-          summary: 's',
-          img: raw.toString('base64'),
-        },
-        commitMessage: 'c',
-      },
-    });
-
-    expect(res.statusCode).toBe(500);
-    expect(common.createRevision).not.toHaveBeenCalled();
-  });
-
-  test('should cleanup uploaded image when database operation fails', async () => {
-    const app = await testApp({});
-
-    const deleteImageMock = vi.fn();
-    vi.spyOn(image, 'deleteMonoImage').mockImplementationOnce(deleteImageMock);
-    vi.spyOn(common, 'createRevision').mockRejectedValueOnce(new Error('createRevision failed'));
-
-    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
-
-    const res = await app.inject({
-      url: '/characters/40',
-      method: 'PATCH',
-      payload: {
-        character: {
-          name: 'n',
-          infobox: 'i',
-          summary: 's',
-          img: raw.toString('base64'),
-        },
-        commitMessage: 'c',
-      },
-    });
-
-    expect(res.statusCode).toBe(500);
-    expect(deleteImageMock).toHaveBeenCalled();
   });
 });
 

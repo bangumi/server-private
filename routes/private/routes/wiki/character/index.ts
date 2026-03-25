@@ -35,10 +35,6 @@ export const CharacterEdit = t.Object(
     name: t.String({ minLength: 1 }),
     infobox: t.String({ minLength: 1 }),
     summary: t.String(),
-    img: t.String({
-      format: 'byte',
-      description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
-    }),
   },
   {
     $id: 'CharacterEdit',
@@ -229,56 +225,127 @@ export async function setup(app: App) {
 
         matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
 
-        let filename;
-        if (input.img) {
-          let raw = Buffer.from(input.img, 'base64');
-          // 4mb
-          if (raw.length > sizeLimit) {
-            throw new ImageFileTooLarge();
-          }
+        const updated = {
+          infobox: input.infobox ?? p.infobox,
+          name: input.name ?? p.name,
+          summary: input.summary ?? p.summary,
+        };
 
-          // validate image
-          const resp = await imaginary.info(raw);
-          const format = resp.type;
+        await t
+          .update(schema.chiiCharacters)
+          .set(updated)
+          .where(op.eq(schema.chiiCharacters.id, characterID))
+          .limit(1);
 
-          if (!format) {
-            throw new UnsupportedImageFormat();
-          }
+        await createRevision(t, {
+          mid: characterID,
+          type: RevType.characterEdit,
+          rev: {
+            crt_name: updated.name,
+            crt_infobox: updated.infobox,
+            crt_summary: updated.summary,
+            extra: {
+              img: p.img,
+            },
+          } satisfies ICharacterRev,
+          creator: auth.userID,
+          comment: commitMessage,
+        });
+      });
 
-          if (!ImageTypeCanBeUploaded.includes(format)) {
-            throw new UnsupportedImageFormat();
-          }
+      return {};
+    },
+  );
 
-          // convert webp to jpeg
-          let ext = format;
-          if (format === 'webp') {
-            raw = await imaginary.convert(raw, { format: 'jpeg' });
-            if (raw.length > sizeLimit) {
-              throw new ImageFileTooLarge();
-            }
-            ext = 'jpeg';
-          }
+  app.post(
+    '/characters/:characterID/img',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'uploadCharacterImage',
+        summary: '上传角色图片',
+        params: t.Object({
+          characterID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            img: t.String({
+              format: 'byte',
+              description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
+            }),
+          },
+          { additionalProperties: false },
+        ),
+        response: {
+          200: t.Object({
+            img: t.String({ description: 'image filename' }),
+          }),
+          ...res.errorResponses(
+            ImageFileTooLarge(),
+            UnsupportedImageFormat(),
+            new NotAllowedError('edit character'),
+          ),
+        },
+      },
+      preHandler: [requireLogin('uploading image')],
+    },
+    async ({ auth, body: { img: base64Img }, params: { characterID } }) => {
+      if (!auth.permission.mono_edit) {
+        throw new NotAllowedError('edit character');
+      }
 
-          // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
-          const h = crypto.randomUUID();
+      const [p] = await db
+        .select()
+        .from(schema.chiiCharacters)
+        .where(op.eq(schema.chiiCharacters.id, characterID))
+        .limit(1);
 
-          // for example raw/36/b8/${subject_id}_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
-          filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_${h}.${ext}`;
+      if (!p) {
+        throw new NotFoundError(`character ${characterID}`);
+      }
 
-          await uploadMonoImage(filename, raw);
+      let raw = Buffer.from(base64Img, 'base64');
+      // 4mb
+      if (raw.length > sizeLimit) {
+        throw new ImageFileTooLarge();
+      }
+
+      // validate image
+      const resp = await imaginary.info(raw);
+      const format = resp.type;
+
+      if (!format) {
+        throw new UnsupportedImageFormat();
+      }
+
+      if (!ImageTypeCanBeUploaded.includes(format)) {
+        throw new UnsupportedImageFormat();
+      }
+
+      // convert webp to jpeg
+      let ext = format;
+      if (format === 'webp') {
+        raw = await imaginary.convert(raw, { format: 'jpeg' });
+        if (raw.length > sizeLimit) {
+          throw new ImageFileTooLarge();
         }
+        ext = 'jpeg';
+      }
 
+      // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
+      const h = crypto.randomUUID();
+
+      // for example raw/36/b8/${character_id}_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_${h}.${ext}`;
+
+      await uploadMonoImage(filename, raw);
+
+      await db.transaction(async (t) => {
         try {
-          const updated = {
-            infobox: input.infobox ?? p.infobox,
-            name: input.name ?? p.name,
-            summary: input.summary ?? p.summary,
-            img: input.img ? filename : p.img,
-          };
-
           await t
             .update(schema.chiiCharacters)
-            .set(updated)
+            .set({ img: filename })
             .where(op.eq(schema.chiiCharacters.id, characterID))
             .limit(1);
 
@@ -286,25 +353,23 @@ export async function setup(app: App) {
             mid: characterID,
             type: RevType.characterEdit,
             rev: {
-              crt_name: updated.name,
-              crt_infobox: updated.infobox,
-              crt_summary: updated.summary,
+              crt_name: p.name,
+              crt_infobox: p.infobox,
+              crt_summary: p.summary,
               extra: {
-                img: updated.img,
+                img: filename,
               },
             } satisfies ICharacterRev,
             creator: auth.userID,
-            comment: commitMessage,
+            comment: '新肖像',
           });
         } catch (error) {
-          if (input.img && filename) {
-            await deleteMonoImage(filename);
-          }
+          await deleteMonoImage(filename);
           throw error;
         }
       });
 
-      return {};
+      return { img: filename };
     },
   );
 
