@@ -283,6 +283,16 @@ describe('edit person ', () => {
       expect.stringMatching(/.*\.jpe?g$/),
       expect.any(Buffer),
     );
+
+    const history = await app.inject('/persons/3214/history-summary');
+    const revisionID = history.json().data[0]?.id;
+    expect(revisionID).toBeDefined();
+
+    const revision = await app.inject(`/persons/-/revisions/${revisionID}`);
+    expect(revision.statusCode).toBe(200);
+
+    const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
+    expect(revisionData.extra?.img).toBe(imageRes.img);
   });
 
   test('should handle image upload failure', async () => {
