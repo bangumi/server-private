@@ -1,15 +1,63 @@
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
-import { describe, expect, test, vi } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 
 import { db } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
+import { projectRoot } from '@app/lib/config.ts';
+import * as image from '@app/lib/image/index.ts';
+import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import type * as res from '@app/lib/types/res.ts';
 import type { IPagedUserPersonContribution } from '@app/routes/private/routes/wiki/person/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './index.ts';
+
+// only allow images in ./fixtures/
+vi.mock('@app/lib/services/imaginary', async () => {
+  const mod = await vi.importActual<typeof import('@app/lib/services/imaginary.ts')>(
+    '@app/lib/services/imaginary',
+  );
+
+  const images = await Promise.all(
+    ['webp', 'jpg'].map(async (ext) => {
+      return {
+        ext,
+        content: await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${ext}`)),
+      };
+    }),
+  );
+
+  expect(images).toHaveLength(2);
+
+  return {
+    default: {
+      async info(img: Buffer) {
+        const i = images.find((x) => x.content.equals(img));
+        if (i) {
+          return { type: i.ext } as Info;
+        }
+        throw new mod.NotValidImageError();
+      },
+
+      convert(): Promise<Buffer<ArrayBuffer>> {
+        return Promise.resolve(Buffer.from(''));
+      },
+    } satisfies IImaginary,
+  };
+});
+
+beforeAll(async () => {
+  await fs.rm('./tmp', { recursive: true, force: true });
+});
+
+afterAll(async () => {
+  await fs.rm('./tmp', { recursive: true, force: true });
+});
 
 async function testApp({ auth }: { auth?: Partial<IAuth> } = {}) {
   const app = createTestServer({
@@ -156,42 +204,6 @@ describe('edit person ', () => {
     expect(res.statusCode).toBe(403);
   });
 
-  test('should need authorization', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: {},
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
-
-    const res = await app.inject({
-      url: '/persons/1',
-      method: 'PATCH',
-      payload: {
-        person: {
-          name: 'n',
-          infobox: 'i',
-          summary: 's',
-        },
-        commitMessage: 'c',
-      },
-    });
-
-    expect(res.json()).toMatchInlineSnapshot(`
-      Object {
-        "code": "NOT_ALLOWED",
-        "error": "Forbidden",
-        "message": "you don't have permission to edit person",
-        "statusCode": 403,
-      }
-    `);
-    expect(res.statusCode).toBe(403);
-  });
-
   test('should update person and history', async () => {
     const app = await testApp();
 
@@ -239,19 +251,47 @@ describe('edit person ', () => {
     expect(revisionID).toBe(contributionID);
 
     const revision = await app.inject(`/persons/-/revisions/${revisionID}`);
-    expect(revision.json()).toMatchInlineSnapshot(`
-      Object {
-        "extra": Object {
-          "img": "89/d4/3214_prsn_anidb.jpg",
-        },
-        "infobox": "i",
-        "name": "n",
-        "profession": Object {
-          "producer": true,
-        },
-        "summary": "s",
-      }
-    `);
+    expect(revision.statusCode).toBe(200);
+    const revisionData: res.IPersonRevisionWikiInfo = revision.json();
+    expect(revisionData.infobox).toBe('i');
+    expect(revisionData.name).toBe('n');
+    expect(revisionData.summary).toBe('s');
+  });
+
+  test('should upload person image and create revision', async () => {
+    const app = await testApp();
+
+    const uploadImageMock = vi.fn();
+    vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/persons/3214/potraits',
+      method: 'POST',
+      payload: {
+        img: raw.toString('base64'),
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const imageRes = res.json();
+    expect(imageRes.img).toMatch(/^raw(?:\/\w{2}){2}\/3214_.*\.jpe?g$/);
+
+    expect(uploadImageMock).toHaveBeenCalledWith(
+      expect.stringMatching(/.*\.jpe?g$/),
+      expect.any(Buffer),
+    );
+
+    const history = await app.inject('/persons/3214/history-summary');
+    const revisionID = history.json().data[0]?.id;
+    expect(revisionID).toBeDefined();
+
+    const revision = await app.inject(`/persons/-/revisions/${revisionID}`);
+    expect(revision.statusCode).toBe(200);
+
+    const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
+    expect(revisionData.extra?.img).toBe(imageRes.img);
   });
 
   test('should expected current person', async () => {

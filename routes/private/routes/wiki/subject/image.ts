@@ -1,7 +1,5 @@
 import * as crypto from 'node:crypto';
 
-import { createError } from '@fastify/error';
-import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import t from 'typebox';
@@ -10,7 +8,13 @@ import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { imageDomain } from '@app/lib/config.ts';
 import { LockedError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
-import { ImageTypeCanBeUploaded, uploadSubjectImage } from '@app/lib/image/index.ts';
+import {
+  ImageFileTooLarge,
+  ImageTypeCanBeUploaded,
+  sizeLimit,
+  UnsupportedImageFormat,
+  uploadSubjectImage,
+} from '@app/lib/image/index.ts';
 import { LikeType } from '@app/lib/like.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { SubjectImageRepo } from '@app/lib/orm/index.ts';
@@ -19,22 +23,8 @@ import imaginary from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
-import { errorResponses } from '@app/lib/types/res.ts';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
-
-const ImageFileTooLarge = createError(
-  'IMAGE_FILE_TOO_LARGE',
-  'uploaded image file is too large',
-  StatusCodes.BAD_REQUEST,
-);
-const UnsupportedImageFormat = createError(
-  'IMAGE_FORMAT_NOT_SUPPORT',
-  `not valid image file, only support ${ImageTypeCanBeUploaded.join(', ')}`,
-  StatusCodes.BAD_REQUEST,
-);
-
-const sizeLimit = 4 * 1024 * 1024;
 
 export function setup(app: App) {
   app.get(
@@ -153,7 +143,7 @@ export function setup(app: App) {
         }),
         response: {
           200: t.Object({}),
-          ...errorResponses(
+          ...res.errorResponses(
             ImageFileTooLarge(),
             UnsupportedImageFormat(),
             new NotAllowedError('non sandbox subject'),
@@ -203,7 +193,7 @@ export function setup(app: App) {
       // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
       const h = crypto.randomUUID();
 
-      // for example raw/36/b8/${subject_id}_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      // for example raw/36/b8/${subject_id}_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
       const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${subjectID}_${h}.${ext}`;
 
       const s = await orm.fetchSubjectByID(subjectID);
