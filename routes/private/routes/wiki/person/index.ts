@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 
+import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from 'typebox';
 import t from 'typebox';
 
@@ -232,6 +233,30 @@ export async function setup(app: App) {
     }) => {
       if (!auth.permission.mono_edit) {
         throw new NotAllowedError('edit person');
+      }
+
+      if (input.infobox) {
+        try {
+          parse(input.infobox);
+        } catch (error) {
+          if (error instanceof WikiSyntaxError) {
+            let l = '';
+            if (error.line) {
+              l = `line: ${error.line}`;
+              if (error.lino) {
+                l += `:${error.lino}`;
+              }
+            }
+
+            if (l) {
+              l = ' (' + l + ')';
+            }
+
+            throw new InvalidWikiSyntaxError(`${error.message}${l}`);
+          }
+
+          throw error;
+        }
       }
 
       await db.transaction(async (t) => {
