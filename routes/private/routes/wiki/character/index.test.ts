@@ -209,7 +209,7 @@ describe('edit character ', () => {
     const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
 
     const res = await app.inject({
-      url: '/characters/40/img',
+      url: '/characters/40/potraits',
       method: 'POST',
       payload: {
         img: raw.toString('base64'),

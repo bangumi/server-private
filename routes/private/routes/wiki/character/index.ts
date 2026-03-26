@@ -261,8 +261,8 @@ export async function setup(app: App) {
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'uploadCharacterImage',
-        summary: '上传角色图片',
+        operationId: 'uploadCharacterPotrait',
+        summary: '上传角色肖像',
         params: t.Object({
           characterID: t.Integer({ minimum: 1 }),
         }),

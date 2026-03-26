@@ -10396,9 +10396,9 @@ paths:
       summary: 获取角色 wiki 历史编辑摘要
       tags:
         - wiki
-  /p1/wiki/characters/{characterID}/img:
+  /p1/wiki/characters/{characterID}/potraits:
     post:
-      operationId: uploadCharacterImage
+      operationId: uploadCharacterPotrait
       parameters:
         - in: path
           name: characterID
@@ -10454,7 +10454,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 上传角色图片
+      summary: 上传角色肖像
       tags:
         - wiki
   /p1/wiki/characters/{characterID}/subjects/history-summary:
@@ -11032,9 +11032,9 @@ paths:
       summary: 获取人物 wiki 历史编辑摘要
       tags:
         - wiki
-  /p1/wiki/persons/{personID}/img:
+  /p1/wiki/persons/{personID}/potraits:
     post:
-      operationId: uploadPersonImage
+      operationId: uploadPersonPotrait
       parameters:
         - in: path
           name: personID
@@ -11090,7 +11090,7 @@ paths:
       security:
         - CookiesSession: []
           HTTPBearer: []
-      summary: 上传人物图片
+      summary: 上传人物肖像
       tags:
         - wiki
   /p1/wiki/persons/{personID}/subjects/history-summary:
