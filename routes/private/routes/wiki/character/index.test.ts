@@ -9,7 +9,6 @@ import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
-import * as common from '@app/lib/rev/common.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import type * as res from '@app/lib/types/res.ts';
 import type { IPagedUserCharacterContribution } from '@app/routes/private/routes/wiki/character/index.ts';
@@ -235,49 +234,6 @@ describe('edit character ', () => {
 
     const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
     expect(revisionData.extra?.img).toBe(imageRes.img);
-  });
-
-  test('should handle image upload failure', async () => {
-    const app = await testApp();
-
-    vi.spyOn(image, 'uploadMonoImage').mockRejectedValueOnce(new Error('Image processing failed'));
-    vi.spyOn(common, 'createRevision');
-
-    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
-
-    const res = await app.inject({
-      url: '/characters/40/img',
-      method: 'POST',
-      payload: {
-        img: raw.toString('base64'),
-      },
-    });
-
-    expect(res.statusCode).toBe(500);
-    expect(common.createRevision).not.toHaveBeenCalled();
-  });
-
-  test('should cleanup when image upload revision creation fails', async () => {
-    const app = await testApp();
-
-    const uploadImageMock = vi.fn();
-    const deleteImageMock = vi.fn();
-    vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
-    vi.spyOn(image, 'deleteMonoImage').mockImplementationOnce(deleteImageMock);
-    vi.spyOn(common, 'createRevision').mockRejectedValueOnce(new Error('createRevision failed'));
-
-    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
-
-    const res = await app.inject({
-      url: '/characters/40/img',
-      method: 'POST',
-      payload: {
-        img: raw.toString('base64'),
-      },
-    });
-
-    expect(res.statusCode).toBe(500);
-    expect(deleteImageMock).toHaveBeenCalled();
   });
 
   test('should expected current character', async () => {

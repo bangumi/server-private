@@ -7,7 +7,6 @@ import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
 import {
-  deleteMonoImage,
   ImageFileTooLarge,
   ImageTypeCanBeUploaded,
   sizeLimit,
@@ -374,43 +373,38 @@ export async function setup(app: App) {
       // for example raw/36/b8/${person_id}_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
       const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${personID}_${h}.${ext}`;
 
-      await uploadMonoImage(filename, raw);
-
       await db.transaction(async (t) => {
-        try {
-          await t
-            .update(schema.chiiPersons)
-            .set({ img: filename })
-            .where(op.eq(schema.chiiPersons.id, personID))
-            .limit(1);
+        await t
+          .update(schema.chiiPersons)
+          .set({ img: filename })
+          .where(op.eq(schema.chiiPersons.id, personID))
+          .limit(1);
 
-          const profession = PersonCareers.reduce(
-            (acc, c) => {
-              if (p[c]) acc[c] = '1';
-              return acc;
+        const profession = PersonCareers.reduce(
+          (acc, c) => {
+            if (p[c]) acc[c] = '1';
+            return acc;
+          },
+          {} as IPersonRev['profession'],
+        );
+
+        await createRevision(t, {
+          mid: personID,
+          type: RevType.personEdit,
+          rev: {
+            prsn_name: p.name,
+            prsn_infobox: p.infobox,
+            prsn_summary: p.summary,
+            profession,
+            extra: {
+              img: filename,
             },
-            {} as IPersonRev['profession'],
-          );
+          } satisfies IPersonRev,
+          creator: auth.userID,
+          comment: '新肖像',
+        });
 
-          await createRevision(t, {
-            mid: personID,
-            type: RevType.personEdit,
-            rev: {
-              prsn_name: p.name,
-              prsn_infobox: p.infobox,
-              prsn_summary: p.summary,
-              profession,
-              extra: {
-                img: filename,
-              },
-            } satisfies IPersonRev,
-            creator: auth.userID,
-            comment: '新肖像',
-          });
-        } catch (error) {
-          await deleteMonoImage(filename);
-          throw error;
-        }
+        await uploadMonoImage(filename, raw);
       });
 
       return { img: filename };
