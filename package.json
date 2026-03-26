@@ -81,7 +81,7 @@
     "socks-proxy-agent": "8.0.5",
     "typebox": "1.1.5",
     "typeorm": "0.3.28",
-    "yaml": "2.8.2"
+    "yaml": "2.8.3"
   },
   "devDependencies": {
     "@bufbuild/buf": "1.66.1",
