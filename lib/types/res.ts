@@ -12,6 +12,7 @@ import {
   GroupMemberRole,
   IndexRelatedCategory,
   IndexType,
+  PersonType,
   Ref,
   RevisionType,
   SubjectType,
@@ -1187,3 +1188,72 @@ export const RevisionHistory = t.Object(
 );
 export type IPagedRevisionHistory = Static<typeof PagedRevisionHistory>;
 export const PagedRevisionHistory = Paged(Ref(RevisionHistory));
+
+export const PersonProfessions = t.Object({
+  producer: t.Optional(t.Boolean()),
+  mangaka: t.Optional(t.Boolean()),
+  artist: t.Optional(t.Boolean()),
+  seiyu: t.Optional(t.Boolean()),
+  writer: t.Optional(t.Boolean()),
+  illustrator: t.Optional(t.Boolean()),
+  actor: t.Optional(t.Boolean()),
+});
+
+export type IPersonWikiInfo = Static<typeof PersonWikiInfo>;
+export const PersonWikiInfo = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    typeID: Ref(PersonType),
+    infobox: t.String(),
+    summary: t.String(),
+    locked: t.Boolean(),
+    redirect: t.Integer(),
+    profession: PersonProfessions,
+  },
+  { $id: 'PersonWikiInfo' },
+);
+
+export type IPersonRevisionWikiInfo = Static<typeof PersonRevisionWikiInfo>;
+export const PersonRevisionWikiInfo = t.Object(
+  {
+    name: t.String(),
+    infobox: t.String(),
+    summary: t.String(),
+    profession: PersonProfessions,
+    extra: t.Object({
+      img: t.Optional(t.String()),
+    }),
+  },
+  {
+    $id: 'PersonRevisionWikiInfo',
+  },
+);
+
+export type ICharacterWikiInfo = Static<typeof CharacterWikiInfo>;
+export const CharacterWikiInfo = t.Object(
+  {
+    id: t.Integer(),
+    name: t.String(),
+    infobox: t.String(),
+    summary: t.String(),
+    locked: t.Boolean(),
+    redirect: t.Integer(),
+  },
+  { $id: 'CharacterWikiInfo' },
+);
+
+export type ICharacterRevisionWikiInfo = Static<typeof CharacterRevisionWikiInfo>;
+export const CharacterRevisionWikiInfo = t.Object(
+  {
+    name: t.String(),
+    infobox: t.String(),
+    summary: t.String(),
+    extra: t.Object({
+      img: t.Optional(t.String()),
+    }),
+  },
+  {
+    $id: 'CharacterRevisionWikiInfo',
+  },
+);

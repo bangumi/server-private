@@ -346,8 +346,12 @@ exports[`should build private api spec 1`] = `
           type: integer
         infobox:
           type: string
+        locked:
+          type: boolean
         name:
           type: string
+        redirect:
+          type: integer
         summary:
           type: string
       required:
@@ -355,6 +359,8 @@ exports[`should build private api spec 1`] = `
         - name
         - infobox
         - summary
+        - locked
+        - redirect
       type: object
     CollectSubject:
       properties:
@@ -1555,6 +1561,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         infobox:
           type: string
+        locked:
+          type: boolean
         name:
           type: string
         profession:
@@ -1574,6 +1582,8 @@ exports[`should build private api spec 1`] = `
             writer:
               type: boolean
           type: object
+        redirect:
+          type: integer
         summary:
           type: string
         typeID:
@@ -1584,6 +1594,8 @@ exports[`should build private api spec 1`] = `
         - typeID
         - infobox
         - summary
+        - locked
+        - redirect
         - profession
       type: object
     PersonWork:
@@ -3121,6 +3133,8 @@ exports[`should build private api spec 1`] = `
           type: integer
         infobox:
           type: string
+        locked:
+          type: boolean
         metaTags:
           items:
             type: string
@@ -3130,6 +3144,8 @@ exports[`should build private api spec 1`] = `
         nsfw:
           type: boolean
         platform:
+          type: integer
+        redirect:
           type: integer
         series:
           type: boolean
@@ -3142,6 +3158,8 @@ exports[`should build private api spec 1`] = `
         - name
         - typeID
         - infobox
+        - locked
+        - redirect
         - platform
         - availablePlatform
         - metaTags
@@ -10272,6 +10290,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
         '500':
           content:
             application/json:
@@ -10396,6 +10420,67 @@ paths:
         - CookiesSession: []
           HTTPBearer: []
       summary: 获取角色 wiki 历史编辑摘要
+      tags:
+        - wiki
+  /p1/wiki/characters/{characterID}/potraits:
+    post:
+      operationId: uploadCharacterPotrait
+      parameters:
+        - in: path
+          name: characterID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                img:
+                  description: base64 encoded raw bytes, 4mb size limit on **decoded** size
+                  format: byte
+                  type: string
+              required:
+                - img
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  img:
+                    description: image filename
+                    type: string
+                required:
+                  - img
+                type: object
+          description: Default Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 上传角色肖像
       tags:
         - wiki
   /p1/wiki/characters/{characterID}/subjects/history-summary:
@@ -10841,6 +10926,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: default error response type
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
         '500':
           content:
             application/json:
@@ -10967,6 +11058,67 @@ paths:
       summary: 获取人物 wiki 历史编辑摘要
       tags:
         - wiki
+  /p1/wiki/persons/{personID}/potraits:
+    post:
+      operationId: uploadPersonPotrait
+      parameters:
+        - in: path
+          name: personID
+          required: true
+          schema:
+            minimum: 1
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              additionalProperties: false
+              properties:
+                img:
+                  description: base64 encoded raw bytes, 4mb size limit on **decoded** size
+                  format: byte
+                  type: string
+              required:
+                - img
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  img:
+                    description: image filename
+                    type: string
+                required:
+                  - img
+                type: object
+          description: Default Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 上传人物肖像
+      tags:
+        - wiki
   /p1/wiki/persons/{personID}/subjects/history-summary:
     get:
       operationId: personSubjectHistorySummary
@@ -11024,10 +11176,148 @@ paths:
       summary: 获取人物-条目关联 wiki 历史编辑摘要
       tags:
         - wiki
-  /p1/wiki/recent:
+  /p1/wiki/recent/characters:
+    get:
+      description: 获取最近两天的角色wiki更新
+      operationId: getRecentCharacterWiki
+      parameters:
+        - description: |-
+            unix time stamp, only return last update time >= since
+
+            only allow recent 2 days
+          in: path
+          name: since
+          required: true
+          schema:
+            default: 0
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  properties:
+                    createdAt:
+                      type: integer
+                    id:
+                      type: integer
+                  required:
+                    - id
+                    - createdAt
+                  type: object
+                type: array
+          description: Default Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      tags:
+        - wiki
+  /p1/wiki/recent/episodes:
+    get:
+      description: 获取最近两天的章节wiki更新
+      operationId: getRecentEpisodeWiki
+      parameters:
+        - description: |-
+            unix time stamp, only return last update time >= since
+
+            only allow recent 2 days
+          in: path
+          name: since
+          required: true
+          schema:
+            default: 0
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  properties:
+                    createdAt:
+                      type: integer
+                    id:
+                      type: integer
+                  required:
+                    - id
+                    - createdAt
+                  type: object
+                type: array
+          description: Default Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      tags:
+        - wiki
+  /p1/wiki/recent/persons:
+    get:
+      description: 获取最近两天的人物wiki更新
+      operationId: getRecentPersonWiki
+      parameters:
+        - description: |-
+            unix time stamp, only return last update time >= since
+
+            only allow recent 2 days
+          in: path
+          name: since
+          required: true
+          schema:
+            default: 0
+            type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  properties:
+                    createdAt:
+                      type: integer
+                    id:
+                      type: integer
+                  required:
+                    - id
+                    - createdAt
+                  type: object
+                type: array
+          description: Default Response
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      tags:
+        - wiki
+  /p1/wiki/recent/subjects:
     get:
       description: 获取最近两天的wiki更新
-      operationId: getRecentWiki
+      operationId: getRecentSubjectWiki
       parameters:
         - description: |-
             unix time stamp, only return last update time >= since

@@ -18,7 +18,7 @@ interface UserKey {
 
 export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as UserKey;
-  const payload = JSON.parse(value) as UserPayload;
+  const payload = JSON.parse(value.toString()) as UserPayload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
@@ -47,7 +47,7 @@ interface FriendPayload {
 }
 
 export async function handleFriend({ value }: KafkaMessage) {
-  const payload = JSON.parse(value) as FriendPayload;
+  const payload = JSON.parse(value.toString()) as FriendPayload;
   const uid = payload.before?.frd_uid ?? payload.after?.frd_uid;
   const fid = payload.before?.frd_fid ?? payload.after?.frd_fid;
 
