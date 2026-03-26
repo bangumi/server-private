@@ -9,7 +9,7 @@ interface Payload {
 }
 
 export async function handleTimelineMessage({ value }: KafkaMessage) {
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value.toString()) as Payload;
 
   switch (payload.op) {
     case 'daily': {

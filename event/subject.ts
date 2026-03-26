@@ -26,7 +26,7 @@ interface Payload {
 
 export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as SubjectKey;
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value.toString()) as Payload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
@@ -48,7 +48,7 @@ interface FieldsKey {
 
 export async function handleFields({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as FieldsKey;
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value.toString()) as Payload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
@@ -70,7 +70,7 @@ interface TopicKey {
 
 export async function handleTopic({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as TopicKey;
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value.toString()) as Payload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
@@ -92,7 +92,7 @@ interface EpisodeKey {
 
 export async function handleEpisode({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as EpisodeKey;
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value.toString()) as Payload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
@@ -124,7 +124,7 @@ export async function handleSubjectDate({ topic, key, value }: KafkaMessage) {
     return;
   }
 
-  const payload = JSON.parse(value) as Payload;
+  const payload = JSON.parse(value.toString()) as Payload;
   switch (payload.op) {
     case EventOp.Update:
     case EventOp.Create: {

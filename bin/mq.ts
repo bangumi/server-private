@@ -1,3 +1,4 @@
+import { handle as handleNotifyEvent } from '@app/event/notify';
 import { handleSubjectDate } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { KafkaMessage, Payload } from '@app/event/type';
@@ -7,6 +8,7 @@ import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
 const TOPICS = [
   'timeline',
+  'notify.v1',
   'debezium.chii.bangumi.chii_timeline',
   'debezium.chii.bangumi.chii_subjects',
   'debezium.chii.bangumi.chii_subject_revisions',
@@ -21,7 +23,7 @@ const binlogHandlers: Record<string, Handler | Handler[]> = {
 };
 
 async function onBinlogMessage(msg: KafkaMessage) {
-  const payload = JSON.parse(msg.value) as Payload;
+  const payload = JSON.parse(msg.value.toString()) as Payload;
   const handler = binlogHandlers[payload.source.table];
   if (!handler) {
     return;
@@ -46,6 +48,7 @@ async function onBinlogMessage(msg: KafkaMessage) {
 
 const serviceHandlers: Record<string, Handler> = {
   timeline: handleTimelineMessage,
+  'notify.v1': handleNotifyEvent,
 };
 
 async function onServiceMessage(msg: KafkaMessage) {
@@ -68,28 +71,34 @@ async function main() {
   const consumer = await newConsumer(TOPICS);
   await consumer.run({
     eachMessage: async ({ topic, message }) => {
-      if (!message.key) {
-        return;
-      }
       if (!message.value) {
         return;
       }
       try {
         if (topic.startsWith('debezium.')) {
+          if (!message.key) {
+            return;
+          }
           await onBinlogMessage({
             topic: topic,
             key: message.key.toString(),
-            value: message.value.toString(),
+            value: message.value,
           });
         } else {
+          const key = message.key?.toString() ?? '';
+          logger.info(`processing message ${topic} ${message.offset} ${key}`);
+
           await onServiceMessage({
             topic: topic,
-            key: message.key.toString(),
-            value: message.value.toString(),
+            key,
+            value: message.value,
           });
         }
       } catch (error) {
-        logger.error(error, `error processing message ${message.key.toString()}`);
+        logger.error(
+          error,
+          `error processing message ${topic} ${message.offset} ${message.key?.toString() ?? ''}`,
+        );
       }
     },
   });

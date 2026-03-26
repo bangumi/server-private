@@ -14,7 +14,7 @@ interface GroupPayload {
 
 export async function handle({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as GroupKey;
-  const payload = JSON.parse(value) as GroupPayload;
+  const payload = JSON.parse(value.toString()) as GroupPayload;
   switch (payload.op) {
     case EventOp.Create: {
       break;
@@ -43,7 +43,7 @@ interface GroupMemberPayload {
 }
 
 export async function handleMember({ value }: KafkaMessage) {
-  const payload = JSON.parse(value) as GroupMemberPayload;
+  const payload = JSON.parse(value.toString()) as GroupMemberPayload;
   const uid = payload.before?.gmb_uid ?? payload.after?.gmb_uid;
   if (!uid) {
     return;
@@ -72,7 +72,7 @@ interface GroupTopicPayload {
 
 export async function handleTopic({ key, value }: KafkaMessage) {
   const idx = JSON.parse(key) as GroupTopicKey;
-  const payload = JSON.parse(value) as GroupTopicPayload;
+  const payload = JSON.parse(value.toString()) as GroupTopicPayload;
   switch (payload.op) {
     case EventOp.Create: {
       break;

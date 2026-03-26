@@ -1,14 +1,24 @@
+import * as crypto from 'node:crypto';
+
 import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { LockedError, NotFoundError } from '@app/lib/error.ts';
+import {
+  ImageFileTooLarge,
+  ImageTypeCanBeUploaded,
+  sizeLimit,
+  UnsupportedImageFormat,
+  uploadMonoImage,
+} from '@app/lib/image/index.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
 import type { ICharacterRev } from '@app/lib/rev/type.ts';
 import { CharacterCastRev, CharacterRev, CharacterSubjectRev, RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
+import imaginary from '@app/lib/services/imaginary.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -19,16 +29,6 @@ import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
-export const CharacterWikiInfo = t.Object(
-  {
-    id: t.Integer(),
-    name: t.String(),
-    infobox: t.String(),
-    summary: t.String(),
-  },
-  { $id: 'CharacterWikiInfo' },
-);
-
 export const CharacterEdit = t.Object(
   {
     name: t.String({ minLength: 1 }),
@@ -38,21 +38,6 @@ export const CharacterEdit = t.Object(
   {
     $id: 'CharacterEdit',
     additionalProperties: false,
-  },
-);
-
-type ICharacterRevisionWikiInfo = Static<typeof CharacterRevisionWikiInfo>;
-export const CharacterRevisionWikiInfo = t.Object(
-  {
-    name: t.String(),
-    infobox: t.String(),
-    summary: t.String(),
-    extra: t.Object({
-      img: t.Optional(t.String()),
-    }),
-  },
-  {
-    $id: 'CharacterRevisionWikiInfo',
   },
 );
 
@@ -112,8 +97,6 @@ export const CharacterCastRevisionWikiInfo = t.Array(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(CharacterWikiInfo);
-  app.addSchema(CharacterRevisionWikiInfo);
   app.addSchema(UserCharacterContribution);
   app.addSchema(CharacterSubjectRevisionWikiInfo);
   app.addSchema(CharacterCastRevisionWikiInfo);
@@ -130,7 +113,7 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(CharacterWikiInfo),
+          200: res.Ref(res.CharacterWikiInfo),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
@@ -140,7 +123,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { characterID } }): Promise<Static<typeof CharacterWikiInfo>> => {
+    async ({ params: { characterID } }): Promise<res.ICharacterWikiInfo> => {
       const [c] = await db
         .select()
         .from(schema.chiiCharacters)
@@ -150,15 +133,13 @@ export async function setup(app: App) {
         throw new NotFoundError(`character ${characterID}`);
       }
 
-      if (c.lock) {
-        throw new NotAllowedError('edit a locked character');
-      }
-
       return {
         id: c.id,
         name: c.name,
         infobox: c.infobox,
         summary: c.summary,
+        locked: Boolean(c.ban),
+        redirect: c.redirect,
       };
     },
   );
@@ -177,10 +158,17 @@ export async function setup(app: App) {
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
-            expectedRevision: t.Partial(CharacterEdit, {
-              default: {},
-              additionalProperties: false,
-            }),
+            expectedRevision: t.Partial(
+              t.Object({
+                name: t.String({ minLength: 1 }),
+                infobox: t.String({ minLength: 1 }),
+                summary: t.String(),
+              }),
+              {
+                default: {},
+                additionalProperties: false,
+              },
+            ),
             character: t.Partial(CharacterEdit, { additionalProperties: false }),
           },
           { additionalProperties: false },
@@ -202,6 +190,11 @@ export async function setup(app: App) {
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
+          ...res.errorResponses(
+            ImageFileTooLarge(),
+            UnsupportedImageFormat(),
+            new NotAllowedError('non sandbox subject'),
+          ),
         },
       },
       preHandler: [requireLogin('editing a subject info')],
@@ -260,6 +253,117 @@ export async function setup(app: App) {
       });
 
       return {};
+    },
+  );
+
+  app.post(
+    '/characters/:characterID/potraits',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'uploadCharacterPotrait',
+        summary: '上传角色肖像',
+        params: t.Object({
+          characterID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object(
+          {
+            img: t.String({
+              format: 'byte',
+              description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
+            }),
+          },
+          { additionalProperties: false },
+        ),
+        response: {
+          200: t.Object({
+            img: t.String({ description: 'image filename' }),
+          }),
+          ...res.errorResponses(
+            ImageFileTooLarge(),
+            UnsupportedImageFormat(),
+            new NotAllowedError('edit character'),
+          ),
+        },
+      },
+      preHandler: [requireLogin('uploading image')],
+    },
+    async ({ auth, body: { img: base64Img }, params: { characterID } }) => {
+      if (!auth.permission.mono_edit) {
+        throw new NotAllowedError('edit character');
+      }
+
+      const [p] = await db
+        .select()
+        .from(schema.chiiCharacters)
+        .where(op.eq(schema.chiiCharacters.id, characterID))
+        .limit(1);
+
+      if (!p) {
+        throw new NotFoundError(`character ${characterID}`);
+      }
+
+      let raw = Buffer.from(base64Img, 'base64');
+      // 4mb
+      if (raw.length > sizeLimit) {
+        throw new ImageFileTooLarge();
+      }
+
+      // validate image
+      const resp = await imaginary.info(raw);
+      const format = resp.type;
+
+      if (!format) {
+        throw new UnsupportedImageFormat();
+      }
+
+      if (!ImageTypeCanBeUploaded.includes(format)) {
+        throw new UnsupportedImageFormat();
+      }
+
+      // convert webp to jpeg
+      let ext = format;
+      if (format === 'webp') {
+        raw = await imaginary.convert(raw, { format: 'jpeg' });
+        if (raw.length > sizeLimit) {
+          throw new ImageFileTooLarge();
+        }
+        ext = 'jpeg';
+      }
+
+      // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
+      const h = crypto.randomUUID();
+
+      // for example raw/36/b8/${character_id}_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_${h}.${ext}`;
+
+      await db.transaction(async (t) => {
+        await t
+          .update(schema.chiiCharacters)
+          .set({ img: filename })
+          .where(op.eq(schema.chiiCharacters.id, characterID))
+          .limit(1);
+
+        await createRevision(t, {
+          mid: characterID,
+          type: RevType.characterEdit,
+          rev: {
+            crt_name: p.name,
+            crt_infobox: p.infobox,
+            crt_summary: p.summary,
+            extra: {
+              img: filename,
+            },
+          } satisfies ICharacterRev,
+          creator: auth.userID,
+          comment: '新肖像',
+        });
+
+        await uploadMonoImage(filename, raw);
+      });
+
+      return { img: filename };
     },
   );
 
@@ -341,14 +445,14 @@ export async function setup(app: App) {
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: res.Ref(CharacterRevisionWikiInfo),
+          200: res.Ref(res.CharacterRevisionWikiInfo),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('revision')),
           }),
         },
       },
     },
-    async ({ params: { revisionID } }): Promise<ICharacterRevisionWikiInfo> => {
+    async ({ params: { revisionID } }): Promise<res.ICharacterRevisionWikiInfo> => {
       const [r] = await db
         .select()
         .from(schema.chiiRevHistory)

@@ -19,6 +19,40 @@ import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
+// only allow images in ./fixtures/
+vi.mock('@app/lib/services/imaginary', async () => {
+  const mod = await vi.importActual<typeof import('@app/lib/services/imaginary.ts')>(
+    '@app/lib/services/imaginary',
+  );
+
+  const images = await Promise.all(
+    ['webp', 'jpg'].map(async (ext) => {
+      return {
+        ext,
+        content: await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${ext}`)),
+      };
+    }),
+  );
+
+  expect(images).toHaveLength(2);
+
+  return {
+    default: {
+      async info(img: Buffer) {
+        const i = images.find((x) => x.content.equals(img));
+        if (i) {
+          return { type: i.ext } as Info;
+        }
+        throw new mod.NotValidImageError();
+      },
+
+      convert(): Promise<Buffer<ArrayBuffer>> {
+        return Promise.resolve(Buffer.from(''));
+      },
+    } satisfies IImaginary,
+  };
+});
+
 async function testApp(...args: Parameters<typeof createTestServer>) {
   const app = createTestServer(...args);
   await app.register(setup);
@@ -143,6 +177,63 @@ describe('edit subject ', () => {
     expect(res.json()).toMatchSnapshot();
   });
 
+  test('should return locked subject info', async () => {
+    const app = await testApp({});
+    const selectSpy = vi
+      .spyOn(db, 'select')
+      .mockReturnValueOnce({
+        from: () => ({
+          where: () => ({
+            limit: vi.fn().mockResolvedValue([
+              {
+                id: 184017,
+                name: 'sandbox',
+                infobox: 'i',
+                metaTags: 'WEB ONA',
+                summary: 's',
+                platform: 5,
+                series: 0,
+                nsfw: false,
+                typeID: SubjectType.Anime,
+                ban: 1,
+              },
+            ]),
+          }),
+        }),
+      } as never)
+      .mockReturnValueOnce({
+        from: () => ({
+          where: () => ({
+            limit: vi.fn().mockResolvedValue([
+              {
+                id: 184017,
+                redirect: 0,
+              },
+            ]),
+          }),
+        }),
+      } as never);
+
+    const res = await app.inject('/subjects/184017');
+
+    selectSpy.mockRestore();
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      id: 184017,
+      name: 'sandbox',
+      infobox: 'i',
+      locked: true,
+      redirect: 0,
+      metaTags: ['WEB', 'ONA'],
+      summary: 's',
+      platform: 5,
+      availablePlatform: expect.any(Array),
+      nsfw: false,
+      typeID: SubjectType.Anime,
+    });
+  });
+
   test('should get subject revision wiki info', async () => {
     const app = await testApp({});
 
@@ -241,7 +332,7 @@ describe('edit subject ', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(editSubject).toBeCalledWith({
+    expect(editSubject).toHaveBeenCalledWith({
       commitMessage: 'c',
       infobox: 'i',
       name: 'n',
@@ -265,40 +356,6 @@ describe('should upload image', () => {
 
   afterEach(() => {
     uploadImageMock.mockReset();
-  });
-
-  // only allow images in ./fixtures/
-  vi.mock('@app/lib/services/imaginary', async () => {
-    const mod = await vi.importActual<typeof import('@app/lib/services/imaginary.ts')>(
-      '@app/lib/services/imaginary',
-    );
-
-    const images = await Promise.all(
-      ['webp', 'jpg'].map(async (ext) => {
-        return {
-          ext,
-          content: await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${ext}`)),
-        };
-      }),
-    );
-
-    expect(images).toHaveLength(2);
-
-    return {
-      default: {
-        async info(img: Buffer) {
-          const i = images.find((x) => x.content.equals(img));
-          if (i) {
-            return { type: i.ext } as Info;
-          }
-          throw new mod.NotValidImageError();
-        },
-
-        convert(): Promise<Buffer<ArrayBuffer>> {
-          return Promise.resolve(Buffer.from(''));
-        },
-      } satisfies IImaginary,
-    };
   });
 
   test('upload subject cover', async () => {
@@ -355,7 +412,7 @@ describe('should upload image', () => {
     });
 
     expect(res.statusCode).toBe(200);
-    expect(uploadImageMock).toBeCalledWith(
+    expect(uploadImageMock).toHaveBeenCalledWith(
       expect.stringMatching(/.*\.jpe?g$/),
       expect.objectContaining({}),
     );

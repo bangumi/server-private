@@ -61,8 +61,10 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.Character);
   app.addSchema(res.CharacterCast);
   app.addSchema(res.CharacterRelation);
+  app.addSchema(res.CharacterRevisionWikiInfo);
   app.addSchema(res.CharacterSubject);
   app.addSchema(res.CharacterSubjectRelation);
+  app.addSchema(res.CharacterWikiInfo);
   app.addSchema(res.Comment);
   app.addSchema(res.Episode);
   app.addSchema(res.Error);
@@ -82,6 +84,8 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.PersonImages);
   app.addSchema(res.PersonRelation);
   app.addSchema(res.PersonRelationType);
+  app.addSchema(res.PersonRevisionWikiInfo);
+  app.addSchema(res.PersonWikiInfo);
   app.addSchema(res.PersonWork);
   app.addSchema(res.Post);
   app.addSchema(res.Profile);

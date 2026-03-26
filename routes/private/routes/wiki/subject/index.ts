@@ -150,6 +150,8 @@ export const SubjectWikiInfo = t.Object(
     name: t.String(),
     typeID: res.Ref(res.SubjectType),
     infobox: t.String(),
+    locked: t.Boolean(),
+    redirect: t.Integer(),
     platform: t.Integer(),
     availablePlatform: t.Array(res.Ref(Platform)),
     metaTags: t.Array(t.String()),
@@ -325,16 +327,14 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject field ${subjectID}`);
       }
 
-      if (s.ban === 2 || f.redirect) {
-        throw new LockedError();
-      }
-
       const availablePlatforms = getSubjectPlatforms(s.typeID);
 
       return {
         id: s.id,
         name: s.name,
         infobox: s.infobox,
+        locked: Boolean(s.ban !== 0),
+        redirect: f.redirect,
         metaTags: s.metaTags ? s.metaTags.split(' ') : [],
         summary: s.summary,
         platform: s.platform,
@@ -554,7 +554,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject field ${subjectID}`);
       }
 
-      if (s.ban === 2 || f.redirect) {
+      if (s.ban !== 0 || f.redirect !== 0) {
         throw new LockedError();
       }
 
@@ -652,7 +652,7 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject field ${subjectID}`);
       }
 
-      if (s.ban === 2 || f.redirect) {
+      if (s.ban !== 0 || f.redirect !== 0) {
         throw new LockedError();
       }
 
