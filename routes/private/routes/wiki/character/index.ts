@@ -335,8 +335,8 @@ export async function setup(app: App) {
       // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
       const h = crypto.randomUUID();
 
-      // for example raw/36/b8/${character_id}_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
-      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_${h}.${ext}`;
+      // for example raw/36/b8/${character_id}_crt_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_crt_${h}.${ext}`;
 
       await db.transaction(async (t) => {
         await t
