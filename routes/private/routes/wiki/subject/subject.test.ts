@@ -14,6 +14,7 @@ import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
 import type { Permission } from '@app/lib/user/perm.ts';
+import { RelationTypes } from '@app/lib/wiki';
 import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
@@ -761,9 +762,220 @@ describe('patch episodes', () => {
   });
 });
 
-describe('subject relations', () => {
+describe('subject relations edit', () => {
+  test('should need authorization', async () => {
+    const payload = {
+      commitMessage: 'update relations',
+      relations: [
+        {
+          subject: { id: 8 },
+          type: 1,
+          order: 1,
+        },
+      ],
+    };
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const res = await app.inject({
+      url: '/subjects/8/relations?type=2',
+      method: 'put',
+      payload,
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "NOT_ALLOWED",
+        "error": "Forbidden",
+        "message": "you don't have permission to edit subject",
+        "statusCode": 403,
+      }
+    `);
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should update subject relations', async () => {
+    const payload = {
+      commitMessage: 'update relations',
+      relations: [
+        {
+          subject: {
+            id: 993,
+          },
+          type: RelationTypes.ANIME_COLLABORATION,
+        },
+        {
+          subject: {
+            id: 793,
+            name: 'コードギアス 反逆のルルーシュ',
+            nameCN: 'Code Geass 反叛的鲁路修',
+          },
+          type: RelationTypes.ANIME_SIDE_STORY,
+          order: 2,
+        },
+      ],
+    };
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: { subject_edit: true },
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const res = await app.inject({
+      url: '/subjects/8/relations?type=2',
+      method: 'put',
+      payload,
+    });
+
+    expect(res.statusCode).toBe(200);
+    const afterEdit = await app.inject('/subjects/8/relations?type=2');
+    expect(afterEdit.json()).toMatchSnapshot();
+
+    const afterDeleteReverse = await app.inject('/subjects/199229/relations?type=2');
+    expect(afterDeleteReverse.json()).toMatchInlineSnapshot(`Array []`);
+
+    const afterEditReverse = await app.inject('/subjects/793/relations?type=2');
+    expect(afterEditReverse.json()).toMatchSnapshot();
+
+    const afterEditShouldNotReverse = await app.inject('/subjects/993/relations?type=2');
+    expect(afterEditShouldNotReverse.json()).toMatchInlineSnapshot(`Array []`);
+  });
+});
+
+test('should handle self relation error', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: { id: 1 },
+        type: 1,
+        order: 1,
+      },
+    ],
+  };
+  const app = await testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
+  const res = await app.inject({
+    url: '/subjects/1/relations?type=1',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "BAD_REQUEST",
+        "error": "Bad Request",
+        "message": "self relation is not allowed",
+        "statusCode": 400,
+      }
+    `);
+});
+
+test('should handle invalid relation type', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: { id: 8 },
+        type: 1002,
+        order: 1,
+      },
+    ],
+  };
+  const app = await testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
+  const res = await app.inject({
+    url: '/subjects/1/relations?type=2',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "BAD_REQUEST",
+        "error": "Bad Request",
+        "message": "relation type 1002 is not valid",
+        "statusCode": 400,
+      }
+    `);
+});
+
+test('should handle wrong subject type', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: { id: 8 },
+        type: 1,
+        order: 1,
+      },
+    ],
+  };
+  const app = await testApp({
+    auth: {
+      groupID: UserGroup.Normal,
+      login: true,
+      permission: { subject_edit: true },
+      allowNsfw: true,
+      regTime: 0,
+      userID: 100,
+    },
+  });
+
+  const res = await app.inject({
+    url: '/subjects/1/relations?type=1',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "BAD_REQUEST",
+        "error": "Bad Request",
+        "message": "subject 8 type not match",
+        "statusCode": 400,
+      }
+    `);
+});
+
+describe('subject relations revision', () => {
   test('should get subject relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/relations/revisions/920431');
 
@@ -774,13 +986,14 @@ describe('subject relations', () => {
     const app = createTestServer({});
     await app.register(setup);
 
-    const res = await app.inject('/subjects/8/relations/history-summary');
+    const res = await app.inject('/subjects/12/relations/history-summary');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get subject character relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/characters/revisions/1041128');
 
@@ -797,7 +1010,8 @@ describe('subject relations', () => {
   });
 
   test('should get subject person revision wiki info', async () => {
-    const app = await testApp({});
+    const app = createTestServer({});
+    await app.register(setup);
 
     const res = await app.inject('/subjects/-/persons/revisions/62793');
 

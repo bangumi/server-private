@@ -1,6 +1,8 @@
 import type { Static } from 'typebox';
 import t from 'typebox';
 
+import type { SubjectType } from '@app/lib/subject';
+
 import { relations } from './common/subject_relations.json';
 import { assertValue } from './validate';
 
@@ -27,7 +29,7 @@ const checkedSubjectRelations = checkedSubjectRelationsRaw;
 export type SubjectRelationType = Static<typeof SubjectRelationTypeSchema>;
 
 export function findSubjectRelationType(
-  subjectType: number,
+  subjectType: SubjectType,
   relationType: number,
 ): SubjectRelationType | undefined {
   return checkedSubjectRelations[subjectType]?.[relationType];
