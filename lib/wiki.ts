@@ -3,6 +3,8 @@ import * as diff from 'diff';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
+import { type SubjectType, SubjectTypeCN } from '@app/lib/subject/type.ts';
+
 export const WikiChangedError = createError<[string]>(
   'WIKI_CHANGED',
   "expected data doesn't match\n%s",
@@ -38,4 +40,20 @@ function readableDiff<T extends string | string[]>(name: string, expected: T, cu
   }
 
   return diff.createPatch(name, `${expected}\n`, `${current}\n`, 'expected', 'current');
+}
+
+export function genRelationComment(
+  relatedType: SubjectType,
+  commitMessage: string,
+  newRelationEdit: unknown[],
+  existingRelationEdit: unknown[],
+  deleteRelationEdit: unknown[],
+) {
+  return `${SubjectTypeCN(relatedType) || '条目'}关联${
+    newRelationEdit.length === 0 &&
+    existingRelationEdit.length === 0 &&
+    deleteRelationEdit.length > 0
+      ? '删除'
+      : '修改'
+  }${commitMessage ? ` - ${commitMessage}` : ''}`;
 }
