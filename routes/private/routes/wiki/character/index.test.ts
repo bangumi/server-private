@@ -133,7 +133,7 @@ describe('edit character ', () => {
       payload: {
         character: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         commitMessage: 'c',
@@ -160,7 +160,7 @@ describe('edit character ', () => {
       payload: {
         character: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         commitMessage: 'c',
@@ -173,7 +173,7 @@ describe('edit character ', () => {
     expect(afterEdit.json()).toMatchInlineSnapshot(`
       Object {
         "id": 40,
-        "infobox": "i",
+        "infobox": "{{Infobox}}",
         "locked": false,
         "name": "n",
         "redirect": 0,
@@ -195,7 +195,7 @@ describe('edit character ', () => {
     const revision = await app.inject(`/characters/-/revisions/${revisionID}`);
     expect(revision.statusCode).toBe(200);
     const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
-    expect(revisionData.infobox).toBe('i');
+    expect(revisionData.infobox).toBe('{{Infobox}}');
     expect(revisionData.name).toBe('n');
     expect(revisionData.summary).toBe('s');
   });
@@ -245,7 +245,7 @@ describe('edit character ', () => {
       payload: {
         character: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         expectedRevision: {

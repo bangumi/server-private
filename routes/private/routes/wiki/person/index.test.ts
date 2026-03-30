@@ -127,7 +127,7 @@ describe('edit person ', () => {
         id: 65425,
         name: '一花',
         type: 1,
-        infobox: 'i',
+        infobox: '{{Infobox}}',
         summary: 's',
         ban: 1,
         lock: 0,
@@ -158,7 +158,7 @@ describe('edit person ', () => {
       id: 65425,
       name: '一花',
       typeID: 1,
-      infobox: 'i',
+      infobox: '{{Infobox}}',
       summary: 's',
       locked: true,
       redirect: 0,
@@ -186,7 +186,7 @@ describe('edit person ', () => {
       payload: {
         person: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         commitMessage: 'c',
@@ -213,7 +213,7 @@ describe('edit person ', () => {
       payload: {
         person: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         commitMessage: 'c',
@@ -227,7 +227,7 @@ describe('edit person ', () => {
     expect(afterEdit.json()).toMatchInlineSnapshot(`
       Object {
         "id": 3214,
-        "infobox": "i",
+        "infobox": "{{Infobox}}",
         "locked": false,
         "name": "n",
         "profession": Object {
@@ -253,7 +253,7 @@ describe('edit person ', () => {
     const revision = await app.inject(`/persons/-/revisions/${revisionID}`);
     expect(revision.statusCode).toBe(200);
     const revisionData: res.IPersonRevisionWikiInfo = revision.json();
-    expect(revisionData.infobox).toBe('i');
+    expect(revisionData.infobox).toBe('{{Infobox}}');
     expect(revisionData.name).toBe('n');
     expect(revisionData.summary).toBe('s');
   });
@@ -303,7 +303,7 @@ describe('edit person ', () => {
       payload: {
         person: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         expectedRevision: {
