@@ -218,7 +218,7 @@ describe('edit character ', () => {
 
     expect(res.statusCode).toBe(200);
     const imageRes = res.json();
-    expect(imageRes.img).toMatch(/^raw(?:\/\w{2}){2}\/40_.*\.jpe?g$/);
+    expect(imageRes.img).toMatch(/^raw(?:\/\w{2}){2}\/40_crt_.*\.jpe?g$/);
 
     expect(uploadImageMock).toHaveBeenCalledWith(
       expect.stringMatching(/.*\.jpe?g$/),
