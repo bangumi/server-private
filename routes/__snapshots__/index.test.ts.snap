@@ -10602,6 +10602,10 @@ paths:
                     type:
                       $ref: '#/components/schemas/EpisodeType'
                   type: object
+                authorID:
+                  description: when header x-admin-token is provided, use this as author id.
+                  exclusiveMinimum: 0
+                  type: integer
                 expectedRevision:
                   properties:
                     date:
