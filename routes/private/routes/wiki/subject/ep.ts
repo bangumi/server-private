@@ -3,10 +3,13 @@ import { DateTime } from 'luxon';
 import t from 'typebox';
 
 import { db } from '@app/drizzle';
+import { HeaderInvalidError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
@@ -89,6 +92,12 @@ export async function setup(app: App) {
             commitMessage: t.String(),
             episode: t.Partial(t.Omit(req.EpisodeWikiInfo, ['id']), { $id: undefined }),
             expectedRevision: req.EpisodeExpected,
+            authorID: t.Optional(
+              t.Integer({
+                exclusiveMinimum: 0,
+                description: 'when header x-admin-token is provided, use this as author id.',
+              }),
+            ),
           },
           {
             examples: [
@@ -126,8 +135,9 @@ export async function setup(app: App) {
     },
     async ({
       auth,
+      headers,
       params: { episodeID },
-      body: { episode: body, commitMessage, expectedRevision: expected },
+      body: { episode: body, commitMessage, expectedRevision: expected, authorID },
     }): Promise<res.EmptyObject> => {
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
@@ -181,6 +191,21 @@ export async function setup(app: App) {
         ep.type = body.type;
       }
 
+      let finalAuthorID = auth.userID;
+      const adminToken = headers['x-admin-token'];
+      if (adminToken !== undefined) {
+        if (adminToken !== config.admin_token) {
+          throw new HeaderInvalidError('invalid admin token');
+        }
+
+        if (authorID) {
+          if (!(await fetcher.fetchSlimUserByID(authorID))) {
+            throw new BadRequestError(`user ${authorID} does not exists`);
+          }
+          finalAuthorID = authorID;
+        }
+      }
+
       const now = DateTime.now().toUnixInteger();
 
       await db.transaction(async (t) => {
@@ -200,7 +225,7 @@ export async function setup(app: App) {
               },
             },
           ],
-          creator: auth.userID,
+          creator: finalAuthorID,
           now,
           comment: commitMessage,
         });
