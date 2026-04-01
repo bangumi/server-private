@@ -139,6 +139,10 @@ export async function setup(app: App) {
       params: { episodeID },
       body: { episode: body, commitMessage, expectedRevision: expected, authorID },
     }): Promise<res.EmptyObject> => {
+      if (authorID !== undefined && headers['x-admin-token'] === undefined) {
+        throw new BadRequestError('authorID is only allowed when x-admin-token is provided');
+      }
+
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);

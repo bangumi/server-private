@@ -582,6 +582,10 @@ export async function setup(app: App) {
       body: { commitMessage, subject: input, expectedRevision, authorID },
       params: { subjectID },
     }): Promise<void> => {
+      if (authorID !== undefined && headers['x-admin-token'] === undefined) {
+        throw new BadRequestError('authorID is only allowed when x-admin-token is provided');
+      }
+
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
