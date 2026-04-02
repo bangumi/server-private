@@ -55,7 +55,7 @@
     "fastify": "5.8.3",
     "fastify-metrics": "13.1.0",
     "fastify-socket.io": "5.1.0",
-    "got": "14.6.6",
+    "got": "15.0.0",
     "graphql": "16.13.1",
     "http-proxy-agent": "9.0.0",
     "http-status-codes": "2.3.0",
