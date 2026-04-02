@@ -1,3 +1,12 @@
+merge_queue:
+  max_parallel_checks: 1
+  queued_label: 'ci:queued'
+  dequeued_label: 'ci:dequeued'
+
+queue_rules:
+  - name: renovate
+    update_method: merge
+
 pull_request_rules:
   - name: label conflicts
     conditions:
@@ -22,5 +31,5 @@ pull_request_rules:
       - check-success=build
       - check-success=analyze
     actions:
-      merge:
-        method: squash
+      queue:
+        name: renovate

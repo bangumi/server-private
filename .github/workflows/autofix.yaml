@@ -22,8 +22,6 @@ jobs:
           components: rustfmt,clippy
 
       - run: cargo fmt || true
-      - run: cargo clippy --fix --allow-dirty || true
-      - run: cargo fmt || true
 
       - uses: ./.github/actions/setup-js-env
 
