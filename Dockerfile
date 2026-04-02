@@ -21,7 +21,7 @@ COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/dist /app/dist
 COPY . ./
 
-FROM gcr.io/distroless/nodejs24-debian13@sha256:658a87364c8fcd8e09a199cbd06bf125932c32fe229993b2eda8fdde89b9f31e
+FROM gcr.io/distroless/nodejs24-debian13@sha256:ea392bfe90af3b558c7b924647a403c4ac37c7e8e9917a86d0830d99732315e2
 
 WORKDIR /app
 
