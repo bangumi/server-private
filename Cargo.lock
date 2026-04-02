@@ -1010,12 +1010,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
-name = "hermit-abi"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc0fef456e4baa96da950455cd02c081ca953b141298e41db3fc7e36b1da849c"
-
-[[package]]
 name = "hex"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1302,17 +1296,6 @@ dependencies = [
  "hashbrown 0.16.1",
  "serde",
  "serde_core",
-]
-
-[[package]]
-name = "is-terminal"
-version = "0.4.17"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
-dependencies = [
- "hermit-abi",
- "libc",
- "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2264,21 +2247,18 @@ dependencies = [
 
 [[package]]
 name = "spdlog-internal"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f7c4ffbdbc9f2d819ffb53ef00a253f524ba7bfd7a3aa8dcd50789b9b27be550"
+checksum = "6eb988bafd6393bd840d78ba07826c857060bb1ba473bd57e8ae4d10a77eb276"
 dependencies = [
  "nom",
- "strum",
- "strum_macros",
- "thiserror",
 ]
 
 [[package]]
 name = "spdlog-macros"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b87a8a157696b61e2a87ed9753da2afb2a27c1e7490786fddf3e71d7e0c3b69e"
+checksum = "b9a23693b67ee8c1515d2043ddd01ea3561872cf1f19bc00947857c0184a62aa"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2288,16 +2268,15 @@ dependencies = [
 
 [[package]]
 name = "spdlog-rs"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c3a3480e91f3f57be460a227415f08975bc39f667c5eff18a76b2dfbeb2f09b"
+checksum = "7415ec666ebcaa1d92c5d9fba5d0b44e1a9fdddc8df6c0b2c45e89af8b830b6d"
 dependencies = [
  "arc-swap",
  "atomic",
  "bytemuck",
  "chrono",
  "dyn-clone",
- "is-terminal",
  "libc",
  "once_cell",
  "parking_lot",
@@ -2305,7 +2284,6 @@ dependencies = [
  "serde",
  "serde_json",
  "spdlog-macros",
- "thiserror",
  "value-bag",
  "winapi",
 ]
