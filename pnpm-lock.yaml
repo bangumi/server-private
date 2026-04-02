@@ -86,8 +86,8 @@ importers:
         specifier: 5.8.3
         version: 5.8.3
       fastify-metrics:
-        specifier: 12.1.0
-        version: 12.1.0(fastify@5.8.3)
+        specifier: 13.1.0
+        version: 13.1.0(fastify@5.8.3)
       fastify-socket.io:
         specifier: 5.1.0
         version: 5.1.0(patch_hash=5d0b9e07e81266f8ac4b5cea2f9f5c8ec46f7e62958394df3d45fd497061679c)(fastify@5.8.3)(socket.io@4.8.3)
@@ -3525,8 +3525,9 @@ packages:
     resolution: {integrity: sha512-Z7Fh2nVQSb2d+poDViM063ix2ZGt9jmY1nWhPfHBOK2Hgnb/OW3P4Et3P/81SEej0J7QbWtJqxO05h8QYfK7LQ==}
     hasBin: true
 
-  fastify-metrics@12.1.0:
-    resolution: {integrity: sha512-EpbT+W1jm8kMbkCPvfW4j23y3BZlXGOcO6+75EFTKDxbJIyXbldrFIoVoP0oD4CsqrKeIARvrOjbZNqK5MdRwQ==}
+  fastify-metrics@13.1.0:
+    resolution: {integrity: sha512-NffA5DkCMyuwLsd7/3yCJmSvZnTDdMsDaY7qM3qEtV2zaoCAkAD9gbc+ROFiUasKFkGtgsDL+5IYH5SYDeWApA==}
+    engines: {node: '>=20', pnpm: '>=10'}
     peerDependencies:
       fastify: '>=5'
 
@@ -9118,7 +9119,7 @@ snapshots:
       path-expression-matcher: 1.2.0
       strnum: 2.2.2
 
-  fastify-metrics@12.1.0(fastify@5.8.3):
+  fastify-metrics@13.1.0(fastify@5.8.3):
     dependencies:
       fastify: 5.8.3
       fastify-plugin: 5.1.0
