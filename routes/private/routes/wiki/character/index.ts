@@ -26,7 +26,13 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
-import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
+import {
+  extractBirth,
+  extractBloodType,
+  extractGender,
+  matchExpected,
+  WikiChangedError,
+} from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -260,6 +266,27 @@ export async function setup(app: App) {
           .set(updated)
           .where(op.eq(schema.chiiCharacters.id, characterID))
           .limit(1);
+
+        if (input.infobox) {
+          const wiki = parse(input.infobox);
+          const { year, month, day } = extractBirth(wiki);
+          await t
+            .update(schema.chiiPersonFields)
+            .set({
+              gender: extractGender(wiki),
+              bloodtype: extractBloodType(wiki),
+              birthYear: year,
+              birthMon: month,
+              birthDay: day,
+            })
+            .where(
+              op.and(
+                op.eq(schema.chiiPersonFields.prsnCat, 'crt'),
+                op.eq(schema.chiiPersonFields.prsnId, characterID),
+              ),
+            )
+            .limit(1);
+        }
 
         await createRevision(t, {
           mid: characterID,
