@@ -504,7 +504,7 @@ export async function setup(app: App) {
         if (!interest) {
           throw new BadRequestError(`subject not collected`);
         }
-        let watchedEpisodes = 0;
+        let watchedEpisodes: number;
         if (batch) {
           const episodes = await t
             .select({ id: schema.chiiEpisodes.id })
