@@ -2,18 +2,17 @@ import type { Wiki } from '@bgm38/wiki';
 import { parse } from '@bgm38/wiki';
 import { expect, test } from 'vitest';
 
-import { extractDate } from '@app/lib/subject/date.ts';
+import { extractDate, extractFromString } from '@app/lib/subject/date.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
 import { DATE } from '@app/lib/utils/date.ts';
-import { extractDateFromString } from '@app/lib/wiki';
 
 test.each([
   ['', undefined],
   ['2020年1月3日', DATE.parse('2020-01-03')],
   ['2017-12-22(2018年1月5日・12日合併号)', DATE.parse('2017-12-22')],
   ['2025年', new DATE(2025)],
-])('extractDateFromString(%s) -> %s', (input, expected) => {
-  expect(extractDateFromString(input)).toEqual(expected);
+])('extractFromString(%s) -> %s', (input, expected) => {
+  expect(extractFromString(input)).toEqual(expected);
 });
 
 test.each([

@@ -161,7 +161,7 @@ describe('edit character ', () => {
         character: {
           name: 'n',
           infobox: `{{Infobox
-|生日= 2000年1月20日
+|生日= 1月20日
 |性别= 男
 |血型= O
 }}`,
@@ -178,7 +178,7 @@ describe('edit character ', () => {
       Object {
         "id": 10,
         "infobox": "{{Infobox
-      |生日= 2000年1月20日
+      |生日= 1月20日
       |性别= 男
       |血型= O
       }}",
@@ -204,7 +204,7 @@ describe('edit character ', () => {
     expect(revision.statusCode).toBe(200);
     const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
     expect(revisionData.infobox).toBe(`{{Infobox
-|生日= 2000年1月20日
+|生日= 1月20日
 |性别= 男
 |血型= O
 }}`);

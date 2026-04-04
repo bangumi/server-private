@@ -4,8 +4,6 @@ import * as diff from 'diff';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { DATE } from '@app/lib/utils/date.ts';
-
 export const WikiChangedError = createError<[string]>(
   'WIKI_CHANGED',
   "expected data doesn't match\n%s",
@@ -71,53 +69,53 @@ export function extractBloodType(wiki: Wiki): number {
   }
 }
 
-export function extractBirth(wiki: Wiki): DATE {
-  const raw = wiki.data.find(({ key }) => key === '生日')?.value;
-  if (!raw) return new DATE(0, 0, 0);
-  const date = extractDateFromString(raw);
-  if (!date) return new DATE(0, 0, 0);
-  return date;
+interface date {
+  year: number;
+  month: number;
+  day: number;
 }
 
-export function extractDateFromString(s: string): DATE | undefined {
+export function extractBirth(wiki: Wiki): date {
+  const raw = wiki.data.find(({ key }) => key === '生日')?.value;
+  if (raw) {
+    const date = extractBirthFromString(raw);
+    if (date) return date;
+  }
+  return { year: 0, month: 0, day: 0 };
+}
+
+export function extractBirthFromString(s: string): date | undefined {
   let year, month, day;
 
-  for (const pattern of simple_patterns) {
+  for (const pattern of birth_simple_patterns) {
     const m = pattern[Symbol.match](s);
     if (m?.groups) {
       year = m.groups.year;
       month = m.groups.month;
       day = m.groups.day;
+      break;
     }
   }
 
-  if (!year) {
+  if (!month || !day) {
     return;
   }
 
-  return new DATE(
-    Number.parseInt(year),
-    month ? Number.parseInt(month) : 0,
-    day ? Number.parseInt(day) : 0,
-  );
+  return {
+    year: year ? Number.parseInt(year) : 0,
+    month: Number.parseInt(month),
+    day: Number.parseInt(day),
+  };
 }
 
-const simple_patterns = [
-  /((?<year>\d{4})年(?<month>\d{1,2})月(?<day>\d{1,2})日)([^\d号発號]|$)/,
-  /(^[^\d-])(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})\)([^\d-]|$)/,
-  /(^[^\d/])(?<year>\d{4})\/(?<month>\d{1,2})\/(?<day>\d{1,2})\)([^\d/]|$)/,
-  /(^[^\d.])(?<year>\d{4})\.(?<month>\d{1,2})\.(?<day>\d{1,2})\)([^\d.万]|$)/,
-
+const birth_simple_patterns = [
   /\((?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})\)$/, // (YYYY-MM-DD)
   /（(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})）$/, //（YYYY-MM-DD）
   /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})$/, // YYYY-MM-DD"
   /^(?<year>\d{4})-(?<month>\d{1,2})-(?<day>\d{1,2})[ ([（].*$/, // YYYY-MM-DD...
   /^(?<year>\d{4})年(?:(?<month>\d{1,2})月)?(?:(?<day>\d{1,2})日)?/, // YYYY年(MM月)?(DD日)?
-];
 
-const simple_dash_patterns = [
-  new RegExp(String.raw`(^|[^\d])\d{4}-\d{2}-\d{2}$`), // YYYY-MM-DD"
-  new RegExp(String.raw`^\d{4}-\d{2}-\d{2}([^\d]|[ (（]|$)`), // YYYY-MM-DD ***
-  new RegExp(String.raw`\(\d{4}-\d{2}-\d{2}\)$`), // (YYYY-MM-DD)
-  new RegExp(String.raw`（\d{4}-\d{2}-\d{2}）$`), // （YYYY-MM-DD）
+  /(?<month>\d{1,2})月(?<day>\d{1,2})日/,
+  /^(?<month>\d{1,2})-(?<day>\d{1,2})$/,
+  /^(?<month>\d{1,2})\/(?<day>\d{1,2})$/,
 ];
