@@ -155,12 +155,16 @@ describe('edit character ', () => {
     const app = await testApp();
 
     const res = await app.inject({
-      url: '/characters/40',
+      url: '/characters/10',
       method: 'PATCH',
       payload: {
         character: {
           name: 'n',
-          infobox: '{{Infobox}}',
+          infobox: `{{Infobox
+|生日= 1月20日
+|性别= 男
+|血型= O
+}}`,
           summary: 's',
         },
         commitMessage: 'c',
@@ -169,11 +173,15 @@ describe('edit character ', () => {
 
     expect(res.statusCode).toBe(200);
 
-    const afterEdit = await app.inject('/characters/40');
+    const afterEdit = await app.inject('/characters/10');
     expect(afterEdit.json()).toMatchInlineSnapshot(`
       Object {
-        "id": 40,
-        "infobox": "{{Infobox}}",
+        "id": 10,
+        "infobox": "{{Infobox
+      |生日= 1月20日
+      |性别= 男
+      |血型= O
+      }}",
         "locked": false,
         "name": "n",
         "redirect": 0,
@@ -181,7 +189,7 @@ describe('edit character ', () => {
       }
     `);
 
-    const history = await app.inject('/characters/40/history-summary');
+    const history = await app.inject('/characters/10/history-summary');
     const contribution = await app.inject('/users/1/contributions/characters');
 
     const revisionRes: res.IPagedRevisionHistory = history.json();
@@ -195,7 +203,11 @@ describe('edit character ', () => {
     const revision = await app.inject(`/characters/-/revisions/${revisionID}`);
     expect(revision.statusCode).toBe(200);
     const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
-    expect(revisionData.infobox).toBe('{{Infobox}}');
+    expect(revisionData.infobox).toBe(`{{Infobox
+|生日= 1月20日
+|性别= 男
+|血型= O
+}}`);
     expect(revisionData.name).toBe('n');
     expect(revisionData.summary).toBe('s');
   });

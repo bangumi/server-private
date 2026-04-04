@@ -434,6 +434,7 @@ export const chiiPersonFields = mysqlTable('chii_person_fields', {
   prsnId: int('prsn_id').notNull(),
   gender: tinyint('gender').notNull(),
   bloodtype: tinyint('bloodtype').notNull(),
+  birthYear: year('birth_year').notNull(),
   birthMon: tinyint('birth_mon').notNull(),
   birthDay: tinyint('birth_day').notNull(),
 });

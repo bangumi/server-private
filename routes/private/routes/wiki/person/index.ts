@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 
+import type { Wiki } from '@bgm38/wiki';
 import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from 'typebox';
 import t from 'typebox';
@@ -26,7 +27,13 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
-import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
+import {
+  extractBirth,
+  extractBloodType,
+  extractGender,
+  matchExpected,
+  WikiChangedError,
+} from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -235,9 +242,10 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit person');
       }
 
+      let wiki: Wiki;
       if (input.infobox) {
         try {
-          parse(input.infobox);
+          wiki = parse(input.infobox);
         } catch (error) {
           if (error instanceof WikiSyntaxError) {
             let l = '';
@@ -294,6 +302,26 @@ export async function setup(app: App) {
           },
           {} as IPersonRev['profession'],
         );
+
+        if (wiki) {
+          const { year, month, day } = extractBirth(wiki);
+          await t
+            .update(schema.chiiPersonFields)
+            .set({
+              gender: extractGender(wiki),
+              bloodtype: extractBloodType(wiki),
+              birthYear: year,
+              birthMon: month,
+              birthDay: day,
+            })
+            .where(
+              op.and(
+                op.eq(schema.chiiPersonFields.prsnCat, 'prsn'),
+                op.eq(schema.chiiPersonFields.prsnId, personID),
+              ),
+            )
+            .limit(1);
+        }
 
         await createRevision(t, {
           mid: personID,
