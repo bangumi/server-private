@@ -5,10 +5,7 @@
     "module": "ESNext",
     "target": "ES2023",
     "moduleResolution": "bundler",
-    // 在 ./vendor 文件中添加一个 wrapper 来避免启用这个选项。
-    "allowSyntheticDefaultImports": false,
     "useUnknownInCatchVariables": true,
-    "esModuleInterop": false,
     "allowJs": true,
     "noImplicitAny": true,
     "noUncheckedIndexedAccess": true,
@@ -24,7 +21,6 @@
     "declaration": false,
     "noEmit": true,
     "rootDir": ".",
-    "baseUrl": ".",
     "resolveJsonModule": true,
     "types": ["node"],
     "paths": {
