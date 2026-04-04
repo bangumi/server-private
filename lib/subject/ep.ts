@@ -54,7 +54,7 @@ export async function markEpisodesAsWatched(
     .where(
       op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
     );
-  let watchedEpisodes = 0;
+  let watchedEpisodes: number;
   if (current?.status) {
     const epStatusList = decodeSubjectEpStatus(current.status);
     if (revertOthers) {
@@ -122,7 +122,7 @@ export async function updateSubjectEpisodeProgress(
     .where(
       op.and(op.eq(schema.chiiEpStatus.uid, userID), op.eq(schema.chiiEpStatus.sid, subjectID)),
     );
-  let watchedEpisodes = 0;
+  let watchedEpisodes: number;
   if (current) {
     const epStatusList = decodeSubjectEpStatus(current.status);
     const status: UserEpisodeStatusItem = {
