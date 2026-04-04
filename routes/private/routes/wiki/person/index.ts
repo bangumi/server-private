@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 
+import type { Wiki } from '@bgm38/wiki';
 import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from 'typebox';
 import t from 'typebox';
@@ -241,9 +242,10 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit person');
       }
 
+      let wiki: Wiki;
       if (input.infobox) {
         try {
-          parse(input.infobox);
+          wiki = parse(input.infobox);
         } catch (error) {
           if (error instanceof WikiSyntaxError) {
             let l = '';
@@ -301,8 +303,7 @@ export async function setup(app: App) {
           {} as IPersonRev['profession'],
         );
 
-        if (input.infobox) {
-          const wiki = parse(input.infobox);
+        if (wiki) {
           const { year, month, day } = extractBirth(wiki);
           await t
             .update(schema.chiiPersonFields)

@@ -1,5 +1,6 @@
 import * as crypto from 'node:crypto';
 
+import type { Wiki } from '@bgm38/wiki';
 import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from 'typebox';
 import t from 'typebox';
@@ -215,9 +216,10 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit character');
       }
 
+      let wiki: Wiki;
       if (input.infobox) {
         try {
-          parse(input.infobox);
+          wiki = parse(input.infobox);
         } catch (error) {
           if (error instanceof WikiSyntaxError) {
             let l = '';
@@ -267,8 +269,7 @@ export async function setup(app: App) {
           .where(op.eq(schema.chiiCharacters.id, characterID))
           .limit(1);
 
-        if (input.infobox) {
-          const wiki = parse(input.infobox);
+        if (wiki) {
           const { year, month, day } = extractBirth(wiki);
           await t
             .update(schema.chiiPersonFields)
