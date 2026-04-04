@@ -145,7 +145,7 @@ export const Notify = {
       }
     }
     const hash = hashType(type);
-    let fieldID = 0;
+    let fieldID: number;
     const [field] = await t
       .select()
       .from(schema.chiiNotifyField)
