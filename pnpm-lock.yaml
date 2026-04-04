@@ -240,8 +240,8 @@ importers:
         specifier: 0.28.0
         version: 0.28.0
       esbuild-node-externals:
-        specifier: 1.20.1
-        version: 1.20.1(esbuild@0.28.0)
+        specifier: 1.21.0
+        version: 1.21.0(esbuild@0.28.0)
       eslint:
         specifier: 10.2.0
         version: 10.2.0(jiti@2.6.1)
@@ -3454,11 +3454,11 @@ packages:
     resolution: {integrity: sha512-FGgH2h8zKNim9ljj7dankFPcICIK9Cp5bm+c2gQSYePhpaG5+esrLODihIorn+Pe6FGJzWhXQotPv73jTaldXA==}
     engines: {node: '>= 0.4'}
 
-  esbuild-node-externals@1.20.1:
-    resolution: {integrity: sha512-uVs+TC+PBiav2LoTz8WZT/ootINw9Rns5JJyVznlfZH1qOyZxWCPzeXklY04UtZut5qUeFFaEWtcH7XoMwiTTQ==}
+  esbuild-node-externals@1.21.0:
+    resolution: {integrity: sha512-bty/rLyPoB/YwshACVOPyVoWkhqKFFyP3RK4wUo2K0UkD/6ESnvCR3aLIvtNzvXgqURgq8ryGXVDMg0q2fwZpQ==}
     engines: {node: '>=12'}
     peerDependencies:
-      esbuild: 0.12 - 0.27
+      esbuild: 0.12 - 0.28
 
   esbuild@0.18.20:
     resolution: {integrity: sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA==}
@@ -9050,7 +9050,7 @@ snapshots:
     dependencies:
       es-errors: 1.3.0
 
-  esbuild-node-externals@1.20.1(esbuild@0.28.0):
+  esbuild-node-externals@1.21.0(esbuild@0.28.0):
     dependencies:
       esbuild: 0.28.0
       find-up: 5.0.0
