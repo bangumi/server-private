@@ -15,8 +15,8 @@ export function avatar(s: string): res.IAvatar {
 
   return {
     large: `https://${imageDomain}/${baseAvatarPath}/${s}`,
-    small: `https://${imageDomain}/r/100/${baseAvatarPath}/${s}`,
     medium: `https://${imageDomain}/r/200/${baseAvatarPath}/${s}`,
+    small: `https://${imageDomain}/r/100/${baseAvatarPath}/${s}`,
   };
 }
 
