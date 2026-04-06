@@ -41,11 +41,11 @@ Object {
       "eps": 0,
       "id": 20,
       "images": Object {
-        "common": "https://lain.bgm.tv/pic/cover/c/98/f1/20_H2vb0.jpg",
-        "grid": "https://lain.bgm.tv/pic/cover/g/98/f1/20_H2vb0.jpg",
+        "common": "https://lain.bgm.tv/r/400/pic/cover/l/98/f1/20_H2vb0.jpg",
+        "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/98/f1/20_H2vb0.jpg",
         "large": "https://lain.bgm.tv/pic/cover/l/98/f1/20_H2vb0.jpg",
-        "medium": "https://lain.bgm.tv/pic/cover/m/98/f1/20_H2vb0.jpg",
-        "small": "https://lain.bgm.tv/pic/cover/s/98/f1/20_H2vb0.jpg",
+        "medium": "https://lain.bgm.tv/r/200/pic/cover/l/98/f1/20_H2vb0.jpg",
+        "small": "https://lain.bgm.tv/r/100/pic/cover/l/98/f1/20_H2vb0.jpg",
       },
       "info": "2004-03-19 / Sound Horizon",
       "infobox": Array [
@@ -331,11 +331,11 @@ Object {
       "eps": 0,
       "id": 10,
       "images": Object {
-        "common": "https://lain.bgm.tv/pic/cover/c/d3/d9/10_mXv4D.jpg",
-        "grid": "https://lain.bgm.tv/pic/cover/g/d3/d9/10_mXv4D.jpg",
+        "common": "https://lain.bgm.tv/r/400/pic/cover/l/d3/d9/10_mXv4D.jpg",
+        "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/d3/d9/10_mXv4D.jpg",
         "large": "https://lain.bgm.tv/pic/cover/l/d3/d9/10_mXv4D.jpg",
-        "medium": "https://lain.bgm.tv/pic/cover/m/d3/d9/10_mXv4D.jpg",
-        "small": "https://lain.bgm.tv/pic/cover/s/d3/d9/10_mXv4D.jpg",
+        "medium": "https://lain.bgm.tv/r/200/pic/cover/l/d3/d9/10_mXv4D.jpg",
+        "small": "https://lain.bgm.tv/r/100/pic/cover/l/d3/d9/10_mXv4D.jpg",
       },
       "info": "2003-01 / CLAMP / 講談社",
       "infobox": Array [
