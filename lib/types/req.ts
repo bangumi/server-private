@@ -5,6 +5,7 @@ import {
   CollectionType,
   EpisodeCollectionStatus,
   IndexRelatedCategory,
+  PersonProfessions,
   Ref,
   ReportReason,
   ReportType,
@@ -398,4 +399,18 @@ export const CreateReport = t.Object(
     ),
   },
   { $id: 'CreateReport', title: 'CreateReport' },
+);
+
+export type IPersonEdit = Static<typeof PersonEdit>;
+export const PersonEdit = t.Object(
+  {
+    name: t.String({ minLength: 1 }),
+    infobox: t.String({ minLength: 1 }),
+    summary: t.String(),
+    profession: PersonProfessions,
+  },
+  {
+    $id: 'PersonEdit',
+    additionalProperties: false,
+  },
 );
