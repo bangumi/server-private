@@ -621,7 +621,6 @@ Object {
         "career": Array [
           "producer",
           "mangaka",
-          "mangaka",
         ],
         "comment": 59,
         "id": 39,
@@ -713,7 +712,6 @@ Object {
           "person": Object {
             "career": Array [
               "producer",
-              "mangaka",
               "mangaka",
             ],
             "comment": 59,
