@@ -20,3 +20,4 @@ changelog.md
 # Rust
 target/
 crates/*/target/
+package-lock.json
