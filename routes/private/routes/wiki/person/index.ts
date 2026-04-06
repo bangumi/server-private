@@ -280,13 +280,13 @@ export async function setup(app: App) {
           infobox: input.infobox ?? p.infobox,
           name: input.name ?? p.name,
           summary: input.summary ?? p.summary,
-          producer: producer === undefined ? p.producer : +producer,
-          mangaka: mangaka === undefined ? p.mangaka : +mangaka,
-          artist: artist === undefined ? p.artist : +artist,
-          seiyu: seiyu === undefined ? p.seiyu : +seiyu,
-          writer: writer === undefined ? p.writer : +writer,
-          illustrator: illustrator === undefined ? p.illustrator : +illustrator,
-          actor: actor === undefined ? p.actor : +actor,
+          producer: producer === undefined ? p.producer : Number(producer),
+          mangaka: mangaka === undefined ? p.mangaka : Number(mangaka),
+          artist: artist === undefined ? p.artist : Number(artist),
+          seiyu: seiyu === undefined ? p.seiyu : Number(seiyu),
+          writer: writer === undefined ? p.writer : Number(writer),
+          illustrator: illustrator === undefined ? p.illustrator : Number(illustrator),
+          actor: actor === undefined ? p.actor : Number(actor),
         };
 
         await t
