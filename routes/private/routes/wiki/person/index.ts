@@ -25,6 +25,7 @@ import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
+import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
@@ -53,18 +54,6 @@ export const PersonEditTypes = [
   RevType.personErase,
   RevType.personMerge,
 ] as const;
-
-export const PersonEdit = t.Object(
-  {
-    name: t.String({ minLength: 1 }),
-    infobox: t.String({ minLength: 1 }),
-    summary: t.String(),
-  },
-  {
-    $id: 'PersonEdit',
-    additionalProperties: false,
-  },
-);
 
 type IUserPersonContribution = Static<typeof UserPersonContribution>;
 const UserPersonContribution = t.Object(
@@ -205,7 +194,7 @@ export async function setup(app: App) {
                 additionalProperties: false,
               },
             ),
-            person: t.Partial(PersonEdit, { additionalProperties: false }),
+            person: t.Partial(req.PersonEdit, { additionalProperties: false }),
             authorID: t.Optional(
               t.Integer({
                 exclusiveMinimum: 0,
@@ -305,10 +294,21 @@ export async function setup(app: App) {
 
         matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
 
+        const givenProfession = input.profession;
+        const { producer, mangaka, artist, seiyu, writer, illustrator, actor } =
+          givenProfession ?? {};
+
         const updated = {
           infobox: input.infobox ?? p.infobox,
           name: input.name ?? p.name,
           summary: input.summary ?? p.summary,
+          producer: producer === undefined ? p.producer : Number(producer),
+          mangaka: mangaka === undefined ? p.mangaka : Number(mangaka),
+          artist: artist === undefined ? p.artist : Number(artist),
+          seiyu: seiyu === undefined ? p.seiyu : Number(seiyu),
+          writer: writer === undefined ? p.writer : Number(writer),
+          illustrator: illustrator === undefined ? p.illustrator : Number(illustrator),
+          actor: actor === undefined ? p.actor : Number(actor),
         };
 
         await t
@@ -316,14 +316,6 @@ export async function setup(app: App) {
           .set(updated)
           .where(op.eq(schema.chiiPersons.id, personID))
           .limit(1);
-
-        const profession = PersonCareers.reduce(
-          (acc, c) => {
-            if (p[c]) acc[c] = '1';
-            return acc;
-          },
-          {} as IPersonRev['profession'],
-        );
 
         if (wiki) {
           const { year, month, day } = extractBirth(wiki);
@@ -344,6 +336,16 @@ export async function setup(app: App) {
             )
             .limit(1);
         }
+
+        const profession = givenProfession
+          ? PersonCareers.reduce(
+              (acc, c) => {
+                if (givenProfession[c]) acc[c] = '1';
+                return acc;
+              },
+              {} as IPersonRev['profession'],
+            )
+          : {};
 
         await createRevision(t, {
           mid: personID,

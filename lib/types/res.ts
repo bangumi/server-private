@@ -12,6 +12,7 @@ import {
   GroupMemberRole,
   IndexRelatedCategory,
   IndexType,
+  PersonProfessions,
   PersonType,
   Ref,
   RevisionType,
@@ -1188,16 +1189,6 @@ export const RevisionHistory = t.Object(
 );
 export type IPagedRevisionHistory = Static<typeof PagedRevisionHistory>;
 export const PagedRevisionHistory = Paged(Ref(RevisionHistory));
-
-export const PersonProfessions = t.Object({
-  producer: t.Optional(t.Boolean()),
-  mangaka: t.Optional(t.Boolean()),
-  artist: t.Optional(t.Boolean()),
-  seiyu: t.Optional(t.Boolean()),
-  writer: t.Optional(t.Boolean()),
-  illustrator: t.Optional(t.Boolean()),
-  actor: t.Optional(t.Boolean()),
-});
 
 export type IPersonWikiInfo = Static<typeof PersonWikiInfo>;
 export const PersonWikiInfo = t.Object(
