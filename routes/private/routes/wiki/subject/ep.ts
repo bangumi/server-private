@@ -140,13 +140,8 @@ export async function setup(app: App) {
       body: { episode: body, commitMessage, expectedRevision: expected, authorID },
     }): Promise<res.EmptyObject> => {
       const adminToken = headers['x-admin-token'];
-      if (authorID !== undefined) {
-        if (adminToken === undefined) {
-          throw new BadRequestError('authorID is only allowed when x-admin-token is provided');
-        }
-        if (adminToken !== config.admin_token) {
-          throw new HeaderInvalidError('invalid admin token');
-        }
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
       }
 
       const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });

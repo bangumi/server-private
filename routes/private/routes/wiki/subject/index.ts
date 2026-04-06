@@ -583,13 +583,8 @@ export async function setup(app: App) {
       params: { subjectID },
     }): Promise<void> => {
       const adminToken = headers['x-admin-token'];
-      if (authorID !== undefined) {
-        if (adminToken === undefined) {
-          throw new BadRequestError('authorID is only allowed when x-admin-token is provided');
-        }
-        if (adminToken !== config.admin_token) {
-          throw new HeaderInvalidError('invalid admin token');
-        }
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
       }
 
       if (!auth.permission.subject_edit) {
