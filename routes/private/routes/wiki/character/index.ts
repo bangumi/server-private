@@ -6,8 +6,10 @@ import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
+import { HeaderInvalidError } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { LockedError, NotFoundError } from '@app/lib/error.ts';
+import config from '@app/lib/config.ts';
+import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import {
   ImageFileTooLarge,
   ImageTypeCanBeUploaded,
@@ -178,6 +180,12 @@ export async function setup(app: App) {
               },
             ),
             character: t.Partial(CharacterEdit, { additionalProperties: false }),
+            authorID: t.Optional(
+              t.Integer({
+                exclusiveMinimum: 0,
+                description: 'when header x-admin-token is provided, use this as author id.',
+              }),
+            ),
           },
           { additionalProperties: false },
         ),
@@ -209,9 +217,15 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, character: input, expectedRevision },
+      headers,
+      body: { commitMessage, character: input, expectedRevision, authorID },
       params: { characterID },
     }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.mono_edit) {
         throw new NotAllowedError('edit character');
       }
@@ -239,6 +253,14 @@ export async function setup(app: App) {
 
           throw error;
         }
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       await db.transaction(async (t) => {
@@ -300,7 +322,7 @@ export async function setup(app: App) {
               img: p.img,
             },
           } satisfies ICharacterRev,
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment: commitMessage,
         });
       });
