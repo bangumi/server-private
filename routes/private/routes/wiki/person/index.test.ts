@@ -219,6 +219,9 @@ describe('edit person ', () => {
 |血型= O
 }}`,
           summary: 's',
+          profession: {
+            mangaka: true,
+          },
         },
         commitMessage: 'c',
       },
@@ -239,6 +242,7 @@ describe('edit person ', () => {
         "locked": false,
         "name": "n",
         "profession": Object {
+          "mangaka": true,
           "producer": true,
         },
         "redirect": 0,

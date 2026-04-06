@@ -451,9 +451,6 @@ function parsePersonCareer(person: orm.IPerson): string[] {
   if (person.mangaka) {
     career.push('mangaka');
   }
-  if (person.mangaka) {
-    career.push('mangaka');
-  }
   if (person.artist) {
     career.push('artist');
   }
