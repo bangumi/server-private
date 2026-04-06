@@ -221,8 +221,14 @@ export async function setup(app: App) {
       body: { commitMessage, character: input, expectedRevision, authorID },
       params: { characterID },
     }) => {
-      if (authorID !== undefined && headers['x-admin-token'] === undefined) {
-        throw new BadRequestError('authorID is only allowed when x-admin-token is provided');
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined) {
+        if (adminToken === undefined) {
+          throw new BadRequestError('authorID is only allowed when x-admin-token is provided');
+        }
+        if (adminToken !== config.admin_token) {
+          throw new HeaderInvalidError('invalid admin token');
+        }
       }
 
       if (!auth.permission.mono_edit) {
@@ -255,18 +261,11 @@ export async function setup(app: App) {
       }
 
       let finalAuthorID = auth.userID;
-      const adminToken = headers['x-admin-token'];
-      if (adminToken !== undefined) {
-        if (adminToken !== config.admin_token) {
-          throw new HeaderInvalidError('invalid admin token');
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
         }
-
-        if (authorID) {
-          if (!(await fetcher.fetchSlimUserByID(authorID))) {
-            throw new BadRequestError(`user ${authorID} does not exists`);
-          }
-          finalAuthorID = authorID;
-        }
+        finalAuthorID = authorID;
       }
 
       await db.transaction(async (t) => {
