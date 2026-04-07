@@ -2,10 +2,12 @@ import type { Static } from 'typebox';
 import t from 'typebox';
 
 import {
+  CharacterType,
   CollectionType,
   EpisodeCollectionStatus,
   IndexRelatedCategory,
   PersonProfessions,
+  PersonType,
   Ref,
   ReportReason,
   ReportType,
@@ -401,6 +403,27 @@ export const CreateReport = t.Object(
   { $id: 'CreateReport', title: 'CreateReport' },
 );
 
+export type IPersonCreate = Static<typeof PersonCreate>;
+export const PersonCreate = t.Object(
+  {
+    name: t.String({ minLength: 1 }),
+    infobox: t.String({ minLength: 1 }),
+    summary: t.String(),
+    type: Ref(PersonType),
+    profession: t.Optional(PersonProfessions),
+    img: t.Optional(
+      t.String({
+        format: 'byte',
+        description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
+      }),
+    ),
+  },
+  {
+    $id: 'PersonCreate',
+    additionalProperties: false,
+  },
+);
+
 export type IPersonEdit = Static<typeof PersonEdit>;
 export const PersonEdit = t.Object(
   {
@@ -411,6 +434,39 @@ export const PersonEdit = t.Object(
   },
   {
     $id: 'PersonEdit',
+    additionalProperties: false,
+  },
+);
+
+export type ICharacterCreate = Static<typeof CharacterCreate>;
+export const CharacterCreate = t.Object(
+  {
+    name: t.String({ minLength: 1 }),
+    infobox: t.String({ minLength: 1 }),
+    summary: t.String(),
+    type: Ref(CharacterType),
+    img: t.Optional(
+      t.String({
+        format: 'byte',
+        description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
+      }),
+    ),
+  },
+  {
+    $id: 'CharacterCreate',
+    additionalProperties: false,
+  },
+);
+
+export type ICharacterEdit = Static<typeof CharacterEdit>;
+export const CharacterEdit = t.Object(
+  {
+    name: t.String({ minLength: 1 }),
+    infobox: t.String({ minLength: 1 }),
+    summary: t.String(),
+  },
+  {
+    $id: 'CharacterEdit',
     additionalProperties: false,
   },
 );
