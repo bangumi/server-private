@@ -141,7 +141,7 @@ exports[`should build private api spec 1`] = `
         redirect:
           type: integer
         role:
-          type: integer
+          $ref: '#/components/schemas/CharacterType'
         summary:
           type: string
       required:
@@ -239,6 +239,45 @@ exports[`should build private api spec 1`] = `
       x-ms-enum:
         modelAsString: false
         name: CharacterCastType
+    CharacterCreate:
+      additionalProperties: false
+      properties:
+        img:
+          description: base64 encoded raw bytes, 4mb size limit on **decoded** size
+          format: byte
+          type: string
+        infobox:
+          minLength: 1
+          type: string
+        name:
+          minLength: 1
+          type: string
+        summary:
+          type: string
+        type:
+          $ref: '#/components/schemas/CharacterType'
+      required:
+        - name
+        - infobox
+        - summary
+        - type
+      type: object
+    CharacterEdit:
+      additionalProperties: false
+      properties:
+        infobox:
+          minLength: 1
+          type: string
+        name:
+          minLength: 1
+          type: string
+        summary:
+          type: string
+      required:
+        - name
+        - infobox
+        - summary
+      type: object
     CharacterRelation:
       properties:
         character:
@@ -340,6 +379,27 @@ exports[`should build private api spec 1`] = `
           - order
         type: object
       type: array
+    CharacterType:
+      description: |-
+        角色类型
+          - 1 = 角色
+          - 2 = 机体
+          - 3 = 舰船
+          - 4 = 组织机构
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+      type: integer
+      x-enum-varnames:
+        - Crt
+        - Mecha
+        - Vessel
+        - Org
+      x-ms-enum:
+        modelAsString: false
+        name: CharacterType
     CharacterWikiInfo:
       properties:
         id:
@@ -1325,7 +1385,7 @@ exports[`should build private api spec 1`] = `
         summary:
           type: string
         type:
-          type: integer
+          $ref: '#/components/schemas/PersonType'
       required:
         - id
         - name
@@ -1400,6 +1460,46 @@ exports[`should build private api spec 1`] = `
       required:
         - user
         - createdAt
+      type: object
+    PersonCreate:
+      additionalProperties: false
+      properties:
+        img:
+          description: base64 encoded raw bytes, 4mb size limit on **decoded** size
+          format: byte
+          type: string
+        infobox:
+          minLength: 1
+          type: string
+        name:
+          minLength: 1
+          type: string
+        profession:
+          properties:
+            actor:
+              type: boolean
+            artist:
+              type: boolean
+            illustrator:
+              type: boolean
+            mangaka:
+              type: boolean
+            producer:
+              type: boolean
+            seiyu:
+              type: boolean
+            writer:
+              type: boolean
+          type: object
+        summary:
+          type: string
+        type:
+          $ref: '#/components/schemas/PersonType'
+      required:
+        - name
+        - infobox
+        - summary
+        - type
       type: object
     PersonEdit:
       additionalProperties: false
@@ -10083,6 +10183,85 @@ paths:
       summary: 获取用户时间胶囊
       tags:
         - user
+  /p1/wiki/characters:
+    post:
+      operationId: postCharacterInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                authorID:
+                  description: >-
+                    when header x-admin-token is provided, use this as author
+                    id.
+                  exclusiveMinimum: 0
+                  type: integer
+                character:
+                  additionalProperties: false
+                  properties:
+                    img:
+                      description: >-
+                        base64 encoded raw bytes, 4mb size limit on **decoded**
+                        size
+                      format: byte
+                      type: string
+                    infobox:
+                      minLength: 1
+                      type: string
+                    name:
+                      minLength: 1
+                      type: string
+                    summary:
+                      type: string
+                    type:
+                      $ref: '#/components/schemas/CharacterType'
+                  required:
+                    - name
+                    - infobox
+                    - summary
+                    - type
+                  type: object
+              required:
+                - character
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  characterID:
+                    type: integer
+                required:
+                  - characterID
+                type: object
+          description: Default Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 创建角色
+      tags:
+        - wiki
   /p1/wiki/characters/-/casts/revisions/{revisionID}:
     get:
       operationId: getCharacterCastRevisionInfo
@@ -10452,6 +10631,12 @@ paths:
             schema:
               additionalProperties: false
               properties:
+                authorID:
+                  description: >-
+                    when header x-admin-token is provided, use this as author
+                    id.
+                  exclusiveMinimum: 0
+                  type: integer
                 img:
                   description: base64 encoded raw bytes, 4mb size limit on **decoded** size
                   format: byte
@@ -10729,6 +10914,102 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
           description: 意料之外的服务器错误
+      tags:
+        - wiki
+  /p1/wiki/persons:
+    post:
+      operationId: postPersonInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                authorID:
+                  description: >-
+                    when header x-admin-token is provided, use this as author
+                    id.
+                  exclusiveMinimum: 0
+                  type: integer
+                person:
+                  additionalProperties: false
+                  properties:
+                    img:
+                      description: >-
+                        base64 encoded raw bytes, 4mb size limit on **decoded**
+                        size
+                      format: byte
+                      type: string
+                    infobox:
+                      minLength: 1
+                      type: string
+                    name:
+                      minLength: 1
+                      type: string
+                    profession:
+                      properties:
+                        actor:
+                          type: boolean
+                        artist:
+                          type: boolean
+                        illustrator:
+                          type: boolean
+                        mangaka:
+                          type: boolean
+                        producer:
+                          type: boolean
+                        seiyu:
+                          type: boolean
+                        writer:
+                          type: boolean
+                      type: object
+                    summary:
+                      type: string
+                    type:
+                      $ref: '#/components/schemas/PersonType'
+                  required:
+                    - name
+                    - infobox
+                    - summary
+                    - type
+                  type: object
+              required:
+                - person
+              type: object
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  personID:
+                    type: integer
+                required:
+                  - personID
+                type: object
+          description: Default Response
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: default error response type
+        '500':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+          description: 意料之外的服务器错误
+      security:
+        - CookiesSession: []
+          HTTPBearer: []
+      summary: 创建人物
       tags:
         - wiki
   /p1/wiki/persons/-/casts/revisions/{revisionID}:
@@ -11117,6 +11398,12 @@ paths:
             schema:
               additionalProperties: false
               properties:
+                authorID:
+                  description: >-
+                    when header x-admin-token is provided, use this as author
+                    id.
+                  exclusiveMinimum: 0
+                  type: integer
                 img:
                   description: base64 encoded raw bytes, 4mb size limit on **decoded** size
                   format: byte
