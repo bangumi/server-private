@@ -152,7 +152,15 @@ export async function setup(app: App) {
         operationId: 'postCharacterInfo',
         summary: '创建角色',
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        body: req.CharacterCreate,
+        body: t.Object({
+          character: req.CharacterCreate,
+          authorID: t.Optional(
+            t.Integer({
+              exclusiveMinimum: 0,
+              description: 'when header x-admin-token is provided, use this as author id.',
+            }),
+          ),
+        }),
         response: {
           200: t.Object({ characterID: t.Integer() }),
           400: res.Ref(res.Error, {
@@ -174,9 +182,22 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('editing a subject info')],
     },
-    async ({ auth, body: character }) => {
+    async ({ auth, headers, body: { character, authorID } }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.mono_edit) {
         throw new NotAllowedError('edit character');
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       let wiki: Wiki;
@@ -291,7 +312,7 @@ export async function setup(app: App) {
               img: filename ?? '',
             },
           } satisfies ICharacterRev,
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment: '新条目',
         });
 
@@ -502,6 +523,12 @@ export async function setup(app: App) {
               format: 'byte',
               description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
             }),
+            authorID: t.Optional(
+              t.Integer({
+                exclusiveMinimum: 0,
+                description: 'when header x-admin-token is provided, use this as author id.',
+              }),
+            ),
           },
           { additionalProperties: false },
         ),
@@ -518,9 +545,22 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('uploading image')],
     },
-    async ({ auth, body: { img: base64Img }, params: { characterID } }) => {
+    async ({ auth, headers, body: { img: base64Img, authorID }, params: { characterID } }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.mono_edit) {
         throw new NotAllowedError('edit character');
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       const [p] = await db
@@ -585,7 +625,7 @@ export async function setup(app: App) {
               img: filename,
             },
           } satisfies ICharacterRev,
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment: '新肖像',
         });
 
