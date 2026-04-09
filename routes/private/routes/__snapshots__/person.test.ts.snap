@@ -10,10 +10,10 @@ Object {
   "comment": 110,
   "id": 1,
   "images": Object {
-    "grid": "https://lain.bgm.tv/pic/crt/g/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
+    "grid": "https://lain.bgm.tv/r/100x100/pic/crt/l/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
     "large": "https://lain.bgm.tv/pic/crt/l/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
-    "medium": "https://lain.bgm.tv/pic/crt/m/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
-    "small": "https://lain.bgm.tv/pic/crt/s/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
+    "medium": "https://lain.bgm.tv/r/200/pic/crt/l/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
+    "small": "https://lain.bgm.tv/r/100/pic/crt/l/a6/e8/1_prsn_ZdFfp.jpg?r=1597241889",
   },
   "info": "性别 女 / 生日 1980年1月21日 / 血型 O型 / 身高 153cm",
   "infobox": Array [
@@ -316,11 +316,11 @@ Object {
       "subject": Object {
         "id": 993,
         "images": Object {
-          "common": "https://lain.bgm.tv/pic/cover/c/7b/13/993_6PQ58.jpg",
-          "grid": "https://lain.bgm.tv/pic/cover/g/7b/13/993_6PQ58.jpg",
+          "common": "https://lain.bgm.tv/r/400/pic/cover/l/7b/13/993_6PQ58.jpg",
+          "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/7b/13/993_6PQ58.jpg",
           "large": "https://lain.bgm.tv/pic/cover/l/7b/13/993_6PQ58.jpg",
-          "medium": "https://lain.bgm.tv/pic/cover/m/7b/13/993_6PQ58.jpg",
-          "small": "https://lain.bgm.tv/pic/cover/s/7b/13/993_6PQ58.jpg",
+          "medium": "https://lain.bgm.tv/r/200/pic/cover/l/7b/13/993_6PQ58.jpg",
+          "small": "https://lain.bgm.tv/r/100/pic/cover/l/7b/13/993_6PQ58.jpg",
         },
         "info": "13话 / 2009年1月3日 / 吉村明 / 吉成鋼",
         "locked": false,
@@ -363,11 +363,11 @@ Object {
       "subject": Object {
         "id": 4,
         "images": Object {
-          "common": "https://lain.bgm.tv/pic/cover/c/a8/7f/4_cMMK5.jpg",
-          "grid": "https://lain.bgm.tv/pic/cover/g/a8/7f/4_cMMK5.jpg",
+          "common": "https://lain.bgm.tv/r/400/pic/cover/l/a8/7f/4_cMMK5.jpg",
+          "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/a8/7f/4_cMMK5.jpg",
           "large": "https://lain.bgm.tv/pic/cover/l/a8/7f/4_cMMK5.jpg",
-          "medium": "https://lain.bgm.tv/pic/cover/m/a8/7f/4_cMMK5.jpg",
-          "small": "https://lain.bgm.tv/pic/cover/s/a8/7f/4_cMMK5.jpg",
+          "medium": "https://lain.bgm.tv/r/200/pic/cover/l/a8/7f/4_cMMK5.jpg",
+          "small": "https://lain.bgm.tv/r/100/pic/cover/l/a8/7f/4_cMMK5.jpg",
         },
         "info": "2008-07-17 / NDS / ACT / SNKプレイモア",
         "locked": false,
@@ -420,8 +420,8 @@ Array [
         "user": Object {
           "avatar": Object {
             "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-            "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-            "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+            "medium": "https://lain.bgm.tv/r/200/pic/user/l/icon.jpg",
+            "small": "https://lain.bgm.tv/r/100/pic/user/l/icon.jpg",
           },
           "group": 0,
           "id": 287622,
@@ -436,8 +436,8 @@ Array [
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        "medium": "https://lain.bgm.tv/r/200/pic/user/l/icon.jpg",
+        "small": "https://lain.bgm.tv/r/100/pic/user/l/icon.jpg",
       },
       "group": 0,
       "id": 287622,
@@ -459,8 +459,8 @@ Array [
     "user": Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        "medium": "https://lain.bgm.tv/r/200/pic/user/l/icon.jpg",
+        "small": "https://lain.bgm.tv/r/100/pic/user/l/icon.jpg",
       },
       "group": 0,
       "id": 287622,

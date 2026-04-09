@@ -8,6 +8,7 @@
     "github>Trim21/renovate-config:monthly"
   ],
   "assignees": [],
+  "rebaseWhen": "conflicted",
   "labels": ["ci:auto-merge", "dependencies"],
   "postUpdateOptions": ["pnpmDedupe"],
   "rangeStrategy": "pin",

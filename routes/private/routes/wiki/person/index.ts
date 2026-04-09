@@ -1,10 +1,14 @@
 import * as crypto from 'node:crypto';
 
+import type { Wiki } from '@bgm38/wiki';
+import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
+import { HeaderInvalidError } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
+import config from '@app/lib/config.ts';
 import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import {
   ImageFileTooLarge,
@@ -26,7 +30,14 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
-import { genRelationComment, matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
+import {
+  extractBirth,
+  extractBloodType,
+  extractGender,
+  genRelationComment,
+  matchExpected,
+  WikiChangedError,
+} from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { findSubjectStaffPosition } from '@app/vendor';
@@ -45,18 +56,6 @@ export const PersonEditTypes = [
   RevType.personErase,
   RevType.personMerge,
 ] as const;
-
-export const PersonEdit = t.Object(
-  {
-    name: t.String({ minLength: 1 }),
-    infobox: t.String({ minLength: 1 }),
-    summary: t.String(),
-  },
-  {
-    $id: 'PersonEdit',
-    additionalProperties: false,
-  },
-);
 
 type IUserPersonContribution = Static<typeof UserPersonContribution>;
 const UserPersonContribution = t.Object(
@@ -237,7 +236,13 @@ export async function setup(app: App) {
                 additionalProperties: false,
               },
             ),
-            person: t.Partial(PersonEdit, { additionalProperties: false }),
+            person: t.Partial(req.PersonEdit, { additionalProperties: false }),
+            authorID: t.Optional(
+              t.Integer({
+                exclusiveMinimum: 0,
+                description: 'when header x-admin-token is provided, use this as author id.',
+              }),
+            ),
           },
           { additionalProperties: false },
         ),
@@ -269,11 +274,50 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, person: input, expectedRevision },
+      headers,
+      body: { commitMessage, person: input, expectedRevision, authorID },
       params: { personID },
     }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.mono_edit) {
         throw new NotAllowedError('edit person');
+      }
+
+      let wiki: Wiki;
+      if (input.infobox) {
+        try {
+          wiki = parse(input.infobox);
+        } catch (error) {
+          if (error instanceof WikiSyntaxError) {
+            let l = '';
+            if (error.line) {
+              l = `line: ${error.line}`;
+              if (error.lino) {
+                l += `:${error.lino}`;
+              }
+            }
+
+            if (l) {
+              l = ' (' + l + ')';
+            }
+
+            throw new InvalidWikiSyntaxError(`${error.message}${l}`);
+          }
+
+          throw error;
+        }
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       await db.transaction(async (t) => {
@@ -292,10 +336,21 @@ export async function setup(app: App) {
 
         matchExpected(expectedRevision, { name: p.name, infobox: p.infobox, summary: p.summary });
 
+        const givenProfession = input.profession;
+        const { producer, mangaka, artist, seiyu, writer, illustrator, actor } =
+          givenProfession ?? {};
+
         const updated = {
           infobox: input.infobox ?? p.infobox,
           name: input.name ?? p.name,
           summary: input.summary ?? p.summary,
+          producer: producer === undefined ? p.producer : Number(producer),
+          mangaka: mangaka === undefined ? p.mangaka : Number(mangaka),
+          artist: artist === undefined ? p.artist : Number(artist),
+          seiyu: seiyu === undefined ? p.seiyu : Number(seiyu),
+          writer: writer === undefined ? p.writer : Number(writer),
+          illustrator: illustrator === undefined ? p.illustrator : Number(illustrator),
+          actor: actor === undefined ? p.actor : Number(actor),
         };
 
         await t
@@ -304,13 +359,35 @@ export async function setup(app: App) {
           .where(op.eq(schema.chiiPersons.id, personID))
           .limit(1);
 
-        const profession = PersonCareers.reduce(
-          (acc, c) => {
-            if (p[c]) acc[c] = '1';
-            return acc;
-          },
-          {} as IPersonRev['profession'],
-        );
+        if (wiki) {
+          const { year, month, day } = extractBirth(wiki);
+          await t
+            .update(schema.chiiPersonFields)
+            .set({
+              gender: extractGender(wiki),
+              bloodtype: extractBloodType(wiki),
+              birthYear: year,
+              birthMon: month,
+              birthDay: day,
+            })
+            .where(
+              op.and(
+                op.eq(schema.chiiPersonFields.prsnCat, 'prsn'),
+                op.eq(schema.chiiPersonFields.prsnId, personID),
+              ),
+            )
+            .limit(1);
+        }
+
+        const profession = givenProfession
+          ? PersonCareers.reduce(
+              (acc, c) => {
+                if (givenProfession[c]) acc[c] = '1';
+                return acc;
+              },
+              {} as IPersonRev['profession'],
+            )
+          : {};
 
         await createRevision(t, {
           mid: personID,
@@ -324,7 +401,7 @@ export async function setup(app: App) {
               img: p.img,
             },
           } satisfies IPersonRev,
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment: commitMessage,
         });
       });
@@ -412,8 +489,8 @@ export async function setup(app: App) {
       // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
       const h = crypto.randomUUID();
 
-      // for example raw/36/b8/${person_id}_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
-      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${personID}_${h}.${ext}`;
+      // for example raw/36/b8/${person_id}_prsn_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${personID}_prsn_${h}.${ext}`;
 
       await db.transaction(async (t) => {
         await t

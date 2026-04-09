@@ -312,19 +312,19 @@ export const RevisionType = t.Integer({
   - 5 = 条目->角色关联
   - 6 = 条目->声优关联
   - 10 = 条目->人物关联
- 
+
   - 2 = 角色编辑
   - 13 = 角色合体
   - 14 = 角色删除
   - 4 = 角色->条目关联
   - 7 = 角色->声优关联
- 
+
   - 3 = 人物编辑
   - 15 = 人物合体
   - 16 = 人物删除
   - 8 = 人物->声优关联
   - 9 = 人物->条目关联
- 
+
   - 18 = 章节编辑
   - 181 = 章节合体
   - 182 = 章节移动
@@ -362,4 +362,14 @@ export const TimelineCat = t.Integer({
   - 7 = 目录
   - 8 = 人物
   - 9 = 天窗`,
+});
+
+export const PersonProfessions = t.Object({
+  producer: t.Optional(t.Boolean()),
+  mangaka: t.Optional(t.Boolean()),
+  artist: t.Optional(t.Boolean()),
+  seiyu: t.Optional(t.Boolean()),
+  writer: t.Optional(t.Boolean()),
+  illustrator: t.Optional(t.Boolean()),
+  actor: t.Optional(t.Boolean()),
 });

@@ -624,6 +624,11 @@ export async function setup(app: App) {
       body: { commitMessage, subject: input, expectedRevision, authorID },
       params: { subjectID },
     }): Promise<void> => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
@@ -682,18 +687,11 @@ export async function setup(app: App) {
       }
 
       let finalAuthorID = auth.userID;
-      const adminToken = headers['x-admin-token'];
-      if (adminToken !== undefined) {
-        if (adminToken !== config.admin_token) {
-          throw new HeaderInvalidError('invalid admin token');
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
         }
-
-        if (authorID) {
-          if (!(await fetcher.fetchSlimUserByID(authorID))) {
-            throw new BadRequestError(`user ${authorID} does not exists`);
-          }
-          finalAuthorID = authorID;
-        }
+        finalAuthorID = authorID;
       }
 
       await Subject.edit({

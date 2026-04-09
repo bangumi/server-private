@@ -1,11 +1,15 @@
 import * as crypto from 'node:crypto';
 
+import type { Wiki } from '@bgm38/wiki';
+import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
+import { HeaderInvalidError } from '@app/lib/auth/index.ts';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { LockedError, NotFoundError } from '@app/lib/error.ts';
+import config from '@app/lib/config.ts';
+import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import {
   ImageFileTooLarge,
   ImageTypeCanBeUploaded,
@@ -25,7 +29,13 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
-import { matchExpected, WikiChangedError } from '@app/lib/wiki.ts';
+import {
+  extractBirth,
+  extractBloodType,
+  extractGender,
+  matchExpected,
+  WikiChangedError,
+} from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -170,6 +180,12 @@ export async function setup(app: App) {
               },
             ),
             character: t.Partial(CharacterEdit, { additionalProperties: false }),
+            authorID: t.Optional(
+              t.Integer({
+                exclusiveMinimum: 0,
+                description: 'when header x-admin-token is provided, use this as author id.',
+              }),
+            ),
           },
           { additionalProperties: false },
         ),
@@ -201,11 +217,50 @@ export async function setup(app: App) {
     },
     async ({
       auth,
-      body: { commitMessage, character: input, expectedRevision },
+      headers,
+      body: { commitMessage, character: input, expectedRevision, authorID },
       params: { characterID },
     }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.mono_edit) {
         throw new NotAllowedError('edit character');
+      }
+
+      let wiki: Wiki;
+      if (input.infobox) {
+        try {
+          wiki = parse(input.infobox);
+        } catch (error) {
+          if (error instanceof WikiSyntaxError) {
+            let l = '';
+            if (error.line) {
+              l = `line: ${error.line}`;
+              if (error.lino) {
+                l += `:${error.lino}`;
+              }
+            }
+
+            if (l) {
+              l = ' (' + l + ')';
+            }
+
+            throw new InvalidWikiSyntaxError(`${error.message}${l}`);
+          }
+
+          throw error;
+        }
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       await db.transaction(async (t) => {
@@ -236,6 +291,26 @@ export async function setup(app: App) {
           .where(op.eq(schema.chiiCharacters.id, characterID))
           .limit(1);
 
+        if (wiki) {
+          const { year, month, day } = extractBirth(wiki);
+          await t
+            .update(schema.chiiPersonFields)
+            .set({
+              gender: extractGender(wiki),
+              bloodtype: extractBloodType(wiki),
+              birthYear: year,
+              birthMon: month,
+              birthDay: day,
+            })
+            .where(
+              op.and(
+                op.eq(schema.chiiPersonFields.prsnCat, 'crt'),
+                op.eq(schema.chiiPersonFields.prsnId, characterID),
+              ),
+            )
+            .limit(1);
+        }
+
         await createRevision(t, {
           mid: characterID,
           type: RevType.characterEdit,
@@ -247,7 +322,7 @@ export async function setup(app: App) {
               img: p.img,
             },
           } satisfies ICharacterRev,
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment: commitMessage,
         });
       });
@@ -335,8 +410,8 @@ export async function setup(app: App) {
       // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
       const h = crypto.randomUUID();
 
-      // for example raw/36/b8/${character_id}_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
-      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_${h}.${ext}`;
+      // for example raw/36/b8/${character_id}_crt_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+      const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_crt_${h}.${ext}`;
 
       await db.transaction(async (t) => {
         await t

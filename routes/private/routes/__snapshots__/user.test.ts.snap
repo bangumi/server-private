@@ -4,8 +4,8 @@ exports[`user > should get user 1`] = `
 Object {
   "avatar": Object {
     "large": "https://lain.bgm.tv/pic/user/l/000/38/29/382951.jpg?r=1571167246",
-    "medium": "https://lain.bgm.tv/pic/user/m/000/38/29/382951.jpg?r=1571167246",
-    "small": "https://lain.bgm.tv/pic/user/s/000/38/29/382951.jpg?r=1571167246",
+    "medium": "https://lain.bgm.tv/r/200/pic/user/l/000/38/29/382951.jpg?r=1571167246",
+    "small": "https://lain.bgm.tv/r/100/pic/user/l/000/38/29/382951.jpg?r=1571167246",
   },
   "bio": "treeholechan@gmail.com 密码：lovemeplease
 （欢迎大家一起维护树洞酱，但请勿随意修改密码）
@@ -122,10 +122,10 @@ Object {
       "comment": 56,
       "id": 32,
       "images": Object {
-        "grid": "https://lain.bgm.tv/pic/crt/g/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+        "grid": "https://lain.bgm.tv/r/100x100/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
         "large": "https://lain.bgm.tv/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
-        "medium": "https://lain.bgm.tv/pic/crt/m/ce/65/32_crt_0g9f9.jpg?r=1606033650",
-        "small": "https://lain.bgm.tv/pic/crt/s/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+        "medium": "https://lain.bgm.tv/r/200/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
+        "small": "https://lain.bgm.tv/r/100/pic/crt/l/ce/65/32_crt_0g9f9.jpg?r=1606033650",
       },
       "info": "性别 女 / 生日 4月13日 / 身高 152cm",
       "lock": false,
@@ -171,8 +171,8 @@ Object {
       "creatorID": 287622,
       "icon": Object {
         "large": "https://lain.bgm.tv/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
-        "medium": "https://lain.bgm.tv/pic/icon/m/000/00/42/4215.jpg?r=1531631345",
-        "small": "https://lain.bgm.tv/pic/icon/s/000/00/42/4215.jpg?r=1531631345",
+        "medium": "https://lain.bgm.tv/r/200/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
+        "small": "https://lain.bgm.tv/r/100/pic/icon/l/000/00/42/4215.jpg?r=1531631345",
       },
       "id": 4215,
       "members": 3,
@@ -205,11 +205,11 @@ Object {
     Object {
       "id": 8,
       "images": Object {
-        "common": "https://lain.bgm.tv/pic/cover/c/c9/f0/8_wK0z3.jpg",
-        "grid": "https://lain.bgm.tv/pic/cover/g/c9/f0/8_wK0z3.jpg",
+        "common": "https://lain.bgm.tv/r/400/pic/cover/l/c9/f0/8_wK0z3.jpg",
+        "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/c9/f0/8_wK0z3.jpg",
         "large": "https://lain.bgm.tv/pic/cover/l/c9/f0/8_wK0z3.jpg",
-        "medium": "https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg",
-        "small": "https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg",
+        "medium": "https://lain.bgm.tv/r/200/pic/cover/l/c9/f0/8_wK0z3.jpg",
+        "small": "https://lain.bgm.tv/r/100/pic/cover/l/c9/f0/8_wK0z3.jpg",
       },
       "info": "25话 / 2008年4月6日 / 谷口悟朗 / 木村貴宏",
       "interest": Object {
@@ -265,11 +265,11 @@ Array [
           "subject": Object {
             "id": 262922,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/b2/f8/262922_u1OMP.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/b2/f8/262922_u1OMP.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/b2/f8/262922_u1OMP.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/b2/f8/262922_u1OMP.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/b2/f8/262922_u1OMP.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/b2/f8/262922_u1OMP.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/b2/f8/262922_u1OMP.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/b2/f8/262922_u1OMP.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/b2/f8/262922_u1OMP.jpg",
             },
             "info": "15话 / 2018-10-03",
             "locked": false,
@@ -318,11 +318,11 @@ Array [
           "subject": Object {
             "id": 214114,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/74/33/214114_6z9WZ.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/74/33/214114_6z9WZ.jpg",
             },
             "info": "22话 / 2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
             "locked": false,
@@ -371,11 +371,11 @@ Array [
           "subject": Object {
             "id": 214114,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/74/33/214114_6z9WZ.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/74/33/214114_6z9WZ.jpg",
             },
             "info": "22话 / 2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
             "locked": false,
@@ -437,11 +437,11 @@ Array [
           "subject": Object {
             "id": 214114,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/74/33/214114_6z9WZ.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/74/33/214114_6z9WZ.jpg",
             },
             "info": "22话 / 2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
             "locked": false,
@@ -490,11 +490,11 @@ Array [
           "subject": Object {
             "id": 214114,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/74/33/214114_6z9WZ.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/74/33/214114_6z9WZ.jpg",
             },
             "info": "22话 / 2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
             "locked": false,
@@ -545,11 +545,11 @@ Array [
           "subject": Object {
             "id": 371546,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/c8/8a/371546_Df9ri.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/c8/8a/371546_Df9ri.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/c8/8a/371546_Df9ri.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/c8/8a/371546_Df9ri.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/c8/8a/371546_Df9ri.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/c8/8a/371546_Df9ri.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/c8/8a/371546_Df9ri.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/c8/8a/371546_Df9ri.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/c8/8a/371546_Df9ri.jpg",
             },
             "info": "13话 / 2022年7月4日 / 仁昌寺義人 / 衣笠彰梧 （MF文庫J『ようこそ実力至上主義の教室へ』／KADOKAWA刊） / 森田和明",
             "locked": false,
@@ -609,11 +609,11 @@ Array [
           "subject": Object {
             "id": 214114,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/74/33/214114_6z9WZ.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/74/33/214114_6z9WZ.jpg",
             },
             "info": "22话 / 2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
             "locked": false,
@@ -662,11 +662,11 @@ Array [
           "subject": Object {
             "id": 309445,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/87/e8/309445_aUj3o.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/87/e8/309445_aUj3o.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/87/e8/309445_aUj3o.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/87/e8/309445_aUj3o.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/87/e8/309445_aUj3o.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/87/e8/309445_aUj3o.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/87/e8/309445_aUj3o.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/87/e8/309445_aUj3o.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/87/e8/309445_aUj3o.jpg",
             },
             "info": "2002-01-00、2099-01-00 / 沙河 / sandbox",
             "locked": false,
@@ -715,11 +715,11 @@ Array [
           "subject": Object {
             "id": 214114,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/74/33/214114_6z9WZ.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/74/33/214114_6z9WZ.jpg",
             },
             "info": "22话 / 2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
             "locked": false,
@@ -770,11 +770,11 @@ Array [
           "subject": Object {
             "id": 214114,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/74/33/214114_6z9WZ.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/74/33/214114_6z9WZ.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/74/33/214114_6z9WZ.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/74/33/214114_6z9WZ.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/74/33/214114_6z9WZ.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/74/33/214114_6z9WZ.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/74/33/214114_6z9WZ.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/74/33/214114_6z9WZ.jpg",
             },
             "info": "22话 / 2017年9月27日 / Glenn Kershaw / Jeff Davis, Breen Frazier / Joe Mantegna, Matthew Gray Gubler, A.J. Cook",
             "locked": false,
@@ -823,11 +823,11 @@ Array [
           "subject": Object {
             "id": 194118,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/5f/65/194118_5c9H0.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/5f/65/194118_5c9H0.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/5f/65/194118_5c9H0.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/5f/65/194118_5c9H0.jpg",
             },
             "info": "22话 / 2016-09-28",
             "locked": false,
@@ -876,11 +876,11 @@ Array [
           "subject": Object {
             "id": 194118,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/5f/65/194118_5c9H0.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/5f/65/194118_5c9H0.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/5f/65/194118_5c9H0.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/5f/65/194118_5c9H0.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/5f/65/194118_5c9H0.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/5f/65/194118_5c9H0.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/5f/65/194118_5c9H0.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/5f/65/194118_5c9H0.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/5f/65/194118_5c9H0.jpg",
             },
             "info": "22话 / 2016-09-28",
             "locked": false,
@@ -931,11 +931,11 @@ Array [
           "subject": Object {
             "id": 62229,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/60/d8/62229_5Yt0j.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/60/d8/62229_5Yt0j.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/60/d8/62229_5Yt0j.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/60/d8/62229_5Yt0j.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/60/d8/62229_5Yt0j.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/60/d8/62229_5Yt0j.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/60/d8/62229_5Yt0j.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/60/d8/62229_5Yt0j.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/60/d8/62229_5Yt0j.jpg",
             },
             "info": "2017年3月3日 / Nintendo Switch、Wii U / AAVG / 任天堂企画制作本部",
             "locked": false,
@@ -995,11 +995,11 @@ Array [
           "subject": Object {
             "id": 366527,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_93yEY.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_93yEY.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/0a/8f/366527_93yEY.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/0a/8f/366527_93yEY.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_93yEY.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_93yEY.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_93yEY.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/0a/8f/366527_93yEY.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/0a/8f/366527_93yEY.jpg",
             },
             "info": "6话 / 2022年2月2日 / Trey Parker",
             "locked": false,
@@ -1048,11 +1048,11 @@ Array [
           "subject": Object {
             "id": 366527,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/0a/8f/366527_93yEY.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/0a/8f/366527_93yEY.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/0a/8f/366527_93yEY.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/0a/8f/366527_93yEY.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/0a/8f/366527_93yEY.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/0a/8f/366527_93yEY.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/0a/8f/366527_93yEY.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/0a/8f/366527_93yEY.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/0a/8f/366527_93yEY.jpg",
             },
             "info": "6话 / 2022年2月2日 / Trey Parker",
             "locked": false,
@@ -1101,11 +1101,11 @@ Array [
           "subject": Object {
             "id": 347656,
             "images": Object {
-              "common": "https://lain.bgm.tv/pic/cover/c/6d/d9/347656_5Sk6o.jpg",
-              "grid": "https://lain.bgm.tv/pic/cover/g/6d/d9/347656_5Sk6o.jpg",
+              "common": "https://lain.bgm.tv/r/400/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
+              "grid": "https://lain.bgm.tv/r/100x100/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
               "large": "https://lain.bgm.tv/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
-              "medium": "https://lain.bgm.tv/pic/cover/m/6d/d9/347656_5Sk6o.jpg",
-              "small": "https://lain.bgm.tv/pic/cover/s/6d/d9/347656_5Sk6o.jpg",
+              "medium": "https://lain.bgm.tv/r/200/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
+              "small": "https://lain.bgm.tv/r/100/pic/cover/l/6d/d9/347656_5Sk6o.jpg",
             },
             "info": "10话 / 2022-06-01",
             "locked": false,
@@ -1159,8 +1159,8 @@ Object {
     Object {
       "avatar": Object {
         "large": "https://lain.bgm.tv/pic/user/l/icon.jpg",
-        "medium": "https://lain.bgm.tv/pic/user/m/icon.jpg",
-        "small": "https://lain.bgm.tv/pic/user/s/icon.jpg",
+        "medium": "https://lain.bgm.tv/r/200/pic/user/l/icon.jpg",
+        "small": "https://lain.bgm.tv/r/100/pic/user/l/icon.jpg",
       },
       "group": 0,
       "id": 427613,
