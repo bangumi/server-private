@@ -188,7 +188,7 @@ describe('edit subject ', () => {
               {
                 id: 184017,
                 name: 'sandbox',
-                infobox: 'i',
+                infobox: '{{Infobox}}',
                 metaTags: 'WEB ONA',
                 summary: 's',
                 platform: 5,
@@ -222,7 +222,7 @@ describe('edit subject ', () => {
     expect(res.json()).toEqual({
       id: 184017,
       name: 'sandbox',
-      infobox: 'i',
+      infobox: '{{Infobox}}',
       locked: true,
       redirect: 0,
       metaTags: ['WEB', 'ONA'],
@@ -264,7 +264,7 @@ describe('edit subject ', () => {
     const payload = {
       subject: {
         name: 'n',
-        infobox: 'i',
+        infobox: '{{Infobox}}',
         platform: 0,
         summary: 's',
         date: '0000-00-00',
@@ -305,7 +305,7 @@ describe('edit subject ', () => {
     const payload = {
       subject: {
         name: 'n',
-        infobox: 'i',
+        infobox: '{{Infobox}}',
         platform: 0,
         metaTags: [],
         summary: 's',
@@ -334,7 +334,7 @@ describe('edit subject ', () => {
     expect(res.statusCode).toBe(200);
     expect(editSubject).toHaveBeenCalledWith({
       commitMessage: 'c',
-      infobox: 'i',
+      infobox: '{{Infobox}}',
       name: 'n',
       platform: 0,
       subjectID: 1,

@@ -1,8 +1,8 @@
-import { MeiliSearch } from 'meilisearch';
+import { Meilisearch } from 'meilisearch';
 
 import config from '@app/lib/config.ts';
 
-export const client = new MeiliSearch({
+export const client = new Meilisearch({
   host: config.meilisearch.url,
   apiKey: config.meilisearch.key,
 });

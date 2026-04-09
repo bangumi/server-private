@@ -127,7 +127,7 @@ describe('edit person ', () => {
         id: 65425,
         name: '一花',
         type: 1,
-        infobox: 'i',
+        infobox: '{{Infobox}}',
         summary: 's',
         ban: 1,
         lock: 0,
@@ -158,7 +158,7 @@ describe('edit person ', () => {
       id: 65425,
       name: '一花',
       typeID: 1,
-      infobox: 'i',
+      infobox: '{{Infobox}}',
       summary: 's',
       locked: true,
       redirect: 0,
@@ -186,7 +186,7 @@ describe('edit person ', () => {
       payload: {
         person: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         commitMessage: 'c',
@@ -208,13 +208,20 @@ describe('edit person ', () => {
     const app = await testApp();
 
     const res = await app.inject({
-      url: '/persons/3214',
+      url: '/persons/7',
       method: 'PATCH',
       payload: {
         person: {
           name: 'n',
-          infobox: 'i',
+          infobox: `{{Infobox
+|生日= 2000年1月20日
+|性别= 男
+|血型= O
+}}`,
           summary: 's',
+          profession: {
+            mangaka: true,
+          },
         },
         commitMessage: 'c',
       },
@@ -223,14 +230,19 @@ describe('edit person ', () => {
     expect(res.json()).toMatchInlineSnapshot(`Object {}`);
     expect(res.statusCode).toBe(200);
 
-    const afterEdit = await app.inject('/persons/3214');
+    const afterEdit = await app.inject('/persons/7');
     expect(afterEdit.json()).toMatchInlineSnapshot(`
       Object {
-        "id": 3214,
-        "infobox": "i",
+        "id": 7,
+        "infobox": "{{Infobox
+      |生日= 2000年1月20日
+      |性别= 男
+      |血型= O
+      }}",
         "locked": false,
         "name": "n",
         "profession": Object {
+          "mangaka": true,
           "producer": true,
         },
         "redirect": 0,
@@ -239,7 +251,7 @@ describe('edit person ', () => {
       }
     `);
 
-    const history = await app.inject('/persons/3214/history-summary');
+    const history = await app.inject('/persons/7/history-summary');
     const contribution = await app.inject('/users/1/contributions/persons');
 
     const revisionRes: res.IPagedRevisionHistory = history.json();
@@ -253,7 +265,11 @@ describe('edit person ', () => {
     const revision = await app.inject(`/persons/-/revisions/${revisionID}`);
     expect(revision.statusCode).toBe(200);
     const revisionData: res.IPersonRevisionWikiInfo = revision.json();
-    expect(revisionData.infobox).toBe('i');
+    expect(revisionData.infobox).toBe(`{{Infobox
+|生日= 2000年1月20日
+|性别= 男
+|血型= O
+}}`);
     expect(revisionData.name).toBe('n');
     expect(revisionData.summary).toBe('s');
   });
@@ -276,7 +292,7 @@ describe('edit person ', () => {
 
     expect(res.statusCode).toBe(200);
     const imageRes = res.json();
-    expect(imageRes.img).toMatch(/^raw(?:\/\w{2}){2}\/3214_.*\.jpe?g$/);
+    expect(imageRes.img).toMatch(/^raw(?:\/\w{2}){2}\/3214_prsn_.*\.jpe?g$/);
 
     expect(uploadImageMock).toHaveBeenCalledWith(
       expect.stringMatching(/.*\.jpe?g$/),
@@ -303,7 +319,7 @@ describe('edit person ', () => {
       payload: {
         person: {
           name: 'n',
-          infobox: 'i',
+          infobox: '{{Infobox}}',
           summary: 's',
         },
         expectedRevision: {

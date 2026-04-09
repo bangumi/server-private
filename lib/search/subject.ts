@@ -114,7 +114,7 @@ export async function search(request: SearchRequest): Promise<SearchResult> {
     offset: request.offset,
   });
   return {
-    ids: results.hits.map((hit) => hit.id as number),
+    ids: results.hits.map((hit: Record<string, unknown>) => hit.id as number),
     total: results.estimatedTotalHits,
   };
 }

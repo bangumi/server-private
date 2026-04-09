@@ -431,7 +431,7 @@ export async function setup(app: App) {
       const commentContent = body.comment ?? '';
       const award = body.award ?? '';
 
-      let returnID = existing?.id;
+      let returnID: number;
       if (existing) {
         if (existing.ban === 0) {
           throw new ConflictError('Related item already exists');
