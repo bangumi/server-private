@@ -1175,6 +1175,12 @@ export async function setup(app: App) {
               $id: 'SubjectRelationExpected',
             }),
           ),
+          authorID: t.Optional(
+            t.Integer({
+              exclusiveMinimum: 0,
+              description: 'when header x-admin-token is provided, use this as author id.',
+            }),
+          ),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
@@ -1191,8 +1197,14 @@ export async function setup(app: App) {
       params: { subjectID },
       query: { type: relatedType },
       auth,
-      body: { commitMessage, relations: relationEdits, expectedRevision },
+      headers,
+      body: { commitMessage, relations: relationEdits, expectedRevision, authorID },
     }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
@@ -1212,6 +1224,14 @@ export async function setup(app: App) {
       const relationSubjectIDs = relationEdits.map((r) => r.subject.id);
       if (new Set(relationSubjectIDs).size !== relationSubjectIDs.length) {
         throw new BadRequestError('duplicate subject in relations is not allowed');
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       await db.transaction(async (txn) => {
@@ -1453,7 +1473,7 @@ export async function setup(app: App) {
                 {} as Record<string, ISubjectRelationRevRemote>,
               ),
           } satisfies ISubjectRelationRev,
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment,
         });
       });
