@@ -1412,6 +1412,12 @@ export async function setup(app: App) {
               $id: 'SubjectPersonExpected',
             }),
           ),
+          authorID: t.Optional(
+            t.Integer({
+              exclusiveMinimum: 0,
+              description: 'when header x-admin-token is provided, use this as author id.',
+            }),
+          ),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
@@ -1427,8 +1433,14 @@ export async function setup(app: App) {
     async ({
       params: { subjectID },
       auth,
-      body: { commitMessage, relations: relationEdits, expectedRevision },
+      headers,
+      body: { commitMessage, relations: relationEdits, expectedRevision, authorID },
     }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
@@ -1441,6 +1453,14 @@ export async function setup(app: App) {
       const invalidPositions = positions.filter((p) => !findSubjectStaffPosition(subject.type, p));
       if (invalidPositions.length > 0) {
         throw new BadRequestError(`position ${invalidPositions.join(', ')} is not valid`);
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       await db.transaction(async (txn) => {
@@ -1585,7 +1605,7 @@ export async function setup(app: App) {
               },
               {} as Record<string, ISubjectPersonRevSingle>,
             ),
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment,
         });
       });
