@@ -541,6 +541,7 @@ export async function setup(app: App) {
           id: x.revId,
           creator: {
             username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+            nickname: users[x.revCreator]?.nickname ?? ghostUser(x.revCreator).nickname,
           },
           type: x.revType,
           createdAt: x.createdAt,
@@ -662,6 +663,7 @@ export async function setup(app: App) {
           id: x.revId,
           creator: {
             username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+            nickname: users[x.revCreator]?.nickname ?? ghostUser(x.revCreator).nickname,
           },
           type: x.revType,
           createdAt: x.createdAt,
@@ -817,6 +819,7 @@ export async function setup(app: App) {
           id: x.revId,
           creator: {
             username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+            nickname: users[x.revCreator]?.nickname ?? ghostUser(x.revCreator).nickname,
           },
           type: x.revType,
           createdAt: x.createdAt,
