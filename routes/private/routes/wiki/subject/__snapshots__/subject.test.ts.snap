@@ -81,108 +81,151 @@ Object {
 `;
 
 exports[`edit subject  > should get edit history 1`] = `
-Array [
-  Object {
-    "commitMessage": "",
-    "createdAt": 1570720134,
-    "creator": Object {
-      "nickname": "deleted or missing user 318251",
-      "username": "318251",
+Object {
+  "data": Array [
+    Object {
+      "commitMessage": "",
+      "createdAt": 1570720134,
+      "creator": Object {
+        "nickname": "deleted or missing user 318251",
+        "username": "318251",
+      },
+      "id": 643749,
+      "type": 1,
     },
-    "id": 643749,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "添加别名",
-    "createdAt": 1522689610,
-    "creator": Object {
-      "nickname": "nickname 79290",
-      "username": "79290",
+    Object {
+      "commitMessage": "添加别名",
+      "createdAt": 1522689610,
+      "creator": Object {
+        "nickname": "nickname 79290",
+        "username": "79290",
+      },
+      "id": 551942,
+      "type": 1,
     },
-    "id": 551942,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "",
-    "createdAt": 1430296495,
-    "creator": Object {
-      "nickname": "nickname 189074",
-      "username": "189074",
+    Object {
+      "commitMessage": "",
+      "createdAt": 1430296495,
+      "creator": Object {
+        "nickname": "nickname 189074",
+        "username": "189074",
+      },
+      "id": 275753,
+      "type": 1,
     },
-    "id": 275753,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "修正笔误",
-    "createdAt": 1417061160,
-    "creator": Object {
-      "nickname": "nickname 26862",
-      "username": "26862",
+    Object {
+      "commitMessage": "修正笔误",
+      "createdAt": 1417061160,
+      "creator": Object {
+        "nickname": "nickname 26862",
+        "username": "26862",
+      },
+      "id": 241960,
+      "type": 1,
     },
-    "id": 241960,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "内容扩充",
-    "createdAt": 1364576814,
-    "creator": Object {
-      "nickname": "nickname 130027",
-      "username": "130027",
+    Object {
+      "commitMessage": "内容扩充",
+      "createdAt": 1364576814,
+      "creator": Object {
+        "nickname": "nickname 130027",
+        "username": "130027",
+      },
+      "id": 133888,
+      "type": 1,
     },
-    "id": 133888,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "",
-    "createdAt": 1357187180,
-    "creator": Object {
-      "nickname": "nickname 104510",
-      "username": "104510",
+    Object {
+      "commitMessage": "",
+      "createdAt": 1357187180,
+      "creator": Object {
+        "nickname": "nickname 104510",
+        "username": "104510",
+      },
+      "id": 113779,
+      "type": 1,
     },
-    "id": 113779,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "",
-    "createdAt": 1336751754,
-    "creator": Object {
-      "nickname": "nickname 9023",
-      "username": "9023",
+    Object {
+      "commitMessage": "",
+      "createdAt": 1336751754,
+      "creator": Object {
+        "nickname": "nickname 9023",
+        "username": "9023",
+      },
+      "id": 71214,
+      "type": 1,
     },
-    "id": 71214,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "简介修正",
-    "createdAt": 1325596293,
-    "creator": Object {
-      "nickname": "nickname 8766",
-      "username": "8766",
+    Object {
+      "commitMessage": "简介修正",
+      "createdAt": 1325596293,
+      "creator": Object {
+        "nickname": "nickname 8766",
+        "username": "8766",
+      },
+      "id": 53051,
+      "type": 1,
     },
-    "id": 53051,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "",
-    "createdAt": 1285863983,
-    "creator": Object {
-      "nickname": "nickname 8025",
-      "username": "8025",
+    Object {
+      "commitMessage": "",
+      "createdAt": 1285863983,
+      "creator": Object {
+        "nickname": "nickname 8025",
+        "username": "8025",
+      },
+      "id": 14884,
+      "type": 1,
     },
-    "id": 14884,
-    "type": 1,
-  },
-  Object {
-    "commitMessage": "合并恢复版本",
-    "createdAt": 1272719723,
-    "creator": Object {
-      "nickname": "nickname 1",
-      "username": "1",
+    Object {
+      "commitMessage": "合并恢复版本",
+      "createdAt": 1272719723,
+      "creator": Object {
+        "nickname": "nickname 1",
+        "username": "1",
+      },
+      "id": 7493,
+      "type": 1,
     },
-    "id": 7493,
-    "type": 1,
-  },
-]
+    Object {
+      "commitMessage": "我实在懒的写简介了",
+      "createdAt": 1272603175,
+      "creator": Object {
+        "nickname": "nickname 4916",
+        "username": "4916",
+      },
+      "id": 7447,
+      "type": 1,
+    },
+    Object {
+      "commitMessage": "新条目",
+      "createdAt": 1272602725,
+      "creator": Object {
+        "nickname": "nickname 4916",
+        "username": "4916",
+      },
+      "id": 7446,
+      "type": 1,
+    },
+    Object {
+      "commitMessage": "两季的标题至少要统一",
+      "createdAt": 1256124847,
+      "creator": Object {
+        "nickname": "nickname 6162",
+        "username": "6162",
+      },
+      "id": 4142,
+      "type": 1,
+    },
+    Object {
+      "commitMessage": "内容扩充",
+      "createdAt": 1254432566,
+      "creator": Object {
+        "nickname": "nickname 2813",
+        "username": "2813",
+      },
+      "id": 3574,
+      "type": 1,
+    },
+  ],
+  "total": 14,
+}
 `;
 
 exports[`edit subject  > should get subject revision wiki info 1`] = `
