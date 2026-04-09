@@ -7,6 +7,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1407073073,
       "creator": Object {
+        "nickname": "deleted or missing user 18215",
         "username": "18215",
       },
       "id": 253524,
@@ -16,6 +17,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1392929834,
       "creator": Object {
+        "nickname": "deleted or missing user 106866",
         "username": "106866",
       },
       "id": 204186,
@@ -25,6 +27,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1358325032,
       "creator": Object {
+        "nickname": "deleted or missing user 50094",
         "username": "50094",
       },
       "id": 87355,
@@ -34,6 +37,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1341711793,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 50866,
@@ -43,6 +47,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1297812968,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 8354,
@@ -52,6 +57,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1297812602,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 8352,
@@ -61,6 +67,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1297812584,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 8351,
@@ -70,6 +77,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296835082,
       "creator": Object {
+        "nickname": "deleted or missing user 9105",
         "username": "9105",
       },
       "id": 5909,
@@ -79,6 +87,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296500374,
       "creator": Object {
+        "nickname": "deleted or missing user 2978",
         "username": "2978",
       },
       "id": 4159,
@@ -335,6 +344,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1561903186,
       "creator": Object {
+        "nickname": "deleted or missing user 318251",
         "username": "318251",
       },
       "id": 1005137,
@@ -344,6 +354,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1297820724,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 8364,
@@ -353,6 +364,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1297053421,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 6653,
@@ -362,6 +374,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1297053366,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 6651,
@@ -371,6 +384,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296812072,
       "creator": Object {
+        "nickname": "deleted or missing user 14459",
         "username": "14459",
       },
       "id": 5780,
@@ -380,6 +394,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296586071,
       "creator": Object {
+        "nickname": "deleted or missing user 12367",
         "username": "12367",
       },
       "id": 4708,
@@ -389,6 +404,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296365688,
       "creator": Object {
+        "nickname": "deleted or missing user 14432",
         "username": "14432",
       },
       "id": 2804,
@@ -398,6 +414,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296365654,
       "creator": Object {
+        "nickname": "deleted or missing user 14432",
         "username": "14432",
       },
       "id": 2800,
@@ -407,6 +424,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296365640,
       "creator": Object {
+        "nickname": "deleted or missing user 14432",
         "username": "14432",
       },
       "id": 2799,
@@ -416,6 +434,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296365628,
       "creator": Object {
+        "nickname": "deleted or missing user 14432",
         "username": "14432",
       },
       "id": 2797,
@@ -425,6 +444,7 @@ Object {
       "commitMessage": "关联修改",
       "createdAt": 1296365604,
       "creator": Object {
+        "nickname": "deleted or missing user 14432",
         "username": "14432",
       },
       "id": 2796,
