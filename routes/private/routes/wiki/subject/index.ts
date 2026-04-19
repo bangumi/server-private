@@ -37,6 +37,7 @@ import {
   getReverseRelation,
   isRelationViceVersa,
   matchExpected,
+  WikiChangedError,
 } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -1277,14 +1278,26 @@ export async function setup(app: App) {
           order: d.chii_subject_relations.order,
         }));
 
+        const oldRelationMap = new Map(oldRelations.map((r) => [r.subject.id, r]));
         if (expectedRevision?.length) {
+          const expectedMap = new Map(expectedRevision.map((r) => [r.subject.id, r]));
+
           for (const old of oldRelations) {
-            const expectedOld = expectedRevision?.find((r) => r.subject.id === old.subject.id);
-            if (!expectedOld) continue;
+            if (!expectedMap.has(old.subject.id)) {
+              throw new WikiChangedError('unexpected relation');
+            }
+          }
+
+          for (const expected of expectedRevision) {
+            const old = oldRelationMap.get(expected.subject.id);
+            if (!old) {
+              throw new WikiChangedError('missing expected relation');
+            }
+
             matchExpected(
               {
-                type: String(expectedOld.type),
-                order: String(expectedOld.order),
+                type: String(expected.type),
+                order: String(expected.order),
               },
               {
                 type: String(old.type),
@@ -1294,20 +1307,15 @@ export async function setup(app: App) {
           }
         }
 
-        const relationEditMap: Record<number, ISubjectRelationWikiEdit> = {};
-        const oldRelationMap: Record<number, ISubjectRelationWikiEdit> = {};
+        const relationEditMap = new Map<number, ISubjectRelationWikiEdit>();
         const deleteRelationEdit: ISubjectRelationWikiEdit[] = [];
         const newRelationEdit: ISubjectRelationWikiEdit[] = [];
         const existingRelationEdit: ISubjectRelationWikiEdit[] = [];
 
-        for (const r of oldRelations) {
-          oldRelationMap[r.subject.id] = r;
-        }
-
         for (const r of relationEdits) {
-          relationEditMap[r.subject.id] = r;
+          relationEditMap.set(r.subject.id, r);
 
-          const old = oldRelationMap[r.subject.id];
+          const old = oldRelationMap.get(r.subject.id);
           if (!old) {
             newRelationEdit.push(r);
           } else if (old.type !== r.type || old.order !== r.order) {
@@ -1316,7 +1324,7 @@ export async function setup(app: App) {
         }
 
         for (const r of oldRelations) {
-          const edit = relationEditMap[r.subject.id];
+          const edit = relationEditMap.get(r.subject.id);
           if (!edit) {
             deleteRelationEdit.push(r);
           }
@@ -1396,7 +1404,7 @@ export async function setup(app: App) {
                   ),
                 );
             } else {
-              const old = oldRelationMap[r.subject.id];
+              const old = oldRelationMap.get(r.subject.id);
               if (old) {
                 const oldViceVersa = isRelationViceVersa(relatedType, old.type);
                 if (oldViceVersa) {
