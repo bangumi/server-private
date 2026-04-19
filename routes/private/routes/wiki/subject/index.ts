@@ -28,7 +28,7 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
-import { genRelationComment, matchExpected } from '@app/lib/wiki';
+import { genRelationComment, matchExpected, WikiChangedError } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { findSubjectStaffPosition } from '@app/vendor';
@@ -1494,18 +1494,26 @@ export async function setup(app: App) {
         }));
 
         if (expectedRevision?.length) {
+          const oldMap = new Map(
+            oldRelations.map((old) => [`${old.person.id}|${old.position}`, old]),
+          );
+
           for (const old of oldRelations) {
-            const expectedOld = expectedRevision?.find(
-              (r) => r.person.id === old.person.id && r.position === old.position,
-            );
-            if (!expectedOld) continue;
+            const key = `${old.person.id}|${old.position}`;
+            if (!expectedRevision.some((r) => `${r.person.id}|${r.position}` === key)) {
+              throw new WikiChangedError('missing expected relation');
+            }
+          }
+
+          for (const expected of expectedRevision) {
+            const key = `${expected.person.id}|${expected.position}`;
+            const old = oldMap.get(key);
+            if (!old) {
+              throw new WikiChangedError('unexpected relation');
+            }
             matchExpected(
-              {
-                appearEps: String(expectedOld.appearEps),
-              },
-              {
-                appearEps: String(old.appearEps),
-              },
+              { appearEps: String(expected.appearEps) },
+              { appearEps: String(old.appearEps) },
             );
           }
         }
