@@ -19,10 +19,10 @@ jobs:
     env:
       TARGET: x86_64-unknown-linux-gnu
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
 
       - name: Set up Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.16.0
 
       - run: cargo fmt --all --check
       - run: cargo clippy --workspace --all-targets --locked
@@ -34,7 +34,7 @@ jobs:
   lint:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
         with:
           submodules: 'true'
       - uses: ./.github/actions/setup-js-env
@@ -52,7 +52,7 @@ jobs:
   test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
         with:
           repository: 'bangumi/dev-env'
           path: 'dev-env'
@@ -60,7 +60,7 @@ jobs:
       - run: mv dev-env $HOME/dev-env
       - run: cd ~/dev-env && docker compose up -d
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
       - uses: ./.github/actions/setup-js-env
 
       - run: bash $HOME/dev-env/wait_mysql_ready.sh
@@ -71,17 +71,17 @@ jobs:
           REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v6.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   rust-test:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
 
       - name: Set up Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.16.0
 
       - uses: taiki-e/install-action@nextest
 
@@ -90,7 +90,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
       - run: docker build -t tmp -f Dockerfile .
       - run: docker run tmp ./dist/index.mjs --help
 
