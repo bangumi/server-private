@@ -167,7 +167,7 @@ export async function create({
             return {
               tagID: tag,
               mainID: subjectID,
-              cat: TagCat.Meta,
+              cat: TagCat.Subject,
               userID: 0,
               type: typeID,
               createdAt: now.toUnixInteger(),
@@ -349,7 +349,7 @@ export async function edit({
         .delete(schema.chiiTagList)
         .where(
           op.and(
-            op.eq(schema.chiiTagList.cat, TagCat.Meta),
+            op.eq(schema.chiiTagList.cat, TagCat.Subject),
             op.eq(schema.chiiTagList.type, s.typeID),
             op.eq(schema.chiiTagList.mainID, subjectID),
           ),
@@ -361,7 +361,7 @@ export async function edit({
             return {
               tagID: tag,
               mainID: subjectID,
-              cat: TagCat.Meta,
+              cat: TagCat.Subject,
               userID: 0,
               type: s.typeID,
               createdAt: now.toUnixInteger(),

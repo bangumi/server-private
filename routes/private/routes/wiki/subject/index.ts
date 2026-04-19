@@ -461,40 +461,54 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
-          200: t.Array(res.Ref(res.RevisionHistory)),
+          200: res.Paged(res.Ref(res.RevisionHistory)),
           401: res.Ref(res.Error, {
             'x-examples': formatErrors(new InvalidWikiSyntaxError()),
           }),
         },
       },
     },
-    async ({ params: { subjectID } }) => {
+    async ({ params: { subjectID }, query: { limit = 20, offset = 0 } }) => {
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectRev)
+        .where(op.eq(schema.chiiSubjectRev.subjectID, subjectID));
+
       const history = await db
         .select()
         .from(schema.chiiSubjectRev)
         .where(op.eq(schema.chiiSubjectRev.subjectID, subjectID))
         .orderBy(op.desc(schema.chiiSubjectRev.revId))
-        .limit(10);
-
-      if (history.length === 0) {
-        return [];
-      }
+        .offset(offset)
+        .limit(limit);
 
       const users = await fetcher.fetchSlimUsersByIDs(history.map((x) => x.creatorID));
 
-      return history.map((x) => {
+      const revisions = history.map((x) => {
         return {
           id: x.revId,
           creator: {
-            username: users[x.creatorID]?.username ?? '',
+            username: users[x.creatorID]?.username ?? ghostUser(x.creatorID).username,
+            nickname: users[x.creatorID]?.nickname ?? ghostUser(x.creatorID).nickname,
           },
           type: x.type,
           createdAt: x.createdAt,
           commitMessage: x.commitMessage,
         } satisfies res.IRevisionHistory;
       });
+
+      return {
+        total: count,
+        data: revisions,
+      };
     },
   );
 
@@ -1074,6 +1088,7 @@ export async function setup(app: App) {
           id: x.revId,
           creator: {
             username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+            nickname: users[x.revCreator]?.nickname ?? ghostUser(x.revCreator).nickname,
           },
           type: x.revType,
           createdAt: x.createdAt,
@@ -1533,6 +1548,7 @@ export async function setup(app: App) {
           id: x.revId,
           creator: {
             username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+            nickname: users[x.revCreator]?.nickname ?? ghostUser(x.revCreator).nickname,
           },
           type: x.revType,
           createdAt: x.createdAt,
@@ -1663,6 +1679,7 @@ export async function setup(app: App) {
           id: x.revId,
           creator: {
             username: users[x.revCreator]?.username ?? ghostUser(x.revCreator).username,
+            nickname: users[x.revCreator]?.nickname ?? ghostUser(x.revCreator).nickname,
           },
           type: x.revType,
           createdAt: x.createdAt,
