@@ -1130,6 +1130,12 @@ export async function setup(app: App) {
               $id: 'PersonSubjectExpected',
             }),
           ),
+          authorID: t.Optional(
+            t.Integer({
+              exclusiveMinimum: 0,
+              description: 'when header x-admin-token is provided, use this as author id.',
+            }),
+          ),
         }),
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
@@ -1146,8 +1152,14 @@ export async function setup(app: App) {
       params: { personID },
       query: { type: subjectType },
       auth,
-      body: { commitMessage, relations: relationEdits, expectedRevision },
+      headers,
+      body: { commitMessage, relations: relationEdits, expectedRevision, authorID },
     }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.subject_edit) {
         throw new NotAllowedError('edit subject');
       }
@@ -1160,6 +1172,14 @@ export async function setup(app: App) {
       const invalidPositions = positions.filter((p) => !findSubjectStaffPosition(subjectType, p));
       if (invalidPositions.length > 0) {
         throw new BadRequestError(`position ${invalidPositions.join(', ')} is not valid`);
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
       }
 
       await db.transaction(async (txn) => {
@@ -1181,18 +1201,26 @@ export async function setup(app: App) {
         }));
 
         if (expectedRevision?.length) {
+          const oldMap = new Map(
+            oldRelations.map((old) => [`${old.subject.id}|${old.position}`, old]),
+          );
+
           for (const old of oldRelations) {
-            const expectedOld = expectedRevision?.find(
-              (r) => r.subject.id === old.subject.id && r.position === old.position,
-            );
-            if (!expectedOld) continue;
+            const key = `${old.subject.id}|${old.position}`;
+            if (!expectedRevision.some((r) => `${r.subject.id}|${r.position}` === key)) {
+              throw new WikiChangedError('missing expected relation');
+            }
+          }
+
+          for (const expected of expectedRevision) {
+            const key = `${expected.subject.id}|${expected.position}`;
+            const old = oldMap.get(key);
+            if (!old) {
+              throw new WikiChangedError('unexpected relation');
+            }
             matchExpected(
-              {
-                appearEps: String(expectedOld.appearEps),
-              },
-              {
-                appearEps: String(old.appearEps),
-              },
+              { appearEps: String(expected.appearEps) },
+              { appearEps: String(old.appearEps) },
             );
           }
         }
@@ -1317,7 +1345,7 @@ export async function setup(app: App) {
               },
               {} as Record<string, IPersonSubjectRevSingle>,
             ),
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment,
         });
       });
