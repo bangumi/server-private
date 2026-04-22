@@ -350,6 +350,7 @@ export async function edit({
         .where(
           op.and(
             op.eq(schema.chiiTagList.cat, TagCat.Subject),
+            op.eq(schema.chiiTagList.userID, 0),
             op.eq(schema.chiiTagList.type, s.typeID),
             op.eq(schema.chiiTagList.mainID, subjectID),
           ),
