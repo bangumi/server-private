@@ -39,6 +39,7 @@ const allowedRedirectUris: string[] = [
   'bangulite://turnstile/callback',
   // https://www.anix.app
   'anix://tv.bgm/turnstile',
+  'https://oauth-backend-jet.vercel.app/api/turnstile/callback',
 ];
 
 // eslint-disable-next-line @typescript-eslint/require-await
