@@ -396,7 +396,14 @@ export async function setup(app: App) {
       if (tids.length === 0) {
         return { total: 0, data: [] };
       }
-      const topics = await fetcher.fetchGroupTopicsByIDs(tids);
+      const topicRows = await db
+        .select()
+        .from(schema.chiiGroupTopics)
+        .where(op.inArray(schema.chiiGroupTopics.id, tids));
+      const topics: Record<number, res.ITopic> = {};
+      for (const d of topicRows) {
+        topics[d.id] = convert.toGroupTopic(d);
+      }
       const uids = Object.values(topics).map((d) => d.creatorID);
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const gids = Object.values(topics).map((d) => d.parentID);
