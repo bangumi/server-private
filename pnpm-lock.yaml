@@ -116,8 +116,8 @@ importers:
         specifier: 5.6.0
         version: 5.6.0
       liquidjs:
-        specifier: 10.25.5
-        version: 10.25.5
+        specifier: 10.25.7
+        version: 10.25.7
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
@@ -4274,8 +4274,8 @@ packages:
     engines: {node: '>=20.17'}
     hasBin: true
 
-  liquidjs@10.25.5:
-    resolution: {integrity: sha512-GKiKeZjJDdVoQAu+S9rzkYsYnYhcep5W3WwZXgb5f+yq484P/k9JqamBbGYu+LBEixcUAXZr2jogdAIjB3ki1w==}
+  liquidjs@10.25.7:
+    resolution: {integrity: sha512-rPCjJLiD4eDhQjvv964AeXFC+HbeYBbZrd7Z82Q6hqv1lX7G+5w4SJcKLn9CAAAwHI4aS3dTdo083UB79K3pDA==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -10021,7 +10021,7 @@ snapshots:
       tinyexec: 1.1.1
       yaml: 2.8.3
 
-  liquidjs@10.25.5:
+  liquidjs@10.25.7:
     dependencies:
       commander: 10.0.1
 
