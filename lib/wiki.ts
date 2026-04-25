@@ -4,6 +4,8 @@ import * as diff from 'diff';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
+import { type SubjectType, SubjectTypeCN } from '@app/lib/subject/type.ts';
+
 export const WikiChangedError = createError<[string]>(
   'WIKI_CHANGED',
   "expected data doesn't match\n%s",
@@ -119,3 +121,19 @@ const birth_simple_patterns = [
   /^(?<month>\d{1,2})-(?<day>\d{1,2})$/,
   /^(?<month>\d{1,2})\/(?<day>\d{1,2})$/,
 ];
+
+export function genRelationComment(
+  relatedType: SubjectType,
+  commitMessage: string,
+  newRelationEdit: unknown[],
+  existingRelationEdit: unknown[],
+  deleteRelationEdit: unknown[],
+) {
+  return `${SubjectTypeCN(relatedType) || '条目'}关联${
+    newRelationEdit.length === 0 &&
+    existingRelationEdit.length === 0 &&
+    deleteRelationEdit.length > 0
+      ? '删除'
+      : '修改'
+  }${commitMessage ? ` - ${commitMessage}` : ''}`;
+}
