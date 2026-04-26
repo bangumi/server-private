@@ -52,16 +52,21 @@ pub(crate) async fn trending_subjects(
   ctx: &CronContext,
   period: TrendingPeriod,
 ) -> Result<()> {
-  info!("Updating trending subjects...");
+  let start = std::time::Instant::now();
+  info!(
+    "trending subjects: starting, period={}, types={:?}",
+    period.as_str(),
+    TRENDING_SUBJECT_TYPES
+  );
   for subject_type in TRENDING_SUBJECT_TYPES {
-    info!(
-      "Updating trending subjects for subject_type={} period={}...",
-      subject_type,
-      period.as_str()
-    );
     update_trending_subjects(ctx, subject_type, period).await?;
   }
 
+  info!(
+    "trending subjects: all types done, period={}, elapsed={:?}",
+    period.as_str(),
+    start.elapsed()
+  );
   Ok(())
 }
 
@@ -69,7 +74,11 @@ pub(crate) async fn trending_subject_topics(
   ctx: &CronContext,
   period: TrendingPeriod,
 ) -> Result<()> {
-  info!("Updating trending subject topics...");
+  let start = std::time::Instant::now();
+  info!(
+    "trending subject topics: starting, period={}",
+    period.as_str()
+  );
 
   let trending_key = format!("trending:topics:subjects:{}", period.as_str());
   let lock_key = format!("lock:{}", trending_key);
@@ -86,8 +95,9 @@ pub(crate) async fn trending_subject_topics(
     .with_context(|| format!("failed to read redis lock key={lock_key}"))?;
   if lock_exists.is_some() {
     info!(
-      "Already calculating trending subject topics for period={}...",
-      period.as_str()
+      "trending subject topics: skipped, lock held, period={}, lock_key={}",
+      period.as_str(),
+      lock_key
     );
     return Ok(());
   }
@@ -103,11 +113,13 @@ pub(crate) async fn trending_subject_topics(
 
   let min_dateline = period.min_dateline();
   info!(
-    "Calculating trending subject topics for period={} from {} ...",
+    "trending subject topics: querying, period={}, min_dateline={}, lock_key={}",
     period.as_str(),
-    min_dateline
+    min_dateline,
+    lock_key
   );
 
+  let query_start = std::time::Instant::now();
   let rows: Vec<TopicTrendingRow> = sqlx::query_as(
     "
         SELECT sbj_pst_mid AS topic_id, COUNT(sbj_pst_id) AS total
@@ -123,6 +135,13 @@ pub(crate) async fn trending_subject_topics(
   .await
   .context("failed to calculate trending subject topics")?;
 
+  info!(
+    "trending subject topics: query done, period={}, rows={}, query_elapsed={:?}",
+    period.as_str(),
+    rows.len(),
+    query_start.elapsed()
+  );
+
   let items: Vec<TrendingItem> = rows
     .into_iter()
     .map(|row| TrendingItem {
@@ -131,16 +150,27 @@ pub(crate) async fn trending_subject_topics(
     })
     .collect();
 
-  info!(
-    "Trending subject topics calculated for period={} count={}",
-    period.as_str(),
-    items.len()
-  );
+  if !items.is_empty() {
+    let top = &items[..items.len().min(5)];
+    info!(
+      "trending subject topics: top results, period={}, top={:?}",
+      period.as_str(),
+      top
+        .iter()
+        .map(|i| format!("id={},total={}", i.id, i.total))
+        .collect::<Vec<_>>()
+    );
+  }
 
   let payload = serde_json::to_string(&items)
     .context("failed to serialize trending subject topics")?;
+  info!(
+    "trending subject topics: writing to redis, key={}, payload_len={}",
+    trending_key,
+    payload.len()
+  );
   redis
-    .set::<_, _, ()>(&trending_key, payload)
+    .set::<_, _, ()>(&trending_key, &payload)
     .await
     .with_context(|| format!("failed to write trending data key={trending_key}"))?;
   redis
@@ -148,6 +178,12 @@ pub(crate) async fn trending_subject_topics(
     .await
     .with_context(|| format!("failed to delete redis lock key={lock_key}"))?;
 
+  info!(
+    "trending subject topics: done, period={}, count={}, elapsed={:?}",
+    period.as_str(),
+    items.len(),
+    start.elapsed()
+  );
   Ok(())
 }
 
@@ -156,6 +192,7 @@ async fn update_trending_subjects(
   subject_type: i32,
   period: TrendingPeriod,
 ) -> Result<()> {
+  let start = std::time::Instant::now();
   let trending_key = format!("trending:subjects:{}:{}", subject_type, period.as_str());
   let lock_key = format!("lock:{}", trending_key);
 
@@ -171,9 +208,10 @@ async fn update_trending_subjects(
     .with_context(|| format!("failed to read redis lock key={lock_key}"))?;
   if lock_exists.is_some() {
     info!(
-      "Already calculating trending subjects for subject_type={} period={}...",
+      "trending subjects: skipped, lock held, type={}, period={}, lock_key={}",
       subject_type,
-      period.as_str()
+      period.as_str(),
+      lock_key
     );
     return Ok(());
   }
@@ -191,10 +229,11 @@ async fn update_trending_subjects(
   let doing_dateline = subject_type != 1 && subject_type != 3;
 
   info!(
-    "Calculating trending subjects for subject_type={} period={} from {} ...",
+    "trending subjects: querying, type={}, period={}, min_dateline={}, doing_dateline={}",
     subject_type,
     period.as_str(),
-    min_dateline
+    min_dateline,
+    doing_dateline
   );
 
   let query = if doing_dateline {
@@ -223,12 +262,21 @@ async fn update_trending_subjects(
         "
   };
 
+  let query_start = std::time::Instant::now();
   let rows: Vec<SubjectTrendingRow> = sqlx::query_as(query)
     .bind(subject_type)
     .bind(min_dateline)
     .fetch_all(&ctx.mysql_pool)
     .await
     .context("failed to calculate trending subjects")?;
+
+  info!(
+    "trending subjects: query done, type={}, period={}, rows={}, query_elapsed={:?}",
+    subject_type,
+    period.as_str(),
+    rows.len(),
+    query_start.elapsed()
+  );
 
   let items: Vec<TrendingItem> = rows
     .into_iter()
@@ -238,17 +286,28 @@ async fn update_trending_subjects(
     })
     .collect();
 
-  info!(
-    "Trending subjects calculated for subject_type={} period={} count={}",
-    subject_type,
-    period.as_str(),
-    items.len()
-  );
+  if !items.is_empty() {
+    let top = &items[..items.len().min(5)];
+    info!(
+      "trending subjects: top results, type={}, period={}, top={:?}",
+      subject_type,
+      period.as_str(),
+      top
+        .iter()
+        .map(|i| format!("id={},total={}", i.id, i.total))
+        .collect::<Vec<_>>()
+    );
+  }
 
   let payload =
     serde_json::to_string(&items).context("failed to serialize trending subjects")?;
+  info!(
+    "trending subjects: writing to redis, key={}, payload_len={}",
+    trending_key,
+    payload.len()
+  );
   redis
-    .set::<_, _, ()>(&trending_key, payload)
+    .set::<_, _, ()>(&trending_key, &payload)
     .await
     .with_context(|| format!("failed to write trending data key={trending_key}"))?;
   redis
@@ -256,5 +315,12 @@ async fn update_trending_subjects(
     .await
     .with_context(|| format!("failed to delete redis lock key={lock_key}"))?;
 
+  info!(
+    "trending subjects: done, type={}, period={}, count={}, elapsed={:?}",
+    subject_type,
+    period.as_str(),
+    items.len(),
+    start.elapsed()
+  );
   Ok(())
 }
