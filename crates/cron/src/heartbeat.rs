@@ -9,6 +9,7 @@ use crate::context::CronContext;
 const HEARTBEAT_KEY: &str = "task:heartbeat";
 
 pub(crate) async fn run(ctx: &CronContext) -> Result<()> {
+  info!("heartbeat: starting");
   let mut redis = ctx
     .redis_pool
     .get()
@@ -25,6 +26,6 @@ pub(crate) async fn run(ctx: &CronContext) -> Result<()> {
     .await
     .context("failed to set heartbeat key")?;
 
-  info!("heartbeat updated, key={}, value={}", HEARTBEAT_KEY, now);
+  info!("heartbeat: updated, key={}, value={}", HEARTBEAT_KEY, now);
   Ok(())
 }

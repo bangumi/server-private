@@ -1,4 +1,5 @@
 use std::future;
+use std::time::Instant;
 
 use anyhow::{Context, Result};
 use spdlog::{error, info};
@@ -40,10 +41,14 @@ pub(crate) async fn run_default_schedule(ctx: CronContext) -> Result<()> {
     .await
     .context("failed to create tokio cron scheduler")?;
 
-  for spec in default_schedule_specs() {
+  let specs = default_schedule_specs();
+  let enabled_count = specs.iter().filter(|s| s.enabled).count();
+  let disabled_count = specs.len() - enabled_count;
+
+  for spec in specs {
     if !spec.enabled {
       info!(
-        "cron job disabled in rust server, job={}, cron={}",
+        "cron job disabled, job={}, cron={}",
         spec.name, spec.cron_expr
       );
       continue;
@@ -57,8 +62,24 @@ pub(crate) async fn run_default_schedule(ctx: CronContext) -> Result<()> {
     let job = Job::new_async_tz(cron_expr, timezone, move |_id, _lock| {
       let ctx = ctx.clone();
       Box::pin(async move {
-        if let Err(err) = run_task(&ctx, task).await {
-          error!("cron job execution failed, job={}, error={}", name, err);
+        let start = Instant::now();
+        info!("cron job starting, job={}", name);
+        match run_task(&ctx, task).await {
+          Ok(()) => {
+            info!(
+              "cron job completed, job={}, elapsed={:?}",
+              name,
+              start.elapsed()
+            );
+          }
+          Err(err) => {
+            error!(
+              "cron job failed, job={}, elapsed={:?}, error={:?}",
+              name,
+              start.elapsed(),
+              err
+            );
+          }
         }
       })
     })
@@ -79,6 +100,11 @@ pub(crate) async fn run_default_schedule(ctx: CronContext) -> Result<()> {
     .start()
     .await
     .context("failed to start tokio cron scheduler")?;
+
+  info!(
+    "cron scheduler started, enabled={}, disabled={}, timezone={}",
+    enabled_count, disabled_count, timezone
+  );
 
   future::pending::<()>().await;
   Ok(())
