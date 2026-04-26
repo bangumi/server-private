@@ -103,7 +103,6 @@ export const PersonRev = t.Object(
   { $id: 'PersonRev' },
 );
 
-export type ISubjectRelationRevSelf = Static<typeof SubjectRelationRevSelf>;
 const SubjectRelationRevSelf = t.Object({
   subject_id: t.Integer(),
   subject_type_id: t.Integer(),
@@ -112,7 +111,6 @@ const SubjectRelationRevSelf = t.Object({
   related_subject_id: t.Integer(),
   related_subject_type_id: t.Integer(),
 });
-export type ISubjectRelationRevRemote = Static<typeof SubjectRelationRevRemote>;
 const SubjectRelationRevRemote = t.Object({
   subject_id: t.Integer(),
   subject_type_id: t.Integer(),
