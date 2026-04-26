@@ -17,6 +17,4 @@ static/style
 !.yarn/plugins
 changelog.md
 
-# Rust
-target/
-crates/*/target/
+.codex
