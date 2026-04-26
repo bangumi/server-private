@@ -14,7 +14,10 @@ pub(crate) struct CronContext {
 
 impl CronContext {
   pub async fn new(config: &AppConfig) -> Result<Self> {
-    info!("cron context: creating redis pool, uri={}", config.redis_uri);
+    info!(
+      "cron context: creating redis pool, uri={}",
+      config.redis_uri
+    );
     let manager = RedisConnectionManager::new(config.redis_uri.as_str())
       .context("failed to create redis manager")?;
     let redis_pool = Pool::builder()

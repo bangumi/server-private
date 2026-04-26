@@ -39,7 +39,8 @@ pub(crate) async fn truncate_user(ctx: &CronContext) -> Result<()> {
     .get()
     .await
     .context("failed to get redis connection from pool")?;
-  scan_and_truncate_zset_keys(&mut redis, TIMELINE_USER_KEY_PATTERN, -201, "user").await?;
+  scan_and_truncate_zset_keys(&mut redis, TIMELINE_USER_KEY_PATTERN, -201, "user")
+    .await?;
 
   Ok(())
 }
@@ -51,7 +52,8 @@ pub(crate) async fn truncate_inbox(ctx: &CronContext) -> Result<()> {
     .get()
     .await
     .context("failed to get redis connection from pool")?;
-  scan_and_truncate_zset_keys(&mut redis, TIMELINE_INBOX_KEY_PATTERN, -201, "inbox").await?;
+  scan_and_truncate_zset_keys(&mut redis, TIMELINE_INBOX_KEY_PATTERN, -201, "inbox")
+    .await?;
 
   Ok(())
 }

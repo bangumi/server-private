@@ -75,7 +75,10 @@ pub(crate) async fn trending_subject_topics(
   period: TrendingPeriod,
 ) -> Result<()> {
   let start = std::time::Instant::now();
-  info!("trending subject topics: starting, period={}", period.as_str());
+  info!(
+    "trending subject topics: starting, period={}",
+    period.as_str()
+  );
 
   let trending_key = format!("trending:topics:subjects:{}", period.as_str());
   let lock_key = format!("lock:{}", trending_key);
@@ -152,7 +155,8 @@ pub(crate) async fn trending_subject_topics(
     info!(
       "trending subject topics: top results, period={}, top={:?}",
       period.as_str(),
-      top.iter()
+      top
+        .iter()
         .map(|i| format!("id={},total={}", i.id, i.total))
         .collect::<Vec<_>>()
     );
@@ -288,7 +292,8 @@ async fn update_trending_subjects(
       "trending subjects: top results, type={}, period={}, top={:?}",
       subject_type,
       period.as_str(),
-      top.iter()
+      top
+        .iter()
         .map(|i| format!("id={},total={}", i.id, i.total))
         .collect::<Vec<_>>()
     );
