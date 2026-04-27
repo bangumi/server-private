@@ -142,7 +142,7 @@ export class CommentWithState {
             .update(schema.chiiCharacters)
             .set({
               comment: incr(schema.chiiCharacters.comment),
-              updatedAt: now,
+              lastPost: now,
             })
             .where(op.eq(schema.chiiCharacters.id, mainID))
             .limit(1);
@@ -153,7 +153,7 @@ export class CommentWithState {
             .update(schema.chiiPersons)
             .set({
               comment: incr(schema.chiiPersons.comment),
-              updatedAt: now,
+              lastPost: now,
             })
             .where(op.eq(schema.chiiPersons.id, mainID))
             .limit(1);
