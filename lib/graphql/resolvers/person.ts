@@ -1,10 +1,10 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
+import type { orm } from '@app/drizzle';
 import { personImages } from '@app/lib/images';
-import type * as entity from '@app/lib/orm/entity/index.ts';
 
-function convertCareer(person: entity.Person) {
+function convertCareer(person: orm.IPerson) {
   const result: string[] = [];
   if (person.producer) {
     result.push('producer');
@@ -30,7 +30,7 @@ function convertCareer(person: entity.Person) {
   return result;
 }
 
-export function convertPerson(person: entity.Person) {
+export function convertPerson(person: orm.IPerson) {
   let wiki: Wiki = {
     type: '',
     data: [],

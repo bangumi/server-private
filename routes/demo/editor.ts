@@ -1,8 +1,26 @@
+import { db, op, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';
-import * as orm from '@app/lib/orm/index.ts';
 import { redirectIfNotLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor';
+
+async function fetchDemoSubject(subjectID: number) {
+  const [data] = await db
+    .select({
+      id: schema.chiiSubjects.id,
+      name: schema.chiiSubjects.name,
+      typeID: schema.chiiSubjects.typeID,
+      platform: schema.chiiSubjects.platform,
+      infobox: schema.chiiSubjects.infobox,
+      summary: schema.chiiSubjects.summary,
+      date: schema.chiiSubjectFields.date,
+    })
+    .from(schema.chiiSubjects)
+    .innerJoin(schema.chiiSubjectFields, op.eq(schema.chiiSubjects.id, schema.chiiSubjectFields.id))
+    .where(op.eq(schema.chiiSubjects.id, subjectID))
+    .limit(1);
+  return data;
+}
 
 export function setup(app: App) {
   app.get(
@@ -15,7 +33,7 @@ export function setup(app: App) {
     },
     async (req, res) => {
       const subjectID = 184017;
-      const s = await orm.fetchSubjectByID(subjectID);
+      const s = await fetchDemoSubject(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
@@ -42,7 +60,7 @@ export function setup(app: App) {
     },
     async (req, res) => {
       const subjectID = 184017;
-      const s = await orm.fetchSubjectByID(subjectID);
+      const s = await fetchDemoSubject(subjectID);
       if (!s) {
         throw new NotFoundError(`subject ${subjectID}`);
       }

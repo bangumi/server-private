@@ -9,7 +9,6 @@ import { db, op, schema } from '@app/drizzle';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
-import { SubjectRepo } from '@app/lib/orm/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
@@ -446,8 +445,11 @@ describe('lock subject', () => {
     expect(res.json()).toMatchInlineSnapshot(`Object {}`);
     expect(res.statusCode).toBe(200);
 
-    const subject = await SubjectRepo.findOneBy({ id: subjectID });
-    expect(subject?.subjectBan).toBe(1);
+    const [subject] = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.eq(schema.chiiSubjects.id, subjectID));
+    expect(subject?.ban).toBe(1);
   });
 
   test('unlock subject', async () => {
@@ -464,8 +466,11 @@ describe('lock subject', () => {
     expect(res.json()).toMatchInlineSnapshot(`Object {}`);
     expect(res.statusCode).toBe(200);
 
-    const subject = await SubjectRepo.findOneBy({ id: subjectID });
-    expect(subject?.subjectBan).toBe(0);
+    const [subject] = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.eq(schema.chiiSubjects.id, subjectID));
+    expect(subject?.ban).toBe(0);
   });
 });
 

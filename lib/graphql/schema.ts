@@ -11,15 +11,6 @@ import {
   convertTopic,
   subjectResolver,
 } from '@app/lib/graphql/resolvers/subject.ts';
-import * as entity from '@app/lib/orm/entity/index.ts';
-import {
-  CastRepo,
-  CharacterRepo,
-  CharacterSubjectsRepo,
-  PersonRepo,
-  PersonSubjectsRepo,
-  SubjectRelationRepo,
-} from '@app/lib/orm/index.ts';
 import { ListTopicDisplays } from '@app/lib/topic/display.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 
@@ -48,12 +39,14 @@ export const resolvers = {
     subject: subjectResolver,
 
     async person(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
-      let query = PersonRepo.createQueryBuilder('c').where('c.id = :id', { id });
+      const conditions = [op.eq(ormSchema.chiiPersons.id, id), op.eq(ormSchema.chiiPersons.ban, 0)];
       if (!allowNsfw) {
-        query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiPersons.nsfw, false));
       }
-      query = query.andWhere('c.ban = 0');
-      const person = await query.getOne();
+      const [person] = await db
+        .select()
+        .from(ormSchema.chiiPersons)
+        .where(op.and(...conditions));
       if (!person) {
         return null;
       }
@@ -61,12 +54,17 @@ export const resolvers = {
     },
 
     async character(_parent, { id }: { id: number }, { auth: { allowNsfw } }: Context) {
-      let query = CharacterRepo.createQueryBuilder('c').where('c.id = :id', { id });
+      const conditions = [
+        op.eq(ormSchema.chiiCharacters.id, id),
+        op.eq(ormSchema.chiiCharacters.ban, 0),
+      ];
       if (!allowNsfw) {
-        query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiCharacters.nsfw, false));
       }
-      query = query.andWhere('c.ban = 0');
-      const character = await query.getOne();
+      const [character] = await db
+        .select()
+        .from(ormSchema.chiiCharacters)
+        .where(op.and(...conditions));
       if (!character) {
         return null;
       }
@@ -83,47 +81,48 @@ export const resolvers = {
       return parent.tags;
     },
 
-    async episodes(
-      parent: { id: number },
-      { limit, offset, type },
-      { repo }: Context,
-    ): Promise<types.Episode[]> {
+    async episodes(parent: { id: number }, { limit, offset, type }): Promise<types.Episode[]> {
       if (!parent.id) {
         return [];
       }
 
       if (offset < 0) {
-        const count = await repo.Episode.createQueryBuilder('t')
-          .where('t.subjectID = :s', { s: parent.id })
-          .getCount();
+        const [result] = await db
+          .select({ count: op.count() })
+          .from(ormSchema.chiiEpisodes)
+          .where(op.eq(ormSchema.chiiEpisodes.subjectID, parent.id));
 
-        if (count === 0) {
+        if (!result || result.count === 0) {
           return [];
         }
 
         // if count == 1, offset == -2, offset should be 0
-        offset = Math.max(count + offset, 0);
+        offset = Math.max(result.count + offset, 0);
       }
 
-      let s = repo.Episode.createQueryBuilder('t')
-        .select()
-        .where('t.subjectID = :s', { s: parent.id });
+      const conditions = [op.eq(ormSchema.chiiEpisodes.subjectID, parent.id)];
       if (type) {
-        s = s.andWhere('t.type = :t', { t: type });
+        conditions.push(op.eq(ormSchema.chiiEpisodes.type, type));
       }
-      const episodes = await s.orderBy('t.sort', 'ASC').limit(limit).offset(offset).getMany();
+      const episodes = await db
+        .select()
+        .from(ormSchema.chiiEpisodes)
+        .where(op.and(...conditions))
+        .orderBy(ormSchema.chiiEpisodes.sort)
+        .limit(limit)
+        .offset(offset);
 
-      return episodes.map((e: entity.Episode) => {
+      return episodes.map((e) => {
         return {
           id: e.id,
           type: e.type,
           name: e.name,
           name_cn: e.nameCN,
-          description: e.summary,
-          airdate: e.date,
-          comment: e.epComment,
-          last_post: e.epLastPost,
-          disc: e.epDisc,
+          description: e.desc,
+          airdate: e.airdate,
+          comment: e.comment,
+          last_post: e.updatedAt,
+          disc: e.disc,
           duration: e.duration,
           sort: e.sort,
         };
@@ -161,17 +160,25 @@ export const resolvers = {
       { limit, offset }: { limit: number; offset: number },
       { auth: { allowNsfw } }: Context,
     ) {
-      let query = PersonSubjectsRepo.createQueryBuilder('r')
-        .innerJoinAndMapOne('r.person', entity.Person, 'p', 'p.id = r.personID')
-        .where('r.subjectID = :id', { id: parent.id });
+      const conditions = [op.eq(ormSchema.chiiPersonSubjects.subjectID, parent.id)];
       if (!allowNsfw) {
-        query = query.andWhere('p.nsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiPersons.nsfw, false));
       }
-      const relations = await query.orderBy('r.position', 'ASC').skip(offset).take(limit).getMany();
-      return relations.map((r) => {
+      const data = await db
+        .select()
+        .from(ormSchema.chiiPersonSubjects)
+        .innerJoin(
+          ormSchema.chiiPersons,
+          op.eq(ormSchema.chiiPersonSubjects.personID, ormSchema.chiiPersons.id),
+        )
+        .where(op.and(...conditions))
+        .orderBy(ormSchema.chiiPersonSubjects.position)
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => {
         return {
-          person: convertPerson(r.person),
-          position: r.position,
+          person: convertPerson(d.chii_persons),
+          position: d.chii_person_cs_index.position,
         };
       });
     },
@@ -181,25 +188,26 @@ export const resolvers = {
       { limit, offset }: { limit: number; offset: number },
       { auth: { allowNsfw } }: Context,
     ) {
-      let query = CharacterSubjectsRepo.createQueryBuilder('r')
-        .innerJoinAndMapOne('r.character', entity.Character, 'c', 'c.id = r.characterID')
-        .where('r.subjectID = :id', { id: parent.id });
+      const conditions = [op.eq(ormSchema.chiiCharacterSubjects.subjectID, parent.id)];
       if (!allowNsfw) {
-        query = query.andWhere('c.nsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiCharacters.nsfw, false));
       }
-      const relations = await query
-        .orderBy('r.type', 'ASC')
-        .orderBy('r.order', 'ASC')
-        .skip(offset)
-        .take(limit)
-        .getMany();
-      return relations.map((r) => {
-        return {
-          character: convertCharacter(r.character),
-          type: r.type,
-          order: r.order,
-        };
-      });
+      const data = await db
+        .select()
+        .from(ormSchema.chiiCharacterSubjects)
+        .innerJoin(
+          ormSchema.chiiCharacters,
+          op.eq(ormSchema.chiiCharacterSubjects.characterID, ormSchema.chiiCharacters.id),
+        )
+        .where(op.and(...conditions))
+        .orderBy(ormSchema.chiiCharacterSubjects.type, ormSchema.chiiCharacterSubjects.order)
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => ({
+        character: convertCharacter(d.chii_characters),
+        type: d.chii_crt_subject_index.type,
+        order: d.chii_crt_subject_index.order,
+      }));
     },
 
     async relations(
@@ -207,33 +215,40 @@ export const resolvers = {
       { limit, offset, includeTypes, excludeTypes },
       { auth: { allowNsfw } }: Context,
     ): Promise<types.SubjectRelation[]> {
-      let query = SubjectRelationRepo.createQueryBuilder('r')
-        .innerJoinAndMapOne('r.relatedSubject', entity.Subject, 's', 's.id = r.relatedSubjectID')
-        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
-        .where('r.subjectID = :id', { id: parent.id });
+      const conditions = [op.eq(ormSchema.chiiSubjectRelations.id, parent.id)];
       if (includeTypes && includeTypes.length > 0) {
-        query = query.andWhere('r.relationType IN (:...includeTypes)', { includeTypes });
+        conditions.push(op.inArray(ormSchema.chiiSubjectRelations.relation, includeTypes));
       }
       if (excludeTypes && excludeTypes.length > 0) {
-        query = query.andWhere('r.relationType NOT IN (:...excludeTypes)', { excludeTypes });
+        conditions.push(op.notInArray(ormSchema.chiiSubjectRelations.relation, excludeTypes));
       }
       if (!allowNsfw) {
-        query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiSubjects.nsfw, false));
       }
-      const relations = await query
-        .orderBy('r.relationType', 'ASC')
-        .orderBy('r.order', 'ASC')
-        .orderBy('r.relatedSubjectID', 'ASC')
-        .skip(offset)
-        .take(limit)
-        .getMany();
-      return relations.map((r: entity.SubjectRelation) => {
-        return {
-          subject: convertSubject(r.relatedSubject),
-          relation: r.relationType,
-          order: r.order,
-        };
-      });
+      const data = await db
+        .select()
+        .from(ormSchema.chiiSubjectRelations)
+        .innerJoin(
+          ormSchema.chiiSubjects,
+          op.eq(ormSchema.chiiSubjectRelations.relatedID, ormSchema.chiiSubjects.id),
+        )
+        .innerJoin(
+          ormSchema.chiiSubjectFields,
+          op.eq(ormSchema.chiiSubjects.id, ormSchema.chiiSubjectFields.id),
+        )
+        .where(op.and(...conditions))
+        .orderBy(
+          ormSchema.chiiSubjectRelations.relation,
+          ormSchema.chiiSubjectRelations.order,
+          ormSchema.chiiSubjectRelations.relatedID,
+        )
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => ({
+        subject: convertSubject(d.chii_subjects, d.chii_subject_fields),
+        relation: d.chii_subject_relations.relation,
+        order: d.chii_subject_relations.order,
+      }));
     },
   },
   Character: {
@@ -242,23 +257,29 @@ export const resolvers = {
       { limit, offset }: { limit: number; offset: number },
       { auth: { allowNsfw } }: Context,
     ) {
-      let query = CharacterSubjectsRepo.createQueryBuilder('r')
-        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
-        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
-        .where('r.characterID = :id', { id: parent.id });
+      const conditions = [op.eq(ormSchema.chiiCharacterSubjects.characterID, parent.id)];
       if (!allowNsfw) {
-        query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiSubjects.nsfw, false));
       }
-      const relations = await query
-        .orderBy('r.type', 'ASC')
-        .orderBy('r.order', 'ASC')
-        .skip(offset)
-        .take(limit)
-        .getMany();
-      return relations.map((r) => ({
-        subject: convertSubject(r.subject),
-        type: r.type,
-        order: r.order,
+      const data = await db
+        .select()
+        .from(ormSchema.chiiCharacterSubjects)
+        .innerJoin(
+          ormSchema.chiiSubjects,
+          op.eq(ormSchema.chiiCharacterSubjects.subjectID, ormSchema.chiiSubjects.id),
+        )
+        .innerJoin(
+          ormSchema.chiiSubjectFields,
+          op.eq(ormSchema.chiiSubjects.id, ormSchema.chiiSubjectFields.id),
+        )
+        .where(op.and(...conditions))
+        .orderBy(ormSchema.chiiCharacterSubjects.type, ormSchema.chiiCharacterSubjects.order)
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => ({
+        subject: convertSubject(d.chii_subjects, d.chii_subject_fields),
+        type: d.chii_crt_subject_index.type,
+        order: d.chii_crt_subject_index.order,
       }));
     },
     async persons(
@@ -266,19 +287,32 @@ export const resolvers = {
       { limit, offset }: { limit: number; offset: number },
       { auth: { allowNsfw } }: Context,
     ) {
-      const query = CastRepo.createQueryBuilder('r')
-        .innerJoinAndMapOne('r.person', entity.Person, 'p', 'p.id = r.personID')
-        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
-        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
-        .where('r.characterID = :id', { id: parent.id });
+      const conditions = [op.eq(ormSchema.chiiCharacterCasts.characterID, parent.id)];
       if (!allowNsfw) {
-        query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiSubjects.nsfw, false));
       }
-      const relations = await query.skip(offset).take(limit).getMany();
-      return relations.map((r) => ({
-        person: convertPerson(r.person),
-        subject: convertSubject(r.subject),
-        summary: r.summary,
+      const data = await db
+        .select()
+        .from(ormSchema.chiiCharacterCasts)
+        .innerJoin(
+          ormSchema.chiiPersons,
+          op.eq(ormSchema.chiiCharacterCasts.personID, ormSchema.chiiPersons.id),
+        )
+        .innerJoin(
+          ormSchema.chiiSubjects,
+          op.eq(ormSchema.chiiCharacterCasts.subjectID, ormSchema.chiiSubjects.id),
+        )
+        .innerJoin(
+          ormSchema.chiiSubjectFields,
+          op.eq(ormSchema.chiiSubjects.id, ormSchema.chiiSubjectFields.id),
+        )
+        .where(op.and(...conditions))
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => ({
+        person: convertPerson(d.chii_persons),
+        subject: convertSubject(d.chii_subjects, d.chii_subject_fields),
+        summary: d.chii_crt_cast_index.summary,
       }));
     },
   },
@@ -288,19 +322,32 @@ export const resolvers = {
       { limit, offset }: { limit: number; offset: number },
       { auth: { allowNsfw } }: Context,
     ) {
-      const query = CastRepo.createQueryBuilder('r')
-        .innerJoinAndMapOne('r.character', entity.Character, 'c', 'c.id = r.characterID')
-        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
-        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
-        .where('r.personID = :id', { id: parent.id });
+      const conditions = [op.eq(ormSchema.chiiCharacterCasts.personID, parent.id)];
       if (!allowNsfw) {
-        query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiSubjects.nsfw, false));
       }
-      const relations = await query.skip(offset).take(limit).getMany();
-      return relations.map((r) => ({
-        character: convertCharacter(r.character),
-        subject: convertSubject(r.subject),
-        summary: r.summary,
+      const data = await db
+        .select()
+        .from(ormSchema.chiiCharacterCasts)
+        .innerJoin(
+          ormSchema.chiiCharacters,
+          op.eq(ormSchema.chiiCharacterCasts.characterID, ormSchema.chiiCharacters.id),
+        )
+        .innerJoin(
+          ormSchema.chiiSubjects,
+          op.eq(ormSchema.chiiCharacterCasts.subjectID, ormSchema.chiiSubjects.id),
+        )
+        .innerJoin(
+          ormSchema.chiiSubjectFields,
+          op.eq(ormSchema.chiiSubjects.id, ormSchema.chiiSubjectFields.id),
+        )
+        .where(op.and(...conditions))
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => ({
+        character: convertCharacter(d.chii_characters),
+        subject: convertSubject(d.chii_subjects, d.chii_subject_fields),
+        summary: d.chii_crt_cast_index.summary,
       }));
     },
 
@@ -309,17 +356,28 @@ export const resolvers = {
       { limit, offset }: { limit: number; offset: number },
       { auth: { allowNsfw } }: Context,
     ) {
-      let query = PersonSubjectsRepo.createQueryBuilder('r')
-        .innerJoinAndMapOne('r.subject', entity.Subject, 's', 's.id = r.subjectID')
-        .innerJoinAndMapOne('s.fields', entity.SubjectFields, 'f', 'f.subjectID = s.id')
-        .where('r.personID = :id', { id: parent.id });
+      const conditions = [op.eq(ormSchema.chiiPersonSubjects.personID, parent.id)];
       if (!allowNsfw) {
-        query = query.andWhere('s.subjectNsfw = :allowNsfw', { allowNsfw });
+        conditions.push(op.eq(ormSchema.chiiSubjects.nsfw, false));
       }
-      const relations = await query.orderBy('r.position', 'ASC').skip(offset).take(limit).getMany();
-      return relations.map((r) => ({
-        subject: convertSubject(r.subject),
-        position: r.position,
+      const data = await db
+        .select()
+        .from(ormSchema.chiiPersonSubjects)
+        .innerJoin(
+          ormSchema.chiiSubjects,
+          op.eq(ormSchema.chiiPersonSubjects.subjectID, ormSchema.chiiSubjects.id),
+        )
+        .innerJoin(
+          ormSchema.chiiSubjectFields,
+          op.eq(ormSchema.chiiSubjects.id, ormSchema.chiiSubjectFields.id),
+        )
+        .where(op.and(...conditions))
+        .orderBy(ormSchema.chiiPersonSubjects.position)
+        .limit(limit)
+        .offset(offset);
+      return data.map((d) => ({
+        subject: convertSubject(d.chii_subjects, d.chii_subject_fields),
+        position: d.chii_person_cs_index.position,
       }));
     },
   },

@@ -1,6 +1,4 @@
-import { afterAll, beforeAll, vi } from 'vitest';
-
-import { AppDataSource } from '@app/lib/orm/index.ts';
+import { afterAll, vi } from 'vitest';
 
 vi.mock('@app/lib/externals/turnstile', () => {
   return {
@@ -13,10 +11,6 @@ vi.mock('@app/lib/externals/turnstile', () => {
       }
     },
   };
-});
-
-beforeAll(async () => {
-  await AppDataSource.initialize();
 });
 
 afterAll(() => {
