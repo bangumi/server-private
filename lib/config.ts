@@ -115,11 +115,6 @@ export const schema = Obj({
     env: 'KAFKA_JS_MQ_GROUP_ID',
   }),
 
-  kafkaRustMqGroupId: t.String({
-    default: 'server-private-rust-mq',
-    env: 'KAFKA_RUST_MQ_GROUP_ID',
-  }),
-
   meilisearch: Obj({
     url: t.String({ default: 'http://127.0.0.1:7700/', env: 'MEILISEARCH_URL' }),
     key: t.String({ default: 'meilisearch-api-key', env: 'MEILISEARCH_KEY' }),

@@ -2,12 +2,11 @@ import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import t from 'typebox';
 
-import { db } from '@app/drizzle';
+import { db, op, schema } from '@app/drizzle';
 import { HeaderInvalidError } from '@app/lib/auth/index.ts';
 import config from '@app/lib/config.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { EpisodeRepo } from '@app/lib/orm/index.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -56,7 +55,11 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { episodeID } }): Promise<res.IEpisodeWikiInfo> => {
-      const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
+      const [ep] = await db
+        .select()
+        .from(schema.chiiEpisodes)
+        .where(op.eq(schema.chiiEpisodes.id, episodeID))
+        .limit(1);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
@@ -67,11 +70,11 @@ export async function setup(app: App) {
         name: lo.unescape(ep.name),
         nameCN: lo.unescape(ep.nameCN),
         ep: ep.sort,
-        disc: ep.epDisc,
-        date: ep.date,
+        disc: ep.disc,
+        date: ep.airdate,
         type: ep.type,
         duration: ep.duration,
-        summary: ep.summary,
+        summary: ep.desc,
       };
     },
   );
@@ -144,7 +147,11 @@ export async function setup(app: App) {
         throw new HeaderInvalidError('invalid admin token');
       }
 
-      const ep = await EpisodeRepo.findOne({ where: { id: episodeID } });
+      const [ep] = await db
+        .select()
+        .from(schema.chiiEpisodes)
+        .where(op.eq(schema.chiiEpisodes.id, episodeID))
+        .limit(1);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
@@ -158,42 +165,44 @@ export async function setup(app: App) {
           name: ep.name,
           nameCN: ep.nameCN,
           duration: ep.duration,
-          date: ep.date,
-          summary: ep.summary,
+          date: ep.airdate,
+          summary: ep.desc,
         });
       }
 
+      const updates: Partial<typeof schema.chiiEpisodes.$inferInsert> = {};
+
       if (body.date) {
         validateDate(body.date);
-        ep.date = body.date;
+        updates.airdate = body.date;
       }
       if (body.duration) {
         validateDuration(body.duration);
-        ep.duration = body.duration;
+        updates.duration = body.duration;
       }
 
       if (body.name !== undefined) {
-        ep.name = lo.escape(body.name);
+        updates.name = lo.escape(body.name);
       }
 
       if (body.nameCN !== undefined) {
-        ep.nameCN = lo.escape(body.nameCN);
+        updates.nameCN = lo.escape(body.nameCN);
       }
 
       if (body.summary !== undefined) {
-        ep.summary = body.summary;
+        updates.desc = body.summary;
       }
 
       if (body.ep !== undefined) {
-        ep.sort = body.ep;
+        updates.sort = body.ep;
       }
 
       if (body.disc !== undefined) {
-        ep.epDisc = body.disc;
+        updates.disc = body.disc;
       }
 
       if (body.type !== undefined) {
-        ep.type = body.type;
+        updates.type = body.type;
       }
 
       let finalAuthorID = auth.userID;
@@ -212,14 +221,14 @@ export async function setup(app: App) {
             {
               episodeID,
               rev: {
-                ep_airdate: ep.date,
-                ep_desc: ep.summary,
-                ep_duration: ep.duration,
-                ep_name: ep.name,
-                ep_name_cn: ep.nameCN,
-                ep_sort: ep.sort.toString(),
-                ep_disc: ep.epDisc.toString(),
-                ep_type: ep.type.toString(),
+                ep_airdate: updates.airdate ?? ep.airdate,
+                ep_desc: updates.desc ?? ep.desc,
+                ep_duration: updates.duration ?? ep.duration,
+                ep_name: updates.name ?? ep.name,
+                ep_name_cn: updates.nameCN ?? ep.nameCN,
+                ep_sort: (updates.sort ?? ep.sort).toString(),
+                ep_disc: (updates.disc ?? ep.disc).toString(),
+                ep_type: (updates.type ?? ep.type).toString(),
               },
             },
           ],
@@ -229,7 +238,12 @@ export async function setup(app: App) {
         });
       });
 
-      await EpisodeRepo.update({ id: episodeID }, ep);
+      if (Object.keys(updates).length > 0) {
+        await db
+          .update(schema.chiiEpisodes)
+          .set(updates)
+          .where(op.eq(schema.chiiEpisodes.id, episodeID));
+      }
 
       return {};
     },

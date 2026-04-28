@@ -6,7 +6,6 @@ import { db, op, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { LikeType } from '@app/lib/like.ts';
-import { SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
@@ -36,23 +35,21 @@ vi.spyOn(Subject, 'onSubjectVote').mockImplementation(() => Promise.resolve());
 describe('should vote for subject cover', () => {
   beforeAll(async () => {
     await db.delete(schema.chiiLikes).where(op.eq(schema.chiiLikes.type, LikeType.SubjectCover));
-    await SubjectImageRepo.upsert(
-      {
-        ban: 0,
-        target: 'testing target',
-        subjectID: 184017,
-        uid: 1,
-        vote: 0,
-        id: 100,
-        createdAt: new Date(),
-      },
-      [],
-    );
+    await db.insert(schema.chiiSubjectImgs).values({
+      imgId: 100,
+      imgBan: 0,
+      imgTarget: 'testing target',
+      imgSubjectId: 184017,
+      imgUid: 1,
+      imgVote: 0,
+      imgNsfw: false,
+      imgDateline: Math.floor(Date.now() / 1000),
+    });
   });
 
   afterAll(async () => {
     await db.delete(schema.chiiLikes).where(op.eq(schema.chiiLikes.type, LikeType.SubjectCover));
-    await SubjectImageRepo.delete({ id: 100 });
+    await db.delete(schema.chiiSubjectImgs).where(op.eq(schema.chiiSubjectImgs.imgId, 100));
   });
 
   test('vote require permission', async () => {

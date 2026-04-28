@@ -1181,6 +1181,7 @@ export const RevisionHistory = t.Object(
     id: t.Integer(),
     creator: t.Object({
       username: t.String(),
+      nickname: t.String(),
     }),
     type: Ref(RevisionType),
     commitMessage: t.String(),

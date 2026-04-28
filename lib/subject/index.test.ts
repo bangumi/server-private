@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
+import { TagCat } from '@app/lib/tag.ts';
 
 import * as Subject from './index.ts';
 
@@ -136,5 +137,114 @@ describe('should update subject', () => {
     ).rejects.toMatchObject({
       message: expect.stringMatching(/.*"a-tag-should-not-exists" is not allowed meta tags.*/g),
     });
+  });
+});
+
+describe('meta tags', () => {
+  const subjectID = 363612;
+  const typeID = 2;
+
+  beforeEach(async () => {
+    await db
+      .delete(schema.chiiTagList)
+      .where(
+        op.and(
+          op.eq(schema.chiiTagList.cat, TagCat.Subject),
+          op.eq(schema.chiiTagList.mainID, subjectID),
+        ),
+      );
+    await db.delete(schema.chiiSubjectRev).where(op.eq(schema.chiiSubjectRev.subjectID, subjectID));
+  });
+
+  const defaultEdit = (metaTags: string[]) =>
+    Subject.edit({
+      subjectID,
+      name: 'q',
+      infobox: '{{Infobox q }}',
+      summary: 'test',
+      userID: 2,
+      metaTags,
+      platform: 3,
+      date: '1997-11-11',
+      commitMessage: 'cm',
+      now: DateTime.now(),
+    });
+
+  test('edit() inserts meta tags into chiiTagList with userID = 0', async () => {
+    await defaultEdit(['热血', '短片']);
+
+    const rows = await db
+      .select()
+      .from(schema.chiiTagList)
+      .where(
+        op.and(
+          op.eq(schema.chiiTagList.cat, TagCat.Subject),
+          op.eq(schema.chiiTagList.mainID, subjectID),
+        ),
+      );
+
+    expect(rows).toHaveLength(2);
+    expect(rows.every((r) => r.userID === 0)).toBe(true);
+    expect(rows.every((r) => r.type === typeID)).toBe(true);
+  });
+
+  test('edit() preserves user tags when meta tags are updated', async () => {
+    // Insert a user tag directly to simulate a user having tagged this subject
+    await db.insert(schema.chiiTagList).values({
+      tagID: 1,
+      userID: 42,
+      cat: TagCat.Subject,
+      type: typeID,
+      mainID: subjectID,
+      createdAt: DateTime.now().toUnixInteger(),
+    });
+
+    await defaultEdit(['热血']);
+
+    // User tag must still exist after the meta tag update
+    const userTags = await db
+      .select()
+      .from(schema.chiiTagList)
+      .where(
+        op.and(
+          op.eq(schema.chiiTagList.cat, TagCat.Subject),
+          op.eq(schema.chiiTagList.mainID, subjectID),
+          op.eq(schema.chiiTagList.userID, 42),
+        ),
+      );
+
+    expect(userTags).toHaveLength(1);
+
+    // Meta tags must also have been inserted
+    const metaTagRows = await db
+      .select()
+      .from(schema.chiiTagList)
+      .where(
+        op.and(
+          op.eq(schema.chiiTagList.cat, TagCat.Subject),
+          op.eq(schema.chiiTagList.mainID, subjectID),
+          op.eq(schema.chiiTagList.userID, 0),
+        ),
+      );
+
+    expect(metaTagRows).toHaveLength(1);
+  });
+
+  test('edit() replaces previous meta tags on subsequent edits', async () => {
+    await defaultEdit(['热血', '短片']);
+    await defaultEdit(['热血']);
+
+    const rows = await db
+      .select()
+      .from(schema.chiiTagList)
+      .where(
+        op.and(
+          op.eq(schema.chiiTagList.cat, TagCat.Subject),
+          op.eq(schema.chiiTagList.mainID, subjectID),
+          op.eq(schema.chiiTagList.userID, 0),
+        ),
+      );
+
+    expect(rows).toHaveLength(1);
   });
 });

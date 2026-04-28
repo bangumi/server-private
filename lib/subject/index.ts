@@ -10,9 +10,6 @@ import { UserGroup } from '@app/lib/auth/index.ts';
 import { BadRequestError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { LikeType } from '@app/lib/like.ts';
 import { logger } from '@app/lib/logger.ts';
-import * as entity from '@app/lib/orm/entity/index.ts';
-import * as ormold from '@app/lib/orm/index.ts';
-import { SubjectImageRepo, SubjectRepo } from '@app/lib/orm/index.ts';
 import { RevType } from '@app/lib/rev/type.ts';
 import { extractDate } from '@app/lib/subject/date.ts';
 import { TagCat } from '@app/lib/tag.ts';
@@ -167,7 +164,7 @@ export async function create({
             return {
               tagID: tag,
               mainID: subjectID,
-              cat: TagCat.Meta,
+              cat: TagCat.Subject,
               userID: 0,
               type: typeID,
               createdAt: now.toUnixInteger(),
@@ -349,7 +346,8 @@ export async function edit({
         .delete(schema.chiiTagList)
         .where(
           op.and(
-            op.eq(schema.chiiTagList.cat, TagCat.Meta),
+            op.eq(schema.chiiTagList.cat, TagCat.Subject),
+            op.eq(schema.chiiTagList.userID, 0),
             op.eq(schema.chiiTagList.type, s.typeID),
             op.eq(schema.chiiTagList.mainID, subjectID),
           ),
@@ -361,7 +359,7 @@ export async function edit({
             return {
               tagID: tag,
               mainID: subjectID,
-              cat: TagCat.Meta,
+              cat: TagCat.Subject,
               userID: 0,
               type: s.typeID,
               createdAt: now.toUnixInteger(),
@@ -493,38 +491,51 @@ export async function uploadCover({
   uid: number;
   filename: string;
 }): Promise<void> {
-  await ormold.AppDataSource.transaction(async (t) => {
-    const Image = t.getRepository(entity.SubjectImage);
-    const Subject = t.getRepository(entity.Subject);
+  await db.transaction(async (t) => {
+    const [existing] = await t
+      .select()
+      .from(schema.chiiSubjectImgs)
+      .where(
+        op.and(
+          op.eq(schema.chiiSubjectImgs.imgSubjectId, subjectID),
+          op.eq(schema.chiiSubjectImgs.imgTarget, filename),
+        ),
+      );
 
-    const image = await Image.findOneBy({
-      subjectID,
-      target: filename,
-    });
-
-    if (image) {
-      if (image.ban !== 0) {
-        image.ban = 0;
-        await Image.save(image);
+    if (existing) {
+      if (existing.imgBan !== 0) {
+        await t
+          .update(schema.chiiSubjectImgs)
+          .set({ imgBan: 0 })
+          .where(op.eq(schema.chiiSubjectImgs.imgId, existing.imgId));
       }
       return;
     }
 
-    const subject = await Subject.findOneByOrFail({ id: subjectID });
+    const [subject] = await t
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.eq(schema.chiiSubjects.id, subjectID));
 
-    await Image.insert({
-      ban: 0,
-      nsfw: 0,
-      subjectID,
-      createdAt: new Date(),
-      target: filename,
-      uid,
-      vote: 0,
+    if (!subject) {
+      throw new UnexpectedNotFoundError(`subject ${subjectID}`);
+    }
+
+    await t.insert(schema.chiiSubjectImgs).values({
+      imgBan: 0,
+      imgNsfw: false,
+      imgSubjectId: subjectID,
+      imgDateline: Math.floor(Date.now() / 1000),
+      imgTarget: filename,
+      imgUid: uid,
+      imgVote: 0,
     });
 
-    if (subject.subjectImage === '') {
-      subject.subjectImage = filename;
-      await Subject.save(subject);
+    if (subject.image === '') {
+      await t
+        .update(schema.chiiSubjects)
+        .set({ image: filename })
+        .where(op.eq(schema.chiiSubjects.id, subjectID));
     }
   });
 }
@@ -532,7 +543,15 @@ export async function uploadCover({
 export { SubjectType } from './type.ts';
 
 export async function onSubjectVote(subjectID: number): Promise<void> {
-  const images = await SubjectImageRepo.findBy({ subjectID, ban: 0 });
+  const images = await db
+    .select()
+    .from(schema.chiiSubjectImgs)
+    .where(
+      op.and(
+        op.eq(schema.chiiSubjectImgs.imgSubjectId, subjectID),
+        op.eq(schema.chiiSubjectImgs.imgBan, 0),
+      ),
+    );
 
   const likes = await db
     .select()
@@ -542,7 +561,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
         op.eq(schema.chiiLikes.type, LikeType.SubjectCover),
         op.inArray(
           schema.chiiLikes.relatedID,
-          images.map((x) => x.id),
+          images.map((x) => x.imgId),
         ),
         op.eq(schema.chiiLikes.deleted, false),
       ),
@@ -572,7 +591,7 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
     .map((image) => {
       return {
         image,
-        rank: toRank((votes[image.id] ?? []).map((x) => x.user)),
+        rank: toRank((votes[image.imgId] ?? []).map((x) => x.user)),
       };
     })
     .toSorted((a, b) => {
@@ -593,7 +612,10 @@ export async function onSubjectVote(subjectID: number): Promise<void> {
   const should = rankedVotes.shift();
 
   if (should) {
-    await SubjectRepo.update({ id: subjectID }, { subjectImage: should.image.target });
+    await db
+      .update(schema.chiiSubjects)
+      .set({ image: should.image.imgTarget })
+      .where(op.eq(schema.chiiSubjects.id, subjectID));
   }
 }
 
