@@ -195,7 +195,7 @@ export async function setup(app: App) {
       let finalAuthorID = auth.userID;
       if (authorID !== undefined) {
         if (!(await fetcher.fetchSlimUserByID(authorID))) {
-          throw new BadRequestError(`user ${authorID} does not exists`);
+          throw new BadRequestError(`user ${authorID} does not exist`);
         }
         finalAuthorID = authorID;
       }
@@ -433,7 +433,7 @@ export async function setup(app: App) {
       let finalAuthorID = auth.userID;
       if (authorID !== undefined) {
         if (!(await fetcher.fetchSlimUserByID(authorID))) {
-          throw new BadRequestError(`user ${authorID} does not exists`);
+          throw new BadRequestError(`user ${authorID} does not exist`);
         }
         finalAuthorID = authorID;
       }
@@ -558,7 +558,7 @@ export async function setup(app: App) {
       let finalAuthorID = auth.userID;
       if (authorID !== undefined) {
         if (!(await fetcher.fetchSlimUserByID(authorID))) {
-          throw new BadRequestError(`user ${authorID} does not exists`);
+          throw new BadRequestError(`user ${authorID} does not exist`);
         }
         finalAuthorID = authorID;
       }
