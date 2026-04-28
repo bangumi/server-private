@@ -8,7 +8,9 @@ import { HeaderInvalidError, NotAllowedError } from '@app/lib/auth/index.ts';
 import config from '@app/lib/config.ts';
 import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { createRevision } from '@app/lib/rev/common.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
+import type { ISubjectPersonRevSingle } from '@app/lib/rev/type.ts';
 import {
   RevType,
   SubjectCharacterRev,
@@ -26,9 +28,10 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
-import { matchExpected } from '@app/lib/wiki';
+import { genRelationComment, matchExpected, WikiChangedError } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+import { findSubjectStaffPosition } from '@app/vendor';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
 
 import * as imageRoutes from './image.ts';
@@ -207,6 +210,44 @@ export const SubjectPersonRevisionWikiInfo = t.Array(
   },
 );
 
+type ISubjectPersonWikiInfo = Static<typeof SubjectPersonWikiInfo>;
+export const SubjectPersonWikiInfo = t.Array(
+  t.Object({
+    person: t.Object({
+      id: t.Integer(),
+      name: t.String(),
+    }),
+    position: t.Integer(),
+    appearEps: t.String(),
+  }),
+  {
+    $id: 'SubjectPersonWikiInfo',
+  },
+);
+
+type ISubjectPersonWikiEdit = Static<typeof SubjectPersonWikiEdit>;
+export const SubjectPersonWikiEdit = t.Object({
+  person: t.Object({
+    id: t.Integer(),
+  }),
+  position: t.Integer(),
+  appearEps: t.Optional(t.String({ default: '' })),
+});
+
+const SubjectPersonExpected = t.Optional(
+  t.Object(
+    {
+      person: t.Object({ id: t.Integer() }),
+      position: t.Integer(),
+      appearEps: t.String(),
+    },
+    {
+      additionalProperties: false,
+      description: 'a optional object to check if input is changed by others',
+    },
+  ),
+);
+
 const EpisodePartial = t.Partial(t.Omit(req.EpisodeWikiInfo, ['id', 'subjectID']));
 
 export const EpsisodesNew = t.Object(
@@ -241,6 +282,7 @@ export async function setup(app: App) {
   app.addSchema(SubjectRelationRevisionWikiInfo);
   app.addSchema(SubjectCharacterRevisionWikiInfo);
   app.addSchema(SubjectPersonRevisionWikiInfo);
+  app.addSchema(SubjectPersonWikiInfo);
 
   app.get(
     '/subjects/:subjectID',
@@ -1316,6 +1358,282 @@ export async function setup(app: App) {
       });
 
       return relations;
+    },
+  );
+
+  app.get(
+    '/subjects/:subjectID/persons',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectPersonWikiInfo',
+        summary: '获取条目-人物关联当前 wiki 信息',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Ref(SubjectPersonWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+        },
+      },
+    },
+    async ({ params: { subjectID } }): Promise<ISubjectPersonWikiInfo> => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, true);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const data = await db
+        .select()
+        .from(schema.chiiPersonSubjects)
+        .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID))
+        .orderBy(
+          op.asc(schema.chiiPersonSubjects.position),
+          op.asc(schema.chiiPersonSubjects.personID),
+        );
+      const persons = await fetcher.fetchSlimPersonsByIDs(
+        data.map((d) => d.personID),
+        true,
+      );
+      const relations = data.map((d) => ({
+        person: {
+          id: d.personID,
+          name: persons[d.personID]?.name ?? '',
+        },
+        position: d.position,
+        appearEps: d.appearEps,
+      }));
+      return relations;
+    },
+  );
+
+  app.put(
+    '/subjects/:subjectID/persons',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'putSubjectPersonWikiInfo',
+        summary: '修改条目-人物关联当前 wiki 信息',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        body: t.Object({
+          commitMessage: t.String(),
+          relations: t.Array(SubjectPersonWikiEdit, {
+            $id: 'SubjectPersonWikiEdit',
+          }),
+          expectedRevision: t.Optional(
+            t.Array(SubjectPersonExpected, {
+              $id: 'SubjectPersonExpected',
+            }),
+          ),
+          authorID: t.Optional(
+            t.Integer({
+              exclusiveMinimum: 0,
+              description: 'when header x-admin-token is provided, use this as author id.',
+            }),
+          ),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Null(),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+          400: res.Ref(res.Error, { description: 'invalid input' }),
+        },
+        preHandler: [requireLogin('editing subject-person relations')],
+      },
+    },
+    async ({
+      params: { subjectID },
+      auth,
+      headers,
+      body: { commitMessage, relations: relationEdits, expectedRevision, authorID },
+    }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
+      if (!auth.permission.subject_edit) {
+        throw new NotAllowedError('edit subject');
+      }
+
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, true);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      const positions = relationEdits.map((r) => r.position);
+      const invalidPositions = positions.filter((p) => !findSubjectStaffPosition(subject.type, p));
+      if (invalidPositions.length > 0) {
+        throw new BadRequestError(`position ${invalidPositions.join(', ')} is not valid`);
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
+      }
+
+      await db.transaction(async (txn) => {
+        const data = await txn
+          .select()
+          .from(schema.chiiPersonSubjects)
+          .where(op.eq(schema.chiiPersonSubjects.subjectID, subjectID));
+        const oldRelations = data.map((d) => ({
+          person: {
+            id: d.personID,
+          },
+          position: d.position,
+          appearEps: d.appearEps,
+        }));
+
+        if (expectedRevision?.length) {
+          const oldMap = new Map(
+            oldRelations.map((old) => [`${old.person.id}|${old.position}`, old]),
+          );
+
+          for (const old of oldRelations) {
+            const key = `${old.person.id}|${old.position}`;
+            if (!expectedRevision.some((r) => `${r.person.id}|${r.position}` === key)) {
+              throw new WikiChangedError('missing expected relation');
+            }
+          }
+
+          for (const expected of expectedRevision) {
+            const key = `${expected.person.id}|${expected.position}`;
+            const old = oldMap.get(key);
+            if (!old) {
+              throw new WikiChangedError('unexpected relation');
+            }
+            matchExpected(
+              { appearEps: String(expected.appearEps) },
+              { appearEps: String(old.appearEps) },
+            );
+          }
+        }
+
+        const relationEditMap: Record<string, ISubjectPersonWikiEdit> = {};
+        const oldRelationMap: Record<string, ISubjectPersonWikiEdit> = {};
+        const deleteRelationEdit: ISubjectPersonWikiEdit[] = [];
+        const newRelationEdit: ISubjectPersonWikiEdit[] = [];
+        const existingRelationEdit: ISubjectPersonWikiEdit[] = [];
+
+        for (const r of oldRelations) {
+          oldRelationMap[`${r.person.id}p${r.position}`] = r;
+        }
+
+        for (const r of relationEdits) {
+          relationEditMap[`${r.person.id}p${r.position}`] = r;
+
+          const old = oldRelationMap[`${r.person.id}p${r.position}`];
+          if (!old) {
+            newRelationEdit.push(r);
+          } else if (old.appearEps !== r.appearEps) {
+            existingRelationEdit.push(r);
+          }
+        }
+
+        for (const r of oldRelations) {
+          const edit = relationEditMap[`${r.person.id}p${r.position}`];
+          if (!edit) {
+            deleteRelationEdit.push(r);
+          }
+        }
+
+        if (deleteRelationEdit.length > 0) {
+          const deleteConditions = deleteRelationEdit.map((r) => {
+            const condition = op.and(
+              op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+              op.eq(schema.chiiPersonSubjects.personID, r.person.id),
+              op.eq(schema.chiiPersonSubjects.position, r.position),
+            );
+            return condition;
+          });
+
+          await txn.delete(schema.chiiPersonSubjects).where(op.or(...deleteConditions));
+        }
+
+        if (existingRelationEdit.length > 0) {
+          for (const r of existingRelationEdit) {
+            await txn
+              .update(schema.chiiPersonSubjects)
+              .set({
+                appearEps: r.appearEps,
+              })
+              .where(
+                op.and(
+                  op.eq(schema.chiiPersonSubjects.subjectID, subjectID),
+                  op.eq(schema.chiiPersonSubjects.personID, r.person.id),
+                  op.eq(schema.chiiPersonSubjects.position, r.position),
+                ),
+              );
+          }
+        }
+
+        if (newRelationEdit.length > 0) {
+          const newRelatedIDs = newRelationEdit.map((r) => r.person.id);
+          const relatedPersons = await fetcher.fetchSlimPersonsByIDs(
+            [...new Set(newRelatedIDs)],
+            true,
+          );
+          const lostIDs = newRelatedIDs.filter((id) => !relatedPersons[id]);
+          if (lostIDs.length > 0) {
+            throw new NotFoundError(`related person ${lostIDs.join(', ')}`);
+          }
+
+          await txn.insert(schema.chiiPersonSubjects).values(
+            newRelationEdit.map(
+              (r) =>
+                ({
+                  subjectID,
+                  personID: r.person.id,
+                  position: r.position,
+                  appearEps: r.appearEps ?? '',
+                  personType: 'prsn',
+                  subjectType: subject.type,
+                  summary: '',
+                }) satisfies typeof schema.chiiPersonSubjects.$inferInsert,
+            ),
+          );
+        }
+
+        const comment = genRelationComment(
+          subject.type,
+          commitMessage,
+          newRelationEdit,
+          existingRelationEdit,
+          deleteRelationEdit,
+        );
+        await createRevision(txn, {
+          mid: subjectID,
+          type: RevType.subjectPersonRelation,
+          rev: relationEdits
+            .toSorted((a, b) => {
+              const s = a.position - b.position;
+              if (s !== 0) return s;
+              return a.person.id - b.person.id;
+            })
+            .reduce(
+              (acc, r, i) => {
+                acc[String(i)] = {
+                  subject_id: subjectID,
+                  prsn_id: r.person.id,
+                  position: r.position,
+                };
+                return acc;
+              },
+              {} as Record<string, ISubjectPersonRevSingle>,
+            ),
+          creator: finalAuthorID,
+          comment,
+        });
+      });
     },
   );
 

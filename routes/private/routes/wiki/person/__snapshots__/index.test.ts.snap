@@ -477,3 +477,54 @@ Array [
   },
 ]
 `;
+
+exports[`should update person-subject relations 1`] = `
+Array [
+  Object {
+    "appearEps": "1-2",
+    "position": 2001,
+    "subject": Object {
+      "id": 22267,
+      "name": "星界の戦旗",
+      "nameCN": "星界的战旗",
+    },
+  },
+  Object {
+    "appearEps": "",
+    "position": 2002,
+    "subject": Object {
+      "id": 10,
+      "name": "Your Eyes Only ちぃフォトグラフィクス",
+      "nameCN": "",
+    },
+  },
+]
+`;
+
+exports[`should update person-subject relations 2`] = `Array []`;
+
+exports[`should update person-subject relations 3`] = `
+Array [
+  Object {
+    "appearEps": "1-2",
+    "person": Object {
+      "id": 9,
+      "name": "森岡浩之",
+    },
+    "position": 2001,
+  },
+]
+`;
+
+exports[`should update person-subject relations 4`] = `
+Array [
+  Object {
+    "appearEps": "",
+    "person": Object {
+      "id": 9,
+      "name": "森岡浩之",
+    },
+    "position": 2002,
+  },
+]
+`;
