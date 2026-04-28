@@ -180,7 +180,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('editing a subject info')],
+      preHandler: [requireLogin('creating a character')],
     },
     async ({ auth, headers, body: { character, authorID } }) => {
       const adminToken = headers['x-admin-token'];
@@ -236,7 +236,7 @@ export async function setup(app: App) {
           comment: 0,
           collects: 0,
           createdAt: now,
-          updatedAt: 0,
+          lastPost: 0,
           lock: 0,
           anidbImg: '',
           anidbId: 0,
@@ -388,7 +388,7 @@ export async function setup(app: App) {
           ),
         },
       },
-      preHandler: [requireLogin('editing a subject info')],
+      preHandler: [requireLogin('editing a character')],
     },
     async ({
       auth,
