@@ -6,6 +6,7 @@ import t from 'typebox';
 
 import {
   CharacterCastType,
+  CharacterType,
   CollectionType,
   EpisodeCollectionStatus,
   EpisodeType,
@@ -518,7 +519,7 @@ export const Character = t.Object(
     id: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
-    role: t.Integer(),
+    role: Ref(CharacterType),
     infobox: Ref(Infobox),
     info: t.String(),
     summary: t.String(),
@@ -563,7 +564,7 @@ export const Person = t.Object(
     id: t.Integer(),
     name: t.String(),
     nameCN: t.String(),
-    type: t.Integer(),
+    type: Ref(PersonType),
     infobox: Ref(Infobox),
     info: t.String(),
     career: t.Array(t.String(), {

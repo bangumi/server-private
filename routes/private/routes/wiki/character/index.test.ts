@@ -78,6 +78,114 @@ async function testApp({ auth }: { auth?: Partial<IAuth> } = {}) {
   return app;
 }
 
+describe('create character', () => {
+  test('should create character and history', async () => {
+    const app = await testApp();
+
+    const uploadImageMock = vi.fn();
+    vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/characters',
+      method: 'POST',
+      payload: {
+        character: {
+          name: 'New Character',
+          type: 1,
+          infobox: `{{Infobox Crt
+|简体中文名= 新角色
+|性别= 女
+|生日= 1995年3月10日
+|血型= B
+}}`,
+          summary: 'A new character summary',
+          img: raw.toString('base64'),
+        },
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const characterRes = res.json();
+    expect(characterRes.characterID).toBeDefined();
+
+    expect(uploadImageMock).toHaveBeenCalledWith(
+      expect.stringMatching(/.*\.jpe?g$/),
+      expect.any(Buffer),
+    );
+
+    const history = await app.inject(`/characters/${characterRes.characterID}/history-summary`);
+    const revisionID = history.json().data[0]?.id;
+    expect(revisionID).toBeDefined();
+
+    const revision = await app.inject(`/characters/-/revisions/${revisionID}`);
+    expect(revision.statusCode).toBe(200);
+
+    const revisionData: res.ICharacterRevisionWikiInfo = revision.json();
+    expect(revisionData.name).toBe('New Character');
+    expect(revisionData.summary).toBe('A new character summary');
+  });
+
+  test('should need authorization', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/characters',
+      method: 'POST',
+      payload: {
+        character: {
+          name: 'New Character',
+          type: 1,
+          infobox: '{{Infobox}}',
+          summary: 'A new character summary',
+          img: raw.toString('base64'),
+        },
+      },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "NOT_ALLOWED",
+        "error": "Forbidden",
+        "message": "you don't have permission to edit character",
+        "statusCode": 403,
+      }
+    `);
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should validate type', async () => {
+    const app = await testApp();
+
+    const res = await app.inject({
+      url: '/characters',
+      method: 'POST',
+      payload: {
+        character: {
+          name: 'New Character',
+          type: 999, // invalid type
+          infobox: '{{Infobox}}',
+          summary: 'A new character summary',
+        },
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+  });
+});
+
 describe('edit character ', () => {
   test('should get current wiki info', async () => {
     const app = await testApp({});

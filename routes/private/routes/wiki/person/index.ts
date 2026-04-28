@@ -2,6 +2,7 @@ import * as crypto from 'node:crypto';
 
 import type { Wiki } from '@bgm38/wiki';
 import { parse, WikiSyntaxError } from '@bgm38/wiki';
+import { DateTime } from 'luxon';
 import type { Static } from 'typebox';
 import t from 'typebox';
 
@@ -110,7 +111,6 @@ export const PersonCastRevisionWikiInfo = t.Array(
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  app.addSchema(res.PersonType);
   app.addSchema(UserPersonContribution);
   app.addSchema(PersonSubjectRevisionWikiInfo);
   app.addSchema(PersonCastRevisionWikiInfo);
@@ -166,6 +166,213 @@ export async function setup(app: App) {
         typeID: p.type,
         profession,
       };
+    },
+  );
+
+  app.post(
+    '/persons',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'postPersonInfo',
+        summary: '创建人物',
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        body: t.Object({
+          person: req.PersonCreate,
+          authorID: t.Optional(
+            t.Integer({
+              exclusiveMinimum: 0,
+              description: 'when header x-admin-token is provided, use this as author id.',
+            }),
+          ),
+        }),
+        response: {
+          200: t.Object({ personID: t.Integer() }),
+          400: res.Ref(res.Error, {
+            'x-examples': formatErrors(
+              new WikiChangedError(`Index: name
+===================================================================
+--- name	expected
++++ name	current
+@@ -1,1 +1,1 @@
+-1234
++水樹奈々
+`),
+            ),
+          }),
+          401: res.Ref(res.Error, {
+            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+          }),
+        },
+      },
+      preHandler: [requireLogin('creating a person')],
+    },
+    async ({ auth, headers, body: { person, authorID } }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
+      if (!auth.permission.mono_edit) {
+        throw new NotAllowedError('edit person');
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exist`);
+        }
+        finalAuthorID = authorID;
+      }
+
+      let wiki: Wiki;
+      try {
+        wiki = parse(person.infobox);
+      } catch (error) {
+        if (error instanceof WikiSyntaxError) {
+          let l = '';
+          if (error.line) {
+            l = `line: ${error.line}`;
+            if (error.lino) {
+              l += `:${error.lino}`;
+            }
+          }
+
+          if (l) {
+            l = ' (' + l + ')';
+          }
+
+          throw new InvalidWikiSyntaxError(`${error.message}${l}`);
+        }
+
+        throw error;
+      }
+
+      let personID;
+
+      await db.transaction(async (t) => {
+        const { producer, mangaka, artist, seiyu, writer, illustrator, actor } =
+          person.profession ?? {};
+
+        const now = DateTime.now().toUnixInteger();
+        const [{ insertId }] = await t.insert(schema.chiiPersons).values({
+          name: person.name,
+          type: person.type,
+          infobox: person.infobox,
+          summary: person.summary,
+          producer: producer ? 1 : 0,
+          mangaka: mangaka ? 1 : 0,
+          artist: artist ? 1 : 0,
+          seiyu: seiyu ? 1 : 0,
+          writer: writer ? 1 : 0,
+          illustrator: illustrator ? 1 : 0,
+          actor: actor ? 1 : 0,
+          img: '',
+          comment: 0,
+          collects: 0,
+          createdAt: now,
+          lastPost: 0,
+          lock: 0,
+          anidbImg: '',
+          anidbId: 0,
+          nsfw: false,
+        } satisfies typeof schema.chiiPersons.$inferInsert);
+
+        personID = insertId;
+
+        let filename, raw;
+        if (person.img) {
+          raw = Buffer.from(person.img, 'base64');
+          // 4mb
+          if (raw.length > sizeLimit) {
+            throw new ImageFileTooLarge();
+          }
+
+          // validate image
+          const resp = await imaginary.info(raw);
+          const format = resp.type;
+
+          if (!format) {
+            throw new UnsupportedImageFormat();
+          }
+
+          if (!ImageTypeCanBeUploaded.includes(format)) {
+            throw new UnsupportedImageFormat();
+          }
+
+          // convert webp to jpeg
+          let ext = format;
+          if (format === 'webp') {
+            raw = await imaginary.convert(raw, { format: 'jpeg' });
+            if (raw.length > sizeLimit) {
+              throw new ImageFileTooLarge();
+            }
+            ext = 'jpeg';
+          }
+
+          // for example "36b8f84d-df4e-4d49-b662-bcde71a8764f"
+          const h = crypto.randomUUID();
+
+          // for example raw/36/b8/${person_id}_prsn_f84d-df4e-4d49-b662-bcde71a8764f.jpg"
+          filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${personID}_prsn_${h}.${ext}`;
+        }
+
+        await t
+          .update(schema.chiiPersons)
+          .set({
+            img: filename ?? '',
+          })
+          .where(op.eq(schema.chiiPersons.id, personID))
+          .limit(1);
+
+        const { year, month, day } = extractBirth(wiki);
+        await t.insert(schema.chiiPersonFields).values({
+          prsnCat: 'prsn',
+          prsnId: personID,
+          gender: extractGender(wiki),
+          bloodtype: extractBloodType(wiki),
+          birthYear: year,
+          birthMon: month,
+          birthDay: day,
+        } satisfies typeof schema.chiiPersonFields.$inferInsert);
+
+        const givenProfession = person.profession;
+        const profession = givenProfession
+          ? PersonCareers.reduce(
+              (acc, c) => {
+                if (givenProfession[c]) acc[c] = '1';
+                return acc;
+              },
+              {} as IPersonRev['profession'],
+            )
+          : {};
+
+        await createRevision(t, {
+          mid: personID,
+          type: RevType.personEdit,
+          rev: {
+            prsn_name: person.name,
+            prsn_infobox: person.infobox,
+            prsn_summary: person.summary,
+            profession,
+            extra: {
+              img: filename ?? '',
+            },
+          } satisfies IPersonRev,
+          creator: finalAuthorID,
+          comment: '新条目',
+        });
+
+        if (filename && raw) {
+          await uploadMonoImage(filename, raw);
+        }
+      });
+
+      if (personID) {
+        return { personID };
+      } else {
+        throw new Error('unknown error');
+      }
     },
   );
 
@@ -228,7 +435,7 @@ export async function setup(app: App) {
           ),
         },
       },
-      preHandler: [requireLogin('editing a subject info')],
+      preHandler: [requireLogin('editing a person')],
     },
     async ({
       auth,
@@ -273,7 +480,7 @@ export async function setup(app: App) {
       let finalAuthorID = auth.userID;
       if (authorID !== undefined) {
         if (!(await fetcher.fetchSlimUserByID(authorID))) {
-          throw new BadRequestError(`user ${authorID} does not exists`);
+          throw new BadRequestError(`user ${authorID} does not exist`);
         }
         finalAuthorID = authorID;
       }
@@ -385,6 +592,12 @@ export async function setup(app: App) {
               format: 'byte',
               description: 'base64 encoded raw bytes, 4mb size limit on **decoded** size',
             }),
+            authorID: t.Optional(
+              t.Integer({
+                exclusiveMinimum: 0,
+                description: 'when header x-admin-token is provided, use this as author id.',
+              }),
+            ),
           },
           { additionalProperties: false },
         ),
@@ -401,9 +614,22 @@ export async function setup(app: App) {
       },
       preHandler: [requireLogin('uploading image')],
     },
-    async ({ auth, body: { img: base64Img }, params: { personID } }) => {
+    async ({ auth, headers, body: { img: base64Img, authorID }, params: { personID } }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
       if (!auth.permission.mono_edit) {
         throw new NotAllowedError('edit person');
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exist`);
+        }
+        finalAuthorID = authorID;
       }
 
       const [p] = await db
@@ -477,7 +703,7 @@ export async function setup(app: App) {
               img: filename,
             },
           } satisfies IPersonRev,
-          creator: auth.userID,
+          creator: finalAuthorID,
           comment: '新肖像',
         });
 

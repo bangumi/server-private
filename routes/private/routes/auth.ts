@@ -25,7 +25,7 @@ const TooManyRequestsError = createError(
 
 const EmailOrPasswordError = createError(
   'EMAIL_PASSWORD_ERROR',
-  'email does not exists or email and password not match',
+  'email does not exist or email and password not match',
   httpCodes.UNAUTHORIZED,
 );
 

@@ -79,6 +79,120 @@ async function testApp({ auth }: { auth?: Partial<IAuth> } = {}) {
   return app;
 }
 
+describe('create person', () => {
+  test('should create person and history', async () => {
+    const app = await testApp();
+
+    const uploadImageMock = vi.fn();
+    vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/persons',
+      method: 'POST',
+      payload: {
+        person: {
+          name: 'New Person',
+          type: 1,
+          infobox: `{{Infobox
+|生日= 1990年5月15日
+|性别= 女
+|血型= A
+}}`,
+          summary: 'A new person summary',
+          profession: {
+            seiyu: true,
+          },
+          img: raw.toString('base64'),
+        },
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    const personRes = res.json();
+    expect(personRes.personID).toBeDefined();
+
+    expect(uploadImageMock).toHaveBeenCalledWith(
+      expect.stringMatching(/.*\.jpe?g$/),
+      expect.any(Buffer),
+    );
+
+    const history = await app.inject(`/persons/${personRes.personID}/history-summary`);
+    const revisionID = history.json().data[0]?.id;
+    expect(revisionID).toBeDefined();
+
+    const revision = await app.inject(`/persons/-/revisions/${revisionID}`);
+    expect(revision.statusCode).toBe(200);
+
+    const revisionData: res.IPersonRevisionWikiInfo = revision.json();
+    expect(revisionData.name).toBe('New Person');
+    expect(revisionData.summary).toBe('A new person summary');
+    expect(revisionData.profession?.seiyu).toBe(true);
+  });
+
+  test('should need authorization', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: {},
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
+
+    const res = await app.inject({
+      url: '/persons',
+      method: 'POST',
+      payload: {
+        person: {
+          name: 'New Person',
+          type: 1,
+          infobox: '{{Infobox}}',
+          summary: 'A new person summary',
+          profession: {
+            seiyu: true,
+          },
+          img: raw.toString('base64'),
+        },
+      },
+    });
+
+    expect(res.json()).toMatchInlineSnapshot(`
+      Object {
+        "code": "NOT_ALLOWED",
+        "error": "Forbidden",
+        "message": "you don't have permission to edit person",
+        "statusCode": 403,
+      }
+    `);
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should validate type', async () => {
+    const app = await testApp();
+
+    const res = await app.inject({
+      url: '/persons',
+      method: 'POST',
+      payload: {
+        person: {
+          name: 'New Person',
+          type: 999, // invalid type
+          infobox: '{{Infobox}}',
+          summary: 'A new person summary',
+        },
+      },
+    });
+
+    expect(res.statusCode).toBe(400);
+  });
+});
+
 describe('edit person ', () => {
   test('should get current wiki info', async () => {
     const app = await testApp({});
