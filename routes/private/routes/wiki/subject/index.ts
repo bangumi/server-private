@@ -8,7 +8,13 @@ import { HeaderInvalidError, NotAllowedError } from '@app/lib/auth/index.ts';
 import config from '@app/lib/config.ts';
 import { BadRequestError, LockedError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { createRevision } from '@app/lib/rev/common.ts';
 import { pushRev } from '@app/lib/rev/ep.ts';
+import type {
+  ISubjectRelationRev,
+  ISubjectRelationRevRemote,
+  ISubjectRelationRevSelf,
+} from '@app/lib/rev/type.ts';
 import {
   RevType,
   SubjectCharacterRev,
@@ -26,9 +32,16 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
-import { matchExpected } from '@app/lib/wiki';
+import {
+  genRelationComment,
+  getReverseRelation,
+  isRelationViceVersa,
+  matchExpected,
+  WikiChangedError,
+} from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
+import { findSubjectRelationType } from '@app/vendor';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
 
 import * as imageRoutes from './image.ts';
@@ -159,6 +172,43 @@ export const SubjectWikiInfo = t.Object(
   { $id: 'SubjectWikiInfo' },
 );
 
+type ISubjectRelationWikiInfo = Static<typeof SubjectRelationWikiInfo>;
+export const SubjectRelationWikiInfo = t.Array(
+  t.Object({
+    subject: t.Object({
+      id: t.Integer(),
+      name: t.String(),
+      nameCN: t.String(),
+    }),
+    type: t.Integer(),
+    order: t.Integer(),
+  }),
+  {
+    $id: 'SubjectRelationWikiInfo',
+  },
+);
+
+type ISubjectRelationWikiEdit = Static<typeof SubjectRelationWikiEdit>;
+export const SubjectRelationWikiEdit = t.Object({
+  subject: t.Object({
+    id: t.Integer(),
+  }),
+  type: t.Integer(),
+  order: t.Optional(t.Integer({ default: 0 })),
+});
+
+const SubjectRelationExpected = t.Object(
+  {
+    subject: t.Object({ id: t.Integer() }),
+    type: t.Integer(),
+    order: t.Integer(),
+  },
+  {
+    additionalProperties: false,
+    description: 'a optional object to check if input is changed by others',
+  },
+);
+
 type ISubjectRelationRevisionWikiInfo = Static<typeof SubjectRelationRevisionWikiInfo>;
 export const SubjectRelationRevisionWikiInfo = t.Array(
   t.Object({
@@ -238,6 +288,7 @@ export async function setup(app: App) {
   app.addSchema(SubjectEdit);
   app.addSchema(Platform);
   app.addSchema(SubjectWikiInfo);
+  app.addSchema(SubjectRelationWikiInfo);
   app.addSchema(SubjectRelationRevisionWikiInfo);
   app.addSchema(SubjectCharacterRevisionWikiInfo);
   app.addSchema(SubjectPersonRevisionWikiInfo);
@@ -927,6 +978,65 @@ export async function setup(app: App) {
   );
 
   app.get(
+    '/subjects/:subjectID/relations',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'getSubjectRelationWikiInfo',
+        summary: '获取条目关联当前 wiki 信息',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          type: req.Ref(req.SubjectType),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: res.Ref(SubjectRelationWikiInfo),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+        },
+      },
+    },
+    async ({ params: { subjectID }, query: { type } }): Promise<ISubjectRelationWikiInfo> => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, true);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+      if (subject.locked) {
+        throw new NotAllowedError('edit a locked subject');
+      }
+      const condition = op.and(
+        op.eq(schema.chiiSubjectRelations.id, subjectID),
+        op.eq(schema.chiiSubjectRelations.relatedType, type),
+      );
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectRelations)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectRelations.relatedID, schema.chiiSubjects.id),
+        )
+        .where(condition)
+        .orderBy(
+          op.asc(schema.chiiSubjectRelations.relation),
+          op.asc(schema.chiiSubjectRelations.order),
+        );
+      const relations = data.map((d) => ({
+        subject: {
+          id: d.chii_subjects.id,
+          name: d.chii_subjects.name,
+          nameCN: d.chii_subjects.nameCN,
+        },
+        type: d.chii_subject_relations.relation,
+        order: d.chii_subject_relations.order,
+      }));
+      return relations;
+    },
+  );
+
+  app.get(
     '/subjects/:subjectID/relations/history-summary',
     {
       schema: {
@@ -1055,6 +1165,341 @@ export async function setup(app: App) {
       });
 
       return relations;
+    },
+  );
+
+  app.put(
+    '/subjects/:subjectID/relations',
+    {
+      schema: {
+        tags: [Tag.Wiki],
+        operationId: 'putSubjectRelationWikiInfo',
+        summary: '修改条目关联当前 wiki 信息',
+        params: t.Object({
+          subjectID: t.Integer({ minimum: 1 }),
+        }),
+        querystring: t.Object({
+          type: req.Ref(req.SubjectType),
+        }),
+        body: t.Object({
+          commitMessage: t.String(),
+          relations: t.Array(SubjectRelationWikiEdit, {
+            $id: 'SubjectRelationWikiEdit',
+          }),
+          expectedRevision: t.Optional(
+            t.Array(SubjectRelationExpected, {
+              $id: 'SubjectRelationExpected',
+            }),
+          ),
+          authorID: t.Optional(
+            t.Integer({
+              exclusiveMinimum: 0,
+              description: 'when header x-admin-token is provided, use this as author id.',
+            }),
+          ),
+        }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        response: {
+          200: t.Null(),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('subject')),
+          }),
+          400: res.Ref(res.Error, { description: 'invalid input' }),
+        },
+        preHandler: [requireLogin('editing subect relations')],
+      },
+    },
+    async ({
+      params: { subjectID },
+      query: { type: relatedType },
+      auth,
+      headers,
+      body: { commitMessage, relations: relationEdits, expectedRevision, authorID },
+    }) => {
+      const adminToken = headers['x-admin-token'];
+      if (authorID !== undefined && adminToken !== config.admin_token) {
+        throw new HeaderInvalidError('invalid admin token');
+      }
+
+      if (!auth.permission.subject_edit) {
+        throw new NotAllowedError('edit subject');
+      }
+
+      const relationTypes = relationEdits.map((r) => r.type);
+      const invalidRelationTypes = relationTypes.filter(
+        (t) => !findSubjectRelationType(relatedType, t),
+      );
+      if (invalidRelationTypes.length > 0) {
+        throw new BadRequestError(`relation type ${invalidRelationTypes.join(', ')} is not valid`);
+      }
+
+      if (relationEdits.some((r) => r.subject.id === subjectID)) {
+        throw new BadRequestError('self relation is not allowed');
+      }
+
+      const relationSubjectIDs = relationEdits.map((r) => r.subject.id);
+      if (new Set(relationSubjectIDs).size !== relationSubjectIDs.length) {
+        throw new BadRequestError('duplicate subject in relations is not allowed');
+      }
+
+      let finalAuthorID = auth.userID;
+      if (authorID !== undefined) {
+        if (!(await fetcher.fetchSlimUserByID(authorID))) {
+          throw new BadRequestError(`user ${authorID} does not exists`);
+        }
+        finalAuthorID = authorID;
+      }
+
+      await db.transaction(async (txn) => {
+        const subject = await fetcher.fetchSlimSubjectByID(subjectID, true);
+        if (!subject) {
+          throw new NotFoundError(`subject ${subjectID}`);
+        }
+        if (subject.locked) {
+          throw new NotAllowedError('edit a locked subject');
+        }
+        const condition = op.and(
+          op.eq(schema.chiiSubjectRelations.id, subjectID),
+          op.eq(schema.chiiSubjectRelations.relatedType, relatedType),
+        );
+        const data = await txn
+          .select()
+          .from(schema.chiiSubjectRelations)
+          .innerJoin(
+            schema.chiiSubjects,
+            op.eq(schema.chiiSubjectRelations.relatedID, schema.chiiSubjects.id),
+          )
+          .where(condition);
+        const oldRelations = data.map((d) => ({
+          subject: {
+            id: d.chii_subjects.id,
+          },
+          type: d.chii_subject_relations.relation,
+          order: d.chii_subject_relations.order,
+        }));
+
+        const oldRelationMap = new Map(oldRelations.map((r) => [r.subject.id, r]));
+        if (expectedRevision?.length) {
+          const expectedMap = new Map(expectedRevision.map((r) => [r.subject.id, r]));
+
+          for (const old of oldRelations) {
+            if (!expectedMap.has(old.subject.id)) {
+              throw new WikiChangedError('unexpected relation');
+            }
+          }
+
+          for (const expected of expectedRevision) {
+            const old = oldRelationMap.get(expected.subject.id);
+            if (!old) {
+              throw new WikiChangedError('missing expected relation');
+            }
+
+            matchExpected(
+              {
+                type: String(expected.type),
+                order: String(expected.order),
+              },
+              {
+                type: String(old.type),
+                order: String(old.order),
+              },
+            );
+          }
+        }
+
+        const relationEditMap = new Map<number, ISubjectRelationWikiEdit>();
+        const deleteRelationEdit: ISubjectRelationWikiEdit[] = [];
+        const newRelationEdit: ISubjectRelationWikiEdit[] = [];
+        const existingRelationEdit: ISubjectRelationWikiEdit[] = [];
+
+        for (const r of relationEdits) {
+          relationEditMap.set(r.subject.id, r);
+
+          const old = oldRelationMap.get(r.subject.id);
+          if (!old) {
+            newRelationEdit.push(r);
+          } else if (old.type !== r.type || old.order !== r.order) {
+            existingRelationEdit.push(r);
+          }
+        }
+
+        for (const r of oldRelations) {
+          const edit = relationEditMap.get(r.subject.id);
+          if (!edit) {
+            deleteRelationEdit.push(r);
+          }
+        }
+
+        if (existingRelationEdit.length > 0 || newRelationEdit.length > 0) {
+          const existingRelatedIDs = existingRelationEdit.map((r) => r.subject.id);
+          const newRelatedIDs = newRelationEdit.map((r) => r.subject.id);
+          const relatedIDs = [...new Set([...newRelatedIDs, ...existingRelatedIDs])];
+          const relatedSubjects = await fetcher.fetchSubjectsByIDs(relatedIDs, true);
+          const lostIDs = newRelatedIDs.filter((id) => !relatedSubjects[id]);
+          if (lostIDs.length > 0) {
+            throw new NotFoundError(`related subject ${lostIDs.join(', ')}`);
+          }
+          const lockedIDs = relatedIDs.filter((id) => relatedSubjects[id]?.locked);
+          if (lockedIDs.length > 0) {
+            throw new NotAllowedError(`relate locked subject ${lockedIDs.join(', ')}`);
+          }
+          const falseTypedIDs = Object.values(relatedSubjects)
+            .filter((s) => s.type !== relatedType)
+            .map((s) => s.id);
+          if (falseTypedIDs.length > 0) {
+            throw new BadRequestError(`subject ${falseTypedIDs.join(', ')} type not match`);
+          }
+        }
+
+        if (deleteRelationEdit.length > 0) {
+          const deleteConditions = deleteRelationEdit.map((r) => {
+            const viceVersa = isRelationViceVersa(relatedType, r.type);
+            let condition = op.and(
+              op.eq(schema.chiiSubjectRelations.id, subjectID),
+              op.eq(schema.chiiSubjectRelations.relatedID, r.subject.id),
+            );
+            if (viceVersa) {
+              condition = op.or(
+                condition,
+                op.and(
+                  op.eq(schema.chiiSubjectRelations.id, r.subject.id),
+                  op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
+                ),
+              );
+            }
+            return condition;
+          });
+
+          await txn.delete(schema.chiiSubjectRelations).where(op.or(...deleteConditions));
+        }
+
+        if (existingRelationEdit.length > 0) {
+          for (const r of existingRelationEdit) {
+            const viceVersa = isRelationViceVersa(relatedType, r.type);
+            await txn
+              .update(schema.chiiSubjectRelations)
+              .set({
+                relation: r.type,
+                order: r.order ?? 0,
+                viceVersa: +viceVersa,
+              })
+              .where(
+                op.and(
+                  op.eq(schema.chiiSubjectRelations.id, subjectID),
+                  op.eq(schema.chiiSubjectRelations.relatedID, r.subject.id),
+                ),
+              );
+            if (viceVersa) {
+              const reverseRelationType = getReverseRelation(subject.type, relatedType, r.type);
+              await txn
+                .update(schema.chiiSubjectRelations)
+                .set({
+                  relation: reverseRelationType,
+                  viceVersa: +viceVersa,
+                })
+                .where(
+                  op.and(
+                    op.eq(schema.chiiSubjectRelations.id, r.subject.id),
+                    op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
+                  ),
+                );
+            } else {
+              const old = oldRelationMap.get(r.subject.id);
+              if (old) {
+                const oldViceVersa = isRelationViceVersa(relatedType, old.type);
+                if (oldViceVersa) {
+                  await txn
+                    .delete(schema.chiiSubjectRelations)
+                    .where(
+                      op.and(
+                        op.eq(schema.chiiSubjectRelations.id, r.subject.id),
+                        op.eq(schema.chiiSubjectRelations.relatedID, subjectID),
+                      ),
+                    );
+                }
+              }
+            }
+          }
+        }
+
+        if (newRelationEdit.length > 0) {
+          const insertData = [];
+          for (const r of newRelationEdit) {
+            const viceVersa = isRelationViceVersa(relatedType, r.type);
+            insertData.push({
+              id: subjectID,
+              type: subject.type,
+              relation: r.type,
+              relatedID: r.subject.id,
+              relatedType,
+              viceVersa: +viceVersa,
+              order: r.order ?? 0,
+            });
+            if (viceVersa) {
+              const reverseRelationType = getReverseRelation(subject.type, relatedType, r.type);
+              insertData.push({
+                id: r.subject.id,
+                type: relatedType,
+                relation: reverseRelationType,
+                relatedID: subjectID,
+                relatedType: subject.type,
+                viceVersa: 1,
+                order: 0,
+              });
+            }
+          }
+
+          await txn.insert(schema.chiiSubjectRelations).values(insertData);
+        }
+
+        const comment = genRelationComment(
+          relatedType,
+          commitMessage,
+          newRelationEdit,
+          existingRelationEdit,
+          deleteRelationEdit,
+        );
+        await createRevision(txn, {
+          mid: subjectID,
+          type: RevType.subjectRelation,
+          rev: {
+            self: relationEdits
+              .toSorted((a, b) => a.subject.id - b.subject.id)
+              .reduce(
+                (acc, r, i) => {
+                  acc[String(i)] = {
+                    subject_id: subjectID,
+                    subject_type_id: subject.type,
+                    relation_type: r.type,
+                    relation_order: r.order ?? 0,
+                    related_subject_id: r.subject.id,
+                    related_subject_type_id: relatedType,
+                  };
+                  return acc;
+                },
+                {} as Record<string, ISubjectRelationRevSelf>,
+              ),
+            remote: relationEdits
+              .filter((r) => isRelationViceVersa(relatedType, r.type))
+              .toSorted((a, b) => a.subject.id - b.subject.id)
+              .reduce(
+                (acc, r, i) => {
+                  acc[String(i)] = {
+                    subject_id: r.subject.id,
+                    subject_type_id: relatedType,
+                    relation_type: getReverseRelation(subject.type, relatedType, r.type),
+                    related_subject_id: subjectID,
+                    related_subject_type_id: subject.type,
+                  };
+                  return acc;
+                },
+                {} as Record<string, ISubjectRelationRevRemote>,
+              ),
+          } satisfies ISubjectRelationRev,
+          creator: finalAuthorID,
+          comment,
+        });
+      });
     },
   );
 
