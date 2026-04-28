@@ -821,7 +821,24 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      const revContentRaw = revRecord[revisionID];
+      let revContentRaw = revRecord[revisionID];
+      // 历史遗留问题，仅修改肖像时为 ICharacterRev
+      if (
+        typeof revContentRaw === 'object' &&
+        revContentRaw !== null &&
+        'crt_name' in revContentRaw &&
+        'crt_infobox' in revContentRaw &&
+        'crt_summary' in revContentRaw &&
+        'extra' in revContentRaw
+      ) {
+        revContentRaw = {
+          prsn_name: revContentRaw.crt_name,
+          prsn_infobox: revContentRaw.crt_infobox,
+          prsn_summary: revContentRaw.crt_summary,
+          profession: {},
+          extra: revContentRaw.extra,
+        };
+      }
       const revContent = parseConvertedValue(PersonRev, revContentRaw);
 
       return {
@@ -829,7 +846,7 @@ export async function setup(app: App) {
         infobox: revContent.prsn_infobox,
         summary: revContent.prsn_summary,
         profession: Object.fromEntries(
-          Object.entries(revContent.profession || {}).map(([p, b]) => [p, !!b]),
+          Object.entries(revContent.profession).map(([p, b]) => [p, !!b]),
         ),
         extra: revContent.extra,
       };
