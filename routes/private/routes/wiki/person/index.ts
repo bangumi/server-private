@@ -5,6 +5,7 @@ import { parse, WikiSyntaxError } from '@bgm38/wiki';
 import { DateTime } from 'luxon';
 import type { Static } from 'typebox';
 import t from 'typebox';
+import { Value } from 'typebox/value';
 
 import { db, op, schema } from '@app/drizzle';
 import { HeaderInvalidError } from '@app/lib/auth/index.ts';
@@ -21,7 +22,13 @@ import {
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
 import type { IPersonRev } from '@app/lib/rev/type.ts';
-import { PersonCastRev, PersonRev, PersonSubjectRev, RevType } from '@app/lib/rev/type.ts';
+import {
+  CharacterRev,
+  PersonCastRev,
+  PersonRev,
+  PersonSubjectRev,
+  RevType,
+} from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
@@ -823,14 +830,7 @@ export async function setup(app: App) {
       const revRecord = await deserializeRevText(revText.revText);
       let revContentRaw = revRecord[revisionID];
       // 历史遗留问题，仅修改肖像时为 ICharacterRev
-      if (
-        typeof revContentRaw === 'object' &&
-        revContentRaw !== null &&
-        'crt_name' in revContentRaw &&
-        'crt_infobox' in revContentRaw &&
-        'crt_summary' in revContentRaw &&
-        'extra' in revContentRaw
-      ) {
+      if (Value.Check(CharacterRev, revContentRaw)) {
         revContentRaw = {
           prsn_name: revContentRaw.crt_name,
           prsn_infobox: revContentRaw.crt_infobox,
