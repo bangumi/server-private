@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "main": "bin/main.ts",
-  "packageManager": "pnpm@10.33.0",
+  "packageManager": "pnpm@10.33.2",
   "engines": {
     "node": "^24.0"
   },
@@ -126,7 +126,7 @@
     "rimraf": "6.1.3",
     "std-env": "4.0.0",
     "tsx": "4.21.0",
-    "typescript": "6.0.2",
+    "typescript": "6.0.3",
     "typescript-eslint": "8.58.0",
     "vite": "8.0.5",
     "vitest": "4.1.2"
