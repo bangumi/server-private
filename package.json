@@ -110,7 +110,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-erasable-syntax-only": "0.4.0",
     "eslint-plugin-promise": "7.2.1",
-    "eslint-plugin-simple-import-sort": "12.1.1",
+    "eslint-plugin-simple-import-sort": "13.0.0",
     "eslint-plugin-tsdoc": "0.5.2",
     "eslint-plugin-unicorn": "64.0.0",
     "eslint-plugin-unused-imports": "4.4.1",
