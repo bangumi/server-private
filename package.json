@@ -86,7 +86,7 @@
     "@bufbuild/buf": "1.67.0",
     "@bufbuild/protoc-gen-es": "2.11.0",
     "@eslint/js": "10.0.1",
-    "@graphql-codegen/cli": "6.2.1",
+    "@graphql-codegen/cli": "7.0.0",
     "@graphql-codegen/introspection": "6.0.0",
     "@graphql-codegen/typescript": "6.0.0",
     "@graphql-codegen/typescript-resolvers": "6.0.0",
