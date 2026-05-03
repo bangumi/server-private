@@ -408,6 +408,7 @@ Array [
     "id": 12345670,
     "mainID": 1,
     "relatedID": 0,
+    "relatedPhotoID": 0,
     "replies": Array [
       Object {
         "content": "是6号结的",
@@ -416,6 +417,7 @@ Array [
         "id": 12345671,
         "mainID": 1,
         "relatedID": 12345670,
+        "relatedPhotoID": 0,
         "state": 0,
         "user": Object {
           "avatar": Object {
@@ -454,6 +456,7 @@ Array [
     "id": 12345672,
     "mainID": 1,
     "relatedID": 0,
+    "relatedPhotoID": 0,
     "replies": Array [],
     "state": 0,
     "user": Object {

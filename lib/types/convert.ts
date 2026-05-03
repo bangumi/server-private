@@ -2,7 +2,14 @@ import type { WikiMap } from '@bgm38/wiki';
 import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
 import { type orm } from '@app/drizzle';
-import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
+import {
+  avatar,
+  blogIcon,
+  groupIcon,
+  monoPhotoImages,
+  personImages,
+  subjectCover,
+} from '@app/lib/images';
 import { parseIndexStats } from '@app/lib/index/stats';
 import { IndexPrivacy } from '@app/lib/index/types';
 import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
@@ -390,6 +397,25 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
     icon: blogIcon(photo.target),
     vote: photo.vote,
     createdAt: photo.createdAt,
+  };
+}
+
+export function toMonoPhoto(photo: orm.ISubjectPhoto): res.IMonoPhoto {
+  const type = photo.type === 1 ? 'character' : 'person';
+  return {
+    id: photo.id,
+    type: photo.type,
+    mainID: photo.mid,
+    creatorID: photo.uid,
+    target: photo.target,
+    images: monoPhotoImages(type, photo.target),
+    title: photo.title,
+    comment: photo.comment,
+    tags: splitTags(photo.tags),
+    spoiler: photo.spoiler,
+    createdAt: photo.createdAt,
+    updatedAt: photo.updatedAt,
+    lastPost: photo.lastPost,
   };
 }
 

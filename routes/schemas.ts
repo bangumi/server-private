@@ -42,6 +42,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.GroupFilterMode);
   app.addSchema(req.GroupSort);
   app.addSchema(req.GroupTopicFilterMode);
+  app.addSchema(req.MonoPhotoOrderBy);
   app.addSchema(req.PersonCreate);
   app.addSchema(req.PersonEdit);
   app.addSchema(req.PersonSearchFilter);
@@ -82,6 +83,8 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.IndexRelated);
   app.addSchema(res.IndexStats);
   app.addSchema(res.Infobox);
+  app.addSchema(res.MonoPhoto);
+  app.addSchema(res.MonoPhotoImages);
   app.addSchema(res.Notice);
   app.addSchema(res.Permissions);
   app.addSchema(res.Person);

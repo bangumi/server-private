@@ -5,6 +5,13 @@ import { CommentWithState } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import {
+  fetchMonoPhotoList,
+  type MonoPhotoOrderBy as IMonoPhotoOrderBy,
+  MonoPhotoOrderBy,
+  MonoPhotoType,
+  requireMonoPhoto,
+} from '@app/lib/person/photo.ts';
 import { PersonCat } from '@app/lib/person/type.ts';
 import { getPersonCollect } from '@app/lib/person/utils.ts';
 import * as convert from '@app/lib/types/convert.ts';
@@ -46,6 +53,14 @@ function toPersonRelation(person: orm.IPerson, relation: orm.IPersonRelation): r
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
   const comment = new CommentWithState(schema.chiiPrsnComments);
+
+  async function requirePerson(personID: number, allowNsfw: boolean) {
+    const person = await fetcher.fetchSlimPersonByID(personID, allowNsfw);
+    if (!person) {
+      throw new NotFoundError(`person ${personID}`);
+    }
+    return person;
+  }
 
   app.get(
     '/persons/:personID',
@@ -420,11 +435,142 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { personID } }) => {
-      const person = await fetcher.fetchSlimPersonByID(personID, auth.allowNsfw);
-      if (!person) {
-        throw new NotFoundError(`person ${personID}`);
-      }
+      await requirePerson(personID, auth.allowNsfw);
       return await comment.getAll(personID);
+    },
+  );
+
+  app.get(
+    '/persons/:personID/photos/preview',
+    {
+      schema: {
+        summary: '获取人物首页相册预览',
+        operationId: 'getPersonPhotoPreview',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 6, minimum: 1, maximum: 20, description: 'max 20' }),
+          ),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.MonoPhoto)),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('person')),
+          }),
+        },
+      },
+    },
+    async ({ auth, params: { personID }, query: { limit = 6 } }) => {
+      await requirePerson(personID, auth.allowNsfw);
+      return await fetchMonoPhotoList({
+        type: MonoPhotoType.Person,
+        mainID: personID,
+        limit,
+        offset: 0,
+        orderBy: MonoPhotoOrderBy.ID,
+        spoiler: false,
+      });
+    },
+  );
+
+  app.get(
+    '/persons/:personID/photos',
+    {
+      schema: {
+        summary: '获取人物相册列表',
+        operationId: 'getPersonPhotos',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+        }),
+        querystring: t.Object({
+          limit: t.Optional(
+            t.Integer({ default: 24, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+          orderBy: t.Optional(
+            req.Ref(req.MonoPhotoOrderBy, {
+              default: MonoPhotoOrderBy.ID,
+            }),
+          ),
+          spoiler: t.Optional(t.Boolean()),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.MonoPhoto)),
+          404: res.Ref(res.Error, {
+            'x-examples': formatErrors(new NotFoundError('person')),
+          }),
+        },
+      },
+    },
+    async ({
+      auth,
+      params: { personID },
+      query: { limit = 24, offset = 0, orderBy = MonoPhotoOrderBy.ID, spoiler },
+    }) => {
+      await requirePerson(personID, auth.allowNsfw);
+      return await fetchMonoPhotoList({
+        type: MonoPhotoType.Person,
+        mainID: personID,
+        limit,
+        offset,
+        orderBy: orderBy as IMonoPhotoOrderBy,
+        spoiler,
+      });
+    },
+  );
+
+  app.get(
+    '/persons/:personID/photos/:photoID',
+    {
+      schema: {
+        summary: '获取人物相册图片',
+        operationId: 'getPersonPhoto',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+          photoID: t.Integer(),
+        }),
+        response: {
+          200: res.Ref(res.MonoPhoto),
+          404: res.Ref(res.Error),
+        },
+      },
+    },
+    async ({ auth, params: { personID, photoID } }) => {
+      await requirePerson(personID, auth.allowNsfw);
+      return await requireMonoPhoto(MonoPhotoType.Person, personID, photoID);
+    },
+  );
+
+  app.get(
+    '/persons/:personID/photos/:photoID/comments',
+    {
+      schema: {
+        summary: '获取人物相册图片的评论',
+        operationId: 'getPersonPhotoComments',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+          photoID: t.Integer(),
+        }),
+        response: {
+          200: t.Array(res.Comment),
+          404: res.Ref(res.Error),
+        },
+      },
+    },
+    async ({ auth, params: { personID, photoID } }) => {
+      await requirePerson(personID, auth.allowNsfw);
+      await requireMonoPhoto(MonoPhotoType.Person, personID, photoID);
+      return await comment.getAll(personID, photoID);
     },
   );
 
@@ -518,6 +664,36 @@ export async function setup(app: App) {
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { personID } }) => {
       return await comment.create(auth, personID, content, replyTo);
+    },
+  );
+
+  app.post(
+    '/persons/:personID/photos/:photoID/comments',
+    {
+      schema: {
+        summary: '创建人物相册图片的评论',
+        operationId: 'createPersonPhotoComment',
+        tags: [Tag.Person],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          personID: t.Integer(),
+          photoID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateReply), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+          404: res.Ref(res.Error),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+    },
+    async ({ auth, body: { content, replyTo = 0 }, params: { personID, photoID } }) => {
+      await requirePerson(personID, auth.allowNsfw);
+      await requireMonoPhoto(MonoPhotoType.Person, personID, photoID);
+      return await comment.create(auth, personID, content, replyTo, photoID);
     },
   );
 

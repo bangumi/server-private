@@ -45,12 +45,26 @@ export class CommentWithState {
     this.table = table;
   }
 
-  async getAll(mainID: number) {
-    const data = await db
-      .select()
-      .from(this.table)
-      .where(op.eq(this.table.mid, mainID))
-      .orderBy(op.asc(this.table.id));
+  private hasRelatedPhoto() {
+    return this.table === schema.chiiCrtComments || this.table === schema.chiiPrsnComments;
+  }
+
+  async getAll(mainID: number, relatedPhotoID?: number) {
+    let where = op.eq(this.table.mid, mainID);
+    if (relatedPhotoID !== undefined && this.hasRelatedPhoto()) {
+      const relatedPhotoWhere = op.and(
+        where,
+        op.eq(
+          (this.table as typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments)
+            .relatedPhotoID,
+          relatedPhotoID,
+        ),
+      );
+      if (relatedPhotoWhere) {
+        where = relatedPhotoWhere;
+      }
+    }
+    const data = await db.select().from(this.table).where(where).orderBy(op.asc(this.table.id));
     const uids = data.map((v) => v.uid);
     const users = await fetcher.fetchSlimUsersByIDs(uids);
     const comments: res.IComment[] = [];
@@ -67,6 +81,7 @@ export class CommentWithState {
         mainID: d.mid,
         creatorID: d.uid,
         relatedID: d.related,
+        relatedPhotoID: 'relatedPhotoID' in d ? d.relatedPhotoID : undefined,
         content: canViewContent ? d.content : '',
         createdAt: d.createdAt,
         state: d.state,
@@ -91,6 +106,7 @@ export class CommentWithState {
     mainID: number,
     content: string,
     replyTo: number,
+    relatedPhotoID = 0,
   ): Promise<{ id: number }> {
     if (!Dam.allCharacterPrintable(content)) {
       throw new BadRequestError('text contains invalid invisible character');
@@ -98,9 +114,10 @@ export class CommentWithState {
     if (auth.permission.ban_post) {
       throw new NotAllowedError('create comment');
     }
+    let effectiveRelatedPhotoID = relatedPhotoID;
     if (replyTo !== 0) {
       const [parent] = await db
-        .select({ id: this.table.id, state: this.table.state })
+        .select()
         .from(this.table)
         .where(op.eq(this.table.id, replyTo))
         .limit(1);
@@ -109,6 +126,14 @@ export class CommentWithState {
       }
       if (parent.state !== CommentState.Normal) {
         throw new NotAllowedError(`reply to a abnormal state comment`);
+      }
+      if (this.hasRelatedPhoto() && 'relatedPhotoID' in parent) {
+        if (effectiveRelatedPhotoID === 0) {
+          effectiveRelatedPhotoID = parent.relatedPhotoID;
+        }
+        if (parent.relatedPhotoID !== effectiveRelatedPhotoID) {
+          throw new NotAllowedError(`reply to a comment from another photo`);
+        }
       }
     }
     const now = DateTime.now().toUnixInteger();
@@ -121,6 +146,9 @@ export class CommentWithState {
       createdAt: now,
       state: CommentState.Normal,
     };
+    if (this.hasRelatedPhoto()) {
+      Object.assign(reply, { relatedPhotoID: effectiveRelatedPhotoID });
+    }
     let insertId = 0;
     await db.transaction(async (t) => {
       const [result] = await t.insert(this.table).values(reply);
@@ -146,6 +174,19 @@ export class CommentWithState {
             })
             .where(op.eq(schema.chiiCharacters.id, mainID))
             .limit(1);
+          if (effectiveRelatedPhotoID > 0) {
+            await t
+              .update(schema.chiiSubjectPhotos)
+              .set({ lastPost: now })
+              .where(
+                op.and(
+                  op.eq(schema.chiiSubjectPhotos.id, effectiveRelatedPhotoID),
+                  op.eq(schema.chiiSubjectPhotos.type, 1),
+                  op.eq(schema.chiiSubjectPhotos.mid, mainID),
+                ),
+              )
+              .limit(1);
+          }
           break;
         }
         case schema.chiiPrsnComments: {
@@ -157,6 +198,19 @@ export class CommentWithState {
             })
             .where(op.eq(schema.chiiPersons.id, mainID))
             .limit(1);
+          if (effectiveRelatedPhotoID > 0) {
+            await t
+              .update(schema.chiiSubjectPhotos)
+              .set({ lastPost: now })
+              .where(
+                op.and(
+                  op.eq(schema.chiiSubjectPhotos.id, effectiveRelatedPhotoID),
+                  op.eq(schema.chiiSubjectPhotos.type, 2),
+                  op.eq(schema.chiiSubjectPhotos.mid, mainID),
+                ),
+              )
+              .limit(1);
+          }
           break;
         }
       }

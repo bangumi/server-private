@@ -147,6 +147,7 @@ describe('person comments', () => {
       createdAt: 1400517144,
       uid: 287622,
       related: 0,
+      relatedPhotoID: 0,
     });
     await db.insert(schema.chiiPrsnComments).values({
       id: 12345671,
@@ -156,6 +157,7 @@ describe('person comments', () => {
       createdAt: 1400517144,
       uid: 287622,
       related: 12345670,
+      relatedPhotoID: 0,
     });
     await db.insert(schema.chiiPrsnComments).values({
       id: 12345672,
@@ -165,6 +167,7 @@ describe('person comments', () => {
       createdAt: 1400517144,
       uid: 287622,
       related: 0,
+      relatedPhotoID: 0,
     });
   });
 
@@ -222,5 +225,168 @@ describe('person comments', () => {
     });
     expect(res.statusCode).toBe(401);
     expect(res.json()).toMatchSnapshot();
+  });
+});
+
+describe('person photos', () => {
+  const photoID = 9900001;
+  const spoilerPhotoID = 9900002;
+  const commentID = 9900010;
+
+  beforeEach(async () => {
+    await redis.flushdb();
+    await db
+      .delete(schema.chiiSubjectPhotos)
+      .where(op.inArray(schema.chiiSubjectPhotos.id, [photoID, spoilerPhotoID]));
+    await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 1));
+    await db.insert(schema.chiiSubjectPhotos).values([
+      {
+        id: photoID,
+        type: 2,
+        mid: 1,
+        uid: 287622,
+        target: 'a6/e8/1_test.jpg',
+        title: 'Live photo',
+        comment: 'A public person photo',
+        tags: 'live test',
+        spoiler: false,
+        createdAt: 1718275200,
+        updatedAt: 1718275201,
+        lastPost: 1718275202,
+        ban: false,
+      },
+      {
+        id: spoilerPhotoID,
+        type: 2,
+        mid: 1,
+        uid: 287622,
+        target: 'a6/e8/1_spoiler.jpg',
+        title: 'Spoiler photo',
+        comment: 'A spoiler person photo',
+        tags: '',
+        spoiler: true,
+        createdAt: 1718275300,
+        updatedAt: 1718275301,
+        lastPost: 1718275302,
+        ban: false,
+      },
+    ]);
+    await db.insert(schema.chiiPrsnComments).values([
+      {
+        id: commentID,
+        mid: 1,
+        content: 'photo comment',
+        state: 0,
+        createdAt: 1718275400,
+        uid: 287622,
+        related: 0,
+        relatedPhotoID: photoID,
+      },
+      {
+        id: commentID + 1,
+        mid: 1,
+        content: 'regular comment',
+        state: 0,
+        createdAt: 1718275401,
+        uid: 287622,
+        related: 0,
+        relatedPhotoID: 0,
+      },
+    ]);
+  });
+
+  afterEach(async () => {
+    await redis.flushdb();
+    await db.delete(schema.chiiPrsnComments).where(op.eq(schema.chiiPrsnComments.mid, 1));
+    await db
+      .delete(schema.chiiSubjectPhotos)
+      .where(op.inArray(schema.chiiSubjectPhotos.id, [photoID, spoilerPhotoID]));
+    await db
+      .update(schema.chiiPersons)
+      .set({
+        comment: 110,
+      })
+      .where(op.eq(schema.chiiPersons.id, 1));
+  });
+
+  test('should get person photo preview without spoiler photos', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/persons/1/photos/preview',
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.total).toBe(1);
+    expect(body.data).toHaveLength(1);
+    expect(body.data[0]).toMatchObject({
+      id: photoID,
+      type: 2,
+      mainID: 1,
+      title: 'Live photo',
+      tags: ['live', 'test'],
+      spoiler: false,
+    });
+    expect(body.data[0].images.large).toBe(
+      'https://lain.bgm.tv/pic/photos/person/l/a6/e8/1_test.jpg',
+    );
+  });
+
+  test('should get person photo list and detail', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const list = await app.inject({
+      method: 'get',
+      url: '/persons/1/photos',
+      query: { limit: '10', offset: '0' },
+    });
+    expect(list.statusCode).toBe(200);
+    expect(list.json().total).toBe(2);
+
+    const detail = await app.inject({
+      method: 'get',
+      url: `/persons/1/photos/${photoID}`,
+    });
+    expect(detail.statusCode).toBe(200);
+    expect(detail.json()).toMatchObject({
+      id: photoID,
+      creatorID: 287622,
+      comment: 'A public person photo',
+    });
+  });
+
+  test('should get and create person photo comments', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+    const list = await app.inject({
+      method: 'get',
+      url: `/persons/1/photos/${photoID}/comments`,
+    });
+    expect(list.statusCode).toBe(200);
+    expect(list.json()).toHaveLength(1);
+    expect(list.json()[0]).toMatchObject({
+      id: commentID,
+      relatedPhotoID: photoID,
+      content: 'photo comment',
+    });
+
+    const created = await app.inject({
+      method: 'post',
+      url: `/persons/1/photos/${photoID}/comments`,
+      payload: { content: 'new photo comment', turnstileToken: 'fake-response' },
+    });
+    expect(created.statusCode).toBe(200);
+    const [comment] = await db
+      .select()
+      .from(schema.chiiPrsnComments)
+      .where(op.eq(schema.chiiPrsnComments.id, created.json().id));
+    expect(comment?.relatedPhotoID).toBe(photoID);
   });
 });
