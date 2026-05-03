@@ -151,7 +151,7 @@ describe('character photos', () => {
       .where(op.eq(schema.chiiCharacters.id, 32));
   });
 
-  test('should get character photo preview without spoiler photos', async () => {
+  test('should get character photo preview with spoiler state', async () => {
     const app = createTestServer();
     await app.register(setup);
     const res = await app.inject({
@@ -160,18 +160,19 @@ describe('character photos', () => {
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
-    expect(body.total).toBe(1);
-    expect(body.data).toHaveLength(1);
+    expect(body.total).toBe(2);
+    expect(body.data).toHaveLength(2);
+    expect(body.data.map((photo: { id: number }) => photo.id)).toEqual([spoilerPhotoID, photoID]);
     expect(body.data[0]).toMatchObject({
-      id: photoID,
+      id: spoilerPhotoID,
       type: 1,
       mainID: 32,
-      title: 'Character photo',
-      tags: ['character', 'test'],
-      spoiler: false,
+      title: 'Spoiler photo',
+      tags: [],
+      spoiler: true,
     });
     expect(body.data[0].images.large).toBe(
-      'https://lain.bgm.tv/pic/photos/character/l/ce/65/32_test.jpg',
+      'https://lain.bgm.tv/pic/photos/character/l/ce/65/32_spoiler.jpg',
     );
   });
 

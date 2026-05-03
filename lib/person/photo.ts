@@ -33,12 +33,11 @@ function orderColumn(orderBy: MonoPhotoOrderBy) {
   }
 }
 
-function condition(type: MonoPhotoType, mainID: number, spoiler?: boolean) {
+function condition(type: MonoPhotoType, mainID: number) {
   return op.and(
     op.eq(schema.chiiSubjectPhotos.type, type),
     op.eq(schema.chiiSubjectPhotos.mid, mainID),
     op.eq(schema.chiiSubjectPhotos.ban, false),
-    spoiler === undefined ? undefined : op.eq(schema.chiiSubjectPhotos.spoiler, spoiler),
   );
 }
 
@@ -56,16 +55,14 @@ export async function fetchMonoPhotoList({
   limit,
   offset,
   orderBy,
-  spoiler,
 }: {
   type: MonoPhotoType;
   mainID: number;
   limit: number;
   offset: number;
   orderBy: MonoPhotoOrderBy;
-  spoiler?: boolean;
 }): Promise<{ total: number; data: res.IMonoPhoto[] }> {
-  const where = condition(type, mainID, spoiler);
+  const where = condition(type, mainID);
   const [{ count = 0 } = {}] = await db
     .select({ count: op.count() })
     .from(schema.chiiSubjectPhotos)

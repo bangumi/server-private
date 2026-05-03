@@ -4833,11 +4833,6 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/MonoPhotoOrderBy'
-        - in: query
-          name: spoiler
-          required: false
-          schema:
-            type: boolean
         - in: path
           name: characterID
           required: true
@@ -7947,11 +7942,6 @@ paths:
           required: false
           schema:
             $ref: '#/components/schemas/MonoPhotoOrderBy'
-        - in: query
-          name: spoiler
-          required: false
-          schema:
-            type: boolean
         - in: path
           name: personID
           required: true

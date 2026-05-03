@@ -472,7 +472,6 @@ export async function setup(app: App) {
         limit,
         offset: 0,
         orderBy: MonoPhotoOrderBy.ID,
-        spoiler: false,
       });
     },
   );
@@ -498,7 +497,6 @@ export async function setup(app: App) {
               default: MonoPhotoOrderBy.ID,
             }),
           ),
-          spoiler: t.Optional(t.Boolean()),
         }),
         response: {
           200: res.Paged(res.Ref(res.MonoPhoto)),
@@ -511,7 +509,7 @@ export async function setup(app: App) {
     async ({
       auth,
       params: { personID },
-      query: { limit = 24, offset = 0, orderBy = MonoPhotoOrderBy.ID, spoiler },
+      query: { limit = 24, offset = 0, orderBy = MonoPhotoOrderBy.ID },
     }) => {
       await requirePerson(personID, auth.allowNsfw);
       return await fetchMonoPhotoList({
@@ -520,7 +518,6 @@ export async function setup(app: App) {
         limit,
         offset,
         orderBy: orderBy as IMonoPhotoOrderBy,
-        spoiler,
       });
     },
   );
