@@ -83,22 +83,6 @@ export const GroupSort = t.String({
   - updated = 最新讨论`,
 });
 
-export type IMonoPhotoOrderBy = Static<typeof MonoPhotoOrderBy>;
-export const MonoPhotoOrderBy = t.String({
-  $id: 'MonoPhotoOrderBy',
-  enum: ['id', 'dateline', 'lasttouch'],
-  default: 'id',
-  'x-ms-enum': {
-    name: 'MonoPhotoOrderBy',
-    modelAsString: true,
-  },
-  'x-enum-varnames': ['ID', 'Dateline', 'Lasttouch'],
-  description: `角色/人物相册排序方式
-  - id = ID
-  - dateline = 创建时间
-  - lasttouch = 最近更新`,
-});
-
 export const SubjectBrowseSort = t.String({
   $id: 'SubjectBrowseSort',
   enum: ['rank', 'trends', 'collects', 'date', 'title'],

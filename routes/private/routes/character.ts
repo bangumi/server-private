@@ -5,13 +5,7 @@ import { CommentWithState } from '@app/lib/comment.ts';
 import { NotFoundError } from '@app/lib/error.ts';
 import { IndexRelatedCategory } from '@app/lib/index/types.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import {
-  fetchMonoPhotoList,
-  type MonoPhotoOrderBy as IMonoPhotoOrderBy,
-  MonoPhotoOrderBy,
-  MonoPhotoType,
-  requireMonoPhoto,
-} from '@app/lib/person/photo.ts';
+import { fetchMonoPhotoList, MonoPhotoType, requireMonoPhoto } from '@app/lib/person/photo.ts';
 import { PersonCat } from '@app/lib/person/type';
 import { getPersonCollect } from '@app/lib/person/utils';
 import * as convert from '@app/lib/types/convert.ts';
@@ -376,7 +370,6 @@ export async function setup(app: App) {
         mainID: characterID,
         limit,
         offset: 0,
-        orderBy: MonoPhotoOrderBy.ID,
       });
     },
   );
@@ -397,11 +390,6 @@ export async function setup(app: App) {
             t.Integer({ default: 24, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
           offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
-          orderBy: t.Optional(
-            req.Ref(req.MonoPhotoOrderBy, {
-              default: MonoPhotoOrderBy.ID,
-            }),
-          ),
         }),
         response: {
           200: res.Paged(res.Ref(res.MonoPhoto)),
@@ -411,18 +399,13 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({
-      auth,
-      params: { characterID },
-      query: { limit = 24, offset = 0, orderBy = MonoPhotoOrderBy.ID },
-    }) => {
+    async ({ auth, params: { characterID }, query: { limit = 24, offset = 0 } }) => {
       await requireCharacter(characterID, auth.allowNsfw);
       return await fetchMonoPhotoList({
         type: MonoPhotoType.Character,
         mainID: characterID,
         limit,
         offset,
-        orderBy: orderBy as IMonoPhotoOrderBy,
       });
     },
   );

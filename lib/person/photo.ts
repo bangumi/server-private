@@ -11,28 +11,6 @@ export const MonoPhotoType = Object.freeze({
 
 export type MonoPhotoType = (typeof MonoPhotoType)[keyof typeof MonoPhotoType];
 
-export const MonoPhotoOrderBy = Object.freeze({
-  ID: 'id',
-  Dateline: 'dateline',
-  Lasttouch: 'lasttouch',
-});
-
-export type MonoPhotoOrderBy = (typeof MonoPhotoOrderBy)[keyof typeof MonoPhotoOrderBy];
-
-function orderColumn(orderBy: MonoPhotoOrderBy) {
-  switch (orderBy) {
-    case 'dateline': {
-      return schema.chiiSubjectPhotos.createdAt;
-    }
-    case 'lasttouch': {
-      return schema.chiiSubjectPhotos.updatedAt;
-    }
-    case 'id': {
-      return schema.chiiSubjectPhotos.id;
-    }
-  }
-}
-
 function condition(type: MonoPhotoType, mainID: number) {
   return op.and(
     op.eq(schema.chiiSubjectPhotos.type, type),
@@ -54,13 +32,11 @@ export async function fetchMonoPhotoList({
   mainID,
   limit,
   offset,
-  orderBy,
 }: {
   type: MonoPhotoType;
   mainID: number;
   limit: number;
   offset: number;
-  orderBy: MonoPhotoOrderBy;
 }): Promise<{ total: number; data: res.IMonoPhoto[] }> {
   const where = condition(type, mainID);
   const [{ count = 0 } = {}] = await db
@@ -71,7 +47,7 @@ export async function fetchMonoPhotoList({
     .select()
     .from(schema.chiiSubjectPhotos)
     .where(where)
-    .orderBy(op.desc(orderColumn(orderBy)))
+    .orderBy(op.desc(schema.chiiSubjectPhotos.id))
     .limit(limit)
     .offset(offset);
   return {

@@ -42,7 +42,6 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.GroupFilterMode);
   app.addSchema(req.GroupSort);
   app.addSchema(req.GroupTopicFilterMode);
-  app.addSchema(req.MonoPhotoOrderBy);
   app.addSchema(req.PersonCreate);
   app.addSchema(req.PersonEdit);
   app.addSchema(req.PersonSearchFilter);

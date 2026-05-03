@@ -1382,25 +1382,6 @@ exports[`should build private api spec 1`] = `
         - grid
       title: MonoPhotoImages
       type: object
-    MonoPhotoOrderBy:
-      default: id
-      description: |-
-        角色/人物相册排序方式
-          - id = ID
-          - dateline = 创建时间
-          - lasttouch = 最近更新
-      enum:
-        - id
-        - dateline
-        - lasttouch
-      type: string
-      x-enum-varnames:
-        - ID
-        - Dateline
-        - Lasttouch
-      x-ms-enum:
-        modelAsString: true
-        name: MonoPhotoOrderBy
     Notice:
       properties:
         createdAt:
@@ -4828,11 +4809,6 @@ paths:
             default: 0
             minimum: 0
             type: integer
-        - in: query
-          name: orderBy
-          required: false
-          schema:
-            $ref: '#/components/schemas/MonoPhotoOrderBy'
         - in: path
           name: characterID
           required: true
@@ -7937,11 +7913,6 @@ paths:
             default: 0
             minimum: 0
             type: integer
-        - in: query
-          name: orderBy
-          required: false
-          schema:
-            $ref: '#/components/schemas/MonoPhotoOrderBy'
         - in: path
           name: personID
           required: true
