@@ -401,28 +401,28 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
   };
 }
 
-export function toMonoPhoto(photo: orm.ISubjectPhoto): res.IMonoPhoto {
-  let type: 'character' | 'person';
-  switch (photo.type) {
+function monoPhotoImageType(type: number): 'character' | 'person' {
+  switch (type) {
     case MonoPhotoType.Character: {
-      type = 'character';
-      break;
+      return 'character';
     }
     case MonoPhotoType.Person: {
-      type = 'person';
-      break;
+      return 'person';
     }
     default: {
-      throw new Error(`unknown mono photo type ${photo.type}`);
+      throw new Error(`unknown mono photo type ${type}`);
     }
   }
+}
+
+export function toMonoPhoto(photo: orm.ISubjectPhoto): res.IMonoPhoto {
   return {
     id: photo.id,
     type: photo.type,
     mainID: photo.mid,
     creatorID: photo.uid,
     target: photo.target,
-    images: monoPhotoImages(type, photo.target),
+    images: monoPhotoImages(monoPhotoImageType(photo.type), photo.target),
     title: photo.title,
     comment: photo.comment,
     tags: splitTags(photo.tags),
