@@ -25,6 +25,12 @@ type commentTablesWithoutState =
   | typeof schema.chiiBlogComments
   | typeof schema.chiiTimelineComments;
 
+interface ParentComment {
+  id: number;
+  state: number;
+  relatedPhotoID?: number;
+}
+
 function CanViewComment(state: number): boolean {
   switch (state) {
     case CommentState.AdminDelete:
@@ -52,6 +58,28 @@ export class CommentWithState {
 
   constructor(table: commentTablesWithState) {
     this.table = table;
+  }
+
+  private async fetchParentComment(commentID: number): Promise<ParentComment | undefined> {
+    if (hasRelatedPhotoTable(this.table)) {
+      const [parent] = await db
+        .select({
+          id: this.table.id,
+          state: this.table.state,
+          relatedPhotoID: this.table.relatedPhotoID,
+        })
+        .from(this.table)
+        .where(op.eq(this.table.id, commentID))
+        .limit(1);
+      return parent;
+    }
+
+    const [parent] = await db
+      .select({ id: this.table.id, state: this.table.state })
+      .from(this.table)
+      .where(op.eq(this.table.id, commentID))
+      .limit(1);
+    return parent;
   }
 
   async getAll(mainID: number, relatedPhotoID?: number) {
@@ -114,30 +142,7 @@ export class CommentWithState {
     }
     let effectiveRelatedPhotoID = relatedPhotoID;
     if (replyTo !== 0) {
-      let parent:
-        | {
-            id: number;
-            state: number;
-            relatedPhotoID?: number;
-          }
-        | undefined;
-      if (hasRelatedPhotoTable(this.table)) {
-        [parent] = await db
-          .select({
-            id: this.table.id,
-            state: this.table.state,
-            relatedPhotoID: this.table.relatedPhotoID,
-          })
-          .from(this.table)
-          .where(op.eq(this.table.id, replyTo))
-          .limit(1);
-      } else {
-        [parent] = await db
-          .select({ id: this.table.id, state: this.table.state })
-          .from(this.table)
-          .where(op.eq(this.table.id, replyTo))
-          .limit(1);
-      }
+      const parent = await this.fetchParentComment(replyTo);
       if (!parent) {
         throw new NotFoundError(`parent comment id ${replyTo}`);
       }
