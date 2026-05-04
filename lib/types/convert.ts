@@ -13,6 +13,7 @@ import {
 import { parseIndexStats } from '@app/lib/index/stats';
 import { IndexPrivacy } from '@app/lib/index/types';
 import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
+import { MonoPhotoType } from '@app/lib/person/photo-type.ts';
 import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -401,7 +402,20 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
 }
 
 export function toMonoPhoto(photo: orm.ISubjectPhoto): res.IMonoPhoto {
-  const type = photo.type === 1 ? 'character' : 'person';
+  let type: 'character' | 'person';
+  switch (photo.type) {
+    case MonoPhotoType.Character: {
+      type = 'character';
+      break;
+    }
+    case MonoPhotoType.Person: {
+      type = 'person';
+      break;
+    }
+    default: {
+      throw new Error(`unknown mono photo type ${photo.type}`);
+    }
+  }
   return {
     id: photo.id,
     type: photo.type,

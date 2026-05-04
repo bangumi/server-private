@@ -1,15 +1,9 @@
 import { db, op, type orm, schema } from '@app/drizzle';
 import { NotFoundError } from '@app/lib/error.ts';
+import type { MonoPhotoType } from '@app/lib/person/photo-type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
-
-export const MonoPhotoType = Object.freeze({
-  Character: 1,
-  Person: 2,
-});
-
-export type MonoPhotoType = (typeof MonoPhotoType)[keyof typeof MonoPhotoType];
 
 function condition(type: MonoPhotoType, mainID: number) {
   return op.and(

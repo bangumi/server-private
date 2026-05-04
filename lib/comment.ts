@@ -6,6 +6,7 @@ import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { LikeType, Reaction } from '@app/lib/like.ts';
+import { MonoPhotoType } from '@app/lib/person/photo-type.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -16,6 +17,8 @@ type commentTablesWithState =
   | typeof schema.chiiEpComments
   | typeof schema.chiiCrtComments
   | typeof schema.chiiPrsnComments;
+
+type commentTablesWithRelatedPhoto = typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments;
 
 type commentTablesWithoutState =
   | typeof schema.chiiIndexComments
@@ -38,6 +41,12 @@ function CanViewComment(state: number): boolean {
   }
 }
 
+function hasRelatedPhotoTable(
+  table: commentTablesWithState,
+): table is commentTablesWithRelatedPhoto {
+  return table === schema.chiiCrtComments || table === schema.chiiPrsnComments;
+}
+
 export class CommentWithState {
   private readonly table: commentTablesWithState;
 
@@ -45,24 +54,10 @@ export class CommentWithState {
     this.table = table;
   }
 
-  private hasRelatedPhoto() {
-    return this.table === schema.chiiCrtComments || this.table === schema.chiiPrsnComments;
-  }
-
   async getAll(mainID: number, relatedPhotoID?: number) {
     let where = op.eq(this.table.mid, mainID);
-    if (relatedPhotoID !== undefined && this.hasRelatedPhoto()) {
-      const relatedPhotoWhere = op.and(
-        where,
-        op.eq(
-          (this.table as typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments)
-            .relatedPhotoID,
-          relatedPhotoID,
-        ),
-      );
-      if (relatedPhotoWhere) {
-        where = relatedPhotoWhere;
-      }
+    if (relatedPhotoID !== undefined && hasRelatedPhotoTable(this.table)) {
+      where = op.and(where, op.eq(this.table.relatedPhotoID, relatedPhotoID)) ?? where;
     }
     const data = await db.select().from(this.table).where(where).orderBy(op.asc(this.table.id));
     const uids = data.map((v) => v.uid);
@@ -81,7 +76,10 @@ export class CommentWithState {
         mainID: d.mid,
         creatorID: d.uid,
         relatedID: d.related,
-        relatedPhotoID: 'relatedPhotoID' in d ? d.relatedPhotoID : undefined,
+        relatedPhotoID: hasRelatedPhotoTable(this.table)
+          ? (d as (typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments)['$inferSelect'])
+              .relatedPhotoID
+          : undefined,
         content: canViewContent ? d.content : '',
         createdAt: d.createdAt,
         state: d.state,
@@ -116,18 +114,37 @@ export class CommentWithState {
     }
     let effectiveRelatedPhotoID = relatedPhotoID;
     if (replyTo !== 0) {
-      const [parent] = await db
-        .select()
-        .from(this.table)
-        .where(op.eq(this.table.id, replyTo))
-        .limit(1);
+      let parent:
+        | {
+            id: number;
+            state: number;
+            relatedPhotoID?: number;
+          }
+        | undefined;
+      if (hasRelatedPhotoTable(this.table)) {
+        [parent] = await db
+          .select({
+            id: this.table.id,
+            state: this.table.state,
+            relatedPhotoID: this.table.relatedPhotoID,
+          })
+          .from(this.table)
+          .where(op.eq(this.table.id, replyTo))
+          .limit(1);
+      } else {
+        [parent] = await db
+          .select({ id: this.table.id, state: this.table.state })
+          .from(this.table)
+          .where(op.eq(this.table.id, replyTo))
+          .limit(1);
+      }
       if (!parent) {
         throw new NotFoundError(`parent comment id ${replyTo}`);
       }
       if (parent.state !== CommentState.Normal) {
         throw new NotAllowedError(`reply to a abnormal state comment`);
       }
-      if (this.hasRelatedPhoto() && 'relatedPhotoID' in parent) {
+      if (parent.relatedPhotoID !== undefined) {
         if (effectiveRelatedPhotoID === 0) {
           effectiveRelatedPhotoID = parent.relatedPhotoID;
         }
@@ -138,7 +155,7 @@ export class CommentWithState {
     }
     const now = DateTime.now().toUnixInteger();
     await rateLimit(LimitAction.Comment, auth.userID);
-    const reply: typeof this.table.$inferInsert = {
+    const baseReply = {
       mid: mainID,
       uid: auth.userID,
       related: replyTo,
@@ -146,9 +163,13 @@ export class CommentWithState {
       createdAt: now,
       state: CommentState.Normal,
     };
-    if (this.hasRelatedPhoto()) {
-      Object.assign(reply, { relatedPhotoID: effectiveRelatedPhotoID });
-    }
+    const reply =
+      this.table === schema.chiiCrtComments || this.table === schema.chiiPrsnComments
+        ? ({
+            ...baseReply,
+            relatedPhotoID: effectiveRelatedPhotoID,
+          } as typeof this.table.$inferInsert)
+        : (baseReply as typeof this.table.$inferInsert);
     let insertId = 0;
     await db.transaction(async (t) => {
       const [result] = await t.insert(this.table).values(reply);
@@ -181,7 +202,7 @@ export class CommentWithState {
               .where(
                 op.and(
                   op.eq(schema.chiiSubjectPhotos.id, effectiveRelatedPhotoID),
-                  op.eq(schema.chiiSubjectPhotos.type, 1),
+                  op.eq(schema.chiiSubjectPhotos.type, MonoPhotoType.Character),
                   op.eq(schema.chiiSubjectPhotos.mid, mainID),
                 ),
               )
@@ -205,7 +226,7 @@ export class CommentWithState {
               .where(
                 op.and(
                   op.eq(schema.chiiSubjectPhotos.id, effectiveRelatedPhotoID),
-                  op.eq(schema.chiiSubjectPhotos.type, 2),
+                  op.eq(schema.chiiSubjectPhotos.type, MonoPhotoType.Person),
                   op.eq(schema.chiiSubjectPhotos.mid, mainID),
                 ),
               )
