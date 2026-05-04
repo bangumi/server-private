@@ -2,10 +2,18 @@ import type { WikiMap } from '@bgm38/wiki';
 import { parseToMap as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
 import { type orm } from '@app/drizzle';
-import { avatar, blogIcon, groupIcon, personImages, subjectCover } from '@app/lib/images';
+import {
+  avatar,
+  blogIcon,
+  groupIcon,
+  monoPhotoImages,
+  personImages,
+  subjectCover,
+} from '@app/lib/images';
 import { parseIndexStats } from '@app/lib/index/stats';
 import { IndexPrivacy } from '@app/lib/index/types';
 import { getInfoboxSummary as getPersonInfoboxSummary } from '@app/lib/person/infobox.ts';
+import { MonoPhotoType } from '@app/lib/person/photo-type.ts';
 import { getInfoboxSummary as getSubjectInfoboxSummary } from '@app/lib/subject/infobox.ts';
 import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
 import type * as res from '@app/lib/types/res.ts';
@@ -390,6 +398,38 @@ export function toBlogPhoto(photo: orm.IBlogPhoto): res.IBlogPhoto {
     icon: blogIcon(photo.target),
     vote: photo.vote,
     createdAt: photo.createdAt,
+  };
+}
+
+function monoPhotoImageType(type: number): 'character' | 'person' {
+  switch (type) {
+    case MonoPhotoType.Character: {
+      return 'character';
+    }
+    case MonoPhotoType.Person: {
+      return 'person';
+    }
+    default: {
+      throw new Error(`unknown mono photo type ${type}`);
+    }
+  }
+}
+
+export function toMonoPhoto(photo: orm.ISubjectPhoto): res.IMonoPhoto {
+  return {
+    id: photo.id,
+    type: photo.type,
+    mainID: photo.mid,
+    creatorID: photo.uid,
+    target: photo.target,
+    images: monoPhotoImages(monoPhotoImageType(photo.type), photo.target),
+    title: photo.title,
+    comment: photo.comment,
+    tags: splitTags(photo.tags),
+    spoiler: photo.spoiler,
+    createdAt: photo.createdAt,
+    updatedAt: photo.updatedAt,
+    lastPost: photo.lastPost,
   };
 }
 

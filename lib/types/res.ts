@@ -480,6 +480,7 @@ export const CommentBase = t.Object(
     mainID: t.Integer(),
     creatorID: t.Integer(),
     relatedID: t.Integer(),
+    relatedPhotoID: t.Optional(t.Integer()),
     createdAt: t.Integer(),
     content: t.String(),
     state: t.Integer(),
@@ -661,6 +662,39 @@ export const BlogPhoto = t.Object(
     createdAt: t.Integer(),
   },
   { $id: 'BlogPhoto', title: 'BlogPhoto' },
+);
+
+export type IMonoPhotoImages = Static<typeof MonoPhotoImages>;
+export const MonoPhotoImages = t.Object(
+  {
+    large: t.String(),
+    common: t.String(),
+    medium: t.String(),
+    small: t.String(),
+    grid: t.String(),
+  },
+  { $id: 'MonoPhotoImages', title: 'MonoPhotoImages' },
+);
+
+export type IMonoPhoto = Static<typeof MonoPhoto>;
+export const MonoPhoto = t.Object(
+  {
+    id: t.Integer(),
+    type: t.Integer(),
+    mainID: t.Integer(),
+    creatorID: t.Integer(),
+    user: t.Optional(Ref(SlimUser)),
+    target: t.String(),
+    images: Ref(MonoPhotoImages),
+    title: t.String(),
+    comment: t.String(),
+    tags: t.Array(t.String()),
+    spoiler: t.Boolean(),
+    createdAt: t.Integer(),
+    updatedAt: t.Integer(),
+    lastPost: t.Integer(),
+  },
+  { $id: 'MonoPhoto', title: 'MonoPhoto' },
 );
 
 export type ISubjectInterestComment = Static<typeof SubjectInterestComment>;

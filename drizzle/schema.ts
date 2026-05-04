@@ -110,6 +110,7 @@ export const chiiCrtComments = mysqlTable('chii_crt_comments', {
   mid: mediumint('crt_pst_mid').notNull(),
   uid: mediumint('crt_pst_uid').notNull(),
   related: mediumint('crt_pst_related').notNull(),
+  relatedPhotoID: mediumint('crt_pst_related_photo').notNull(),
   createdAt: int('crt_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('crt_pst_content').notNull(),
   state: tinyint('crt_pst_state').notNull(),
@@ -472,6 +473,7 @@ export const chiiPrsnComments = mysqlTable('chii_prsn_comments', {
   mid: mediumint('prsn_pst_mid').notNull(),
   uid: mediumint('prsn_pst_uid').notNull(),
   related: mediumint('prsn_pst_related').notNull(),
+  relatedPhotoID: mediumint('prsn_pst_related_photo').notNull(),
   createdAt: int('prsn_pst_dateline').notNull(),
   content: htmlEscapedString('mediumtext')('prsn_pst_content').notNull(),
   state: tinyint('prsn_pst_state').notNull(),
@@ -746,6 +748,22 @@ export const chiiBlogPhotos = mysqlTable('chii_blog_photo', {
   target: varchar('photo_target', { length: 255 }).notNull(),
   vote: mediumint('photo_vote').notNull(),
   createdAt: int('photo_dateline').notNull(),
+});
+
+export const chiiSubjectPhotos = mysqlTable('chii_subject_photos', {
+  id: mediumint('sbj_photo_id').autoincrement().notNull(),
+  type: tinyint('sbj_photo_type').notNull(),
+  mid: mediumint('sbj_photo_mid').notNull(),
+  uid: mediumint('sbj_photo_uid').notNull(),
+  target: varchar('sbj_photo_target', { length: 255 }).notNull(),
+  title: htmlEscapedString('varchar')('sbj_photo_title', { length: 1024 }).notNull(),
+  comment: htmlEscapedString('mediumtext')('sbj_photo_comment').notNull(),
+  tags: htmlEscapedString('varchar')('sbj_photo_tags', { length: 255 }).notNull(),
+  spoiler: customBoolean('sbj_photo_spoiler').notNull(),
+  createdAt: int('sbj_photo_dateline').notNull(),
+  updatedAt: int('sbj_photo_lasttouch').notNull(),
+  lastPost: int('sbj_photo_lastpost').notNull(),
+  ban: customBoolean('sbj_photo_ban').notNull(),
 });
 
 export const chiiIssues = mysqlTable('chii_issues', {

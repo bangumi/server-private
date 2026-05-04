@@ -7,6 +7,8 @@ const baseIconPath = `pic/icon/l`;
 const basePhotoPath = `pic/photo/l`;
 const baseSubjectImagePath = `pic/cover/l`;
 const basePersonImagePath = `pic/crt/l`;
+const baseCharacterPhotoPath = `pic/photos/character/l`;
+const basePersonPhotoPath = `pic/photos/person/l`;
 
 export function avatar(s: string): res.IAvatar {
   if (!s) {
@@ -60,5 +62,17 @@ export function personImages(s: string): res.IPersonImages | undefined {
     medium: `https://${imageDomain}/r/200/${basePersonImagePath}/${s}`,
     small: `https://${imageDomain}/r/100/${basePersonImagePath}/${s}`,
     grid: `https://${imageDomain}/r/100x100/${basePersonImagePath}/${s}`,
+  };
+}
+
+export function monoPhotoImages(type: 'character' | 'person', s: string): res.IMonoPhotoImages {
+  const path =
+    type === 'character' ? `${baseCharacterPhotoPath}/${s}` : `${basePersonPhotoPath}/${s}`;
+  return {
+    large: `https://${imageDomain}/${path}`,
+    common: `https://${imageDomain}/r/400/${path}`,
+    medium: `https://${imageDomain}/r/200/${path}`,
+    small: `https://${imageDomain}/r/100/${path}`,
+    grid: `https://${imageDomain}/r/100x100/${path}`,
   };
 }
