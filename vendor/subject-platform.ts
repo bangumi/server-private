@@ -1,6 +1,8 @@
 import type { Static } from 'typebox';
 import t from 'typebox';
 
+import type { SubjectType } from '@app/lib/subject';
+
 import * as platformConfig from './common/subject_platforms.json';
 import { assertValue } from './validate';
 
@@ -46,19 +48,22 @@ export type SubjectPlatform = Static<typeof SubjectPlatformSchema>;
 export type SubjectPlatformDefault = Static<typeof SubjectPlatformDefaultSchema>;
 
 export function findSubjectPlatform(
-  subjectType: number,
+  subjectType: SubjectType,
   plat: number,
 ): SubjectPlatform | undefined {
   return checkedSubjectPlatforms.platforms[subjectType]?.[plat];
 }
 
-export function getSubjectPlatforms(subjectType: number): SubjectPlatform[] {
+export function getSubjectPlatforms(subjectType: SubjectType): SubjectPlatform[] {
   return Object.values(checkedSubjectPlatforms.platforms[subjectType] ?? {}).toSorted(
     (a, b) => a.id - b.id,
   );
 }
 
-export function getSubjectPlatformSortKeys(subjectType: number, plat: number): readonly string[] {
+export function getSubjectPlatformSortKeys(
+  subjectType: SubjectType,
+  plat: number,
+): readonly string[] {
   const platform = findSubjectPlatform(subjectType, plat);
   const keys = platform?.sort_keys ?? checkedSubjectPlatforms.defaults[subjectType]?.sort_keys;
   return keys ?? Object.freeze(['放送开始', '发行日期', '开始']);
