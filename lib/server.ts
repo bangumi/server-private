@@ -6,7 +6,6 @@ import type { FastifySchemaValidationError } from 'fastify/types/schema.d.ts';
 import metricsPlugin from 'fastify-metrics';
 import mercurius from 'mercurius';
 import type { Static } from 'typebox';
-import { TypeORMError } from 'typeorm';
 
 import { fastifyAltairPlugin } from '@app/lib/graphql/ui.ts';
 import * as routes from '@app/routes/index.ts';
@@ -18,7 +17,6 @@ import config, { testing, VERSION } from './config.ts';
 import type { Context } from './graphql/context.ts';
 import { resolvers, schema } from './graphql/schema.ts';
 import { logger } from './logger.ts';
-import { repo } from './orm/index.ts';
 import type * as res from './types/res.ts';
 
 export function defaultSchemaErrorFormatter(
@@ -70,8 +68,7 @@ export async function createServer(
   });
 
   server.setErrorHandler(function (error, request, reply) {
-    // hide TypeORM message
-    if (error instanceof TypeORMError || error instanceof DrizzleError) {
+    if (error instanceof DrizzleError) {
       logger.error(error);
       void reply.status(500).send({
         error: 'Internal Server Error',
@@ -148,10 +145,10 @@ export async function createServer(
     context: async (request: FastifyRequest): Promise<Context> => {
       const a = await auth.byHeader(request.headers.authorization);
       if (a) {
-        return { repo, auth: a };
+        return { auth: a };
       }
 
-      return { repo, auth: emptyAuth() };
+      return { auth: emptyAuth() };
     },
   });
 

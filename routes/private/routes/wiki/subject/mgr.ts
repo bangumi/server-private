@@ -1,10 +1,9 @@
 import { DateTime } from 'luxon';
 import t from 'typebox';
 
+import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
-import * as entity from '@app/lib/orm/entity';
-import { AppDataSource } from '@app/lib/orm/index.ts';
 import { RevType } from '@app/lib/rev/type.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -31,26 +30,27 @@ export function setup(app: App) {
         throw new NotAllowedError('lock a subject');
       }
 
-      await AppDataSource.transaction(async (txn) => {
-        await txn
-          .getRepository(entity.Subject)
-          .createQueryBuilder()
-          .update({ subjectBan: 1 })
-          .where('id = :id', { id: body.subjectID })
-          .execute();
+      await db.transaction(async (t) => {
+        await t
+          .update(schema.chiiSubjects)
+          .set({ ban: 1 })
+          .where(op.eq(schema.chiiSubjects.id, body.subjectID));
 
-        await txn
-          .getRepository(entity.SubjectRev)
-          .createQueryBuilder()
-          .insert()
-          .values({
-            type: RevType.subjectLock,
-            subjectID: body.subjectID,
-            commitMessage: body.reason,
-            creatorID: auth.userID,
-            createdAt: DateTime.now().toUnixInteger(),
-          })
-          .execute();
+        await t.insert(schema.chiiSubjectRev).values({
+          type: RevType.subjectLock,
+          subjectID: body.subjectID,
+          typeID: 0,
+          name: '',
+          nameCN: '',
+          infobox: '',
+          metaTags: '',
+          summary: '',
+          commitMessage: body.reason,
+          creatorID: auth.userID,
+          createdAt: DateTime.now().toUnixInteger(),
+          eps: 0,
+          platform: 0,
+        });
       });
 
       return {};
@@ -78,26 +78,27 @@ export function setup(app: App) {
         throw new NotAllowedError('unlock a subject');
       }
 
-      await AppDataSource.transaction(async (txn) => {
-        await txn
-          .getRepository(entity.Subject)
-          .createQueryBuilder()
-          .update({ subjectBan: 0 })
-          .where('id = :id', { id: body.subjectID })
-          .execute();
+      await db.transaction(async (t) => {
+        await t
+          .update(schema.chiiSubjects)
+          .set({ ban: 0 })
+          .where(op.eq(schema.chiiSubjects.id, body.subjectID));
 
-        await txn
-          .getRepository(entity.SubjectRev)
-          .createQueryBuilder()
-          .insert()
-          .values({
-            type: RevType.subjectUnlock,
-            subjectID: body.subjectID,
-            commitMessage: body.reason,
-            creatorID: auth.userID,
-            createdAt: DateTime.now().toUnixInteger(),
-          })
-          .execute();
+        await t.insert(schema.chiiSubjectRev).values({
+          type: RevType.subjectUnlock,
+          subjectID: body.subjectID,
+          typeID: 0,
+          name: '',
+          nameCN: '',
+          infobox: '',
+          metaTags: '',
+          summary: '',
+          commitMessage: body.reason,
+          creatorID: auth.userID,
+          createdAt: DateTime.now().toUnixInteger(),
+          eps: 0,
+          platform: 0,
+        });
       });
 
       return {};

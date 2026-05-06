@@ -1,8 +1,7 @@
 import * as lo from 'lodash-es';
 import t from 'typebox';
 
-import * as orm from '@app/lib/orm/index.ts';
-import { EpisodeRepo, EpRevRepo, RevHistoryRepo, RevTextRepo } from '@app/lib/orm/index.ts';
+import { db, op, schema } from '@app/drizzle';
 import type { EpTextRev } from '@app/lib/rev/type.ts';
 import { EpisodeEditTypes } from '@app/lib/rev/type.ts';
 import { parseRevTexts } from '@app/lib/rev/utils.ts';
@@ -23,16 +22,25 @@ export async function setup(app: App) {
       },
     },
     async ({ params: { episodeID } }, res) => {
-      const ep = await EpisodeRepo.findOneBy({ id: episodeID });
+      const [ep] = await db
+        .select()
+        .from(schema.chiiEpisodes)
+        .where(op.eq(schema.chiiEpisodes.id, episodeID))
+        .limit(1);
 
       if (!ep) {
         return res.status(404).send();
       }
 
-      const o = await RevHistoryRepo.findBy({
-        revMid: episodeID,
-        revType: orm.In(EpisodeEditTypes),
-      });
+      const o = await db
+        .select()
+        .from(schema.chiiRevHistory)
+        .where(
+          op.and(
+            op.eq(schema.chiiRevHistory.revMid, episodeID),
+            op.inArray(schema.chiiRevHistory.revType, EpisodeEditTypes),
+          ),
+        );
 
       // const revs: {
       //   airdate: string;
@@ -47,10 +55,18 @@ export async function setup(app: App) {
       const s = episodeID.toString();
 
       // `episodeID=123` 时可能查询到 `123456` 的批量修改
-      const epBatchRevs = await EpRevRepo.findBy([
-        { revEids: orm.Like(`%${episodeID}%`), revSid: ep.subjectID },
-        { revEids: episodeID.toString(), revSid: ep.subjectID },
-      ]);
+      const epBatchRevs = await db
+        .select()
+        .from(schema.chiiEpRevisions)
+        .where(
+          op.and(
+            op.eq(schema.chiiEpRevisions.revSid, ep.subjectID),
+            op.or(
+              op.like(schema.chiiEpRevisions.revEids, `%${episodeID}%`),
+              op.eq(schema.chiiEpRevisions.revEids, episodeID.toString()),
+            ),
+          ),
+        );
 
       const batchRevs = epBatchRevs
         .map((x) => {
@@ -62,9 +78,14 @@ export async function setup(app: App) {
         })
         .filter((x) => x.eids.includes(s));
 
-      const revTexts = await RevTextRepo.findBy({
-        revTextId: orm.In(lo.uniq(o.map((x) => x.revTextId))),
-      });
+      const textIds = lo.uniq(o.map((x) => x.revTextId));
+      const revTexts =
+        textIds.length > 0
+          ? await db
+              .select()
+              .from(schema.chiiRevText)
+              .where(op.inArray(schema.chiiRevText.revTextId, textIds))
+          : [];
 
       const revText = await parseRevTexts<EpTextRev>(revTexts);
       const revData = Object.fromEntries(revText.map((x) => [x.id, x.data]));

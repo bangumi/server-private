@@ -1,9 +1,8 @@
 import t from 'typebox';
 
+import { db, op, schema } from '@app/drizzle';
 import { production } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
-import { SubjectImage } from '@app/lib/orm/entity/index.ts';
-import { AppDataSource, SubjectImageRepo } from '@app/lib/orm/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { redirectIfNotLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -75,16 +74,22 @@ export async function setup(app: App) {
       ],
     },
     async ({ params: { subjectID }, body: { imageID } }, res) => {
-      const i = await SubjectImageRepo.findOneBy({ subjectID });
+      const [i] = await db
+        .select()
+        .from(schema.chiiSubjectImgs)
+        .where(op.eq(schema.chiiSubjectImgs.imgSubjectId, subjectID))
+        .limit(1);
 
       if (!i) {
         return res.status(404).send();
       }
 
-      await AppDataSource.transaction(async (t) => {
-        const SubjectImageRepo = t.getRepository(SubjectImage);
-        await image.deleteSubjectImage(i.target);
-        await SubjectImageRepo.update({ id: imageID }, { ban: 1 });
+      await db.transaction(async (t) => {
+        await image.deleteSubjectImage(i.imgTarget);
+        await t
+          .update(schema.chiiSubjectImgs)
+          .set({ imgBan: 1 })
+          .where(op.eq(schema.chiiSubjectImgs.imgId, imageID));
       });
 
       await Subject.onSubjectVote(subjectID);
