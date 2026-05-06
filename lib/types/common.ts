@@ -44,6 +44,31 @@ export const PersonType = t.Integer({
   - 3 = 组合`,
 });
 
+export const CharacterType = t.Integer({
+  $id: 'CharacterType',
+  enum: [1, 2, 3, 4 /* , 5, 6, 7, 8, 9 */],
+  'x-ms-enum': {
+    name: 'CharacterType',
+    modelAsString: false,
+  },
+  'x-enum-varnames': [
+    'Crt',
+    'Mecha',
+    'Vessel',
+    'Org' /* , 'Weapon', 'Armor', 'Item', 'Spell', 'Vidol' */,
+  ],
+  description: `角色类型
+  - 1 = 角色
+  - 2 = 机体
+  - 3 = 舰船
+  - 4 = 组织机构`,
+  /* - 5 = 兵器
+  - 6 = 装备
+  - 7 = 道具&物品
+  - 8 = 技能&法术
+  - 9 = 虚拟偶像`*/
+});
+
 export const CharacterCastType = t.Integer({
   $id: 'CharacterCastType',
   enum: [0, 2, 1, 3, 4, 5, 6],

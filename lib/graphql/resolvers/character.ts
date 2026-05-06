@@ -1,10 +1,10 @@
 import type { Wiki } from '@bgm38/wiki';
 import { parse as parseWiki, WikiSyntaxError } from '@bgm38/wiki';
 
+import type { orm } from '@app/drizzle';
 import { personImages } from '@app/lib/images';
-import type * as entity from '@app/lib/orm/entity/index.ts';
 
-export function convertCharacter(character: entity.Character) {
+export function convertCharacter(character: orm.ICharacter) {
   let wiki: Wiki = {
     type: '',
     data: [],
