@@ -19,7 +19,7 @@ import {
 } from '@app/lib/image/index.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { createRevision } from '@app/lib/rev/common.ts';
-import type { IPersonRev, IPersonSubjectRevSingle } from '@app/lib/rev/type.ts';
+import type { IPersonRev, IPersonSubjectRev } from '@app/lib/rev/type.ts';
 import { PersonCastRev, PersonRev, PersonSubjectRev, RevType } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
@@ -1328,23 +1328,11 @@ export async function setup(app: App) {
         await createRevision(txn, {
           mid: personID,
           type: RevType.subjectPersonRelation,
-          rev: relationEdits
-            .toSorted((a, b) => {
-              const s = a.position - b.position;
-              if (s !== 0) return s;
-              return a.subject.id - b.subject.id;
-            })
-            .reduce(
-              (acc, r, i) => {
-                acc[String(i)] = {
-                  subject_id: r.subject.id,
-                  prsn_id: personID,
-                  position: r.position,
-                };
-                return acc;
-              },
-              {} as Record<string, IPersonSubjectRevSingle>,
-            ),
+          rev: relationEdits.map((r) => ({
+            subject_id: r.subject.id,
+            prsn_id: personID,
+            position: r.position,
+          })) satisfies IPersonSubjectRev,
           creator: finalAuthorID,
           comment,
         });

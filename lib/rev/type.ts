@@ -142,7 +142,7 @@ export const SubjectCharacterRev = t.Union(
   { $id: 'SubjectCharacterRev' },
 );
 
-export type ISubjectPersonRevSingle = Static<typeof SubjectPersonRevSingle>;
+export type ISubjectPersonRev = Static<typeof SubjectPersonRev>;
 const SubjectPersonRevSingle = t.Object({
   subject_id: t.Integer(),
   position: t.Integer(),
@@ -153,7 +153,7 @@ export const SubjectPersonRev = t.Union(
   { $id: 'SubjectPersonRev' },
 );
 
-export type IPersonSubjectRevSingle = Static<typeof PersonSubjectRevSingle>;
+export type IPersonSubjectRev = Static<typeof PersonSubjectRev>;
 const PersonSubjectRevSingle = t.Object({
   subject_id: t.Integer(),
   position: t.Integer(),
