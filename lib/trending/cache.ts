@@ -1,7 +1,6 @@
-import type { SubjectType } from '@app/lib/subject/type.ts';
 import type { TrendingPeriod } from '@app/lib/trending/type.ts';
 
-export function getTrendingSubjectKey(type: SubjectType, period: TrendingPeriod) {
+export function getTrendingSubjectKey(type: number, period: TrendingPeriod) {
   return `trending:subjects:${type}:${period}`;
 }
 

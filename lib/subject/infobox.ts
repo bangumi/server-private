@@ -1,9 +1,10 @@
+import { UnreachableError } from '@app/lib/error.ts';
 import { getInfoboxValue } from '@app/lib/infobox.ts';
 import type * as res from '@app/lib/types/res.ts';
 
 import { SubjectType } from './type';
 
-function getDisplayFields(type: SubjectType): string[][] {
+function getDisplayFields(type: number): string[][] {
   const airdate = ['放送开始', '上映日', '上映年度', '发售日'];
   switch (type) {
     case SubjectType.Book: {
@@ -21,10 +22,13 @@ function getDisplayFields(type: SubjectType): string[][] {
     case SubjectType.Real: {
       return [airdate, ['开始'], ['导演'], ['编剧'], ['主演']];
     }
+    default: {
+      throw new UnreachableError(`unexpected subject type: ${type}`);
+    }
   }
 }
 
-export function getInfoboxSummary(infobox: res.IInfoboxItem[], type: SubjectType, eps = 0): string {
+export function getInfoboxSummary(infobox: res.IInfoboxItem[], type: number, eps = 0): string {
   const displayFields = getDisplayFields(type);
   const list: string[] = [];
   if (eps > 0) {

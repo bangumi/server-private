@@ -8,7 +8,7 @@ import { getTrendingDateline, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getTrendingSubjectKey } from './cache';
 
 export async function updateTrendingSubjects(
-  subjectType: SubjectType,
+  subjectType: number,
   period = TrendingPeriod.Month,
   flush = false,
 ) {
