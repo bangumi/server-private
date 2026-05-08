@@ -11,8 +11,8 @@ import { fastifyAltairPlugin } from '@app/lib/graphql/ui.ts';
 import * as routes from '@app/routes/index.ts';
 
 import { buildAjvOptions } from './ajv.ts';
-import { emptyAuth } from './auth/index.ts';
 import * as auth from './auth/index.ts';
+import { emptyAuth } from './auth/index.ts';
 import config, { testing, VERSION } from './config.ts';
 import type { Context } from './graphql/context.ts';
 import { resolvers, schema } from './graphql/schema.ts';
