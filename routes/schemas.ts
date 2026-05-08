@@ -24,7 +24,6 @@ function addCommonSchemas(app: App) {
   app.addSchema(common.ReportType);
   app.addSchema(common.RevisionType);
   app.addSchema(common.SubjectType);
-  app.addSchema(common.SubjectRelationId);
   app.addSchema(common.TimelineCat);
 }
 

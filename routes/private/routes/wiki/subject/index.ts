@@ -176,7 +176,7 @@ export const SubjectRelationWikiInfo = t.Array(
       name: t.String(),
       nameCN: t.String(),
     }),
-    type: res.Ref(res.SubjectRelationId),
+    type: t.Integer(),
     order: t.Integer(),
   }),
   {
@@ -189,14 +189,14 @@ export const SubjectRelationWikiEdit = t.Object({
   subject: t.Object({
     id: t.Integer(),
   }),
-  type: req.Ref(req.SubjectRelationId),
+  type: t.Integer(),
   order: t.Optional(t.Integer({ default: 0 })),
 });
 
 const SubjectRelationExpected = t.Object(
   {
     subject: t.Object({ id: t.Integer() }),
-    type: req.Ref(req.SubjectRelationId),
+    type: t.Integer(),
     order: t.Integer(),
   },
   {
@@ -214,7 +214,7 @@ export const SubjectRelationRevisionWikiInfo = t.Array(
       name: t.String(),
       nameCN: t.String(),
     }),
-    type: res.Ref(res.SubjectRelationId),
+    type: t.Integer(),
     order: t.Integer(),
   }),
   {
