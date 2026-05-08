@@ -36,20 +36,20 @@ export const NotAllowedError = createError<[string]>(
 );
 
 export const UserGroup = Object.freeze({
-  Unknown: 0 as number,
-  Admin: 1 as number,
-  BangumiAdmin: 2 as number,
-  WindowAdmin: 3 as number,
-  Quite: 4 as number,
-  Banned: 5 as number,
+  Unknown: 0,
+  Admin: 1,
+  BangumiAdmin: 2,
+  WindowAdmin: 3,
+  Quite: 4,
+  Banned: 5,
   // 不太清楚具体是什么
-  _6: 6 as number,
+  _6: 6,
   // 不太清楚具体是什么
-  _7: 7 as number,
-  CharacterAdmin: 8 as number,
-  WikiAdmin: 9 as number,
-  Normal: 10 as number,
-  WikiEditor: 11 as number,
+  _7: 7,
+  CharacterAdmin: 8,
+  WikiAdmin: 9,
+  Normal: 10,
+  WikiEditor: 11,
 } as const);
 
 const nsfwRestrictedUIDs = new Set([
