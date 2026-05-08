@@ -3,9 +3,7 @@ import type { Wiki } from '@bgm38/wiki';
 import { DATE } from '@app/lib/utils/date.ts';
 import { getSubjectPlatformSortKeys } from '@app/vendor';
 
-import type { SubjectType } from './type';
-
-export function extractDate(w: Wiki, typeID: SubjectType, platform: number): DATE {
+export function extractDate(w: Wiki, typeID: number, platform: number): DATE {
   const keys = getSubjectPlatformSortKeys(typeID, platform);
 
   const values = keys

@@ -1,15 +1,15 @@
 import { decr, incr, op, type orm, schema, type Txn } from '@app/drizzle';
 
 import { markEpisodesAsWatched } from './ep';
-import { type CollectionType, SubjectType } from './type';
+import { SubjectType } from './type';
 import { getCollectionTypeField } from './type';
 
 /** 更新条目收藏计数，需要在事务中执行 */
 export async function updateSubjectCollectionCounts(
   t: Txn,
   subjectID: number,
-  newType: CollectionType,
-  oldType?: CollectionType,
+  newType: number,
+  oldType?: number,
 ) {
   if (oldType && oldType === newType) {
     return;
@@ -89,7 +89,7 @@ export async function completeSubjectProgress(
   if (subject.volumes > 0) {
     interest.volStatus = subject.volumes;
   }
-  if ([SubjectType.Anime, SubjectType.Real].includes(subject.typeID)) {
+  if (subject.typeID === SubjectType.Anime || subject.typeID === SubjectType.Real) {
     const episodes = await t
       .select({ id: schema.chiiEpisodes.id })
       .from(schema.chiiEpisodes)
