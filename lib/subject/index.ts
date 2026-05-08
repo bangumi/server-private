@@ -212,7 +212,7 @@ export async function create({
       rate10: 0,
     } satisfies typeof schema.chiiSubjectFields.$inferInsert);
 
-    if ([SubjectType.Anime, SubjectType.Real].includes(typeID) && episodes) {
+    if ((typeID === SubjectType.Anime || typeID === SubjectType.Real) && episodes) {
       // avoid create too many episodes, 50 is enough.
       episodes = Math.min(episodes, 50);
 
@@ -624,7 +624,7 @@ function toRank(users: { group: number }[]): number[] {
     ...subjectImageVoteOrder.map((x) => {
       return users.filter((u) => u.group === x).length;
     }),
-    users.filter((x) => !subjectImageVoteOrder.includes(x.group)).length,
+    users.filter((x) => !(subjectImageVoteOrder as readonly number[]).includes(x.group)).length,
   ];
 }
 

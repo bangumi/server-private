@@ -146,9 +146,9 @@ export async function countUserSubjectCollection(
     [SubjectType.Real]: Object.assign({}, empty),
   };
   for (const d of data) {
-    const type = d.ctype as CollectionType;
-    const stype = d.stype as SubjectType;
-    stats[stype][type] = d.count;
+    const type = d.ctype;
+    const stype = d.stype;
+    stats[stype as keyof typeof stats][type as keyof typeof empty] = d.count;
   }
   await redis.setex(key, 3600, JSON.stringify(stats));
   return stats;

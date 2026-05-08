@@ -4,7 +4,7 @@ import * as diff from 'diff';
 import { StatusCodes } from 'http-status-codes';
 import * as lo from 'lodash-es';
 
-import { type SubjectType, SubjectTypeCN } from '@app/lib/subject/type.ts';
+import { SubjectTypeCN } from '@app/lib/subject/type.ts';
 
 export const WikiChangedError = createError<[string]>(
   'WIKI_CHANGED',
@@ -123,7 +123,7 @@ const birth_simple_patterns = [
 ];
 
 export function genRelationComment(
-  relatedType: SubjectType,
+  relatedType: number,
   commitMessage: string,
   newRelationEdit: unknown[],
   existingRelationEdit: unknown[],

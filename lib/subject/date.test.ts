@@ -54,6 +54,6 @@ test.each([
     SubjectType.Book,
     DATE.parse('2019-11-28'),
   ],
-])('extractDate(%s) = %s', (w: Wiki, t: SubjectType, date: DATE) => {
+])('extractDate(%s) = %s', (w: Wiki, t: number, date: DATE) => {
   expect(extractDate(w, t, 0)).toEqual(date);
 });

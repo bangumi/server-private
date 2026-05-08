@@ -1,7 +1,7 @@
 import { db, op, schema } from '@app/drizzle';
 import { logger } from '@app/lib/logger';
 import redis from '@app/lib/redis.ts';
-import type { TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
+import type { TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getTrendingDateline } from '@app/lib/trending/type.ts';
 
 import { getTrendingSubjectTopicKey } from './cache';
@@ -31,7 +31,7 @@ export async function updateTrendingSubjectTopics(period: TrendingPeriod) {
 
   const ids = [];
   for (const item of data) {
-    ids.push({ id: item.topicID, total: item.total } as TrendingItem);
+    ids.push({ id: item.topicID, total: item.total });
   }
 
   logger.info('Trending subject topics for (%s) calculated: %d.', period, ids.length);

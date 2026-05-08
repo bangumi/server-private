@@ -200,6 +200,5 @@ export function parseConvertedValue<T extends TSchema>(schema: T, value: unknown
   const converted = Value.Convert(schema, value);
   const result = Value.Parse(schema, converted);
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return result;
 }

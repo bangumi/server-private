@@ -1558,7 +1558,7 @@ export async function setup(app: App) {
       if (topic.state === CommentState.AdminCloseTopic) {
         throw new NotAllowedError('edit reply in a closed topic');
       }
-      if ([CommentState.AdminDelete, CommentState.UserDelete].includes(post.state)) {
+      if (([CommentState.AdminDelete, CommentState.UserDelete] as number[]).includes(post.state)) {
         throw new NotAllowedError('edit a deleted reply');
       }
 

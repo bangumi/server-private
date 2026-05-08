@@ -2,13 +2,12 @@ import { db, op, schema } from '@app/drizzle';
 import { logger } from '@app/lib/logger';
 import redis from '@app/lib/redis.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
-import type { TrendingItem } from '@app/lib/trending/type.ts';
 import { getTrendingDateline, TrendingPeriod } from '@app/lib/trending/type.ts';
 
 import { getTrendingSubjectKey } from './cache';
 
 export async function updateTrendingSubjects(
-  subjectType: SubjectType,
+  subjectType: number,
   period = TrendingPeriod.Month,
   flush = false,
 ) {
@@ -58,7 +57,7 @@ export async function updateTrendingSubjects(
 
   const ids = [];
   for (const item of data) {
-    ids.push({ id: item.subjectID, total: item.total } as TrendingItem);
+    ids.push({ id: item.subjectID, total: item.total });
   }
   logger.info('Trending subjects for %s(%s) calculated: %d.', subjectType, period, ids.length);
   await redis.set(trendingKey, JSON.stringify(ids));

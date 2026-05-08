@@ -1,6 +1,6 @@
 import type { OptionsInit } from 'got';
-import { Options } from 'got';
 import * as got from 'got';
+import { Options } from 'got';
 
 import { HTTPS_PROXY } from '@app/lib/config.ts';
 import { getProxyAgent } from '@app/lib/utils/proxy.ts';

@@ -1,7 +1,7 @@
 import * as lo from 'lodash-es';
 
 import { db, op, schema } from '@app/drizzle';
-import { BadRequestError } from '@app/lib/error.ts';
+import { BadRequestError, UnreachableError } from '@app/lib/error.ts';
 import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 import { decode } from '@app/lib/utils';
@@ -30,7 +30,7 @@ export interface TimelineMessage {
     uid: number;
     subject: {
       id: number;
-      type: SubjectType;
+      type: number;
     };
     createdAt: number;
     source: number;
@@ -39,11 +39,11 @@ export interface TimelineMessage {
     uid: number;
     subject: {
       id: number;
-      type: SubjectType;
+      type: number;
     };
     collect: {
       id: number;
-      type: CollectionType;
+      type: number;
       rate: number;
       comment: string;
     };
@@ -54,7 +54,7 @@ export interface TimelineMessage {
     uid: number;
     subject: {
       id: number;
-      type: SubjectType;
+      type: number;
     };
     episode: {
       id: number;
@@ -67,7 +67,7 @@ export interface TimelineMessage {
     uid: number;
     subject: {
       id: number;
-      type: SubjectType;
+      type: number;
       eps: number;
       volumes: number;
     };
@@ -525,7 +525,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
   },
 };
 
-function switchSubjectType(ctype: CollectionType, stype: SubjectType): number {
+function switchSubjectType(ctype: number, stype: number): number {
   switch (stype) {
     case SubjectType.Book: {
       const source = {
@@ -535,7 +535,7 @@ function switchSubjectType(ctype: CollectionType, stype: SubjectType): number {
         [CollectionType.OnHold]: 13,
         [CollectionType.Dropped]: 14,
       };
-      return source[ctype];
+      return source[ctype as keyof typeof source];
     }
     case SubjectType.Anime:
     case SubjectType.Real: {
@@ -546,7 +546,7 @@ function switchSubjectType(ctype: CollectionType, stype: SubjectType): number {
         [CollectionType.OnHold]: 13,
         [CollectionType.Dropped]: 14,
       };
-      return source[ctype];
+      return source[ctype as keyof typeof source];
     }
     case SubjectType.Music: {
       const source = {
@@ -556,7 +556,7 @@ function switchSubjectType(ctype: CollectionType, stype: SubjectType): number {
         [CollectionType.OnHold]: 13,
         [CollectionType.Dropped]: 14,
       };
-      return source[ctype];
+      return source[ctype as keyof typeof source];
     }
     case SubjectType.Game: {
       const source = {
@@ -566,7 +566,10 @@ function switchSubjectType(ctype: CollectionType, stype: SubjectType): number {
         [CollectionType.OnHold]: 13,
         [CollectionType.Dropped]: 14,
       };
-      return source[ctype];
+      return source[ctype as keyof typeof source];
+    }
+    default: {
+      throw new UnreachableError(`unexpected subject type: ${stype}`);
     }
   }
 }
