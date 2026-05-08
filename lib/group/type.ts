@@ -20,10 +20,10 @@ export const GroupSort = Object.freeze({
 });
 
 export const GroupMemberRole = Object.freeze({
-  Visitor: -2 as number,
-  Guest: -1 as number,
-  Member: 0 as number,
-  Creator: 1 as number,
-  Moderator: 2 as number,
-  Blocked: 3 as number,
+  Visitor: -2,
+  Guest: -1,
+  Member: 0,
+  Creator: 1,
+  Moderator: 2,
+  Blocked: 3,
 });

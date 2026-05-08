@@ -12,7 +12,6 @@ import * as image from '@app/lib/image/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
-import type { Permission } from '@app/lib/user/perm.ts';
 import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
@@ -422,7 +421,7 @@ const lockSubjectApp = () =>
     auth: {
       groupID: UserGroup.Normal,
       login: true,
-      permission: { subject_edit: true, subject_lock: true } as Permission,
+      permission: { subject_edit: true, subject_lock: true },
       allowNsfw: true,
       regTime: 0,
       userID: 100,
