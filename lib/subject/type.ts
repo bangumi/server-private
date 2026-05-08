@@ -9,7 +9,7 @@ export const SubjectType = {
 } as const;
 export const SubjectTypeValues = new Set([1, 2, 3, 4, 6]);
 
-export function SubjectTypeCN(typeID: SubjectType) {
+export function SubjectTypeCN(typeID: number) {
   return {
     1: '书籍',
     2: '动画',

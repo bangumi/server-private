@@ -1,7 +1,6 @@
 import type { Static } from 'typebox';
 import t from 'typebox';
 
-import type { SubjectType as SubjectTypeEnum } from '@app/lib/subject';
 import { SubjectType } from '@app/lib/subject/type.ts';
 
 import { relation_mappings, relations } from './common/subject_relations.json';
@@ -30,13 +29,13 @@ const checkedSubjectRelations = checkedSubjectRelationsRaw;
 export type SubjectRelationType = Static<typeof SubjectRelationTypeSchema>;
 
 export function findSubjectRelationType(
-  subjectType: SubjectTypeEnum,
+  subjectType: number,
   relationType: number,
 ): SubjectRelationType | undefined {
   return checkedSubjectRelations[subjectType]?.[relationType];
 }
 
-export function isRelationViceVersa(subjectType: SubjectTypeEnum, relationType: number): boolean {
+export function isRelationViceVersa(subjectType: number, relationType: number): boolean {
   const rtype = findSubjectRelationType(subjectType, relationType);
   if (!rtype) return true;
   return !rtype.skip_vice_versa;
@@ -52,8 +51,8 @@ assertValue(SubjectRelationMappingsSchema, relationMappingsRaw, 'subject_relatio
 const relationMappings = relationMappingsRaw;
 
 export function getReverseRelation(
-  subjectType: SubjectTypeEnum,
-  relatedType: SubjectTypeEnum,
+  subjectType: number,
+  relatedType: number,
   relationType: number,
 ): number {
   if ([subjectType, relatedType].includes(SubjectType.Music)) {
