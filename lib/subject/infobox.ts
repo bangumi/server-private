@@ -1,3 +1,4 @@
+import { UnreachableError } from '@app/lib/error.ts';
 import { getInfoboxValue } from '@app/lib/infobox.ts';
 import type * as res from '@app/lib/types/res.ts';
 
@@ -22,7 +23,7 @@ function getDisplayFields(type: number): string[][] {
       return [airdate, ['开始'], ['导演'], ['编剧'], ['主演']];
     }
     default: {
-      return [];
+      throw new UnreachableError(`unexpected subject type: ${type}`);
     }
   }
 }

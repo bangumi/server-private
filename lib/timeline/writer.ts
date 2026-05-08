@@ -1,7 +1,7 @@
 import * as lo from 'lodash-es';
 
 import { db, op, schema } from '@app/drizzle';
-import { BadRequestError } from '@app/lib/error.ts';
+import { BadRequestError, UnreachableError } from '@app/lib/error.ts';
 import { producer } from '@app/lib/kafka';
 import { CollectionType, EpisodeCollectionStatus, SubjectType } from '@app/lib/subject/type';
 import { decode } from '@app/lib/utils';
@@ -569,7 +569,7 @@ function switchSubjectType(ctype: number, stype: number): number {
       return source[ctype as keyof typeof source];
     }
     default: {
-      return 14;
+      throw new UnreachableError(`unexpected subject type: ${stype}`);
     }
   }
 }

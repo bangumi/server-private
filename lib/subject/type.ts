@@ -1,3 +1,5 @@
+import { UnreachableError } from '@app/lib/error.ts';
+
 export const SubjectType = {
   Book: 1, // 书籍
   Anime: 2, // 动画
@@ -49,7 +51,7 @@ export function getCollectionTypeField(type: number) {
       return 'dropped';
     }
     default: {
-      return 'dropped';
+      throw new UnreachableError(`unexpected collection type: ${type}`);
     }
   }
 }
