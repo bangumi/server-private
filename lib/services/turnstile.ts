@@ -1,5 +1,5 @@
-import { stage, testing } from '@app/lib/config.ts';
 import config from '@app/lib/config.ts';
+import { stage, testing } from '@app/lib/config.ts';
 
 import { BaseExternalHttpSrv } from './base.ts';
 
