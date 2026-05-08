@@ -624,7 +624,7 @@ function toRank(users: { group: number }[]): number[] {
     ...subjectImageVoteOrder.map((x) => {
       return users.filter((u) => u.group === x).length;
     }),
-    users.filter((x) => !subjectImageVoteOrder.includes(x.group)).length,
+    users.filter((x) => !(subjectImageVoteOrder as readonly number[]).includes(x.group)).length,
   ];
 }
 

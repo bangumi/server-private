@@ -110,7 +110,7 @@ export async function setup(app: App) {
           sort: data.ep_sort,
           duration: data.ep_duration,
           name_cn: data.ep_name_cn,
-        } as { revDateline: number; creatorID: number });
+        });
       }
 
       for (const rev of batchRevs) {
