@@ -12,7 +12,6 @@ import * as image from '@app/lib/image/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
-import { SubjectRelationId } from '@app/lib/subject/type.ts';
 import type { Permission } from '@app/lib/user/perm.ts';
 import type { ISubjectEdit, ISubjectNew } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { setup } from '@app/routes/private/routes/wiki/subject/index.ts';
@@ -815,7 +814,7 @@ describe('subject relations edit', () => {
           subject: {
             id: 993,
           },
-          type: SubjectRelationId.ANIME_COLLABORATION,
+          type: 14, // ANIME_COLLABORATION
         },
         {
           subject: {
@@ -823,7 +822,7 @@ describe('subject relations edit', () => {
             name: 'コードギアス 反逆のルルーシュ',
             nameCN: 'Code Geass 反叛的鲁路修',
           },
-          type: SubjectRelationId.ANIME_SIDE_STORY,
+          type: 6, // ANIME_SIDE_STORY
           order: 2,
         },
       ],
