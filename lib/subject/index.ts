@@ -26,6 +26,8 @@ export const InvalidWikiSyntaxError = createError(
   StatusCodes.BAD_REQUEST,
 );
 
+export const InvalidMetaTagsError = createError('INVALID_META_TAGS', '%s', StatusCodes.BAD_REQUEST);
+
 interface Create {
   typeID: number;
   name: string;
@@ -152,7 +154,7 @@ export async function create({
       for (const tag of metaTags) {
         const id = allowedTags.get(tag.toLocaleLowerCase());
         if (!id) {
-          throw new BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
+          throw new InvalidMetaTagsError(`${JSON.stringify(tag)} is not allowed meta tags`);
         }
 
         newTags.push(id);
@@ -336,7 +338,7 @@ export async function edit({
       for (const tag of metaTags) {
         const id = allowedTags.get(tag.toLocaleLowerCase());
         if (!id) {
-          throw new BadRequestError(`${JSON.stringify(tag)} is not allowed meta tags`);
+          throw new InvalidMetaTagsError(`${JSON.stringify(tag)} is not allowed meta tags`);
         }
 
         newTags.push(id);

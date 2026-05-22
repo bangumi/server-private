@@ -17,7 +17,7 @@ import {
 } from '@app/lib/rev/type.ts';
 import { deserializeRevText } from '@app/lib/rev/utils.ts';
 import * as Subject from '@app/lib/subject/index.ts';
-import { InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
+import { InvalidMetaTagsError, InvalidWikiSyntaxError } from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -322,7 +322,7 @@ export async function setup(app: App) {
         response: {
           200: t.Object({ subjectID: t.Number() }),
           [StatusCodes.BAD_REQUEST]: res.Ref(res.Error, {
-            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError(), new InvalidMetaTagsError()),
           }),
           401: res.Ref(res.Error, {}),
         },
@@ -491,7 +491,7 @@ export async function setup(app: App) {
         response: {
           200: t.Null(),
           401: res.Ref(res.Error, {
-            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError(), new InvalidMetaTagsError()),
           }),
         },
       },
@@ -584,7 +584,7 @@ export async function setup(app: App) {
         response: {
           200: t.Null(),
           401: res.Ref(res.Error, {
-            'x-examples': formatErrors(new InvalidWikiSyntaxError()),
+            'x-examples': formatErrors(new InvalidWikiSyntaxError(), new InvalidMetaTagsError()),
           }),
         },
       },
