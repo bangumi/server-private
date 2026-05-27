@@ -507,11 +507,11 @@ export async function setup(app: App) {
   );
 
   app.post(
-    '/characters/:characterID/potraits',
+    '/characters/:characterID/portraits',
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'uploadCharacterPotrait',
+        operationId: 'uploadCharacterPortrait',
         summary: '上传角色肖像',
         params: t.Object({
           characterID: t.Integer({ minimum: 1 }),

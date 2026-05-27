@@ -583,11 +583,11 @@ export async function setup(app: App) {
   );
 
   app.post(
-    '/persons/:personID/potraits',
+    '/persons/:personID/portraits',
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'uploadPersonPotrait',
+        operationId: 'uploadPersonPortrait',
         summary: '上传人物肖像',
         params: t.Object({
           personID: t.Integer({ minimum: 1 }),
