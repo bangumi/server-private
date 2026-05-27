@@ -63,7 +63,7 @@
     "ioredis": "5.10.1",
     "js-yaml": "4.1.1",
     "keyv": "5.6.0",
-    "liquidjs": "10.25.7",
+    "liquidjs": "10.26.0",
     "lodash-es": "4.18.1",
     "luxon": "3.7.2",
     "meilisearch": "0.58.0",
