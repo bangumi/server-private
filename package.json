@@ -117,7 +117,7 @@
     "graphql-tag": "2.12.6",
     "husky": "9.1.7",
     "ioredis-mock": "8.13.1",
-    "lint-staged": "16.4.0",
+    "lint-staged": "17.0.7",
     "mercurius-integration-testing": "9.0.1",
     "nodemon": "3.1.14",
     "p-limit": "7.3.0",
