@@ -54,7 +54,7 @@ jobs:
           REDIS_URI: 'redis://:redis-pass@127.0.0.1:6379/0'
 
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v6.0.0
+        uses: codecov/codecov-action@v6.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
