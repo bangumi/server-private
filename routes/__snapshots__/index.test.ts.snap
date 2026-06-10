@@ -2391,6 +2391,7 @@ exports[`should build private api spec 1`] = `
           medium: https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg
           small: https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg
         locked: false
+        metaTags: []
         name: コードギアス 反逆のルルーシュR2
         nameCN: Code Geass 反叛的鲁路修R2
         nsfw: false
@@ -2406,6 +2407,10 @@ exports[`should build private api spec 1`] = `
           $ref: '#/components/schemas/SlimSubjectInterest'
         locked:
           type: boolean
+        metaTags:
+          items:
+            type: string
+          type: array
         name:
           type: string
         nameCN:
@@ -2422,6 +2427,7 @@ exports[`should build private api spec 1`] = `
         - nameCN
         - type
         - info
+        - metaTags
         - rating
         - locked
         - nsfw

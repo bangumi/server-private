@@ -253,6 +253,7 @@ export function toSlimSubject(subject: orm.ISubject, fields: orm.ISubjectFields)
     type: subject.typeID,
     images: subjectCover(subject.image),
     info: getSubjectInfoboxSummary(infobox, subject.typeID, subject.eps),
+    metaTags: splitTags(subject.metaTags),
     rating: toSubjectRating(fields),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
