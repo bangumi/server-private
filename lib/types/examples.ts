@@ -10,6 +10,7 @@ export const slimSubject = {
     medium: 'https://lain.bgm.tv/pic/cover/m/c9/f0/8_wK0z3.jpg',
     small: 'https://lain.bgm.tv/pic/cover/s/c9/f0/8_wK0z3.jpg',
   },
+  metaTags: [],
   locked: false,
   nsfw: false,
 };

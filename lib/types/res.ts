@@ -428,6 +428,7 @@ export const SlimSubject = t.Object(
     type: Ref(SubjectType),
     images: t.Optional(Ref(SubjectImages)),
     info: t.String(),
+    metaTags: t.Array(t.String()),
     rating: Ref(SubjectRating),
     locked: t.Boolean(),
     nsfw: t.Boolean(),
