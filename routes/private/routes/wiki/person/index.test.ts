@@ -13,6 +13,7 @@ import * as image from '@app/lib/image/index.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import type * as res from '@app/lib/types/res.ts';
 import type { IPagedUserPersonContribution } from '@app/routes/private/routes/wiki/person/index.ts';
+import { setup as setupSubject } from '@app/routes/private/routes/wiki/subject/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './index.ts';
@@ -463,9 +464,117 @@ describe('edit person ', () => {
   });
 });
 
+test('should update person-subject relations', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: {
+          id: 22267,
+          name: '星界の戦旗',
+          nameCN: '星界的战旗',
+        },
+        position: 2001,
+        appearEps: '1-2',
+      },
+      {
+        subject: {
+          id: 10,
+        },
+        position: 2002,
+      },
+    ],
+  };
+  const app = await testApp();
+
+  const res = await app.inject({
+    url: '/persons/9/subjects?type=1',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(200);
+  const afterEdit = await app.inject('/persons/9/subjects?type=1');
+  expect(afterEdit.json()).toMatchSnapshot();
+
+  const subjectApp = createTestServer();
+  await subjectApp.register(setupSubject);
+
+  const afterDeleteReverse = await subjectApp.inject('/subjects/22273/persons');
+  expect(afterDeleteReverse.json()).toMatchSnapshot();
+
+  const afterEditReverse = await subjectApp.inject('/subjects/22267/persons');
+  expect(afterEditReverse.json()).toMatchSnapshot();
+
+  const afterAddReverse = await subjectApp.inject('/subjects/10/persons');
+  expect(afterAddReverse.json()).toMatchSnapshot();
+});
+
+test('should handle invalid subject relation type', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: {
+          id: 10,
+        },
+        position: 3001,
+      },
+    ],
+  };
+  const app = await testApp();
+
+  const res = await app.inject({
+    url: '/persons/9/subjects?type=1',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
+    Object {
+      "code": "BAD_REQUEST",
+      "error": "Bad Request",
+      "message": "position 3001 is not valid",
+      "statusCode": 400,
+    }
+  `);
+});
+
+test('should handle wrong subject type', async () => {
+  const payload = {
+    commitMessage: 'update relations',
+    relations: [
+      {
+        subject: {
+          id: 7,
+        },
+        position: 2002,
+      },
+    ],
+  };
+  const app = await testApp();
+
+  const res = await app.inject({
+    url: '/persons/9/subjects?type=1',
+    method: 'put',
+    payload,
+  });
+
+  expect(res.statusCode).toBe(400);
+  expect(res.json()).toMatchInlineSnapshot(`
+    Object {
+      "code": "BAD_REQUEST",
+      "error": "Bad Request",
+      "message": "related subject 7 type not match",
+      "statusCode": 400,
+    }
+  `);
+});
+
 describe('person relations', () => {
   test('should get person character relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = await testApp();
 
     const res = await app.inject('/persons/-/casts/revisions/5909');
 
@@ -473,8 +582,7 @@ describe('person relations', () => {
   });
 
   test('should get person character relation history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
+    const app = await testApp();
 
     const res = await app.inject('/persons/1/casts/history-summary');
 
@@ -482,7 +590,7 @@ describe('person relations', () => {
   });
 
   test('should get person subject revision wiki info', async () => {
-    const app = await testApp({});
+    const app = await testApp();
 
     const res = await app.inject('/persons/-/subjects/revisions/70822');
 
@@ -490,8 +598,7 @@ describe('person relations', () => {
   });
 
   test('should get person subject relation history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
+    const app = await testApp();
 
     const res = await app.inject('/persons/1/subjects/history-summary');
 
