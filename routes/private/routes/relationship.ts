@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
+import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { NotFoundError, UnexpectedNotFoundError } from '@app/lib/error';
 import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
@@ -10,6 +11,12 @@ import { AsyncTimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
+import {
+  fetchPrivacyByUserID,
+  PrivacySettingKey,
+  PrivacyValue,
+  readPrivacySetting,
+} from '@app/lib/user/privacy.ts';
 import { fetchFriends, parseBlocklist } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -91,6 +98,7 @@ export async function setup(app: App) {
       if (!user) {
         throw new NotFoundError(`user ${username}`);
       }
+      await requireFollowAllowed(auth.userID, user.id);
       await rateLimit(LimitAction.Relationship, auth.userID);
       const createdAt = DateTime.now().toUnixInteger();
       await db.transaction(async (t) => {
@@ -402,4 +410,19 @@ export async function setup(app: App) {
       return { blocklist: blocklist };
     },
   );
+}
+
+async function requireFollowAllowed(sourceUserID: number, targetUserID: number): Promise<void> {
+  const [sourcePrivacy, targetPrivacy] = await Promise.all([
+    fetchPrivacyByUserID(sourceUserID),
+    fetchPrivacyByUserID(targetUserID),
+  ]);
+
+  if (readPrivacySetting(sourcePrivacy, PrivacySettingKey.Follow) !== PrivacyValue.All) {
+    throw new NotAllowedError('add friend');
+  }
+
+  if (readPrivacySetting(targetPrivacy, PrivacySettingKey.Follow) !== PrivacyValue.All) {
+    throw new NotAllowedError('add friend');
+  }
 }

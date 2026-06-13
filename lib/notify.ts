@@ -100,6 +100,7 @@ interface PrivacySetting {
   TimelineReply: PrivacyValue;
   CommentNotification: PrivacyValue;
   MentionNotification: PrivacyValue;
+  FriendNotification: PrivacyValue;
   PrivateMessage: PrivacyValue;
 
   blockedUsers: number[];
@@ -123,10 +124,11 @@ export const Notify = {
     if (setting.blockedUsers.includes(sourceUserID)) {
       return;
     }
-    if (setting.CommentNotification === PrivacyValue.None) {
+    const privacyValue = privacyValueForNotifyType(type, setting);
+    if (privacyValue === PrivacyValue.None) {
       return;
     }
-    if (setting.CommentNotification === PrivacyValue.Friends) {
+    if (privacyValue === PrivacyValue.Friends) {
       const isFriend = await isFriends(destUserID, sourceUserID);
       if (!isFriend) {
         return;
@@ -253,8 +255,21 @@ async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
     TimelineReply: readPrivacySetting(uf.privacy, PrivacySettingKey.TimelineReply),
     MentionNotification: readPrivacySetting(uf.privacy, PrivacySettingKey.MentionNotification),
     CommentNotification: readPrivacySetting(uf.privacy, PrivacySettingKey.CommentNotification),
+    FriendNotification: readPrivacySetting(uf.privacy, PrivacySettingKey.FriendNotification),
     blockedUsers,
   };
+}
+
+function privacyValueForNotifyType(type: NotifyType, setting: PrivacySetting): PrivacyValue {
+  if (type === NotifyType.RequestFriend || type === NotifyType.AcceptFriend) {
+    return setting.FriendNotification;
+  }
+
+  if (type >= NotifyType._23 && type <= NotifyType._34) {
+    return setting.MentionNotification;
+  }
+
+  return setting.CommentNotification;
 }
 
 /** 计算 notifyField 的 hash 字段，参照 settings */
