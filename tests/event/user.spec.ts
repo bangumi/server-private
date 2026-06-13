@@ -2,12 +2,14 @@ import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { handleFields } from '@app/event/user.ts';
-import { clearCachedPrivacyByUserID, fetchPrivacyByUserID } from '@app/lib/user/privacy.ts';
+import redis from '@app/lib/redis.ts';
+import { getPrivacyCacheKey } from '@app/lib/user/cache.ts';
+import { fetchPrivacyByUserID } from '@app/lib/user/privacy.ts';
 
 const testUserID = 900_003;
 
 beforeEach(async () => {
-  await clearCachedPrivacyByUserID(testUserID);
+  await redis.del(getPrivacyCacheKey(testUserID));
   await db.delete(schema.chiiUserFields).where(op.eq(schema.chiiUserFields.uid, testUserID));
   await db.insert(schema.chiiUserFields).values({
     uid: testUserID,
@@ -21,7 +23,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await clearCachedPrivacyByUserID(testUserID);
+  await redis.del(getPrivacyCacheKey(testUserID));
   await db.delete(schema.chiiUserFields).where(op.eq(schema.chiiUserFields.uid, testUserID));
 });
 

@@ -2,10 +2,10 @@ import redis from '@app/lib/redis.ts';
 import {
   getFollowersCacheKey,
   getFriendsCacheKey,
+  getPrivacyCacheKey,
   getRelationCacheKey,
   getSlimCacheKey,
 } from '@app/lib/user/cache';
-import { clearCachedPrivacyByUserID } from '@app/lib/user/privacy.ts';
 
 import { EventOp, type KafkaMessage } from './type';
 
@@ -42,7 +42,7 @@ export async function handleFields({ key, value }: KafkaMessage) {
     case EventOp.Create:
     case EventOp.Update:
     case EventOp.Delete: {
-      await clearCachedPrivacyByUserID(idx.uid);
+      await redis.del(getPrivacyCacheKey(idx.uid));
       break;
     }
     case EventOp.Snapshot: {
