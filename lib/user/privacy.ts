@@ -1,4 +1,5 @@
 import { db, op, schema } from '@app/drizzle';
+import { TypedCache } from '@app/lib/cache.ts';
 import type { Permission } from '@app/lib/user/perm.ts';
 import { decode } from '@app/lib/utils/index.ts';
 
@@ -73,6 +74,8 @@ const nsfwRestrictedUserIDs = new Set([
 
 const nsfwSubjectPreferenceKey = 'show_nsfw_subject';
 const nsfwEligibilitySeconds = 60 * 60 * 24 * 60;
+const privacyCacheTTL = 60;
+const privacyCache = TypedCache<number, string>((userID) => `user:privacy:${userID}`);
 
 const settingConfigs: Record<PrivacySettingKey, PrivacyTypeConfig> = {
   [PrivacySettingKey.PrivateMessage]: {
@@ -135,13 +138,24 @@ const privacyIDToValue: Record<number, PrivacyValue> = {
 };
 
 export async function fetchPrivacyByUserID(userID: number): Promise<string> {
+  const cached = await privacyCache.get(userID);
+  if (cached !== null) {
+    return cached;
+  }
+
   const [field] = await db
     .select({ privacy: schema.chiiUserFields.privacy })
     .from(schema.chiiUserFields)
     .where(op.eq(schema.chiiUserFields.uid, userID))
     .limit(1);
 
-  return field?.privacy ?? '';
+  const privacy = field?.privacy ?? '';
+  await privacyCache.set(userID, privacy, privacyCacheTTL);
+  return privacy;
+}
+
+export async function clearCachedPrivacyByUserID(userID: number): Promise<void> {
+  await privacyCache.del(userID);
 }
 
 export function parsePrivacyRaw(privacy: string): PrivacyRaw {

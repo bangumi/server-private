@@ -5,6 +5,7 @@ import {
   getRelationCacheKey,
   getSlimCacheKey,
 } from '@app/lib/user/cache';
+import { clearCachedPrivacyByUserID } from '@app/lib/user/privacy.ts';
 
 import { EventOp, type KafkaMessage } from './type';
 
@@ -26,6 +27,22 @@ export async function handle({ key, value }: KafkaMessage) {
     case EventOp.Update:
     case EventOp.Delete: {
       await redis.del(getSlimCacheKey(idx.uid));
+      break;
+    }
+    case EventOp.Snapshot: {
+      break;
+    }
+  }
+}
+
+export async function handleFields({ key, value }: KafkaMessage) {
+  const idx = JSON.parse(key) as UserKey;
+  const payload = JSON.parse(value.toString()) as UserPayload;
+  switch (payload.op) {
+    case EventOp.Create:
+    case EventOp.Update:
+    case EventOp.Delete: {
+      await clearCachedPrivacyByUserID(idx.uid);
       break;
     }
     case EventOp.Snapshot: {

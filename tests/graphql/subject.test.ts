@@ -4,7 +4,11 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { createServer } from '@app/lib/server.ts';
-import { patchPrivacyRaw, serializePrivacyRaw } from '@app/lib/user/privacy.ts';
+import {
+  clearCachedPrivacyByUserID,
+  patchPrivacyRaw,
+  serializePrivacyRaw,
+} from '@app/lib/user/privacy.ts';
 
 const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
 const authUserID = 382951;
@@ -25,6 +29,7 @@ beforeAll(async () => {
       ),
     })
     .where(op.eq(schema.chiiUserFields.uid, authUserID));
+  await clearCachedPrivacyByUserID(authUserID);
 });
 
 afterAll(async () => {
@@ -32,6 +37,7 @@ afterAll(async () => {
     .update(schema.chiiUserFields)
     .set({ privacy: originalPrivacy })
     .where(op.eq(schema.chiiUserFields.uid, authUserID));
+  await clearCachedPrivacyByUserID(authUserID);
 });
 
 describe('subject', () => {
