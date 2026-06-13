@@ -2,10 +2,10 @@ import * as lodash from 'lodash-es';
 
 import { db, incr, op, schema, type Txn } from '@app/drizzle';
 import { siteUrl } from '@app/lib/config.ts';
+import { PrivacySettingKey, PrivacyValue, readPrivacySetting } from '@app/lib/user/privacy.ts';
 import { isFriends, parseBlocklist } from '@app/lib/user/utils.ts';
 
 import { NotFoundError, UnreachableError } from './error.ts';
-import { decode } from './utils/index.ts';
 
 /**
  * `nt_type`
@@ -68,13 +68,6 @@ export const NotifyType = Object.freeze({
 
 export type NotifyType = (typeof NotifyType)[keyof typeof NotifyType];
 
-export const PrivacyFilter = Object.freeze({
-  All: 0,
-  Friends: 1,
-  None: 2,
-});
-export type PrivacyFilter = (typeof PrivacyFilter)[keyof typeof PrivacyFilter];
-
 interface Creation {
   destUserID: number;
   sourceUserID: number;
@@ -103,29 +96,14 @@ interface Filter {
   limit: number;
 }
 
-type UserPrivacySettingsField = number;
-
-const UserPrivacyReceivePrivateMessage: UserPrivacySettingsField = 1;
-const UserPrivacyReceiveTimelineReply: UserPrivacySettingsField = 30;
-const UserPrivacyReceiveMentionNotification: UserPrivacySettingsField = 20;
-const UserPrivacyReceiveCommentNotification: UserPrivacySettingsField = 21;
-
 interface PrivacySetting {
-  TimelineReply: PrivacyFilter;
-  CommentNotification: PrivacyFilter;
-  MentionNotification: PrivacyFilter;
-  PrivateMessage: PrivacyFilter;
+  TimelineReply: PrivacyValue;
+  CommentNotification: PrivacyValue;
+  MentionNotification: PrivacyValue;
+  PrivateMessage: PrivacyValue;
 
   blockedUsers: number[];
 }
-
-const defaultPrivacySetting: PrivacySetting = {
-  TimelineReply: PrivacyFilter.All,
-  CommentNotification: PrivacyFilter.All,
-  MentionNotification: PrivacyFilter.All,
-  PrivateMessage: PrivacyFilter.All,
-  blockedUsers: [],
-};
 
 export const Notify = {
   /**
@@ -145,10 +123,10 @@ export const Notify = {
     if (setting.blockedUsers.includes(sourceUserID)) {
       return;
     }
-    if (setting.CommentNotification === PrivacyFilter.None) {
+    if (setting.CommentNotification === PrivacyValue.None) {
       return;
     }
-    if (setting.CommentNotification === PrivacyFilter.Friends) {
+    if (setting.CommentNotification === PrivacyValue.Friends) {
       const isFriend = await isFriends(destUserID, sourceUserID);
       if (!isFriend) {
         return;
@@ -270,19 +248,11 @@ async function getUserNotifySetting(userID: number): Promise<PrivacySetting> {
   }
 
   const blockedUsers = parseBlocklist(uf.blocklist);
-  if (!uf.privacy) {
-    return {
-      ...defaultPrivacySetting,
-      blockedUsers,
-    };
-  }
-
-  const field = decode(uf.privacy) as Record<number, number>;
   return {
-    PrivateMessage: field[UserPrivacyReceivePrivateMessage] as PrivacyFilter,
-    TimelineReply: field[UserPrivacyReceiveTimelineReply] as PrivacyFilter,
-    MentionNotification: field[UserPrivacyReceiveMentionNotification] as PrivacyFilter,
-    CommentNotification: field[UserPrivacyReceiveCommentNotification] as PrivacyFilter,
+    PrivateMessage: readPrivacySetting(uf.privacy, PrivacySettingKey.PrivateMessage),
+    TimelineReply: readPrivacySetting(uf.privacy, PrivacySettingKey.TimelineReply),
+    MentionNotification: readPrivacySetting(uf.privacy, PrivacySettingKey.MentionNotification),
+    CommentNotification: readPrivacySetting(uf.privacy, PrivacySettingKey.CommentNotification),
     blockedUsers,
   };
 }

@@ -5,7 +5,7 @@ import { db, op, schema } from '@app/drizzle';
 import { handle } from '@app/event/notify.ts';
 import { NotifySchema } from '@app/vendor/proto/mq/v1/notify_pb.ts';
 
-const testDestUserID = 382951;
+const testDestUserID = 900_002;
 const testFromUserID = 287622;
 const testMid = 1;
 
