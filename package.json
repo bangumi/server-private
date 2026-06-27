@@ -165,18 +165,5 @@
     "singleQuote": true,
     "semi": true,
     "trailingComma": "all"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@bufbuild/buf",
-      "@confluentinc/kafka-javascript",
-      "esbuild"
-    ],
-    "ignoredBuiltDependencies": [
-      "fastify-socket.io"
-    ],
-    "patchedDependencies": {
-      "fastify-socket.io": "patches/fastify-socket.io.patch"
-    }
   }
 }
