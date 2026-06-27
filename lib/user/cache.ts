@@ -21,3 +21,7 @@ export function getRelationCacheKey(uid: number, fid: number): string {
 export function getJoinedGroupsCacheKey(uid: number): string {
   return `user:groups:${uid}`;
 }
+
+export function getPrivacyCacheKey(uid: number): string {
+  return `user:privacy:${uid}`;
+}
