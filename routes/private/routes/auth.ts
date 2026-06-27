@@ -40,6 +40,8 @@ const allowedRedirectUris: string[] = [
   // https://www.anix.app
   'anix://tv.bgm/turnstile',
   'https://oauth-backend-jet.vercel.app/api/turnstile/callback',
+  // https://github.com/gi-b716/AniMikan
+  'animikan://api/bangumi/turnstile/callback',
 ];
 
 // eslint-disable-next-line @typescript-eslint/require-await
