@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "main": "bin/main.ts",
-  "packageManager": "pnpm@10.34.1",
+  "packageManager": "pnpm@11.5.3",
   "engines": {
     "node": "^24.0"
   },
@@ -165,18 +165,5 @@
     "singleQuote": true,
     "semi": true,
     "trailingComma": "all"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@bufbuild/buf",
-      "@confluentinc/kafka-javascript",
-      "esbuild"
-    ],
-    "ignoredBuiltDependencies": [
-      "fastify-socket.io"
-    ],
-    "patchedDependencies": {
-      "fastify-socket.io": "patches/fastify-socket.io.patch"
-    }
   }
 }
