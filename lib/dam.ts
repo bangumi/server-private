@@ -1,7 +1,7 @@
 /** 敏感词过滤 */
 import config from './config.ts';
 
-const controlPattern = /[\u200B-\u200F\u202A-\u202E\uFEFF]/;
+const controlPattern = /[\u061C\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/;
 
 interface Option {
   nsfw_word?: string;
