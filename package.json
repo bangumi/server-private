@@ -36,7 +36,7 @@
     "@fastify/cookie": "11.0.2",
     "@fastify/error": "4.2.0",
     "@fastify/formbody": "8.0.2",
-    "@fastify/request-context": "6.2.1",
+    "@fastify/request-context": "7.0.0",
     "@fastify/sse": "0.4.0",
     "@fastify/static": "9.1.3",
     "@fastify/swagger": "9.7.0",
