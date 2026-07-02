@@ -45,8 +45,8 @@ importers:
         specifier: 6.1.0
         version: 6.1.0(typebox@1.1.39)
       '@fastify/view':
-        specifier: 11.1.1
-        version: 11.1.1
+        specifier: 12.0.0
+        version: 12.0.0
       '@node-rs/bcrypt':
         specifier: 1.10.7
         version: 1.10.7
@@ -1169,8 +1169,8 @@ packages:
     peerDependencies:
       typebox: ^1.0.13
 
-  '@fastify/view@11.1.1':
-    resolution: {integrity: sha512-GiHqT3R2eKJgWmy0s45eELTC447a4+lTM2o+8fSWeKwBe9VToeePuHJcKtOEXPrKGSddGO0RsNayULiS3aeHeQ==}
+  '@fastify/view@12.0.0':
+    resolution: {integrity: sha512-Prcoim4yTwG6vPnIyGrWViDx6FFnchV0GQWeBgAgywlL1JflGhTLDhIsyd7EkOreYHyqALqxnmhhJhD4NrJTWw==}
 
   '@fastify/websocket@11.2.0':
     resolution: {integrity: sha512-3HrDPbAG1CzUCqnslgJxppvzaAZffieOVbLp1DAy1huCSynUWPifSvfdEDUR8HlJLp3sp1A36uOM2tJogADS8w==}
@@ -5504,7 +5504,7 @@ snapshots:
     dependencies:
       typebox: 1.1.39
 
-  '@fastify/view@11.1.1':
+  '@fastify/view@12.0.0':
     dependencies:
       fastify-plugin: 5.1.0
       toad-cache: 3.7.1
