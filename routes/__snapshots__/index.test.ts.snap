@@ -2532,7 +2532,7 @@ exports[`should build private api spec 1`] = `
           动画制作:
             - v: サンライズ
           官方网站:
-            - v: http://www.geass.jp/r2/
+            - v: https://www.geass.jp/r2/
           导演:
             - v: 谷口悟朗
           摄影监督:
