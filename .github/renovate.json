@@ -10,6 +10,7 @@
   "rebaseWhen": "conflicted",
   "labels": ["ci:auto-merge", "dependencies"],
   "postUpdateOptions": ["pnpmDedupe"],
+  "minimumReleaseAge": "3 days",
   "rangeStrategy": "pin",
   "dockerfile": {
     "managerFilePatterns": ["Dockerfile"],
