@@ -1,10 +1,42 @@
 import { gql } from 'graphql-tag';
 import { createMercuriusTestClient } from 'mercurius-integration-testing';
-import { describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 
+import { db, op, schema } from '@app/drizzle';
+import redis from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
+import { getPrivacyCacheKey } from '@app/lib/user/cache.ts';
+import { patchPrivacyRaw, serializePrivacyRaw } from '@app/lib/user/privacy.ts';
 
 const testClient = createMercuriusTestClient(await createServer(), { url: '/v0/graphql' });
+const authUserID = 382951;
+let originalPrivacy = '';
+
+beforeAll(async () => {
+  const [field] = await db
+    .select({ privacy: schema.chiiUserFields.privacy })
+    .from(schema.chiiUserFields)
+    .where(op.eq(schema.chiiUserFields.uid, authUserID))
+    .limit(1);
+  originalPrivacy = field?.privacy ?? '';
+  await db
+    .update(schema.chiiUserFields)
+    .set({
+      privacy: serializePrivacyRaw(
+        patchPrivacyRaw(originalPrivacy, { preferences: { showNsfwSubject: true } }),
+      ),
+    })
+    .where(op.eq(schema.chiiUserFields.uid, authUserID));
+  await redis.del(getPrivacyCacheKey(authUserID));
+});
+
+afterAll(async () => {
+  await db
+    .update(schema.chiiUserFields)
+    .set({ privacy: originalPrivacy })
+    .where(op.eq(schema.chiiUserFields.uid, authUserID));
+  await redis.del(getPrivacyCacheKey(authUserID));
+});
 
 describe('subject', () => {
   test('should get', async () => {
