@@ -546,7 +546,10 @@ export async function setup(app: App) {
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
       const reactions = await Reaction.fetchByMainID(topicID, LikeType.GroupReply);
-      for (const x of replies.filter((x) => x.related !== 0)) {
+      for (const x of replies) {
+        if (x.related === 0) {
+          continue;
+        }
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
@@ -558,7 +561,10 @@ export async function setup(app: App) {
         subReplies[x.related] = subR;
       }
       const topLevelReplies: res.IReply[] = [];
-      for (const x of replies.filter((x) => x.related === 0)) {
+      for (const x of replies) {
+        if (x.related !== 0) {
+          continue;
+        }
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }

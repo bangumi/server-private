@@ -245,10 +245,10 @@ export async function setup(app: App) {
       const works: res.IPersonWork[] = [];
       for (const sid of subjectIDs) {
         const subject = subjects[sid];
-        const positions = relationsMap.get(sid) || [];
         if (!subject) {
           continue;
         }
+        const positions = relationsMap.get(sid) || [];
         works.push({ subject, positions });
       }
       return {

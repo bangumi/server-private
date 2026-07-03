@@ -14,10 +14,12 @@ const folder = './upstream/common/';
 const output_folder = './vendor/common/';
 
 for (const file of await fs.readdir(folder)) {
-  if (file.toLowerCase().endsWith('.yml') || file.toLowerCase().endsWith('.yaml')) {
-    const json_content = await to_json(folder + file);
-    const json_file = output_folder + file.replace('.yml', '.json');
-    console.log(`${file} to ${json_file}`);
-    await fs.writeFile(json_file, json_content, 'utf8');
+  if (!(file.toLowerCase().endsWith('.yml') || file.toLowerCase().endsWith('.yaml'))) {
+    continue;
   }
+
+  const json_content = await to_json(folder + file);
+  const json_file = output_folder + file.replace('.yml', '.json');
+  console.log(`${file} to ${json_file}`);
+  await fs.writeFile(json_file, json_content, 'utf8');
 }

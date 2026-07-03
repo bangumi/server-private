@@ -31,12 +31,7 @@ class TimelineEventTarget extends EventTarget {
 
 export const timelineEvents = new TimelineEventTarget();
 
-let initialized = false;
-
 export async function initTimelineSubscriber() {
-  if (initialized) return;
-  initialized = true;
-
   await TimelineSubscriber.subscribe(TIMELINE_EVENT_CHANNEL);
 
   // Parse Redis message once and emit to all listeners

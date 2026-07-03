@@ -323,12 +323,12 @@ export async function setup(app: App) {
     },
     async (request, reply) => {
       const { auth, headers, query } = request;
-      const filterCat = query.cat;
-      const mode = query.mode ?? req.IFilterMode.Friends;
-
       if (!reply.sse || !headers.accept?.includes('text/event-stream')) {
         throw new BadRequestError('Accept header must include text/event-stream');
       }
+
+      const filterCat = query.cat;
+      const mode = query.mode ?? req.IFilterMode.Friends;
 
       let friendIDs: Set<number> | null = null;
       if (mode === req.IFilterMode.Friends) {

@@ -102,12 +102,14 @@ export async function createServer(
 
   server.decorateRequest('ip', {
     getter: function (this: FastifyRequest): string {
+      /* eslint-disable unicorn/no-this-outside-of-class */
       const hRealIp = this.headers[clientIpHeader] as string | undefined;
       if (hRealIp) {
         return hRealIp;
       }
 
       return this.socket.remoteAddress ?? '127.0.0.1';
+      /* eslint-enable unicorn/no-this-outside-of-class */
     },
   });
 

@@ -435,20 +435,19 @@ export async function setup(app: App) {
       if (existing) {
         if (existing.ban === 0) {
           throw new ConflictError('Related item already exists');
-        } else {
-          await db
-            .update(schema.chiiIndexRelated)
-            .set({
-              type,
-              order,
-              comment: commentContent,
-              award,
-              ban: 0,
-              createdAt: now,
-            })
-            .where(op.eq(schema.chiiIndexRelated.id, existing.id));
-          returnID = existing.id;
         }
+        await db
+          .update(schema.chiiIndexRelated)
+          .set({
+            type,
+            order,
+            comment: commentContent,
+            award,
+            ban: 0,
+            createdAt: now,
+          })
+          .where(op.eq(schema.chiiIndexRelated.id, existing.id));
+        returnID = existing.id;
       } else {
         const [{ insertId }] = await db.insert(schema.chiiIndexRelated).values({
           cat: body.cat,

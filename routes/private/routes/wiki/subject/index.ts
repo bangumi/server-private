@@ -291,7 +291,7 @@ export async function setup(app: App) {
         id: s.id,
         name: s.name,
         infobox: s.infobox,
-        locked: Boolean(s.ban !== 0),
+        locked: s.ban !== 0,
         redirect: f.redirect,
         metaTags: s.metaTags ? s.metaTags.split(' ') : [],
         summary: s.summary,

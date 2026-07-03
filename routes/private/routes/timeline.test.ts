@@ -1,7 +1,7 @@
 import { request as httpRequest } from 'node:http';
 
 import fastifySSE from '@fastify/sse';
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
@@ -153,8 +153,11 @@ describe('should get timeline events', () => {
   const testUserID = 287622;
   const createdTimelineIDs: number[] = [];
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await initTimelineSubscriber();
+  });
+
+  beforeEach(async () => {
     await redis.flushdb();
   });
 

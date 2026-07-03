@@ -46,11 +46,11 @@ export function extractGender(wiki: Wiki): number {
   if (!raw) return 0;
   if (['男', '男性', '♂'].includes(raw)) {
     return 1;
-  } else if (['女', '女性', '♀'].includes(raw)) {
-    return 2;
-  } else {
-    return 0;
   }
+  if (['女', '女性', '♀'].includes(raw)) {
+    return 2;
+  }
+  return 0;
 }
 
 export function extractBloodType(wiki: Wiki): number {
@@ -58,15 +58,17 @@ export function extractBloodType(wiki: Wiki): number {
   if (!raw) return 0;
   if (['A', 'A型'].includes(raw)) {
     return 1;
-  } else if (['B', 'B型'].includes(raw)) {
-    return 2;
-  } else if (['AB', 'AB型'].includes(raw)) {
-    return 3;
-  } else if (['O', 'O型'].includes(raw)) {
-    return 4;
-  } else {
-    return 0;
   }
+  if (['B', 'B型'].includes(raw)) {
+    return 2;
+  }
+  if (['AB', 'AB型'].includes(raw)) {
+    return 3;
+  }
+  if (['O', 'O型'].includes(raw)) {
+    return 4;
+  }
+  return 0;
 }
 
 interface date {

@@ -82,7 +82,7 @@ export function convertSubject(subject: orm.ISubject, fields: orm.ISubjectFields
     volumes: subject.volumes,
     eps: subject.eps,
     collection: collection,
-    series: Boolean(subject.series),
+    series: subject.series,
     series_entry: subject.seriesEntry,
     airtime: airtime,
     rating: rating,

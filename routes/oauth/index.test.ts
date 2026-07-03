@@ -13,10 +13,12 @@ const createApp = async () => {
     auth: { login: true, userID: 4 },
   });
   app.addHook('preHandler', async function (req, reply) {
-    if (req.auth.login) {
-      const user = await fetchUserX(req.auth.userID);
-      reply.locals = { user };
+    if (!req.auth.login) {
+      return;
     }
+
+    const user = await fetchUserX(req.auth.userID);
+    reply.locals = { user };
   });
 
   await app.register(formBody);

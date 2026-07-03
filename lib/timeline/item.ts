@@ -107,10 +107,10 @@ export async function parseTimelineMemo(
         );
         for (const id of Object.keys(info).map(Number).toSorted()) {
           const subject = ss[id];
-          const v = info[id];
           if (!subject) {
             continue;
           }
+          const v = info[id];
           if (!v) {
             continue;
           }
@@ -233,6 +233,8 @@ export async function parseTimelineMemo(
       };
     }
     case TimelineCat.Mono: {
+      const characters: res.ISlimCharacter[] = [];
+      const persons: res.ISlimPerson[] = [];
       if (batch) {
         const info = decode(data) as memo.MonoBatch;
         const characterIDs = [];
@@ -251,8 +253,6 @@ export async function parseTimelineMemo(
         }
         const cs = await fetcher.fetchSlimCharactersByIDs(characterIDs, auth.allowNsfw);
         const ps = await fetcher.fetchSlimPersonsByIDs(personIDs, auth.allowNsfw);
-        const characters = [];
-        const persons = [];
         for (const characterID of characterIDs) {
           const character = cs[characterID];
           if (character) {
@@ -265,16 +265,8 @@ export async function parseTimelineMemo(
             persons.push(person);
           }
         }
-        return {
-          mono: {
-            characters,
-            persons,
-          },
-        };
       } else {
         const info = decode(data) as memo.MonoSingle;
-        const characters = [];
-        const persons = [];
         switch (info.cat) {
           case TimelineMonoCat.Character: {
             const character = await fetcher.fetchSlimCharacterByID(Number(info.id), auth.allowNsfw);
@@ -291,13 +283,13 @@ export async function parseTimelineMemo(
             break;
           }
         }
-        return {
-          mono: {
-            characters,
-            persons,
-          },
-        };
       }
+      return {
+        mono: {
+          characters,
+          persons,
+        },
+      };
     }
     case TimelineCat.Doujin: {
       return {};

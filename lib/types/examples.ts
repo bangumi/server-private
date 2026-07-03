@@ -99,7 +99,7 @@ export const subject = {
     ],
     官方网站: [
       {
-        v: 'http://www.geass.jp/r2/',
+        v: 'https://www.geass.jp/r2/',
       },
     ],
     导演: [

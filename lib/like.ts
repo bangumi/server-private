@@ -198,19 +198,18 @@ export const Reaction = {
       if (previous) {
         if (previous.value === reaction.value && !previous.deleted) {
           return;
-        } else {
-          // 更新
-          await t
-            .update(schema.chiiLikes)
-            .set({ deleted: false, value: reaction.value })
-            .where(
-              op.and(
-                op.eq(schema.chiiLikes.type, reaction.type),
-                op.eq(schema.chiiLikes.relatedID, reaction.rid),
-                op.eq(schema.chiiLikes.uid, reaction.uid),
-              ),
-            );
         }
+        // 更新
+        await t
+          .update(schema.chiiLikes)
+          .set({ deleted: false, value: reaction.value })
+          .where(
+            op.and(
+              op.eq(schema.chiiLikes.type, reaction.type),
+              op.eq(schema.chiiLikes.relatedID, reaction.rid),
+              op.eq(schema.chiiLikes.uid, reaction.uid),
+            ),
+          );
       } else {
         // 新增
         await t.insert(schema.chiiLikes).values({

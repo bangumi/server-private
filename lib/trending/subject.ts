@@ -55,10 +55,7 @@ export async function updateTrendingSubjects(
     .orderBy(op.desc(op.count(schema.chiiSubjects.id)))
     .limit(1000);
 
-  const ids = [];
-  for (const item of data) {
-    ids.push({ id: item.subjectID, total: item.total });
-  }
+  const ids = Array.from(data, (item) => ({ id: item.subjectID, total: item.total }));
   logger.info('Trending subjects for %s(%s) calculated: %d.', subjectType, period, ids.length);
   await redis.set(trendingKey, JSON.stringify(ids));
   await redis.del(lockKey);

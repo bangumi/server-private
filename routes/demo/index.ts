@@ -33,10 +33,12 @@ export async function setup(app: App) {
   void app.addHook('preHandler', Auth);
 
   app.addHook('preHandler', async function (req, reply) {
-    if (req.auth.login) {
-      const user = await fetchUserX(req.auth.userID);
-      reply.locals = { user };
+    if (!req.auth.login) {
+      return;
     }
+
+    const user = await fetchUserX(req.auth.userID);
+    reply.locals = { user };
   });
 
   await app.register(fastifyStatic, {

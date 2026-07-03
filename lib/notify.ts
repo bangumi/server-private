@@ -200,6 +200,7 @@ export const Notify = {
             ids ? op.inArray(schema.chiiNotify.id, ids) : undefined,
           ),
         );
+      // eslint-disable-next-line unicorn/no-this-outside-of-class -- plain object pattern, migrate to class later
       await this.consolidateUnreadCount(t, userID);
     });
   },

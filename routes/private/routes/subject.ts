@@ -573,13 +573,10 @@ export async function setup(app: App) {
         relations[r.position] = staffs;
       }
 
-      const result: res.ISubjectPosition[] = [];
-      for (const position of positions) {
-        result.push({
-          position: position,
-          staffs: relations[position.id] || [],
-        });
-      }
+      const result: res.ISubjectPosition[] = Array.from(positions, (position) => ({
+        position: position,
+        staffs: relations[position.id] || [],
+      }));
 
       return {
         data: result,
@@ -1268,7 +1265,10 @@ export async function setup(app: App) {
       const users = await fetcher.fetchSlimUsersByIDs(uids);
       const subReplies: Record<number, res.IReplyBase[]> = {};
       const reactions = await Reaction.fetchByMainID(topicID, LikeType.SubjectReply);
-      for (const x of replies.filter((x) => x.related !== 0)) {
+      for (const x of replies) {
+        if (x.related === 0) {
+          continue;
+        }
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }
@@ -1280,7 +1280,10 @@ export async function setup(app: App) {
         subReplies[x.related] = subR;
       }
       const topLevelReplies: res.IReply[] = [];
-      for (const x of replies.filter((x) => x.related === 0)) {
+      for (const x of replies) {
+        if (x.related !== 0) {
+          continue;
+        }
         if (!CanViewTopicReply(x.state)) {
           x.content = '';
         }

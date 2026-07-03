@@ -323,9 +323,8 @@ export async function setup(app: App) {
 
       if (characterID) {
         return { characterID };
-      } else {
-        throw new Error('unknown error');
       }
+      throw new Error('unknown error');
     },
   );
 
@@ -1051,9 +1050,10 @@ export async function setup(app: App) {
         const personID = rel.prsn_id;
 
         const subject = subjectsMap[subjectID];
-        const person = personsMap[personID];
 
         if (!subject) return [];
+
+        const person = personsMap[personID];
 
         return [
           {

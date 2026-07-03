@@ -123,9 +123,8 @@ export async function fetchSlimSubjectByID(
     const slim = JSON.parse(cached) as res.ISlimSubject;
     if (!allowNsfw && slim.nsfw) {
       return;
-    } else {
-      return slim;
     }
+    return slim;
   }
   const [data] = await db
     .select()
@@ -283,7 +282,6 @@ export async function fetchSubjectIDsByFilter(
   sort: SubjectSort,
   page: number,
 ): Promise<res.IPaged<number>> {
-  const pageSize = 24;
   if (filter.tags) {
     const normalizedTags = filter.tags
       .map((tag) => tag.trim().normalize('NFKC').toLowerCase())
@@ -295,6 +293,7 @@ export async function fetchSubjectIDsByFilter(
   if (cached) {
     return JSON.parse(cached) as res.IPaged<number>;
   }
+  const pageSize = 24;
   if (sort === SubjectSort.Trends) {
     const trendingKey = getTrendingSubjectKey(filter.type, TrendingPeriod.Month);
     const data = await redis.get(trendingKey);

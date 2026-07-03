@@ -285,8 +285,6 @@ export async function setup(app: App) {
       let needTimeline = false;
       let interestID = 0;
       await db.transaction(async (t) => {
-        let needUpdateRate = false;
-
         if (tags !== undefined) {
           tags = await insertUserTags(
             t,
@@ -306,6 +304,7 @@ export async function setup(app: App) {
         if (!subject) {
           throw new UnexpectedNotFoundError(`subject ${subjectID}`);
         }
+        let needUpdateRate = false;
         const [interest] = await t
           .select()
           .from(schema.chiiSubjectInterests)

@@ -377,9 +377,8 @@ export async function setup(app: App) {
 
       if (personID) {
         return { personID };
-      } else {
-        throw new Error('unknown error');
       }
+      throw new Error('unknown error');
     },
   );
 
@@ -1149,9 +1148,10 @@ export async function setup(app: App) {
         const characterID = rel.crt_id;
 
         const subject = subjectsMap[subjectID];
-        const character = charactersMap[characterID];
 
         if (!subject) return [];
+
+        const character = charactersMap[characterID];
 
         return [
           {
