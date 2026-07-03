@@ -18,6 +18,7 @@ beforeAll(async () => {
     .from(schema.chiiUserFields)
     .where(op.eq(schema.chiiUserFields.uid, authUserID))
     .limit(1);
+  // eslint-disable-next-line unicorn/no-top-level-assignment-in-function -- test setup
   originalPrivacy = field?.privacy ?? '';
   await db
     .update(schema.chiiUserFields)

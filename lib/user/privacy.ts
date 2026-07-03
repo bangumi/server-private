@@ -326,7 +326,7 @@ function assertAllowedPrivacyValue(key: PrivacySettingKey, value: PrivacyValue):
 }
 
 function toInteger(value: unknown): number | undefined {
-  if (typeof value === 'number' && Number.isInteger(value)) {
+  if (typeof value === 'number' && Number.isSafeInteger(value)) {
     return value;
   }
 
@@ -335,7 +335,7 @@ function toInteger(value: unknown): number | undefined {
       return;
     }
     const n = Number(value);
-    if (Number.isInteger(n)) {
+    if (Number.isSafeInteger(n)) {
       return n;
     }
   }
