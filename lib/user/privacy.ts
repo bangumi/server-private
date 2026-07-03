@@ -288,13 +288,10 @@ function readPrivacySettings(raw: PrivacyRaw): PrivacySettings {
     privateMessage: readPrivacySettingFromRaw(raw, PrivacySettingKey.PrivateMessage),
     timelineReply: readPrivacySettingFromRaw(raw, PrivacySettingKey.TimelineReply),
     timelineCollectReply: readPrivacySettingFromRaw(raw, PrivacySettingKey.TimelineCollectReply),
-    follow: readPrivacySettingFromRaw(raw, PrivacySettingKey.Follow) as BinaryPrivacyValue,
+    follow: readBinaryPrivacySettingFromRaw(raw, PrivacySettingKey.Follow),
     mentionNotification: readPrivacySettingFromRaw(raw, PrivacySettingKey.MentionNotification),
     commentNotification: readPrivacySettingFromRaw(raw, PrivacySettingKey.CommentNotification),
-    friendNotification: readPrivacySettingFromRaw(
-      raw,
-      PrivacySettingKey.FriendNotification,
-    ) as BinaryPrivacyValue,
+    friendNotification: readBinaryPrivacySettingFromRaw(raw, PrivacySettingKey.FriendNotification),
   };
 }
 
@@ -308,6 +305,14 @@ function readPrivacySettingFromRaw(raw: PrivacyRaw, key: PrivacySettingKey): Pri
   }
 
   return config.defaultValue;
+}
+
+function readBinaryPrivacySettingFromRaw(raw: PrivacyRaw, key: PrivacySettingKey): BinaryPrivacyValue {
+  const value = readPrivacySettingFromRaw(raw, key);
+  if (value === PrivacyValue.Friends) {
+    throw new TypeError(`${key} must be all or none, got ${value}`);
+  }
+  return value;
 }
 
 function assertAllowedPrivacyValue(key: PrivacySettingKey, value: PrivacyValue): void {

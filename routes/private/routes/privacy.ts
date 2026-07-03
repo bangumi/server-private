@@ -120,7 +120,9 @@ export async function setup(app: App) {
         throw new NotAllowedError('set nsfw subject preference');
       }
 
-      const nextPrivacy = serializePrivacyRaw(patchPrivacyRaw(privacy, body as PrivacyPatch));
+      // TypeBox widens enum strings here; patchPrivacyRaw performs runtime validation.
+      const patch = body as PrivacyPatch;
+      const nextPrivacy = serializePrivacyRaw(patchPrivacyRaw(privacy, patch));
       await db
         .update(schema.chiiUserFields)
         .set({ privacy: nextPrivacy })
