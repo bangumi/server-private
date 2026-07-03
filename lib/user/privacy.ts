@@ -307,7 +307,10 @@ function readPrivacySettingFromRaw(raw: PrivacyRaw, key: PrivacySettingKey): Pri
   return config.defaultValue;
 }
 
-function readBinaryPrivacySettingFromRaw(raw: PrivacyRaw, key: PrivacySettingKey): BinaryPrivacyValue {
+function readBinaryPrivacySettingFromRaw(
+  raw: PrivacyRaw,
+  key: PrivacySettingKey,
+): BinaryPrivacyValue {
   const value = readPrivacySettingFromRaw(raw, key);
   if (value === PrivacyValue.Friends) {
     throw new TypeError(`${key} must be all or none, got ${value}`);
