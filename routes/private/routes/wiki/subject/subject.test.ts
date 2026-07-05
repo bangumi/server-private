@@ -9,6 +9,7 @@ import { db, op, schema } from '@app/drizzle';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
+import redis from '@app/lib/redis.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
@@ -599,6 +600,14 @@ describe('patch episodes', () => {
       .orderBy(schema.chiiEpisodes.sort);
     episodeIDs = episodes.map((ep) => ep.id);
     expect(episodeIDs).toHaveLength(2);
+  });
+
+  beforeEach(async () => {
+    await redis.flushdb();
+  });
+
+  afterEach(async () => {
+    await redis.flushdb();
   });
 
   test('successfully patch episodes', async () => {
