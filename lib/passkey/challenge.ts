@@ -1,0 +1,110 @@
+import type { Static } from 'typebox';
+import t from 'typebox';
+import { Value } from 'typebox/value';
+
+import redis from '@app/lib/redis.ts';
+
+import { hashSHA256, randomBase64Url } from './webauthn.ts';
+
+export interface CreateChallengeParams {
+  uid: number;
+  type: 'register' | 'login';
+  rpId: string;
+  ip?: string;
+  userAgent?: string;
+  webauthnUserId?: string;
+}
+
+export interface ChallengeData {
+  challenge: string;
+  uid: number;
+  type: 'register' | 'login';
+  rpId: string;
+  webauthnUserId: string;
+}
+
+const challengeTTL = 300; // 5 minutes
+
+/** Schema for Redis-stored challenge data — guards against stale payloads after code updates */
+/** Schema for Redis-stored challenge data — guards against stale payloads after code updates */
+const ChallengePayloadSchema = t.Object({
+  uid: t.Integer(),
+  type: t.Union([t.Literal('register'), t.Literal('login')]),
+  rpId: t.String({ minLength: 1 }),
+  webauthnUserId: t.String(),
+  ip: t.String(),
+  userAgentHash: t.String(),
+});
+
+type IChallengePayload = Static<typeof ChallengePayloadSchema>;
+
+function challengeKey(challenge: string): string {
+  return `passkey:challenge:${challenge}`;
+}
+
+export async function createChallenge(params: CreateChallengeParams): Promise<ChallengeData> {
+  const challenge = randomBase64Url(32);
+  const data: ChallengeData = {
+    challenge,
+    uid: params.uid,
+    type: params.type,
+    rpId: params.rpId,
+    webauthnUserId: params.webauthnUserId ?? '',
+  };
+
+  const payload: IChallengePayload = {
+    uid: data.uid,
+    type: data.type,
+    rpId: data.rpId,
+    webauthnUserId: data.webauthnUserId,
+    ip: params.ip ?? '',
+    userAgentHash: params.userAgent ? hashSHA256(params.userAgent) : '',
+  };
+
+  await redis.setex(challengeKey(challenge), challengeTTL, JSON.stringify(payload));
+
+  return data;
+}
+
+export async function consumeChallenge(
+  challenge: string,
+  type: 'register' | 'login',
+  rpId: string,
+  uid?: number,
+): Promise<ChallengeData | null> {
+  const key = challengeKey(challenge);
+  const raw = await redis.get(key);
+
+  if (!raw) {
+    return null;
+  }
+
+  let stored: IChallengePayload;
+  try {
+    stored = Value.Parse(ChallengePayloadSchema, JSON.parse(raw));
+  } catch {
+    return null;
+  }
+
+  if (stored.type !== type || stored.rpId !== rpId) {
+    return null;
+  }
+
+  if (uid !== undefined && stored.uid !== uid) {
+    return null;
+  }
+
+  // Delete atomically to ensure one-time consumption
+  const deleted = await redis.del(key);
+  if (deleted === 0) {
+    return null;
+  }
+
+  return {
+    challenge,
+    uid: stored.uid,
+    type: stored.type,
+    rpId: stored.rpId,
+    webauthnUserId: stored.webauthnUserId,
+  };
+}

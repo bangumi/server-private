@@ -778,3 +778,20 @@ export const chiiIssues = mysqlTable('chii_issues', {
   related: mediumint('isu_related').notNull(),
   createdAt: int('isu_dateline').notNull(),
 });
+
+export const chiiPasskeyCredentials = mysqlTable('chii_passkey_credentials', {
+  id: int('id').autoincrement().notNull(),
+  uid: mediumint('uid').notNull(),
+  rpId: varchar('rp_id', { length: 64 }).notNull(),
+  credentialId: varchar('credential_id', { length: 255 }).notNull(),
+  publicKey: mediumtext('public_key').notNull(),
+  webauthnUserId: varchar('webauthn_user_id', { length: 128 }).notNull(),
+  signCount: int('sign_count').default(0).notNull(),
+  transports: mediumtext('transports').notNull(),
+  deviceType: varchar('device_type', { length: 32 }).default('').notNull(),
+  backedUp: tinyint('backed_up').default(0).notNull(),
+  nickname: varchar('nickname', { length: 80 }).default('').notNull(),
+  createdAt: int('created_at').notNull(),
+  lastUsedAt: int('last_used_at').default(0).notNull(),
+  revokedAt: int('revoked_at').default(0).notNull(),
+});

@@ -25,6 +25,11 @@ turnstile:
   secretKey: '1x0000000000000000000000000000000AA' # TURNSTILE_SECRET_KEY
   siteKey: '1x00000000000000000000AA' # TURNSTILE_SITE_KEY
 
+passkey:
+  rpName: 'Bangumi'
+  rpIds: 'bgm.tv,bangumi.tv,chii.in'
+  origins: 'https://bgm.tv,https://bangumi.tv,https://chii.in'
+
 sentryDSN: 'https://examplePublicKey@o0.ingest.sentry.io/0' # SENTRY_DSN
 
 image:
