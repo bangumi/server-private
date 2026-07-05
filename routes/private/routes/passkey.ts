@@ -74,9 +74,12 @@ function currentOrigin(host: string, origins: string[], protocol: string): strin
   return `${protocol}://${host}`;
 }
 
+const passkeyLoginRateLimitWindow = 600; // 10 minutes
+const passkeyLoginRateLimitMax = 10;
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
-  const loginLimiter = createLimiter();
+  const limiter = createLimiter();
 
   // Login options
   app.post(
@@ -108,7 +111,22 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ body: { credentials }, headers, hostname, ip }) => {
+    async ({ body: { credentials }, headers, hostname, ip }, reply) => {
+      // Rate limit: prevent flooding Redis with challenge keys
+      const limitKey = `passkey-options-rate-limit-${ip}`;
+      const { remain, reset, limit, limited } = await limiter.get(
+        limitKey,
+        passkeyLoginRateLimitWindow,
+        passkeyLoginRateLimitMax,
+      );
+      void reply.headers({
+        'X-RateLimit-Remaining': remain,
+        'X-RateLimit-Limit': limit,
+        'X-RateLimit-Reset': reset,
+      });
+      if (limited) {
+        throw new TooManyRequestsError();
+      }
       const cfg = getRpIdConfig();
       const rpId = currentRpId(hostname, cfg.rpIds);
       if (!rpId) {
@@ -166,7 +184,11 @@ export async function setup(app: App) {
 
       // Check login rate limit
       const limitKey = `passkey-login-rate-limit-${ip}`;
-      const { remain, reset, limit, limited } = await loginLimiter.get(limitKey, 600, 10);
+      const { remain, reset, limit, limited } = await limiter.get(
+        limitKey,
+        passkeyLoginRateLimitWindow,
+        passkeyLoginRateLimitMax,
+      );
       void reply.headers({
         'X-RateLimit-Remaining': remain,
         'X-RateLimit-Limit': limit,
@@ -234,7 +256,7 @@ export async function setup(app: App) {
       await passkey.markCredentialUsed(credential.id, result.newCounter);
 
       // Reset login rate limit on success
-      await loginLimiter.reset(limitKey);
+      await limiter.reset(limitKey);
 
       // Create session
       const token = await session.create({

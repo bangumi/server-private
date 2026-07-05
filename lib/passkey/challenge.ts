@@ -73,8 +73,10 @@ export async function consumeChallenge(
   uid?: number,
 ): Promise<ChallengeData | null> {
   const key = challengeKey(challenge);
-  const raw = await redis.get(key);
 
+  // GETDEL is atomic: get the value and delete the key in one operation,
+  // ensuring one-time consumption without TOCTOU race condition.
+  const raw = await redis.getdel(key);
   if (!raw) {
     return null;
   }
@@ -91,12 +93,6 @@ export async function consumeChallenge(
   }
 
   if (uid !== undefined && stored.uid !== uid) {
-    return null;
-  }
-
-  // Delete atomically to ensure one-time consumption
-  const deleted = await redis.del(key);
-  if (deleted === 0) {
     return null;
   }
 
