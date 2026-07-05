@@ -1,13 +1,13 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import {
-  type AuthenticationResponseJSON,
   type AuthenticatorTransportFuture,
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } from '@simplewebauthn/server';
 import type { Static } from 'typebox';
 import t from 'typebox';
+import { Value } from 'typebox/value';
 
 export function base64UrlToBuffer(value: string): Uint8Array {
   return Buffer.from(value, 'base64url');
@@ -26,7 +26,7 @@ export const AuthenticationResponseSchema = t.Object(
   {
     id: t.String(),
     rawId: t.String(),
-    type: t.String(),
+    type: t.Literal('public-key'),
     response: t.Object({
       clientDataJSON: t.String(),
       authenticatorData: t.String(),
@@ -62,14 +62,12 @@ function castTransports(transports?: string[]): AuthenticatorTransportFuture[] |
 
 export async function generatePasskeyAuthenticationOptions(params: {
   rpId: string;
-  challenge: string;
   credentials?: { credentialId: string; transports?: string[] }[];
 }) {
   const credentials = params.credentials ?? [];
   if (credentials.length > 0) {
     const options = await generateAuthenticationOptions({
       rpID: params.rpId,
-      challenge: params.challenge,
       userVerification: 'required',
       allowCredentials: credentials.map((cred) => ({
         id: cred.credentialId,
@@ -82,7 +80,6 @@ export async function generatePasskeyAuthenticationOptions(params: {
   // Usernameless mode: no allowCredentials — browser shows native account selector
   const options = await generateAuthenticationOptions({
     rpID: params.rpId,
-    challenge: params.challenge,
     userVerification: 'required',
   });
 
@@ -101,10 +98,11 @@ export async function verifyPasskeyAuthentication(params: {
     transports?: string[];
     webauthnUserId?: string;
   };
-  response: IAuthenticationResponse;
+  response: unknown;
 }) {
+  const response = Value.Parse(AuthenticationResponseSchema, params.response);
   const result = await verifyAuthenticationResponse({
-    response: params.response as unknown as AuthenticationResponseJSON,
+    response: response,
     expectedChallenge: params.expectedChallenge,
     expectedOrigin: params.origin,
     expectedRPID: params.rpId,
@@ -118,7 +116,7 @@ export async function verifyPasskeyAuthentication(params: {
   });
 
   const info = result.authenticationInfo;
-  const userHandle = params.response.response.userHandle ?? '';
+  const userHandle = response.response.userHandle ?? '';
   const expectedUserHandle = params.credential.webauthnUserId ?? '';
   const userHandleMatches = !expectedUserHandle || !userHandle || userHandle === expectedUserHandle;
 

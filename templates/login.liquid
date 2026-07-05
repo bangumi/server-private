@@ -3,6 +3,9 @@
 
 {% block head %}
 <script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>
+<script
+  src='https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@13/dist/bundle/index.umd.min.js'
+></script>
 {% endblock %}
 
 {% block content %}
@@ -134,10 +137,7 @@
         // 2. Prompt user to authenticate with their passkey
         let credential;
         try {
-          credential = await navigator.credentials.get({
-            publicKey: options,
-            mediation: 'required',
-          });
+          credential = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: options });
         } catch (_err) {
           // User cancelled or no passkey available — not an error
           return;

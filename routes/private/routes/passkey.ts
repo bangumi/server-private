@@ -59,7 +59,21 @@ function currentRpId(host: string, allowlist: string[]): string {
   return '';
 }
 
-function currentOrigin(host: string, protocol: string): string {
+function currentOrigin(host: string, origins: string[], protocol: string): string {
+  const normalizedHost = host.replace(/:\d+$/, '').toLowerCase();
+  for (const origin of origins) {
+    try {
+      const url = new URL(origin);
+      if (
+        url.hostname.toLowerCase() === normalizedHost ||
+        normalizedHost.endsWith(`.${url.hostname.toLowerCase()}`)
+      ) {
+        return origin;
+      }
+    } catch {
+      continue;
+    }
+  }
   return `${protocol}://${host}`;
 }
 
@@ -104,7 +118,13 @@ export async function setup(app: App) {
         throw new PasskeyUnavailableError();
       }
 
-      const { challenge } = await passkey.createChallenge({
+      const { options } = await passkey.generatePasskeyAuthenticationOptions({
+        rpId,
+        credentials,
+      });
+
+      await passkey.createChallenge({
+        challenge: options.challenge,
         uid: 0,
         type: 'login',
         rpId,
@@ -112,15 +132,9 @@ export async function setup(app: App) {
         userAgent: headers['user-agent'] ?? '',
       });
 
-      const { options } = await passkey.generatePasskeyAuthenticationOptions({
-        rpId,
-        challenge,
-        credentials,
-      });
-
       return {
         options,
-        challenge,
+        challenge: options.challenge,
         rpId,
       };
     },
@@ -177,20 +191,26 @@ export async function setup(app: App) {
         throw new PasskeyLoginFailedError();
       }
 
-      const origin = currentOrigin(hostname, protocol);
-      const result = await passkey.verifyPasskeyAuthentication({
-        rpId,
-        origin,
-        expectedChallenge: challenge,
-        credential: {
-          credentialId: credential.credentialId,
-          publicKey: credential.publicKey,
-          counter: credential.signCount,
-          transports: credential.transports,
-          webauthnUserId: credential.webauthnUserId,
-        },
-        response: credentialResponse,
-      });
+      const origin = currentOrigin(hostname, cfg.origins, protocol);
+
+      let result: Awaited<ReturnType<typeof passkey.verifyPasskeyAuthentication>>;
+      try {
+        result = await passkey.verifyPasskeyAuthentication({
+          rpId,
+          origin,
+          expectedChallenge: challenge,
+          credential: {
+            credentialId: credential.credentialId,
+            publicKey: credential.publicKey,
+            counter: credential.signCount,
+            transports: credential.transports,
+            webauthnUserId: credential.webauthnUserId,
+          },
+          response: credentialResponse,
+        });
+      } catch {
+        throw new PasskeyLoginFailedError();
+      }
 
       if (!result.verified || !result.userVerified) {
         throw new PasskeyLoginFailedError();
@@ -228,9 +248,12 @@ export async function setup(app: App) {
       void reply.cookie(CookieKey, token, { maxAge: 24 * 60 * 60 * 30 });
 
       return {
-        ...user,
-        group: user.groupid,
+        id: user.id,
+        username: user.username,
+        nickname: user.nickname,
         avatar: avatar(user.avatar),
+        sign: user.sign,
+        group: user.groupid,
         joinedAt: user.regdate,
       };
     },

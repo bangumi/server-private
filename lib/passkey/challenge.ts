@@ -4,9 +4,11 @@ import { Value } from 'typebox/value';
 
 import redis from '@app/lib/redis.ts';
 
-import { hashSHA256, randomBase64Url } from './webauthn.ts';
+import { hashSHA256 } from './webauthn.ts';
 
 export interface CreateChallengeParams {
+  /** Challenge string from SDK-generated options.challenge */
+  challenge: string;
   uid: number;
   type: 'register' | 'login';
   rpId: string;
@@ -26,7 +28,6 @@ export interface ChallengeData {
 const challengeTTL = 300; // 5 minutes
 
 /** Schema for Redis-stored challenge data — guards against stale payloads after code updates */
-/** Schema for Redis-stored challenge data — guards against stale payloads after code updates */
 const ChallengePayloadSchema = t.Object({
   uid: t.Integer(),
   type: t.Union([t.Literal('register'), t.Literal('login')]),
@@ -43,9 +44,8 @@ function challengeKey(challenge: string): string {
 }
 
 export async function createChallenge(params: CreateChallengeParams): Promise<ChallengeData> {
-  const challenge = randomBase64Url(32);
   const data: ChallengeData = {
-    challenge,
+    challenge: params.challenge,
     uid: params.uid,
     type: params.type,
     rpId: params.rpId,
@@ -61,7 +61,7 @@ export async function createChallenge(params: CreateChallengeParams): Promise<Ch
     userAgentHash: params.userAgent ? hashSHA256(params.userAgent) : '',
   };
 
-  await redis.setex(challengeKey(challenge), challengeTTL, JSON.stringify(payload));
+  await redis.setex(challengeKey(params.challenge), challengeTTL, JSON.stringify(payload));
 
   return data;
 }
