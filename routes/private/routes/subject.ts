@@ -1372,6 +1372,7 @@ export async function setup(app: App) {
         }
       }
 
+      await rateLimit(LimitAction.Topic, auth.userID);
       await db.transaction(async (t) => {
         await t
           .update(schema.chiiSubjectTopics)
@@ -1579,6 +1580,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit a post with reply');
       }
 
+      await rateLimit(LimitAction.Reply, auth.userID);
       await db
         .update(schema.chiiSubjectPosts)
         .set({ content })
@@ -1619,6 +1621,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('delete reply not created by you');
       }
 
+      await rateLimit(LimitAction.Reply, auth.userID);
       await db
         .update(schema.chiiSubjectPosts)
         .set({ state: CommentState.UserDelete })

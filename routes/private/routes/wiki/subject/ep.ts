@@ -14,8 +14,10 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { validateDuration } from '@app/lib/utils/index.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { matchExpected } from '@app/lib/wiki';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -215,6 +217,7 @@ export async function setup(app: App) {
 
       const now = DateTime.now().toUnixInteger();
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         await pushRev(t, {
           revisions: [

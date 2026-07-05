@@ -31,6 +31,7 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import {
   extractBirth,
   extractBloodType,
@@ -39,6 +40,7 @@ import {
   WikiChangedError,
 } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 type IUserCharacterContribution = Static<typeof UserCharacterContribution>;
@@ -225,6 +227,7 @@ export async function setup(app: App) {
 
       let characterID;
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         const now = DateTime.now().toUnixInteger();
         const [{ insertId }] = await t.insert(schema.chiiCharacters).values({
@@ -437,6 +440,7 @@ export async function setup(app: App) {
         finalAuthorID = authorID;
       }
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         const [p] = await t
           .select()
@@ -606,6 +610,7 @@ export async function setup(app: App) {
       // for example raw/36/b8/${character_id}_crt_36b8f84d-df4e-4d49-b662-bcde71a8764f.jpg"
       const filename = `raw/${h.slice(0, 2)}/${h.slice(2, 4)}/${characterID}_crt_${h}.${ext}`;
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         await t
           .update(schema.chiiCharacters)

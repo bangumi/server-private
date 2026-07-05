@@ -13,7 +13,9 @@ import {
   type PrivacyPatch,
   serializePrivacyRaw,
 } from '@app/lib/user/privacy.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 const PrivacyValue = t.String({
@@ -123,6 +125,7 @@ export async function setup(app: App) {
       // TypeBox widens enum strings here; patchPrivacyRaw performs runtime validation.
       const patch = body as PrivacyPatch;
       const nextPrivacy = serializePrivacyRaw(patchPrivacyRaw(privacy, patch));
+      await rateLimit(LimitAction.User, auth.userID);
       await db
         .update(schema.chiiUserFields)
         .set({ privacy: nextPrivacy })

@@ -5,7 +5,9 @@ import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { RevType } from '@app/lib/rev/type.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 export function setup(app: App) {
@@ -30,6 +32,7 @@ export function setup(app: App) {
         throw new NotAllowedError('lock a subject');
       }
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         await t
           .update(schema.chiiSubjects)
@@ -78,6 +81,7 @@ export function setup(app: App) {
         throw new NotAllowedError('unlock a subject');
       }
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         await t
           .update(schema.chiiSubjects)

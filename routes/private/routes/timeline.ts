@@ -147,6 +147,7 @@ export async function setup(app: App) {
       if (timeline.uid !== auth.userID) {
         throw new NotAllowedError('delete timeline');
       }
+      await rateLimit(LimitAction.Timeline, auth.userID);
       await db.transaction(async (t) => {
         await t
           .delete(schema.chiiTimeline)

@@ -4,7 +4,9 @@ import t from 'typebox';
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { randomBase62String } from '@app/lib/utils/index.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import { TokenType } from '@app/routes/oauth';
 import type { App } from '@app/routes/type.ts';
 
@@ -36,6 +38,7 @@ export function setup(app: App) {
         throw new NotAllowedError("delete a token not belong to you or token doesn't exist");
       }
 
+      await rateLimit(LimitAction.User, auth.userID);
       await db
         .update(schema.chiiAccessToken)
         .set({ expiredAt: new Date() })
@@ -59,6 +62,7 @@ export function setup(app: App) {
       preHandler: [requireLogin('delete your token')],
     },
     async ({ auth, body: { days, name } }) => {
+      await rateLimit(LimitAction.User, auth.userID);
       const token = await randomBase62String(40);
       await db.insert(schema.chiiAccessToken).values({
         userID: auth.userID.toString(),

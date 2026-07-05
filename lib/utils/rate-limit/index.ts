@@ -40,6 +40,13 @@ export const LimitAction = Object.freeze({
   Index: { action: 'index', limit: 10, durationMinutes: 5 },
 
   /**
+   * 创建/更新用户自己的目录内容
+   *
+   * 5 分钟 15 次
+   */
+  IndexEdit: { action: 'index-edit', limit: 15, durationMinutes: 5 },
+
+  /**
    * 更新章节进度
    *
    * 5 分钟 10 次
@@ -94,6 +101,20 @@ export const LimitAction = Object.freeze({
    * 5 分钟 10 次
    */
   Relationship: { action: 'relationship', limit: 10, durationMinutes: 5 },
+
+  /**
+   * 更新用户自己的设置或轻量状态
+   *
+   * 5 分钟 10 次
+   */
+  User: { action: 'user', limit: 10, durationMinutes: 5 },
+
+  /**
+   * 创建或更新 Wiki 内容
+   *
+   * 5 分钟 10 次
+   */
+  Wiki: { action: 'wiki', limit: 10, durationMinutes: 5 },
 } as const satisfies Record<string, LimitRule>);
 
 export interface Result {

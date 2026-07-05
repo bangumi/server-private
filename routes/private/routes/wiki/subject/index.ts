@@ -26,8 +26,10 @@ import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { validateDate } from '@app/lib/utils/date.ts';
 import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { matchExpected } from '@app/lib/wiki';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
 
@@ -333,6 +335,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('edit subject');
       }
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       const subjectID = await Subject.create({
         typeID: body.type,
         name: body.name,
@@ -532,6 +535,7 @@ export async function setup(app: App) {
 
       const body: Static<typeof SubjectEdit> = input;
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await Subject.edit({
         subjectID: subjectID,
         name: body.name,
@@ -666,6 +670,7 @@ export async function setup(app: App) {
         finalAuthorID = authorID;
       }
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await Subject.edit({
         subjectID: subjectID,
         name: name,
@@ -757,6 +762,7 @@ export async function setup(app: App) {
         };
       });
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       const episodeIDs = await db.transaction(async (txn) => {
         const [{ insertId: firstEpID }] = await txn.insert(schema.chiiEpisodes).values(newEpisodes);
 
@@ -839,6 +845,7 @@ export async function setup(app: App) {
       if (episodeIDs.length !== new Set(episodeIDs).size) {
         throw new BadRequestError('episode ids are not unique');
       }
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         const eps = await t
           .select()
