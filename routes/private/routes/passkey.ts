@@ -63,17 +63,14 @@ function currentOrigin(host: string, origins: string[], protocol: string): strin
   const normalizedHost = host.replace(/:\d+$/, '').toLowerCase();
   for (const origin of origins) {
     try {
-      const url = new URL(origin);
-      if (
-        url.hostname.toLowerCase() === normalizedHost ||
-        normalizedHost.endsWith(`.${url.hostname.toLowerCase()}`)
-      ) {
+      if (new URL(origin).hostname.toLowerCase() === normalizedHost) {
         return origin;
       }
     } catch {
       continue;
     }
   }
+  // fallback: use request protocol (http in dev, https in prod)
   return `${protocol}://${host}`;
 }
 
