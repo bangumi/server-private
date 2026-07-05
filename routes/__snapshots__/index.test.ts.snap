@@ -7578,6 +7578,8 @@ paths:
                         - signature
                       type: object
                     type:
+                      enum:
+                        - public-key
                       type: string
                   required:
                     - id
