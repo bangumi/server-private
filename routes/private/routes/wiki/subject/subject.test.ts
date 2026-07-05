@@ -344,6 +344,41 @@ describe('edit subject ', () => {
       userID: 100,
     });
   });
+
+  test('should patch subject', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: { subject_edit: true },
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const res = await app.inject({
+      url: '/subjects/1',
+      method: 'patch',
+      payload: {
+        commitMessage: 'patch summary',
+        expectedRevision: {},
+        subject: {
+          summary: 'patched summary',
+        },
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(editSubject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        commitMessage: 'patch summary',
+        subjectID: 1,
+        summary: 'patched summary',
+        userID: 100,
+      }),
+    );
+  });
 });
 
 describe('should upload image', () => {
