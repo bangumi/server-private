@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
+import redis from '@app/lib/redis.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -103,6 +104,7 @@ describe('group topics', () => {
   const testPostID = 101;
 
   beforeEach(async () => {
+    await redis.flushdb();
     await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
     await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.uid, testUserID));
     await db.insert(schema.chiiGroupTopics).values({
@@ -137,6 +139,7 @@ describe('group topics', () => {
   });
 
   afterEach(async () => {
+    await redis.flushdb();
     await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
     await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.uid, testUserID));
   });

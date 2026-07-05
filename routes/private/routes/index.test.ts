@@ -26,6 +26,7 @@ describe('index APIs', () => {
   let createdIndexId: number | null = null;
 
   beforeEach(async () => {
+    await redis.flushdb();
     vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime);
     await db
       .update(schema.chiiIndexes)
@@ -48,6 +49,7 @@ describe('index APIs', () => {
   });
 
   afterEach(async () => {
+    await redis.flushdb();
     vi.clearAllMocks();
     await db
       .update(schema.chiiIndexes)
