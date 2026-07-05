@@ -188,6 +188,8 @@ export function setup(app: App) {
         throw new ImageFileTooLarge();
       }
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
+
       // validate image
       const resp = await imaginary.info(raw);
       const format = resp.type;
@@ -225,7 +227,6 @@ export function setup(app: App) {
         throw new LockedError();
       }
 
-      await rateLimit(LimitAction.Wiki, auth.userID);
       await uploadSubjectImage(filename, raw);
 
       await Subject.uploadCover({ subjectID: subjectID, filename, uid: auth.userID });
