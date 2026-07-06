@@ -12578,9 +12578,9 @@ paths:
             unix time stamp, only return last update time >= since
 
             only allow recent 2 days
-          in: path
+          in: query
           name: since
-          required: true
+          required: false
           schema:
             default: 0
             type: integer
@@ -12624,9 +12624,9 @@ paths:
             unix time stamp, only return last update time >= since
 
             only allow recent 2 days
-          in: path
+          in: query
           name: since
-          required: true
+          required: false
           schema:
             default: 0
             type: integer
@@ -12670,9 +12670,9 @@ paths:
             unix time stamp, only return last update time >= since
 
             only allow recent 2 days
-          in: path
+          in: query
           name: since
-          required: true
+          required: false
           schema:
             default: 0
             type: integer
@@ -12716,9 +12716,9 @@ paths:
             unix time stamp, only return last update time >= since
 
             only allow recent 2 days
-          in: path
+          in: query
           name: since
-          required: true
+          required: false
           schema:
             default: 0
             type: integer
