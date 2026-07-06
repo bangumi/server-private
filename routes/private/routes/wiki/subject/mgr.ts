@@ -3,8 +3,9 @@ import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
-import { Tag } from '@app/lib/openapi/index.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { RevType } from '@app/lib/rev/type.ts';
+import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -21,11 +22,14 @@ export function setup(app: App) {
           subjectID: t.Integer({ examples: [184017] }),
           reason: t.String(),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
+          403: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('list subject covers')],
+      preHandler: [requireLogin('lock a subject')],
     },
     async ({ body, auth }) => {
       if (!auth.permission.subject_lock) {
@@ -70,11 +74,14 @@ export function setup(app: App) {
           subjectID: t.Integer({ examples: [184017] }),
           reason: t.String(),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
+          403: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('list subject covers')],
+      preHandler: [requireLogin('unlock a subject')],
     },
     async ({ body, auth }) => {
       if (!auth.permission.subject_lock) {

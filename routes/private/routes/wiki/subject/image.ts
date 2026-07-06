@@ -16,7 +16,7 @@ import {
   uploadSubjectImage,
 } from '@app/lib/image/index.ts';
 import { LikeType } from '@app/lib/like.ts';
-import { Tag } from '@app/lib/openapi/index.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -161,8 +161,10 @@ export function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer(),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
           ...res.errorResponses(
             ImageFileTooLarge(),
             UnsupportedImageFormat(),
@@ -247,8 +249,11 @@ export function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
           imageID: t.Integer({ minimum: 1 }),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
+          403: res.Ref(res.Error),
         },
       },
       preHandler: [
@@ -299,8 +304,11 @@ export function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
           imageID: t.Integer({ minimum: 1 }),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
+          403: res.Ref(res.Error),
         },
       },
       preHandler: [
