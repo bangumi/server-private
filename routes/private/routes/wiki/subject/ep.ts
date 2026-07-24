@@ -217,7 +217,9 @@ export async function setup(app: App) {
 
       const now = DateTime.now().toUnixInteger();
 
-      await rateLimit(LimitAction.Wiki, auth.userID);
+      if (adminToken !== config.admin_token) {
+        await rateLimit(LimitAction.Wiki, auth.userID);
+      }
       await db.transaction(async (t) => {
         await pushRev(t, {
           revisions: [
