@@ -670,7 +670,9 @@ export async function setup(app: App) {
         finalAuthorID = authorID;
       }
 
-      await rateLimit(LimitAction.Wiki, auth.userID);
+      if (adminToken !== config.admin_token) {
+        await rateLimit(LimitAction.Wiki, auth.userID);
+      }
       await Subject.edit({
         subjectID: subjectID,
         name: name,

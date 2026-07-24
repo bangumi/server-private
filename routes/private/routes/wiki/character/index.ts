@@ -440,7 +440,9 @@ export async function setup(app: App) {
         finalAuthorID = authorID;
       }
 
-      await rateLimit(LimitAction.Wiki, auth.userID);
+      if (adminToken !== config.admin_token) {
+        await rateLimit(LimitAction.Wiki, auth.userID);
+      }
       await db.transaction(async (t) => {
         const [p] = await t
           .select()
