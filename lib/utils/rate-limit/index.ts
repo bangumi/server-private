@@ -112,9 +112,9 @@ export const LimitAction = Object.freeze({
   /**
    * 创建或更新 Wiki 内容
    *
-   * 5 分钟 10 次
+   * 5 分钟 30 次
    */
-  Wiki: { action: 'wiki', limit: 10, durationMinutes: 5 },
+  Wiki: { action: 'wiki', limit: 30, durationMinutes: 5 },
 } as const satisfies Record<string, LimitRule>);
 
 export interface Result {
