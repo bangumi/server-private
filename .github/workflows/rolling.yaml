@@ -42,6 +42,9 @@ jobs:
   github:
     if: ${{ github.repository_owner == 'bangumi' }}
     runs-on: ubuntu-slim
+    permissions:
+      contents: write
+      pull-requests: write
     needs:
       - auto-tag
     steps:
