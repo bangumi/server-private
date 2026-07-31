@@ -26,7 +26,7 @@ describe('index APIs', () => {
   let createdIndexId: number | null = null;
 
   beforeEach(async () => {
-    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime);
+    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime<true>);
     await db
       .update(schema.chiiIndexes)
       .set({
