@@ -82,7 +82,6 @@ jobs:
         with:
           token: ${{ github.token }}
           title: 'bump: ${{ env.NEW_VERSION }}'
-          push-to-fork: bangumi-bot/server-private
           branch: 'ci/release-next-version'
           body-path: changelog.md
           commit-message: 'bump: ${{ env.NEW_VERSION }}'
