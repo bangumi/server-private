@@ -27,7 +27,7 @@ describe('index APIs', () => {
 
   beforeEach(async () => {
     await redis.flushdb();
-    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime);
+    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime<true>);
     await db
       .update(schema.chiiIndexes)
       .set({

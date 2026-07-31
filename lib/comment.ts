@@ -14,9 +14,7 @@ import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 
 type commentTablesWithState =
-  | typeof schema.chiiEpComments
-  | typeof schema.chiiCrtComments
-  | typeof schema.chiiPrsnComments;
+  typeof schema.chiiEpComments | typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments;
 
 type commentTablesWithRelatedPhoto = typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments;
 
