@@ -265,6 +265,7 @@ export class CommentWithState {
     if (reply) {
       throw new NotAllowedError('edit a comment with replies');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db.update(this.table).set({ content }).where(op.eq(this.table.id, commentID));
     return {};
   }
@@ -284,6 +285,7 @@ export class CommentWithState {
     if (comment.state !== CommentState.Normal) {
       throw new NotAllowedError('delete a abnormal state comment');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db
       .update(this.table)
       .set({ state: CommentState.UserDelete })
@@ -429,6 +431,7 @@ export class CommentWithoutState {
     if (reply) {
       throw new NotAllowedError('edit a comment with replies');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db.update(this.table).set({ content }).where(op.eq(this.table.id, commentID));
     return {};
   }
@@ -445,6 +448,7 @@ export class CommentWithoutState {
     if (comment.uid !== auth.userID) {
       throw new NotAllowedError('delete a comment which is not yours');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db.delete(this.table).where(op.eq(this.table.id, commentID)).limit(1);
     return {};
   }

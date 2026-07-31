@@ -13,7 +13,9 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 declare module 'fastify' {
@@ -140,6 +142,7 @@ export async function setup(app: App) {
         id = undefined;
       }
 
+      await rateLimit(LimitAction.User, userID);
       await Notify.markAllAsRead(userID, id);
       return {};
     },

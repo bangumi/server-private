@@ -16,7 +16,9 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -40,6 +42,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('create index')],
     },
     async ({ auth, body }) => {
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       const now = DateTime.now().toUnixInteger();
       const title = body.title;
       const desc = body.desc;
@@ -144,6 +147,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('update index related content which is not yours');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       const now = DateTime.now().toUnixInteger();
       const updateData: Partial<typeof schema.chiiIndexes.$inferInsert> = {
         title: body.title,
@@ -187,6 +191,7 @@ export async function setup(app: App) {
       if (index.uid !== auth.userID) {
         throw new NotAllowedError('delete index');
       }
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       await db
         .update(schema.chiiIndexes)
         .set({ ban: IndexPrivacy.Ban })
@@ -405,6 +410,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('update index related content which is not yours');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       let type = 0;
       if (body.cat === IndexRelatedCategory.Subject) {
         const subject = await fetcher.fetchSlimSubjectByID(body.sid);
@@ -514,6 +520,7 @@ export async function setup(app: App) {
         throw new NotFoundError('index related item');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       await db
         .update(schema.chiiIndexRelated)
         .set({
@@ -570,6 +577,7 @@ export async function setup(app: App) {
         throw new NotFoundError('index related item');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       await db
         .update(schema.chiiIndexRelated)
         .set({ ban: 1 })

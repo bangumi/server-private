@@ -226,6 +226,7 @@ export const Reaction = {
   },
 
   async delete(reaction: DeleteReaction) {
+    await rateLimit(LimitAction.Like, reaction.uid);
     await db.transaction(async (t) => {
       const [previous] = await t
         .select()

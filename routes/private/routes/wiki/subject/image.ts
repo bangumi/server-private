@@ -16,12 +16,14 @@ import {
   uploadSubjectImage,
 } from '@app/lib/image/index.ts';
 import { LikeType } from '@app/lib/like.ts';
-import { Tag } from '@app/lib/openapi/index.ts';
+import { Security, Tag } from '@app/lib/openapi/index.ts';
 import imaginary from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 async function getSubjectInfo(subjectID: number) {
@@ -159,8 +161,10 @@ export function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer(),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
           ...res.errorResponses(
             ImageFileTooLarge(),
             UnsupportedImageFormat(),
@@ -185,6 +189,8 @@ export function setup(app: App) {
       if (raw.length > sizeLimit) {
         throw new ImageFileTooLarge();
       }
+
+      await rateLimit(LimitAction.Wiki, auth.userID);
 
       // validate image
       const resp = await imaginary.info(raw);
@@ -243,8 +249,11 @@ export function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
           imageID: t.Integer({ minimum: 1 }),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
+          403: res.Ref(res.Error),
         },
       },
       preHandler: [
@@ -268,6 +277,7 @@ export function setup(app: App) {
         throw new NotFoundError(`image(id=${imageID}, subjectID=${subjectID})`);
       }
 
+      await rateLimit(LimitAction.Like, auth.userID);
       await db.insert(schema.chiiLikes).values({
         type: LikeType.SubjectCover,
         relatedID: imageID,
@@ -294,8 +304,11 @@ export function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
           imageID: t.Integer({ minimum: 1 }),
         }),
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: t.Object({}),
+          401: res.Ref(res.Error),
+          403: res.Ref(res.Error),
         },
       },
       preHandler: [
@@ -304,6 +317,7 @@ export function setup(app: App) {
       ],
     },
     async ({ params: { subjectID, imageID }, auth }) => {
+      await rateLimit(LimitAction.Like, auth.userID);
       const [result] = await db
         .update(schema.chiiLikes)
         .set({ deleted: true })

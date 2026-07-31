@@ -38,6 +38,7 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import {
   extractBirth,
   extractBloodType,
@@ -46,6 +47,7 @@ import {
   WikiChangedError,
 } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 export const PersonCareers = [
@@ -257,6 +259,7 @@ export async function setup(app: App) {
 
       let personID;
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         const { producer, mangaka, artist, seiyu, writer, illustrator, actor } =
           person.profession ?? {};
@@ -491,6 +494,9 @@ export async function setup(app: App) {
         finalAuthorID = authorID;
       }
 
+      if (adminToken !== config.admin_token) {
+        await rateLimit(LimitAction.Wiki, auth.userID);
+      }
       await db.transaction(async (t) => {
         const [p] = await t
           .select()
@@ -653,6 +659,8 @@ export async function setup(app: App) {
       if (raw.length > sizeLimit) {
         throw new ImageFileTooLarge();
       }
+
+      await rateLimit(LimitAction.Wiki, auth.userID);
 
       // validate image
       const resp = await imaginary.info(raw);

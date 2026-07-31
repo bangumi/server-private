@@ -40,3 +40,5 @@ Key infrastructure: MySQL (TypeORM), Redis (ioredis), Kafka (@confluentinc/kafka
 - Notification types defined in `lib/notify.ts`
 - Kafka topic handlers registered in `bin/mq.ts` serviceHandlers map
 - Husky + lint-staged for pre-commit hooks
+- TypeBox schema variables 使用 PascalCase（如 `ChallengePayloadSchema`）
+- 对应的 `Static<typeof ...>` 类型使用 `I` 前缀命名（如 `IChallengePayload`）

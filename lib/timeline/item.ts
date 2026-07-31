@@ -159,9 +159,10 @@ export async function parseTimelineMemo(
         return {
           progress: {
             batch: {
-              epsTotal: info.eps_total,
+              // 旧数据（PHP 时代）可能缺少 eps_total / vols_total 字段
+              epsTotal: info.eps_total ?? '??',
               epsUpdate: info.eps_update,
-              volsTotal: info.vols_total,
+              volsTotal: info.vols_total ?? '??',
               volsUpdate: info.vols_update,
               subject,
             },
