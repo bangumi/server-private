@@ -152,9 +152,12 @@ export const schema = Obj({
   sentryDSN: t.Optional(t.String({ env: 'SENTRY_DSN' })),
 
   passkey: Obj({
-    rpName: t.String({ default: 'Bangumi' }),
-    rpIds: t.String({ default: 'bgm.tv,bangumi.tv,chii.in' }),
-    origins: t.String({ default: 'https://bgm.tv,https://bangumi.tv,https://chii.in' }),
+    rpName: t.String({ default: 'Bangumi', env: 'PASSKEY_RP_NAME' }),
+    rpIds: t.String({ default: 'bgm.tv,bangumi.tv,chii.in', env: 'PASSKEY_RP_IDS' }),
+    origins: t.String({
+      default: 'https://bgm.tv,https://bangumi.tv,https://chii.in',
+      env: 'PASSKEY_ORIGINS',
+    }),
   }),
 
   mysql: Obj({
