@@ -59,7 +59,12 @@ function currentRpId(host: string, allowlist: string[]): string {
   return '';
 }
 
-function currentOrigin(host: string, origins: string[], protocol: string): string {
+export function currentOrigin(
+  host: string,
+  origins: string[],
+  protocol: string,
+  forwardedProto?: string,
+): string {
   const normalizedHost = host.replace(/:\d+$/, '').toLowerCase();
   for (const origin of origins) {
     try {
@@ -70,8 +75,10 @@ function currentOrigin(host: string, origins: string[], protocol: string): strin
       continue;
     }
   }
-  // fallback: use request protocol (http in dev, https in prod)
-  return `${protocol}://${host}`;
+  // fallback: when TLS terminates at a reverse proxy, request.protocol reflects
+  // the plaintext connection inside the proxy; prefer X-Forwarded-Proto instead
+  const effectiveProtocol = forwardedProto?.split(',', 1)[0]?.trim().toLowerCase() || protocol;
+  return `${effectiveProtocol}://${host}`;
 }
 
 const passkeyLoginRateLimitWindow = 600; // 10 minutes
@@ -173,7 +180,7 @@ export async function setup(app: App) {
       },
     },
     async (
-      { body: { challenge, credential: credentialResponse }, hostname, ip, protocol },
+      { body: { challenge, credential: credentialResponse }, headers, hostname, ip, protocol },
       reply,
     ) => {
       const cfg = getRpIdConfig();
@@ -210,7 +217,13 @@ export async function setup(app: App) {
         throw new PasskeyLoginFailedError();
       }
 
-      const origin = currentOrigin(hostname, cfg.origins, protocol);
+      const forwardedProto = headers['x-forwarded-proto'];
+      const origin = currentOrigin(
+        hostname,
+        cfg.origins,
+        protocol,
+        Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto,
+      );
 
       let result: Awaited<ReturnType<typeof passkey.verifyPasskeyAuthentication>>;
       try {
