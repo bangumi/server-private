@@ -2,176 +2,176 @@
 {% layout 'layout' %}
 
 {% block head %}
-<script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>
-<script
-  src='https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@13/dist/bundle/index.umd.min.js'
-></script>
+  <script src='https://challenges.cloudflare.com/turnstile/v0/api.js' async defer></script>
+  <script
+    src='https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@13/dist/bundle/index.umd.min.js'
+  ></script>
 {% endblock %}
 
 {% block content %}
-<div class='container mt-5'>
-  <div class='row'>
-    <ul class='list-group error-details'></ul>
-  </div>
-  <div class='row'>
-    <form>
-      <div class='mb-3'>
-        <label for='exampleInputEmail1' class='form-label'>Email address</label>
-        <input
-          type='email'
-          class='form-control'
-          name='email'
-          id='exampleInputEmail1'
-          aria-describedby='emailHelp'
+  <div class='container mt-5'>
+    <div class='row'>
+      <ul class='list-group error-details'></ul>
+    </div>
+    <div class='row'>
+      <form>
+        <div class='mb-3'>
+          <label for='exampleInputEmail1' class='form-label'>Email address</label>
+          <input
+            type='email'
+            class='form-control'
+            name='email'
+            id='exampleInputEmail1'
+            aria-describedby='emailHelp'
+          >
+          <div id='emailHelp' class='form-text'>email</div>
+        </div>
+        <div class='mb-3'>
+          <label for='exampleInputPassword1' class='form-label'>Password</label>
+          <input
+            type='password'
+            name='password'
+            class='form-control'
+            id='exampleInputPassword1'
+          >
+        </div>
+        <div class='mb-3'>
+          <div
+            class='cf-turnstile'
+            data-action='login'
+            data-response-field-name='turnstileToken'
+            data-sitekey='{{ TURNSTILE_SITE_KEY }}'
+            data-theme='light'
+          ></div>
+        </div>
+        <button type='submit' class='btn btn-primary'>Submit</button>
+        <button
+          type='button'
+          class='btn btn-outline-secondary ms-2'
+          id='passkey-login-btn'
+          style='display:none'
         >
-        <div id='emailHelp' class='form-text'>email</div>
-      </div>
-      <div class='mb-3'>
-        <label for='exampleInputPassword1' class='form-label'>Password</label>
-        <input
-          type='password'
-          name='password'
-          class='form-control'
-          id='exampleInputPassword1'
-        >
-      </div>
-      <div class='mb-3'>
-        <div
-          class='cf-turnstile'
-          data-action='login'
-          data-response-field-name='turnstileToken'
-          data-sitekey='{{ TURNSTILE_SITE_KEY }}'
-          data-theme='light'
-        ></div>
-      </div>
-      <button type='submit' class='btn btn-primary'>Submit</button>
-      <button
-        type='button'
-        class='btn btn-outline-secondary ms-2'
-        id='passkey-login-btn'
-        style='display:none'
-      >
-        使用 Passkey 登录
-      </button>
-    </form>
+          使用 Passkey 登录
+        </button>
+      </form>
+    </div>
   </div>
-</div>
 
-<script>
-  $(document).ready(function () {
-    if (window.PublicKeyCredential) {
-      $('#passkey-login-btn').show();
-    }
+  <script>
+    $(document).ready(function () {
+      if (window.PublicKeyCredential) {
+        $('#passkey-login-btn').show();
+      }
 
-    $('form').on('submit', function (e) {
-      e.preventDefault();
-      $('.error-details').html('');
-      const data = {};
-      Array.from($('form').serializeArray()).forEach(({ name, value }, index) => {
-        data[name] = value;
+      $('form').on('submit', function (e) {
+        e.preventDefault();
+        $('.error-details').html('');
+        const data = {};
+        Array.from($('form').serializeArray()).forEach(({ name, value }, index) => {
+          data[name] = value;
+        });
+
+        if (!('turnstileToken' in data)) {
+          return;
+        }
+
+        async function submit() {
+          const res = await fetch('/p1/login', {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          if (res.status > 300) {
+            turnstile.reset();
+            const d = await res.json();
+            if (res.status === 401) {
+              const remain = res.headers.get('X-RateLimit-Remaining');
+              $('.error-details')
+                .append(`<li class="m-1 list-group-item list-group-item-danger">${d.message}</li>`)
+                .append(
+                  `<li class="m-1 list-group-item list-group-item-danger">剩余登录次数: ${remain}</li>`,
+                );
+            } else {
+              console.log(d);
+              $('.error-details').prepend(
+                `<li class="m-1 list-group-item list-group-item-danger">${d.message}</li>`,
+              );
+            }
+          } else {
+            console.log(await res.json());
+
+            let qs = new URLSearchParams(location.search);
+
+            const to = qs.get('backTo') ?? '/demo/';
+
+            if (to.startsWith('/')) {
+              location.href = to;
+            } else {
+              location.href = '/demo/';
+            }
+          }
+        }
+
+        submit();
       });
 
-      if (!('turnstileToken' in data)) {
-        return;
-      }
+      $('#passkey-login-btn').on('click', async function () {
+        $('.error-details').html('');
 
-      async function submit() {
-        const res = await fetch('/p1/login', {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        });
-        if (res.status > 300) {
-          turnstile.reset();
-          const d = await res.json();
-          if (res.status === 401) {
-            const remain = res.headers.get('X-RateLimit-Remaining');
-            $('.error-details')
-              .append(`<li class="m-1 list-group-item list-group-item-danger">${d.message}</li>`)
-              .append(
-                `<li class="m-1 list-group-item list-group-item-danger">剩余登录次数: ${remain}</li>`,
-              );
-          } else {
-            console.log(d);
-            $('.error-details').prepend(
-              `<li class="m-1 list-group-item list-group-item-danger">${d.message}</li>`,
-            );
+        try {
+          // 1. Get authentication options
+          const optionsRes = await fetch('/p1/passkey/login/options', {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({}),
+          });
+
+          if (!optionsRes.ok) {
+            const err = await optionsRes.json();
+            showError(err.message || '获取 Passkey 选项失败');
+            return;
           }
-        } else {
-          console.log(await res.json());
+
+          const { options, challenge } = await optionsRes.json();
+
+          // 2. Prompt user to authenticate with their passkey
+          let credential;
+          try {
+            credential = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: options });
+          } catch (_err) {
+            // User cancelled or no passkey available — not an error
+            return;
+          }
+
+          // 3. Verify with server
+          const verifyRes = await fetch('/p1/passkey/login/verify', {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ challenge, credential }),
+          });
+
+          if (!verifyRes.ok) {
+            const err = await verifyRes.json();
+            showError(err.message || 'Passkey 登录失败，请稍后再试。');
+            return;
+          }
+
+          await verifyRes.json();
 
           let qs = new URLSearchParams(location.search);
-
           const to = qs.get('backTo') ?? '/demo/';
-
-          if (to.startsWith('/')) {
-            location.href = to;
-          } else {
-            location.href = '/demo/';
-          }
+          location.href = to.startsWith('/') ? to : '/demo/';
+        } catch (err) {
+          showError('Passkey 登录失败，请稍后再试。');
+          console.error(err);
         }
-      }
-
-      submit();
+      });
     });
 
-    $('#passkey-login-btn').on('click', async function () {
-      $('.error-details').html('');
-
-      try {
-        // 1. Get authentication options
-        const optionsRes = await fetch('/p1/passkey/login/options', {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
-        });
-
-        if (!optionsRes.ok) {
-          const err = await optionsRes.json();
-          showError(err.message || '获取 Passkey 选项失败');
-          return;
-        }
-
-        const { options, challenge } = await optionsRes.json();
-
-        // 2. Prompt user to authenticate with their passkey
-        let credential;
-        try {
-          credential = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON: options });
-        } catch (_err) {
-          // User cancelled or no passkey available — not an error
-          return;
-        }
-
-        // 3. Verify with server
-        const verifyRes = await fetch('/p1/passkey/login/verify', {
-          method: 'post',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ challenge, credential }),
-        });
-
-        if (!verifyRes.ok) {
-          const err = await verifyRes.json();
-          showError(err.message || 'Passkey 登录失败，请稍后再试。');
-          return;
-        }
-
-        await verifyRes.json();
-
-        let qs = new URLSearchParams(location.search);
-        const to = qs.get('backTo') ?? '/demo/';
-        location.href = to.startsWith('/') ? to : '/demo/';
-      } catch (err) {
-        showError('Passkey 登录失败，请稍后再试。');
-        console.error(err);
-      }
-    });
-  });
-
-  function showError(msg) {
-    $('.error-details').append(
-      `<li class="m-1 list-group-item list-group-item-danger">${msg}</li>`,
-    );
-  }
-</script>
+    function showError(msg) {
+      $('.error-details').append(
+        `<li class="m-1 list-group-item list-group-item-danger">${msg}</li>`,
+      );
+    }
+  </script>
 {% endblock %}
