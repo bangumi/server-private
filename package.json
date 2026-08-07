@@ -62,7 +62,7 @@
     "http-status-codes": "2.3.0",
     "https-proxy-agent": "9.1.0",
     "ioredis": "5.11.1",
-    "js-yaml": "5.2.1",
+    "js-yaml": "5.2.2",
     "keyv": "5.6.0",
     "liquidjs": "10.27.1",
     "lodash-es": "4.18.1",
