@@ -10,4 +10,4 @@ jobs:
     steps:
       - uses: 'actions/checkout@v7.0.0'
       - name: 'TODO to Issue'
-        uses: 'alstr/todo-to-issue-action@v5.1.14'
+        uses: 'alstr/todo-to-issue-action@v5.1.15'
