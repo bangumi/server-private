@@ -9,8 +9,10 @@ import type { Static } from 'typebox';
 import t from 'typebox';
 import { Value } from 'typebox/value';
 
-export function base64UrlToBuffer(value: string): Uint8Array {
-  return Buffer.from(value, 'base64url');
+export function base64UrlToBuffer(value: string): Uint8Array<ArrayBuffer> {
+  // Buffer may be backed by the Node buffer pool (ArrayBufferLike); copy into a
+  // fresh ArrayBuffer-backed array as @simplewebauthn/server expects Uint8Array<ArrayBuffer>.
+  return Uint8Array.from(Buffer.from(value, 'base64url'));
 }
 
 export function randomBase64Url(bytes = 32): string {
