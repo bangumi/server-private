@@ -2,66 +2,66 @@
 {% layout 'layout' %}
 
 {% block content %}
-<div class='container mt-5'>
-  <div class='row'>{{ user.username }} 已经登录</div>
-  <div class='row'>user id {{ user.id }}</div>
-  {% if notifyCount %}
-    <div class='row'>{{ notifyCount }} 条新通知</div>
-  {% endif %}
+  <div class='container mt-5'>
+    <div class='row'>{{ user.username }} 已经登录</div>
+    <div class='row'>user id {{ user.id }}</div>
+    {% if notifyCount %}
+      <div class='row'>{{ notifyCount }} 条新通知</div>
+    {% endif %}
 
-  <div class='row mt-2'>
-    <a href='/demo/access-token'> 个人令牌 </a>
-  </div>
-
-  {% if notify.length %}
     <div class='row mt-2'>
-      <ul class='list-group'>
-        {% for x in notify %}
-          <li class='list-group-item'>
-            <span>time={{ x.createdAt | date: "'%Y-%m-%d %H:%M:%S'" }}</span>
-            <span>id={{ x.id }}</span>
-            <span>type={{ x.type }}</span>
-          </li>
-        {% endfor %}
-      </ul>
+      <a href='/demo/access-token'> 个人令牌 </a>
     </div>
-  {% endif %}
-  <div class='row'>
-    <div class='col'>
-      <button class='btn btn-danger' onclick='logout()'>登出</button>
+
+    {% if notify.length %}
+      <div class='row mt-2'>
+        <ul class='list-group'>
+          {% for x in notify %}
+            <li class='list-group-item'>
+              <span>time={{ x.createdAt | date: "'%Y-%m-%d %H:%M:%S'" }}</span>
+              <span>id={{ x.id }}</span>
+              <span>type={{ x.type }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    <div class='row'>
+      <div class='col'>
+        <button class='btn btn-danger' onclick='logout()'>登出</button>
+      </div>
     </div>
+    <script>
+      async function logout() {
+        await fetch('/p1/logout', {
+          method: 'post',
+          credentials: 'same-origin',
+          headers: { 'content-type': 'application/json' },
+          body: '{}',
+        });
+        location.reload();
+      }
+    </script>
   </div>
-  <script>
-    async function logout() {
-      await fetch('/p1/logout', {
-        method: 'post',
-        credentials: 'same-origin',
-        headers: { 'content-type': 'application/json' },
-        body: '{}',
-      });
-      location.reload();
-    }
+
+  <script type='module'>
+    import { io } from 'https://cdn.jsdelivr.net/npm/socket.io-client@4/dist/socket.io.esm.min.js';
+
+    const socket = io(location.host, {
+      path: '/p1/socket-io/',
+      reconnection: true,
+      reconnectionDelay: 5000,
+      reconnectionDelayMax: 10000,
+      transports: ['websocket'],
+    });
+
+    socket.on('notify', (ev) => {
+      console.log(ev);
+    });
+
+    socket.on('connect_error', () => {
+      // revert to classic upgrade
+      socket.io.opts.transports = ['polling', 'websocket'];
+    });
   </script>
-</div>
-
-<script type='module'>
-  import { io } from 'https://cdn.jsdelivr.net/npm/socket.io-client@4/dist/socket.io.esm.min.js';
-
-  const socket = io(location.host, {
-    path: '/p1/socket-io/',
-    reconnection: true,
-    reconnectionDelay: 5000,
-    reconnectionDelayMax: 10000,
-    transports: ['websocket'],
-  });
-
-  socket.on('notify', (ev) => {
-    console.log(ev);
-  });
-
-  socket.on('connect_error', () => {
-    // revert to classic upgrade
-    socket.io.opts.transports = ['polling', 'websocket'];
-  });
-</script>
 {% endblock %}
