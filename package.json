@@ -106,7 +106,7 @@
     "dotenv": "17.4.2",
     "drizzle-kit": "0.31.10",
     "esbuild": "0.28.1",
-    "esbuild-node-externals": "1.23.1",
+    "esbuild-node-externals": "2.0.0",
     "eslint": "10.8.0",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-erasable-syntax-only": "0.4.2",
