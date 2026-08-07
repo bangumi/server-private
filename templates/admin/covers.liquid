@@ -1,8 +1,8 @@
 {% layout 'layout' %}
 
 {% block content %}
-<script src='https://cdn.jsdelivr.net/npm/vue@3'></script>
-{% raw %}
+  <script src='https://cdn.jsdelivr.net/npm/vue@3'></script>
+  {% raw %}
   <div class='container mt-5' id='container'>
     <div class='row' v-if='data.current'>
       <img :src='data.current.thumbnail' alt='' class='img-thumbnail col-3'>
@@ -22,43 +22,42 @@
   </div>
 {% endraw %}
 
-<script>
-  const subjectID = '{{ subjectID }}';
+  <script>
+    const subjectID = '{{ subjectID }}';
 
-  Vue.createApp({
-    el: '#container',
-    data() {
-      return {
-        data: { covers: [] },
-      };
-    },
-    async created() {
-      const res = await fetch(`/p1/wiki/subjects/${subjectID}/covers`);
-      this.data = await res.json();
-      console.log('vue instance created');
-    },
-    mounted() {},
-    methods: {
-      async vote(id) {
-        console.log('vote for id', id);
-        const res = await fetch(`/p1/wiki/subjects/${subjectID}/covers/${id}/vote`, {
-          method: 'post',
-        });
-        if (res.ok) {
-          location.reload();
-        }
+    Vue.createApp({
+      el: '#container',
+      data() {
+        return {
+          data: { covers: [] },
+        };
       },
-      async unvote(id) {
-        console.log('vote for id', id);
-        const res = await fetch(`/p1/wiki/subjects/${subjectID}/covers/${id}/vote`, {
-          method: 'delete',
-        });
-        if (res.ok) {
-          location.reload();
-        }
+      async created() {
+        const res = await fetch(`/p1/wiki/subjects/${subjectID}/covers`);
+        this.data = await res.json();
+        console.log('vue instance created');
       },
-    },
-  }).mount('#container');
-</script>
-
+      mounted() {},
+      methods: {
+        async vote(id) {
+          console.log('vote for id', id);
+          const res = await fetch(`/p1/wiki/subjects/${subjectID}/covers/${id}/vote`, {
+            method: 'post',
+          });
+          if (res.ok) {
+            location.reload();
+          }
+        },
+        async unvote(id) {
+          console.log('vote for id', id);
+          const res = await fetch(`/p1/wiki/subjects/${subjectID}/covers/${id}/vote`, {
+            method: 'delete',
+          });
+          if (res.ok) {
+            location.reload();
+          }
+        },
+      },
+    }).mount('#container');
+  </script>
 {% endblock %}

@@ -15,15 +15,13 @@
       content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'
     >
 
-    {% block head %}
-    {% endblock %}
+    {% block head %}{% endblock %}
   </head>
   <body>
     {% if header != 'disable' %}
       {% include 'partial/header' %}
     {% endif %}
 
-    {% block content -%}
-    {%- endblock %}
+    {% block content -%}{%- endblock %}
   </body>
 </html>
