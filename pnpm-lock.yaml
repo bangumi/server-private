@@ -235,8 +235,8 @@ importers:
         specifier: 0.28.1
         version: 0.28.1
       esbuild-node-externals:
-        specifier: 1.23.1
-        version: 1.23.1(esbuild@0.28.1)
+        specifier: 2.0.0
+        version: 2.0.0(esbuild@0.28.1)
       eslint:
         specifier: 10.8.0
         version: 10.8.0(jiti@2.7.0)(supports-color@5.5.0)
@@ -2782,9 +2782,9 @@ packages:
   es-module-lexer@2.1.0:
     resolution: {integrity: sha512-n27zTYMjYu1aj4MjCWzSP7G9r75utsaoc8m61weK+W8JMBGGQybd43GstCXZ3WNmSFtGT9wi59qQTW6mhTR5LQ==}
 
-  esbuild-node-externals@1.23.1:
-    resolution: {integrity: sha512-aU/Bxaq9KU5SUnsCVP0a2Kj74qZz0QpRH2qvcQ4tRQ7yGYcmzUPOdXXA2hd7o55OjChduOwsFYP5EPJH01gn2Q==}
-    engines: {node: '>=12'}
+  esbuild-node-externals@2.0.0:
+    resolution: {integrity: sha512-AzLWGYBC2MGvo37iAPv17yVe/r2iOfEZnCEBACR+5HkSrOOnRnVf8+33pJU5VCg7brzGtiSsBLqIp5hxYfItsw==}
+    engines: {node: '>=22'}
     peerDependencies:
       esbuild: 0.12 - 0.28
 
@@ -7213,7 +7213,7 @@ snapshots:
 
   es-module-lexer@2.1.0: {}
 
-  esbuild-node-externals@1.23.1(esbuild@0.28.1):
+  esbuild-node-externals@2.0.0(esbuild@0.28.1):
     dependencies:
       empathic: 2.0.1
       esbuild: 0.28.1
