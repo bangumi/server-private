@@ -58,7 +58,7 @@ export function toUserHomepage(homepage: string): res.IUserHomepage {
     right: [],
   };
   for (const item of homepage.split(';')) {
-    const [type, list] = item.split(':');
+    const [type, list] = item.split(':', 2);
     switch (type) {
       case 'l': {
         layout.left = list?.split(',') ?? [];

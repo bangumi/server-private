@@ -44,7 +44,7 @@ export async function setup(app: App) {
       }
       const entry = convert.toBlogEntry(item.chii_blog_entry, item.chii_members);
       const isFriend = await isFriends(entry.user.id, auth.userID);
-      if (!entry.public && entry.user.id !== auth.userID && !isFriend) {
+      if (!isFriend && !entry.public && entry.user.id !== auth.userID) {
         throw new NotFoundError('Blog entry not found');
       }
       return entry;

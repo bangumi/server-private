@@ -121,7 +121,7 @@ export function setup(app: App) {
 
       const currentUpload = s.image ? images.find((x) => x.imgTarget === s.image) : undefined;
 
-      if (s.image && !currentUpload) {
+      if (!currentUpload && s.image) {
         throw new UnexpectedNotFoundError(`can't find image uploading for image ${s.image}`);
       }
 
