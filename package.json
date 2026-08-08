@@ -113,7 +113,7 @@
     "eslint-plugin-promise": "7.3.0",
     "eslint-plugin-simple-import-sort": "14.0.0",
     "eslint-plugin-tsdoc": "0.5.2",
-    "eslint-plugin-unicorn": "70.0.0",
+    "eslint-plugin-unicorn": "72.0.0",
     "eslint-plugin-unused-imports": "4.4.1",
     "graphql-tag": "2.12.7",
     "husky": "9.1.7",
