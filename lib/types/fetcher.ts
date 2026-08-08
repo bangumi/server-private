@@ -377,7 +377,7 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
 
-    if (sort === SubjectSort.Rank && !isMetaTag && tagCounts) {
+    if (!isMetaTag && tagCounts && sort === SubjectSort.Rank) {
       const counts = subjectIDs.map((id) => tagCounts.get(id) ?? 0);
       const uniqCounts = [...new Set(counts)].toSorted((a, b) => a - b);
       const thresholdIndex = Math.ceil(uniqCounts.length * 0.6);
@@ -405,8 +405,8 @@ export async function fetchSubjectIDsByFilter(
   let totalOverride: number | undefined;
   let collectOrderedIDs: number[] | undefined;
   if (
-    sort === SubjectSort.Collects &&
     tagOrderedIDs &&
+    sort === SubjectSort.Collects &&
     filter.tags?.length === 1 &&
     !filter.cat &&
     filter.series === undefined &&
@@ -498,7 +498,7 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
     query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${filter.ids.join(',')})`);
-  } else if (sort === SubjectSort.Collects && collectOrderedIDs) {
+  } else if (collectOrderedIDs && sort === SubjectSort.Collects) {
     query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${collectOrderedIDs.join(',')})`);
   } else {
     query.orderBy(...sorts);
@@ -1106,7 +1106,7 @@ export async function fetchSlimBlogEntryByID(
   if (cached) {
     const slim = JSON.parse(cached) as res.ISlimBlogEntry;
     const isFriend = await isFriends(slim.uid, uid);
-    if (!slim.public && slim.uid !== uid && !isFriend) {
+    if (!isFriend && !slim.public && slim.uid !== uid) {
       return;
     }
     return slim;
@@ -1121,7 +1121,7 @@ export async function fetchSlimBlogEntryByID(
   const slim = convert.toSlimBlogEntry(data);
   await redis.setex(getBlogSlimCacheKey(entryID), ONE_MONTH, JSON.stringify(slim));
   const isFriend = await isFriends(slim.uid, uid);
-  if (!slim.public && slim.uid !== uid && !isFriend) {
+  if (!isFriend && !slim.public && slim.uid !== uid) {
     return;
   }
   return slim;
@@ -1145,7 +1145,7 @@ export async function fetchSlimBlogEntriesByIDs(
     if (cached[idx]) {
       const slim = JSON.parse(cached[idx]) as res.ISlimBlogEntry;
       const isFriend = friends.includes(slim.uid);
-      if (slim.public || slim.uid === uid || isFriend) {
+      if (isFriend || slim.public || slim.uid === uid) {
         result[id] = slim;
       }
     } else {
@@ -1163,7 +1163,7 @@ export async function fetchSlimBlogEntriesByIDs(
       const slim = convert.toSlimBlogEntry(d);
       await redis.setex(getBlogSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
       const isFriend = friends.includes(slim.uid);
-      if (slim.public || slim.uid === uid || isFriend) {
+      if (isFriend || slim.public || slim.uid === uid) {
         result[d.id] = slim;
       }
     }

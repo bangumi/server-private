@@ -72,7 +72,7 @@ export async function handleTimelineSSE(
       const { tml_id, cat, uid } = event;
 
       if (filterCat !== undefined && cat !== filterCat) return;
-      if (mode === req.IFilterMode.Friends && friendIDs && !friendIDs.has(uid)) return;
+      if (friendIDs && mode === req.IFilterMode.Friends && !friendIDs.has(uid)) return;
 
       const timeline = await fetchTimelineByID(request.auth, tml_id);
       if (!timeline) return;

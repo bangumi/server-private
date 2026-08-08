@@ -55,7 +55,7 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
 
   const s = authCode.decode(sessionRaw, md5(config.php_session_secret_key + ua));
 
-  const [passwordCrypt, userIDRaw] = s.split('\t');
+  const [passwordCrypt, userIDRaw] = s.split('\t', 2);
   if (!userIDRaw || !passwordCrypt) {
     return false;
   }

@@ -337,7 +337,7 @@ export async function setup(app: App) {
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
             await updateSubjectCollectionCounts(t, subjectID, type, oldType);
-            if (type === CollectionType.Collect && progress) {
+            if (progress && type === CollectionType.Collect) {
               await completeSubjectProgress(t, auth.userID, subject, toUpdate);
             }
           }
@@ -396,7 +396,7 @@ export async function setup(app: App) {
             updatedAt: now,
             privacy,
           };
-          if (type === CollectionType.Collect && progress) {
+          if (progress && type === CollectionType.Collect) {
             await completeSubjectProgress(t, auth.userID, subject, toInsert);
           }
           const field = getCollectionTypeField(type);
@@ -420,7 +420,7 @@ export async function setup(app: App) {
       });
 
       // 插入时间线
-      if (privacy === CollectionPrivacy.Public && needTimeline && type) {
+      if (needTimeline && type && privacy === CollectionPrivacy.Public) {
         await AsyncTimelineWriter.subject({
           uid: auth.userID,
           subject: {

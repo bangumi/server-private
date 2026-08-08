@@ -99,6 +99,7 @@ export default defineConfig(
       'unicorn/no-top-level-side-effects': 'off',
       'unicorn/consistent-class-member-order': 'off',
       'unicorn/no-array-reduce': 'off',
+      'unicorn/single-line-block-comment-style': 'off',
       'unicorn/prefer-uint8array-base64': 'off',
       'unicorn/prefer-await': 'off',
       'unicorn/no-useless-recursion': 'off',

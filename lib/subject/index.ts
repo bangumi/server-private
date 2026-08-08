@@ -214,7 +214,7 @@ export async function create({
       rate10: 0,
     } satisfies typeof schema.chiiSubjectFields.$inferInsert);
 
-    if ((typeID === SubjectType.Anime || typeID === SubjectType.Real) && episodes) {
+    if (episodes && (typeID === SubjectType.Anime || typeID === SubjectType.Real)) {
       // avoid create too many episodes, 50 is enough.
       episodes = Math.min(episodes, 50);
 

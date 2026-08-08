@@ -649,14 +649,14 @@ export async function setup(app: App) {
       }: Partial<Static<typeof SubjectEdit>> = input;
 
       if (
+        date === undefined &&
         infobox === s.infobox &&
         name === s.name &&
         platform === s.platform &&
         metaTags.toSorted().join(' ') === s.metaTags &&
         summary === s.summary &&
         series === s.series &&
-        nsfw === s.nsfw &&
-        date === undefined
+        nsfw === s.nsfw
       ) {
         // no new data
         return;

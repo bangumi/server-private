@@ -618,7 +618,7 @@ export async function setup(app: App) {
 
       const isFriend = await isFriends(user.id, auth.userID);
       const conditions = [op.eq(schema.chiiBlogEntries.uid, user.id)];
-      if (auth.userID !== user.id && !isFriend) {
+      if (!isFriend && auth.userID !== user.id) {
         conditions.push(op.eq(schema.chiiBlogEntries.public, true));
       }
 
