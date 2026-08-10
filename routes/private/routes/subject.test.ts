@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
+import redis from '@app/lib/redis.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
+import { getFriendsCacheKey } from '@app/lib/user/cache.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './subject.ts';
@@ -314,6 +316,33 @@ describe('subject topics', () => {
     const res = await app.inject(`/subjects/-/posts/${testPostID}`);
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should include friendship in subject post', async () => {
+    const viewerID = 900_108;
+    const cacheKey = getFriendsCacheKey(viewerID);
+    await redis.set(cacheKey, JSON.stringify([testUserID]));
+
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: viewerID,
+      },
+    });
+    await app.register(setup);
+
+    try {
+      const res = await app.inject(`/subjects/-/posts/${testPostID}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.json()).toMatchObject({
+        creator: { id: testUserID, isFriend: true },
+        topic: { creator: { id: testUserID, isFriend: true } },
+      });
+    } finally {
+      await redis.del(cacheKey);
+      await app.close();
+    }
   });
 
   test('should create/edit/delete new post', async () => {

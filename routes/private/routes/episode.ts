@@ -9,6 +9,7 @@ import { getEpStatus } from '@app/lib/subject/ep';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { fetchViewerFriendIDs } from '@app/lib/user/utils.ts';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -63,6 +64,7 @@ export async function setup(app: App) {
         operationId: 'getEpisodeComments',
         summary: '获取条目的章节吐槽箱',
         tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
@@ -71,12 +73,12 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<res.IComment[]> => {
+    async ({ auth, params: { episodeID } }): Promise<res.IComment[]> => {
       const ep = await fetcher.fetchEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-      return await comment.getAll(episodeID);
+      return await comment.getAll(episodeID, await fetchViewerFriendIDs(auth));
     },
   );
 

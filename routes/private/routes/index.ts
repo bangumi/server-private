@@ -16,6 +16,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { fetchViewerFriendIDs } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -619,7 +620,8 @@ export async function setup(app: App) {
         throw new NotFoundError('index');
       }
 
-      return await comment.getAll(indexID);
+      const friendIDs = await fetchViewerFriendIDs(auth);
+      return await comment.getAll(indexID, friendIDs);
     },
   );
 

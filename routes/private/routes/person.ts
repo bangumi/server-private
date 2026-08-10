@@ -14,6 +14,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { fetchViewerFriendIDs } from '@app/lib/user/utils.ts';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
@@ -431,7 +432,8 @@ export async function setup(app: App) {
     },
     async ({ auth, params: { personID } }) => {
       await requirePerson(personID, auth.allowNsfw);
-      return await comment.getAll(personID);
+      const friendIDs = await fetchViewerFriendIDs(auth);
+      return await comment.getAll(personID, friendIDs);
     },
   );
 
@@ -551,7 +553,8 @@ export async function setup(app: App) {
     async ({ auth, params: { personID, photoID } }) => {
       await requirePerson(personID, auth.allowNsfw);
       await requireMonoPhoto(MonoPhotoType.Person, personID, photoID);
-      return await comment.getAll(personID, photoID);
+      const friendIDs = await fetchViewerFriendIDs(auth);
+      return await comment.getAll(personID, friendIDs, photoID);
     },
   );
 

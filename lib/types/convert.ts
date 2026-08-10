@@ -87,6 +87,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     bio: fields.bio,
     networkServices: [],
     homepage: toUserHomepage(fields.homepage),
+    isFriend: false,
     stats: {
       group: 0,
       subject: {},
@@ -113,6 +114,7 @@ export function toSlimUser(user: orm.IUser): res.ISlimUser {
     group: user.groupid,
     sign: user.sign,
     joinedAt: user.regdate,
+    isFriend: false,
   };
 }
 

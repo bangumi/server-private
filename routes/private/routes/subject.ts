@@ -19,7 +19,7 @@ import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { fetchFriends } from '@app/lib/user/utils';
+import { fetchFriends, fetchViewerFriendIDs } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -1252,7 +1252,8 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${topic.subjectID}`);
       }
-      const creator = await fetcher.fetchSlimUserByID(topic.uid);
+      const friendIDs = await fetchViewerFriendIDs(auth);
+      const creator = await fetcher.fetchSlimUserByID(topic.uid, friendIDs);
       if (!creator) {
         throw new NotFoundError(`user ${topic.uid}`);
       }
@@ -1262,7 +1263,7 @@ export async function setup(app: App) {
         .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
         .orderBy(op.asc(schema.chiiSubjectPosts.id));
       const uids = replies.map((x) => x.uid);
-      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const users = await fetcher.fetchSlimUsersByIDs(uids, friendIDs);
       const subReplies: Record<number, res.IReplyBase[]> = {};
       const reactions = await Reaction.fetchByMainID(topicID, LikeType.SubjectReply);
       for (const x of replies) {
@@ -1395,6 +1396,7 @@ export async function setup(app: App) {
         operationId: 'getSubjectPost',
         summary: '获取条目讨论回复详情',
         tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -1403,7 +1405,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { postID } }) => {
+    async ({ auth, params: { postID } }) => {
       const [post] = await db
         .select()
         .from(schema.chiiSubjectPosts)
@@ -1412,7 +1414,8 @@ export async function setup(app: App) {
       if (!post) {
         throw new NotFoundError(`post ${postID}`);
       }
-      const creator = await fetcher.fetchSlimUserByID(post.uid);
+      const friendIDs = await fetchViewerFriendIDs(auth);
+      const creator = await fetcher.fetchSlimUserByID(post.uid, friendIDs);
       if (!creator) {
         throw new UnexpectedNotFoundError(`user ${post.uid}`);
       }
@@ -1424,7 +1427,7 @@ export async function setup(app: App) {
       if (!topic) {
         throw new UnexpectedNotFoundError(`topic ${post.mid}`);
       }
-      const topicCreator = await fetcher.fetchSlimUserByID(topic.uid);
+      const topicCreator = await fetcher.fetchSlimUserByID(topic.uid, friendIDs);
       if (!topicCreator) {
         throw new UnexpectedNotFoundError(`user ${topic.uid}`);
       }

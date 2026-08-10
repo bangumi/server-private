@@ -1,15 +1,29 @@
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
-import { handleFields } from '@app/event/user.ts';
+import { handleFields, handleFriend } from '@app/event/user.ts';
 import redis from '@app/lib/redis.ts';
-import { getPrivacyCacheKey } from '@app/lib/user/cache.ts';
+import {
+  getFollowersCacheKey,
+  getFriendsCacheKey,
+  getPrivacyCacheKey,
+  getRelationCacheKey,
+  getStatsCacheKey,
+} from '@app/lib/user/cache.ts';
 import { fetchPrivacyByUserID } from '@app/lib/user/privacy.ts';
 
 const testUserID = 900_003;
+const testFriendID = 900_004;
+
+const friendshipCacheKeys = [
+  getFriendsCacheKey(testUserID),
+  getFollowersCacheKey(testFriendID),
+  getRelationCacheKey(testUserID, testFriendID),
+  getStatsCacheKey(testUserID, 'friend'),
+];
 
 beforeEach(async () => {
-  await redis.del(getPrivacyCacheKey(testUserID));
+  await redis.del(getPrivacyCacheKey(testUserID), ...friendshipCacheKeys);
   await db.delete(schema.chiiUserFields).where(op.eq(schema.chiiUserFields.uid, testUserID));
   await db.insert(schema.chiiUserFields).values({
     uid: testUserID,
@@ -23,7 +37,7 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
-  await redis.del(getPrivacyCacheKey(testUserID));
+  await redis.del(getPrivacyCacheKey(testUserID), ...friendshipCacheKeys);
   await db.delete(schema.chiiUserFields).where(op.eq(schema.chiiUserFields.uid, testUserID));
 });
 
@@ -44,4 +58,26 @@ test('should invalidate user privacy cache from memberfields event', async () =>
   });
 
   await expect(fetchPrivacyByUserID(testUserID)).resolves.toBe('{"show_nsfw_subject":1}');
+});
+
+test('should invalidate friendship caches from friend event', async () => {
+  await Promise.all(friendshipCacheKeys.map((key) => redis.set(key, 'cached')));
+
+  await handleFriend({
+    topic: 'debezium.chii.bangumi.chii_friends',
+    key: '{}',
+    value: Buffer.from(
+      JSON.stringify({
+        op: 'c',
+        after: {
+          frd_uid: testUserID,
+          frd_fid: testFriendID,
+        },
+      }),
+    ),
+  });
+
+  await expect(redis.mget(friendshipCacheKeys)).resolves.toEqual(
+    friendshipCacheKeys.map(() => null),
+  );
 });

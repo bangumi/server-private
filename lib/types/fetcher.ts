@@ -31,6 +31,7 @@ import { TagCat } from '@app/lib/tag.ts';
 import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
+import { applyUserFriendship } from '@app/lib/user/friendship.ts';
 import { fetchFriends, isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
@@ -53,11 +54,14 @@ export async function fetchSlimUserByUsername(
 }
 
 /** Cached */
-export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | undefined> {
+export async function fetchSlimUserByID(
+  uid: number,
+  friendIDs?: ReadonlySet<number>,
+): Promise<res.ISlimUser | undefined> {
   const cached = await redis.get(getUserSlimCacheKey(uid));
   if (cached) {
     const item = JSON.parse(cached) as res.ISlimUser;
-    return item;
+    return applyUserFriendship(item, friendIDs);
   }
   const [data] = await db.select().from(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, uid));
   if (!data) {
@@ -65,11 +69,14 @@ export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | un
   }
   const item = convert.toSlimUser(data);
   await redis.setex(getUserSlimCacheKey(uid), ONE_MONTH, JSON.stringify(item));
-  return item;
+  return applyUserFriendship(item, friendIDs);
 }
 
 /** Cached */
-export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
+export async function fetchSlimUsersByIDs(
+  ids: number[],
+  friendIDs?: ReadonlySet<number>,
+): Promise<Record<number, res.ISlimUser>> {
   if (ids.length === 0) {
     return {};
   }
@@ -80,7 +87,7 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   const missing = [];
   for (const [idx, id] of ids.entries()) {
     if (cached[idx]) {
-      result[id] = JSON.parse(cached[idx]) as res.ISlimUser;
+      result[id] = applyUserFriendship(JSON.parse(cached[idx]) as res.ISlimUser, friendIDs);
     } else {
       missing.push(id);
     }
@@ -92,7 +99,7 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
   for (const d of data) {
     const slim = convert.toSlimUser(d);
     await redis.setex(getUserSlimCacheKey(slim.id), ONE_MONTH, JSON.stringify(slim));
-    result[slim.id] = slim;
+    result[slim.id] = applyUserFriendship(slim, friendIDs);
   }
   return result;
 }

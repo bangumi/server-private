@@ -9,7 +9,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { isFriends } from '@app/lib/user/utils.ts';
+import { fetchViewerFriendIDs, isFriends } from '@app/lib/user/utils.ts';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
@@ -168,7 +168,7 @@ export async function setup(app: App) {
       if (!entry) {
         throw new NotFoundError('Blog entry not found');
       }
-      return await comment.getAll(entryID);
+      return await comment.getAll(entryID, await fetchViewerFriendIDs(auth));
     },
   );
 

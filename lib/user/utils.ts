@@ -8,6 +8,7 @@ import {
   getFriendsCacheKey,
   getJoinedGroupsCacheKey,
   getRelationCacheKey,
+  getStatsCacheKey,
 } from '@app/lib/user/cache.ts';
 import { intval } from '@app/lib/utils/index.ts';
 
@@ -37,6 +38,16 @@ export async function fetchFriends(uid?: number): Promise<number[]> {
   const result = friends.map((x) => x.fid);
   await redis.setex(getFriendsCacheKey(uid), 3600, JSON.stringify(result));
   return result;
+}
+
+export async function fetchViewerFriendIDs(
+  auth: Readonly<{ login: boolean; userID: number }>,
+): Promise<ReadonlySet<number>> {
+  if (!auth.login) {
+    return new Set();
+  }
+
+  return new Set(await fetchFriends(auth.userID));
 }
 
 /** Cached: Get follower ids of user(uid) */
@@ -76,6 +87,15 @@ export async function isFriends(uid: number, another: number): Promise<boolean> 
   return result === 1;
 }
 
+export async function invalidateFriendshipCaches(uid: number, fid: number): Promise<void> {
+  await redis.del(
+    getFriendsCacheKey(uid),
+    getFollowersCacheKey(fid),
+    getRelationCacheKey(uid, fid),
+    getStatsCacheKey(uid, 'friend'),
+  );
+}
+
 export function ghostUser(uid: number): res.ISlimUser {
   return {
     id: 0,
@@ -89,6 +109,7 @@ export function ghostUser(uid: number): res.ISlimUser {
     group: 0,
     sign: '',
     joinedAt: 0,
+    isFriend: false,
   };
 }
 
