@@ -1,31 +1,27 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
+
+import * as lodash from 'lodash-es';
 import { expect, test } from 'vitest';
 
+import { projectRoot } from '@app/lib/config.ts';
 import { createServer } from '@app/lib/server.ts';
 
-function sortedStringify(obj: unknown): string {
-  return JSON.stringify(
-    obj,
-    (_key: string, value: unknown) => {
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        return Object.keys(value)
-          .toSorted()
-          .reduce<Record<string, unknown>>((sorted, key) => {
-            sorted[key] = (value as Record<string, unknown>)[key];
-            return sorted;
-          }, {});
-      }
-      return value;
-    },
-    2,
-  );
-}
-
-test('should build private api spec', async () => {
+test('should keep openapi spec up to date', async () => {
   const app = await createServer();
 
   const res = await app.inject({ url: '/p1/openapi.json' });
   expect(res.statusCode).toBe(200);
 
-  const body = JSON.parse(res.body);
-  expect(sortedStringify(body)).toMatchSnapshot();
+  // 与 bin/export-openapi.ts 保持一致：导出时忽略 info.version
+  const generated = lodash.omit(JSON.parse(res.body), 'info.version');
+  const committed = JSON.parse(fs.readFileSync(path.resolve(projectRoot, 'openapi.json'), 'utf8'));
+
+  if (!isDeepStrictEqual(generated, committed)) {
+    throw new Error(
+      'openapi.json is out of date with the current code. ' +
+        'Run `pnpm run file ./bin/export-openapi.ts && pnpm exec prettier --write openapi.json` to update it.',
+    );
+  }
 }, 15000);
