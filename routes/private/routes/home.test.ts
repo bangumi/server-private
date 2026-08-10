@@ -16,16 +16,22 @@ describe('home', () => {
     vi.clearAllMocks();
   });
 
-  test('should require login', async () => {
+  test('should return public blocks when not logged in', async () => {
     const app = createTestServer();
     await app.register(calendarSetup);
     await app.register(setup);
 
     const res = await app.inject({
       method: 'get',
-      url: '/me/home',
+      url: '/home',
     });
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({
+      progress: [],
+      timeline: [],
+      groupTopics: [],
+    });
+    expect(res.json()).toMatchSnapshot();
   });
 
   test('should get home data', async () => {
@@ -41,7 +47,7 @@ describe('home', () => {
 
     const res = await app.inject({
       method: 'get',
-      url: '/me/home',
+      url: '/home',
     });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();

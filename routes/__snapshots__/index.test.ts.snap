@@ -10019,6 +10019,44 @@ exports[`should build private api spec 1`] = `
         ]
       }
     },
+    "/p1/home": {
+      "get": {
+        "description": "聚合首页所需的全部数据：进度管理、好友时间线、小组话题、热门小组、热门条目讨论与每日放送。根据登录状态分发：未登录时个人区块（进度/时间线/小组话题）为空，仅返回公开区块；已登录时返回全部区块。各个区块独立计算，单个区块失败时返回空数据，不影响其他区块。",
+        "operationId": "getHome",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "意料之外的服务器错误"
+          }
+        },
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "获取首页数据",
+        "tags": [
+          "home"
+        ]
+      }
+    },
     "/p1/indexes": {
       "post": {
         "operationId": "createIndex",
@@ -11027,44 +11065,6 @@ exports[`should build private api spec 1`] = `
         "summary": "获取当前用户信息",
         "tags": [
           "misc"
-        ]
-      }
-    },
-    "/p1/me/home": {
-      "get": {
-        "description": "聚合登录用户首页所需的全部数据：进度管理、好友时间线、小组话题、热门小组、热门条目讨论与每日放送。各个区块独立计算，单个区块失败时返回空数据，不影响其他区块。",
-        "operationId": "getMeHome",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HomeResponse"
-                }
-              }
-            },
-            "description": "Default Response"
-          },
-          "500": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            },
-            "description": "意料之外的服务器错误"
-          }
-        },
-        "security": [
-          {
-            "CookiesSession": [],
-            "HTTPBearer": []
-          }
-        ],
-        "summary": "获取登录用户首页数据",
-        "tags": [
-          "home"
         ]
       }
     },

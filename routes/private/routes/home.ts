@@ -19,7 +19,6 @@ import { TopicDisplay } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchJoinedGroups } from '@app/lib/user/utils';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 import { Calendar, CalendarItem, type ICalendarItem } from './calendar.ts';
@@ -137,25 +136,50 @@ export async function setup(app: App) {
   app.addSchema(HomeResponse);
 
   app.get(
-    '/me/home',
+    '/home',
     {
       schema: {
-        summary: '获取登录用户首页数据',
+        summary: '获取首页数据',
         description:
-          '聚合登录用户首页所需的全部数据：进度管理、好友时间线、小组话题、热门小组、热门条目讨论与每日放送。' +
-          '各个区块独立计算，单个区块失败时返回空数据，不影响其他区块。',
-        operationId: 'getMeHome',
+          '聚合首页所需的全部数据：进度管理、好友时间线、小组话题、热门小组、热门条目讨论与每日放送。' +
+          '根据登录状态分发：未登录时个人区块（进度/时间线/小组话题）为空，仅返回公开区块；' +
+          '已登录时返回全部区块。各个区块独立计算，单个区块失败时返回空数据，不影响其他区块。',
+        operationId: 'getHome',
         tags: [Tag.Home],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         response: {
           200: res.Ref(HomeResponse),
         },
       },
-      preHandler: [requireLogin('view home page')],
     },
     async ({ auth }) => {
-      const startedAt = DateTime.now().toUnixInteger();
+      if (!auth.login) {
+        // 未登录：仅返回公开区块；未登录首页的 intro 等区块留待后续实现
+        const [famousGroups, hotSubjectTopics, calendar] = await Promise.all([
+          fetchFamousGroups().catch((error) => {
+            logger.error(error, 'failed to fetch home famous groups');
+            return [] as res.ISlimGroup[];
+          }),
+          fetchHotSubjectTopics(auth.allowNsfw).catch((error) => {
+            logger.error(error, 'failed to fetch home hot subject topics');
+            return [] as res.ISubjectTopic[];
+          }),
+          fetchCalendar(auth.allowNsfw).catch((error) => {
+            logger.error(error, 'failed to fetch home calendar');
+            return EMPTY_CALENDAR;
+          }),
+        ]);
+        return {
+          progress: [],
+          timeline: [],
+          groupTopics: [],
+          famousGroups,
+          hotSubjectTopics,
+          calendar,
+        };
+      }
 
+      const startedAt = DateTime.now().toUnixInteger();
       const [progress, timeline, groupTopics, famousGroups, hotSubjectTopics, calendar] =
         await Promise.all([
           fetchProgress(auth.userID, auth.allowNsfw).catch((error) => {
