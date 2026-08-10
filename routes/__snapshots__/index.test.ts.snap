@@ -1399,6 +1399,52 @@ exports[`should build private api spec 1`] = `
           "name": "GroupTopicFilterMode"
         }
       },
+      "HomeResponse": {
+        "properties": {
+          "calendar": {
+            "$ref": "#/components/schemas/Calendar"
+          },
+          "famousGroups": {
+            "items": {
+              "$ref": "#/components/schemas/SlimGroup"
+            },
+            "type": "array"
+          },
+          "groupTopics": {
+            "items": {
+              "$ref": "#/components/schemas/GroupTopic"
+            },
+            "type": "array"
+          },
+          "hotSubjectTopics": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectTopic"
+            },
+            "type": "array"
+          },
+          "progress": {
+            "items": {
+              "$ref": "#/components/schemas/ProgressItem"
+            },
+            "type": "array"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/Timeline"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "progress",
+          "timeline",
+          "groupTopics",
+          "famousGroups",
+          "hotSubjectTopics",
+          "calendar"
+        ],
+        "type": "object"
+      },
       "Index": {
         "properties": {
           "award": {
@@ -2508,6 +2554,97 @@ exports[`should build private api spec 1`] = `
         ],
         "title": "Profile",
         "type": "object"
+      },
+      "ProgressItem": {
+        "properties": {
+          "eps": {
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            },
+            "type": "array"
+          },
+          "interest": {
+            "$ref": "#/components/schemas/SubjectInterest"
+          },
+          "lastUnwatchedEp": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "sort": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "id",
+                  "sort"
+                ],
+                "type": "object"
+              }
+            ]
+          },
+          "percent": {
+            "type": "number"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/ProgressSubject"
+          },
+          "todayOnAir": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "subject",
+          "interest",
+          "percent",
+          "todayOnAir",
+          "lastUnwatchedEp",
+          "eps"
+        ],
+        "type": "object"
+      },
+      "ProgressSubject": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/SlimSubject"
+          },
+          {
+            "properties": {
+              "airDate": {
+                "type": "string"
+              },
+              "doing": {
+                "type": "integer"
+              },
+              "eps": {
+                "type": "integer"
+              },
+              "series": {
+                "type": "boolean"
+              },
+              "volumes": {
+                "type": "integer"
+              },
+              "weekday": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "eps",
+              "volumes",
+              "series",
+              "doing",
+              "airDate",
+              "weekday"
+            ],
+            "type": "object"
+          }
+        ]
       },
       "Reaction": {
         "properties": {
@@ -9954,6 +10091,44 @@ exports[`should build private api spec 1`] = `
         "summary": "创建小组话题",
         "tags": [
           "group"
+        ]
+      }
+    },
+    "/p1/home": {
+      "get": {
+        "description": "聚合首页所需的全部数据：进度管理、好友时间线、小组话题、热门小组、热门条目讨论与每日放送。根据登录状态分发：未登录时个人区块（进度/时间线/小组话题）为空，仅返回公开区块；已登录时返回全部区块。各个区块独立计算，单个区块失败时返回空数据，不影响其他区块。",
+        "operationId": "getHome",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HomeResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "意料之外的服务器错误"
+          }
+        },
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "获取首页数据",
+        "tags": [
+          "home"
         ]
       }
     },
