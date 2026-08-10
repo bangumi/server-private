@@ -16,6 +16,7 @@ import * as character from './routes/character.ts';
 import * as collection from './routes/collection.ts';
 import * as episode from './routes/episode.ts';
 import * as group from './routes/group.ts';
+import * as home from './routes/home.ts';
 import * as index from './routes/index.ts';
 import * as misc from './routes/misc.ts';
 import * as passkey from './routes/passkey.ts';
@@ -85,6 +86,7 @@ async function API(app: App) {
   await app.register(episode.setup);
   await app.register(friend.setup);
   await app.register(group.setup);
+  await app.register(home.setup);
   await app.register(index.setup);
   await app.register(misc.setup);
   await app.register(passkey.setup);
