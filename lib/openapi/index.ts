@@ -8,6 +8,7 @@ export const Tag = {
   Collection: 'collection',
   Episode: 'episode',
   Group: 'group',
+  Home: 'home',
   Index: 'index',
   Person: 'person',
   Relationship: 'relationship',
