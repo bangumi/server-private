@@ -3729,6 +3729,81 @@ exports[`should build private api spec 1`] = `
         ],
         "type": "object"
       },
+      "SubjectHomeResponse": {
+        "properties": {
+          "characters": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectCharacter"
+            },
+            "type": "array"
+          },
+          "comments": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectInterestComment"
+            },
+            "type": "array"
+          },
+          "episodes": {
+            "items": {
+              "$ref": "#/components/schemas/Episode"
+            },
+            "type": "array"
+          },
+          "indexes": {
+            "items": {
+              "$ref": "#/components/schemas/SlimIndex"
+            },
+            "type": "array"
+          },
+          "recs": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectRec"
+            },
+            "type": "array"
+          },
+          "relations": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectRelation"
+            },
+            "type": "array"
+          },
+          "reviews": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectReview"
+            },
+            "type": "array"
+          },
+          "staff": {
+            "items": {
+              "$ref": "#/components/schemas/SubjectStaff"
+            },
+            "type": "array"
+          },
+          "subject": {
+            "$ref": "#/components/schemas/Subject"
+          },
+          "topics": {
+            "items": {
+              "$ref": "#/components/schemas/Topic"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "subject",
+          "episodes",
+          "characters",
+          "staff",
+          "relations",
+          "recs",
+          "comments",
+          "reviews",
+          "indexes",
+          "topics"
+        ],
+        "title": "SubjectHomeResponse",
+        "type": "object"
+      },
       "SubjectImages": {
         "properties": {
           "common": {
@@ -14444,6 +14519,54 @@ exports[`should build private api spec 1`] = `
           }
         ],
         "summary": "获取条目的章节",
+        "tags": [
+          "subject"
+        ]
+      }
+    },
+    "/p1/subjects/{subjectID}/home": {
+      "get": {
+        "description": "聚合条目详情页所需的全部数据：条目信息、章节、角色、制作人员、相关条目、推荐、吐槽、相关日志、收录与讨论。已登录时返回个人收藏状态与章节观看状态。各个区块独立计算，单个区块失败时返回空数据，不影响其他区块。",
+        "operationId": "getSubjectHome",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "subjectID",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectHomeResponse"
+                }
+              }
+            },
+            "description": "Default Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "意料之外的服务器错误"
+          }
+        },
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "获取条目首页数据",
         "tags": [
           "subject"
         ]

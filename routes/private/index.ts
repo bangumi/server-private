@@ -25,6 +25,7 @@ import * as friend from './routes/relationship.ts';
 import * as report from './routes/report.ts';
 import * as search from './routes/search.ts';
 import * as subject from './routes/subject.ts';
+import * as subjectHome from './routes/subject-home.ts';
 import * as timeline from './routes/timeline.ts';
 import * as trending from './routes/trending.ts';
 import * as user from './routes/user.ts';
@@ -93,6 +94,7 @@ async function API(app: App) {
   await app.register(report.setup);
   await app.register(search.setup);
   await app.register(subject.setup);
+  await app.register(subjectHome.setup);
   await app.register(timeline.setup);
   await app.register(trending.setup);
   await app.register(user.setup);
