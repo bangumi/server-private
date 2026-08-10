@@ -15,7 +15,7 @@ import { logger } from '@app/lib/logger.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getTimelineInbox } from '@app/lib/timeline/inbox';
 import { fetchTimelineByIDs } from '@app/lib/timeline/item';
-import { TopicDisplay } from '@app/lib/topic/type.ts';
+import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchJoinedGroups } from '@app/lib/user/utils';
@@ -48,6 +48,8 @@ async function fetchGroupTopics(userID: number, allowNsfw: boolean): Promise<res
     .where(
       op.and(
         op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal),
+        // 对齐 PHP GetPersonalGroupTopic: 仅允许正常/重开状态的话题
+        op.inArray(schema.chiiGroupTopics.state, [CommentState.Normal, CommentState.AdminReopen]),
         op.inArray(schema.chiiGroupTopics.gid, gids),
       ),
     )
