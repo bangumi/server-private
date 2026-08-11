@@ -6,11 +6,14 @@ import type * as res from '@app/lib/types/res.ts';
 import {
   getFollowersCacheKey,
   getFriendsCacheKey,
+  getFriendsCacheVersionKey,
   getJoinedGroupsCacheKey,
-  getRelationCacheKey,
   getStatsCacheKey,
 } from '@app/lib/user/cache.ts';
 import { intval } from '@app/lib/utils/index.ts';
+
+const FRIENDS_CACHE_TTL = 3600;
+const FRIENDS_CACHE_SENTINEL = 0;
 
 export function parseBlocklist(blocklist: string): number[] {
   return blocklist
@@ -20,34 +23,66 @@ export function parseBlocklist(blocklist: string): number[] {
     .filter((x) => x !== 0);
 }
 
+async function fetchFriendsFromDB(uid: number): Promise<number[]> {
+  const friends = await db
+    .select({ fid: schema.chiiFriends.fid })
+    .from(schema.chiiFriends)
+    .where(op.eq(schema.chiiFriends.uid, uid));
+  return friends.map((friend) => friend.fid);
+}
+
+async function getCurrentFriendsCacheKey(uid: number): Promise<string> {
+  const version = intval((await redis.get(getFriendsCacheVersionKey(uid))) ?? '0');
+  return getFriendsCacheKey(uid, version);
+}
+
+async function cacheFriends(cacheKey: string, friendIDs: readonly number[]): Promise<void> {
+  await redis
+    .multi()
+    .sadd(cacheKey, FRIENDS_CACHE_SENTINEL, ...friendIDs)
+    .expire(cacheKey, FRIENDS_CACHE_TTL)
+    .exec();
+}
+
 /** Cached: Get friend ids of user(uid) */
 export async function fetchFriends(uid?: number): Promise<number[]> {
   if (!uid) {
     return [];
   }
 
-  const cached = await redis.get(getFriendsCacheKey(uid));
-  if (cached) {
-    return JSON.parse(cached) as number[];
+  const cacheKey = await getCurrentFriendsCacheKey(uid);
+  const members = await redis.smembers(cacheKey);
+  if (members.includes(FRIENDS_CACHE_SENTINEL.toString())) {
+    return members
+      .map((member) => intval(member))
+      .filter((member) => member !== FRIENDS_CACHE_SENTINEL);
   }
 
-  const friends = await db
-    .select({ fid: schema.chiiFriends.fid })
-    .from(schema.chiiFriends)
-    .where(op.eq(schema.chiiFriends.uid, uid));
-  const result = friends.map((x) => x.fid);
-  await redis.setex(getFriendsCacheKey(uid), 3600, JSON.stringify(result));
-  return result;
+  const friendIDs = await fetchFriendsFromDB(uid);
+  await cacheFriends(cacheKey, friendIDs);
+  return friendIDs;
 }
 
-export async function fetchViewerFriendIDs(
-  auth: Readonly<{ login: boolean; userID: number }>,
+/** Cached: Get the ids among candidates that user(uid) follows. */
+export async function fetchFriendIDs(
+  uid: number | undefined,
+  candidates: readonly number[],
 ): Promise<ReadonlySet<number>> {
-  if (!auth.login) {
+  if (!uid || candidates.length === 0) {
     return new Set();
   }
 
-  return new Set(await fetchFriends(auth.userID));
+  const ids = [...new Set(candidates)];
+  const cacheKey = await getCurrentFriendsCacheKey(uid);
+  const memberships = await redis.smismember(cacheKey, FRIENDS_CACHE_SENTINEL, ...ids);
+  if (memberships[0] === 1) {
+    return new Set(ids.filter((_, index) => memberships[index + 1] === 1));
+  }
+
+  const friendIDs = await fetchFriendsFromDB(uid);
+  await cacheFriends(cacheKey, friendIDs);
+  const friends = new Set(friendIDs);
+  return new Set(ids.filter((id) => friends.has(id)));
 }
 
 /** Cached: Get follower ids of user(uid) */
@@ -72,28 +107,16 @@ export async function fetchFollowers(uid?: number): Promise<number[]> {
 
 /** Cached: Is user(another) is friend of user(uid) */
 export async function isFriends(uid: number, another: number): Promise<boolean> {
-  const cached = await redis.get(getRelationCacheKey(uid, another));
-  if (cached) {
-    return cached === '1';
-  }
-
-  const [d] = await db
-    .select({ uid: schema.chiiFriends.uid, fid: schema.chiiFriends.fid })
-    .from(schema.chiiFriends)
-    .where(op.and(op.eq(schema.chiiFriends.uid, uid), op.eq(schema.chiiFriends.fid, another)))
-    .limit(1);
-  const result = d ? 1 : 0;
-  await redis.setex(getRelationCacheKey(uid, another), 3600, result);
-  return result === 1;
+  const friendIDs = await fetchFriendIDs(uid, [another]);
+  return friendIDs.has(another);
 }
 
 export async function invalidateFriendshipCaches(uid: number, fid: number): Promise<void> {
-  await redis.del(
-    getFriendsCacheKey(uid),
-    getFollowersCacheKey(fid),
-    getRelationCacheKey(uid, fid),
-    getStatsCacheKey(uid, 'friend'),
-  );
+  await redis
+    .multi()
+    .incr(getFriendsCacheVersionKey(uid))
+    .del(getFollowersCacheKey(fid), getStatsCacheKey(uid, 'friend'))
+    .exec();
 }
 
 export function ghostUser(uid: number): res.ISlimUser {

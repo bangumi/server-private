@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import redis from '@app/lib/redis.ts';
-import { getFriendsCacheKey } from '@app/lib/user/cache.ts';
+import { getFriendsCacheKey, getFriendsCacheVersionKey } from '@app/lib/user/cache.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './episode.ts';
@@ -75,8 +75,8 @@ describe('get ep comment', () => {
   test('should include friendship in comments', async () => {
     const viewerID = 900_107;
     const friendID = 382_951;
-    const cacheKey = getFriendsCacheKey(viewerID);
-    await redis.set(cacheKey, JSON.stringify([friendID]));
+    const cacheKey = getFriendsCacheKey(viewerID, 0);
+    await redis.sadd(cacheKey, 0, friendID);
 
     const app = createTestServer({
       auth: {
@@ -98,7 +98,7 @@ describe('get ep comment', () => {
         replies: [{ user: { id: friendID, isFriend: true } }],
       });
     } finally {
-      await redis.del(cacheKey);
+      await redis.del(cacheKey, getFriendsCacheVersionKey(viewerID));
       await app.close();
     }
   });

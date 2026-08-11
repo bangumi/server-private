@@ -19,8 +19,8 @@ import {
   readPrivacySetting,
 } from '@app/lib/user/privacy.ts';
 import {
+  fetchFriendIDs,
   fetchFriends,
-  fetchViewerFriendIDs,
   invalidateFriendshipCaches,
   parseBlocklist,
 } from '@app/lib/user/utils.ts';
@@ -274,7 +274,10 @@ export async function setup(app: App) {
       const followers = data.map((d) => convert.toFriend(d.chii_members, d.chii_friends));
       applyUsersFriendship(
         followers.map((follower) => follower.user),
-        await fetchViewerFriendIDs(auth),
+        await fetchFriendIDs(
+          auth.userID,
+          followers.map((follower) => follower.user.id),
+        ),
       );
 
       return {

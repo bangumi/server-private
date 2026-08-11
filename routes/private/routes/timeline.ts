@@ -18,7 +18,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { fetchFriends, fetchViewerFriendIDs } from '@app/lib/user/utils.ts';
+import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -185,8 +185,7 @@ export async function setup(app: App) {
       if (!timeline) {
         throw new NotFoundError('timeline');
       }
-      const friendIDs = await fetchViewerFriendIDs(auth);
-      return await comment.getAll(timelineID, friendIDs);
+      return await comment.getAll(timelineID, auth.login ? auth.userID : undefined);
     },
   );
 

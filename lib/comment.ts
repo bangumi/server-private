@@ -80,14 +80,14 @@ export class CommentWithState {
     return parent;
   }
 
-  async getAll(mainID: number, friendIDs?: ReadonlySet<number>, relatedPhotoID?: number) {
+  async getAll(mainID: number, viewerID?: number, relatedPhotoID?: number) {
     let where = op.eq(this.table.mid, mainID);
     if (relatedPhotoID !== undefined && hasRelatedPhotoTable(this.table)) {
       where = op.and(where, op.eq(this.table.relatedPhotoID, relatedPhotoID)) ?? where;
     }
     const data = await db.select().from(this.table).where(where).orderBy(op.asc(this.table.id));
     const uids = data.map((v) => v.uid);
-    const users = await fetcher.fetchSlimUsersByIDs(uids, friendIDs);
+    const users = await fetcher.fetchSlimUsersByIDs(uids, viewerID);
     const comments: res.IComment[] = [];
     const replies: Record<number, res.ICommentBase[]> = {};
     let allReactions: Record<number, res.IReaction[]> = {};
@@ -302,14 +302,14 @@ export class CommentWithoutState {
     this.table = table;
   }
 
-  async getAll(mainID: number, friendIDs?: ReadonlySet<number>) {
+  async getAll(mainID: number, viewerID?: number) {
     const data = await db
       .select()
       .from(this.table)
       .where(op.eq(this.table.mid, mainID))
       .orderBy(op.asc(this.table.id));
     const uids = data.map((v) => v.uid);
-    const users = await fetcher.fetchSlimUsersByIDs(uids, friendIDs);
+    const users = await fetcher.fetchSlimUsersByIDs(uids, viewerID);
     const comments: res.IComment[] = [];
     const replies: Record<number, res.ICommentBase[]> = {};
     for (const d of data) {

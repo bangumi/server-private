@@ -9,7 +9,6 @@ import { getEpStatus } from '@app/lib/subject/ep';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { fetchViewerFriendIDs } from '@app/lib/user/utils.ts';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -78,7 +77,7 @@ export async function setup(app: App) {
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-      return await comment.getAll(episodeID, await fetchViewerFriendIDs(auth));
+      return await comment.getAll(episodeID, auth.login ? auth.userID : undefined);
     },
   );
 
