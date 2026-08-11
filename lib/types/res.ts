@@ -193,6 +193,10 @@ export const SlimUser = t.Object(
     group: t.Integer(),
     sign: t.String(),
     joinedAt: t.Integer(),
+    isFriend: t.Boolean({
+      description:
+        'Whether the authenticated user has added this user as a friend; false when the endpoint does not populate viewer friendship',
+    }),
   },
   { $id: 'SlimUser', title: 'SlimUser' },
 );
@@ -213,6 +217,10 @@ export const User = t.Object(
     networkServices: t.Array(UserNetworkService),
     homepage: Ref(UserHomepage),
     stats: Ref(UserStats),
+    isFriend: t.Boolean({
+      description:
+        'Whether the authenticated user has added this user as a friend; false when unauthenticated',
+    }),
   },
   { $id: 'User', title: 'User' },
 );

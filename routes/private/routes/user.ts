@@ -41,7 +41,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { username } }) => {
+    async ({ auth, params: { username } }) => {
       const [data] = await db
         .select()
         .from(schema.chiiUsers)
@@ -69,6 +69,7 @@ export async function setup(app: App) {
       for (const svc of svcs) {
         user.networkServices.push(convert.toUserNetworkService(svc));
       }
+      user.isFriend = auth.login && (await isFriends(auth.userID, user.id));
       return user;
     },
   );
