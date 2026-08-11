@@ -6,7 +6,6 @@ import redis from '@app/lib/redis.ts';
 import {
   getFollowersCacheKey,
   getFriendsCacheKey,
-  getFriendsCacheVersionKey,
   getPrivacyCacheKey,
   getStatsCacheKey,
 } from '@app/lib/user/cache.ts';
@@ -15,8 +14,7 @@ import { fetchPrivacyByUserID } from '@app/lib/user/privacy.ts';
 const testUserID = 900_003;
 const testFriendID = 900_004;
 
-const friendsCacheVersionKey = getFriendsCacheVersionKey(testUserID);
-const friendsCacheKey = getFriendsCacheKey(testUserID, 3);
+const friendsCacheKey = getFriendsCacheKey(testUserID);
 const invalidatedFriendshipCacheKeys = [
   getFollowersCacheKey(testFriendID),
   getStatsCacheKey(testUserID, 'friend'),
@@ -25,7 +23,6 @@ const invalidatedFriendshipCacheKeys = [
 beforeEach(async () => {
   await redis.del(
     getPrivacyCacheKey(testUserID),
-    friendsCacheVersionKey,
     friendsCacheKey,
     ...invalidatedFriendshipCacheKeys,
   );
@@ -44,7 +41,6 @@ beforeEach(async () => {
 afterEach(async () => {
   await redis.del(
     getPrivacyCacheKey(testUserID),
-    friendsCacheVersionKey,
     friendsCacheKey,
     ...invalidatedFriendshipCacheKeys,
   );
@@ -70,8 +66,7 @@ test('should invalidate user privacy cache from memberfields event', async () =>
   await expect(fetchPrivacyByUserID(testUserID)).resolves.toBe('{"show_nsfw_subject":1}');
 });
 
-test('should advance friendship cache generation from friend event', async () => {
-  await redis.set(friendsCacheVersionKey, 3);
+test('should invalidate friendship caches from friend event', async () => {
   await redis.sadd(friendsCacheKey, 0, testFriendID);
   await Promise.all(invalidatedFriendshipCacheKeys.map((key) => redis.set(key, 'cached')));
 
@@ -89,10 +84,7 @@ test('should advance friendship cache generation from friend event', async () =>
     ),
   });
 
-  await expect(redis.get(friendsCacheVersionKey)).resolves.toBe('4');
-  await expect(redis.smembers(friendsCacheKey)).resolves.toEqual(
-    expect.arrayContaining(['0', testFriendID.toString()]),
-  );
+  await expect(redis.exists(friendsCacheKey)).resolves.toBe(0);
   await expect(redis.mget(invalidatedFriendshipCacheKeys)).resolves.toEqual(
     invalidatedFriendshipCacheKeys.map(() => null),
   );

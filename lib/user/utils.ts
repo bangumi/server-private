@@ -6,7 +6,6 @@ import type * as res from '@app/lib/types/res.ts';
 import {
   getFollowersCacheKey,
   getFriendsCacheKey,
-  getFriendsCacheVersionKey,
   getJoinedGroupsCacheKey,
   getStatsCacheKey,
 } from '@app/lib/user/cache.ts';
@@ -31,11 +30,6 @@ async function fetchFriendsFromDB(uid: number): Promise<number[]> {
   return friends.map((friend) => friend.fid);
 }
 
-async function getCurrentFriendsCacheKey(uid: number): Promise<string> {
-  const version = intval((await redis.get(getFriendsCacheVersionKey(uid))) ?? '0');
-  return getFriendsCacheKey(uid, version);
-}
-
 async function cacheFriends(cacheKey: string, friendIDs: readonly number[]): Promise<void> {
   await redis
     .multi()
@@ -50,7 +44,7 @@ export async function fetchFriends(uid?: number): Promise<number[]> {
     return [];
   }
 
-  const cacheKey = await getCurrentFriendsCacheKey(uid);
+  const cacheKey = getFriendsCacheKey(uid);
   const members = await redis.smembers(cacheKey);
   if (members.includes(FRIENDS_CACHE_SENTINEL.toString())) {
     return members
@@ -73,7 +67,7 @@ export async function fetchFriendIDs(
   }
 
   const ids = [...new Set(candidates)];
-  const cacheKey = await getCurrentFriendsCacheKey(uid);
+  const cacheKey = getFriendsCacheKey(uid);
   const memberships = await redis.smismember(cacheKey, FRIENDS_CACHE_SENTINEL, ...ids);
   if (memberships[0] === 1) {
     return new Set(ids.filter((_, index) => memberships[index + 1] === 1));
@@ -112,11 +106,11 @@ export async function isFriends(uid: number, another: number): Promise<boolean> 
 }
 
 export async function invalidateFriendshipCaches(uid: number, fid: number): Promise<void> {
-  await redis
-    .multi()
-    .incr(getFriendsCacheVersionKey(uid))
-    .del(getFollowersCacheKey(fid), getStatsCacheKey(uid, 'friend'))
-    .exec();
+  await redis.del(
+    getFriendsCacheKey(uid),
+    getFollowersCacheKey(fid),
+    getStatsCacheKey(uid, 'friend'),
+  );
 }
 
 export function ghostUser(uid: number): res.ISlimUser {

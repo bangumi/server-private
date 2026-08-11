@@ -6,12 +6,8 @@ export function getStatsCacheKey(uid: number, section: string): string {
   return `user:stats:${uid}:${section}`;
 }
 
-export function getFriendsCacheVersionKey(uid: number): string {
-  return `user:v2:friends:${uid}:version`;
-}
-
-export function getFriendsCacheKey(uid: number, version: number): string {
-  return `user:v2:friends:${uid}:generation:${version}`;
+export function getFriendsCacheKey(uid: number): string {
+  return `user:v2:friends:${uid}`;
 }
 
 export function getFollowersCacheKey(uid: number): string {

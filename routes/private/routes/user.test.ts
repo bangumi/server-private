@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import redis from '@app/lib/redis.ts';
-import { getFriendsCacheKey, getFriendsCacheVersionKey } from '@app/lib/user/cache.ts';
+import { getFriendsCacheKey } from '@app/lib/user/cache.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './user.ts';
@@ -21,7 +21,7 @@ describe('user', () => {
   test('should include the authenticated user friendship', async () => {
     const viewerID = 900_101;
     const targetID = 382_951;
-    const friendsCacheKey = getFriendsCacheKey(viewerID, 0);
+    const friendsCacheKey = getFriendsCacheKey(viewerID);
     await redis.sadd(friendsCacheKey, 0, targetID);
 
     const app = createTestServer({
@@ -41,7 +41,7 @@ describe('user', () => {
       expect(res.statusCode).toBe(200);
       expect(res.json()).toMatchObject({ id: targetID, isFriend: true });
     } finally {
-      await redis.del(friendsCacheKey, getFriendsCacheVersionKey(viewerID));
+      await redis.del(friendsCacheKey);
       await app.close();
     }
   });

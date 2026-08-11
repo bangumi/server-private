@@ -4,7 +4,7 @@ import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
 import redis from '@app/lib/redis.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
-import { getFriendsCacheKey, getFriendsCacheVersionKey } from '@app/lib/user/cache.ts';
+import { getFriendsCacheKey } from '@app/lib/user/cache.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './subject.ts';
@@ -320,7 +320,7 @@ describe('subject topics', () => {
 
   test('should include friendship in subject post', async () => {
     const viewerID = 900_108;
-    const cacheKey = getFriendsCacheKey(viewerID, 0);
+    const cacheKey = getFriendsCacheKey(viewerID);
     await redis.sadd(cacheKey, 0, testUserID);
 
     const app = createTestServer({
@@ -340,7 +340,7 @@ describe('subject topics', () => {
         topic: { creator: { id: testUserID, isFriend: true } },
       });
     } finally {
-      await redis.del(cacheKey, getFriendsCacheVersionKey(viewerID));
+      await redis.del(cacheKey);
       await app.close();
     }
   });
