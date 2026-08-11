@@ -31,7 +31,8 @@ import { TagCat } from '@app/lib/tag.ts';
 import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
-import { fetchFriends, isFriends } from '@app/lib/user/utils.ts';
+import { applyUserFriendship, applyUsersFriendship } from '@app/lib/user/friendship.ts';
+import { fetchFriendIDs, fetchFriends, isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -53,11 +54,14 @@ export async function fetchSlimUserByUsername(
 }
 
 /** Cached */
-export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | undefined> {
+export async function fetchSlimUserByID(
+  uid: number,
+  viewerID?: number,
+): Promise<res.ISlimUser | undefined> {
   const cached = await redis.get(getUserSlimCacheKey(uid));
   if (cached) {
     const item = JSON.parse(cached) as res.ISlimUser;
-    return item;
+    return applyUserFriendship(item, await fetchFriendIDs(viewerID, [item.id]));
   }
   const [data] = await db.select().from(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, uid));
   if (!data) {
@@ -65,11 +69,14 @@ export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | un
   }
   const item = convert.toSlimUser(data);
   await redis.setex(getUserSlimCacheKey(uid), ONE_MONTH, JSON.stringify(item));
-  return item;
+  return applyUserFriendship(item, await fetchFriendIDs(viewerID, [item.id]));
 }
 
 /** Cached */
-export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
+export async function fetchSlimUsersByIDs(
+  ids: number[],
+  viewerID?: number,
+): Promise<Record<number, res.ISlimUser>> {
   if (ids.length === 0) {
     return {};
   }
@@ -94,6 +101,14 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
     await redis.setex(getUserSlimCacheKey(slim.id), ONE_MONTH, JSON.stringify(slim));
     result[slim.id] = slim;
   }
+  const users = Object.values(result);
+  applyUsersFriendship(
+    users,
+    await fetchFriendIDs(
+      viewerID,
+      users.map((user) => user.id),
+    ),
+  );
   return result;
 }
 

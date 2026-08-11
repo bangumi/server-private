@@ -11,13 +11,19 @@ import { AsyncTimelineWriter } from '@app/lib/timeline/writer';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
+import { applyUsersFriendship } from '@app/lib/user/friendship.ts';
 import {
   fetchPrivacyByUserID,
   PrivacySettingKey,
   PrivacyValue,
   readPrivacySetting,
 } from '@app/lib/user/privacy.ts';
-import { fetchFriends, parseBlocklist } from '@app/lib/user/utils.ts';
+import {
+  fetchFriendIDs,
+  fetchFriends,
+  invalidateFriendshipCaches,
+  parseBlocklist,
+} from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -63,6 +69,10 @@ export async function setup(app: App) {
         .offset(offset);
 
       const friends = data.map((d) => convert.toFriend(d.chii_members, d.chii_friends));
+      applyUsersFriendship(
+        friends.map((friend) => friend.user),
+        new Set(friends.map((friend) => friend.user.id)),
+      );
 
       return {
         data: friends,
@@ -175,6 +185,7 @@ export async function setup(app: App) {
           });
         }
       });
+      await invalidateFriendshipCaches(auth.userID, user.id);
       await AsyncTimelineWriter.daily({
         uid: auth.userID,
         type: TimelineDailyType.AddFriend,
@@ -219,6 +230,7 @@ export async function setup(app: App) {
           ),
         )
         .limit(1);
+      await invalidateFriendshipCaches(auth.userID, user.id);
       return {};
     },
   );
@@ -260,6 +272,13 @@ export async function setup(app: App) {
         .limit(limit)
         .offset(offset);
       const followers = data.map((d) => convert.toFriend(d.chii_members, d.chii_friends));
+      applyUsersFriendship(
+        followers.map((follower) => follower.user),
+        await fetchFriendIDs(
+          auth.userID,
+          followers.map((follower) => follower.user.id),
+        ),
+      );
 
       return {
         data: followers,

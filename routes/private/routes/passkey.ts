@@ -287,6 +287,7 @@ export async function setup(app: App) {
         sign: user.sign,
         group: user.groupid,
         joinedAt: user.regdate,
+        isFriend: false,
       };
     },
   );

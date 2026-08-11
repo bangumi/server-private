@@ -168,7 +168,7 @@ export async function setup(app: App) {
       if (!entry) {
         throw new NotFoundError('Blog entry not found');
       }
-      return await comment.getAll(entryID);
+      return await comment.getAll(entryID, auth.login ? auth.userID : undefined);
     },
   );
 

@@ -2585,7 +2585,16 @@
       },
       "SlimUser": {
         "type": "object",
-        "required": ["id", "username", "nickname", "avatar", "group", "sign", "joinedAt"],
+        "required": [
+          "id",
+          "username",
+          "nickname",
+          "avatar",
+          "group",
+          "sign",
+          "joinedAt",
+          "isFriend"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -2610,6 +2619,10 @@
           },
           "joinedAt": {
             "type": "integer"
+          },
+          "isFriend": {
+            "type": "boolean",
+            "description": "Whether the authenticated user has added this user as a friend; false when the endpoint does not populate viewer friendship"
           }
         },
         "title": "SlimUser"
@@ -3552,7 +3565,8 @@
           "bio",
           "networkServices",
           "homepage",
-          "stats"
+          "stats",
+          "isFriend"
         ],
         "properties": {
           "id": {
@@ -3618,6 +3632,10 @@
           },
           "stats": {
             "$ref": "#/components/schemas/UserStats"
+          },
+          "isFriend": {
+            "type": "boolean",
+            "description": "Whether the authenticated user has added this user as a friend; false when unauthenticated"
           }
         },
         "title": "User"
@@ -7773,6 +7791,12 @@
             "required": true
           }
         ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -9188,6 +9212,12 @@
             "in": "path",
             "name": "postID",
             "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
           }
         ],
         "responses": {
@@ -14055,6 +14085,12 @@
             "required": true
           }
         ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Default Response",
@@ -16065,7 +16101,8 @@
                               "avatar",
                               "group",
                               "sign",
-                              "joinedAt"
+                              "joinedAt",
+                              "isFriend"
                             ],
                             "properties": {
                               "id": {
@@ -16091,6 +16128,10 @@
                               },
                               "joinedAt": {
                                 "type": "integer"
+                              },
+                              "isFriend": {
+                                "type": "boolean",
+                                "description": "Whether the authenticated user has added this user as a friend; false when the endpoint does not populate viewer friendship"
                               }
                             },
                             "title": "SlimUser"
