@@ -89,12 +89,12 @@ export async function setup(app: App) {
     '/trending/subjects/topics',
     {
       schema: {
-        summary: '获取频道条目讨论',
+        summary: '获取条目讨论',
         operationId: 'getTrendingSubjectTopics',
         tags: [Tag.Trending],
         security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         querystring: t.Object({
-          type: req.Ref(req.SubjectType),
+          type: t.Optional(req.Ref(req.SubjectType)),
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
           ),
@@ -108,10 +108,12 @@ export async function setup(app: App) {
     async ({ auth, query: { type, limit = 20, offset = 0 } }) => {
       const conditions = [
         op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal),
-        op.eq(schema.chiiSubjects.typeID, type),
         op.ne(schema.chiiSubjects.ban, 1),
         auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
       ];
+      if (type !== undefined) {
+        conditions.push(op.eq(schema.chiiSubjects.typeID, type));
+      }
       const [{ count = 0 } = {}] = await db
         .select({ count: op.count() })
         .from(schema.chiiSubjectTopics)

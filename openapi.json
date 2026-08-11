@@ -15093,7 +15093,7 @@
     "/p1/trending/subjects/topics": {
       "get": {
         "operationId": "getTrendingSubjectTopics",
-        "summary": "获取频道条目讨论",
+        "summary": "获取条目讨论",
         "tags": ["trending"],
         "parameters": [
           {
@@ -15102,7 +15102,7 @@
             },
             "in": "query",
             "name": "type",
-            "required": true
+            "required": false
           },
           {
             "schema": {
