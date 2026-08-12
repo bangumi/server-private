@@ -20,6 +20,7 @@
     "start": "nodemon ./bin/main.ts",
     "start-cron": "nodemon ./bin/cron.ts",
     "start-mq": "nodemon ./bin/mq.ts",
+    "pretest": "node scripts/reset-test-db.mjs",
     "test": "vitest --run",
     "vitest": "vitest",
     "file": "node --no-warnings --import tsx/esm",
