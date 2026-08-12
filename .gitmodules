@@ -7,3 +7,7 @@
 	path = upstream/proto
 	url = https://github.com/Bangumi/proto
 	branch = master
+[submodule "dev-env"]
+	path = dev-env
+	url = https://github.com/bangumi/dev-env.git
+	branch = gh-pages
