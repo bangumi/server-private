@@ -42,6 +42,8 @@ const allowedRedirectUris: string[] = [
   'https://oauth-backend-jet.vercel.app/api/turnstile/callback',
   // https://github.com/gi-b716/AniMikan
   'animikan://api/bangumi/turnstile/callback',
+  // https://github.com/shqingda/kaku
+  'kaku://auth/turnstile',
 ];
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -194,6 +196,7 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         group: user.groupid,
         avatar: avatar(user.avatar),
         joinedAt: user.regdate,
+        isFriend: false,
       };
     },
   );

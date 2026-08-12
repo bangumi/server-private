@@ -619,7 +619,7 @@ export async function setup(app: App) {
         throw new NotFoundError('index');
       }
 
-      return await comment.getAll(indexID);
+      return await comment.getAll(indexID, auth.login ? auth.userID : undefined);
     },
   );
 

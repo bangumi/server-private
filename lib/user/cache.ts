@@ -7,15 +7,11 @@ export function getStatsCacheKey(uid: number, section: string): string {
 }
 
 export function getFriendsCacheKey(uid: number): string {
-  return `user:friends:${uid}`;
+  return `user:v2:friends:${uid}`;
 }
 
 export function getFollowersCacheKey(uid: number): string {
   return `user:followers:${uid}`;
-}
-
-export function getRelationCacheKey(uid: number, fid: number): string {
-  return `user:relation:${uid}:${fid}`;
 }
 
 export function getJoinedGroupsCacheKey(uid: number): string {

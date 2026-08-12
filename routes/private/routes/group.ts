@@ -533,17 +533,18 @@ export async function setup(app: App) {
       if (!group) {
         throw new NotFoundError(`group ${topic.gid}`);
       }
-      const creator = await fetcher.fetchSlimUserByID(topic.uid);
-      if (!creator) {
-        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
-      }
       const replies = await db
         .select()
         .from(schema.chiiGroupPosts)
         .where(op.eq(schema.chiiGroupPosts.mid, topicID))
         .orderBy(op.asc(schema.chiiGroupPosts.id));
-      const uids = replies.map((x) => x.uid);
-      const users = await fetcher.fetchSlimUsersByIDs(uids);
+      const viewerID = auth.login ? auth.userID : undefined;
+      const uids = [topic.uid, ...replies.map((x) => x.uid)];
+      const users = await fetcher.fetchSlimUsersByIDs(uids, viewerID);
+      const creator = users[topic.uid];
+      if (!creator) {
+        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
+      }
       const subReplies: Record<number, res.IReplyBase[]> = {};
       const reactions = await Reaction.fetchByMainID(topicID, LikeType.GroupReply);
       for (const x of replies) {
@@ -676,6 +677,7 @@ export async function setup(app: App) {
         operationId: 'getGroupPost',
         summary: '获取小组话题回复详情',
         tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -684,7 +686,7 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { postID } }) => {
+    async ({ auth, params: { postID } }) => {
       const [post] = await db
         .select()
         .from(schema.chiiGroupPosts)
@@ -692,10 +694,6 @@ export async function setup(app: App) {
         .limit(1);
       if (!post) {
         throw new NotFoundError(`post ${postID}`);
-      }
-      const creator = await fetcher.fetchSlimUserByID(post.uid);
-      if (!creator) {
-        throw new UnexpectedNotFoundError(`user ${post.uid}`);
       }
       const [topic] = await db
         .select()
@@ -705,7 +703,13 @@ export async function setup(app: App) {
       if (!topic) {
         throw new UnexpectedNotFoundError(`topic ${post.mid}`);
       }
-      const topicCreator = await fetcher.fetchSlimUserByID(topic.uid);
+      const viewerID = auth.login ? auth.userID : undefined;
+      const users = await fetcher.fetchSlimUsersByIDs([post.uid, topic.uid], viewerID);
+      const creator = users[post.uid];
+      if (!creator) {
+        throw new UnexpectedNotFoundError(`user ${post.uid}`);
+      }
+      const topicCreator = users[topic.uid];
       if (!topicCreator) {
         throw new UnexpectedNotFoundError(`user ${topic.uid}`);
       }

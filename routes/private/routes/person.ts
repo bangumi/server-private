@@ -431,7 +431,7 @@ export async function setup(app: App) {
     },
     async ({ auth, params: { personID } }) => {
       await requirePerson(personID, auth.allowNsfw);
-      return await comment.getAll(personID);
+      return await comment.getAll(personID, auth.login ? auth.userID : undefined);
     },
   );
 
@@ -551,7 +551,7 @@ export async function setup(app: App) {
     async ({ auth, params: { personID, photoID } }) => {
       await requirePerson(personID, auth.allowNsfw);
       await requireMonoPhoto(MonoPhotoType.Person, personID, photoID);
-      return await comment.getAll(personID, photoID);
+      return await comment.getAll(personID, auth.login ? auth.userID : undefined, photoID);
     },
   );
 
