@@ -8,7 +8,7 @@ import * as process from 'node:process';
 import * as mysql from 'mysql2/promise';
 
 const projectRoot = path.resolve(import.meta.dirname, '..');
-const distSqlPath = path.join(projectRoot, 'dev-env', 'dist.sql');
+const distSqlPath = path.join(projectRoot, 'upstream', 'dev-env', 'dist.sql');
 
 async function main() {
   // dev-env submodule 未检出时跳过重置，不影响测试运行
