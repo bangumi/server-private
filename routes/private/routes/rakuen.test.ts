@@ -1,10 +1,33 @@
-import { describe, expect, test } from 'vitest';
+import { afterEach, describe, expect, test } from 'vitest';
 
+import { db, op, schema } from '@app/drizzle';
+import redis from '@app/lib/redis.ts';
+import { CommentState } from '@app/lib/topic/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './rakuen.ts';
 
 const topicTypes = ['group', 'subject', 'episode', 'character', 'person'];
+
+// 回归测试插入的数据，统一清理
+const insertedTopicIDs: number[] = [];
+const insertedCharacterIDs: number[] = [];
+
+afterEach(async () => {
+  if (insertedTopicIDs.length > 0) {
+    await db
+      .delete(schema.chiiGroupTopics)
+      .where(op.inArray(schema.chiiGroupTopics.id, insertedTopicIDs));
+    insertedTopicIDs.length = 0;
+  }
+  if (insertedCharacterIDs.length > 0) {
+    await db
+      .delete(schema.chiiCharacters)
+      .where(op.inArray(schema.chiiCharacters.id, insertedCharacterIDs));
+    insertedCharacterIDs.length = 0;
+  }
+  await redis.flushdb();
+});
 
 describe('rakuen', () => {
   test('should get all topics, sorted by updatedAt desc', async () => {
@@ -197,5 +220,115 @@ describe('rakuen', () => {
       query: { limit: '201' },
     });
     expect(res.statusCode).toBe(400);
+  });
+
+  test('should exclude non-public topic states from group aggregate', async () => {
+    const now = Math.floor(Date.now() / 1000);
+    const rows = [
+      {
+        id: 990001,
+        gid: 1,
+        uid: 382951,
+        title: 'rakuen-test-normal',
+        createdAt: now,
+        updatedAt: now,
+        replies: 1,
+        state: CommentState.Normal,
+        display: 1,
+      },
+      {
+        id: 990002,
+        gid: 1,
+        uid: 382951,
+        title: 'rakuen-test-closed',
+        createdAt: now,
+        updatedAt: now,
+        replies: 1,
+        state: CommentState.AdminCloseTopic,
+        display: 1,
+      },
+      {
+        id: 990003,
+        gid: 1,
+        uid: 382951,
+        title: 'rakuen-test-silent',
+        createdAt: now,
+        updatedAt: now,
+        replies: 1,
+        state: CommentState.AdminSilentTopic,
+        display: 1,
+      },
+    ];
+    await db.insert(schema.chiiGroupTopics).values(rows);
+    insertedTopicIDs.push(...rows.map((r) => r.id));
+
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/rakuen/topics',
+      query: { type: 'group', limit: '200' },
+    });
+    expect(res.statusCode).toBe(200);
+    const titles = res.json().data.map((x: { title: string }) => x.title);
+    expect(titles).toContain('rakuen-test-normal');
+    expect(titles).not.toContain('rakuen-test-closed');
+    expect(titles).not.toContain('rakuen-test-silent');
+  });
+
+  test('should isolate cache by nsfw permission', async () => {
+    const now = Math.floor(Date.now() / 1000);
+    await db.insert(schema.chiiCharacters).values({
+      id: 990001,
+      name: 'rakuen-test-nsfw',
+      role: 1,
+      infobox: '',
+      summary: '',
+      img: '',
+      comment: 1,
+      collects: 0,
+      createdAt: now,
+      lastPost: now,
+      lock: 0,
+      anidbImg: '',
+      anidbId: 0,
+      ban: 0,
+      redirect: 0,
+      nsfw: true,
+    });
+    insertedCharacterIDs.push(990001);
+
+    const restricted = createTestServer();
+    await restricted.register(setup);
+    const nsfw = createTestServer({ auth: { allowNsfw: true } });
+    await nsfw.register(setup);
+
+    const r1 = await restricted.inject({
+      method: 'get',
+      url: '/rakuen/topics',
+      query: { type: 'character', limit: '200' },
+    });
+    expect(r1.statusCode).toBe(200);
+    const names1 = r1.json().data.map((x: { name: string }) => x.name);
+    expect(names1).not.toContain('rakuen-test-nsfw');
+
+    const r2 = await nsfw.inject({
+      method: 'get',
+      url: '/rakuen/topics',
+      query: { type: 'character', limit: '200' },
+    });
+    expect(r2.statusCode).toBe(200);
+    const names2 = r2.json().data.map((x: { name: string }) => x.name);
+    expect(names2).toContain('rakuen-test-nsfw');
+
+    // 未开启 NSFW 的用户不应读到上一步 nsfw 权限建立的缓存
+    const r3 = await restricted.inject({
+      method: 'get',
+      url: '/rakuen/topics',
+      query: { type: 'character', limit: '200' },
+    });
+    expect(r3.statusCode).toBe(200);
+    const names3 = r3.json().data.map((x: { name: string }) => x.name);
+    expect(names3).not.toContain('rakuen-test-nsfw');
   });
 });

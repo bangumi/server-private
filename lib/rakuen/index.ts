@@ -2,17 +2,20 @@ import { db, op, schema } from '@app/drizzle';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import { TypedCache } from '@app/lib/cache.ts';
 import { BadRequestError } from '@app/lib/error';
-import { TopicDisplay } from '@app/lib/topic/type.ts';
+import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import { IRaKuenTopicType } from '@app/lib/types/req.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { fetchJoinedGroups } from '@app/lib/user/utils.ts';
 
-/** 全站 1 分钟缓存，my_group 为登录态数据，key 带 uid */
+/** 全站 1 分钟缓存，key 带 type/uid/nsfw/limit */
 const cache = TypedCache<string, res.IPaged<res.IRaKuenTopic>>(
   (key) => `rakuen:topics:v1:${key}`,
   60,
 );
+
+/** 聚合对登录/未登录共享缓存，统一使用匿名用户可见的话题状态 */
+const PublicTopicStates = [CommentState.Normal, CommentState.AdminReopen];
 
 type RaKuenItem = res.IRaKuenTopic;
 
@@ -30,7 +33,10 @@ async function fetchGroupTopics(
     return { items: [], total: 0 };
   }
 
-  const conditions = [op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal)];
+  const conditions = [
+    op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal),
+    op.inArray(schema.chiiGroupTopics.state, PublicTopicStates),
+  ];
   if (!auth.allowNsfw) {
     conditions.push(op.eq(schema.chiiGroups.nsfw, false));
   }
@@ -85,7 +91,11 @@ async function fetchGroupTopics(
 }
 
 async function fetchSubjectTopics(auth: Readonly<IAuth>, limit: number): Promise<QueryResult> {
-  const conditions = [op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal)];
+  const conditions = [
+    op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal),
+    op.inArray(schema.chiiSubjectTopics.state, PublicTopicStates),
+    op.ne(schema.chiiSubjects.ban, 1),
+  ];
   if (!auth.allowNsfw) {
     conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
   }
@@ -132,7 +142,11 @@ async function fetchSubjectTopics(auth: Readonly<IAuth>, limit: number): Promise
 }
 
 async function fetchEpisodes(auth: Readonly<IAuth>, limit: number): Promise<QueryResult> {
-  const conditions = [op.ne(schema.chiiEpisodes.ban, 1)];
+  const conditions = [
+    op.ne(schema.chiiEpisodes.ban, 1),
+    op.gt(schema.chiiEpisodes.comment, 0),
+    op.ne(schema.chiiSubjects.ban, 1),
+  ];
   if (!auth.allowNsfw) {
     conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
   }
@@ -183,6 +197,7 @@ async function fetchCharacters(auth: Readonly<IAuth>, limit: number): Promise<Qu
   const conditions = [
     op.ne(schema.chiiCharacters.ban, 1),
     op.eq(schema.chiiCharacters.redirect, 0),
+    op.gt(schema.chiiCharacters.comment, 0),
   ];
   if (!auth.allowNsfw) {
     conditions.push(op.eq(schema.chiiCharacters.nsfw, false));
@@ -222,7 +237,11 @@ async function fetchCharacters(auth: Readonly<IAuth>, limit: number): Promise<Qu
 }
 
 async function fetchPersons(auth: Readonly<IAuth>, limit: number): Promise<QueryResult> {
-  const conditions = [op.ne(schema.chiiPersons.ban, 1), op.eq(schema.chiiPersons.redirect, 0)];
+  const conditions = [
+    op.ne(schema.chiiPersons.ban, 1),
+    op.eq(schema.chiiPersons.redirect, 0),
+    op.gt(schema.chiiPersons.comment, 0),
+  ];
   if (!auth.allowNsfw) {
     conditions.push(op.eq(schema.chiiPersons.nsfw, false));
   }
@@ -266,7 +285,9 @@ export async function getRaKuenTopics(
   limit: number,
 ): Promise<res.IPaged<res.IRaKuenTopic>> {
   const cacheKey =
-    type === IRaKuenTopicType.MyGroup ? `my_group:${auth.userID}:${limit}` : `${type}:${limit}`;
+    type === IRaKuenTopicType.MyGroup
+      ? `my_group:${auth.userID}:${auth.allowNsfw}:${limit}`
+      : `${type}:${auth.allowNsfw}:${limit}`;
 
   const cached = await cache.get(cacheKey);
   if (cached) {
