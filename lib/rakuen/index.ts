@@ -25,11 +25,12 @@ interface QueryResult {
 }
 
 async function fetchGroupTopics(
-  auth: Readonly<IAuth>,
+  allowNsfw: boolean,
   limit: number,
   myGroup: boolean,
+  userID: number,
 ): Promise<QueryResult> {
-  if (myGroup && !auth.login) {
+  if (myGroup && userID === 0) {
     return { items: [], total: 0 };
   }
 
@@ -37,11 +38,11 @@ async function fetchGroupTopics(
     op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal),
     op.inArray(schema.chiiGroupTopics.state, PublicTopicStates),
   ];
-  if (!auth.allowNsfw) {
+  if (!allowNsfw) {
     conditions.push(op.eq(schema.chiiGroups.nsfw, false));
   }
   if (myGroup) {
-    const gids = await fetchJoinedGroups(auth.userID);
+    const gids = await fetchJoinedGroups(userID);
     if (gids.length === 0) {
       return { items: [], total: 0 };
     }
@@ -65,7 +66,7 @@ async function fetchGroupTopics(
   const [groups, users] = await Promise.all([
     fetcher.fetchSlimGroupsByIDs(
       data.map((d) => d.chii_group_topics.gid),
-      auth.allowNsfw,
+      allowNsfw,
     ),
     fetcher.fetchSlimUsersByIDs(data.map((d) => d.chii_group_topics.uid)),
   ]);
@@ -90,13 +91,13 @@ async function fetchGroupTopics(
   return { items, total: count };
 }
 
-async function fetchSubjectTopics(auth: Readonly<IAuth>, limit: number): Promise<QueryResult> {
+async function fetchSubjectTopics(allowNsfw: boolean, limit: number): Promise<QueryResult> {
   const conditions = [
     op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal),
     op.inArray(schema.chiiSubjectTopics.state, PublicTopicStates),
     op.ne(schema.chiiSubjects.ban, 1),
   ];
-  if (!auth.allowNsfw) {
+  if (!allowNsfw) {
     conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
   }
   const join = op.eq(schema.chiiSubjectTopics.subjectID, schema.chiiSubjects.id);
@@ -117,7 +118,7 @@ async function fetchSubjectTopics(auth: Readonly<IAuth>, limit: number): Promise
     fetcher.fetchSlimUsersByIDs(data.map((d) => d.chii_subject_topics.uid)),
     fetcher.fetchSlimSubjectsByIDs(
       data.map((d) => d.chii_subject_topics.subjectID),
-      auth.allowNsfw,
+      allowNsfw,
     ),
   ]);
   const items: RaKuenItem[] = [];
@@ -141,13 +142,13 @@ async function fetchSubjectTopics(auth: Readonly<IAuth>, limit: number): Promise
   return { items, total: count };
 }
 
-async function fetchEpisodes(auth: Readonly<IAuth>, limit: number): Promise<QueryResult> {
+async function fetchEpisodes(allowNsfw: boolean, limit: number): Promise<QueryResult> {
   const conditions = [
     op.ne(schema.chiiEpisodes.ban, 1),
     op.gt(schema.chiiEpisodes.comment, 0),
     op.ne(schema.chiiSubjects.ban, 1),
   ];
-  if (!auth.allowNsfw) {
+  if (!allowNsfw) {
     conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
   }
   const join = op.eq(schema.chiiEpisodes.subjectID, schema.chiiSubjects.id);
@@ -166,7 +167,7 @@ async function fetchEpisodes(auth: Readonly<IAuth>, limit: number): Promise<Quer
 
   const subjects = await fetcher.fetchSlimSubjectsByIDs(
     data.map((d) => d.chii_episodes.subjectID),
-    auth.allowNsfw,
+    allowNsfw,
   );
   const items: RaKuenItem[] = [];
   for (const d of data) {
@@ -193,13 +194,13 @@ async function fetchEpisodes(auth: Readonly<IAuth>, limit: number): Promise<Quer
   return { items, total: count };
 }
 
-async function fetchCharacters(auth: Readonly<IAuth>, limit: number): Promise<QueryResult> {
+async function fetchCharacters(allowNsfw: boolean, limit: number): Promise<QueryResult> {
   const conditions = [
     op.ne(schema.chiiCharacters.ban, 1),
     op.eq(schema.chiiCharacters.redirect, 0),
     op.gt(schema.chiiCharacters.comment, 0),
   ];
-  if (!auth.allowNsfw) {
+  if (!allowNsfw) {
     conditions.push(op.eq(schema.chiiCharacters.nsfw, false));
   }
   const [{ count = 0 } = {}] = await db
@@ -215,7 +216,7 @@ async function fetchCharacters(auth: Readonly<IAuth>, limit: number): Promise<Qu
 
   const slims = await fetcher.fetchSlimCharactersByIDs(
     data.map((d) => d.id),
-    auth.allowNsfw,
+    allowNsfw,
   );
   const items: RaKuenItem[] = [];
   for (const d of data) {
@@ -236,13 +237,13 @@ async function fetchCharacters(auth: Readonly<IAuth>, limit: number): Promise<Qu
   return { items, total: count };
 }
 
-async function fetchPersons(auth: Readonly<IAuth>, limit: number): Promise<QueryResult> {
+async function fetchPersons(allowNsfw: boolean, limit: number): Promise<QueryResult> {
   const conditions = [
     op.ne(schema.chiiPersons.ban, 1),
     op.eq(schema.chiiPersons.redirect, 0),
     op.gt(schema.chiiPersons.comment, 0),
   ];
-  if (!auth.allowNsfw) {
+  if (!allowNsfw) {
     conditions.push(op.eq(schema.chiiPersons.nsfw, false));
   }
   const [{ count = 0 } = {}] = await db
@@ -258,7 +259,7 @@ async function fetchPersons(auth: Readonly<IAuth>, limit: number): Promise<Query
 
   const slims = await fetcher.fetchSlimPersonsByIDs(
     data.map((d) => d.id),
-    auth.allowNsfw,
+    allowNsfw,
   );
   const items: RaKuenItem[] = [];
   for (const d of data) {
@@ -298,11 +299,11 @@ export async function getRaKuenTopics(
   switch (type) {
     case IRaKuenTopicType.All: {
       const [g, s, e, c, p] = await Promise.all([
-        fetchGroupTopics(auth, limit, false),
-        fetchSubjectTopics(auth, limit),
-        fetchEpisodes(auth, limit),
-        fetchCharacters(auth, limit),
-        fetchPersons(auth, limit),
+        fetchGroupTopics(auth.allowNsfw, limit, false, auth.userID),
+        fetchSubjectTopics(auth.allowNsfw, limit),
+        fetchEpisodes(auth.allowNsfw, limit),
+        fetchCharacters(auth.allowNsfw, limit),
+        fetchPersons(auth.allowNsfw, limit),
       ]);
       result = {
         data: [...g.items, ...s.items, ...e.items, ...c.items, ...p.items]
@@ -313,32 +314,32 @@ export async function getRaKuenTopics(
       break;
     }
     case IRaKuenTopicType.Group: {
-      const { items, total } = await fetchGroupTopics(auth, limit, false);
+      const { items, total } = await fetchGroupTopics(auth.allowNsfw, limit, false, auth.userID);
       result = { data: items, total };
       break;
     }
     case IRaKuenTopicType.MyGroup: {
-      const { items, total } = await fetchGroupTopics(auth, limit, true);
+      const { items, total } = await fetchGroupTopics(auth.allowNsfw, limit, true, auth.userID);
       result = { data: items, total };
       break;
     }
     case IRaKuenTopicType.Subject: {
-      const { items, total } = await fetchSubjectTopics(auth, limit);
+      const { items, total } = await fetchSubjectTopics(auth.allowNsfw, limit);
       result = { data: items, total };
       break;
     }
     case IRaKuenTopicType.Episode: {
-      const { items, total } = await fetchEpisodes(auth, limit);
+      const { items, total } = await fetchEpisodes(auth.allowNsfw, limit);
       result = { data: items, total };
       break;
     }
     case IRaKuenTopicType.Character: {
-      const { items, total } = await fetchCharacters(auth, limit);
+      const { items, total } = await fetchCharacters(auth.allowNsfw, limit);
       result = { data: items, total };
       break;
     }
     case IRaKuenTopicType.Person: {
-      const { items, total } = await fetchPersons(auth, limit);
+      const { items, total } = await fetchPersons(auth.allowNsfw, limit);
       result = { data: items, total };
       break;
     }
