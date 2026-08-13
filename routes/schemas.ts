@@ -35,6 +35,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CreateContent);
   app.addSchema(req.CreateIndex);
   app.addSchema(req.CreateIndexRelated);
+  app.addSchema(req.CreatePrivateMessage);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateReport);
   app.addSchema(req.CreateTopic);
@@ -96,6 +97,11 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.PersonWikiInfo);
   app.addSchema(res.PersonWork);
   app.addSchema(res.Post);
+  app.addSchema(res.PrivateMessage);
+  app.addSchema(res.PrivateMessageContact);
+  app.addSchema(res.PrivateMessageConversation);
+  app.addSchema(res.PrivateMessageConversationDetail);
+  app.addSchema(res.PrivateMessageStatus);
   app.addSchema(res.Profile);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);

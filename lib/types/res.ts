@@ -1293,3 +1293,59 @@ export const CharacterRevisionWikiInfo = t.Object(
     $id: 'CharacterRevisionWikiInfo',
   },
 );
+
+export type IPrivateMessage = Static<typeof PrivateMessage>;
+export const PrivateMessage = t.Object(
+  {
+    id: t.Integer(),
+    sender: Ref(SlimUser),
+    receiverID: t.Integer(),
+    title: t.String(),
+    content: t.String(),
+    createdAt: t.Integer({ description: 'unix timestamp seconds' }),
+    read: t.Boolean({ description: '接收者是否已读' }),
+    related: t.Integer({ description: '会话根消息 id (msg_related)' }),
+  },
+  { $id: 'PrivateMessage', title: 'PrivateMessage' },
+);
+
+export type IPrivateMessageConversation = Static<typeof PrivateMessageConversation>;
+export const PrivateMessageConversation = t.Object(
+  {
+    id: t.Integer({ description: '会话根消息 id (msg_related)' }),
+    title: t.String(),
+    other: Ref(SlimUser),
+    lastMessage: Ref(PrivateMessage),
+    unreadCount: t.Integer(),
+    totalCount: t.Integer(),
+  },
+  { $id: 'PrivateMessageConversation', title: 'PrivateMessageConversation' },
+);
+
+export type IPrivateMessageStatus = Static<typeof PrivateMessageStatus>;
+export const PrivateMessageStatus = t.Object(
+  {
+    inbox: t.Integer({ description: '收件箱消息条数（注意：会话列表接口的 total 为会话数）' }),
+    outbox: t.Integer({ description: '发件箱消息条数（注意：会话列表接口的 total 为会话数）' }),
+    unread: t.Integer({ description: '未读私信消息条数' }),
+  },
+  { $id: 'PrivateMessageStatus', title: 'PrivateMessageStatus' },
+);
+
+export type IPrivateMessageContact = Static<typeof PrivateMessageContact>;
+export const PrivateMessageContact = t.Object(
+  {
+    user: Ref(SlimUser),
+    lastMessageAt: t.Integer(),
+  },
+  { $id: 'PrivateMessageContact', title: 'PrivateMessageContact' },
+);
+
+export type IPrivateMessageConversationDetail = Static<typeof PrivateMessageConversationDetail>;
+export const PrivateMessageConversationDetail = t.Object(
+  {
+    conversation: Ref(PrivateMessageConversation),
+    messages: t.Array(Ref(PrivateMessage)),
+  },
+  { $id: 'PrivateMessageConversationDetail', title: 'PrivateMessageConversationDetail' },
+);

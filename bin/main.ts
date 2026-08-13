@@ -40,7 +40,7 @@ async function main() {
   server.addHook('onReady', async () => {
     await Promise.all([
       producer.initialize(),
-      Subscriber.psubscribe(`event-user-notify-*`),
+      Subscriber.psubscribe(`event-user-notify-*`, `event-user-pm-*`),
       initTimelineSubscriber(),
     ]);
   });

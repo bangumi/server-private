@@ -10,6 +10,7 @@ import { UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { avatar } from '@app/lib/images';
 import { Notify } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
+import { getPmEventChannel, type PmEvent } from '@app/lib/pm/type.ts';
 import { Subscriber } from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
@@ -175,19 +176,32 @@ export async function setup(app: App) {
     }
 
     const userID = a.userID;
-    const watch = `event-user-notify-${userID}`;
+    const notifyWatch = `event-user-notify-${userID}`;
+    const pmWatch = getPmEventChannel(userID);
 
     const send = (count: number) => {
       socket.emit('notify', JSON.stringify({ count }));
     };
 
+    const sendPm = (event: PmEvent) => {
+      socket.emit('pm', JSON.stringify(event));
+    };
+
     const callback = (pattern: string, ch: string, msg: string) => {
-      if (ch !== watch) {
+      if (ch === notifyWatch) {
+        const { new_notify } = JSON.parse(msg) as { new_notify: number };
+        send(new_notify);
         return;
       }
 
-      const { new_notify } = JSON.parse(msg) as { new_notify: number };
-      send(new_notify);
+      if (ch === pmWatch) {
+        try {
+          const event = JSON.parse(msg) as PmEvent;
+          sendPm(event);
+        } catch {
+          // 忽略无法解析的私信事件
+        }
+      }
     };
 
     Subscriber.addListener('pmessage', callback);

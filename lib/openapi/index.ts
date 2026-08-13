@@ -11,6 +11,7 @@ export const Tag = {
   Home: 'home',
   Index: 'index',
   Person: 'person',
+  Pm: 'pm',
   Relationship: 'relationship',
   Search: 'search',
   Subject: 'subject',

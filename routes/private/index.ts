@@ -22,6 +22,7 @@ import * as index from './routes/index.ts';
 import * as misc from './routes/misc.ts';
 import * as passkey from './routes/passkey.ts';
 import * as person from './routes/person.ts';
+import * as pm from './routes/pm.ts';
 import * as privacy from './routes/privacy.ts';
 import * as friend from './routes/relationship.ts';
 import * as report from './routes/report.ts';
@@ -94,6 +95,7 @@ async function API(app: App) {
   await app.register(misc.setup);
   await app.register(passkey.setup);
   await app.register(person.setup);
+  await app.register(pm.setup);
   await app.register(privacy.setup);
   await app.register(report.setup);
   await app.register(search.setup);

@@ -115,6 +115,13 @@ export const LimitAction = Object.freeze({
    * 5 分钟 30 次
    */
   Wiki: { action: 'wiki', limit: 30, durationMinutes: 5 },
+
+  /**
+   * 发送私信
+   *
+   * 1 分钟 60 次
+   */
+  Pm: { action: 'pm', limit: 60, durationMinutes: 1 },
 } as const satisfies Record<string, LimitRule>);
 
 export interface Result {

@@ -46,3 +46,5 @@ export type IGroupPost = typeof schema.chiiGroupPosts.$inferSelect;
 
 export type INotify = typeof schema.chiiNotify.$inferSelect;
 export type INotifyField = typeof schema.chiiNotifyField.$inferSelect;
+
+export type IPrivateMessage = typeof schema.chiiPms.$inferSelect;
