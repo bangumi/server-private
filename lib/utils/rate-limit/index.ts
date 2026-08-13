@@ -82,6 +82,13 @@ export const LimitAction = Object.freeze({
   Comment: { action: 'comment', limit: 15, durationMinutes: 5 },
 
   /**
+   * 发布/编辑日志
+   *
+   * 10 分钟 5 次
+   */
+  Blog: { action: 'blog', limit: 5, durationMinutes: 10 },
+
+  /**
    * 创建小组话题和条目讨论
    *
    * 10 分钟 2 次
