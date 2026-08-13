@@ -7,8 +7,7 @@ import { CommentWithoutState } from '@app/lib/comment';
 import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError } from '@app/lib/error.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { insertUserTags, TagCat, updateTagResult, validateTags } from '@app/lib/tag';
-import { TimelineCat } from '@app/lib/timeline/type.ts';
+import { insertUserTags, TagCat, validateTags } from '@app/lib/tag';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
@@ -45,7 +44,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('create blog entry'), requireTurnstileToken()],
     },
     async ({ auth, body }) => {
-      const { subjectIDs, photoIDs } = body;
+      const { subjectIDs } = body;
       const title = body.title.trim();
       if (title === '') {
         throw new BadRequestError('title is required');
@@ -60,18 +59,20 @@ export async function setup(app: App) {
       if ([...content].length > 100000) {
         throw new BadRequestError('content too long, only allow less equal than 100000 characters');
       }
-      if (dam.needReview(title) || dam.needReview(content)) {
-        throw new BadRequestError('title or content is not allowed');
-      }
       if (subjectIDs && subjectIDs.length > 5) {
         throw new BadRequestError('subjectIDs too many, only allow at most 5');
+      }
+      // 禁言用户不允许发布日志
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create blog entry');
       }
       const tags = body.tags ? validateTags(body.tags) : [];
 
       await rateLimit(LimitAction.Blog, auth.userID);
 
       const now = DateTime.now().toUnixInteger();
-      const isPublic = body.public ?? true;
+      // shadow ban：触发敏感词时降级为仅好友可见（对齐旧站 setEntryForReview）
+      const isPublic = (body.public ?? true) && !(dam.needReview(title) || dam.needReview(content));
       let entryID = 0;
       await db.transaction(async (t) => {
         const [result] = await t.insert(schema.chiiBlogEntries).values({
@@ -109,19 +110,6 @@ export async function setup(app: App) {
               createdAt: now,
             })),
           );
-        }
-
-        if (photoIDs && photoIDs.length > 0) {
-          await t
-            .update(schema.chiiBlogPhotos)
-            .set({ eid: entryID })
-            .where(
-              op.and(
-                op.inArray(schema.chiiBlogPhotos.id, photoIDs),
-                op.eq(schema.chiiBlogPhotos.uid, auth.userID),
-                op.eq(schema.chiiBlogPhotos.eid, 0),
-              ),
-            );
         }
       });
       return { id: entryID };
@@ -392,14 +380,13 @@ export async function setup(app: App) {
         throw new NotAllowedError('update a blog entry which is not yours');
       }
 
-      const { title, content, tags, public: isPublic, subjectIDs, photoIDs } = body;
+      const { title, content, tags, public: isPublic, subjectIDs } = body;
       if (
         title === undefined &&
         content === undefined &&
         tags === undefined &&
         isPublic === undefined &&
-        subjectIDs === undefined &&
-        photoIDs === undefined
+        subjectIDs === undefined
       ) {
         throw new BadRequestError('no update');
       }
@@ -423,16 +410,21 @@ export async function setup(app: App) {
       if ([...effectiveContent].length > 100000) {
         throw new BadRequestError('content too long, only allow less equal than 100000 characters');
       }
-      if (dam.needReview(effectiveTitle) || dam.needReview(effectiveContent)) {
-        throw new BadRequestError('title or content is not allowed');
-      }
       if (subjectIDs && subjectIDs.length > 5) {
         throw new BadRequestError('subjectIDs too many, only allow at most 5');
+      }
+      // 禁言用户不允许编辑日志
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('update blog entry');
       }
 
       await rateLimit(LimitAction.Blog, auth.userID);
 
       const now = DateTime.now().toUnixInteger();
+      // shadow ban：触发敏感词时降级为仅好友可见（对齐旧站 setEntryForReview）
+      const effectivePublic =
+        (isPublic ?? current.public) &&
+        !(dam.needReview(effectiveTitle) || dam.needReview(effectiveContent));
       await db.transaction(async (t) => {
         const toUpdate: Partial<typeof schema.chiiBlogEntries.$inferInsert> = {
           updatedAt: now,
@@ -443,8 +435,8 @@ export async function setup(app: App) {
         if (newContent !== undefined) {
           toUpdate.content = newContent;
         }
-        if (isPublic !== undefined) {
-          toUpdate.public = isPublic;
+        if (effectivePublic !== current.public) {
+          toUpdate.public = effectivePublic;
         }
         if (tags !== undefined) {
           const validTags = await insertUserTags(t, auth.userID, TagCat.Entry, 1, entryID, tags);
@@ -469,113 +461,11 @@ export async function setup(app: App) {
           }
           toUpdate.related = subjectIDs.length > 0 ? 1 : 0;
         }
-        if (photoIDs && photoIDs.length > 0) {
-          await t
-            .update(schema.chiiBlogPhotos)
-            .set({ eid: entryID })
-            .where(
-              op.and(
-                op.inArray(schema.chiiBlogPhotos.id, photoIDs),
-                op.eq(schema.chiiBlogPhotos.uid, auth.userID),
-                op.eq(schema.chiiBlogPhotos.eid, 0),
-              ),
-            );
-        }
         await t
           .update(schema.chiiBlogEntries)
           .set(toUpdate)
           .where(op.eq(schema.chiiBlogEntries.id, entryID))
           .limit(1);
-      });
-      return {};
-    },
-  );
-
-  app.delete(
-    '/blogs/:entryID',
-    {
-      schema: {
-        summary: '删除日志',
-        description: '删除自己的日志，级联清理评论、关联条目、照片、标签与时间线',
-        operationId: 'deleteBlogEntry',
-        tags: [Tag.Blog],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
-        params: t.Object({
-          entryID: t.Integer(),
-        }),
-        response: {
-          200: t.Object({}),
-          404: res.Ref(res.Error),
-        },
-      },
-      preHandler: [requireLogin('delete blog entry')],
-    },
-    async ({ auth, params: { entryID } }) => {
-      const [current] = await db
-        .select({ uid: schema.chiiBlogEntries.uid })
-        .from(schema.chiiBlogEntries)
-        .where(op.eq(schema.chiiBlogEntries.id, entryID))
-        .limit(1);
-      if (!current) {
-        throw new NotFoundError('Blog entry not found');
-      }
-      if (current.uid !== auth.userID) {
-        throw new NotAllowedError('delete a blog entry which is not yours');
-      }
-
-      await rateLimit(LimitAction.Blog, auth.userID);
-
-      await db.transaction(async (t) => {
-        await t
-          .delete(schema.chiiBlogEntries)
-          .where(op.eq(schema.chiiBlogEntries.id, entryID))
-          .limit(1);
-        await t.delete(schema.chiiBlogComments).where(op.eq(schema.chiiBlogComments.mid, entryID));
-        await t
-          .delete(schema.chiiSubjectRelatedBlogs)
-          .where(op.eq(schema.chiiSubjectRelatedBlogs.entryID, entryID));
-        await t.delete(schema.chiiBlogPhotos).where(op.eq(schema.chiiBlogPhotos.eid, entryID));
-
-        // 清理标签关联并更新标签计数
-        const tagList = await t
-          .select({ tagID: schema.chiiTagList.tagID })
-          .from(schema.chiiTagList)
-          .where(
-            op.and(
-              op.eq(schema.chiiTagList.userID, auth.userID),
-              op.eq(schema.chiiTagList.cat, TagCat.Entry),
-              op.eq(schema.chiiTagList.type, 1),
-              op.eq(schema.chiiTagList.mainID, entryID),
-            ),
-          );
-        if (tagList.length > 0) {
-          await t
-            .delete(schema.chiiTagList)
-            .where(
-              op.and(
-                op.eq(schema.chiiTagList.userID, auth.userID),
-                op.eq(schema.chiiTagList.cat, TagCat.Entry),
-                op.eq(schema.chiiTagList.type, 1),
-                op.eq(schema.chiiTagList.mainID, entryID),
-              ),
-            );
-          await updateTagResult(
-            t,
-            tagList.map((x) => x.tagID),
-          );
-        }
-
-        // 删除日志相关时间线（cat=6, 非批量合并）
-        await t
-          .delete(schema.chiiTimeline)
-          .where(
-            op.and(
-              op.eq(schema.chiiTimeline.uid, auth.userID),
-              op.eq(schema.chiiTimeline.cat, TimelineCat.Blog),
-              op.eq(schema.chiiTimeline.related, entryID.toString()),
-              op.eq(schema.chiiTimeline.batch, false),
-            ),
-          );
       });
       return {};
     },

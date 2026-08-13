@@ -266,7 +266,6 @@ export const CreateBlog = t.Object(
     tags: t.Optional(t.Array(t.String({ description: '标签' }))),
     public: t.Optional(t.Boolean({ description: '公开（true）或仅好友可见（false），默认公开' })),
     subjectIDs: t.Optional(t.Array(t.Integer({ description: '关联条目 id，最多 5 个' }))),
-    photoIDs: t.Optional(t.Array(t.Integer({ description: '已上传图片 id' }))),
   },
   { $id: 'CreateBlog' },
 );
@@ -279,7 +278,6 @@ export const UpdateBlog = t.Object(
     tags: t.Optional(t.Array(t.String({ description: '标签' }))),
     public: t.Optional(t.Boolean({ description: '公开（true）或仅好友可见（false）' })),
     subjectIDs: t.Optional(t.Array(t.Integer({ description: '关联条目 id，最多 5 个' }))),
-    photoIDs: t.Optional(t.Array(t.Integer({ description: '已上传图片 id' }))),
   },
   { $id: 'UpdateBlog' },
 );

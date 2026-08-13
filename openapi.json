@@ -398,13 +398,6 @@
               "type": "integer",
               "description": "关联条目 id，最多 5 个"
             }
-          },
-          "photoIDs": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "description": "已上传图片 id"
-            }
           }
         }
       },
@@ -870,13 +863,6 @@
             "items": {
               "type": "integer",
               "description": "关联条目 id，最多 5 个"
-            }
-          },
-          "photoIDs": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "description": "已上传图片 id"
             }
           }
         }
@@ -5444,61 +5430,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "default error response type",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "意料之外的服务器错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "operationId": "deleteBlogEntry",
-        "summary": "删除日志",
-        "tags": ["blog"],
-        "description": "删除自己的日志，级联清理评论、关联条目、照片、标签与时间线",
-        "parameters": [
-          {
-            "schema": {
-              "type": "integer"
-            },
-            "in": "path",
-            "name": "entryID",
-            "required": true
-          }
-        ],
-        "security": [
-          {
-            "CookiesSession": [],
-            "HTTPBearer": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Default Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
                 }
               }
             }
