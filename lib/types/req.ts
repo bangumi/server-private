@@ -470,3 +470,27 @@ export const CharacterEdit = t.Object(
     additionalProperties: false,
   },
 );
+
+export type ICreatePrivateMessage = Static<typeof CreatePrivateMessage>;
+export const CreatePrivateMessage = t.Object(
+  {
+    receivers: t.Optional(
+      t.Array(t.String({ minLength: 1 }), {
+        minItems: 1,
+        maxItems: 10,
+        description: '收件人 username 列表，与 receiverIDs 二选一',
+      }),
+    ),
+    receiverIDs: t.Optional(
+      t.Array(t.Integer(), {
+        minItems: 1,
+        maxItems: 10,
+        description: '收件人 user id 列表，与 receivers 二选一',
+      }),
+    ),
+    title: t.String({ minLength: 1, maxLength: 75 }),
+    content: t.String({ minLength: 1, maxLength: 1000 }),
+    related: t.Optional(t.Integer({ description: '回复时传入会话根消息 id，不传则创建新会话' })),
+  },
+  { $id: 'CreatePrivateMessage', title: 'CreatePrivateMessage' },
+);
