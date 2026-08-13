@@ -37,6 +37,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CreateIndexRelated);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateReport);
+  app.addSchema(req.CreateSubjectComment);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.FilterMode);
   app.addSchema(req.GroupFilterMode);
@@ -57,6 +58,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.UpdateEpisodeProgress);
   app.addSchema(req.UpdateIndex);
   app.addSchema(req.UpdateIndexRelated);
+  app.addSchema(req.UpdateSubjectComment);
   app.addSchema(req.UpdateSubjectProgress);
   app.addSchema(req.UpdateTopic);
 }

@@ -1,8 +1,10 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
+import { LikeType } from '@app/lib/like';
 import redis from '@app/lib/redis.ts';
+import { CollectionType } from '@app/lib/subject/type.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import { getFriendsCacheKey } from '@app/lib/user/cache.ts';
 import { createTestServer } from '@app/tests/utils.ts';
@@ -399,5 +401,288 @@ describe('subject topics', () => {
       .from(schema.chiiSubjectPosts)
       .where(op.eq(schema.chiiSubjectPosts.id, id));
     expect(deletedPost?.state).toBe(CommentState.UserDelete);
+  });
+});
+
+describe('subject comment write APIs', () => {
+  const TEST_USER_ID = 382951;
+  const TEST_COMMENT_ID = 1; // uid=382951, subjectID=8, hasComment=1
+  const OTHER_COMMENT_ID = 3; // uid=2703, subjectID=4, hasComment=0
+
+  async function reset() {
+    // 恢复 dist.sql 初始数据
+    await db
+      .update(schema.chiiSubjectInterests)
+      .set({
+        comment: 'test comment',
+        hasComment: 1,
+        rate: 0,
+        type: CollectionType.Collect,
+        privacy: 0,
+        updatedAt: 1639569371,
+      })
+      .where(op.eq(schema.chiiSubjectInterests.id, TEST_COMMENT_ID));
+    await db
+      .update(schema.chiiSubjectInterests)
+      .set({
+        comment: '',
+        hasComment: 0,
+        rate: 0,
+        type: CollectionType.Wish,
+        privacy: 0,
+        updatedAt: 1639569404,
+      })
+      .where(op.eq(schema.chiiSubjectInterests.id, 2));
+    await db
+      .update(schema.chiiSubjectInterests)
+      .set({
+        comment: '',
+        hasComment: 0,
+        rate: 0,
+        type: CollectionType.Wish,
+        privacy: 0,
+        updatedAt: 1639569404,
+      })
+      .where(op.eq(schema.chiiSubjectInterests.id, OTHER_COMMENT_ID));
+    // subject 12 创建路径清理
+    await db
+      .delete(schema.chiiSubjectInterests)
+      .where(
+        op.and(
+          op.eq(schema.chiiSubjectInterests.uid, TEST_USER_ID),
+          op.eq(schema.chiiSubjectInterests.subjectID, 12),
+        ),
+      );
+    await db
+      .update(schema.chiiSubjects)
+      .set({ collect: 4534, doing: 215 })
+      .where(op.eq(schema.chiiSubjects.id, 12));
+    await db
+      .update(schema.chiiSubjectFields)
+      .set({ rate10: 168 })
+      .where(op.eq(schema.chiiSubjectFields.id, 12));
+    // 清理吐槽点赞
+    await db
+      .delete(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
+          op.inArray(schema.chiiLikes.relatedID, [TEST_COMMENT_ID, 2, OTHER_COMMENT_ID]),
+        ),
+      );
+  }
+
+  beforeEach(async () => {
+    await reset();
+  });
+
+  afterEach(async () => {
+    await reset();
+  });
+
+  test('should create subject comment on existing collection', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/4/comments',
+      payload: { comment: 'new comment', turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(200);
+    const { id } = res.json();
+    expect(id).toBe(2); // 已有收藏 id=2，更新吐槽
+    const [interest] = await db
+      .select()
+      .from(schema.chiiSubjectInterests)
+      .where(op.eq(schema.chiiSubjectInterests.id, 2));
+    expect(interest?.comment).toBe('new comment');
+    expect(interest?.hasComment).toBe(1);
+  });
+
+  test('should create subject comment with new collection', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/12/comments',
+      payload: {
+        comment: 'new comment',
+        type: CollectionType.Collect,
+        turnstileToken: 'fake-response',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const { id } = res.json();
+    expect(typeof id).toBe('number');
+    const [interest] = await db
+      .select()
+      .from(schema.chiiSubjectInterests)
+      .where(
+        op.and(
+          op.eq(schema.chiiSubjectInterests.uid, TEST_USER_ID),
+          op.eq(schema.chiiSubjectInterests.subjectID, 12),
+        ),
+      );
+    expect(interest?.comment).toBe('new comment');
+    expect(interest?.hasComment).toBe(1);
+    expect(interest?.type).toBe(CollectionType.Collect);
+    const [subject] = await db
+      .select()
+      .from(schema.chiiSubjects)
+      .where(op.eq(schema.chiiSubjects.id, 12));
+    expect(subject?.collect).toBe(4535);
+  });
+
+  test('should require type on new subject comment', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/12/comments',
+      payload: { comment: 'new comment', turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('should not create subject comment without login', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/8/comments',
+      payload: { comment: 'new comment', turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('should update own subject comment', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: `/subjects/-/comments/${TEST_COMMENT_ID}`,
+      payload: { comment: 'updated comment' },
+    });
+    expect(res.statusCode).toBe(200);
+    const [interest] = await db
+      .select()
+      .from(schema.chiiSubjectInterests)
+      .where(op.eq(schema.chiiSubjectInterests.id, TEST_COMMENT_ID));
+    expect(interest?.comment).toBe('updated comment');
+  });
+
+  test('should not update comment of others', async () => {
+    // 先把 OTHER_COMMENT_ID 变成"别人的吐槽"以覆盖权限分支
+    await db
+      .update(schema.chiiSubjectInterests)
+      .set({ comment: 'other comment', hasComment: 1 })
+      .where(op.eq(schema.chiiSubjectInterests.id, OTHER_COMMENT_ID));
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: `/subjects/-/comments/${OTHER_COMMENT_ID}`,
+      payload: { comment: 'updated comment' },
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should delete own subject comment', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'delete',
+      url: `/subjects/-/comments/${TEST_COMMENT_ID}`,
+    });
+    expect(res.statusCode).toBe(200);
+    const [interest] = await db
+      .select()
+      .from(schema.chiiSubjectInterests)
+      .where(op.eq(schema.chiiSubjectInterests.id, TEST_COMMENT_ID));
+    expect(interest?.hasComment).toBe(0);
+    expect(interest?.comment).toBe('');
+  });
+
+  test('should not delete comment of others', async () => {
+    await db
+      .update(schema.chiiSubjectInterests)
+      .set({ comment: 'other comment', hasComment: 1 })
+      .where(op.eq(schema.chiiSubjectInterests.id, OTHER_COMMENT_ID));
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'delete',
+      url: `/subjects/-/comments/${OTHER_COMMENT_ID}`,
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should like subject comment', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: `/subjects/-/comments/${TEST_COMMENT_ID}/like`,
+      payload: { value: 0 },
+    });
+    expect(res.statusCode).toBe(200);
+    const [like] = await db
+      .select()
+      .from(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
+          op.eq(schema.chiiLikes.relatedID, TEST_COMMENT_ID),
+          op.eq(schema.chiiLikes.uid, TEST_USER_ID),
+        ),
+      );
+    expect(like?.deleted).toBe(false);
+  });
+
+  test('should unlike subject comment', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const likeRes = await app.inject({
+      method: 'put',
+      url: `/subjects/-/comments/${TEST_COMMENT_ID}/like`,
+      payload: { value: 0 },
+    });
+    expect(likeRes.statusCode).toBe(200);
+    const unlikeRes = await app.inject({
+      method: 'delete',
+      url: `/subjects/-/comments/${TEST_COMMENT_ID}/like`,
+    });
+    expect(unlikeRes.statusCode).toBe(200);
+    const [like] = await db
+      .select()
+      .from(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
+          op.eq(schema.chiiLikes.relatedID, TEST_COMMENT_ID),
+          op.eq(schema.chiiLikes.uid, TEST_USER_ID),
+        ),
+      );
+    expect(like?.deleted).toBe(true);
   });
 });

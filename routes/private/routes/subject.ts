@@ -11,7 +11,9 @@ import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/ep';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
-import { CollectionPrivacy } from '@app/lib/subject/type.ts';
+import { CollectionPrivacy, getCollectionTypeField } from '@app/lib/subject/type.ts';
+import { updateSubjectCollectionCounts, updateSubjectRating } from '@app/lib/subject/utils.ts';
+import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
 import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
@@ -722,6 +724,321 @@ export async function setup(app: App) {
         data: comments,
         total: count,
       };
+    },
+  );
+
+  app.post(
+    '/subjects/:subjectID/comments',
+    {
+      schema: {
+        summary: '发表条目的吐槽',
+        description: '吐槽挂在条目收藏上：已收藏则更新吐槽，未收藏需传 type 创建收藏并写吐槽',
+        operationId: 'createSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateSubjectComment), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('create subject comment'), requireTurnstileToken()],
+    },
+    async ({ auth, ip, body, params: { subjectID } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      let comment = body.comment;
+      let rate = body.rate;
+      const type = body.type;
+
+      comment = comment.normalize('NFC');
+      if (comment.length > 380) {
+        throw new BadRequestError('comment too long');
+      }
+
+      await rateLimit(LimitAction.Subject, auth.userID);
+
+      let needTimeline = false;
+      let privacy: number = CollectionPrivacy.Public;
+      let commentID = 0;
+      const now = DateTime.now().toUnixInteger();
+      await db.transaction(async (t) => {
+        const [interest] = await t
+          .select()
+          .from(schema.chiiSubjectInterests)
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+              op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+            ),
+          )
+          .limit(1);
+        if (rate === undefined) {
+          rate = 0;
+        }
+        if (interest) {
+          commentID = interest.id;
+          const oldRate = interest.rate;
+          const oldType = interest.type;
+          const toUpdate: Partial<orm.ISubjectInterest> = {
+            comment,
+            hasComment: 1,
+            updatedAt: now,
+            updateIp: ip,
+          };
+          if (type && oldType !== type) {
+            needTimeline = true;
+            toUpdate.type = type;
+            toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
+            await updateSubjectCollectionCounts(t, subjectID, type, oldType);
+          }
+          if (oldRate !== rate) {
+            toUpdate.rate = rate;
+          }
+          if (dam.needReview(comment) || auth.permission.ban_post) {
+            privacy = CollectionPrivacy.Ban;
+            toUpdate.privacy = CollectionPrivacy.Ban;
+          }
+          await t
+            .update(schema.chiiSubjectInterests)
+            .set(toUpdate)
+            .where(op.eq(schema.chiiSubjectInterests.id, interest.id))
+            .limit(1);
+          if (oldRate !== rate) {
+            await updateSubjectRating(t, subjectID, oldRate, rate);
+          }
+        } else {
+          if (!type) {
+            throw new BadRequestError('type is required on new subject comment');
+          }
+          if (dam.needReview(comment) || auth.permission.ban_post) {
+            privacy = CollectionPrivacy.Ban;
+          }
+          const field = getCollectionTypeField(type);
+          const toInsert: typeof schema.chiiSubjectInterests.$inferInsert = {
+            uid: auth.userID,
+            subjectID,
+            subjectType: subject.type,
+            rate,
+            type,
+            hasComment: 1,
+            comment,
+            tag: '',
+            epStatus: 0,
+            volStatus: 0,
+            wishDateline: 0,
+            doingDateline: 0,
+            collectDateline: 0,
+            onHoldDateline: 0,
+            droppedDateline: 0,
+            createIp: ip,
+            updateIp: ip,
+            updatedAt: now,
+            privacy,
+            [`${field}Dateline`]: now,
+          };
+          const [result] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
+          commentID = result.insertId;
+          needTimeline = true;
+          await updateSubjectCollectionCounts(t, subjectID, type);
+          if (rate) {
+            await updateSubjectRating(t, subjectID, 0, rate);
+          }
+        }
+      });
+
+      if (needTimeline && privacy === CollectionPrivacy.Public) {
+        await AsyncTimelineWriter.subject({
+          uid: auth.userID,
+          subject: {
+            id: subject.id,
+            type: subject.type,
+          },
+          collect: {
+            id: commentID,
+            type: type ?? 0,
+            rate: rate ?? 0,
+            comment,
+          },
+          createdAt: now,
+          source: auth.source,
+        });
+      }
+      return { id: commentID };
+    },
+  );
+
+  app.put(
+    '/subjects/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑条目的吐槽',
+        operationId: 'updateSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer({ minimum: 1 }),
+        }),
+        body: req.Ref(req.UpdateSubjectComment),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('edit a subject comment')],
+    },
+    async ({ auth, ip, body: { comment }, params: { commentID } }) => {
+      const [current] = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      if (!current || current.hasComment !== 1) {
+        throw new NotFoundError(`subject comment ${commentID}`);
+      }
+      if (current.uid !== auth.userID) {
+        throw new NotAllowedError('edit a subject comment which is not yours');
+      }
+
+      const normalizedComment = comment.normalize('NFC');
+      if (normalizedComment.length > 380) {
+        throw new BadRequestError('comment too long');
+      }
+
+      await rateLimit(LimitAction.Comment, auth.userID);
+      const toUpdate: Partial<orm.ISubjectInterest> = {
+        comment: normalizedComment,
+        updatedAt: DateTime.now().toUnixInteger(),
+        updateIp: ip,
+      };
+      if (dam.needReview(normalizedComment) || auth.permission.ban_post) {
+        toUpdate.privacy = CollectionPrivacy.Ban;
+      }
+      await db
+        .update(schema.chiiSubjectInterests)
+        .set(toUpdate)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除条目的吐槽',
+        description: '删除吐槽会清空吐槽内容并保留收藏记录',
+        operationId: 'deleteSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer({ minimum: 1 }),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete a subject comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      const [current] = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      if (!current || current.hasComment !== 1) {
+        throw new NotFoundError(`subject comment ${commentID}`);
+      }
+      if (current.uid !== auth.userID) {
+        throw new NotAllowedError('delete a subject comment which is not yours');
+      }
+      await rateLimit(LimitAction.Comment, auth.userID);
+      await db
+        .update(schema.chiiSubjectInterests)
+        .set({
+          comment: '',
+          hasComment: 0,
+          updatedAt: DateTime.now().toUnixInteger(),
+        })
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      return {};
+    },
+  );
+
+  app.put(
+    '/subjects/-/comments/:commentID/like',
+    {
+      schema: {
+        summary: '给条目的吐槽点赞',
+        operationId: 'likeSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        body: t.Object({
+          value: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('liking a subject comment')],
+    },
+    async ({ auth, params: { commentID }, body: { value } }) => {
+      const [comment] = await db
+        .select({ subjectID: schema.chiiSubjectInterests.subjectID })
+        .from(schema.chiiSubjectInterests)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      if (!comment) {
+        throw new NotFoundError(`comment ${commentID}`);
+      }
+      await Reaction.add({
+        type: LikeType.SubjectCollect,
+        mid: comment.subjectID,
+        rid: commentID,
+        uid: auth.userID,
+        value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/comments/:commentID/like',
+    {
+      schema: {
+        summary: '取消条目的吐槽点赞',
+        operationId: 'unlikeSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a subject comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      await Reaction.delete({
+        type: LikeType.SubjectCollect,
+        rid: commentID,
+        uid: auth.userID,
+      });
+      return {};
     },
   );
 

@@ -325,6 +325,24 @@ export const CollectSubject = t.Object(
   { $id: 'CollectSubject' },
 );
 
+export type ICreateSubjectComment = Static<typeof CreateSubjectComment>;
+export const CreateSubjectComment = t.Object(
+  {
+    comment: t.String({ minLength: 1, description: '吐槽内容' }),
+    type: t.Optional(Ref(CollectionType)),
+    rate: t.Optional(t.Integer({ minimum: 0, maximum: 10, description: '评分，0 表示删除评分' })),
+  },
+  { $id: 'CreateSubjectComment' },
+);
+
+export type IUpdateSubjectComment = Static<typeof UpdateSubjectComment>;
+export const UpdateSubjectComment = t.Object(
+  {
+    comment: t.String({ minLength: 1, description: '吐槽内容' }),
+  },
+  { $id: 'UpdateSubjectComment' },
+);
+
 export type IUpdateSubjectProgress = Static<typeof UpdateSubjectProgress>;
 export const UpdateSubjectProgress = t.Object(
   {
