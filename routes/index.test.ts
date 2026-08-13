@@ -21,7 +21,7 @@ test('should keep openapi spec up to date', async () => {
   if (!isDeepStrictEqual(generated, committed)) {
     throw new Error(
       'openapi.json is out of date with the current code. ' +
-        'Run `pnpm run file ./bin/export-openapi.ts && pnpm exec prettier --write openapi.json` to update it.',
+        'Run `pnpm run file ./bin/export-openapi.ts` to update it.',
     );
   }
 }, 15000);

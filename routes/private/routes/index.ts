@@ -68,6 +68,70 @@ export async function setup(app: App) {
   );
 
   app.get(
+    '/indexes',
+    {
+      schema: {
+        summary: '获取目录列表',
+        description: '全站公开目录列表，支持排序、分页和类型过滤',
+        operationId: 'getIndexes',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          order: t.Optional(
+            t.Enum(
+              { hot: 'hot', latest: 'latest' },
+              { default: 'latest', description: '排序方式：hot=按收藏数，latest=按创建时间' },
+            ),
+          ),
+          type: t.Optional(req.Ref(req.IndexType)),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.Index)),
+        },
+      },
+    },
+    async ({ query: { order = 'latest', type, limit = 20, offset = 0 } }) => {
+      const conditions = [op.eq(schema.chiiIndexes.ban, IndexPrivacy.Normal)];
+      if (type !== undefined) {
+        conditions.push(op.eq(schema.chiiIndexes.type, type));
+      }
+
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiIndexes)
+        .where(op.and(...conditions));
+
+      const orderBy =
+        order === 'hot'
+          ? [op.desc(schema.chiiIndexes.collects), op.desc(schema.chiiIndexes.createdAt)]
+          : [op.desc(schema.chiiIndexes.createdAt)];
+
+      const data = await db
+        .select()
+        .from(schema.chiiIndexes)
+        .where(op.and(...conditions))
+        .orderBy(...orderBy)
+        .limit(limit)
+        .offset(offset);
+
+      const indexes = data.map((d) => convert.toIndex(d));
+      const users = await fetcher.fetchSlimUsersByIDs(indexes.map((i) => i.uid));
+      for (const index of indexes) {
+        index.user = users[index.uid];
+      }
+
+      return {
+        data: indexes,
+        total: count,
+      };
+    },
+  );
+
+  app.get(
     '/indexes/:indexID',
     {
       schema: {
