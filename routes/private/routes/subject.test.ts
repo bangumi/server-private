@@ -678,6 +678,85 @@ describe('subject comment write APIs', () => {
     expect(res.statusCode).toBe(403);
   });
 
+  test('should reject empty comment after trim', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/8/comments',
+      payload: { comment: ' '.repeat(3), turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('should reject comment with invisible characters', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/8/comments',
+      payload: { comment: 'bad\u200Bword', turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('should reject comment longer than 380 characters', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/8/comments',
+      payload: { comment: 'a'.repeat(381), turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(400);
+  });
+
+  test('should reject subject comment when user is banned', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: TEST_USER_ID,
+        permission: { ban_post: true },
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/8/comments',
+      payload: { comment: 'new comment', turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should restore shadow-banned comment to private on update', async () => {
+    await db
+      .update(schema.chiiSubjectInterests)
+      .set({ privacy: 2 })
+      .where(op.eq(schema.chiiSubjectInterests.id, TEST_COMMENT_ID));
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: `/subjects/-/comments/${TEST_COMMENT_ID}`,
+      payload: { comment: 'clean text' },
+    });
+    expect(res.statusCode).toBe(200);
+    const [interest] = await db
+      .select()
+      .from(schema.chiiSubjectInterests)
+      .where(op.eq(schema.chiiSubjectInterests.id, TEST_COMMENT_ID));
+    expect(interest?.privacy).toBe(1); // ShadowBan 解除后恢复为仅自己可见
+  });
+
   test('should like subject comment', async () => {
     const app = createTestServer({
       auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },

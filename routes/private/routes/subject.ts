@@ -31,6 +31,8 @@ import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handl
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
+type SubjectInterestInsert = typeof schema.chiiSubjectInterests.$inferInsert;
+
 function toSubjectRelation(
   subject: orm.ISubject,
   fields: orm.ISubjectFields,
@@ -807,7 +809,7 @@ export async function setup(app: App) {
           if (effectiveType === CollectionType.Wish) {
             rate = 0;
           }
-          const toUpdate: Partial<orm.ISubjectInterest> = {
+          const toUpdate: Partial<SubjectInterestInsert> = {
             comment,
             hasComment: 1,
             updatedAt: now,
@@ -850,7 +852,7 @@ export async function setup(app: App) {
             privacy = CollectionPrivacy.Ban;
           }
           const field = getCollectionTypeField(type);
-          const toInsert: typeof schema.chiiSubjectInterests.$inferInsert = {
+          const toInsert: SubjectInterestInsert = {
             uid: auth.userID,
             subjectID,
             subjectType: subject.type,
@@ -951,7 +953,7 @@ export async function setup(app: App) {
       }
 
       await rateLimit(LimitAction.Comment, auth.userID);
-      const toUpdate: Partial<orm.ISubjectInterest> = {
+      const toUpdate: Partial<SubjectInterestInsert> = {
         comment: normalizedComment,
         updatedAt: DateTime.now().toUnixInteger(),
         updateIp: ip,
