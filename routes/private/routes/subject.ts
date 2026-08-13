@@ -11,7 +11,11 @@ import { Notify, NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/ep';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
-import { CollectionPrivacy, getCollectionTypeField } from '@app/lib/subject/type.ts';
+import {
+  CollectionPrivacy,
+  CollectionType,
+  getCollectionTypeField,
+} from '@app/lib/subject/type.ts';
 import { updateSubjectCollectionCounts, updateSubjectRating } from '@app/lib/subject/utils.ts';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
 import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
@@ -755,18 +759,27 @@ export async function setup(app: App) {
         throw new NotFoundError(`subject ${subjectID}`);
       }
 
-      let comment = body.comment;
-      let rate = body.rate;
       const type = body.type;
+      let rate = body.rate;
 
-      comment = comment.normalize('NFC');
-      if (comment.length > 380) {
-        throw new BadRequestError('comment too long');
+      // 对齐 Go UpdateComment：NFC normalize → trim → 不可见字符检查 → 380 长度限制
+      const comment = body.comment.normalize('NFC').trim();
+      if (comment === '') {
+        throw new BadRequestError('comment is required');
+      }
+      if (!Dam.allCharacterPrintable(comment)) {
+        throw new BadRequestError('invisible character are included in comment');
+      }
+      if ([...comment].length > 380) {
+        throw new BadRequestError('comment too long, only allow less equal than 380 characters');
+      }
+      // 对齐 Go：被禁言用户不允许发表吐槽
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create subject comment');
       }
 
       await rateLimit(LimitAction.Subject, auth.userID);
 
-      let needTimeline = false;
       let privacy: number = CollectionPrivacy.Public;
       let commentID = 0;
       const now = DateTime.now().toUnixInteger();
@@ -786,8 +799,14 @@ export async function setup(app: App) {
         }
         if (interest) {
           commentID = interest.id;
+          privacy = interest.privacy;
           const oldRate = interest.rate;
           const oldType = interest.type;
+          const effectiveType = type ?? oldType;
+          // 对齐 Go UpdateRate：想看状态时评分强制为 0
+          if (effectiveType === CollectionType.Wish) {
+            rate = 0;
+          }
           const toUpdate: Partial<orm.ISubjectInterest> = {
             comment,
             hasComment: 1,
@@ -795,7 +814,6 @@ export async function setup(app: App) {
             updateIp: ip,
           };
           if (type && oldType !== type) {
-            needTimeline = true;
             toUpdate.type = type;
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             await updateSubjectCollectionCounts(t, subjectID, type, oldType);
@@ -803,9 +821,14 @@ export async function setup(app: App) {
           if (oldRate !== rate) {
             toUpdate.rate = rate;
           }
-          if (dam.needReview(comment) || auth.permission.ban_post) {
+          if (dam.needReview(comment)) {
+            // 对齐 Go ShadowBan：触发敏感词 → 禁止公开
             privacy = CollectionPrivacy.Ban;
             toUpdate.privacy = CollectionPrivacy.Ban;
+          } else if (interest.privacy === CollectionPrivacy.Ban) {
+            // 对齐 Go ShadowBan 解除：不再触发敏感词时恢复为仅自己可见
+            privacy = CollectionPrivacy.Private;
+            toUpdate.privacy = CollectionPrivacy.Private;
           }
           await t
             .update(schema.chiiSubjectInterests)
@@ -819,7 +842,11 @@ export async function setup(app: App) {
           if (!type) {
             throw new BadRequestError('type is required on new subject comment');
           }
-          if (dam.needReview(comment) || auth.permission.ban_post) {
+          // 对齐 Go UpdateRate：想看状态时评分强制为 0
+          if (type === CollectionType.Wish) {
+            rate = 0;
+          }
+          if (dam.needReview(comment)) {
             privacy = CollectionPrivacy.Ban;
           }
           const field = getCollectionTypeField(type);
@@ -847,7 +874,6 @@ export async function setup(app: App) {
           };
           const [result] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
           commentID = result.insertId;
-          needTimeline = true;
           await updateSubjectCollectionCounts(t, subjectID, type);
           if (rate) {
             await updateSubjectRating(t, subjectID, 0, rate);
@@ -855,7 +881,8 @@ export async function setup(app: App) {
         }
       });
 
-      if (needTimeline && privacy === CollectionPrivacy.Public) {
+      // 对齐 Go mayCreateTimeline：请求带 type 且收藏公开时才写时间线
+      if (type !== undefined && privacy === CollectionPrivacy.Public) {
         await AsyncTimelineWriter.subject({
           uid: auth.userID,
           subject: {
@@ -864,7 +891,7 @@ export async function setup(app: App) {
           },
           collect: {
             id: commentID,
-            type: type ?? 0,
+            type,
             rate: rate ?? 0,
             comment,
           },
@@ -906,10 +933,21 @@ export async function setup(app: App) {
       if (current.uid !== auth.userID) {
         throw new NotAllowedError('edit a subject comment which is not yours');
       }
+      // 对齐 Go：被禁言用户不允许编辑吐槽
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('edit a subject comment');
+      }
 
-      const normalizedComment = comment.normalize('NFC');
-      if (normalizedComment.length > 380) {
-        throw new BadRequestError('comment too long');
+      // 对齐 Go UpdateComment：NFC normalize → trim → 不可见字符检查 → 380 长度限制
+      const normalizedComment = comment.normalize('NFC').trim();
+      if (normalizedComment === '') {
+        throw new BadRequestError('comment is required');
+      }
+      if (!Dam.allCharacterPrintable(normalizedComment)) {
+        throw new BadRequestError('invisible character are included in comment');
+      }
+      if ([...normalizedComment].length > 380) {
+        throw new BadRequestError('comment too long, only allow less equal than 380 characters');
       }
 
       await rateLimit(LimitAction.Comment, auth.userID);
@@ -918,8 +956,12 @@ export async function setup(app: App) {
         updatedAt: DateTime.now().toUnixInteger(),
         updateIp: ip,
       };
-      if (dam.needReview(normalizedComment) || auth.permission.ban_post) {
+      if (dam.needReview(normalizedComment)) {
+        // 对齐 Go ShadowBan：触发敏感词 → 禁止公开
         toUpdate.privacy = CollectionPrivacy.Ban;
+      } else if (current.privacy === CollectionPrivacy.Ban) {
+        // 对齐 Go ShadowBan 解除：不再触发敏感词时恢复为仅自己可见
+        toUpdate.privacy = CollectionPrivacy.Private;
       }
       await db
         .update(schema.chiiSubjectInterests)

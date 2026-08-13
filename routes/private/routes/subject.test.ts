@@ -455,7 +455,7 @@ describe('subject comment write APIs', () => {
       );
     await db
       .update(schema.chiiSubjects)
-      .set({ collect: 4534, doing: 215 })
+      .set({ wish: 1159, collect: 4534, doing: 215 })
       .where(op.eq(schema.chiiSubjects.id, 12));
     await db
       .update(schema.chiiSubjectFields)
@@ -500,6 +500,51 @@ describe('subject comment write APIs', () => {
       .where(op.eq(schema.chiiSubjectInterests.id, 2));
     expect(interest?.comment).toBe('new comment');
     expect(interest?.hasComment).toBe(1);
+  });
+
+  test('should trim comment', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/4/comments',
+      payload: { comment: '  spaced comment  ', turnstileToken: 'fake-response' },
+    });
+    expect(res.statusCode).toBe(200);
+    const [interest] = await db
+      .select()
+      .from(schema.chiiSubjectInterests)
+      .where(op.eq(schema.chiiSubjectInterests.id, 2));
+    expect(interest?.comment).toBe('spaced comment');
+  });
+
+  test('should force rate to 0 for wish collection', async () => {
+    const app = createTestServer({
+      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'post',
+      url: '/subjects/12/comments',
+      payload: {
+        comment: 'wish comment',
+        type: CollectionType.Wish,
+        rate: 5,
+        turnstileToken: 'fake-response',
+      },
+    });
+    expect(res.statusCode).toBe(200);
+    const { id } = res.json();
+    const [interest] = await db
+      .select()
+      .from(schema.chiiSubjectInterests)
+      .where(op.eq(schema.chiiSubjectInterests.id, id));
+    expect(interest?.rate).toBe(0);
+    expect(interest?.type).toBe(CollectionType.Wish);
   });
 
   test('should create subject comment with new collection', async () => {
