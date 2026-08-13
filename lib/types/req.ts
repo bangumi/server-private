@@ -83,6 +83,34 @@ export const GroupSort = t.String({
   - updated = 最新讨论`,
 });
 
+export const RaKuenTopicType = t.String({
+  $id: 'RaKuenTopicType',
+  enum: ['all', 'group', 'my_group', 'subject', 'episode', 'character', 'person'],
+  'x-ms-enum': {
+    name: 'RaKuenTopicType',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['All', 'Group', 'MyGroup', 'Subject', 'Episode', 'Character', 'Person'],
+  description: `超展开聚合类型
+  - all = 全部
+  - group = 小组话题
+  - my_group = 已加入小组的话题（未登录返回空）
+  - subject = 条目话题
+  - episode = 章节
+  - character = 角色
+  - person = 人物`,
+});
+
+export const IRaKuenTopicType = Object.freeze({
+  All: 'all',
+  Group: 'group',
+  MyGroup: 'my_group',
+  Subject: 'subject',
+  Episode: 'episode',
+  Character: 'character',
+  Person: 'person',
+});
+
 export const SubjectBrowseSort = t.String({
   $id: 'SubjectBrowseSort',
   enum: ['rank', 'trends', 'collects', 'date', 'title'],

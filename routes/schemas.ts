@@ -45,6 +45,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.PersonCreate);
   app.addSchema(req.PersonEdit);
   app.addSchema(req.PersonSearchFilter);
+  app.addSchema(req.RaKuenTopicType);
   app.addSchema(req.SearchCharacter);
   app.addSchema(req.SearchPerson);
   app.addSchema(req.SearchSubject);
@@ -97,6 +98,12 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.PersonWork);
   app.addSchema(res.Post);
   app.addSchema(res.Profile);
+  app.addSchema(res.RaKuenCharacter);
+  app.addSchema(res.RaKuenEpisode);
+  app.addSchema(res.RaKuenGroupTopic);
+  app.addSchema(res.RaKuenPerson);
+  app.addSchema(res.RaKuenSubjectTopic);
+  app.addSchema(res.RaKuenTopic);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
   app.addSchema(res.ReplyBase);
