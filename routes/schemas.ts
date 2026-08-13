@@ -75,6 +75,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.CharacterWikiInfo);
   app.addSchema(res.Comment);
+  app.addSchema(res.CommentBase);
   app.addSchema(res.Episode);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);

@@ -327,7 +327,7 @@ export async function setup(app: App) {
           characterID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
@@ -448,7 +448,7 @@ export async function setup(app: App) {
           photoID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error),
         },
       },

@@ -68,7 +68,7 @@ export async function setup(app: App) {
           episodeID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
         },
       },
     },

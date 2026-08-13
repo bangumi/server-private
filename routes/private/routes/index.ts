@@ -666,7 +666,7 @@ export async function setup(app: App) {
           indexID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('index')),
           }),
