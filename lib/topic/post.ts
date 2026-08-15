@@ -23,21 +23,32 @@ type PostTable = typeof schema.chiiGroupPosts | typeof schema.chiiSubjectPosts;
 
 type TopicTable = typeof schema.chiiGroupTopics | typeof schema.chiiSubjectTopics;
 
-export type TopicRow = orm.IGroupTopic | orm.ISubjectTopic;
+type PostRow<PT extends PostTable> = PT['$inferSelect'];
 
-interface TopicPostServiceOptions {
+type TopicRow<TT extends TopicTable> = TT['$inferSelect'];
+
+type AnyPostRow = orm.IGroupPost | orm.ISubjectPost;
+
+type ReplyLikeType = (typeof LikeType)['GroupReply'] | (typeof LikeType)['SubjectReply'];
+
+interface NotifyTypesConfig {
+  /** 回复主楼的站内信类型 */
+  topicReply: NotifyType;
+  /** 回复回帖的站内信类型 */
+  postReply: NotifyType;
+}
+
+interface TopicPostServiceOptions<
+  PT extends PostTable = PostTable,
+  TT extends TopicTable = TopicTable,
+> {
   /** 回复所在的 posts 表（chii_group_posts / chii_subject_posts） */
-  table: PostTable;
+  table: PT;
   /** 回复所属的 topics 表 */
-  topicTable: TopicTable;
+  topicTable: TT;
   /** 回复点赞使用的 LikeType */
-  likeType: (typeof LikeType)['GroupReply'] | (typeof LikeType)['SubjectReply'];
-  notifyTypes: {
-    /** 回复主楼的站内信类型 */
-    topicReply: NotifyType;
-    /** 回复回帖的站内信类型 */
-    postReply: NotifyType;
-  };
+  likeType: ReplyLikeType;
+  notifyTypes: NotifyTypesConfig;
 }
 
 /**
@@ -46,20 +57,23 @@ interface TopicPostServiceOptions {
  * 两张 posts 表结构一致，仅 likeType / notify 类型 / 计数器副作用不同， 通过构造参数区分，避免 group.ts 与 subject.ts 中重复的回复 CRUD
  * 实现。
  */
-export class TopicPostService {
+export class TopicPostService<
+  PT extends PostTable = PostTable,
+  TT extends TopicTable = TopicTable,
+> {
   private readonly table: PostTable;
   private readonly topicTable: TopicTable;
-  private readonly likeType: (typeof LikeType)['GroupReply'] | (typeof LikeType)['SubjectReply'];
-  private readonly notifyTypes: TopicPostServiceOptions['notifyTypes'];
+  private readonly likeType: ReplyLikeType;
+  private readonly notifyTypes: NotifyTypesConfig;
 
-  constructor(options: TopicPostServiceOptions) {
+  constructor(options: TopicPostServiceOptions<PT, TT>) {
     this.table = options.table;
     this.topicTable = options.topicTable;
     this.likeType = options.likeType;
     this.notifyTypes = options.notifyTypes;
   }
 
-  private toReplyBase(post: orm.IGroupPost | orm.ISubjectPost): res.IReplyBase {
+  private toReplyBase(post: AnyPostRow): res.IReplyBase {
     return {
       id: post.id,
       content: post.content,
@@ -120,8 +134,8 @@ export class TopicPostService {
     postID: number,
     viewerID?: number,
   ): Promise<{
-    post: orm.IGroupPost | orm.ISubjectPost;
-    topic: TopicRow;
+    post: PostRow<PT>;
+    topic: TopicRow<TT>;
     creator: res.ISlimUser;
     topicCreator: res.ISlimUser;
   }> {
@@ -157,10 +171,10 @@ export class TopicPostService {
    */
   async create(
     auth: Readonly<IAuth>,
-    topic: TopicRow,
+    topic: TopicRow<TT>,
     content: string,
     replyTo: number,
-    preCreateCheck?: (topic: TopicRow) => Promise<void>,
+    preCreateCheck?: (topic: TopicRow<TT>) => Promise<void>,
   ): Promise<{ id: number }> {
     if (auth.permission.ban_post) {
       throw new NotAllowedError('create reply');
@@ -208,7 +222,7 @@ export class TopicPostService {
         content,
         state: CommentState.Normal,
         createdAt,
-      } as typeof this.table.$inferInsert);
+      });
       postID = insertId;
 
       if (topic.state === CommentState.AdminSilentTopic) {

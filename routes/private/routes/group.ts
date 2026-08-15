@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import t from 'typebox';
 
-import type { orm } from '@app/drizzle';
 import { db, op, schema } from '@app/drizzle';
 import { NotAllowedError } from '@app/lib/auth/index.ts';
 import { Dam, dam } from '@app/lib/dam.ts';
@@ -675,7 +674,7 @@ export async function setup(app: App) {
         content: post.content,
         state: post.state,
         topic: {
-          ...convert.toGroupTopic(topic as orm.IGroupTopic),
+          ...convert.toGroupTopic(topic),
           creator: topicCreator,
           replies: topic.replies,
         },
@@ -810,14 +809,13 @@ export async function setup(app: App) {
       }
 
       return await groupPostService.create(auth, topic, content, replyTo, async (topic) => {
-        const gTopic = topic as orm.IGroupTopic;
         const [group] = await db
           .select()
           .from(schema.chiiGroups)
-          .where(op.eq(schema.chiiGroups.id, gTopic.gid))
+          .where(op.eq(schema.chiiGroups.id, topic.gid))
           .limit(1);
         if (!group) {
-          throw new UnexpectedNotFoundError(`group ${gTopic.gid}`);
+          throw new UnexpectedNotFoundError(`group ${topic.gid}`);
         }
         if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
           throw new NotJoinPrivateGroupError(group.name);

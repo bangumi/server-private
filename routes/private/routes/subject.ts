@@ -1754,7 +1754,7 @@ export async function setup(app: App) {
         content: post.content,
         state: post.state,
         topic: {
-          ...convert.toSubjectTopic(topic as orm.ISubjectTopic),
+          ...convert.toSubjectTopic(topic),
           creator: topicCreator,
           replies: topic.replies,
         },
