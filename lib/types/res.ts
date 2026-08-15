@@ -504,7 +504,7 @@ export const CommentBase = t.Object(
 export type IComment = Static<typeof Comment>;
 export const Comment = t.Intersect(
   [
-    CommentBase,
+    Ref(CommentBase),
     t.Object({
       replies: t.Array(Ref(CommentBase)),
     }),
