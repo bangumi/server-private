@@ -258,6 +258,30 @@ export const UpdateTopic = t.Object(
   { $id: 'UpdateTopic' },
 );
 
+export type ICreateBlog = Static<typeof CreateBlog>;
+export const CreateBlog = t.Object(
+  {
+    title: t.String({ minLength: 1, maxLength: 80, description: '日志标题' }),
+    content: t.String({ minLength: 1, description: '日志正文（BBCode）' }),
+    tags: t.Optional(t.Array(t.String({ description: '标签' }))),
+    public: t.Optional(t.Boolean({ description: '公开（true）或仅好友可见（false），默认公开' })),
+    subjectIDs: t.Optional(t.Array(t.Integer({ description: '关联条目 id，最多 5 个' }))),
+  },
+  { $id: 'CreateBlog' },
+);
+
+export type IUpdateBlog = Static<typeof UpdateBlog>;
+export const UpdateBlog = t.Object(
+  {
+    title: t.Optional(t.String({ minLength: 1, maxLength: 80, description: '日志标题' })),
+    content: t.Optional(t.String({ minLength: 1, description: '日志正文（BBCode）' })),
+    tags: t.Optional(t.Array(t.String({ description: '标签' }))),
+    public: t.Optional(t.Boolean({ description: '公开（true）或仅好友可见（false）' })),
+    subjectIDs: t.Optional(t.Array(t.Integer({ description: '关联条目 id，最多 5 个' }))),
+  },
+  { $id: 'UpdateBlog' },
+);
+
 export type ICreateReply = Static<typeof CreateReply>;
 export const CreateReply = t.Object(
   {
