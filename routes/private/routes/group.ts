@@ -17,11 +17,12 @@ import {
   GroupTopicFilterMode,
 } from '@app/lib/group/type';
 import { getGroupMember, isMemberInGroup } from '@app/lib/group/utils.ts';
-import { LikeType, Reaction } from '@app/lib/like';
-import { Notify, NotifyType } from '@app/lib/notify.ts';
+import { LikeType } from '@app/lib/like';
+import { NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
-import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display';
-import { canEditTopic, canReplyPost } from '@app/lib/topic/state.ts';
+import { CanViewTopicContent } from '@app/lib/topic/display';
+import { TopicPostService } from '@app/lib/topic/post.ts';
+import { canEditTopic } from '@app/lib/topic/state.ts';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -32,6 +33,16 @@ import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
+
+const groupPostService = new TopicPostService({
+  table: schema.chiiGroupPosts,
+  topicTable: schema.chiiGroupTopics,
+  likeType: LikeType.GroupReply,
+  notifyTypes: {
+    topicReply: NotifyType.GroupTopicReply,
+    postReply: NotifyType.GroupPostReply,
+  },
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -533,56 +544,19 @@ export async function setup(app: App) {
       if (!group) {
         throw new NotFoundError(`group ${topic.gid}`);
       }
-      const replies = await db
-        .select()
-        .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.mid, topicID))
-        .orderBy(op.asc(schema.chiiGroupPosts.id));
       const viewerID = auth.login ? auth.userID : undefined;
-      const uids = [topic.uid, ...replies.map((x) => x.uid)];
-      const users = await fetcher.fetchSlimUsersByIDs(uids, viewerID);
+      const replies = await groupPostService.getReplies(topicID, viewerID);
+      const users = await fetcher.fetchSlimUsersByIDs([topic.uid], viewerID);
       const creator = users[topic.uid];
       if (!creator) {
         throw new UnexpectedNotFoundError(`user ${topic.uid}`);
-      }
-      const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await Reaction.fetchByMainID(topicID, LikeType.GroupReply);
-      for (const x of replies) {
-        if (x.related === 0) {
-          continue;
-        }
-        if (!CanViewTopicReply(x.state)) {
-          x.content = '';
-        }
-        const sub = convert.toGroupTopicReply(x);
-        sub.creator = users[sub.creatorID];
-        sub.reactions = reactions[x.id] ?? [];
-        const subR = subReplies[x.related] ?? [];
-        subR.push(sub);
-        subReplies[x.related] = subR;
-      }
-      const topLevelReplies: res.IReply[] = [];
-      for (const x of replies) {
-        if (x.related !== 0) {
-          continue;
-        }
-        if (!CanViewTopicReply(x.state)) {
-          x.content = '';
-        }
-        const reply = {
-          ...convert.toGroupTopicReply(x),
-          creator: users[x.uid],
-          replies: subReplies[x.id] ?? [],
-          reactions: reactions[x.id] ?? [],
-        };
-        topLevelReplies.push(reply);
       }
 
       return {
         ...convert.toGroupTopic(topic),
         group,
         creator,
-        replies: topLevelReplies,
+        replies,
       };
     },
   );
@@ -687,32 +661,11 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { postID } }) => {
-      const [post] = await db
-        .select()
-        .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-      const [topic] = await db
-        .select()
-        .from(schema.chiiGroupTopics)
-        .where(op.eq(schema.chiiGroupTopics.id, post.mid))
-        .limit(1);
-      if (!topic) {
-        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
-      }
       const viewerID = auth.login ? auth.userID : undefined;
-      const users = await fetcher.fetchSlimUsersByIDs([post.uid, topic.uid], viewerID);
-      const creator = users[post.uid];
-      if (!creator) {
-        throw new UnexpectedNotFoundError(`user ${post.uid}`);
-      }
-      const topicCreator = users[topic.uid];
-      if (!topicCreator) {
-        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
-      }
+      const { post, topic, creator, topicCreator } = await groupPostService.getPost(
+        postID,
+        viewerID,
+      );
       return {
         id: post.id,
         creatorID: post.uid,
@@ -751,21 +704,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a group post')],
     },
     async ({ auth, params: { postID }, body: { value } }) => {
-      const [post] = await db
-        .select({ mid: schema.chiiGroupPosts.mid })
-        .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-      await Reaction.add({
-        type: LikeType.GroupReply,
-        mid: post.mid,
-        rid: postID,
-        uid: auth.userID,
-        value,
-      });
+      await groupPostService.like(auth, postID, value);
       return {};
     },
   );
@@ -788,11 +727,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a group post')],
     },
     async ({ auth, params: { postID } }) => {
-      await Reaction.delete({
-        type: LikeType.GroupReply,
-        rid: postID,
-        uid: auth.userID,
-      });
+      await groupPostService.unlike(auth, postID);
       return {};
     },
   );
@@ -816,61 +751,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('edit a post')],
     },
     async ({ auth, body: { content }, params: { postID } }) => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('edit reply');
-      }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('content contains invalid invisible character');
-      }
-
-      const [post] = await db
-        .select()
-        .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-
-      if (post.uid !== auth.userID) {
-        throw new NotAllowedError('edit reply not created by you');
-      }
-
-      const [topic] = await db
-        .select()
-        .from(schema.chiiGroupTopics)
-        .where(op.eq(schema.chiiGroupTopics.id, post.mid))
-        .limit(1);
-      if (!topic) {
-        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
-      }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('edit reply in a closed topic');
-      }
-      if (([CommentState.AdminDelete, CommentState.UserDelete] as number[]).includes(post.state)) {
-        throw new NotAllowedError('edit a deleted reply');
-      }
-
-      const [reply] = await db
-        .select()
-        .from(schema.chiiGroupPosts)
-        .where(
-          op.and(
-            op.eq(schema.chiiGroupPosts.mid, topic.id),
-            op.eq(schema.chiiGroupPosts.related, postID),
-          ),
-        )
-        .limit(1);
-      if (reply) {
-        throw new NotAllowedError('edit a post with reply');
-      }
-
-      await rateLimit(LimitAction.Reply, auth.userID);
-      await db
-        .update(schema.chiiGroupPosts)
-        .set({ content })
-        .where(op.eq(schema.chiiGroupPosts.id, postID));
-
+      await groupPostService.update(auth, postID, content);
       return {};
     },
   );
@@ -893,25 +774,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('delete a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const [post] = await db
-        .select()
-        .from(schema.chiiGroupPosts)
-        .where(op.eq(schema.chiiGroupPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-
-      if (post.uid !== auth.userID) {
-        throw new NotAllowedError('delete reply not created by you');
-      }
-
-      await rateLimit(LimitAction.Reply, auth.userID);
-      await db
-        .update(schema.chiiGroupPosts)
-        .set({ state: CommentState.UserDelete })
-        .where(op.eq(schema.chiiGroupPosts.id, postID));
-
+      await groupPostService.delete(auth, postID);
       return {};
     },
   );
@@ -936,12 +799,6 @@ export async function setup(app: App) {
       preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
     },
     async ({ auth, params: { topicID }, body: { content, replyTo = 0 } }) => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create reply');
-      }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('content contains invalid invisible character');
-      }
       const [topic] = await db
         .select()
         .from(schema.chiiGroupTopics)
@@ -950,84 +807,20 @@ export async function setup(app: App) {
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('reply to a closed topic');
-      }
 
-      const [group] = await db
-        .select()
-        .from(schema.chiiGroups)
-        .where(op.eq(schema.chiiGroups.id, topic.gid))
-        .limit(1);
-      if (!group) {
-        throw new UnexpectedNotFoundError(`group ${topic.gid}`);
-      }
-      if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
-        throw new NotJoinPrivateGroupError(group.name);
-      }
-
-      let notifyUserID = topic.uid;
-      if (replyTo) {
-        const [parent] = await db
+      return await groupPostService.create(auth, topic, content, replyTo, async (topic) => {
+        const [group] = await db
           .select()
-          .from(schema.chiiGroupPosts)
-          .where(op.eq(schema.chiiGroupPosts.id, replyTo))
+          .from(schema.chiiGroups)
+          .where(op.eq(schema.chiiGroups.id, topic.gid))
           .limit(1);
-        if (!parent) {
-          throw new NotFoundError(`post ${replyTo}`);
+        if (!group) {
+          throw new UnexpectedNotFoundError(`group ${topic.gid}`);
         }
-        if (!canReplyPost(parent.state)) {
-          throw new NotAllowedError('reply to a admin action post');
+        if (!group.accessible && !(await isMemberInGroup(group.id, auth.userID))) {
+          throw new NotJoinPrivateGroupError(group.name);
         }
-        notifyUserID = parent.uid;
-      }
-
-      await rateLimit(LimitAction.Reply, auth.userID);
-
-      const createdAt = DateTime.now().toUnixInteger();
-
-      let postID = 0;
-      await db.transaction(async (t) => {
-        const [{ count = 0 } = {}] = await t
-          .select({ count: op.count() })
-          .from(schema.chiiGroupPosts)
-          .where(
-            op.and(
-              op.eq(schema.chiiGroupPosts.mid, topicID),
-              op.eq(schema.chiiGroupPosts.state, CommentState.Normal),
-            ),
-          );
-        const [{ insertId }] = await t.insert(schema.chiiGroupPosts).values({
-          mid: topicID,
-          uid: auth.userID,
-          related: replyTo,
-          content,
-          state: CommentState.Normal,
-          createdAt,
-        });
-        postID = insertId;
-        const topicUpdate: Record<string, number> = {
-          replies: count,
-        };
-        if (topic.state !== CommentState.AdminSilentTopic) {
-          topicUpdate.updatedAt = createdAt;
-        }
-        await t
-          .update(schema.chiiGroupTopics)
-          .set(topicUpdate)
-          .where(op.eq(schema.chiiGroupTopics.id, topicID));
-        await Notify.create(t, {
-          destUserID: notifyUserID,
-          sourceUserID: auth.userID,
-          createdAt,
-          type: replyTo === 0 ? NotifyType.GroupTopicReply : NotifyType.GroupPostReply,
-          relatedID: postID,
-          mainID: topic.id,
-          title: topic.title,
-        });
       });
-
-      return { id: postID };
     },
   );
 }

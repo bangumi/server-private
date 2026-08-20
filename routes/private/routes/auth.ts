@@ -34,6 +34,8 @@ const UserBannedError = createError('USER_BANNED', 'user is banned', httpCodes.U
 const allowedRedirectUris: string[] = [
   'chii://',
   'bangumi://',
+  // https://github.com/xiaoyvyv/bangumi
+  'bangumi-cmp://',
   'ani://bangumi-turnstile-callback',
   // https://github.com/kechuan/banguLite
   'bangulite://turnstile/callback',

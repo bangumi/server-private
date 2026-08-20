@@ -7,7 +7,7 @@ import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { IndexRelatedCategory } from '@app/lib/index/types';
 import { LikeType, Reaction } from '@app/lib/like';
-import { Notify, NotifyType } from '@app/lib/notify.ts';
+import { NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/ep';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
@@ -18,8 +18,9 @@ import {
 } from '@app/lib/subject/type.ts';
 import { updateSubjectCollectionCounts, updateSubjectRating } from '@app/lib/subject/utils.ts';
 import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
-import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
-import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
+import { CanViewTopicContent } from '@app/lib/topic/display.ts';
+import { TopicPostService } from '@app/lib/topic/post.ts';
+import { canEditTopic } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
@@ -69,6 +70,16 @@ function toSubjectRec(
     count: rec.count,
   };
 }
+
+const subjectPostService = new TopicPostService({
+  table: schema.chiiSubjectPosts,
+  topicTable: schema.chiiSubjectTopics,
+  likeType: LikeType.SubjectReply,
+  notifyTypes: {
+    topicReply: NotifyType.SubjectTopicReply,
+    postReply: NotifyType.SubjectPostReply,
+  },
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -1613,55 +1624,18 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${topic.subjectID}`);
       }
-      const replies = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
-        .orderBy(op.asc(schema.chiiSubjectPosts.id));
       const viewerID = auth.login ? auth.userID : undefined;
-      const uids = [topic.uid, ...replies.map((x) => x.uid)];
-      const users = await fetcher.fetchSlimUsersByIDs(uids, viewerID);
+      const replies = await subjectPostService.getReplies(topicID, viewerID);
+      const users = await fetcher.fetchSlimUsersByIDs([topic.uid], viewerID);
       const creator = users[topic.uid];
       if (!creator) {
         throw new NotFoundError(`user ${topic.uid}`);
-      }
-      const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await Reaction.fetchByMainID(topicID, LikeType.SubjectReply);
-      for (const x of replies) {
-        if (x.related === 0) {
-          continue;
-        }
-        if (!CanViewTopicReply(x.state)) {
-          x.content = '';
-        }
-        const sub = convert.toSubjectTopicReply(x);
-        sub.creator = users[sub.creatorID];
-        sub.reactions = reactions[x.id] ?? [];
-        const subR = subReplies[x.related] ?? [];
-        subR.push(sub);
-        subReplies[x.related] = subR;
-      }
-      const topLevelReplies: res.IReply[] = [];
-      for (const x of replies) {
-        if (x.related !== 0) {
-          continue;
-        }
-        if (!CanViewTopicReply(x.state)) {
-          x.content = '';
-        }
-        const reply = {
-          ...convert.toSubjectTopicReply(x),
-          creator: users[x.uid],
-          replies: subReplies[x.id] ?? [],
-          reactions: reactions[x.id] ?? [],
-        };
-        topLevelReplies.push(reply);
       }
       return {
         ...convert.toSubjectTopic(topic),
         subject,
         creator,
-        replies: topLevelReplies,
+        replies,
       };
     },
   );
@@ -1767,32 +1741,11 @@ export async function setup(app: App) {
       },
     },
     async ({ auth, params: { postID } }) => {
-      const [post] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-      const [topic] = await db
-        .select()
-        .from(schema.chiiSubjectTopics)
-        .where(op.eq(schema.chiiSubjectTopics.id, post.mid))
-        .limit(1);
-      if (!topic) {
-        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
-      }
       const viewerID = auth.login ? auth.userID : undefined;
-      const users = await fetcher.fetchSlimUsersByIDs([post.uid, topic.uid], viewerID);
-      const creator = users[post.uid];
-      if (!creator) {
-        throw new UnexpectedNotFoundError(`user ${post.uid}`);
-      }
-      const topicCreator = users[topic.uid];
-      if (!topicCreator) {
-        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
-      }
+      const { post, topic, creator, topicCreator } = await subjectPostService.getPost(
+        postID,
+        viewerID,
+      );
       return {
         id: post.id,
         creatorID: post.uid,
@@ -1831,21 +1784,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a subject post')],
     },
     async ({ auth, params: { postID }, body: { value } }) => {
-      const [post] = await db
-        .select({ mid: schema.chiiSubjectPosts.mid })
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-      await Reaction.add({
-        type: LikeType.SubjectReply,
-        mid: post.mid,
-        rid: postID,
-        uid: auth.userID,
-        value,
-      });
+      await subjectPostService.like(auth, postID, value);
       return {};
     },
   );
@@ -1868,11 +1807,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a subject post')],
     },
     async ({ auth, params: { postID } }) => {
-      await Reaction.delete({
-        type: LikeType.SubjectReply,
-        rid: postID,
-        uid: auth.userID,
-      });
+      await subjectPostService.unlike(auth, postID);
       return {};
     },
   );
@@ -1896,61 +1831,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('editing a post')],
     },
     async ({ auth, body: { content }, params: { postID } }) => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('edit reply');
-      }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('content contains invalid invisible character');
-      }
-
-      const [post] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-
-      if (post.uid !== auth.userID) {
-        throw new NotAllowedError('edit reply not created by you');
-      }
-
-      const [topic] = await db
-        .select()
-        .from(schema.chiiSubjectTopics)
-        .where(op.eq(schema.chiiSubjectTopics.id, post.mid))
-        .limit(1);
-      if (!topic) {
-        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
-      }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('edit reply in a closed topic');
-      }
-      if (([CommentState.AdminDelete, CommentState.UserDelete] as number[]).includes(post.state)) {
-        throw new NotAllowedError('edit a deleted reply');
-      }
-
-      const [reply] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(
-          op.and(
-            op.eq(schema.chiiSubjectPosts.mid, topic.id),
-            op.eq(schema.chiiSubjectPosts.related, postID),
-          ),
-        )
-        .limit(1);
-      if (reply) {
-        throw new NotAllowedError('edit a post with reply');
-      }
-
-      await rateLimit(LimitAction.Reply, auth.userID);
-      await db
-        .update(schema.chiiSubjectPosts)
-        .set({ content })
-        .where(op.eq(schema.chiiSubjectPosts.id, postID));
-
+      await subjectPostService.update(auth, postID, content);
       return {};
     },
   );
@@ -1973,25 +1854,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('deleting a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const [post] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-
-      if (post.uid !== auth.userID) {
-        throw new NotAllowedError('delete reply not created by you');
-      }
-
-      await rateLimit(LimitAction.Reply, auth.userID);
-      await db
-        .update(schema.chiiSubjectPosts)
-        .set({ state: CommentState.UserDelete })
-        .where(op.eq(schema.chiiSubjectPosts.id, postID));
-
+      await subjectPostService.delete(auth, postID);
       return {};
     },
   );
@@ -2016,12 +1879,6 @@ export async function setup(app: App) {
       preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
     },
     async ({ auth, params: { topicID }, body: { content, replyTo = 0 } }) => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create reply');
-      }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('content contains invalid invisible character');
-      }
       const [topic] = await db
         .select()
         .from(schema.chiiSubjectTopics)
@@ -2030,72 +1887,8 @@ export async function setup(app: App) {
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('reply to a closed topic');
-      }
 
-      let notifyUserID = topic.uid;
-      if (replyTo) {
-        const [parent] = await db
-          .select()
-          .from(schema.chiiSubjectPosts)
-          .where(op.eq(schema.chiiSubjectPosts.id, replyTo))
-          .limit(1);
-        if (!parent) {
-          throw new NotFoundError(`post ${replyTo}`);
-        }
-        if (!canReplyPost(parent.state)) {
-          throw new NotAllowedError('reply to a admin action post');
-        }
-        notifyUserID = parent.uid;
-      }
-
-      await rateLimit(LimitAction.Reply, auth.userID);
-
-      const createdAt = DateTime.now().toUnixInteger();
-
-      let postID = 0;
-      await db.transaction(async (t) => {
-        const [{ count = 0 } = {}] = await t
-          .select({ count: op.count() })
-          .from(schema.chiiSubjectPosts)
-          .where(
-            op.and(
-              op.eq(schema.chiiSubjectPosts.mid, topicID),
-              op.eq(schema.chiiSubjectPosts.state, CommentState.Normal),
-            ),
-          );
-        const [{ insertId }] = await t.insert(schema.chiiSubjectPosts).values({
-          mid: topicID,
-          uid: auth.userID,
-          related: replyTo,
-          content,
-          state: CommentState.Normal,
-          createdAt,
-        });
-        postID = insertId;
-        const topicUpdate: Record<string, number> = {
-          replies: count,
-        };
-        if (topic.state !== CommentState.AdminSilentTopic) {
-          topicUpdate.updatedAt = createdAt;
-        }
-        await t
-          .update(schema.chiiSubjectTopics)
-          .set(topicUpdate)
-          .where(op.eq(schema.chiiSubjectTopics.id, topicID));
-        await Notify.create(t, {
-          destUserID: notifyUserID,
-          sourceUserID: auth.userID,
-          createdAt,
-          type: replyTo === 0 ? NotifyType.SubjectTopicReply : NotifyType.SubjectPostReply,
-          relatedID: postID,
-          mainID: topic.id,
-          title: topic.title,
-        });
-      });
-
-      return { id: postID };
+      return await subjectPostService.create(auth, topic, content, replyTo);
     },
   );
 }

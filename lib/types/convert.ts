@@ -619,16 +619,6 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
   };
 }
 
-export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReplyBase {
-  return {
-    id: reply.id,
-    content: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-  };
-}
-
 export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
   return {
     user: toSlimUser(user),
@@ -688,15 +678,5 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
     replyCount: topic.replies,
     state: topic.state,
     display: topic.display,
-  };
-}
-
-export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
-  return {
-    id: reply.id,
-    content: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
   };
 }

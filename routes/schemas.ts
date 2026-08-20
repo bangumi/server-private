@@ -32,6 +32,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CharacterEdit);
   app.addSchema(req.CharacterSearchFilter);
   app.addSchema(req.CollectSubject);
+  app.addSchema(req.CreateBlog);
   app.addSchema(req.CreateContent);
   app.addSchema(req.CreateIndex);
   app.addSchema(req.CreateIndexRelated);
@@ -56,6 +57,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateEpisodeProgress);
+  app.addSchema(req.UpdateBlog);
   app.addSchema(req.UpdateIndex);
   app.addSchema(req.UpdateIndexRelated);
   app.addSchema(req.UpdateSubjectComment);
@@ -75,6 +77,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.CharacterWikiInfo);
   app.addSchema(res.Comment);
+  app.addSchema(res.CommentBase);
   app.addSchema(res.Episode);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
