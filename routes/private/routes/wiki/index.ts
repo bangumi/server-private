@@ -22,14 +22,6 @@ export async function setup(app: App) {
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setupRecentChangeList(app: App) {
-  const RecentWikiChange = t.Object(
-    {
-      subject: t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() })),
-      persons: t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() })),
-    },
-    { $id: 'RecentWikiChange' },
-  );
-
   const RecentItem = t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() }));
 
   const sinceQuery = t.Object({
@@ -42,8 +34,6 @@ export async function setupRecentChangeList(app: App) {
     ),
   });
 
-  app.addSchema(RecentWikiChange);
-
   app.get(
     '/recent/subjects',
     {
@@ -53,12 +43,12 @@ export async function setupRecentChangeList(app: App) {
         description: '获取最近两天的wiki更新',
         querystring: sinceQuery,
         response: {
-          200: res.Ref(RecentWikiChange),
+          200: RecentItem,
           401: res.Ref(res.Error),
         },
       },
     },
-    async ({ query: { since = 0 } }): Promise<Static<typeof RecentWikiChange>> => {
+    async ({ query: { since = 0 } }): Promise<Static<typeof RecentItem>> => {
       since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
 
       const subjects = await db
@@ -70,32 +60,9 @@ export async function setupRecentChangeList(app: App) {
         .where(op.gte(schema.chiiSubjectRev.createdAt, since))
         .orderBy(op.desc(schema.chiiSubjectRev.createdAt));
 
-      const persons = await db
-        .select({
-          revMid: schema.chiiRevHistory.revMid,
-          createdAt: schema.chiiRevHistory.createdAt,
-        })
-        .from(schema.chiiRevHistory)
-        .where(
-          op.and(
-            op.gte(schema.chiiRevHistory.createdAt, since),
-            op.inArray(schema.chiiRevHistory.revType, [
-              RevType.personEdit,
-              RevType.personMerge,
-              RevType.personErase,
-            ]),
-          ),
-        )
-        .orderBy(op.desc(schema.chiiRevHistory.createdAt));
-
-      return {
-        subject: subjects.map((o) => {
-          return { id: o.subjectID, createdAt: o.createdAt };
-        }),
-        persons: persons.map((o) => {
-          return { id: o.revMid, createdAt: o.createdAt };
-        }),
-      };
+      return subjects.map((o) => {
+        return { id: o.subjectID, createdAt: o.createdAt };
+      });
     },
   );
 

@@ -13,7 +13,7 @@ test('test recent change list', async () => {
 });
 
 test.each([
-  ['/recent/subjects', { subject: [], persons: [] }],
+  ['/recent/subjects', []],
   ['/recent/persons', []],
   ['/recent/characters', []],
   ['/recent/episodes', []],
