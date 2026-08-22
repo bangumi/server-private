@@ -2,7 +2,6 @@ allowBuilds:
   '@bufbuild/buf': true
   '@confluentinc/kafka-javascript': true
   esbuild: true
-  fastify-socket.io: false
 
 shellEmulator: true
 engineStrict: true
