@@ -1458,7 +1458,7 @@ export async function setup(app: App) {
 
           for (const old of oldRelations) {
             const key = `${old.subject.id}|${old.position}`;
-            if (!expectedRevision.some((r) => `${r.subject.id}|${r.position}` === key)) {
+            if (expectedRevision.every((r) => `${r.subject.id}|${r.position}` !== key)) {
               throw new WikiChangedError('missing expected relation');
             }
           }
@@ -1470,8 +1470,8 @@ export async function setup(app: App) {
               throw new WikiChangedError('unexpected relation');
             }
             matchExpected(
-              { appearEps: String(expected.appearEps) },
-              { appearEps: String(old.appearEps) },
+              { appearEps: expected.appearEps },
+              { appearEps: old.appearEps },
             );
           }
         }
