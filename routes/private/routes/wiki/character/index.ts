@@ -758,7 +758,10 @@ export async function setup(app: App) {
       const revRecord = await deserializeRevText(revText.revText);
       const revContentRaw = revRecord[revisionID];
 
-      if (!Value.Check(CharacterRev, revContentRaw) && !Value.Check(LegacyCharacterRev, revContentRaw)) {
+      if (
+        !Value.Check(CharacterRev, revContentRaw) &&
+        !Value.Check(LegacyCharacterRev, revContentRaw)
+      ) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
 
