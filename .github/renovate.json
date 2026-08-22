@@ -19,6 +19,9 @@
   "docker-compose": {
     "enabled": false
   },
+  "mise": {
+    "enabled": false
+  },
   "nodenv": {
     "enabled": false
   },
