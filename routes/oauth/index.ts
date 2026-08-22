@@ -113,10 +113,12 @@ export async function setup(app: App) {
   });
   app.addHook('preHandler', Auth);
   app.addHook('preHandler', async function (req, reply) {
-    if (req.auth.login) {
-      const user = await fetchUserX(req.auth.userID);
-      reply.locals = { user };
+    if (!req.auth.login) {
+      return;
     }
+
+    const user = await fetchUserX(req.auth.userID);
+    reply.locals = { user };
   });
 
   await app.register(formBody);
@@ -318,7 +320,7 @@ export async function userOauthRoutes(app: App) {
       if (req.body.state) {
         u.searchParams.set('state', req.body.state);
       }
-      return reply.redirect(u.toString());
+      return reply.redirect(u.href);
     },
   );
 

@@ -63,20 +63,21 @@ export async function setup(app: App) {
         operationId: 'getEpisodeComments',
         summary: '获取条目的章节吐槽箱',
         tags: [Tag.Episode],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
         },
       },
     },
-    async ({ params: { episodeID } }): Promise<res.IComment[]> => {
+    async ({ auth, params: { episodeID } }): Promise<res.IComment[]> => {
       const ep = await fetcher.fetchEpisodeByID(episodeID);
       if (!ep) {
         throw new NotFoundError(`episode ${episodeID}`);
       }
-      return await comment.getAll(episodeID);
+      return await comment.getAll(episodeID, auth.login ? auth.userID : undefined);
     },
   );
 

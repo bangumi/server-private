@@ -193,6 +193,10 @@ export const SlimUser = t.Object(
     group: t.Integer(),
     sign: t.String(),
     joinedAt: t.Integer(),
+    isFriend: t.Boolean({
+      description:
+        'Whether the authenticated user has added this user as a friend; false when the endpoint does not populate viewer friendship',
+    }),
   },
   { $id: 'SlimUser', title: 'SlimUser' },
 );
@@ -213,6 +217,10 @@ export const User = t.Object(
     networkServices: t.Array(UserNetworkService),
     homepage: Ref(UserHomepage),
     stats: Ref(UserStats),
+    isFriend: t.Boolean({
+      description:
+        'Whether the authenticated user has added this user as a friend; false when unauthenticated',
+    }),
   },
   { $id: 'User', title: 'User' },
 );
@@ -428,6 +436,7 @@ export const SlimSubject = t.Object(
     type: Ref(SubjectType),
     images: t.Optional(Ref(SubjectImages)),
     info: t.String(),
+    metaTags: t.Array(t.String()),
     rating: Ref(SubjectRating),
     locked: t.Boolean(),
     nsfw: t.Boolean(),
@@ -495,7 +504,7 @@ export const CommentBase = t.Object(
 export type IComment = Static<typeof Comment>;
 export const Comment = t.Intersect(
   [
-    CommentBase,
+    Ref(CommentBase),
     t.Object({
       replies: t.Array(Ref(CommentBase)),
     }),
@@ -1021,6 +1030,93 @@ export const SubjectTopic = t.Intersect(
     }),
   ],
   { $id: 'SubjectTopic', title: 'SubjectTopic' },
+);
+
+export type IRaKuenGroupTopic = Static<typeof RaKuenGroupTopic>;
+export const RaKuenGroupTopic = t.Object(
+  {
+    type: t.Literal('group'),
+    id: t.Integer(),
+    title: t.String(),
+    replyCount: t.Integer(),
+    creator: Ref(SlimUser),
+    group: Ref(SlimGroup),
+    updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
+  },
+  { $id: 'RaKuenGroupTopic', title: 'RaKuenGroupTopic' },
+);
+
+export type IRaKuenSubjectTopic = Static<typeof RaKuenSubjectTopic>;
+export const RaKuenSubjectTopic = t.Object(
+  {
+    type: t.Literal('subject'),
+    id: t.Integer(),
+    title: t.String(),
+    replyCount: t.Integer(),
+    creator: Ref(SlimUser),
+    subject: Ref(SlimSubject),
+    updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
+  },
+  { $id: 'RaKuenSubjectTopic', title: 'RaKuenSubjectTopic' },
+);
+
+export type IRaKuenEpisode = Static<typeof RaKuenEpisode>;
+export const RaKuenEpisode = t.Object(
+  {
+    type: t.Literal('episode'),
+    id: t.Integer(),
+    subject: Ref(SlimSubject),
+    episode: t.Object({
+      id: t.Integer(),
+      sort: t.Number(),
+      type: Ref(EpisodeType),
+      name: t.String(),
+      nameCN: t.String(),
+      comment: t.Integer(),
+    }),
+    updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
+  },
+  { $id: 'RaKuenEpisode', title: 'RaKuenEpisode' },
+);
+
+export type IRaKuenCharacter = Static<typeof RaKuenCharacter>;
+export const RaKuenCharacter = t.Object(
+  {
+    type: t.Literal('character'),
+    id: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
+    images: t.Optional(Ref(PersonImages)),
+    comment: t.Integer(),
+    updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
+  },
+  { $id: 'RaKuenCharacter', title: 'RaKuenCharacter' },
+);
+
+export type IRaKuenPerson = Static<typeof RaKuenPerson>;
+export const RaKuenPerson = t.Object(
+  {
+    type: t.Literal('person'),
+    id: t.Integer(),
+    name: t.String(),
+    nameCN: t.String(),
+    images: t.Optional(Ref(PersonImages)),
+    comment: t.Integer(),
+    updatedAt: t.Integer({ description: '最后回复时间，unix time stamp in seconds' }),
+  },
+  { $id: 'RaKuenPerson', title: 'RaKuenPerson' },
+);
+
+export type IRaKuenTopic = Static<typeof RaKuenTopic>;
+export const RaKuenTopic = t.Union(
+  [
+    Ref(RaKuenGroupTopic),
+    Ref(RaKuenSubjectTopic),
+    Ref(RaKuenEpisode),
+    Ref(RaKuenCharacter),
+    Ref(RaKuenPerson),
+  ],
+  { $id: 'RaKuenTopic', title: 'RaKuenTopic' },
 );
 
 export type IIndexStats = Static<typeof IndexStats>;

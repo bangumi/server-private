@@ -207,3 +207,60 @@ describe('index collection', () => {
     expect(res.json()).toMatchSnapshot();
   });
 });
+
+describe('friends subject collections', () => {
+  test('should get friends subject collections', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/me/friends/subject-collections',
+      query: { subjectType: '2', limit: '10', offset: '0' },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(typeof body.total).toBe('number');
+    for (const item of body.data) {
+      expect(item).toMatchObject({
+        user: expect.objectContaining({ id: expect.any(Number) }),
+        subject: expect.objectContaining({ type: 2 }),
+        collectionType: expect.any(Number),
+        updatedAt: expect.any(Number),
+      });
+    }
+  });
+
+  test('should require login for friends subject collections', async () => {
+    const app = createTestServer();
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/me/friends/subject-collections',
+      query: { subjectType: '2' },
+    });
+    expect(res.statusCode).toBe(401);
+  });
+
+  test('should require subjectType for friends subject collections', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/me/friends/subject-collections',
+    });
+    expect(res.statusCode).toBe(400);
+  });
+});

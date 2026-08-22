@@ -27,7 +27,7 @@ describe('login', () => {
 
     const login = () => app.inject(opt);
 
-    const all = await Promise.all(Array.from({ length: 20 }).map(() => login()));
+    const all = await Promise.all(Array.from({ length: 20 }, () => login()));
 
     const res = await login();
 

@@ -16,7 +16,9 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -40,6 +42,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('create index')],
     },
     async ({ auth, body }) => {
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       const now = DateTime.now().toUnixInteger();
       const title = body.title;
       const desc = body.desc;
@@ -61,6 +64,70 @@ export async function setup(app: App) {
       });
 
       return { id: insertId };
+    },
+  );
+
+  app.get(
+    '/indexes',
+    {
+      schema: {
+        summary: '获取目录列表',
+        description: '全站公开目录列表，支持排序、分页和类型过滤',
+        operationId: 'getIndexes',
+        tags: [Tag.Index],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          order: t.Optional(
+            t.Enum(
+              { hot: 'hot', latest: 'latest' },
+              { default: 'latest', description: '排序方式：hot=按收藏数，latest=按创建时间' },
+            ),
+          ),
+          type: t.Optional(req.Ref(req.IndexType)),
+          limit: t.Optional(
+            t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(res.Index)),
+        },
+      },
+    },
+    async ({ query: { order = 'latest', type, limit = 20, offset = 0 } }) => {
+      const conditions = [op.eq(schema.chiiIndexes.ban, IndexPrivacy.Normal)];
+      if (type !== undefined) {
+        conditions.push(op.eq(schema.chiiIndexes.type, type));
+      }
+
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiIndexes)
+        .where(op.and(...conditions));
+
+      const orderBy =
+        order === 'hot'
+          ? [op.desc(schema.chiiIndexes.collects), op.desc(schema.chiiIndexes.createdAt)]
+          : [op.desc(schema.chiiIndexes.createdAt)];
+
+      const data = await db
+        .select()
+        .from(schema.chiiIndexes)
+        .where(op.and(...conditions))
+        .orderBy(...orderBy)
+        .limit(limit)
+        .offset(offset);
+
+      const indexes = data.map((d) => convert.toIndex(d));
+      const users = await fetcher.fetchSlimUsersByIDs(indexes.map((i) => i.uid));
+      for (const index of indexes) {
+        index.user = users[index.uid];
+      }
+
+      return {
+        data: indexes,
+        total: count,
+      };
     },
   );
 
@@ -144,6 +211,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('update index related content which is not yours');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       const now = DateTime.now().toUnixInteger();
       const updateData: Partial<typeof schema.chiiIndexes.$inferInsert> = {
         title: body.title,
@@ -187,6 +255,7 @@ export async function setup(app: App) {
       if (index.uid !== auth.userID) {
         throw new NotAllowedError('delete index');
       }
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       await db
         .update(schema.chiiIndexes)
         .set({ ban: IndexPrivacy.Ban })
@@ -405,6 +474,7 @@ export async function setup(app: App) {
         throw new NotAllowedError('update index related content which is not yours');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       let type = 0;
       if (body.cat === IndexRelatedCategory.Subject) {
         const subject = await fetcher.fetchSlimSubjectByID(body.sid);
@@ -435,20 +505,19 @@ export async function setup(app: App) {
       if (existing) {
         if (existing.ban === 0) {
           throw new ConflictError('Related item already exists');
-        } else {
-          await db
-            .update(schema.chiiIndexRelated)
-            .set({
-              type,
-              order,
-              comment: commentContent,
-              award,
-              ban: 0,
-              createdAt: now,
-            })
-            .where(op.eq(schema.chiiIndexRelated.id, existing.id));
-          returnID = existing.id;
         }
+        await db
+          .update(schema.chiiIndexRelated)
+          .set({
+            type,
+            order,
+            comment: commentContent,
+            award,
+            ban: 0,
+            createdAt: now,
+          })
+          .where(op.eq(schema.chiiIndexRelated.id, existing.id));
+        returnID = existing.id;
       } else {
         const [{ insertId }] = await db.insert(schema.chiiIndexRelated).values({
           cat: body.cat,
@@ -515,6 +584,7 @@ export async function setup(app: App) {
         throw new NotFoundError('index related item');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       await db
         .update(schema.chiiIndexRelated)
         .set({
@@ -571,6 +641,7 @@ export async function setup(app: App) {
         throw new NotFoundError('index related item');
       }
 
+      await rateLimit(LimitAction.IndexEdit, auth.userID);
       await db
         .update(schema.chiiIndexRelated)
         .set({ ban: 1 })
@@ -595,7 +666,7 @@ export async function setup(app: App) {
           indexID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('index')),
           }),
@@ -612,7 +683,7 @@ export async function setup(app: App) {
         throw new NotFoundError('index');
       }
 
-      return await comment.getAll(indexID);
+      return await comment.getAll(indexID, auth.login ? auth.userID : undefined);
     },
   );
 

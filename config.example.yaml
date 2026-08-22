@@ -25,6 +25,13 @@ turnstile:
   secretKey: '1x0000000000000000000000000000000AA' # TURNSTILE_SECRET_KEY
   siteKey: '1x00000000000000000000AA' # TURNSTILE_SITE_KEY
 
+passkey:
+  rpName: 'Bangumi' # PASSKEY_RP_NAME
+  rpIds: 'bgm.tv,bangumi.tv,chii.in' # PASSKEY_RP_IDS
+  # 新部署域名需要追加对应 origin，例如 next 环境：
+  #   origins: 'https://bgm.tv,https://bangumi.tv,https://chii.in,https://next.bgm.tv'
+  origins: 'https://bgm.tv,https://bangumi.tv,https://chii.in' # PASSKEY_ORIGINS
+
 sentryDSN: 'https://examplePublicKey@o0.ingest.sentry.io/0' # SENTRY_DSN
 
 image:

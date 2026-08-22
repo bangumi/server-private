@@ -24,11 +24,13 @@ export function extractDate(w: Wiki, typeID: number, platform: number): DATE {
     }
 
     for (const value of item.values ?? []) {
-      if (value.v) {
-        const parsed = extractFromString(value.v);
-        if (parsed) {
-          return parsed;
-        }
+      if (!value.v) {
+        continue;
+      }
+
+      const parsed = extractFromString(value.v);
+      if (parsed) {
+        return parsed;
       }
     }
   }

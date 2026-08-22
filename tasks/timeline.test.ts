@@ -35,7 +35,7 @@ describe('truncate timeline cache', () => {
         .map(String),
     );
 
-    const trailingMembers = await redis.zrange(cacheKey, 0, 10);
+    const trailingMembers = await redis.zrange(cacheKey, '0', '10');
     expect(trailingMembers).toEqual(members.slice(500, 511).map(String));
   });
 
@@ -60,7 +60,7 @@ describe('truncate timeline cache', () => {
         .map(String),
     );
 
-    const trailingMembers = await redis.zrange(cacheKey, 0, 10);
+    const trailingMembers = await redis.zrange(cacheKey, '0', '10');
     expect(trailingMembers).toEqual(members.slice(200, 211).map(String));
   });
 });

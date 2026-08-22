@@ -4,7 +4,6 @@ import * as path from 'node:path';
 import type { JSONObject } from '@fastify/swagger';
 import swagger from '@fastify/swagger';
 import type { FastifySchema } from 'fastify';
-import * as yaml from 'js-yaml';
 import type { OpenAPIV3 } from 'openapi-types';
 
 import { CookieKey } from '@app/lib/auth/session.ts';
@@ -25,12 +24,8 @@ export function addRoute(app: App) {
     void res.type('text/html').send(swaggerUI);
   });
 
-  app.get('/openapi.yaml', () => {
-    return yaml.dump(app.swagger(), {
-      indent: 2,
-      sortKeys: true,
-      noRefs: true,
-    });
+  app.get('/openapi.json', () => {
+    return app.swagger();
   });
 
   app.addHook('onRoute', (route) => {

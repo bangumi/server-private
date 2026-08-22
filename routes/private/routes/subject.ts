@@ -7,23 +7,32 @@ import { Dam, dam } from '@app/lib/dam.ts';
 import { BadRequestError, NotFoundError, UnexpectedNotFoundError } from '@app/lib/error.ts';
 import { IndexRelatedCategory } from '@app/lib/index/types';
 import { LikeType, Reaction } from '@app/lib/like';
-import { Notify, NotifyType } from '@app/lib/notify.ts';
+import { NotifyType } from '@app/lib/notify.ts';
 import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { getEpStatus } from '@app/lib/subject/ep';
 import type { SubjectFilter, SubjectSort } from '@app/lib/subject/type.ts';
-import { CollectionPrivacy } from '@app/lib/subject/type.ts';
-import { CanViewTopicContent, CanViewTopicReply } from '@app/lib/topic/display.ts';
-import { canEditTopic, canReplyPost } from '@app/lib/topic/state';
+import {
+  CollectionPrivacy,
+  CollectionType,
+  getCollectionTypeField,
+} from '@app/lib/subject/type.ts';
+import { updateSubjectCollectionCounts, updateSubjectRating } from '@app/lib/subject/utils.ts';
+import { AsyncTimelineWriter } from '@app/lib/timeline/writer.ts';
+import { CanViewTopicContent } from '@app/lib/topic/display.ts';
+import { TopicPostService } from '@app/lib/topic/post.ts';
+import { canEditTopic } from '@app/lib/topic/state';
 import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
 import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { fetchFriends } from '@app/lib/user/utils';
+import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
+
+type SubjectInterestInsert = typeof schema.chiiSubjectInterests.$inferInsert;
 
 function toSubjectRelation(
   subject: orm.ISubject,
@@ -61,6 +70,16 @@ function toSubjectRec(
     count: rec.count,
   };
 }
+
+const subjectPostService = new TopicPostService({
+  table: schema.chiiSubjectPosts,
+  topicTable: schema.chiiSubjectTopics,
+  likeType: LikeType.SubjectReply,
+  notifyTypes: {
+    topicReply: NotifyType.SubjectTopicReply,
+    postReply: NotifyType.SubjectPostReply,
+  },
+});
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
@@ -573,13 +592,10 @@ export async function setup(app: App) {
         relations[r.position] = staffs;
       }
 
-      const result: res.ISubjectPosition[] = [];
-      for (const position of positions) {
-        result.push({
-          position: position,
-          staffs: relations[position.id] || [],
-        });
-      }
+      const result: res.ISubjectPosition[] = Array.from(positions, (position) => ({
+        position: position,
+        staffs: relations[position.id] || [],
+      }));
 
       return {
         data: result,
@@ -725,6 +741,359 @@ export async function setup(app: App) {
         data: comments,
         total: count,
       };
+    },
+  );
+
+  app.post(
+    '/subjects/:subjectID/comments',
+    {
+      schema: {
+        summary: '发表条目的吐槽',
+        description: '吐槽挂在条目收藏上：已收藏则更新吐槽，未收藏需传 type 创建收藏并写吐槽',
+        operationId: 'createSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          subjectID: t.Integer(),
+        }),
+        body: t.Intersect([req.Ref(req.CreateSubjectComment), req.Ref(req.TurnstileToken)]),
+        response: {
+          200: t.Object({
+            id: t.Integer({ description: 'new comment id' }),
+          }),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('create subject comment'), requireTurnstileToken()],
+    },
+    async ({ auth, ip, body, params: { subjectID } }) => {
+      const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
+      if (!subject) {
+        throw new NotFoundError(`subject ${subjectID}`);
+      }
+
+      const type = body.type;
+      let rate = body.rate;
+
+      // 对齐 Go UpdateComment：NFC normalize → trim → 不可见字符检查 → 380 长度限制
+      const comment = body.comment.normalize('NFC').trim();
+      if (comment === '') {
+        throw new BadRequestError('comment is required');
+      }
+      if (!Dam.allCharacterPrintable(comment)) {
+        throw new BadRequestError('invisible character are included in comment');
+      }
+      if ([...comment].length > 380) {
+        throw new BadRequestError('comment too long, only allow less equal than 380 characters');
+      }
+      // 对齐 Go：被禁言用户不允许发表吐槽
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('create subject comment');
+      }
+
+      await rateLimit(LimitAction.Subject, auth.userID);
+
+      let privacy: number = CollectionPrivacy.Public;
+      let commentID = 0;
+      const now = DateTime.now().toUnixInteger();
+      await db.transaction(async (t) => {
+        const [interest] = await t
+          .select()
+          .from(schema.chiiSubjectInterests)
+          .where(
+            op.and(
+              op.eq(schema.chiiSubjectInterests.uid, auth.userID),
+              op.eq(schema.chiiSubjectInterests.subjectID, subjectID),
+            ),
+          )
+          .limit(1);
+        if (rate === undefined) {
+          rate = 0;
+        }
+        if (interest) {
+          commentID = interest.id;
+          privacy = interest.privacy;
+          const oldRate = interest.rate;
+          const oldType = interest.type;
+          const effectiveType = type ?? oldType;
+          // 对齐 Go UpdateRate：想看状态时评分强制为 0
+          if (effectiveType === CollectionType.Wish) {
+            rate = 0;
+          }
+          const toUpdate: Partial<SubjectInterestInsert> = {
+            comment,
+            hasComment: 1,
+            updatedAt: now,
+            updateIp: ip,
+          };
+          if (type && oldType !== type) {
+            toUpdate.type = type;
+            toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
+            await updateSubjectCollectionCounts(t, subjectID, type, oldType);
+          }
+          if (oldRate !== rate) {
+            toUpdate.rate = rate;
+          }
+          if (dam.needReview(comment)) {
+            // 对齐 Go ShadowBan：触发敏感词 → 禁止公开
+            privacy = CollectionPrivacy.Ban;
+            toUpdate.privacy = CollectionPrivacy.Ban;
+          } else if (interest.privacy === CollectionPrivacy.Ban) {
+            // 对齐 Go ShadowBan 解除：不再触发敏感词时恢复为仅自己可见
+            privacy = CollectionPrivacy.Private;
+            toUpdate.privacy = CollectionPrivacy.Private;
+          }
+          await t
+            .update(schema.chiiSubjectInterests)
+            .set(toUpdate)
+            .where(op.eq(schema.chiiSubjectInterests.id, interest.id))
+            .limit(1);
+          if (oldRate !== rate) {
+            await updateSubjectRating(t, subjectID, oldRate, rate);
+          }
+        } else {
+          if (!type) {
+            throw new BadRequestError('type is required on new subject comment');
+          }
+          // 对齐 Go UpdateRate：想看状态时评分强制为 0
+          if (type === CollectionType.Wish) {
+            rate = 0;
+          }
+          if (dam.needReview(comment)) {
+            privacy = CollectionPrivacy.Ban;
+          }
+          const field = getCollectionTypeField(type);
+          const toInsert: SubjectInterestInsert = {
+            uid: auth.userID,
+            subjectID,
+            subjectType: subject.type,
+            rate,
+            type,
+            hasComment: 1,
+            comment,
+            tag: '',
+            epStatus: 0,
+            volStatus: 0,
+            wishDateline: 0,
+            doingDateline: 0,
+            collectDateline: 0,
+            onHoldDateline: 0,
+            droppedDateline: 0,
+            createIp: ip,
+            updateIp: ip,
+            updatedAt: now,
+            privacy,
+            [`${field}Dateline`]: now,
+          };
+          const [result] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
+          commentID = result.insertId;
+          await updateSubjectCollectionCounts(t, subjectID, type);
+          if (rate) {
+            await updateSubjectRating(t, subjectID, 0, rate);
+          }
+        }
+      });
+
+      // 对齐 Go mayCreateTimeline：请求带 type 且收藏公开时才写时间线
+      if (type !== undefined && privacy === CollectionPrivacy.Public) {
+        await AsyncTimelineWriter.subject({
+          uid: auth.userID,
+          subject: {
+            id: subject.id,
+            type: subject.type,
+          },
+          collect: {
+            id: commentID,
+            type,
+            rate: rate ?? 0,
+            comment,
+          },
+          createdAt: now,
+          source: auth.source,
+        });
+      }
+      return { id: commentID };
+    },
+  );
+
+  app.put(
+    '/subjects/-/comments/:commentID',
+    {
+      schema: {
+        summary: '编辑条目的吐槽',
+        operationId: 'updateSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer({ minimum: 1 }),
+        }),
+        body: req.Ref(req.UpdateSubjectComment),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('edit a subject comment')],
+    },
+    async ({ auth, ip, body: { comment }, params: { commentID } }) => {
+      const [current] = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      if (!current || current.hasComment !== 1) {
+        throw new NotFoundError(`subject comment ${commentID}`);
+      }
+      if (current.uid !== auth.userID) {
+        throw new NotAllowedError('edit a subject comment which is not yours');
+      }
+      // 对齐 Go：被禁言用户不允许编辑吐槽
+      if (auth.permission.ban_post) {
+        throw new NotAllowedError('edit a subject comment');
+      }
+
+      // 对齐 Go UpdateComment：NFC normalize → trim → 不可见字符检查 → 380 长度限制
+      const normalizedComment = comment.normalize('NFC').trim();
+      if (normalizedComment === '') {
+        throw new BadRequestError('comment is required');
+      }
+      if (!Dam.allCharacterPrintable(normalizedComment)) {
+        throw new BadRequestError('invisible character are included in comment');
+      }
+      if ([...normalizedComment].length > 380) {
+        throw new BadRequestError('comment too long, only allow less equal than 380 characters');
+      }
+
+      await rateLimit(LimitAction.Comment, auth.userID);
+      const toUpdate: Partial<SubjectInterestInsert> = {
+        comment: normalizedComment,
+        updatedAt: DateTime.now().toUnixInteger(),
+        updateIp: ip,
+      };
+      if (dam.needReview(normalizedComment)) {
+        // 对齐 Go ShadowBan：触发敏感词 → 禁止公开
+        toUpdate.privacy = CollectionPrivacy.Ban;
+      } else if (current.privacy === CollectionPrivacy.Ban) {
+        // 对齐 Go ShadowBan 解除：不再触发敏感词时恢复为仅自己可见
+        toUpdate.privacy = CollectionPrivacy.Private;
+      }
+      await db
+        .update(schema.chiiSubjectInterests)
+        .set(toUpdate)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/comments/:commentID',
+    {
+      schema: {
+        summary: '删除条目的吐槽',
+        description: '删除吐槽会清空吐槽内容并保留收藏记录',
+        operationId: 'deleteSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer({ minimum: 1 }),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('delete a subject comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      const [current] = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      if (!current || current.hasComment !== 1) {
+        throw new NotFoundError(`subject comment ${commentID}`);
+      }
+      if (current.uid !== auth.userID) {
+        throw new NotAllowedError('delete a subject comment which is not yours');
+      }
+      await rateLimit(LimitAction.Comment, auth.userID);
+      await db
+        .update(schema.chiiSubjectInterests)
+        .set({
+          comment: '',
+          hasComment: 0,
+          updatedAt: DateTime.now().toUnixInteger(),
+        })
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      return {};
+    },
+  );
+
+  app.put(
+    '/subjects/-/comments/:commentID/like',
+    {
+      schema: {
+        summary: '给条目的吐槽点赞',
+        operationId: 'likeSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        body: t.Object({
+          value: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+          429: res.Ref(res.Error),
+        },
+      },
+      preHandler: [requireLogin('liking a subject comment')],
+    },
+    async ({ auth, params: { commentID }, body: { value } }) => {
+      const [comment] = await db
+        .select({ subjectID: schema.chiiSubjectInterests.subjectID })
+        .from(schema.chiiSubjectInterests)
+        .where(op.eq(schema.chiiSubjectInterests.id, commentID))
+        .limit(1);
+      if (!comment) {
+        throw new NotFoundError(`comment ${commentID}`);
+      }
+      await Reaction.add({
+        type: LikeType.SubjectCollect,
+        mid: comment.subjectID,
+        rid: commentID,
+        uid: auth.userID,
+        value,
+      });
+      return {};
+    },
+  );
+
+  app.delete(
+    '/subjects/-/comments/:commentID/like',
+    {
+      schema: {
+        summary: '取消条目的吐槽点赞',
+        operationId: 'unlikeSubjectComment',
+        tags: [Tag.Subject],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        params: t.Object({
+          commentID: t.Integer(),
+        }),
+        response: {
+          200: t.Object({}),
+        },
+      },
+      preHandler: [requireLogin('liking a subject comment')],
+    },
+    async ({ auth, params: { commentID } }) => {
+      await Reaction.delete({
+        type: LikeType.SubjectCollect,
+        rid: commentID,
+        uid: auth.userID,
+      });
+      return {};
     },
   );
 
@@ -1255,48 +1624,18 @@ export async function setup(app: App) {
       if (!subject) {
         throw new NotFoundError(`subject ${topic.subjectID}`);
       }
-      const creator = await fetcher.fetchSlimUserByID(topic.uid);
+      const viewerID = auth.login ? auth.userID : undefined;
+      const replies = await subjectPostService.getReplies(topicID, viewerID);
+      const users = await fetcher.fetchSlimUsersByIDs([topic.uid], viewerID);
+      const creator = users[topic.uid];
       if (!creator) {
         throw new NotFoundError(`user ${topic.uid}`);
-      }
-      const replies = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.mid, topicID))
-        .orderBy(op.asc(schema.chiiSubjectPosts.id));
-      const uids = replies.map((x) => x.uid);
-      const users = await fetcher.fetchSlimUsersByIDs(uids);
-      const subReplies: Record<number, res.IReplyBase[]> = {};
-      const reactions = await Reaction.fetchByMainID(topicID, LikeType.SubjectReply);
-      for (const x of replies.filter((x) => x.related !== 0)) {
-        if (!CanViewTopicReply(x.state)) {
-          x.content = '';
-        }
-        const sub = convert.toSubjectTopicReply(x);
-        sub.creator = users[sub.creatorID];
-        sub.reactions = reactions[x.id] ?? [];
-        const subR = subReplies[x.related] ?? [];
-        subR.push(sub);
-        subReplies[x.related] = subR;
-      }
-      const topLevelReplies: res.IReply[] = [];
-      for (const x of replies.filter((x) => x.related === 0)) {
-        if (!CanViewTopicReply(x.state)) {
-          x.content = '';
-        }
-        const reply = {
-          ...convert.toSubjectTopicReply(x),
-          creator: users[x.uid],
-          replies: subReplies[x.id] ?? [],
-          reactions: reactions[x.id] ?? [],
-        };
-        topLevelReplies.push(reply);
       }
       return {
         ...convert.toSubjectTopic(topic),
         subject,
         creator,
-        replies: topLevelReplies,
+        replies,
       };
     },
   );
@@ -1369,6 +1708,7 @@ export async function setup(app: App) {
         }
       }
 
+      await rateLimit(LimitAction.Topic, auth.userID);
       await db.transaction(async (t) => {
         await t
           .update(schema.chiiSubjectTopics)
@@ -1391,6 +1731,7 @@ export async function setup(app: App) {
         operationId: 'getSubjectPost',
         summary: '获取条目讨论回复详情',
         tags: [Tag.Topic],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -1399,31 +1740,12 @@ export async function setup(app: App) {
         },
       },
     },
-    async ({ params: { postID } }) => {
-      const [post] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-      const creator = await fetcher.fetchSlimUserByID(post.uid);
-      if (!creator) {
-        throw new UnexpectedNotFoundError(`user ${post.uid}`);
-      }
-      const [topic] = await db
-        .select()
-        .from(schema.chiiSubjectTopics)
-        .where(op.eq(schema.chiiSubjectTopics.id, post.mid))
-        .limit(1);
-      if (!topic) {
-        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
-      }
-      const topicCreator = await fetcher.fetchSlimUserByID(topic.uid);
-      if (!topicCreator) {
-        throw new UnexpectedNotFoundError(`user ${topic.uid}`);
-      }
+    async ({ auth, params: { postID } }) => {
+      const viewerID = auth.login ? auth.userID : undefined;
+      const { post, topic, creator, topicCreator } = await subjectPostService.getPost(
+        postID,
+        viewerID,
+      );
       return {
         id: post.id,
         creatorID: post.uid,
@@ -1462,21 +1784,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a subject post')],
     },
     async ({ auth, params: { postID }, body: { value } }) => {
-      const [post] = await db
-        .select({ mid: schema.chiiSubjectPosts.mid })
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-      await Reaction.add({
-        type: LikeType.SubjectReply,
-        mid: post.mid,
-        rid: postID,
-        uid: auth.userID,
-        value,
-      });
+      await subjectPostService.like(auth, postID, value);
       return {};
     },
   );
@@ -1499,11 +1807,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('liking a subject post')],
     },
     async ({ auth, params: { postID } }) => {
-      await Reaction.delete({
-        type: LikeType.SubjectReply,
-        rid: postID,
-        uid: auth.userID,
-      });
+      await subjectPostService.unlike(auth, postID);
       return {};
     },
   );
@@ -1527,60 +1831,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('editing a post')],
     },
     async ({ auth, body: { content }, params: { postID } }) => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('edit reply');
-      }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('content contains invalid invisible character');
-      }
-
-      const [post] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-
-      if (post.uid !== auth.userID) {
-        throw new NotAllowedError('edit reply not created by you');
-      }
-
-      const [topic] = await db
-        .select()
-        .from(schema.chiiSubjectTopics)
-        .where(op.eq(schema.chiiSubjectTopics.id, post.mid))
-        .limit(1);
-      if (!topic) {
-        throw new UnexpectedNotFoundError(`topic ${post.mid}`);
-      }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('edit reply in a closed topic');
-      }
-      if (([CommentState.AdminDelete, CommentState.UserDelete] as number[]).includes(post.state)) {
-        throw new NotAllowedError('edit a deleted reply');
-      }
-
-      const [reply] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(
-          op.and(
-            op.eq(schema.chiiSubjectPosts.mid, topic.id),
-            op.eq(schema.chiiSubjectPosts.related, postID),
-          ),
-        )
-        .limit(1);
-      if (reply) {
-        throw new NotAllowedError('edit a post with reply');
-      }
-
-      await db
-        .update(schema.chiiSubjectPosts)
-        .set({ content })
-        .where(op.eq(schema.chiiSubjectPosts.id, postID));
-
+      await subjectPostService.update(auth, postID, content);
       return {};
     },
   );
@@ -1603,24 +1854,7 @@ export async function setup(app: App) {
       preHandler: [requireLogin('deleting a post')],
     },
     async ({ auth, params: { postID } }) => {
-      const [post] = await db
-        .select()
-        .from(schema.chiiSubjectPosts)
-        .where(op.eq(schema.chiiSubjectPosts.id, postID))
-        .limit(1);
-      if (!post) {
-        throw new NotFoundError(`post ${postID}`);
-      }
-
-      if (post.uid !== auth.userID) {
-        throw new NotAllowedError('delete reply not created by you');
-      }
-
-      await db
-        .update(schema.chiiSubjectPosts)
-        .set({ state: CommentState.UserDelete })
-        .where(op.eq(schema.chiiSubjectPosts.id, postID));
-
+      await subjectPostService.delete(auth, postID);
       return {};
     },
   );
@@ -1645,12 +1879,6 @@ export async function setup(app: App) {
       preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
     },
     async ({ auth, params: { topicID }, body: { content, replyTo = 0 } }) => {
-      if (auth.permission.ban_post) {
-        throw new NotAllowedError('create reply');
-      }
-      if (!Dam.allCharacterPrintable(content)) {
-        throw new BadRequestError('content contains invalid invisible character');
-      }
       const [topic] = await db
         .select()
         .from(schema.chiiSubjectTopics)
@@ -1659,72 +1887,8 @@ export async function setup(app: App) {
       if (!topic) {
         throw new NotFoundError(`topic ${topicID}`);
       }
-      if (topic.state === CommentState.AdminCloseTopic) {
-        throw new NotAllowedError('reply to a closed topic');
-      }
 
-      let notifyUserID = topic.uid;
-      if (replyTo) {
-        const [parent] = await db
-          .select()
-          .from(schema.chiiSubjectPosts)
-          .where(op.eq(schema.chiiSubjectPosts.id, replyTo))
-          .limit(1);
-        if (!parent) {
-          throw new NotFoundError(`post ${replyTo}`);
-        }
-        if (!canReplyPost(parent.state)) {
-          throw new NotAllowedError('reply to a admin action post');
-        }
-        notifyUserID = parent.uid;
-      }
-
-      await rateLimit(LimitAction.Reply, auth.userID);
-
-      const createdAt = DateTime.now().toUnixInteger();
-
-      let postID = 0;
-      await db.transaction(async (t) => {
-        const [{ count = 0 } = {}] = await t
-          .select({ count: op.count() })
-          .from(schema.chiiSubjectPosts)
-          .where(
-            op.and(
-              op.eq(schema.chiiSubjectPosts.mid, topicID),
-              op.eq(schema.chiiSubjectPosts.state, CommentState.Normal),
-            ),
-          );
-        const [{ insertId }] = await t.insert(schema.chiiSubjectPosts).values({
-          mid: topicID,
-          uid: auth.userID,
-          related: replyTo,
-          content,
-          state: CommentState.Normal,
-          createdAt,
-        });
-        postID = insertId;
-        const topicUpdate: Record<string, number> = {
-          replies: count,
-        };
-        if (topic.state !== CommentState.AdminSilentTopic) {
-          topicUpdate.updatedAt = createdAt;
-        }
-        await t
-          .update(schema.chiiSubjectTopics)
-          .set(topicUpdate)
-          .where(op.eq(schema.chiiSubjectTopics.id, topicID));
-        await Notify.create(t, {
-          destUserID: notifyUserID,
-          sourceUserID: auth.userID,
-          createdAt,
-          type: replyTo === 0 ? NotifyType.SubjectTopicReply : NotifyType.SubjectPostReply,
-          relatedID: postID,
-          mainID: topic.id,
-          title: topic.title,
-        });
-      });
-
-      return { id: postID };
+      return await subjectPostService.create(auth, topic, content, replyTo);
     },
   );
 }

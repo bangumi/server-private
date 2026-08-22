@@ -26,7 +26,8 @@ describe('index APIs', () => {
   let createdIndexId: number | null = null;
 
   beforeEach(async () => {
-    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime);
+    await redis.flushdb();
+    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime<true>);
     await db
       .update(schema.chiiIndexes)
       .set({
@@ -48,6 +49,7 @@ describe('index APIs', () => {
   });
 
   afterEach(async () => {
+    await redis.flushdb();
     vi.clearAllMocks();
     await db
       .update(schema.chiiIndexes)
@@ -133,6 +135,115 @@ describe('index APIs', () => {
         headers: {},
       });
       expect(res.statusCode).toBe(401);
+    });
+  });
+
+  describe('GET /indexes', () => {
+    test('should return paginated list containing newly created index', async () => {
+      const app = createTestServer({
+        auth: { login: true, userID: TEST_USER_ID },
+      });
+      await app.register(setup);
+
+      const createRes = await app.inject({
+        method: 'post',
+        url: '/indexes',
+        payload: {
+          title: 'Listed Index',
+          desc: 'Listed description',
+        },
+      });
+      expect(createRes.statusCode).toBe(200);
+      const { id } = createRes.json();
+      createdIndexId = id;
+
+      const res = await app.inject({
+        method: 'get',
+        url: '/indexes?order=latest&limit=100',
+      });
+      expect(res.statusCode).toBe(200);
+      const data = res.json();
+      expect(data).toHaveProperty('total');
+      expect(typeof data.total).toBe('number');
+      expect(Array.isArray(data.data)).toBe(true);
+      expect(data.data.map((item: { id: number }) => item.id)).toContain(id);
+    });
+
+    test('should filter out private indexes', async () => {
+      const app = createTestServer({
+        auth: { login: true, userID: TEST_USER_ID },
+      });
+      await app.register(setup);
+
+      const createRes = await app.inject({
+        method: 'post',
+        url: '/indexes',
+        payload: {
+          title: 'Private Index',
+          desc: 'Private description',
+          private: true,
+        },
+      });
+      expect(createRes.statusCode).toBe(200);
+      const { id } = createRes.json();
+      createdIndexId = id;
+
+      const res = await app.inject({
+        method: 'get',
+        url: '/indexes?order=latest&limit=100',
+      });
+      expect(res.statusCode).toBe(200);
+      const data = res.json();
+      expect(data.data.map((item: { id: number }) => item.id)).not.toContain(id);
+    });
+
+    test('should sort by collects when order=hot', async () => {
+      const app = createTestServer({});
+      await app.register(setup);
+
+      const res = await app.inject({
+        method: 'get',
+        url: '/indexes?order=hot&limit=100',
+      });
+      expect(res.statusCode).toBe(200);
+      const data = res.json();
+      const collects = data.data.map((item: { collects: number }) => item.collects);
+      for (let i = 1; i < collects.length; i++) {
+        expect(collects[i]).toBeLessThanOrEqual(collects[i - 1]);
+      }
+    });
+
+    test('should filter by type', async () => {
+      const app = createTestServer({
+        auth: { login: true, userID: TEST_USER_ID },
+      });
+      await app.register(setup);
+
+      const createRes = await app.inject({
+        method: 'post',
+        url: '/indexes',
+        payload: {
+          title: 'Type Filtered Index',
+          desc: 'Type filtered description',
+        },
+      });
+      expect(createRes.statusCode).toBe(200);
+      const { id } = createRes.json();
+      createdIndexId = id;
+
+      const type0Res = await app.inject({
+        method: 'get',
+        url: '/indexes?type=0&order=latest&limit=100',
+      });
+      expect(type0Res.statusCode).toBe(200);
+      expect(type0Res.json().data.map((item: { id: number }) => item.id)).toContain(id);
+
+      const type2Res = await app.inject({
+        method: 'get',
+        url: '/indexes?type=2&order=latest&limit=100',
+      });
+      expect(type2Res.statusCode).toBe(200);
+      expect(type2Res.json().data.map((item: { id: number }) => item.id)).not.toContain(id);
     });
   });
 

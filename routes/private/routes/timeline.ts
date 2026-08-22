@@ -18,7 +18,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { fetchFriends } from '@app/lib/user/utils';
+import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
@@ -147,6 +147,7 @@ export async function setup(app: App) {
       if (timeline.uid !== auth.userID) {
         throw new NotAllowedError('delete timeline');
       }
+      await rateLimit(LimitAction.Timeline, auth.userID);
       await db.transaction(async (t) => {
         await t
           .delete(schema.chiiTimeline)
@@ -172,7 +173,7 @@ export async function setup(app: App) {
           timelineID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('timeline')),
           }),
@@ -184,7 +185,7 @@ export async function setup(app: App) {
       if (!timeline) {
         throw new NotFoundError('timeline');
       }
-      return await comment.getAll(timelineID);
+      return await comment.getAll(timelineID, auth.login ? auth.userID : undefined);
     },
   );
 
@@ -323,12 +324,12 @@ export async function setup(app: App) {
     },
     async (request, reply) => {
       const { auth, headers, query } = request;
-      const filterCat = query.cat;
-      const mode = query.mode ?? req.IFilterMode.Friends;
-
       if (!reply.sse || !headers.accept?.includes('text/event-stream')) {
         throw new BadRequestError('Accept header must include text/event-stream');
       }
+
+      const filterCat = query.cat;
+      const mode = query.mode ?? req.IFilterMode.Friends;
 
       let friendIDs: Set<number> | null = null;
       if (mode === req.IFilterMode.Friends) {

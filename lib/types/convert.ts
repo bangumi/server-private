@@ -58,7 +58,7 @@ export function toUserHomepage(homepage: string): res.IUserHomepage {
     right: [],
   };
   for (const item of homepage.split(';')) {
-    const [type, list] = item.split(':');
+    const [type, list] = item.split(':', 2);
     switch (type) {
       case 'l': {
         layout.left = list?.split(',') ?? [];
@@ -87,6 +87,7 @@ export function toUser(user: orm.IUser, fields: orm.IUserFields): res.IUser {
     bio: fields.bio,
     networkServices: [],
     homepage: toUserHomepage(fields.homepage),
+    isFriend: false,
     stats: {
       group: 0,
       subject: {},
@@ -113,6 +114,7 @@ export function toSlimUser(user: orm.IUser): res.ISlimUser {
     group: user.groupid,
     sign: user.sign,
     joinedAt: user.regdate,
+    isFriend: false,
   };
 }
 
@@ -253,6 +255,7 @@ export function toSlimSubject(subject: orm.ISubject, fields: orm.ISubjectFields)
     type: subject.typeID,
     images: subjectCover(subject.image),
     info: getSubjectInfoboxSummary(infobox, subject.typeID, subject.eps),
+    metaTags: splitTags(subject.metaTags),
     rating: toSubjectRating(fields),
     locked: subject.ban === 2,
     nsfw: subject.nsfw,
@@ -616,16 +619,6 @@ export function toSubjectTopic(topic: orm.ISubjectTopic): res.ITopic {
   };
 }
 
-export function toSubjectTopicReply(reply: orm.ISubjectPost): res.IReplyBase {
-  return {
-    id: reply.id,
-    content: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
-  };
-}
-
 export function toPersonCollect(user: orm.IUser, collect: orm.IPersonCollect): res.IPersonCollect {
   return {
     user: toSlimUser(user),
@@ -685,15 +678,5 @@ export function toGroupTopic(topic: orm.IGroupTopic): res.ITopic {
     replyCount: topic.replies,
     state: topic.state,
     display: topic.display,
-  };
-}
-
-export function toGroupTopicReply(reply: orm.IGroupPost): res.IReplyBase {
-  return {
-    id: reply.id,
-    content: reply.content,
-    state: reply.state,
-    createdAt: reply.createdAt,
-    creatorID: reply.uid,
   };
 }

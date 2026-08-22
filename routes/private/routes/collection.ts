@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import type { Static } from 'typebox';
 import t from 'typebox';
 
 import { db, decr, incr, op, type orm, schema } from '@app/drizzle';
@@ -27,13 +28,109 @@ import * as convert from '@app/lib/types/convert.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
+import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
+export type IFriendSubjectCollectionActivity = Static<typeof FriendSubjectCollectionActivity>;
+const FriendSubjectCollectionActivity = t.Object(
+  {
+    user: res.Ref(res.SlimUser),
+    subject: res.Ref(res.SlimSubject),
+    collectionType: res.Ref(res.CollectionType),
+    updatedAt: t.Integer({ description: '收藏最后修改时间，unix time stamp in seconds' }),
+  },
+  { $id: 'FriendSubjectCollectionActivity', title: 'FriendSubjectCollectionActivity' },
+);
+
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setup(app: App) {
+  app.addSchema(FriendSubjectCollectionActivity);
+
+  app.get(
+    '/me/friends/subject-collections',
+    {
+      schema: {
+        summary: '获取好友最近的条目收藏',
+        operationId: 'getFriendsSubjectCollections',
+        tags: [Tag.Collection],
+        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        querystring: t.Object({
+          subjectType: req.Ref(req.SubjectType),
+          limit: t.Optional(
+            t.Integer({ default: 10, minimum: 1, maximum: 100, description: 'max 100' }),
+          ),
+          offset: t.Optional(t.Integer({ default: 0, minimum: 0, description: 'min 0' })),
+        }),
+        response: {
+          200: res.Paged(res.Ref(FriendSubjectCollectionActivity)),
+        },
+      },
+      preHandler: [requireLogin('get friends subject collections')],
+    },
+    async ({ auth, query: { subjectType, limit = 10, offset = 0 } }) => {
+      const friendIDs = await fetchFriends(auth.userID);
+      if (friendIDs.length === 0) {
+        return { data: [], total: 0 };
+      }
+      const conditions = [
+        op.inArray(schema.chiiSubjectInterests.uid, friendIDs),
+        op.eq(schema.chiiSubjectInterests.subjectType, subjectType),
+        op.eq(schema.chiiSubjectInterests.privacy, CollectionPrivacy.Public),
+        op.ne(schema.chiiSubjectInterests.type, 0),
+        op.ne(schema.chiiSubjects.ban, 1),
+        auth.allowNsfw ? undefined : op.eq(schema.chiiSubjects.nsfw, false),
+      ];
+      const [{ count = 0 } = {}] = await db
+        .select({ count: op.count() })
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectInterests.subjectID, schema.chiiSubjects.id),
+        )
+        .where(op.and(...conditions));
+      const data = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .innerJoin(
+          schema.chiiSubjects,
+          op.eq(schema.chiiSubjectInterests.subjectID, schema.chiiSubjects.id),
+        )
+        .where(op.and(...conditions))
+        .orderBy(op.desc(schema.chiiSubjectInterests.updatedAt))
+        .limit(limit)
+        .offset(offset);
+      const users = await fetcher.fetchSlimUsersByIDs(
+        data.map((d) => d.chii_subject_interests.uid),
+      );
+      const subjects = await fetcher.fetchSlimSubjectsByIDs(
+        data.map((d) => d.chii_subject_interests.subjectID),
+        auth.allowNsfw,
+      );
+      const result: IFriendSubjectCollectionActivity[] = [];
+      for (const d of data) {
+        const interest = d.chii_subject_interests;
+        const user = users[interest.uid];
+        if (!user) {
+          continue;
+        }
+        const subject = subjects[interest.subjectID];
+        if (!subject) {
+          continue;
+        }
+        result.push({
+          user,
+          subject,
+          collectionType: interest.type,
+          updatedAt: interest.updatedAt,
+        });
+      }
+      return { data: result, total: count };
+    },
+  );
+
   app.get(
     '/collections/subjects',
     {
@@ -285,8 +382,6 @@ export async function setup(app: App) {
       let needTimeline = false;
       let interestID = 0;
       await db.transaction(async (t) => {
-        let needUpdateRate = false;
-
         if (tags !== undefined) {
           tags = await insertUserTags(
             t,
@@ -306,6 +401,7 @@ export async function setup(app: App) {
         if (!subject) {
           throw new UnexpectedNotFoundError(`subject ${subjectID}`);
         }
+        let needUpdateRate = false;
         const [interest] = await t
           .select()
           .from(schema.chiiSubjectInterests)
@@ -338,7 +434,7 @@ export async function setup(app: App) {
             toUpdate[`${getCollectionTypeField(type)}Dateline`] = now;
             //若收藏类型改变,则更新数据
             await updateSubjectCollectionCounts(t, subjectID, type, oldType);
-            if (type === CollectionType.Collect && progress) {
+            if (progress && type === CollectionType.Collect) {
               await completeSubjectProgress(t, auth.userID, subject, toUpdate);
             }
           }
@@ -397,7 +493,7 @@ export async function setup(app: App) {
             updatedAt: now,
             privacy,
           };
-          if (type === CollectionType.Collect && progress) {
+          if (progress && type === CollectionType.Collect) {
             await completeSubjectProgress(t, auth.userID, subject, toInsert);
           }
           const field = getCollectionTypeField(type);
@@ -421,7 +517,7 @@ export async function setup(app: App) {
       });
 
       // 插入时间线
-      if (privacy === CollectionPrivacy.Public && needTimeline && type) {
+      if (needTimeline && type && privacy === CollectionPrivacy.Public) {
         await AsyncTimelineWriter.subject({
           uid: auth.userID,
           subject: {

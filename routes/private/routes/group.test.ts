@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
+import { LikeType } from '@app/lib/like';
+import redis from '@app/lib/redis.ts';
 import { CommentState } from '@app/lib/topic/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
@@ -103,6 +105,7 @@ describe('group topics', () => {
   const testPostID = 101;
 
   beforeEach(async () => {
+    await redis.flushdb();
     await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
     await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.uid, testUserID));
     await db.insert(schema.chiiGroupTopics).values({
@@ -137,6 +140,7 @@ describe('group topics', () => {
   });
 
   afterEach(async () => {
+    await redis.flushdb();
     await db.delete(schema.chiiGroupTopics).where(op.eq(schema.chiiGroupTopics.gid, testGroupID));
     await db.delete(schema.chiiGroupPosts).where(op.eq(schema.chiiGroupPosts.uid, testUserID));
   });
@@ -332,6 +336,99 @@ describe('group topics', () => {
     const res = await app.inject(`/groups/-/posts/${testPostID}`);
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
+  });
+
+  test('should get group topic with nested replies', async () => {
+    await db.insert(schema.chiiGroupPosts).values({
+      mid: testTopicID,
+      uid: testUserID,
+      content: 'Nested Reply',
+      related: testPostID,
+      state: 0,
+      createdAt: 1462335911,
+    });
+
+    const app = createTestServer();
+    await app.register(setup);
+
+    const res = await app.inject(`/groups/-/topics/${testTopicID}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toMatchObject({
+      id: testTopicID,
+      title: 'Test Topic',
+      creatorID: testUserID,
+      replies: [
+        {
+          id: testTopicPostID,
+          creatorID: testUserID,
+          content: 'Test Topic Content',
+          replies: [],
+        },
+        {
+          id: testPostID,
+          creatorID: testUserID,
+          content: 'Test Reply',
+          replies: [{ creatorID: testUserID, content: 'Nested Reply' }],
+        },
+      ],
+    });
+  });
+
+  test('should like and unlike group post', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID,
+      },
+    });
+    await app.register(setup);
+
+    const likeRes = await app.inject({
+      url: `/groups/-/posts/${testPostID}/like`,
+      method: 'put',
+      payload: { value: 0 },
+    });
+    expect(likeRes.statusCode).toBe(200);
+
+    const [like] = await db
+      .select()
+      .from(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, LikeType.GroupReply),
+          op.eq(schema.chiiLikes.relatedID, testPostID),
+          op.eq(schema.chiiLikes.uid, testUserID),
+        ),
+      );
+    expect(like).toMatchObject({ value: 0, deleted: false });
+
+    const unlikeRes = await app.inject({
+      url: `/groups/-/posts/${testPostID}/like`,
+      method: 'delete',
+    });
+    expect(unlikeRes.statusCode).toBe(200);
+
+    const [unliked] = await db
+      .select()
+      .from(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, LikeType.GroupReply),
+          op.eq(schema.chiiLikes.relatedID, testPostID),
+          op.eq(schema.chiiLikes.uid, testUserID),
+        ),
+      );
+    expect(unliked?.deleted).toBe(true);
+
+    await db
+      .delete(schema.chiiLikes)
+      .where(
+        op.and(
+          op.eq(schema.chiiLikes.type, LikeType.GroupReply),
+          op.eq(schema.chiiLikes.relatedID, testPostID),
+        ),
+      );
   });
 
   test('should create/edit/delete new post', async () => {

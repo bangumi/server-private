@@ -14,9 +14,7 @@ import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 
 type commentTablesWithState =
-  | typeof schema.chiiEpComments
-  | typeof schema.chiiCrtComments
-  | typeof schema.chiiPrsnComments;
+  typeof schema.chiiEpComments | typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments;
 
 type commentTablesWithRelatedPhoto = typeof schema.chiiCrtComments | typeof schema.chiiPrsnComments;
 
@@ -82,14 +80,14 @@ export class CommentWithState {
     return parent;
   }
 
-  async getAll(mainID: number, relatedPhotoID?: number) {
+  async getAll(mainID: number, viewerID?: number, relatedPhotoID?: number) {
     let where = op.eq(this.table.mid, mainID);
     if (relatedPhotoID !== undefined && hasRelatedPhotoTable(this.table)) {
       where = op.and(where, op.eq(this.table.relatedPhotoID, relatedPhotoID)) ?? where;
     }
     const data = await db.select().from(this.table).where(where).orderBy(op.asc(this.table.id));
     const uids = data.map((v) => v.uid);
-    const users = await fetcher.fetchSlimUsersByIDs(uids);
+    const users = await fetcher.fetchSlimUsersByIDs(uids, viewerID);
     const comments: res.IComment[] = [];
     const replies: Record<number, res.ICommentBase[]> = {};
     let allReactions: Record<number, res.IReaction[]> = {};
@@ -267,6 +265,7 @@ export class CommentWithState {
     if (reply) {
       throw new NotAllowedError('edit a comment with replies');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db.update(this.table).set({ content }).where(op.eq(this.table.id, commentID));
     return {};
   }
@@ -286,6 +285,7 @@ export class CommentWithState {
     if (comment.state !== CommentState.Normal) {
       throw new NotAllowedError('delete a abnormal state comment');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db
       .update(this.table)
       .set({ state: CommentState.UserDelete })
@@ -302,14 +302,14 @@ export class CommentWithoutState {
     this.table = table;
   }
 
-  async getAll(mainID: number) {
+  async getAll(mainID: number, viewerID?: number) {
     const data = await db
       .select()
       .from(this.table)
       .where(op.eq(this.table.mid, mainID))
       .orderBy(op.asc(this.table.id));
     const uids = data.map((v) => v.uid);
-    const users = await fetcher.fetchSlimUsersByIDs(uids);
+    const users = await fetcher.fetchSlimUsersByIDs(uids, viewerID);
     const comments: res.IComment[] = [];
     const replies: Record<number, res.ICommentBase[]> = {};
     for (const d of data) {
@@ -431,6 +431,7 @@ export class CommentWithoutState {
     if (reply) {
       throw new NotAllowedError('edit a comment with replies');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db.update(this.table).set({ content }).where(op.eq(this.table.id, commentID));
     return {};
   }
@@ -447,6 +448,7 @@ export class CommentWithoutState {
     if (comment.uid !== auth.userID) {
       throw new NotAllowedError('delete a comment which is not yours');
     }
+    await rateLimit(LimitAction.Comment, auth.userID);
     await db.delete(this.table).where(op.eq(this.table.id, commentID)).limit(1);
     return {};
   }

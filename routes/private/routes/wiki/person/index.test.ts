@@ -397,7 +397,7 @@ describe('edit person ', () => {
     const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
 
     const res = await app.inject({
-      url: '/persons/3214/potraits',
+      url: '/persons/3214/portraits',
       method: 'POST',
       payload: {
         img: raw.toString('base64'),

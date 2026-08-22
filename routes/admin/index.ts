@@ -4,7 +4,9 @@ import { db, op, schema } from '@app/drizzle';
 import { production } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
 import * as Subject from '@app/lib/subject/index.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import { redirectIfNotLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
 import * as ep from './ep.ts';
@@ -73,7 +75,7 @@ export async function setup(app: App) {
         requirePermission('delete subject cover', (a) => a.permission.subject_cover_erase),
       ],
     },
-    async ({ params: { subjectID }, body: { imageID } }, res) => {
+    async ({ auth, params: { subjectID }, body: { imageID } }, res) => {
       const [i] = await db
         .select()
         .from(schema.chiiSubjectImgs)
@@ -84,6 +86,7 @@ export async function setup(app: App) {
         return res.status(404).send();
       }
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         await image.deleteSubjectImage(i.imgTarget);
         await t

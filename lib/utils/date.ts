@@ -12,7 +12,7 @@ export class DATE {
   }
 
   static parse(s: string): DATE {
-    const [year, month, day] = s.split('-');
+    const [year, month, day] = s.split('-', 3);
 
     return new DATE(
       year ? Number.parseInt(year) || 0 : 0,

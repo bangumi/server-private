@@ -62,7 +62,7 @@ class Imaginary extends BaseHttpSrv implements IImaginary {
 
 function createImaginaryClient(): IImaginary {
   if (config.image.imaginaryUrl) {
-    return new Imaginary(new URL(config.image.imaginaryUrl).toString());
+    return new Imaginary(new URL(config.image.imaginaryUrl).href);
   }
 
   if (!testing) {

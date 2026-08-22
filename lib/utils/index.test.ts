@@ -13,7 +13,7 @@ describe('random should not have bias', async () => {
   const c: Record<string, number> = {};
 
   await Promise.all(
-    Array.from({ length: loop }).map(() =>
+    Array.from({ length: loop }, () =>
       limit(async () => {
         const token = await randomBase62String(step);
         expect(token).toHaveLength(step);
@@ -62,7 +62,7 @@ test.each([
   ['00:50:10', 50 * 60 + 10],
   ['30m2s', 30 * 60 + 2],
   ['1h20m8s', 60 * 60 + 20 * 60 + 8],
-  ['not duration string', Number.NaN],
+  ['not duration string', NaN],
 ])('parseDuration(%j) === %j', function (value, expected) {
   expect(parseDuration(value)).toBe(expected);
 });

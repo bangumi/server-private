@@ -17,7 +17,11 @@ import {
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
 import type { KafkaMessage, Payload } from '@app/event/type';
-import { handle as handleUserEvent, handleFriend as handleFriendEvent } from '@app/event/user';
+import {
+  handle as handleUserEvent,
+  handleFields as handleUserFieldsEvent,
+  handleFriend as handleFriendEvent,
+} from '@app/event/user';
 import { newConsumer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
 import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
@@ -35,6 +39,7 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_group_members',
   'debezium.chii.bangumi.chii_group_topics',
   'debezium.chii.bangumi.chii_index',
+  'debezium.chii.bangumi.chii_memberfields',
   'debezium.chii.bangumi.chii_members',
   'debezium.chii.bangumi.chii_friends',
   'debezium.chii.bangumi.chii_persons',
@@ -55,6 +60,7 @@ const binlogHandlers: Record<string, Handler | Handler[]> = {
   chii_group_members: handleGroupMemberEvent,
   chii_group_topics: handleGroupTopicEvent,
   chii_index: handleIndexEvent,
+  chii_memberfields: handleUserFieldsEvent,
   chii_members: handleUserEvent,
   chii_friends: handleFriendEvent,
   chii_persons: handlePersonEvent,

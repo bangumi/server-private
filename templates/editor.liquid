@@ -2,74 +2,74 @@
 {% layout 'layout' %}
 
 {% block content %}
-<script src='https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js'></script>
 
-<div class='container mt-5'>
-  <div class='row'>
-    <label for='name'></label>
-    <input type='text' id='name' placeholder='name' value='{{ name }}'>
-  </div>
-  <br>
-  <div class='row'>
-    {% for platform in platforms %}
-      <div class='form-check-inline'>
-        <label class='form-check-label'>
-          <input
-            type='radio'
-            class='form-check-input'
-            name='platform'
-            value='{{ platform.id }}'
-            {% if platformID == platform.id %}
-              checked
-            {% endif %}
-          >
-          {{ platform.type_cn }}
-        </label>
+  <div class='container mt-5'>
+    <div class='row'>
+      <label for='name'></label>
+      <input type='text' id='name' placeholder='name' value='{{ name }}'>
+    </div>
+    <br>
+    <div class='row'>
+      {% for platform in platforms %}
+        <div class='form-check-inline'>
+          <label class='form-check-label'>
+            <input
+              type='radio'
+              class='form-check-input'
+              name='platform'
+              value='{{ platform.id }}'
+              {% if platformID == platform.id %}
+                checked
+              {% endif %}
+            >
+            {{ platform.type_cn }}
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+    <div class='row'>
+      <div
+        id='infobox'
+        data-raw='{{ infobox }}'
+        style='width: 100%; height: 50vh; border: 1px solid grey'
+      ></div>
+    </div>
+    <br>
+    <div class='row'>
+      <label for='summary'></label>
+      <textarea
+        name='summary'
+        id='summary'
+        style='width: 100%; height: 20vh'
+      >{{ summary }}</textarea>
+    </div>
+    <br>
+    <div class='row'>
+      <div class='form-group'>
+        <label for='date'
+          >开播日期/连载开始日期/上映时间/发售时间，默认会从 infobox
+          中提取。填写之后会覆盖infobox内置的日期</label
+        >
+        <input class='form-control' type='text' id='date'>
       </div>
-    {% endfor %}
-  </div>
-  <div class='row'>
-    <div
-      id='infobox'
-      data-raw='{{ infobox }}'
-      style='width: 100%; height: 50vh; border: 1px solid grey'
-    ></div>
-  </div>
-  <br>
-  <div class='row'>
-    <label for='summary'></label>
-    <textarea
-      name='summary'
-      id='summary'
-      style='width: 100%; height: 20vh'
-    >{{ summary }}</textarea>
-  </div>
-  <br>
-  <div class='row'>
-    <div class='form-group'>
-      <label for='date'
-        >开播日期/连载开始日期/上映时间/发售时间，默认会从 infobox
-        中提取。填写之后会覆盖infobox内置的日期</label
-      >
-      <input class='form-control' type='text' id='date'>
+    </div>
+    <br>
+    <div class=' row'>
+      <label for='commitMessage'></label>
+      <input type='text' id='commitMessage' placeholder='编辑说明'>
+    </div>
+    <br>
+    <div class='row'>
+      <button class='btn btn-primary' id='submit'>submit</button>
     </div>
   </div>
-  <br>
-  <div class=' row'>
-    <label for='commitMessage'></label>
-    <input type='text' id='commitMessage' placeholder='编辑说明'>
-  </div>
-  <br>
-  <div class='row'>
-    <button class='btn btn-primary' id='submit'>submit</button>
-  </div>
-</div>
 
-<script>
-  const infobox = $('#infobox').data('raw');
-  const subjectID = '{{ subjectID }}';
-</script>
-{% raw %}
+  <script>
+    const infobox = $('#infobox').data('raw');
+    const subjectID = '{{ subjectID }}';
+  </script>
+  {% raw %}
   <script>
     require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor/min/vs' } });
 
@@ -169,5 +169,4 @@
     });
   </script>
 {% endraw %}
-
 {% endblock %}

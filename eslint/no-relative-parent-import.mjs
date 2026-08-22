@@ -31,21 +31,23 @@ export default createRule({
     const filename = context.filename;
     return {
       ImportDeclaration: (node) => {
-        if (node.source.value.startsWith('..')) {
-          const importPath = path.resolve(path.dirname(filename), node.source.value);
-          const should = posix.normalize(
-            posix.join('@app', path.relative(projectRoot, importPath).replaceAll('\\', '/')),
-          );
-
-          context.report({
-            node,
-            messageId: 'import',
-            data: { should },
-            fix: (fixer) => {
-              return fixer.replaceTextRange(node.source.range, JSON.stringify(should));
-            },
-          });
+        if (!node.source.value.startsWith('..')) {
+          return;
         }
+
+        const importPath = path.resolve(path.dirname(filename), node.source.value);
+        const should = posix.normalize(
+          posix.join('@app', path.relative(projectRoot, importPath).replaceAll('\\', '/')),
+        );
+
+        context.report({
+          node,
+          messageId: 'import',
+          data: { should },
+          fix: (fixer) => {
+            return fixer.replaceTextRange(node.source.range, JSON.stringify(should));
+          },
+        });
       },
     };
   },

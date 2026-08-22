@@ -7,7 +7,7 @@ import { setup } from './calendar.ts';
 
 describe('calendar', () => {
   beforeEach(() => {
-    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime);
+    vi.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromSeconds(1020240000) as DateTime<true>);
   });
 
   afterEach(() => {

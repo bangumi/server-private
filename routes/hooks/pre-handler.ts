@@ -55,7 +55,7 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
 
   const s = authCode.decode(sessionRaw, md5(config.php_session_secret_key + ua));
 
-  const [passwordCrypt, userIDRaw] = s.split('\t');
+  const [passwordCrypt, userIDRaw] = s.split('\t', 2);
   if (!userIDRaw || !passwordCrypt) {
     return false;
   }
@@ -136,8 +136,10 @@ export async function accessTokenAuth(req: FastifyRequest): Promise<boolean> {
 }
 
 export async function redirectIfNotLogin(req: FastifyRequest, reply: FastifyReply) {
-  if (!req.auth.login) {
-    const qs = new URLSearchParams({ backTo: req.url });
-    return reply.redirect(`/demo/login?${qs.toString()}`);
+  if (req.auth.login) {
+    return;
   }
+
+  const qs = new URLSearchParams({ backTo: req.url });
+  return reply.redirect(`/demo/login?${qs.toString()}`);
 }

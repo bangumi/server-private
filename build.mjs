@@ -20,8 +20,12 @@ const buildConfigs = {
         onLoad({ filter: /.*\.ts/, namespace: 'file' }, (args) => {
           let code = fs.readFileSync(args.path, 'utf8');
           code = code
-            .replaceAll(/\bimport\.meta\.url\b/g, JSON.stringify(url.pathToFileURL(args.path)))
-            .replaceAll(/\bimport\.meta\.dirname\b/g, JSON.stringify(path.dirname(args.path)));
+            .replaceAll(/\bimport\.meta\.url\b/g, () =>
+              JSON.stringify(url.pathToFileURL(args.path)),
+            )
+            .replaceAll(/\bimport\.meta\.dirname\b/g, () =>
+              JSON.stringify(path.dirname(args.path)),
+            );
           return { contents: code, loader: 'ts' };
         });
       },

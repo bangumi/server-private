@@ -9,6 +9,7 @@ import { db, op, schema } from '@app/drizzle';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
+import redis from '@app/lib/redis.ts';
 import type { IImaginary, Info } from '@app/lib/services/imaginary.ts';
 import * as Subject from '@app/lib/subject/index.ts';
 import { SubjectType } from '@app/lib/subject/index.ts';
@@ -343,6 +344,41 @@ describe('edit subject ', () => {
       userID: 100,
     });
   });
+
+  test('should patch subject', async () => {
+    const app = await testApp({
+      auth: {
+        groupID: UserGroup.Normal,
+        login: true,
+        permission: { subject_edit: true },
+        allowNsfw: true,
+        regTime: 0,
+        userID: 100,
+      },
+    });
+
+    const res = await app.inject({
+      url: '/subjects/1',
+      method: 'patch',
+      payload: {
+        commitMessage: 'patch summary',
+        expectedRevision: {},
+        subject: {
+          summary: 'patched summary',
+        },
+      },
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(editSubject).toHaveBeenCalledWith(
+      expect.objectContaining({
+        commitMessage: 'patch summary',
+        subjectID: 1,
+        summary: 'patched summary',
+        userID: 100,
+      }),
+    );
+  });
 });
 
 describe('should upload image', () => {
@@ -599,6 +635,14 @@ describe('patch episodes', () => {
       .orderBy(schema.chiiEpisodes.sort);
     episodeIDs = episodes.map((ep) => ep.id);
     expect(episodeIDs).toHaveLength(2);
+  });
+
+  beforeEach(async () => {
+    await redis.flushdb();
+  });
+
+  afterEach(async () => {
+    await redis.flushdb();
   });
 
   test('successfully patch episodes', async () => {

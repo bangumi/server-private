@@ -327,7 +327,7 @@ export async function setup(app: App) {
           characterID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('character')),
           }),
@@ -336,7 +336,7 @@ export async function setup(app: App) {
     },
     async ({ auth, params: { characterID } }) => {
       await requireCharacter(characterID, auth.allowNsfw);
-      return await comment.getAll(characterID);
+      return await comment.getAll(characterID, auth.login ? auth.userID : undefined);
     },
   );
 
@@ -448,7 +448,7 @@ export async function setup(app: App) {
           photoID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error),
         },
       },
@@ -456,7 +456,7 @@ export async function setup(app: App) {
     async ({ auth, params: { characterID, photoID } }) => {
       await requireCharacter(characterID, auth.allowNsfw);
       await requireMonoPhoto(MonoPhotoType.Character, characterID, photoID);
-      return await comment.getAll(characterID, photoID);
+      return await comment.getAll(characterID, auth.login ? auth.userID : undefined, photoID);
     },
   );
 
