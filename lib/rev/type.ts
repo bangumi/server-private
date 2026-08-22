@@ -103,6 +103,25 @@ export const PersonRev = t.Object(
   { $id: 'PersonRev' },
 );
 
+export const LegacyPersonRev = t.Object(
+  {
+    prsn_name: t.String(),
+    prsn_infobox: t.String(),
+    prsn_summary: t.String(),
+    profession: t.Object({
+      producer: t.Optional(t.String()),
+      mangaka: t.Optional(t.String()),
+      artist: t.Optional(t.String()),
+      seiyu: t.Optional(t.String()),
+      writer: t.Optional(t.String()),
+      illustrator: t.Optional(t.String()),
+      actor: t.Optional(t.String()),
+    }),
+    extra: t.Union([t.Object({ img: t.Optional(t.String()) }), t.Array(t.Unknown())]),
+  },
+  { $id: 'LegacyPersonRev' },
+);
+
 const SubjectRelationRevSelf = t.Object({
   subject_id: t.Integer(),
   subject_type_id: t.Integer(),

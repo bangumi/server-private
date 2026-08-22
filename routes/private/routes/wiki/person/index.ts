@@ -24,6 +24,7 @@ import { createRevision } from '@app/lib/rev/common.ts';
 import type { IPersonRev } from '@app/lib/rev/type.ts';
 import {
   CharacterRev,
+  LegacyPersonRev,
   PersonCastRev,
   PersonRev,
   PersonSubjectRev,
@@ -835,29 +836,35 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      let revContentRaw: Record<string, unknown> = revRecord[revisionID] as Record<string, unknown>;
+      const revContentRaw = revRecord[revisionID];
 
-      // 历史遗留问题：merge 等操作产生的空记录（数组而非对象），无法还原为有效版本
-      if (!revContentRaw || typeof revContentRaw !== 'object' || Array.isArray(revContentRaw)) {
+      if (
+        !revContentRaw ||
+        !Value.Check(PersonRev, revContentRaw) &&
+          !Value.Check(CharacterRev, revContentRaw) &&
+          !Value.Check(LegacyPersonRev, revContentRaw)
+      ) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
 
-      // 历史遗留问题：早期 extra 是数组，PersonRev.extra 现在是 Object
-      if (Array.isArray(revContentRaw.extra)) {
-        revContentRaw = { ...revContentRaw, extra: {} };
-      }
-
-      // 历史遗留问题，仅修改肖像时为 ICharacterRev
+      let raw: Record<string, unknown>;
       if (Value.Check(CharacterRev, revContentRaw)) {
-        revContentRaw = {
+        raw = {
           prsn_name: revContentRaw.crt_name,
           prsn_infobox: revContentRaw.crt_infobox,
           prsn_summary: revContentRaw.crt_summary,
           profession: {},
           extra: revContentRaw.extra,
         };
+      } else {
+        raw = revContentRaw;
       }
-      const revContent = parseConvertedValue(PersonRev, revContentRaw);
+
+      if (Array.isArray(raw.extra)) {
+        raw = { ...raw, extra: {} };
+      }
+
+      const revContent = parseConvertedValue(PersonRev, raw);
 
       return {
         name: revContent.prsn_name,
