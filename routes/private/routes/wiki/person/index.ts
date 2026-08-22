@@ -822,7 +822,7 @@ export async function setup(app: App) {
         .from(schema.chiiRevHistory)
         .where(op.eq(schema.chiiRevHistory.revId, revisionID))
         .limit(1);
-      if (!r || !(PersonEditTypes as unknown as number[]).includes(r.revType)) {
+      if (!r || r.revType !== RevType.personEdit) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
 
@@ -839,10 +839,9 @@ export async function setup(app: App) {
       const revContentRaw = revRecord[revisionID];
 
       if (
-        !revContentRaw ||
         !Value.Check(PersonRev, revContentRaw) &&
-          !Value.Check(CharacterRev, revContentRaw) &&
-          !Value.Check(LegacyPersonRev, revContentRaw)
+        !Value.Check(CharacterRev, revContentRaw) &&
+        !Value.Check(LegacyPersonRev, revContentRaw)
       ) {
         throw new NotFoundError(`revision ${revisionID}`);
       }

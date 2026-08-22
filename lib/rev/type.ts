@@ -81,6 +81,16 @@ export const CharacterRev = t.Object(
   { $id: 'CharacterRev' },
 );
 
+export const LegacyCharacterRev = t.Object(
+  {
+    crt_name: t.String(),
+    crt_infobox: t.String(),
+    crt_summary: t.String(),
+    extra: t.Union([t.Object({ img: t.Optional(t.String()) }), t.Array(t.Unknown())]),
+  },
+  { $id: 'LegacyCharacterRev' },
+);
+
 export type IPersonRev = Static<typeof PersonRev>;
 export const PersonRev = t.Object(
   {
