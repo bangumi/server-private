@@ -24,6 +24,7 @@ import { createRevision } from '@app/lib/rev/common.ts';
 import type { IPersonRev } from '@app/lib/rev/type.ts';
 import {
   CharacterRev,
+  LegacyPersonRev,
   PersonCastRev,
   PersonRev,
   PersonSubjectRev,
@@ -821,7 +822,7 @@ export async function setup(app: App) {
         .from(schema.chiiRevHistory)
         .where(op.eq(schema.chiiRevHistory.revId, revisionID))
         .limit(1);
-      if (!r || !(PersonEditTypes as unknown as number[]).includes(r.revType)) {
+      if (!r || r.revType !== RevType.personEdit) {
         throw new NotFoundError(`revision ${revisionID}`);
       }
 
@@ -835,18 +836,34 @@ export async function setup(app: App) {
       }
 
       const revRecord = await deserializeRevText(revText.revText);
-      let revContentRaw = revRecord[revisionID];
-      // 历史遗留问题，仅修改肖像时为 ICharacterRev
+      const revContentRaw = revRecord[revisionID];
+
+      if (
+        !Value.Check(PersonRev, revContentRaw) &&
+        !Value.Check(CharacterRev, revContentRaw) &&
+        !Value.Check(LegacyPersonRev, revContentRaw)
+      ) {
+        throw new NotFoundError(`revision ${revisionID}`);
+      }
+
+      let raw: Record<string, unknown>;
       if (Value.Check(CharacterRev, revContentRaw)) {
-        revContentRaw = {
+        raw = {
           prsn_name: revContentRaw.crt_name,
           prsn_infobox: revContentRaw.crt_infobox,
           prsn_summary: revContentRaw.crt_summary,
           profession: {},
           extra: revContentRaw.extra,
         };
+      } else {
+        raw = revContentRaw;
       }
-      const revContent = parseConvertedValue(PersonRev, revContentRaw);
+
+      if (Array.isArray(raw.extra)) {
+        raw = { ...raw, extra: {} };
+      }
+
+      const revContent = parseConvertedValue(PersonRev, raw);
 
       return {
         name: revContent.prsn_name,
