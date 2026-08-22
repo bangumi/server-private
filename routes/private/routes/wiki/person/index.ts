@@ -1469,10 +1469,7 @@ export async function setup(app: App) {
             if (!old) {
               throw new WikiChangedError('unexpected relation');
             }
-            matchExpected(
-              { appearEps: expected.appearEps },
-              { appearEps: old.appearEps },
-            );
+            matchExpected({ appearEps: expected.appearEps }, { appearEps: old.appearEps });
           }
         }
 
