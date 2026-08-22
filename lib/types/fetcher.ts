@@ -31,7 +31,8 @@ import { TagCat } from '@app/lib/tag.ts';
 import { getTrendingSubjectKey } from '@app/lib/trending/cache.ts';
 import { type TrendingItem, TrendingPeriod } from '@app/lib/trending/type.ts';
 import { getSlimCacheKey as getUserSlimCacheKey } from '@app/lib/user/cache.ts';
-import { fetchFriends, isFriends } from '@app/lib/user/utils.ts';
+import { applyUserFriendship, applyUsersFriendship } from '@app/lib/user/friendship.ts';
+import { fetchFriendIDs, fetchFriends, isFriends } from '@app/lib/user/utils.ts';
 
 import * as convert from './convert.ts';
 import type * as res from './res.ts';
@@ -53,11 +54,14 @@ export async function fetchSlimUserByUsername(
 }
 
 /** Cached */
-export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | undefined> {
+export async function fetchSlimUserByID(
+  uid: number,
+  viewerID?: number,
+): Promise<res.ISlimUser | undefined> {
   const cached = await redis.get(getUserSlimCacheKey(uid));
   if (cached) {
     const item = JSON.parse(cached) as res.ISlimUser;
-    return item;
+    return applyUserFriendship(item, await fetchFriendIDs(viewerID, [item.id]));
   }
   const [data] = await db.select().from(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, uid));
   if (!data) {
@@ -65,11 +69,14 @@ export async function fetchSlimUserByID(uid: number): Promise<res.ISlimUser | un
   }
   const item = convert.toSlimUser(data);
   await redis.setex(getUserSlimCacheKey(uid), ONE_MONTH, JSON.stringify(item));
-  return item;
+  return applyUserFriendship(item, await fetchFriendIDs(viewerID, [item.id]));
 }
 
 /** Cached */
-export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number, res.ISlimUser>> {
+export async function fetchSlimUsersByIDs(
+  ids: number[],
+  viewerID?: number,
+): Promise<Record<number, res.ISlimUser>> {
   if (ids.length === 0) {
     return {};
   }
@@ -94,6 +101,14 @@ export async function fetchSlimUsersByIDs(ids: number[]): Promise<Record<number,
     await redis.setex(getUserSlimCacheKey(slim.id), ONE_MONTH, JSON.stringify(slim));
     result[slim.id] = slim;
   }
+  const users = Object.values(result);
+  applyUsersFriendship(
+    users,
+    await fetchFriendIDs(
+      viewerID,
+      users.map((user) => user.id),
+    ),
+  );
   return result;
 }
 
@@ -123,9 +138,8 @@ export async function fetchSlimSubjectByID(
     const slim = JSON.parse(cached) as res.ISlimSubject;
     if (!allowNsfw && slim.nsfw) {
       return;
-    } else {
-      return slim;
     }
+    return slim;
   }
   const [data] = await db
     .select()
@@ -283,7 +297,6 @@ export async function fetchSubjectIDsByFilter(
   sort: SubjectSort,
   page: number,
 ): Promise<res.IPaged<number>> {
-  const pageSize = 24;
   if (filter.tags) {
     const normalizedTags = filter.tags
       .map((tag) => tag.trim().normalize('NFKC').toLowerCase())
@@ -295,6 +308,7 @@ export async function fetchSubjectIDsByFilter(
   if (cached) {
     return JSON.parse(cached) as res.IPaged<number>;
   }
+  const pageSize = 24;
   if (sort === SubjectSort.Trends) {
     const trendingKey = getTrendingSubjectKey(filter.type, TrendingPeriod.Month);
     const data = await redis.get(trendingKey);
@@ -378,7 +392,7 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
 
-    if (sort === SubjectSort.Rank && !isMetaTag && tagCounts) {
+    if (!isMetaTag && tagCounts && sort === SubjectSort.Rank) {
       const counts = subjectIDs.map((id) => tagCounts.get(id) ?? 0);
       const uniqCounts = [...new Set(counts)].toSorted((a, b) => a - b);
       const thresholdIndex = Math.ceil(uniqCounts.length * 0.6);
@@ -406,8 +420,8 @@ export async function fetchSubjectIDsByFilter(
   let totalOverride: number | undefined;
   let collectOrderedIDs: number[] | undefined;
   if (
-    sort === SubjectSort.Collects &&
     tagOrderedIDs &&
+    sort === SubjectSort.Collects &&
     filter.tags?.length === 1 &&
     !filter.cat &&
     filter.series === undefined &&
@@ -499,7 +513,7 @@ export async function fetchSubjectIDsByFilter(
       return { data: [], total: 0 };
     }
     query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${filter.ids.join(',')})`);
-  } else if (sort === SubjectSort.Collects && collectOrderedIDs) {
+  } else if (collectOrderedIDs && sort === SubjectSort.Collects) {
     query.orderBy(op.sql`find_in_set(chii_subjects.subject_id, ${collectOrderedIDs.join(',')})`);
   } else {
     query.orderBy(...sorts);
@@ -1107,7 +1121,7 @@ export async function fetchSlimBlogEntryByID(
   if (cached) {
     const slim = JSON.parse(cached) as res.ISlimBlogEntry;
     const isFriend = await isFriends(slim.uid, uid);
-    if (!slim.public && slim.uid !== uid && !isFriend) {
+    if (!isFriend && !slim.public && slim.uid !== uid) {
       return;
     }
     return slim;
@@ -1122,7 +1136,7 @@ export async function fetchSlimBlogEntryByID(
   const slim = convert.toSlimBlogEntry(data);
   await redis.setex(getBlogSlimCacheKey(entryID), ONE_MONTH, JSON.stringify(slim));
   const isFriend = await isFriends(slim.uid, uid);
-  if (!slim.public && slim.uid !== uid && !isFriend) {
+  if (!isFriend && !slim.public && slim.uid !== uid) {
     return;
   }
   return slim;
@@ -1146,7 +1160,7 @@ export async function fetchSlimBlogEntriesByIDs(
     if (cached[idx]) {
       const slim = JSON.parse(cached[idx]) as res.ISlimBlogEntry;
       const isFriend = friends.includes(slim.uid);
-      if (slim.public || slim.uid === uid || isFriend) {
+      if (isFriend || slim.public || slim.uid === uid) {
         result[id] = slim;
       }
     } else {
@@ -1164,7 +1178,7 @@ export async function fetchSlimBlogEntriesByIDs(
       const slim = convert.toSlimBlogEntry(d);
       await redis.setex(getBlogSlimCacheKey(d.id), ONE_MONTH, JSON.stringify(slim));
       const isFriend = friends.includes(slim.uid);
-      if (slim.public || slim.uid === uid || isFriend) {
+      if (isFriend || slim.public || slim.uid === uid) {
         result[d.id] = slim;
       }
     }

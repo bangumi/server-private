@@ -7,6 +7,10 @@ test('should check printable characters', () => {
   expect(Dam.allCharacterPrintable('\u202D')).toBe(false);
   expect(Dam.allCharacterPrintable("See what's hidden in your string…\tor be​hind﻿")).toBe(false);
 
+  // bidirectional isolate controls (Unicode Bidi_Control, used in Trojan-Source attacks)
+  expect(Dam.allCharacterPrintable('\u2066')).toBe(false);
+  expect(Dam.allCharacterPrintable('\u2069')).toBe(false);
+  expect(Dam.allCharacterPrintable('\u061C')).toBe(false);
   // emoji dog face
   expect(Dam.allCharacterPrintable('\u{0001F436}')).toBe(true);
 });

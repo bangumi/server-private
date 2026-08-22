@@ -1,0 +1,353 @@
+import { db, op, schema } from '@app/drizzle';
+import type { IAuth } from '@app/lib/auth/index.ts';
+import { TypedCache } from '@app/lib/cache.ts';
+import { BadRequestError } from '@app/lib/error';
+import { CommentState, TopicDisplay } from '@app/lib/topic/type.ts';
+import * as fetcher from '@app/lib/types/fetcher.ts';
+import { IRaKuenTopicType } from '@app/lib/types/req.ts';
+import type * as res from '@app/lib/types/res.ts';
+import { fetchJoinedGroups } from '@app/lib/user/utils.ts';
+
+/** 全站 1 分钟缓存，key 带 type/uid/nsfw/limit */
+const cache = TypedCache<string, res.IPaged<res.IRaKuenTopic>>(
+  (key) => `rakuen:topics:v1:${key}`,
+  60,
+);
+
+/** 聚合对登录/未登录共享缓存，统一使用匿名用户可见的话题状态 */
+const PublicTopicStates = [CommentState.Normal, CommentState.AdminReopen];
+
+type RaKuenItem = res.IRaKuenTopic;
+
+interface QueryResult {
+  items: RaKuenItem[];
+  total: number;
+}
+
+async function fetchGroupTopics(
+  allowNsfw: boolean,
+  limit: number,
+  myGroup: boolean,
+  userID: number,
+): Promise<QueryResult> {
+  if (myGroup && userID === 0) {
+    return { items: [], total: 0 };
+  }
+
+  const conditions = [
+    op.eq(schema.chiiGroupTopics.display, TopicDisplay.Normal),
+    op.inArray(schema.chiiGroupTopics.state, PublicTopicStates),
+  ];
+  if (!allowNsfw) {
+    conditions.push(op.eq(schema.chiiGroups.nsfw, false));
+  }
+  if (myGroup) {
+    const gids = await fetchJoinedGroups(userID);
+    if (gids.length === 0) {
+      return { items: [], total: 0 };
+    }
+    conditions.push(op.inArray(schema.chiiGroupTopics.gid, gids));
+  }
+
+  const join = op.eq(schema.chiiGroupTopics.gid, schema.chiiGroups.id);
+  const [{ count = 0 } = {}] = await db
+    .select({ count: op.count() })
+    .from(schema.chiiGroupTopics)
+    .innerJoin(schema.chiiGroups, join)
+    .where(op.and(...conditions));
+  const data = await db
+    .select()
+    .from(schema.chiiGroupTopics)
+    .innerJoin(schema.chiiGroups, join)
+    .where(op.and(...conditions))
+    .orderBy(op.desc(schema.chiiGroupTopics.updatedAt))
+    .limit(limit);
+
+  const [groups, users] = await Promise.all([
+    fetcher.fetchSlimGroupsByIDs(
+      data.map((d) => d.chii_group_topics.gid),
+      allowNsfw,
+    ),
+    fetcher.fetchSlimUsersByIDs(data.map((d) => d.chii_group_topics.uid)),
+  ]);
+  const items: RaKuenItem[] = [];
+  for (const d of data) {
+    const topic = d.chii_group_topics;
+    const group = groups[topic.gid];
+    const creator = users[topic.uid];
+    if (!group || !creator) {
+      continue;
+    }
+    items.push({
+      type: 'group',
+      id: topic.id,
+      title: topic.title,
+      replyCount: topic.replies,
+      creator,
+      group,
+      updatedAt: topic.updatedAt,
+    });
+  }
+  return { items, total: count };
+}
+
+async function fetchSubjectTopics(allowNsfw: boolean, limit: number): Promise<QueryResult> {
+  const conditions = [
+    op.eq(schema.chiiSubjectTopics.display, TopicDisplay.Normal),
+    op.inArray(schema.chiiSubjectTopics.state, PublicTopicStates),
+    op.ne(schema.chiiSubjects.ban, 1),
+  ];
+  if (!allowNsfw) {
+    conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
+  }
+  const join = op.eq(schema.chiiSubjectTopics.subjectID, schema.chiiSubjects.id);
+  const [{ count = 0 } = {}] = await db
+    .select({ count: op.count() })
+    .from(schema.chiiSubjectTopics)
+    .innerJoin(schema.chiiSubjects, join)
+    .where(op.and(...conditions));
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectTopics)
+    .innerJoin(schema.chiiSubjects, join)
+    .where(op.and(...conditions))
+    .orderBy(op.desc(schema.chiiSubjectTopics.updatedAt))
+    .limit(limit);
+
+  const [users, subjects] = await Promise.all([
+    fetcher.fetchSlimUsersByIDs(data.map((d) => d.chii_subject_topics.uid)),
+    fetcher.fetchSlimSubjectsByIDs(
+      data.map((d) => d.chii_subject_topics.subjectID),
+      allowNsfw,
+    ),
+  ]);
+  const items: RaKuenItem[] = [];
+  for (const d of data) {
+    const topic = d.chii_subject_topics;
+    const subject = subjects[topic.subjectID];
+    const creator = users[topic.uid];
+    if (!subject || !creator) {
+      continue;
+    }
+    items.push({
+      type: 'subject',
+      id: topic.id,
+      title: topic.title,
+      replyCount: topic.replies,
+      creator,
+      subject,
+      updatedAt: topic.updatedAt,
+    });
+  }
+  return { items, total: count };
+}
+
+async function fetchEpisodes(allowNsfw: boolean, limit: number): Promise<QueryResult> {
+  const conditions = [
+    op.ne(schema.chiiEpisodes.ban, 1),
+    op.gt(schema.chiiEpisodes.comment, 0),
+    op.ne(schema.chiiSubjects.ban, 1),
+  ];
+  if (!allowNsfw) {
+    conditions.push(op.eq(schema.chiiSubjects.nsfw, false));
+  }
+  const join = op.eq(schema.chiiEpisodes.subjectID, schema.chiiSubjects.id);
+  const [{ count = 0 } = {}] = await db
+    .select({ count: op.count() })
+    .from(schema.chiiEpisodes)
+    .innerJoin(schema.chiiSubjects, join)
+    .where(op.and(...conditions));
+  const data = await db
+    .select()
+    .from(schema.chiiEpisodes)
+    .innerJoin(schema.chiiSubjects, join)
+    .where(op.and(...conditions))
+    .orderBy(op.desc(schema.chiiEpisodes.updatedAt))
+    .limit(limit);
+
+  const subjects = await fetcher.fetchSlimSubjectsByIDs(
+    data.map((d) => d.chii_episodes.subjectID),
+    allowNsfw,
+  );
+  const items: RaKuenItem[] = [];
+  for (const d of data) {
+    const ep = d.chii_episodes;
+    const subject = subjects[ep.subjectID];
+    if (!subject) {
+      continue;
+    }
+    items.push({
+      type: 'episode',
+      id: ep.id,
+      subject,
+      episode: {
+        id: ep.id,
+        sort: ep.sort,
+        type: ep.type,
+        name: ep.name,
+        nameCN: ep.nameCN,
+        comment: ep.comment,
+      },
+      updatedAt: ep.updatedAt,
+    });
+  }
+  return { items, total: count };
+}
+
+async function fetchCharacters(allowNsfw: boolean, limit: number): Promise<QueryResult> {
+  const conditions = [
+    op.ne(schema.chiiCharacters.ban, 1),
+    op.eq(schema.chiiCharacters.redirect, 0),
+    op.gt(schema.chiiCharacters.comment, 0),
+  ];
+  if (!allowNsfw) {
+    conditions.push(op.eq(schema.chiiCharacters.nsfw, false));
+  }
+  const [{ count = 0 } = {}] = await db
+    .select({ count: op.count() })
+    .from(schema.chiiCharacters)
+    .where(op.and(...conditions));
+  const data = await db
+    .select({ id: schema.chiiCharacters.id, updatedAt: schema.chiiCharacters.lastPost })
+    .from(schema.chiiCharacters)
+    .where(op.and(...conditions))
+    .orderBy(op.desc(schema.chiiCharacters.lastPost))
+    .limit(limit);
+
+  const slims = await fetcher.fetchSlimCharactersByIDs(
+    data.map((d) => d.id),
+    allowNsfw,
+  );
+  const items: RaKuenItem[] = [];
+  for (const d of data) {
+    const c = slims[d.id];
+    if (!c) {
+      continue;
+    }
+    items.push({
+      type: 'character',
+      id: c.id,
+      name: c.name,
+      nameCN: c.nameCN,
+      images: c.images,
+      comment: c.comment,
+      updatedAt: d.updatedAt,
+    });
+  }
+  return { items, total: count };
+}
+
+async function fetchPersons(allowNsfw: boolean, limit: number): Promise<QueryResult> {
+  const conditions = [
+    op.ne(schema.chiiPersons.ban, 1),
+    op.eq(schema.chiiPersons.redirect, 0),
+    op.gt(schema.chiiPersons.comment, 0),
+  ];
+  if (!allowNsfw) {
+    conditions.push(op.eq(schema.chiiPersons.nsfw, false));
+  }
+  const [{ count = 0 } = {}] = await db
+    .select({ count: op.count() })
+    .from(schema.chiiPersons)
+    .where(op.and(...conditions));
+  const data = await db
+    .select({ id: schema.chiiPersons.id, updatedAt: schema.chiiPersons.lastPost })
+    .from(schema.chiiPersons)
+    .where(op.and(...conditions))
+    .orderBy(op.desc(schema.chiiPersons.lastPost))
+    .limit(limit);
+
+  const slims = await fetcher.fetchSlimPersonsByIDs(
+    data.map((d) => d.id),
+    allowNsfw,
+  );
+  const items: RaKuenItem[] = [];
+  for (const d of data) {
+    const p = slims[d.id];
+    if (!p) {
+      continue;
+    }
+    items.push({
+      type: 'person',
+      id: p.id,
+      name: p.name,
+      nameCN: p.nameCN,
+      images: p.images,
+      comment: p.comment,
+      updatedAt: d.updatedAt,
+    });
+  }
+  return { items, total: count };
+}
+
+export async function getRaKuenTopics(
+  auth: Readonly<IAuth>,
+  type: string,
+  limit: number,
+): Promise<res.IPaged<res.IRaKuenTopic>> {
+  const cacheKey =
+    type === IRaKuenTopicType.MyGroup
+      ? `my_group:${auth.userID}:${auth.allowNsfw}:${limit}`
+      : `${type}:${auth.allowNsfw}:${limit}`;
+
+  const cached = await cache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  let result: res.IPaged<res.IRaKuenTopic>;
+  switch (type) {
+    case IRaKuenTopicType.All: {
+      const [g, s, e, c, p] = await Promise.all([
+        fetchGroupTopics(auth.allowNsfw, limit, false, auth.userID),
+        fetchSubjectTopics(auth.allowNsfw, limit),
+        fetchEpisodes(auth.allowNsfw, limit),
+        fetchCharacters(auth.allowNsfw, limit),
+        fetchPersons(auth.allowNsfw, limit),
+      ]);
+      result = {
+        data: [...g.items, ...s.items, ...e.items, ...c.items, ...p.items]
+          .toSorted((a, b) => b.updatedAt - a.updatedAt)
+          .slice(0, limit),
+        total: g.total + s.total + e.total + c.total + p.total,
+      };
+      break;
+    }
+    case IRaKuenTopicType.Group: {
+      const { items, total } = await fetchGroupTopics(auth.allowNsfw, limit, false, auth.userID);
+      result = { data: items, total };
+      break;
+    }
+    case IRaKuenTopicType.MyGroup: {
+      const { items, total } = await fetchGroupTopics(auth.allowNsfw, limit, true, auth.userID);
+      result = { data: items, total };
+      break;
+    }
+    case IRaKuenTopicType.Subject: {
+      const { items, total } = await fetchSubjectTopics(auth.allowNsfw, limit);
+      result = { data: items, total };
+      break;
+    }
+    case IRaKuenTopicType.Episode: {
+      const { items, total } = await fetchEpisodes(auth.allowNsfw, limit);
+      result = { data: items, total };
+      break;
+    }
+    case IRaKuenTopicType.Character: {
+      const { items, total } = await fetchCharacters(auth.allowNsfw, limit);
+      result = { data: items, total };
+      break;
+    }
+    case IRaKuenTopicType.Person: {
+      const { items, total } = await fetchPersons(auth.allowNsfw, limit);
+      result = { data: items, total };
+      break;
+    }
+    default: {
+      throw new BadRequestError(`invalid rakuen topic type ${type}`);
+    }
+  }
+
+  await cache.set(cacheKey, result);
+  return result;
+}

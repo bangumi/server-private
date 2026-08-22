@@ -1,25 +1,15 @@
 import type { GraphQLResolveInfo } from 'graphql';
-
 import type { Context } from '@app/lib/graphql/context.ts';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = {
-  [_ in K]?: never;
-};
-export type Incremental<T> =
-  | T
-  | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
 };
 
 export type Avatar = {
@@ -47,10 +37,12 @@ export type Character = {
   summary: Scalars['String']['output'];
 };
 
+
 export type CharacterPersonsArgs = {
   limit?: Scalars['Int']['input'];
   offset?: Scalars['Int']['input'];
 };
+
 
 export type CharacterSubjectsArgs = {
   limit?: Scalars['Int']['input'];
@@ -125,10 +117,12 @@ export type Person = {
   type: Scalars['Int']['output'];
 };
 
+
 export type PersonCharactersArgs = {
   limit?: Scalars['Int']['input'];
   offset?: Scalars['Int']['input'];
 };
+
 
 export type PersonSubjectsArgs = {
   limit?: Scalars['Int']['input'];
@@ -156,19 +150,22 @@ export type Query = {
   subject?: Maybe<Subject>;
 };
 
+
 export type QueryCharacterArgs = {
   id: Scalars['Int']['input'];
 };
+
 
 export type QueryPersonArgs = {
   id: Scalars['Int']['input'];
 };
 
+
 export type QuerySubjectArgs = {
   id: Scalars['Int']['input'];
 };
 
-/** Basic character info as field of other types to avoid recursive query */
+/** basic character info as field of other types to avoid recursive query */
 export type SlimCharacter = {
   __typename?: 'SlimCharacter';
   collects: Scalars['Int']['output'];
@@ -185,7 +182,7 @@ export type SlimCharacter = {
   summary: Scalars['String']['output'];
 };
 
-/** Basic person info as field of other types to avoid recursive query */
+/** basic person info as field of other types to avoid recursive query */
 export type SlimPerson = {
   __typename?: 'SlimPerson';
   career: Array<Scalars['String']['output']>;
@@ -203,7 +200,7 @@ export type SlimPerson = {
   type: Scalars['Int']['output'];
 };
 
-/** A subject as field of other types to avoid recursive query */
+/** a subject as field of other types to avoid recursive query */
 export type SlimSubject = {
   __typename?: 'SlimSubject';
   airtime: SubjectAirtime;
@@ -253,10 +250,12 @@ export type Subject = {
   volumes: Scalars['Int']['output'];
 };
 
+
 export type SubjectCharactersArgs = {
   limit?: Scalars['Int']['input'];
   offset?: Scalars['Int']['input'];
 };
+
 
 export type SubjectEpisodesArgs = {
   limit?: Scalars['Int']['input'];
@@ -264,10 +263,12 @@ export type SubjectEpisodesArgs = {
   type?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
 export type SubjectPersonsArgs = {
   limit?: Scalars['Int']['input'];
   offset?: Scalars['Int']['input'];
 };
+
 
 export type SubjectRelationsArgs = {
   excludeTypes?: InputMaybe<Array<Scalars['Int']['input']>>;
@@ -276,9 +277,11 @@ export type SubjectRelationsArgs = {
   offset?: Scalars['Int']['input'];
 };
 
+
 export type SubjectTagsArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
 };
+
 
 export type SubjectTopicsArgs = {
   limit?: Scalars['Int']['input'];
@@ -373,43 +376,38 @@ export type User = {
   username: Scalars['String']['output'];
 };
 
+
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
+
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
-  | ResolverFn<TResult, TParent, TContext, TArgs>
-  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Promise<TResult> | TResult;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
 
 export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
-export interface SubscriptionSubscriberObject<
-  TResult,
-  TKey extends string,
-  TParent,
-  TContext,
-  TArgs,
-> {
+export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
   subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
   resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
 }
@@ -423,37 +421,31 @@ export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, 
   | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
   | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
 
-export type SubscriptionResolver<
-  TResult,
-  TKey extends string,
-  TParent = {},
-  TContext = {},
-  TArgs = {},
-> =
+export type SubscriptionResolver<TResult, TKey extends string, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> =
   | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
   | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
 
-export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+export type TypeResolveFn<TTypes, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (
   parent: TParent,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
-  obj: T,
-  context: TContext,
-  info: GraphQLResolveInfo,
-) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
-export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+export type DirectiveResolverFn<TResult = Record<PropertyKey, never>, TParent = Record<PropertyKey, never>, TContext = Record<PropertyKey, never>, TArgs = Record<PropertyKey, never>> = (
   next: NextResolverFn<TResult>,
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
+
+
+
+
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
@@ -471,7 +463,7 @@ export type ResolversTypes = {
   Person: ResolverTypeWrapper<Person>;
   PersonRelatedCharacter: ResolverTypeWrapper<PersonRelatedCharacter>;
   PersonRelatedSubject: ResolverTypeWrapper<PersonRelatedSubject>;
-  Query: ResolverTypeWrapper<{}>;
+  Query: ResolverTypeWrapper<Record<PropertyKey, never>>;
   SlimCharacter: ResolverTypeWrapper<SlimCharacter>;
   SlimPerson: ResolverTypeWrapper<SlimPerson>;
   SlimSubject: ResolverTypeWrapper<SlimSubject>;
@@ -506,7 +498,7 @@ export type ResolversParentTypes = {
   Person: Person;
   PersonRelatedCharacter: PersonRelatedCharacter;
   PersonRelatedSubject: PersonRelatedSubject;
-  Query: {};
+  Query: Record<PropertyKey, never>;
   SlimCharacter: SlimCharacter;
   SlimPerson: SlimPerson;
   SlimSubject: SlimSubject;
@@ -525,20 +517,13 @@ export type ResolversParentTypes = {
   User: User;
 };
 
-export type AvatarResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Avatar'] = ResolversParentTypes['Avatar'],
-> = {
+export type AvatarResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Avatar'] = ResolversParentTypes['Avatar']> = {
   large?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   medium?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   small?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CharacterResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character'],
-> = {
+export type CharacterResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Character'] = ResolversParentTypes['Character']> = {
   collects?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   comment?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -548,50 +533,26 @@ export type CharacterResolvers<
   lock?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nsfw?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  persons?: Resolver<
-    Maybe<Array<ResolversTypes['CharacterRelatedPerson']>>,
-    ParentType,
-    ContextType,
-    RequireFields<CharacterPersonsArgs, 'limit' | 'offset'>
-  >;
+  persons?: Resolver<Maybe<Array<ResolversTypes['CharacterRelatedPerson']>>, ParentType, ContextType, RequireFields<CharacterPersonsArgs, 'limit' | 'offset'>>;
   redirect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  subjects?: Resolver<
-    Maybe<Array<ResolversTypes['CharacterRelatedSubject']>>,
-    ParentType,
-    ContextType,
-    RequireFields<CharacterSubjectsArgs, 'limit' | 'offset'>
-  >;
+  subjects?: Resolver<Maybe<Array<ResolversTypes['CharacterRelatedSubject']>>, ParentType, ContextType, RequireFields<CharacterSubjectsArgs, 'limit' | 'offset'>>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CharacterRelatedPersonResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['CharacterRelatedPerson'] =
-    ResolversParentTypes['CharacterRelatedPerson'],
-> = {
+export type CharacterRelatedPersonResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CharacterRelatedPerson'] = ResolversParentTypes['CharacterRelatedPerson']> = {
   person?: Resolver<ResolversTypes['SlimPerson'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CharacterRelatedSubjectResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['CharacterRelatedSubject'] =
-    ResolversParentTypes['CharacterRelatedSubject'],
-> = {
+export type CharacterRelatedSubjectResolvers<ContextType = Context, ParentType extends ResolversParentTypes['CharacterRelatedSubject'] = ResolversParentTypes['CharacterRelatedSubject']> = {
   order?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type EpisodeResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Episode'] = ResolversParentTypes['Episode'],
-> = {
+export type EpisodeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Episode'] = ResolversParentTypes['Episode']> = {
   airdate?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   comment?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -603,49 +564,28 @@ export type EpisodeResolvers<
   name_cn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sort?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ImagesResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Images'] = ResolversParentTypes['Images'],
-> = {
+export type ImagesResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Images'] = ResolversParentTypes['Images']> = {
   grid?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   large?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   medium?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   small?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InfoboxResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Infobox'] = ResolversParentTypes['Infobox'],
-> = {
+export type InfoboxResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Infobox'] = ResolversParentTypes['Infobox']> = {
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   values?: Resolver<Maybe<Array<ResolversTypes['InfoboxValue']>>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InfoboxValueResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['InfoboxValue'] = ResolversParentTypes['InfoboxValue'],
-> = {
+export type InfoboxValueResolvers<ContextType = Context, ParentType extends ResolversParentTypes['InfoboxValue'] = ResolversParentTypes['InfoboxValue']> = {
   k?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   v?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PersonResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Person'] = ResolversParentTypes['Person'],
-> = {
+export type PersonResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Person'] = ResolversParentTypes['Person']> = {
   career?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  characters?: Resolver<
-    Maybe<Array<ResolversTypes['PersonRelatedCharacter']>>,
-    ParentType,
-    ContextType,
-    RequireFields<PersonCharactersArgs, 'limit' | 'offset'>
-  >;
+  characters?: Resolver<Maybe<Array<ResolversTypes['PersonRelatedCharacter']>>, ParentType, ContextType, RequireFields<PersonCharactersArgs, 'limit' | 'offset'>>;
   collects?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   comment?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -656,67 +596,30 @@ export type PersonResolvers<
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nsfw?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   redirect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  subjects?: Resolver<
-    Maybe<Array<ResolversTypes['PersonRelatedSubject']>>,
-    ParentType,
-    ContextType,
-    RequireFields<PersonSubjectsArgs, 'limit' | 'offset'>
-  >;
+  subjects?: Resolver<Maybe<Array<ResolversTypes['PersonRelatedSubject']>>, ParentType, ContextType, RequireFields<PersonSubjectsArgs, 'limit' | 'offset'>>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PersonRelatedCharacterResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['PersonRelatedCharacter'] =
-    ResolversParentTypes['PersonRelatedCharacter'],
-> = {
+export type PersonRelatedCharacterResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PersonRelatedCharacter'] = ResolversParentTypes['PersonRelatedCharacter']> = {
   character?: Resolver<ResolversTypes['SlimCharacter'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type PersonRelatedSubjectResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['PersonRelatedSubject'] =
-    ResolversParentTypes['PersonRelatedSubject'],
-> = {
+export type PersonRelatedSubjectResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PersonRelatedSubject'] = ResolversParentTypes['PersonRelatedSubject']> = {
   position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
-> = {
-  character?: Resolver<
-    Maybe<ResolversTypes['Character']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryCharacterArgs, 'id'>
-  >;
+export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  character?: Resolver<Maybe<ResolversTypes['Character']>, ParentType, ContextType, RequireFields<QueryCharacterArgs, 'id'>>;
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  person?: Resolver<
-    Maybe<ResolversTypes['Person']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryPersonArgs, 'id'>
-  >;
-  subject?: Resolver<
-    Maybe<ResolversTypes['Subject']>,
-    ParentType,
-    ContextType,
-    RequireFields<QuerySubjectArgs, 'id'>
-  >;
+  person?: Resolver<Maybe<ResolversTypes['Person']>, ParentType, ContextType, RequireFields<QueryPersonArgs, 'id'>>;
+  subject?: Resolver<Maybe<ResolversTypes['Subject']>, ParentType, ContextType, RequireFields<QuerySubjectArgs, 'id'>>;
 };
 
-export type SlimCharacterResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SlimCharacter'] = ResolversParentTypes['SlimCharacter'],
-> = {
+export type SlimCharacterResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SlimCharacter'] = ResolversParentTypes['SlimCharacter']> = {
   collects?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   comment?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -729,13 +632,9 @@ export type SlimCharacterResolvers<
   redirect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   role?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SlimPersonResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SlimPerson'] = ResolversParentTypes['SlimPerson'],
-> = {
+export type SlimPersonResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SlimPerson'] = ResolversParentTypes['SlimPerson']> = {
   career?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   collects?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   comment?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -749,13 +648,9 @@ export type SlimPersonResolvers<
   redirect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SlimSubjectResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SlimSubject'] = ResolversParentTypes['SlimSubject'],
-> = {
+export type SlimSubjectResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SlimSubject'] = ResolversParentTypes['SlimSubject']> = {
   airtime?: Resolver<ResolversTypes['SubjectAirtime'], ParentType, ContextType>;
   eps?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -773,27 +668,13 @@ export type SlimSubjectResolvers<
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   volumes?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['Subject'] = ResolversParentTypes['Subject'],
-> = {
+export type SubjectResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Subject'] = ResolversParentTypes['Subject']> = {
   airtime?: Resolver<ResolversTypes['SubjectAirtime'], ParentType, ContextType>;
-  characters?: Resolver<
-    Maybe<Array<ResolversTypes['SubjectRelatedCharacter']>>,
-    ParentType,
-    ContextType,
-    RequireFields<SubjectCharactersArgs, 'limit' | 'offset'>
-  >;
+  characters?: Resolver<Maybe<Array<ResolversTypes['SubjectRelatedCharacter']>>, ParentType, ContextType, RequireFields<SubjectCharactersArgs, 'limit' | 'offset'>>;
   collection?: Resolver<ResolversTypes['SubjectCollection'], ParentType, ContextType>;
-  episodes?: Resolver<
-    Maybe<Array<ResolversTypes['Episode']>>,
-    ParentType,
-    ContextType,
-    RequireFields<SubjectEpisodesArgs, 'limit' | 'offset'>
-  >;
+  episodes?: Resolver<Maybe<Array<ResolversTypes['Episode']>>, ParentType, ContextType, RequireFields<SubjectEpisodesArgs, 'limit' | 'offset'>>;
   eps?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   images?: Resolver<Maybe<ResolversTypes['SubjectImages']>, ParentType, ContextType>;
@@ -802,146 +683,80 @@ export type SubjectResolvers<
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name_cn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nsfw?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  persons?: Resolver<
-    Maybe<Array<ResolversTypes['SubjectRelatedPerson']>>,
-    ParentType,
-    ContextType,
-    RequireFields<SubjectPersonsArgs, 'limit' | 'offset'>
-  >;
+  persons?: Resolver<Maybe<Array<ResolversTypes['SubjectRelatedPerson']>>, ParentType, ContextType, RequireFields<SubjectPersonsArgs, 'limit' | 'offset'>>;
   platform?: Resolver<ResolversTypes['SubjectPlatform'], ParentType, ContextType>;
   rating?: Resolver<ResolversTypes['SubjectRating'], ParentType, ContextType>;
   redirect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  relations?: Resolver<
-    Maybe<Array<ResolversTypes['SubjectRelation']>>,
-    ParentType,
-    ContextType,
-    RequireFields<SubjectRelationsArgs, 'limit' | 'offset'>
-  >;
+  relations?: Resolver<Maybe<Array<ResolversTypes['SubjectRelation']>>, ParentType, ContextType, RequireFields<SubjectRelationsArgs, 'limit' | 'offset'>>;
   series?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   series_entry?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  tags?: Resolver<
-    Array<ResolversTypes['SubjectTag']>,
-    ParentType,
-    ContextType,
-    RequireFields<SubjectTagsArgs, 'limit'>
-  >;
-  topics?: Resolver<
-    Maybe<Array<ResolversTypes['SubjectTopic']>>,
-    ParentType,
-    ContextType,
-    RequireFields<SubjectTopicsArgs, 'limit' | 'offset'>
-  >;
+  tags?: Resolver<Array<ResolversTypes['SubjectTag']>, ParentType, ContextType, RequireFields<SubjectTagsArgs, 'limit'>>;
+  topics?: Resolver<Maybe<Array<ResolversTypes['SubjectTopic']>>, ParentType, ContextType, RequireFields<SubjectTopicsArgs, 'limit' | 'offset'>>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   volumes?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectAirtimeResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectAirtime'] =
-    ResolversParentTypes['SubjectAirtime'],
-> = {
+export type SubjectAirtimeResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectAirtime'] = ResolversParentTypes['SubjectAirtime']> = {
   date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   month?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   weekday?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   year?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectCollectionResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectCollection'] =
-    ResolversParentTypes['SubjectCollection'],
-> = {
+export type SubjectCollectionResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectCollection'] = ResolversParentTypes['SubjectCollection']> = {
   collect?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   doing?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   dropped?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   on_hold?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   wish?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectImagesResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectImages'] = ResolversParentTypes['SubjectImages'],
-> = {
+export type SubjectImagesResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectImages'] = ResolversParentTypes['SubjectImages']> = {
   common?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   grid?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   large?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   medium?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   small?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectPlatformResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectPlatform'] =
-    ResolversParentTypes['SubjectPlatform'],
-> = {
+export type SubjectPlatformResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectPlatform'] = ResolversParentTypes['SubjectPlatform']> = {
   alias?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type_cn?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectRatingResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectRating'] = ResolversParentTypes['SubjectRating'],
-> = {
+export type SubjectRatingResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectRating'] = ResolversParentTypes['SubjectRating']> = {
   count?: Resolver<Maybe<Array<ResolversTypes['Int']>>, ParentType, ContextType>;
   rank?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectRelatedCharacterResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectRelatedCharacter'] =
-    ResolversParentTypes['SubjectRelatedCharacter'],
-> = {
+export type SubjectRelatedCharacterResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectRelatedCharacter'] = ResolversParentTypes['SubjectRelatedCharacter']> = {
   character?: Resolver<ResolversTypes['SlimCharacter'], ParentType, ContextType>;
   order?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectRelatedPersonResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectRelatedPerson'] =
-    ResolversParentTypes['SubjectRelatedPerson'],
-> = {
+export type SubjectRelatedPersonResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectRelatedPerson'] = ResolversParentTypes['SubjectRelatedPerson']> = {
   person?: Resolver<ResolversTypes['SlimPerson'], ParentType, ContextType>;
   position?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectRelationResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectRelation'] =
-    ResolversParentTypes['SubjectRelation'],
-> = {
+export type SubjectRelationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectRelation'] = ResolversParentTypes['SubjectRelation']> = {
   order?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   relation?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   subject?: Resolver<ResolversTypes['SlimSubject'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectTagResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectTag'] = ResolversParentTypes['SubjectTag'],
-> = {
+export type SubjectTagResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectTag'] = ResolversParentTypes['SubjectTag']> = {
   count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SubjectTopicResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['SubjectTopic'] = ResolversParentTypes['SubjectTopic'],
-> = {
+export type SubjectTopicResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SubjectTopic'] = ResolversParentTypes['SubjectTopic']> = {
   created_at?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   creator?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   display?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -950,18 +765,13 @@ export type SubjectTopicResolvers<
   state?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updated_at?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserResolvers<
-  ContextType = Context,
-  ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User'],
-> = {
+export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   avatar?: Resolver<ResolversTypes['Avatar'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   nickname?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = Context> = {
@@ -993,3 +803,4 @@ export type Resolvers<ContextType = Context> = {
   SubjectTopic?: SubjectTopicResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
+

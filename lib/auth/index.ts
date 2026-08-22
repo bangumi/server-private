@@ -2,12 +2,16 @@ import * as crypto from 'node:crypto';
 
 import { createError } from '@fastify/error';
 import { compare } from '@node-rs/bcrypt';
-import { DateTime } from 'luxon';
 
 import { db, op, schema } from '@app/drizzle';
 import { TypedCache } from '@app/lib/cache.ts';
 import type * as res from '@app/lib/types/res.ts';
 import { fetchPermission, type Permission } from '@app/lib/user/perm';
+import {
+  canViewNsfwSubject,
+  fetchPrivacyByUserID,
+  isNsfwSubjectPreferenceEnabled,
+} from '@app/lib/user/privacy.ts';
 import { fetchUserX } from '@app/lib/user/utils.ts';
 import { intval } from '@app/lib/utils/index.ts';
 import { getTimelineSourceFromAppID } from '@app/vendor';
@@ -51,10 +55,6 @@ export const UserGroup = Object.freeze({
   Normal: 10,
   WikiEditor: 11,
 } as const);
-
-const nsfwRestrictedUIDs = new Set([
-  873244, // by @everpcpc
-]);
 
 export interface IAuth {
   userID: number;
@@ -149,15 +149,18 @@ export function emptyAuth(): IAuth {
 
 async function userToAuth(user: res.ISlimUser, appID?: string): Promise<IAuth> {
   const perms = await fetchPermission(user.group);
+  const privacy = await fetchPrivacyByUserID(user.id);
+  const showNsfwSubject = isNsfwSubjectPreferenceEnabled(privacy);
   return {
     userID: user.id,
     login: true,
     permission: perms,
-    allowNsfw:
-      !nsfwRestrictedUIDs.has(user.id) &&
-      !perms.ban_visit &&
-      !perms.user_ban &&
-      DateTime.now().toUnixInteger() - user.joinedAt >= 60 * 60 * 24 * 90,
+    allowNsfw: canViewNsfwSubject({
+      showNsfwSubject,
+      userID: user.id,
+      regTime: user.joinedAt,
+      permission: perms,
+    }),
     regTime: user.joinedAt,
     groupID: user.group,
     source: getTimelineSourceFromAppID(appID ?? '') ?? defaultSource,

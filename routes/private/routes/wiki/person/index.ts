@@ -38,6 +38,7 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { ghostUser } from '@app/lib/user/utils';
 import { parseConvertedValue } from '@app/lib/utils/index.ts';
+import { LimitAction } from '@app/lib/utils/rate-limit';
 import {
   extractBirth,
   extractBloodType,
@@ -47,6 +48,7 @@ import {
   WikiChangedError,
 } from '@app/lib/wiki.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 import { findSubjectStaffPosition } from '@app/vendor';
 
@@ -299,6 +301,7 @@ export async function setup(app: App) {
 
       let personID;
 
+      await rateLimit(LimitAction.Wiki, auth.userID);
       await db.transaction(async (t) => {
         const { producer, mangaka, artist, seiyu, writer, illustrator, actor } =
           person.profession ?? {};
@@ -419,9 +422,8 @@ export async function setup(app: App) {
 
       if (personID) {
         return { personID };
-      } else {
-        throw new Error('unknown error');
       }
+      throw new Error('unknown error');
     },
   );
 
@@ -534,6 +536,9 @@ export async function setup(app: App) {
         finalAuthorID = authorID;
       }
 
+      if (adminToken !== config.admin_token) {
+        await rateLimit(LimitAction.Wiki, auth.userID);
+      }
       await db.transaction(async (t) => {
         const [p] = await t
           .select()
@@ -625,11 +630,11 @@ export async function setup(app: App) {
   );
 
   app.post(
-    '/persons/:personID/potraits',
+    '/persons/:personID/portraits',
     {
       schema: {
         tags: [Tag.Wiki],
-        operationId: 'uploadPersonPotrait',
+        operationId: 'uploadPersonPortrait',
         summary: '上传人物肖像',
         params: t.Object({
           personID: t.Integer({ minimum: 1 }),
@@ -696,6 +701,8 @@ export async function setup(app: App) {
       if (raw.length > sizeLimit) {
         throw new ImageFileTooLarge();
       }
+
+      await rateLimit(LimitAction.Wiki, auth.userID);
 
       // validate image
       const resp = await imaginary.info(raw);
@@ -1191,9 +1198,10 @@ export async function setup(app: App) {
         const characterID = rel.crt_id;
 
         const subject = subjectsMap[subjectID];
-        const character = charactersMap[characterID];
 
         if (!subject) return [];
+
+        const character = charactersMap[characterID];
 
         return [
           {

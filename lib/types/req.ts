@@ -83,6 +83,34 @@ export const GroupSort = t.String({
   - updated = 最新讨论`,
 });
 
+export const RaKuenTopicType = t.String({
+  $id: 'RaKuenTopicType',
+  enum: ['all', 'group', 'my_group', 'subject', 'episode', 'character', 'person'],
+  'x-ms-enum': {
+    name: 'RaKuenTopicType',
+    modelAsString: true,
+  },
+  'x-enum-varnames': ['All', 'Group', 'MyGroup', 'Subject', 'Episode', 'Character', 'Person'],
+  description: `超展开聚合类型
+  - all = 全部
+  - group = 小组话题
+  - my_group = 已加入小组的话题（未登录返回空）
+  - subject = 条目话题
+  - episode = 章节
+  - character = 角色
+  - person = 人物`,
+});
+
+export const IRaKuenTopicType = Object.freeze({
+  All: 'all',
+  Group: 'group',
+  MyGroup: 'my_group',
+  Subject: 'subject',
+  Episode: 'episode',
+  Character: 'character',
+  Person: 'person',
+});
+
 export const SubjectBrowseSort = t.String({
   $id: 'SubjectBrowseSort',
   enum: ['rank', 'trends', 'collects', 'date', 'title'],
@@ -230,6 +258,30 @@ export const UpdateTopic = t.Object(
   { $id: 'UpdateTopic' },
 );
 
+export type ICreateBlog = Static<typeof CreateBlog>;
+export const CreateBlog = t.Object(
+  {
+    title: t.String({ minLength: 1, maxLength: 80, description: '日志标题' }),
+    content: t.String({ minLength: 1, description: '日志正文（BBCode）' }),
+    tags: t.Optional(t.Array(t.String({ description: '标签' }))),
+    public: t.Optional(t.Boolean({ description: '公开（true）或仅好友可见（false），默认公开' })),
+    subjectIDs: t.Optional(t.Array(t.Integer({ description: '关联条目 id，最多 5 个' }))),
+  },
+  { $id: 'CreateBlog' },
+);
+
+export type IUpdateBlog = Static<typeof UpdateBlog>;
+export const UpdateBlog = t.Object(
+  {
+    title: t.Optional(t.String({ minLength: 1, maxLength: 80, description: '日志标题' })),
+    content: t.Optional(t.String({ minLength: 1, description: '日志正文（BBCode）' })),
+    tags: t.Optional(t.Array(t.String({ description: '标签' }))),
+    public: t.Optional(t.Boolean({ description: '公开（true）或仅好友可见（false）' })),
+    subjectIDs: t.Optional(t.Array(t.Integer({ description: '关联条目 id，最多 5 个' }))),
+  },
+  { $id: 'UpdateBlog' },
+);
+
 export type ICreateReply = Static<typeof CreateReply>;
 export const CreateReply = t.Object(
   {
@@ -295,6 +347,24 @@ export const CollectSubject = t.Object(
     ),
   },
   { $id: 'CollectSubject' },
+);
+
+export type ICreateSubjectComment = Static<typeof CreateSubjectComment>;
+export const CreateSubjectComment = t.Object(
+  {
+    comment: t.String({ minLength: 1, description: '吐槽内容' }),
+    type: t.Optional(Ref(CollectionType)),
+    rate: t.Optional(t.Integer({ minimum: 0, maximum: 10, description: '评分，0 表示删除评分' })),
+  },
+  { $id: 'CreateSubjectComment' },
+);
+
+export type IUpdateSubjectComment = Static<typeof UpdateSubjectComment>;
+export const UpdateSubjectComment = t.Object(
+  {
+    comment: t.String({ minLength: 1, description: '吐槽内容' }),
+  },
+  { $id: 'UpdateSubjectComment' },
 );
 
 export type IUpdateSubjectProgress = Static<typeof UpdateSubjectProgress>;

@@ -1,7 +1,7 @@
 import { request as httpRequest } from 'node:http';
 
 import fastifySSE from '@fastify/sse';
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
@@ -147,14 +147,43 @@ describe('timeline status', () => {
     expect(data?.type).toBe(1);
     expect(data?.memo).toBe('^_^\n(bgm38)&gt;_&lt;');
   });
+
+  test('should delete timeline say', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+      },
+    });
+
+    await app.register(setup);
+    const id = await createTimelineSay(app, 'timeline to delete', []);
+
+    const res = await app.inject({
+      method: 'delete',
+      url: `/timeline/${id}`,
+    });
+
+    expect(res.statusCode).toBe(200);
+    const [data] = await db
+      .select()
+      .from(schema.chiiTimeline)
+      .where(op.eq(schema.chiiTimeline.id, id))
+      .limit(1);
+    expect(data).toBeUndefined();
+  });
 });
 
 describe('should get timeline events', () => {
   const testUserID = 287622;
   const createdTimelineIDs: number[] = [];
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     await initTimelineSubscriber();
+  });
+
+  beforeEach(async () => {
     await redis.flushdb();
   });
 

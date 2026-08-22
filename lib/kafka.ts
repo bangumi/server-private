@@ -12,13 +12,13 @@ class Producer {
 
     const { Kafka, logLevel } = KafkaJS;
 
-    const kafka = new Kafka({
-      log_level: logLevel.WARN,
-    });
-
     if (!config.kafkaBrokers) {
       throw new Error('KAFKA_BROKERS is not set');
     }
+
+    const kafka = new Kafka({
+      log_level: logLevel.WARN,
+    });
 
     const producer = kafka.producer({
       'bootstrap.servers': config.kafkaBrokers,
@@ -53,12 +53,12 @@ export const producer = production || stage ? new Producer() : new MockProducer(
 export async function newConsumer(topics: string[]) {
   const { Kafka, logLevel } = KafkaJS;
 
-  const kafka = new Kafka({
-    log_level: logLevel.WARN,
-  });
   if (!config.kafkaBrokers) {
     throw new Error('KAFKA_BROKERS is not set');
   }
+  const kafka = new Kafka({
+    log_level: logLevel.WARN,
+  });
   const consumer = kafka.consumer({
     'bootstrap.servers': config.kafkaBrokers,
     'group.id': config.kafkaJsMqGroupId,

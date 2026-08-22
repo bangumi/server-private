@@ -69,12 +69,12 @@ export function intval(value: string | number): number {
 
 function parseIntStrict(integer: string | number) {
   if (typeof integer === 'number') {
-    return Number.isInteger(integer) ? integer : undefined;
+    return Number.isSafeInteger(integer) ? integer : undefined;
   }
 
   const n = Number(integer);
 
-  if (Number.isInteger(n)) {
+  if (Number.isSafeInteger(n)) {
     return n;
   }
 }
@@ -87,7 +87,7 @@ export function parseDuration(durationString: string): number {
   if (durationString.includes(':')) {
     const split = durationString.split(':');
     if (split.length > 3) {
-      return Number.NaN;
+      return NaN;
     }
 
     let result = 0;
@@ -99,7 +99,7 @@ export function parseDuration(durationString: string): number {
     return result;
   }
 
-  return _parseDuration(durationString, 's') ?? Number.NaN;
+  return _parseDuration(durationString, 's') ?? NaN;
 }
 
 export function validateDuration(duration: string | undefined) {

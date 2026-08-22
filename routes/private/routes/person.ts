@@ -245,10 +245,10 @@ export async function setup(app: App) {
       const works: res.IPersonWork[] = [];
       for (const sid of subjectIDs) {
         const subject = subjects[sid];
-        const positions = relationsMap.get(sid) || [];
         if (!subject) {
           continue;
         }
+        const positions = relationsMap.get(sid) || [];
         works.push({ subject, positions });
       }
       return {
@@ -422,7 +422,7 @@ export async function setup(app: App) {
           personID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error, {
             'x-examples': formatErrors(new NotFoundError('person')),
           }),
@@ -431,7 +431,7 @@ export async function setup(app: App) {
     },
     async ({ auth, params: { personID } }) => {
       await requirePerson(personID, auth.allowNsfw);
-      return await comment.getAll(personID);
+      return await comment.getAll(personID, auth.login ? auth.userID : undefined);
     },
   );
 
@@ -543,7 +543,7 @@ export async function setup(app: App) {
           photoID: t.Integer(),
         }),
         response: {
-          200: t.Array(res.Comment),
+          200: t.Array(res.Ref(res.Comment)),
           404: res.Ref(res.Error),
         },
       },
@@ -551,7 +551,7 @@ export async function setup(app: App) {
     async ({ auth, params: { personID, photoID } }) => {
       await requirePerson(personID, auth.allowNsfw);
       await requireMonoPhoto(MonoPhotoType.Person, personID, photoID);
-      return await comment.getAll(personID, photoID);
+      return await comment.getAll(personID, auth.login ? auth.userID : undefined, photoID);
     },
   );
 

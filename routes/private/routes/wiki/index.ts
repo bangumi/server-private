@@ -22,25 +22,17 @@ export async function setup(app: App) {
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export async function setupRecentChangeList(app: App) {
-  const RecentWikiChange = t.Object(
-    {
-      subject: t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() })),
-      persons: t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() })),
-    },
-    { $id: 'RecentWikiChange' },
-  );
-
   const RecentItem = t.Array(t.Object({ id: t.Integer(), createdAt: t.Integer() }));
 
-  const sinceParam = t.Object({
-    since: t.Integer({
-      default: 0,
-      description:
-        'unix time stamp, only return last update time >= since\n\nonly allow recent 2 days',
-    }),
+  const sinceQuery = t.Object({
+    since: t.Optional(
+      t.Integer({
+        default: 0,
+        description:
+          'unix time stamp, only return last update time >= since\n\nonly allow recent 2 days',
+      }),
+    ),
   });
-
-  app.addSchema(RecentWikiChange);
 
   app.get(
     '/recent/subjects',
@@ -49,20 +41,14 @@ export async function setupRecentChangeList(app: App) {
         tags: [Tag.Wiki],
         operationId: 'getRecentSubjectWiki',
         description: '获取最近两天的wiki更新',
-        params: t.Object({
-          since: t.Integer({
-            default: 0,
-            description:
-              'unix time stamp, only return last update time >= since\n\nonly allow recent 2 days',
-          }),
-        }),
+        querystring: sinceQuery,
         response: {
-          200: res.Ref(RecentWikiChange),
+          200: RecentItem,
           401: res.Ref(res.Error),
         },
       },
     },
-    async ({ params: { since } }): Promise<Static<typeof RecentWikiChange>> => {
+    async ({ query: { since = 0 } }): Promise<Static<typeof RecentItem>> => {
       since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
 
       const subjects = await db
@@ -74,32 +60,9 @@ export async function setupRecentChangeList(app: App) {
         .where(op.gte(schema.chiiSubjectRev.createdAt, since))
         .orderBy(op.desc(schema.chiiSubjectRev.createdAt));
 
-      const persons = await db
-        .select({
-          revMid: schema.chiiRevHistory.revMid,
-          createdAt: schema.chiiRevHistory.createdAt,
-        })
-        .from(schema.chiiRevHistory)
-        .where(
-          op.and(
-            op.gte(schema.chiiRevHistory.createdAt, since),
-            op.inArray(schema.chiiRevHistory.revType, [
-              RevType.personEdit,
-              RevType.personMerge,
-              RevType.personErase,
-            ]),
-          ),
-        )
-        .orderBy(op.desc(schema.chiiRevHistory.createdAt));
-
-      return {
-        subject: subjects.map((o) => {
-          return { id: o.subjectID, createdAt: o.createdAt };
-        }),
-        persons: persons.map((o) => {
-          return { id: o.revMid, createdAt: o.createdAt };
-        }),
-      };
+      return subjects.map((o) => {
+        return { id: o.subjectID, createdAt: o.createdAt };
+      });
     },
   );
 
@@ -110,14 +73,14 @@ export async function setupRecentChangeList(app: App) {
         tags: [Tag.Wiki],
         operationId: 'getRecentPersonWiki',
         description: '获取最近两天的人物wiki更新',
-        params: sinceParam,
+        querystring: sinceQuery,
         response: {
           200: RecentItem,
           401: res.Ref(res.Error),
         },
       },
     },
-    async ({ params: { since } }): Promise<Static<typeof RecentItem>> => {
+    async ({ query: { since = 0 } }): Promise<Static<typeof RecentItem>> => {
       since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
 
       const persons = await db
@@ -151,14 +114,14 @@ export async function setupRecentChangeList(app: App) {
         tags: [Tag.Wiki],
         operationId: 'getRecentCharacterWiki',
         description: '获取最近两天的角色wiki更新',
-        params: sinceParam,
+        querystring: sinceQuery,
         response: {
           200: RecentItem,
           401: res.Ref(res.Error),
         },
       },
     },
-    async ({ params: { since } }): Promise<Static<typeof RecentItem>> => {
+    async ({ query: { since = 0 } }): Promise<Static<typeof RecentItem>> => {
       since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
 
       const characters = await db
@@ -192,14 +155,14 @@ export async function setupRecentChangeList(app: App) {
         tags: [Tag.Wiki],
         operationId: 'getRecentEpisodeWiki',
         description: '获取最近两天的章节wiki更新',
-        params: sinceParam,
+        querystring: sinceQuery,
         response: {
           200: RecentItem,
           401: res.Ref(res.Error),
         },
       },
     },
-    async ({ params: { since } }): Promise<Static<typeof RecentItem>> => {
+    async ({ query: { since = 0 } }): Promise<Static<typeof RecentItem>> => {
       since = Math.max(Date.now() / 1000 - 3600 * 24 * 2, since);
 
       const episodes = await db

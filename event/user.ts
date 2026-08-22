@@ -1,10 +1,6 @@
 import redis from '@app/lib/redis.ts';
-import {
-  getFollowersCacheKey,
-  getFriendsCacheKey,
-  getRelationCacheKey,
-  getSlimCacheKey,
-} from '@app/lib/user/cache';
+import { getPrivacyCacheKey, getSlimCacheKey } from '@app/lib/user/cache';
+import { invalidateFriendshipCaches } from '@app/lib/user/utils.ts';
 
 import { EventOp, type KafkaMessage } from './type';
 
@@ -26,6 +22,22 @@ export async function handle({ key, value }: KafkaMessage) {
     case EventOp.Update:
     case EventOp.Delete: {
       await redis.del(getSlimCacheKey(idx.uid));
+      break;
+    }
+    case EventOp.Snapshot: {
+      break;
+    }
+  }
+}
+
+export async function handleFields({ key, value }: KafkaMessage) {
+  const idx = JSON.parse(key) as UserKey;
+  const payload = JSON.parse(value.toString()) as UserPayload;
+  switch (payload.op) {
+    case EventOp.Create:
+    case EventOp.Update:
+    case EventOp.Delete: {
+      await redis.del(getPrivacyCacheKey(idx.uid));
       break;
     }
     case EventOp.Snapshot: {
@@ -58,11 +70,7 @@ export async function handleFriend({ value }: KafkaMessage) {
     case EventOp.Create:
     case EventOp.Update:
     case EventOp.Delete: {
-      await redis.del(
-        getFriendsCacheKey(uid),
-        getFollowersCacheKey(fid),
-        getRelationCacheKey(uid, fid),
-      );
+      await invalidateFriendshipCaches(uid, fid);
       break;
     }
     case EventOp.Snapshot: {

@@ -32,11 +32,13 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.CharacterEdit);
   app.addSchema(req.CharacterSearchFilter);
   app.addSchema(req.CollectSubject);
+  app.addSchema(req.CreateBlog);
   app.addSchema(req.CreateContent);
   app.addSchema(req.CreateIndex);
   app.addSchema(req.CreateIndexRelated);
   app.addSchema(req.CreateReply);
   app.addSchema(req.CreateReport);
+  app.addSchema(req.CreateSubjectComment);
   app.addSchema(req.CreateTopic);
   app.addSchema(req.FilterMode);
   app.addSchema(req.GroupFilterMode);
@@ -45,6 +47,7 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.PersonCreate);
   app.addSchema(req.PersonEdit);
   app.addSchema(req.PersonSearchFilter);
+  app.addSchema(req.RaKuenTopicType);
   app.addSchema(req.SearchCharacter);
   app.addSchema(req.SearchPerson);
   app.addSchema(req.SearchSubject);
@@ -54,8 +57,10 @@ function addRequestSchemas(app: App) {
   app.addSchema(req.TurnstileToken);
   app.addSchema(req.UpdateContent);
   app.addSchema(req.UpdateEpisodeProgress);
+  app.addSchema(req.UpdateBlog);
   app.addSchema(req.UpdateIndex);
   app.addSchema(req.UpdateIndexRelated);
+  app.addSchema(req.UpdateSubjectComment);
   app.addSchema(req.UpdateSubjectProgress);
   app.addSchema(req.UpdateTopic);
 }
@@ -72,6 +77,7 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.CharacterSubjectRelation);
   app.addSchema(res.CharacterWikiInfo);
   app.addSchema(res.Comment);
+  app.addSchema(res.CommentBase);
   app.addSchema(res.Episode);
   app.addSchema(res.Error);
   app.addSchema(res.Friend);
@@ -97,6 +103,12 @@ function addResponseSchemas(app: App) {
   app.addSchema(res.PersonWork);
   app.addSchema(res.Post);
   app.addSchema(res.Profile);
+  app.addSchema(res.RaKuenCharacter);
+  app.addSchema(res.RaKuenEpisode);
+  app.addSchema(res.RaKuenGroupTopic);
+  app.addSchema(res.RaKuenPerson);
+  app.addSchema(res.RaKuenSubjectTopic);
+  app.addSchema(res.RaKuenTopic);
   app.addSchema(res.Reaction);
   app.addSchema(res.Reply);
   app.addSchema(res.ReplyBase);
