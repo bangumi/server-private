@@ -430,3 +430,22 @@ describe('character relations', () => {
     expect(res.json()).toMatchSnapshot();
   });
 });
+
+describe('legacy revision data', () => {
+  test('should handle revision with legacy array extra', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/characters/-/revisions/113047');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().extra).toEqual({});
+  });
+
+  test('should return 404 for revision with empty record', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/characters/-/revisions/114512');
+
+    expect(res.statusCode).toBe(404);
+  });
+});
