@@ -498,3 +498,22 @@ describe('person relations', () => {
     expect(res.json()).toMatchSnapshot();
   });
 });
+
+describe('legacy revision data', () => {
+  test('should handle revision with legacy array extra', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/persons/-/revisions/12');
+
+    expect(res.statusCode).toBe(200);
+    expect(res.json().extra).toEqual({});
+  });
+
+  test('should return 404 for revision with empty record', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/persons/-/revisions/1142797');
+
+    expect(res.statusCode).toBe(404);
+  });
+});
