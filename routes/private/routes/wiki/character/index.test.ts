@@ -440,4 +440,12 @@ describe('legacy revision data', () => {
     expect(res.statusCode).toBe(200);
     expect(res.json().extra).toEqual({});
   });
+
+  test('should return 404 for revision with empty record', async () => {
+    const app = await testApp({});
+
+    const res = await app.inject('/characters/-/revisions/114512');
+
+    expect(res.statusCode).toBe(404);
+  });
 });
