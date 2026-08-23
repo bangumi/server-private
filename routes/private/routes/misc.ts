@@ -1,4 +1,3 @@
-import fastifySocketIO from 'fastify-socket.io';
 import type { Server } from 'socket.io';
 import t from 'typebox';
 
@@ -17,6 +16,7 @@ import { LimitAction } from '@app/lib/utils/rate-limit';
 import { requireLogin } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
+import fastifySocketIO from '@app/vendor/fastify-socket.io/index.ts';
 
 declare module 'fastify' {
   interface FastifyInstance {
