@@ -107,13 +107,13 @@ describe('channel', () => {
     const ids = [12345681, 12345682, 12345683, 12345684];
     const now = 1;
     await db.insert(schema.chiiTagIndex).values([
-      // type=2 的条目标签
+      // type=2 的条目标签，count 设大保证排在测试库真实数据前面
       {
         id: ids[0],
         name: 'channel-tag-a',
         cat: 0,
         type: 2,
-        count: 5,
+        count: 1_000_000,
         createdAt: now,
         updatedAt: now,
       },
@@ -122,7 +122,7 @@ describe('channel', () => {
         name: 'channel-tag-b',
         cat: 0,
         type: 2,
-        count: 10,
+        count: 2_000_000,
         createdAt: now,
         updatedAt: now,
       },
@@ -132,7 +132,7 @@ describe('channel', () => {
         name: 'channel-tag-other-cat',
         cat: 1,
         type: 2,
-        count: 99,
+        count: 3_000_000,
         createdAt: now,
         updatedAt: now,
       },
@@ -141,7 +141,7 @@ describe('channel', () => {
         name: 'channel-tag-other-type',
         cat: 0,
         type: 1,
-        count: 99,
+        count: 3_000_000,
         createdAt: now,
         updatedAt: now,
       },
@@ -158,10 +158,10 @@ describe('channel', () => {
       });
       expect(res.statusCode).toBe(200);
       const body = res.json();
-      expect(body.total).toBe(2);
-      expect(body.data).toEqual([
-        { name: 'channel-tag-b', count: 10 },
-        { name: 'channel-tag-a', count: 5 },
+      expect(body.total).toBeGreaterThanOrEqual(2);
+      expect(body.data.slice(0, 2)).toEqual([
+        { name: 'channel-tag-b', count: 2_000_000 },
+        { name: 'channel-tag-a', count: 1_000_000 },
       ]);
     } finally {
       await db.delete(schema.chiiTagIndex).where(op.inArray(schema.chiiTagIndex.id, ids));

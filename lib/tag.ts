@@ -97,14 +97,15 @@ export async function updateTagResult(t: Txn, tagIDs: number[]) {
     .from(schema.chiiTagList)
     .where(op.inArray(schema.chiiTagList.tagID, tagIDs))
     .groupBy(schema.chiiTagList.tagID);
-  for (const item of counts) {
+  const countMap = new Map(counts.map((c) => [c.tagID, Number(c.count)]));
+  for (const tagID of tagIDs) {
     await t
       .update(schema.chiiTagIndex)
       .set({
-        count: item.count,
+        count: countMap.get(tagID) ?? 0,
         updatedAt: now,
       })
-      .where(op.eq(schema.chiiTagIndex.id, item.tagID))
+      .where(op.eq(schema.chiiTagIndex.id, tagID))
       .limit(1);
   }
 }
