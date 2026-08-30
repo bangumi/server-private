@@ -21,13 +21,6 @@ const poolConnection = mysql.createPool({
   connectTimeout: 15_000,
 });
 
-// 慢查询默认 15s 超时，由服务端取消超时的只读 SELECT，避免长时间占用连接
-poolConnection.on('connection', (connection) => {
-  connection.query('SET SESSION max_execution_time = 15000').catch((error: unknown) => {
-    logger.warn({ error }, 'failed to set session max_execution_time');
-  });
-});
-
 export const db = drizzle(poolConnection, {
   schema,
   mode: 'default',
