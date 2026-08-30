@@ -18,6 +18,7 @@ const poolConnection = mysql.createPool({
   database: config.mysql.db,
   password: config.mysql.password,
   port: config.mysql.port,
+  connectTimeout: 15_000,
 });
 
 export const db = drizzle(poolConnection, {
