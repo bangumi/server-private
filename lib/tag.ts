@@ -49,16 +49,19 @@ export async function insertUserTags(
   tags: string[],
 ): Promise<string[]> {
   tags = validateTags(tags);
-  await t
-    .delete(schema.chiiTagList)
-    .where(
-      op.and(
-        op.eq(schema.chiiTagList.userID, uid),
-        op.eq(schema.chiiTagList.cat, cat),
-        op.eq(schema.chiiTagList.type, type),
-        op.eq(schema.chiiTagList.mainID, mid),
-      ),
-    );
+
+  const where = op.and(
+    op.eq(schema.chiiTagList.userID, uid),
+    op.eq(schema.chiiTagList.cat, cat),
+    op.eq(schema.chiiTagList.type, type),
+    op.eq(schema.chiiTagList.mainID, mid),
+  );
+
+  const oldTagRows = await t
+    .select({ tagID: schema.chiiTagList.tagID })
+    .from(schema.chiiTagList)
+    .where(where);
+  await t.delete(schema.chiiTagList).where(where);
 
   const tagIDs = await ensureTags(t, cat, type, tags);
   const tids = Object.values(tagIDs).toSorted();
@@ -75,7 +78,11 @@ export async function insertUserTags(
         createdAt: now,
       })),
     );
-    await updateTagResult(t, tids);
+  }
+
+  const affected = [...new Set([...oldTagRows.map((row) => row.tagID), ...tids])];
+  if (affected.length > 0) {
+    await updateTagResult(t, affected);
   }
   return tags;
 }
