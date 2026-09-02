@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "main": "bin/main.ts",
-  "packageManager": "pnpm@11.20.0",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": "^24.0"
   },
@@ -54,7 +54,7 @@
     "cron": "4.4.0",
     "diff": "9.0.0",
     "drizzle-orm": "0.45.2",
-    "fastify": "5.11.2",
+    "fastify": "5.12.1",
     "fastify-metrics": "13.2.1",
     "fastify-plugin": "6.0.0",
     "got": "15.1.0",
