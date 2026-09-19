@@ -108,6 +108,9 @@ export const schema = Obj({
 
   redisUri: t.String({ default: 'redis://127.0.0.1:3306/0', env: 'REDIS_URI' }),
 
+  /** 旧站 (bgm.tv PHP) 使用的 memcached，设置后才会在写操作后失效旧站缓存 */
+  memcachedServers: t.Optional(t.String({ env: 'MEMCACHED_SERVERS' })),
+
   kafkaBrokers: t.String({ default: '127.0.0.1:9092', env: 'KAFKA_BROKERS' }),
 
   kafkaJsMqGroupId: t.String({

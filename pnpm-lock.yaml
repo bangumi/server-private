@@ -125,6 +125,9 @@ importers:
       meilisearch:
         specifier: 0.60.0
         version: 0.60.0
+      memjs:
+        specifier: 1.3.2
+        version: 1.3.2
       mercurius:
         specifier: 16.10.0
         version: 16.10.0(graphql@16.14.2)
@@ -204,6 +207,9 @@ importers:
       '@types/luxon':
         specifier: 3.7.3
         version: 3.7.3
+      '@types/memjs':
+        specifier: 1.3.3
+        version: 1.3.3
       '@types/mime-types':
         specifier: 3.0.1
         version: 3.0.1
@@ -2018,6 +2024,9 @@ packages:
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
 
+  '@types/memjs@1.3.3':
+    resolution: {integrity: sha512-OqZuZ2T0ErrygA/WUqQjmsB1GpxAt84OCgKPKbsSWwYKA/oe/lTiqvqMgFOv/Ngl8p+nytgdhrdxJtikOgimCg==}
+
   '@types/mime-types@3.0.1':
     resolution: {integrity: sha512-xRMsfuQbnRq1Ef+C+RKaENOxXX87Ygl38W1vDfPHRku02TgQr+Qd8iivLtAMcR0KF5/29xlnFihkTlbqFrGOVQ==}
 
@@ -3750,6 +3759,10 @@ packages:
   meilisearch@0.60.0:
     resolution: {integrity: sha512-z32KgxE6/7hRzbVfzUgzlmNl2OS7TwGE6wSWs2tVEuAY9DWrX6zAmt0s7wTyelH36orIaZ3/t1mQsCsExGtVDQ==}
     engines: {node: ^20.19.0 || >=22.12.0}
+
+  memjs@1.3.2:
+    resolution: {integrity: sha512-qUEg2g8vxPe+zPn09KidjIStHPtoBO8Cttm8bgJFWWabbsjQ9Av9Ky+6UcvKx6ue0LLb/LEhtcyQpRyKfzeXcg==}
+    engines: {node: '>=0.10.0'}
 
   mercurius-integration-testing@9.0.1:
     resolution: {integrity: sha512-AAE0slhjNPtNbRD3guczsEzlh38ClzFlvU/VnuMHqjWUDsc7pHkk8psFTxlJ6ihFiNIVBBPDIfWnBzbMJ+7IrA==}
@@ -6603,6 +6616,10 @@ snapshots:
     dependencies:
       '@types/unist': 3.0.3
 
+  '@types/memjs@1.3.3':
+    dependencies:
+      '@types/node': 24.13.3
+
   '@types/mime-types@3.0.1': {}
 
   '@types/ms@2.1.0': {}
@@ -8326,6 +8343,8 @@ snapshots:
   mdn-data@2.34.0: {}
 
   meilisearch@0.60.0: {}
+
+  memjs@1.3.2: {}
 
   mercurius-integration-testing@9.0.1(fastify@5.12.1)(graphql@16.14.2)(mercurius@16.10.0(graphql@16.14.2)):
     dependencies:
