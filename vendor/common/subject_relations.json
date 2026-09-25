@@ -1,6 +1,59 @@
 {
   "define": {
     "type": { "book": 1, "anime": 2, "music": 3, "game": 4, "real": 6 },
+    "relation_ids": {
+      "adaptation": 1,
+      "anime_prequel": 2,
+      "anime_sequel": 3,
+      "anime_summary": 4,
+      "anime_full_story": 5,
+      "anime_side_story": 6,
+      "anime_character": 7,
+      "anime_same_setting": 8,
+      "anime_alternative_setting": 9,
+      "anime_alternative_version": 10,
+      "anime_spin_off": 11,
+      "anime_parent_story": 12,
+      "anime_collaboration": 14,
+      "anime_other": 99,
+      "book_series": 1002,
+      "book_offprint": 1003,
+      "book_album": 1004,
+      "book_prequel": 1005,
+      "book_sequel": 1006,
+      "book_side_story": 1007,
+      "book_parent_story": 1008,
+      "book_version": 1010,
+      "book_character": 1011,
+      "book_same_setting": 1012,
+      "book_alternative_setting": 1013,
+      "book_collaboration": 1014,
+      "book_alternative_version": 1015,
+      "book_other": 1099,
+      "music_ost": 3001,
+      "music_character_song": 3002,
+      "music_opening_song": 3003,
+      "music_ending_song": 3004,
+      "music_insert_song": 3005,
+      "music_image_song": 3006,
+      "music_drama": 3007,
+      "music_other": 3099,
+      "game_prequel": 4002,
+      "game_sequel": 4003,
+      "game_side_story": 4006,
+      "game_character": 4007,
+      "game_same_setting": 4008,
+      "game_alternative_setting": 4009,
+      "game_alternative_version": 4010,
+      "game_parent_story": 4012,
+      "game_collaboration": 4014,
+      "game_dlc": 4015,
+      "game_version": 4016,
+      "game_main_version": 4017,
+      "game_collection": 4018,
+      "game_in_collection": 4019,
+      "game_other": 4099
+    },
     "types": {
       "anime": {
         "1": {
@@ -572,6 +625,89 @@
         "jp": "",
         "desc": "",
         "skip_vice_versa": true
+      }
+    }
+  },
+  "relation_mappings": {
+    "1": {
+      "1": {
+        "1002": 1003,
+        "1003": 1002,
+        "1005": 1006,
+        "1006": 1005,
+        "1007": 1008,
+        "1008": 1007
+      },
+      "2": {
+        "1005": 3,
+        "1006": 2,
+        "1007": 12,
+        "1008": 6,
+        "1011": 7,
+        "1012": 8,
+        "1013": 9
+      },
+      "4": {
+        "1005": 4003,
+        "1006": 4002,
+        "1007": 4012,
+        "1008": 4006,
+        "1011": 4007,
+        "1012": 4008,
+        "1013": 4009
+      }
+    },
+    "2": {
+      "1": {
+        "2": 1006,
+        "3": 1005,
+        "6": 1008,
+        "7": 1011,
+        "8": 1012,
+        "9": 1013,
+        "11": 1008,
+        "12": 1007
+      },
+      "2": { "2": 3, "3": 2, "4": 5, "5": 4, "6": 12, "11": 12, "12": 11 },
+      "4": {
+        "2": 4003,
+        "3": 4002,
+        "6": 4012,
+        "7": 4007,
+        "8": 4008,
+        "9": 4009,
+        "11": 4012,
+        "12": 4006
+      }
+    },
+    "4": {
+      "1": {
+        "4002": 1006,
+        "4003": 1005,
+        "4006": 1008,
+        "4007": 1011,
+        "4008": 1012,
+        "4009": 1013,
+        "4012": 1007
+      },
+      "2": {
+        "4002": 3,
+        "4003": 2,
+        "4006": 12,
+        "4007": 7,
+        "4008": 8,
+        "4009": 9,
+        "4012": 6
+      },
+      "4": {
+        "4002": 4003,
+        "4003": 4002,
+        "4006": 4012,
+        "4012": 4006,
+        "4016": 4017,
+        "4017": 4016,
+        "4018": 4019,
+        "4019": 4018
       }
     }
   }

@@ -1,7 +1,9 @@
 import type { Static } from 'typebox';
 import t from 'typebox';
 
-import { relations } from './common/subject_relations.json';
+import { SubjectType } from '@app/lib/subject/type.ts';
+
+import { relation_mappings, relations } from './common/subject_relations.json';
 import { assertValue } from './validate';
 
 const SubjectRelationTypeSchema = t.Object(
@@ -31,4 +33,42 @@ export function findSubjectRelationType(
   relationType: number,
 ): SubjectRelationType | undefined {
   return checkedSubjectRelations[subjectType]?.[relationType];
+}
+
+export function isRelationViceVersa(subjectType: number, relationType: number): boolean {
+  const rtype = findSubjectRelationType(subjectType, relationType);
+  if (!rtype) return true;
+  return !rtype.skip_vice_versa;
+}
+
+const SubjectRelationMappingsSchema = t.Record(
+  t.Integer(),
+  t.Record(t.Integer(), t.Record(t.Integer(), t.Integer())),
+);
+
+const relationMappingsRaw: unknown = relation_mappings;
+assertValue(SubjectRelationMappingsSchema, relationMappingsRaw, 'subject_relations.json');
+const relationMappings = relationMappingsRaw;
+
+export function getReverseRelation(
+  subjectType: number,
+  relatedType: number,
+  relationType: number,
+): number {
+  if ([subjectType, relatedType].includes(SubjectType.Music)) {
+    return relationType;
+  }
+
+  if (subjectType === relatedType) {
+    if (subjectType === SubjectType.Real) subjectType = SubjectType.Anime;
+    if (relatedType === SubjectType.Real) relatedType = SubjectType.Anime;
+
+    const reverseRelation = relationMappings[subjectType]?.[relatedType]?.[relationType];
+    if (reverseRelation) {
+      return reverseRelation;
+    }
+    return relationType;
+  } else {
+    return 1; // adaptation
+  }
 }

@@ -4458,6 +4458,36 @@
           }
         }
       },
+      "SubjectRelationWikiInfo": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["subject", "type", "order"],
+          "properties": {
+            "subject": {
+              "type": "object",
+              "required": ["id", "name", "nameCN"],
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "nameCN": {
+                  "type": "string"
+                }
+              }
+            },
+            "type": {
+              "type": "integer"
+            },
+            "order": {
+              "type": "integer"
+            }
+          }
+        }
+      },
       "SubjectRelationRevisionWikiInfo": {
         "type": "array",
         "items": {
@@ -17836,6 +17866,207 @@
             "description": "Default Response"
           },
           "401": {
+            "description": "default error response type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "意料之外的服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/p1/wiki/subjects/{subjectID}/relations": {
+      "get": {
+        "operationId": "getSubjectRelationWikiInfo",
+        "summary": "获取条目关联当前 wiki 信息",
+        "tags": ["wiki"],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/SubjectType"
+            },
+            "in": "query",
+            "name": "type",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "in": "path",
+            "name": "subjectID",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectRelationWikiInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "default error response type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "意料之外的服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "putSubjectRelationWikiInfo",
+        "summary": "修改条目关联当前 wiki 信息",
+        "tags": ["wiki"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["commitMessage", "relations"],
+                "properties": {
+                  "commitMessage": {
+                    "type": "string"
+                  },
+                  "relations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["subject", "type"],
+                      "properties": {
+                        "subject": {
+                          "type": "object",
+                          "required": ["id"],
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "type": {
+                          "type": "integer"
+                        },
+                        "order": {
+                          "type": "integer",
+                          "default": 0
+                        }
+                      }
+                    }
+                  },
+                  "expectedRevision": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["subject", "type", "order"],
+                      "properties": {
+                        "subject": {
+                          "type": "object",
+                          "required": ["id"],
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "type": {
+                          "type": "integer"
+                        },
+                        "order": {
+                          "type": "integer"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "description": "a optional object to check if input is changed by others"
+                    }
+                  },
+                  "authorID": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "description": "when header x-admin-token is provided, use this as author id."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/SubjectType"
+            },
+            "in": "query",
+            "name": "type",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "in": "path",
+            "name": "subjectID",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          },
+          "400": {
+            "description": "invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
             "description": "default error response type",
             "content": {
               "application/json": {
