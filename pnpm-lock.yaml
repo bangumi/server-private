@@ -84,8 +84,8 @@ importers:
         specifier: 5.12.5
         version: 5.12.5
       fastify-metrics:
-        specifier: 13.2.1
-        version: 13.2.1(fastify@5.12.5)
+        specifier: 14.1.0
+        version: 14.1.0(fastify@5.12.5)
       fastify-plugin:
         specifier: 6.0.0
         version: 6.0.0
@@ -1792,6 +1792,10 @@ packages:
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
 
+  '@prometheus-io/client@0.16.1':
+    resolution: {integrity: sha512-XkFPsGFGoSs/UMg/vh0QLDpanl/tsrOV5PLHdpGe8Ho+ir/Llhytr15j6y8ZwLrpIGzK9gTVVpIalA6C4UjUZw==}
+    engines: {node: ^22 || ^24 || >=26}
+
   '@repeaterjs/repeater@3.1.0':
     resolution: {integrity: sha512-TaoVksZRSx2KWYYpyLQtMQXXeS98VsgZImzW65xmiVgbYhXLk+aEsmzPLirqVuE4/XuUapH2iMtxUzaBNDzdSQ==}
 
@@ -3116,9 +3120,9 @@ packages:
   fast-wrap-ansi@0.2.2:
     resolution: {integrity: sha512-7F2Fl+TjRSenLqlU3UjSH0iyqopqoZIu7eZVpEirP2g1GtWa2G/ecEmBdgz31+Mxr+ELclgg6sokpSFIQiZ02Q==}
 
-  fastify-metrics@13.2.1:
-    resolution: {integrity: sha512-kUJOy6pwNgQATSoUQeWesZ8m8YEnc48wE0SFDLqjI01cWClDEWM6BRCMa6P8MtS1080VX/8TY6Z/LAjig1b7SA==}
-    engines: {node: '>=20', pnpm: '>=10'}
+  fastify-metrics@14.1.0:
+    resolution: {integrity: sha512-jf9qVynXVd43XxAT4JHXRVTaVbryAdTsX09PgGVeGqTfrgd0qpw1YtRYyCato0armPPmzvNDPSR2xK5MRXZTXA==}
+    engines: {node: '>=22.19.0', pnpm: '>=12'}
     peerDependencies:
       '@platformatic/prom-client': ^1.0.0
       fastify: '>=5'
@@ -6453,6 +6457,11 @@ snapshots:
 
   '@pinojs/redact@0.4.0': {}
 
+  '@prometheus-io/client@0.16.1':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      tdigest: 0.1.3
+
   '@repeaterjs/repeater@3.1.0': {}
 
   '@rolldown/binding-android-arm-eabi@1.2.10':
@@ -7728,11 +7737,11 @@ snapshots:
     dependencies:
       fast-string-width: 3.0.2
 
-  fastify-metrics@13.2.1(fastify@5.12.5):
+  fastify-metrics@14.1.0(fastify@5.12.5):
     dependencies:
+      '@prometheus-io/client': 0.16.1
       fastify: 5.12.5
       fastify-plugin: 6.0.0
-      prom-client: 15.1.3
 
   fastify-plugin@5.1.0: {}
 
