@@ -125,25 +125,36 @@ export async function updateSubjectEpisodeProgress(
   let watchedEpisodes: number;
   if (current) {
     const epStatusList = decodeSubjectEpStatus(current.status);
-    const status: UserEpisodeStatusItem = {
-      eid: episodeID.toString(),
-      type,
-      updated_at: {
-        ...epStatusList.get(episodeID)?.updated_at,
-        [type]: now,
-      },
-    };
-    epStatusList.set(episodeID, status);
+    if (type === EpisodeCollectionStatus.None) {
+      epStatusList.delete(episodeID);
+    } else {
+      const status: UserEpisodeStatusItem = {
+        eid: episodeID.toString(),
+        type,
+        updated_at: {
+          ...epStatusList.get(episodeID)?.updated_at,
+          [type]: now,
+        },
+      };
+      epStatusList.set(episodeID, status);
+    }
     watchedEpisodes = [...epStatusList.values()].filter(
       (x) => x.type === EpisodeCollectionStatus.Done,
     ).length;
-    const newStatus = encodeSubjectEpStatus(epStatusList);
-    await t
-      .update(schema.chiiEpStatus)
-      .set({ status: newStatus, updatedAt: now })
-      .where(op.eq(schema.chiiEpStatus.id, current.id))
-      .limit(1);
+    if (epStatusList.size === 0) {
+      await t.delete(schema.chiiEpStatus).where(op.eq(schema.chiiEpStatus.id, current.id)).limit(1);
+    } else {
+      const newStatus = encodeSubjectEpStatus(epStatusList);
+      await t
+        .update(schema.chiiEpStatus)
+        .set({ status: newStatus, updatedAt: now })
+        .where(op.eq(schema.chiiEpStatus.id, current.id))
+        .limit(1);
+    }
   } else {
+    if (type === EpisodeCollectionStatus.None) {
+      return 0;
+    }
     const epStatusList = new Map<number, UserEpisodeStatusItem>();
     const status: UserEpisodeStatusItem = {
       eid: episodeID.toString(),
