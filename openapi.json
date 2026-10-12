@@ -4548,6 +4548,33 @@
           }
         }
       },
+      "SubjectPersonWikiInfo": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["person", "position", "appearEps"],
+          "properties": {
+            "person": {
+              "type": "object",
+              "required": ["id", "name"],
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            },
+            "position": {
+              "type": "integer"
+            },
+            "appearEps": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "SubjectNew": {
         "type": "object",
         "required": ["name", "type", "platform", "infobox", "nsfw", "metaTags", "summary"],
@@ -4948,6 +4975,36 @@
                   "type": "string"
                 }
               }
+            }
+          }
+        }
+      },
+      "PersonSubjectWikiInfo": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["subject", "position", "appearEps"],
+          "properties": {
+            "subject": {
+              "type": "object",
+              "required": ["id", "name", "nameCN"],
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "nameCN": {
+                  "type": "string"
+                }
+              }
+            },
+            "position": {
+              "type": "integer"
+            },
+            "appearEps": {
+              "type": "string"
             }
           }
         }
@@ -18272,6 +18329,191 @@
         }
       }
     },
+    "/p1/wiki/subjects/{subjectID}/persons": {
+      "get": {
+        "operationId": "getSubjectPersonWikiInfo",
+        "summary": "获取条目-人物关联当前 wiki 信息",
+        "tags": ["wiki"],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "in": "path",
+            "name": "subjectID",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubjectPersonWikiInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "default error response type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "意料之外的服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "putSubjectPersonWikiInfo",
+        "summary": "修改条目-人物关联当前 wiki 信息",
+        "tags": ["wiki"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["commitMessage", "relations"],
+                "properties": {
+                  "commitMessage": {
+                    "type": "string"
+                  },
+                  "relations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["person", "position"],
+                      "properties": {
+                        "person": {
+                          "type": "object",
+                          "required": ["id"],
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "position": {
+                          "type": "integer"
+                        },
+                        "appearEps": {
+                          "type": "string",
+                          "default": ""
+                        }
+                      }
+                    }
+                  },
+                  "expectedRevision": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["person", "position", "appearEps"],
+                      "properties": {
+                        "person": {
+                          "type": "object",
+                          "required": ["id"],
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "position": {
+                          "type": "integer"
+                        },
+                        "appearEps": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "description": "a optional object to check if input is changed by others"
+                    }
+                  },
+                  "authorID": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "description": "when header x-admin-token is provided, use this as author id."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "in": "path",
+            "name": "subjectID",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          },
+          "400": {
+            "description": "invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "default error response type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "意料之外的服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/p1/wiki/users/{username}/contributions/subjects": {
       "get": {
         "operationId": "getUserContributedSubjects",
@@ -20200,6 +20442,207 @@
                       "description": "limit+offset 为参数的请求表示总条数，page 为参数的请求表示总页数"
                     }
                   }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "default error response type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "意料之外的服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/p1/wiki/persons/{personID}/subjects": {
+      "get": {
+        "operationId": "getPersonSubjectWikiInfo",
+        "summary": "获取人物-条目关联当前 wiki 信息",
+        "tags": ["wiki"],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/SubjectType"
+            },
+            "in": "query",
+            "name": "type",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "in": "path",
+            "name": "personID",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonSubjectWikiInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "default error response type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "意料之外的服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "putPersonSubjectWikiInfo",
+        "summary": "修改人物-条目关联当前 wiki 信息",
+        "tags": ["wiki"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["commitMessage", "relations"],
+                "properties": {
+                  "commitMessage": {
+                    "type": "string"
+                  },
+                  "relations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["subject", "position"],
+                      "properties": {
+                        "subject": {
+                          "type": "object",
+                          "required": ["id"],
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "position": {
+                          "type": "integer"
+                        },
+                        "appearEps": {
+                          "type": "string",
+                          "default": ""
+                        }
+                      }
+                    }
+                  },
+                  "expectedRevision": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["subject", "position", "appearEps"],
+                      "properties": {
+                        "subject": {
+                          "type": "object",
+                          "required": ["id"],
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "position": {
+                          "type": "integer"
+                        },
+                        "appearEps": {
+                          "type": "string"
+                        }
+                      },
+                      "additionalProperties": false,
+                      "description": "a optional object to check if input is changed by others"
+                    }
+                  },
+                  "authorID": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "description": "when header x-admin-token is provided, use this as author id."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/SubjectType"
+            },
+            "in": "query",
+            "name": "type",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "in": "path",
+            "name": "personID",
+            "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response"
+          },
+          "400": {
+            "description": "invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
