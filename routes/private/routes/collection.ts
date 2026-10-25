@@ -30,7 +30,7 @@ import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -219,7 +219,10 @@ export async function setup(app: App) {
         summary: '更新条目进度',
         operationId: 'updateSubjectProgress',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           subjectID: t.Integer(),
         }),
@@ -229,7 +232,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('update subject progress')],
+      preHandler: [requireLogin('update subject progress'), requireScope('write:collection')],
     },
     async ({ ip, auth, params: { subjectID }, body: { epStatus, volStatus } }) => {
       const subject = await fetcher.fetchSubjectByID(subjectID, auth.allowNsfw);
@@ -338,7 +341,10 @@ export async function setup(app: App) {
         summary: '新增或修改条目收藏',
         operationId: 'updateSubjectCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           subjectID: t.Integer(),
         }),
@@ -348,7 +354,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('update subject collection')],
+      preHandler: [requireLogin('update subject collection'), requireScope('write:collection')],
     },
     async ({
       ip,
@@ -545,7 +551,10 @@ export async function setup(app: App) {
         summary: '更新章节进度',
         operationId: 'updateEpisodeProgress',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           episodeID: t.Integer(),
         }),
@@ -555,7 +564,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('update episode progress')],
+      preHandler: [requireLogin('update episode progress'), requireScope('write:collection')],
     },
     async ({ auth, params: { episodeID }, body: { type, batch } }) => {
       const episode = await fetcher.fetchEpisodeByID(episodeID);
@@ -756,7 +765,10 @@ export async function setup(app: App) {
         summary: '新增角色收藏',
         operationId: 'addCharacterCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           characterID: t.Integer(),
         }),
@@ -765,7 +777,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add character collection')],
+      preHandler: [requireLogin('add character collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { characterID } }) => {
       const character = await fetcher.fetchSlimCharacterByID(characterID);
@@ -826,7 +838,10 @@ export async function setup(app: App) {
         summary: '删除角色收藏',
         operationId: 'deleteCharacterCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           characterID: t.Integer(),
         }),
@@ -835,7 +850,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('remove character collection')],
+      preHandler: [requireLogin('remove character collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { characterID } }) => {
       const character = await fetcher.fetchSlimCharacterByID(characterID);
@@ -941,7 +956,10 @@ export async function setup(app: App) {
         summary: '新增人物收藏',
         operationId: 'addPersonCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           personID: t.Integer(),
         }),
@@ -950,7 +968,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add person collection')],
+      preHandler: [requireLogin('add person collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { personID } }) => {
       const person = await fetcher.fetchSlimPersonByID(personID);
@@ -1011,7 +1029,10 @@ export async function setup(app: App) {
         summary: '删除人物收藏',
         operationId: 'deletePersonCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           personID: t.Integer(),
         }),
@@ -1020,7 +1041,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('delete person collection')],
+      preHandler: [requireLogin('delete person collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { personID } }) => {
       const person = await fetcher.fetchSlimPersonByID(personID);
@@ -1123,7 +1144,10 @@ export async function setup(app: App) {
         summary: '新增目录收藏',
         operationId: 'addIndexCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -1132,7 +1156,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add index collection')],
+      preHandler: [requireLogin('add index collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { indexID } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -1180,7 +1204,10 @@ export async function setup(app: App) {
         summary: '删除目录收藏',
         operationId: 'deleteIndexCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -1189,7 +1216,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('delete index collection')],
+      preHandler: [requireLogin('delete index collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { indexID } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);

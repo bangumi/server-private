@@ -30,7 +30,11 @@ import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchJoinedGroups } from '@app/lib/user/utils';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
+import {
+  requireLogin,
+  requireScope,
+  requireTurnstileToken,
+} from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -444,7 +448,10 @@ export async function setup(app: App) {
         operationId: 'createGroupTopic',
         summary: '创建小组话题',
         tags: [Tag.Group],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           groupName: t.String({ minLength: 1 }),
         }),
@@ -456,7 +463,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a topic'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a topic'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { title, content }, params: { groupName } }) => {
       if (auth.permission.ban_post) {
@@ -568,7 +579,10 @@ export async function setup(app: App) {
         operationId: 'editGroupTopic',
         description: '编辑小组话题',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           topicID: t.Integer(),
         }),
@@ -577,7 +591,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('edit a topic')],
+      preHandler: [requireLogin('edit a topic'), requireScope('write:topic')],
     },
     async ({ auth, body: { title, content }, params: { topicID } }) => {
       if (auth.permission.ban_post) {
@@ -689,7 +703,10 @@ export async function setup(app: App) {
         summary: '给小组话题回复点赞',
         operationId: 'likeGroupPost',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -701,7 +718,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('liking a group post')],
+      preHandler: [requireLogin('liking a group post'), requireScope('write:topic')],
     },
     async ({ auth, params: { postID }, body: { value } }) => {
       await groupPostService.like(auth, postID, value);
@@ -716,7 +733,10 @@ export async function setup(app: App) {
         summary: '取消小组话题回复点赞',
         operationId: 'unlikeGroupPost',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -724,7 +744,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('liking a group post')],
+      preHandler: [requireLogin('liking a group post'), requireScope('write:topic')],
     },
     async ({ auth, params: { postID } }) => {
       await groupPostService.unlike(auth, postID);
@@ -739,7 +759,10 @@ export async function setup(app: App) {
         operationId: 'editGroupPost',
         summary: '编辑小组话题回复',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -748,7 +771,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('edit a post')],
+      preHandler: [requireLogin('edit a post'), requireScope('write:topic')],
     },
     async ({ auth, body: { content }, params: { postID } }) => {
       await groupPostService.update(auth, postID, content);
@@ -763,7 +786,10 @@ export async function setup(app: App) {
         operationId: 'deleteGroupPost',
         summary: '删除小组话题回复',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -771,7 +797,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete a post')],
+      preHandler: [requireLogin('delete a post'), requireScope('write:topic')],
     },
     async ({ auth, params: { postID } }) => {
       await groupPostService.delete(auth, postID);
@@ -786,7 +812,10 @@ export async function setup(app: App) {
         operationId: 'createGroupReply',
         summary: '创建小组话题回复',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           topicID: t.Integer(),
         }),
@@ -796,7 +825,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a reply'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, params: { topicID }, body: { content, replyTo = 0 } }) => {
       const [topic] = await db

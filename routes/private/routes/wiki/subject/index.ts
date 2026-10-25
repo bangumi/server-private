@@ -28,7 +28,7 @@ import { validateDate } from '@app/lib/utils/date.ts';
 import { parseConvertedValue, validateDuration } from '@app/lib/utils/index.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { matchExpected } from '@app/lib/wiki';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 import { getSubjectPlatforms } from '@app/vendor/index.ts';
@@ -319,7 +319,10 @@ export async function setup(app: App) {
         tags: [Tag.Wiki],
         operationId: 'createNewSubject',
         summary: '创建新条目',
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: SubjectNew,
         response: {
           200: t.Object({ subjectID: t.Number() }),
@@ -329,6 +332,7 @@ export async function setup(app: App) {
           401: res.Ref(res.Error, {}),
         },
       },
+      preHandler: [requireScope('write:wiki')],
     },
     async ({ auth, body }) => {
       if (!auth.permission.subject_edit) {
@@ -475,7 +479,10 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
@@ -498,7 +505,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('editing a subject info')],
+      preHandler: [requireLogin('editing a subject info'), requireScope('write:wiki')],
     },
     async ({
       auth,
@@ -563,7 +570,10 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
@@ -592,7 +602,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('editing a subject info')],
+      preHandler: [requireLogin('editing a subject info'), requireScope('write:wiki')],
     },
     async ({
       auth,
@@ -704,7 +714,10 @@ export async function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: EpsisodesNew,
         response: {
           200: t.Object({ episodeIDs: t.Array(t.Integer()) }),
@@ -713,7 +726,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('creating episodes')],
+      preHandler: [requireLogin('creating episodes'), requireScope('write:wiki')],
     },
     async ({
       auth,
@@ -804,7 +817,10 @@ export async function setup(app: App) {
         summary: '批量编辑条目章节',
         description: '需要 `epEdit` 权限，一次最多可以编辑 20 个章节',
         params: t.Object({ subjectID: t.Integer({ examples: [363612], minimum: 0 }) }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: EpsisodesEdit,
         response: {
           200: t.Null(),
@@ -813,7 +829,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('editing episodes')],
+      preHandler: [requireLogin('editing episodes'), requireScope('write:wiki')],
     },
     async ({
       auth,

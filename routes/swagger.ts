@@ -9,6 +9,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import { projectRoot, VERSION } from '@app/lib/config.ts';
 import { Security } from '@app/lib/openapi/index.ts';
+import { ScopeDescription } from '@app/lib/scope.ts';
 import * as res from '@app/lib/types/res.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -120,6 +121,16 @@ export async function privateAPI(app: App) {
           type: 'http',
           scheme: 'Bearer',
           description: '使用 [demo](/demo/login) 登录后创建个人令牌',
+        },
+        [Security.OAuth2]: {
+          type: 'oauth2',
+          flows: {
+            authorizationCode: {
+              authorizationUrl: '/oauth/authorize',
+              tokenUrl: '/oauth/access_token',
+              scopes: ScopeDescription,
+            },
+          },
         },
       },
     },

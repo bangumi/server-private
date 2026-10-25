@@ -117,6 +117,54 @@ describe('subject collection', () => {
     expect(subjectFields?.rate10).toBe(169);
   });
 
+  test('should reject request from token without write:collection scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 382951,
+        scope: ['write:indices'],
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: '/collections/subjects/12',
+      body: {
+        type: CollectionType.Doing,
+        rate: 10,
+        comment: 'test',
+        private: false,
+        progress: true,
+      },
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should create subject collection with write:collection scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 382951,
+        scope: ['write:collection'],
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'put',
+      url: '/collections/subjects/12',
+      body: {
+        type: CollectionType.Doing,
+        rate: 10,
+        comment: 'test',
+        private: false,
+        progress: true,
+      },
+    });
+    expect(res.statusCode).toBe(200);
+  });
+
   test('should create subject collection with progress', async () => {
     const app = createTestServer({
       auth: {

@@ -7,7 +7,7 @@ import { Security, Tag } from '@app/lib/openapi/index.ts';
 import { RevType } from '@app/lib/rev/type.ts';
 import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -22,14 +22,17 @@ export function setup(app: App) {
           subjectID: t.Integer({ examples: [184017] }),
           reason: t.String(),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         response: {
           200: t.Object({}),
           401: res.Ref(res.Error),
           403: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('lock a subject')],
+      preHandler: [requireLogin('lock a subject'), requireScope('write:wiki')],
     },
     async ({ body, auth }) => {
       if (!auth.permission.subject_lock) {
@@ -74,14 +77,17 @@ export function setup(app: App) {
           subjectID: t.Integer({ examples: [184017] }),
           reason: t.String(),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         response: {
           200: t.Object({}),
           401: res.Ref(res.Error),
           403: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('unlock a subject')],
+      preHandler: [requireLogin('unlock a subject'), requireScope('write:wiki')],
     },
     async ({ body, auth }) => {
       if (!auth.permission.subject_lock) {

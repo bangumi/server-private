@@ -11,6 +11,7 @@ import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session.ts';
 import { TypedCache } from '@app/lib/cache.ts';
 import config from '@app/lib/config.ts';
 import { CaptchaError } from '@app/lib/error';
+import { hasScope } from '@app/lib/scope.ts';
 import { turnstile } from '@app/lib/services/turnstile';
 import { md5 } from '@app/lib/utils/index.ts';
 
@@ -24,6 +25,18 @@ export function requirePermission(s: string, allowed: (auth: IAuth) => boolean |
   return async ({ auth }: { auth: IAuth }) => {
     if (!allowed(auth)) {
       throw new NotAllowedError(s);
+    }
+  };
+}
+
+export function requireScope(scope: string) {
+  return async ({ auth }: { auth: IAuth }) => {
+    if (!auth.login) {
+      throw new NeedLoginError(scope);
+    }
+
+    if (!hasScope(auth.scope, scope)) {
+      throw new NotAllowedError(scope);
     }
   };
 }
