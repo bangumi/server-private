@@ -1,5 +1,3 @@
-import { parse } from '@bgm38/wiki';
-
 import { db, op, schema } from '@app/drizzle';
 import redis from '@app/lib/redis.ts';
 import {
@@ -8,7 +6,7 @@ import {
   getSlimCacheKey,
   getTopicCacheKey,
 } from '@app/lib/subject/cache';
-import { extractDate } from '@app/lib/subject/date';
+import { resolveSubjectDate } from '@app/lib/subject/date';
 import { sleep } from '@app/lib/utils';
 
 import { EventOp, type KafkaMessage } from './type';
@@ -147,15 +145,8 @@ async function updateSubjectDate(subjectID: number, ts: number) {
     return;
   }
 
-  let w;
-  try {
-    w = parse(subject.infobox);
-  } catch {
-    return;
-  }
-
-  const date = extractDate(w, subject.typeID, subject.platform);
-  if (date.year <= 1900) {
+  const date = resolveSubjectDate(subject.infobox, subject.typeID, subject.platform);
+  if (!date) {
     return;
   }
 
