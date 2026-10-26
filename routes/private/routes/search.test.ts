@@ -67,7 +67,7 @@ describe('subject search', () => {
     vi.clearAllMocks();
   });
 
-  test('should include platform and only the current user interest', async () => {
+  test('should include platform, series, and only the current user interest', async () => {
     const app = createTestServer({
       auth: { login: true, userID: TEST_USER_ID, allowNsfw: true },
     });
@@ -80,6 +80,11 @@ describe('subject search', () => {
     expect(res.statusCode).toBe(200);
     const body = res.json();
     expect(body.data).toHaveLength(2);
+    const seriesRows = await db
+      .select({ id: schema.chiiSubjects.id, series: schema.chiiSubjects.series })
+      .from(schema.chiiSubjects)
+      .where(op.inArray(schema.chiiSubjects.id, SUBJECT_IDS));
+    const seriesByID = new Map(seriesRows.map((row) => [row.id, row.series] as const));
     for (const subject of body.data) {
       expect(subject.platform).toMatchObject({
         id: expect.any(Number),
@@ -87,6 +92,7 @@ describe('subject search', () => {
         typeCN: expect.any(String),
         alias: expect.any(String),
       });
+      expect(subject.series).toBe(seriesByID.get(subject.id));
     }
     expect(body.data[0].interest).toMatchObject({
       rate: 8,

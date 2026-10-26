@@ -176,6 +176,7 @@ Object {
       "score": 7.57,
       "total": 3231,
     },
+    "series": false,
     "type": 2,
   },
   "subjectID": 12,

@@ -435,6 +435,7 @@ export const SlimSubject = t.Object(
     nameCN: t.String(),
     type: Ref(SubjectType),
     platform: t.Optional(Ref(SubjectPlatform)),
+    series: t.Boolean(),
     images: t.Optional(Ref(SubjectImages)),
     info: t.String(),
     metaTags: t.Array(t.String()),

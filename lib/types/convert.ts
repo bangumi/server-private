@@ -254,6 +254,7 @@ export function toSlimSubject(subject: orm.ISubject, fields: orm.ISubjectFields)
     nameCN: subject.nameCN,
     type: subject.typeID,
     platform: toSubjectPlatform(subject),
+    series: subject.series,
     images: subjectCover(subject.image),
     info: getSubjectInfoboxSummary(infobox, subject.typeID, subject.eps),
     metaTags: splitTags(subject.metaTags),
