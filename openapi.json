@@ -2771,6 +2771,9 @@
           "type": {
             "$ref": "#/components/schemas/SubjectType"
           },
+          "platform": {
+            "$ref": "#/components/schemas/SubjectPlatform"
+          },
           "images": {
             "$ref": "#/components/schemas/SubjectImages"
           },

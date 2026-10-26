@@ -52,6 +52,15 @@ Array [
     "name": "沙盒",
     "nameCN": "Bangumi Wiki 动画测试用沙盘",
     "nsfw": false,
+    "platform": Object {
+      "alias": "tv",
+      "enableHeader": true,
+      "id": 1,
+      "order": 0,
+      "type": "TV",
+      "typeCN": "TV",
+      "wikiTpl": "TVAnime",
+    },
     "rating": Object {
       "count": Array [
         1,

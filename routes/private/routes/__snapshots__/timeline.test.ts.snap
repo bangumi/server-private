@@ -35,6 +35,15 @@ Array [
             "name": "Criminal Minds Season 14",
             "nameCN": "犯罪心理 第十四季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -110,6 +119,15 @@ Array [
             "name": "Criminal Minds Season 13",
             "nameCN": "犯罪心理 第十三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -185,6 +203,15 @@ Array [
             "name": "Criminal Minds Season 13",
             "nameCN": "犯罪心理 第十三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -273,6 +300,15 @@ Array [
             "name": "Criminal Minds Season 13",
             "nameCN": "犯罪心理 第十三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -348,6 +384,15 @@ Array [
             "name": "Criminal Minds Season 13",
             "nameCN": "犯罪心理 第十三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -423,6 +468,15 @@ Array [
             "name": "ようこそ実力至上主義の教室へ 2nd Season",
             "nameCN": "欢迎来到实力至上主义的教室 第二季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "tv",
+              "enableHeader": true,
+              "id": 1,
+              "order": 0,
+              "type": "TV",
+              "typeCN": "TV",
+              "wikiTpl": "TVAnime",
+            },
             "rating": Object {
               "count": Array [
                 34,
@@ -509,6 +563,15 @@ Array [
             "name": "Criminal Minds Season 13",
             "nameCN": "犯罪心理 第十三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -581,6 +644,12 @@ Array [
             "name": "沙盒音乐条目1",
             "nameCN": "沙盒音乐条目",
             "nsfw": false,
+            "platform": Object {
+              "alias": "",
+              "id": 0,
+              "type": "",
+              "typeCN": "",
+            },
             "rating": Object {
               "count": Array [
                 1,
@@ -656,6 +725,15 @@ Array [
             "name": "Criminal Minds Season 13",
             "nameCN": "犯罪心理 第十三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -733,6 +811,15 @@ Array [
             "name": "Criminal Minds Season 13",
             "nameCN": "犯罪心理 第十三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -808,6 +895,15 @@ Array [
             "name": "Criminal Minds Season 12",
             "nameCN": "犯罪心理 第12季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -883,6 +979,15 @@ Array [
             "name": "Criminal Minds Season 12",
             "nameCN": "犯罪心理 第12季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -958,6 +1063,14 @@ Array [
             "name": "ゼルダの伝説 ブレス オブ ザ ワイルド",
             "nameCN": "塞尔达传说 旷野之息",
             "nsfw": false,
+            "platform": Object {
+              "alias": "games",
+              "enableHeader": true,
+              "id": 4001,
+              "order": 0,
+              "type": "games",
+              "typeCN": "游戏",
+            },
             "rating": Object {
               "count": Array [
                 39,
@@ -1040,6 +1153,15 @@ Array [
             "name": "South Park Season 25",
             "nameCN": "南方公园 第25季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "tv",
+              "enableHeader": true,
+              "id": 1,
+              "order": 0,
+              "type": "TV",
+              "typeCN": "TV",
+              "wikiTpl": "TVAnime",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -1111,6 +1233,15 @@ Array [
             "name": "South Park Season 25",
             "nameCN": "南方公园 第25季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "tv",
+              "enableHeader": true,
+              "id": 1,
+              "order": 0,
+              "type": "TV",
+              "typeCN": "TV",
+              "wikiTpl": "TVAnime",
+            },
             "rating": Object {
               "count": Array [
                 0,
@@ -1186,6 +1317,15 @@ Array [
             "name": "The Orville Season3",
             "nameCN": "奥维尔号 第三季",
             "nsfw": false,
+            "platform": Object {
+              "alias": "en",
+              "enableHeader": true,
+              "id": 2,
+              "order": 1,
+              "type": "en",
+              "typeCN": "欧美剧",
+              "wikiTpl": "TV",
+            },
             "rating": Object {
               "count": Array [
                 0,

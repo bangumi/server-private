@@ -600,6 +600,30 @@ export async function fetchSubjectInterest(
   return convert.toSubjectInterest(data);
 }
 
+export async function fetchSlimSubjectInterests(
+  userID: number,
+  subjectIDs: number[],
+): Promise<Record<number, res.ISlimSubjectInterest>> {
+  if (subjectIDs.length === 0) {
+    return {};
+  }
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectInterests)
+    .where(
+      op.and(
+        op.ne(schema.chiiSubjectInterests.type, 0),
+        op.eq(schema.chiiSubjectInterests.uid, userID),
+        op.inArray(schema.chiiSubjectInterests.subjectID, lo.uniq(subjectIDs)),
+      ),
+    );
+  const result: Record<number, res.ISlimSubjectInterest> = {};
+  for (const interest of data) {
+    result[interest.subjectID] = convert.toSlimSubjectInterest(interest);
+  }
+  return result;
+}
+
 /** Cached */
 export async function fetchSubjectTopicsByIDs(ids: number[]): Promise<Record<number, res.ITopic>> {
   if (ids.length === 0) {

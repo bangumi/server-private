@@ -150,6 +150,15 @@ Object {
     "name": "ちょびっツ",
     "nameCN": "人形电脑天使心",
     "nsfw": false,
+    "platform": Object {
+      "alias": "tv",
+      "enableHeader": true,
+      "id": 1,
+      "order": 0,
+      "type": "TV",
+      "typeCN": "TV",
+      "wikiTpl": "TVAnime",
+    },
     "rating": Object {
       "count": Array [
         4,

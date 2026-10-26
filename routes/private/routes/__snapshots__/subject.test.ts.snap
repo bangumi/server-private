@@ -541,6 +541,15 @@ Object {
         "name": "ちょびっツの「ツ」の字 - Chobits Fan Book",
         "nameCN": "",
         "nsfw": false,
+        "platform": Object {
+          "alias": "illustration",
+          "enableHeader": true,
+          "id": 1003,
+          "order": 2,
+          "type": "Illustration",
+          "typeCN": "画集",
+          "wikiTpl": "Book",
+        },
         "rating": Object {
           "count": Array [
             0,
@@ -814,6 +823,15 @@ Object {
         "name": "第一次的親密接觸",
         "nameCN": "第一次的亲密接触",
         "nsfw": false,
+        "platform": Object {
+          "alias": "novel",
+          "enableHeader": true,
+          "id": 1002,
+          "order": 1,
+          "type": "Novel",
+          "typeCN": "小说",
+          "wikiTpl": "Novel",
+        },
         "rating": Object {
           "count": Array [
             0,
@@ -874,6 +892,15 @@ Object {
         "name": "コードギアス 反逆のルルーシュR2",
         "nameCN": "Code Geass 反叛的鲁路修R2",
         "nsfw": false,
+        "platform": Object {
+          "alias": "tv",
+          "enableHeader": true,
+          "id": 1,
+          "order": 0,
+          "type": "TV",
+          "typeCN": "TV",
+          "wikiTpl": "TVAnime",
+        },
         "rating": Object {
           "count": Array [
             44,
