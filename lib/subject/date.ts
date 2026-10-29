@@ -1,7 +1,28 @@
-import type { Wiki } from '@bgm38/wiki';
+import { parse, type Wiki } from '@bgm38/wiki';
 
 import { DATE } from '@app/lib/utils/date.ts';
 import { getSubjectPlatformSortKeys } from '@app/vendor';
+
+/** 从条目 infobox 解析日期，解析失败或日期不可用时返回 undefined（调用方不应清空已有日期） */
+export function resolveSubjectDate(
+  infobox: string,
+  typeID: number,
+  platform: number,
+): DATE | undefined {
+  let w: Wiki;
+  try {
+    w = parse(infobox);
+  } catch {
+    return;
+  }
+
+  const date = extractDate(w, typeID, platform);
+  if (date.year <= 1900) {
+    return;
+  }
+
+  return date;
+}
 
 export function extractDate(w: Wiki, typeID: number, platform: number): DATE {
   const keys = getSubjectPlatformSortKeys(typeID, platform);
