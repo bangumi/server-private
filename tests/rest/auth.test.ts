@@ -15,7 +15,8 @@ afterEach(async () => {
   await db.delete(schema.chiiOsWebSessions);
 });
 
-test('should pass login/logout authorization flow', async () => {
+// login 要在 CI 上跑一次完整 createServer + bcrypt 校验，实测单条已接近全局 10s 超时
+test('should pass login/logout authorization flow', { timeout: 30_000 }, async () => {
   const app = await createServer();
 
   const res = await app.inject({
