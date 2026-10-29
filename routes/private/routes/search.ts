@@ -45,11 +45,18 @@ export async function setup(app: App) {
         limit,
         offset,
       });
-      const subjects = await fetcher.fetchSlimSubjectsByIDs(resp.ids, auth.allowNsfw);
+      const interestsPromise: Promise<Record<number, res.ISlimSubjectInterest>> = auth.login
+        ? fetcher.fetchSlimSubjectInterests(auth.userID, resp.ids)
+        : Promise.resolve({});
+      const [subjects, interests] = await Promise.all([
+        fetcher.fetchSlimSubjectsByIDs(resp.ids, auth.allowNsfw),
+        interestsPromise,
+      ]);
       const result = [];
       for (const sid of resp.ids) {
-        if (subjects[sid]) {
-          result.push(subjects[sid]);
+        const subject = subjects[sid];
+        if (subject) {
+          result.push({ ...subject, interest: interests[sid] });
         }
       }
       return {
