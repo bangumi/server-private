@@ -64,11 +64,13 @@ export function extractFromString(s: string): DATE | undefined {
 
   for (const pattern of simple_patterns) {
     const m = pattern[Symbol.match](s);
-    if (m?.groups) {
-      year = m.groups.year;
-      month = m.groups.month;
-      day = m.groups.day;
+    if (!m?.groups) {
+      continue;
     }
+
+    year = m.groups.year;
+    month = m.groups.month;
+    day = m.groups.day;
   }
 
   if (!year) {
