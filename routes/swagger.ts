@@ -38,14 +38,12 @@ export function addRoute(app: App) {
     }
 
     if (!route.schema.operationId) {
-      if (!route.schema.operationId) {
-        throw new Error(`missing operationId on router ${route.url}`);
-      }
+      throw new Error(`missing operationId on router ${route.url}`);
+    }
 
-      for (const x of route.schema.operationId) {
-        if (!validChars.includes(x)) {
-          throw new Error(`invalid operationId ${route.schema.operationId} on router ${route.url}`);
-        }
+    for (const x of route.schema.operationId) {
+      if (!validChars.includes(x)) {
+        throw new Error(`invalid operationId ${route.schema.operationId} on router ${route.url}`);
       }
     }
   });

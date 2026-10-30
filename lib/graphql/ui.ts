@@ -39,12 +39,14 @@ export const fastifyAltairPlugin: FastifyPluginAsync<AltairFastifyPluginOptions>
     return res.type('text/html').send(altairPage);
   });
 
-  if (renderOptions.serveInitialOptionsInSeperateRequest) {
-    const initialOptions = renderInitSnippet(renderOptions);
-    const initOptPath = path + '/initial_options.js';
-
-    fastify.get(initOptPath, (_req, res) => {
-      return res.type('application/javascript').send(initialOptions);
-    });
+  if (!renderOptions.serveInitialOptionsInSeperateRequest) {
+    return;
   }
+
+  const initialOptions = renderInitSnippet(renderOptions);
+  const initOptPath = path + '/initial_options.js';
+
+  fastify.get(initOptPath, (_req, res) => {
+    return res.type('application/javascript').send(initialOptions);
+  });
 };
