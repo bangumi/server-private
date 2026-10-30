@@ -9,11 +9,31 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './group.ts';
 
+const testUserID = 382951;
+
+const app = createTestServer();
+await app.register(setup);
+
+const memberApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: 287622,
+  },
+});
+await memberApp.register(setup);
+
+const testUserApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: testUserID,
+  },
+});
+await testUserApp.register(setup);
+
 describe('group list', () => {
   test('should get group list', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-
     const res = await app.inject({
       url: '/groups',
       query: {
@@ -26,14 +46,7 @@ describe('group list', () => {
   });
 
   test('should get joined group list', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = memberApp;
 
     const res = await app.inject({
       url: '/groups',
@@ -44,14 +57,7 @@ describe('group list', () => {
   });
 
   test('should get managed group list', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = memberApp;
 
     const res = await app.inject({
       url: '/groups',
@@ -64,23 +70,13 @@ describe('group list', () => {
 
 describe('group info', () => {
   test('should get group info', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-
     const res = await app.inject('/groups/sandbox');
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get group info with membership', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = memberApp;
 
     const res = await app.inject('/groups/sandbox');
     expect(res.statusCode).toBe(200);
@@ -88,9 +84,6 @@ describe('group info', () => {
   });
 
   test('should get group members', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-
     const res = await app.inject('/groups/sandbox/members');
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
@@ -101,7 +94,6 @@ describe('group topics', () => {
   const testGroupID = 4215;
   const testTopicID = 100;
   const testTopicPostID = 100;
-  const testUserID = 382951;
   const testPostID = 101;
 
   beforeEach(async () => {
@@ -146,14 +138,7 @@ describe('group topics', () => {
   });
 
   test('should get recent topics of joined group', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     const res = await app.inject({
       url: '/groups/-/topics',
@@ -167,14 +152,7 @@ describe('group topics', () => {
   });
 
   test('should get recent topics of all group', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     const res = await app.inject({
       url: '/groups/-/topics',
@@ -188,14 +166,7 @@ describe('group topics', () => {
   });
 
   test('should get recent topics of mine', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     const res = await app.inject({
       url: '/groups/-/topics',
@@ -209,14 +180,7 @@ describe('group topics', () => {
   });
 
   test('should get recent topics of replied', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     const res = await app.inject({
       url: '/groups/-/topics',
@@ -230,9 +194,6 @@ describe('group topics', () => {
   });
 
   test('should get group topics', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-
     const res = await app.inject({
       url: `/groups/sandbox/topics`,
       query: { limit: '2', offset: '0' },
@@ -242,14 +203,7 @@ describe('group topics', () => {
   });
 
   test('should create new topic', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     const res = await app.inject({
       url: `/groups/sandbox/topics`,
@@ -279,14 +233,7 @@ describe('group topics', () => {
   });
 
   test('should edit own topic', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     const res = await app.inject({
       url: `/groups/-/topics/${testTopicID}`,
@@ -330,9 +277,6 @@ describe('group topics', () => {
   });
 
   test('should get group post', async () => {
-    const app = createTestServer();
-    await app.register(setup);
-
     const res = await app.inject(`/groups/-/posts/${testPostID}`);
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
@@ -347,9 +291,6 @@ describe('group topics', () => {
       state: 0,
       createdAt: 1462335911,
     });
-
-    const app = createTestServer();
-    await app.register(setup);
 
     const res = await app.inject(`/groups/-/topics/${testTopicID}`);
     expect(res.statusCode).toBe(200);
@@ -375,14 +316,7 @@ describe('group topics', () => {
   });
 
   test('should like and unlike group post', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     const likeRes = await app.inject({
       url: `/groups/-/posts/${testPostID}/like`,
@@ -432,14 +366,7 @@ describe('group topics', () => {
   });
 
   test('should create/edit/delete new post', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = testUserApp;
 
     // create post
     const createRes = await app.inject({
