@@ -15,7 +15,7 @@ import { validateDate } from '@app/lib/utils/date.ts';
 import { validateDuration } from '@app/lib/utils/index.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { matchExpected } from '@app/lib/wiki';
-import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requirePermission, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -90,7 +90,10 @@ export async function setup(app: App) {
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: t.Object(
           {
             commitMessage: t.String(),
@@ -134,6 +137,7 @@ export async function setup(app: App) {
       },
       preHandler: [
         requireLogin('edit a episode'),
+        requireScope('write:wiki'),
         requirePermission('edit episode', (auth) => auth.permission.ep_edit),
       ],
     },

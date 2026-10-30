@@ -47,7 +47,7 @@ import {
   matchExpected,
   WikiChangedError,
 } from '@app/lib/wiki.ts';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -186,7 +186,10 @@ export async function setup(app: App) {
         tags: [Tag.Wiki],
         operationId: 'postPersonInfo',
         summary: '创建人物',
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: t.Object({
           person: req.PersonCreate,
           authorID: t.Optional(
@@ -215,7 +218,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('creating a person')],
+      preHandler: [requireLogin('creating a person'), requireScope('write:wiki')],
     },
     async ({ auth, headers, body: { person, authorID } }) => {
       const adminToken = headers['x-admin-token'];
@@ -396,7 +399,10 @@ export async function setup(app: App) {
         params: t.Object({
           personID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: t.Object(
           {
             commitMessage: t.String({ minLength: 1 }),
@@ -445,7 +451,7 @@ export async function setup(app: App) {
           ),
         },
       },
-      preHandler: [requireLogin('editing a person')],
+      preHandler: [requireLogin('editing a person'), requireScope('write:wiki')],
     },
     async ({
       auth,
@@ -598,7 +604,10 @@ export async function setup(app: App) {
         params: t.Object({
           personID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         body: t.Object(
           {
             img: t.String({
@@ -625,7 +634,7 @@ export async function setup(app: App) {
           ),
         },
       },
-      preHandler: [requireLogin('uploading image')],
+      preHandler: [requireLogin('uploading image'), requireScope('write:wiki')],
     },
     async ({ auth, headers, body: { img: base64Img, authorID }, params: { personID } }) => {
       const adminToken = headers['x-admin-token'];

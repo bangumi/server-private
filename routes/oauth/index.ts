@@ -14,7 +14,14 @@ import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { redisOauthPrefix } from '@app/lib/config.ts';
 import { BadRequestError } from '@app/lib/error.ts';
 import redis from '@app/lib/redis.ts';
-import { EpochDefaultScope, type IScope, Scope, scopeMessage } from '@app/lib/scope.ts';
+import {
+  EpochDefaultScope,
+  type IScope,
+  parseScopeColumn,
+  Scope,
+  scopeColumnValue,
+  scopeMessage,
+} from '@app/lib/scope.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import { fetchUserX } from '@app/lib/user/utils.ts';
 import { randomBase64url } from '@app/lib/utils/index.ts';
@@ -410,7 +417,7 @@ async function tokenFromCode(req: {
     created_at: now.toISOString(),
   } satisfies TokenInfo);
 
-  const rawScope = JSON.stringify(scope);
+  const rawScope = scopeColumnValue(scope);
 
   const token: typeof schema.chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
@@ -445,6 +452,7 @@ async function tokenFromCode(req: {
     token_type: 'Bearer',
     refresh_token: refresh.refreshToken,
     user_id: userID,
+    scope: scope.join(' '),
   };
 }
 
@@ -456,7 +464,7 @@ async function tokenFromRefresh(req: {
 }): Promise<ITokenResponse> {
   const now = DateTime.now();
 
-  const [accessToken, refreshToken, userID] = await db.transaction(async (t) => {
+  const [accessToken, refreshToken, userID, scopeColumn] = await db.transaction(async (t) => {
     const [refresh] = await t
       .select()
       .from(schema.chiiOAuthRefreshToken)
@@ -517,8 +525,10 @@ async function tokenFromRefresh(req: {
       .set({ expiredAt: now.toJSDate() })
       .where(sql`refresh_token = ${req.refreshToken} collate utf8mb4_bin`);
 
-    return [token.accessToken, newRefresh.refreshToken, refresh.userID];
+    return [token.accessToken, newRefresh.refreshToken, refresh.userID, refresh.scope];
   });
+
+  const scope = parseScopeColumn(scopeColumn);
 
   return {
     access_token: accessToken,
@@ -526,5 +536,6 @@ async function tokenFromRefresh(req: {
     token_type: 'Bearer',
     refresh_token: refreshToken,
     user_id: userID,
+    ...(scope !== null && { scope: scope.join(' ') }),
   };
 }

@@ -22,7 +22,7 @@ import * as Subject from '@app/lib/subject/index.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin, requirePermission } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requirePermission, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -161,7 +161,10 @@ export function setup(app: App) {
         params: t.Object({
           subjectID: t.Integer(),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         response: {
           200: t.Object({}),
           401: res.Ref(res.Error),
@@ -180,6 +183,7 @@ export function setup(app: App) {
       },
       preHandler: [
         requireLogin('upload a subject cover'),
+        requireScope('write:wiki'),
         requirePermission('upload subject cover', (auth) => auth.permission.subject_edit ?? false),
       ],
     },
@@ -249,7 +253,10 @@ export function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
           imageID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         response: {
           200: t.Object({}),
           401: res.Ref(res.Error),
@@ -258,6 +265,7 @@ export function setup(app: App) {
       },
       preHandler: [
         requireLogin('vote for subject cover'),
+        requireScope('write:wiki'),
         requirePermission('vote for subject cover', (auth) => auth.permission.subject_edit),
       ],
     },
@@ -304,7 +312,10 @@ export function setup(app: App) {
           subjectID: t.Integer({ minimum: 1 }),
           imageID: t.Integer({ minimum: 1 }),
         }),
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:wiki'] },
+        ],
         response: {
           200: t.Object({}),
           401: res.Ref(res.Error),
@@ -313,6 +324,7 @@ export function setup(app: App) {
       },
       preHandler: [
         requireLogin('vote for subject cover'),
+        requireScope('write:wiki'),
         requirePermission('vote for subject cover', (auth) => auth.permission.subject_edit),
       ],
     },

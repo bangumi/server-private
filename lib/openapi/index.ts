@@ -24,6 +24,6 @@ export const Tag = {
 
 export const Security = {
   HTTPBearer: 'HTTPBearer',
-  OptionalHTTPBearer: 'OptionalHTTPBearer',
   CookiesSession: 'CookiesSession',
+  OAuth2: 'OAuth2',
 } as const;

@@ -17,7 +17,11 @@ import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
+import {
+  requireLogin,
+  requireScope,
+  requireTurnstileToken,
+} from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -31,7 +35,10 @@ export async function setup(app: App) {
         summary: '创建目录',
         operationId: 'createIndex',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:indices'] },
+        ],
         body: req.Ref(req.CreateIndex),
         response: {
           200: t.Object({
@@ -39,7 +46,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('create index')],
+      preHandler: [requireLogin('create index'), requireScope('write:indices')],
     },
     async ({ auth, body }) => {
       await rateLimit(LimitAction.IndexEdit, auth.userID);
@@ -190,7 +197,10 @@ export async function setup(app: App) {
         summary: '更新目录',
         operationId: 'updateIndex',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:indices'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -199,7 +209,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('update index')],
+      preHandler: [requireLogin('update index'), requireScope('write:indices')],
     },
     async ({ auth, params: { indexID }, body }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -237,7 +247,10 @@ export async function setup(app: App) {
         summary: '删除目录',
         operationId: 'deleteIndex',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:indices'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -245,7 +258,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete index')],
+      preHandler: [requireLogin('delete index'), requireScope('write:indices')],
     },
     async ({ auth, params: { indexID } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -451,7 +464,10 @@ export async function setup(app: App) {
         summary: '添加目录关联内容',
         operationId: 'putIndexRelated',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:indices'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -462,7 +478,7 @@ export async function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('add index related content')],
+      preHandler: [requireLogin('add index related content'), requireScope('write:indices')],
     },
     async ({ auth, params: { indexID }, body }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -547,7 +563,10 @@ export async function setup(app: App) {
         summary: '更新目录关联内容',
         operationId: 'patchIndexRelated',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:indices'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
           id: t.Integer(),
@@ -557,7 +576,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('update index related content')],
+      preHandler: [requireLogin('update index related content'), requireScope('write:indices')],
     },
     async ({ auth, params: { indexID, id }, body }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -605,7 +624,10 @@ export async function setup(app: App) {
         summary: '删除目录关联内容',
         operationId: 'deleteIndexRelated',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:indices'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
           id: t.Integer(),
@@ -614,7 +636,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete index related content')],
+      preHandler: [requireLogin('delete index related content'), requireScope('write:indices')],
     },
     async ({ auth, params: { indexID, id } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -694,7 +716,10 @@ export async function setup(app: App) {
         summary: '创建目录的评论',
         operationId: 'createIndexComment',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -706,7 +731,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a comment'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { indexID } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -729,7 +758,10 @@ export async function setup(app: App) {
         summary: '编辑目录的评论',
         operationId: 'updateIndexComment',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -738,7 +770,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('edit a comment')],
+      preHandler: [requireLogin('edit a comment'), requireScope('write:topic')],
     },
     async ({ auth, body: { content }, params: { commentID } }) => {
       return await comment.update(auth, commentID, content);
@@ -752,7 +784,10 @@ export async function setup(app: App) {
         summary: '删除目录的评论',
         operationId: 'deleteIndexComment',
         tags: [Tag.Index],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -760,7 +795,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete a comment')],
+      preHandler: [requireLogin('delete a comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID } }) => {
       return await comment.delete(auth, commentID);

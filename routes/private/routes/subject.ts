@@ -28,7 +28,11 @@ import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
+import {
+  requireLogin,
+  requireScope,
+  requireTurnstileToken,
+} from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -752,7 +756,10 @@ export async function setup(app: App) {
         description: '吐槽挂在条目收藏上：已收藏则更新吐槽，未收藏需传 type 创建收藏并写吐槽',
         operationId: 'createSubjectComment',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           subjectID: t.Integer(),
         }),
@@ -764,7 +771,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('create subject comment'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('create subject comment'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, ip, body, params: { subjectID } }) => {
       const subject = await fetcher.fetchSlimSubjectByID(subjectID, auth.allowNsfw);
@@ -923,7 +934,10 @@ export async function setup(app: App) {
         summary: '编辑条目的吐槽',
         operationId: 'updateSubjectComment',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer({ minimum: 1 }),
         }),
@@ -932,7 +946,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('edit a subject comment')],
+      preHandler: [requireLogin('edit a subject comment'), requireScope('write:topic')],
     },
     async ({ auth, ip, body: { comment }, params: { commentID } }) => {
       const [current] = await db
@@ -993,7 +1007,10 @@ export async function setup(app: App) {
         description: '删除吐槽会清空吐槽内容并保留收藏记录',
         operationId: 'deleteSubjectComment',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer({ minimum: 1 }),
         }),
@@ -1001,7 +1018,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete a subject comment')],
+      preHandler: [requireLogin('delete a subject comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID } }) => {
       const [current] = await db
@@ -1036,7 +1053,10 @@ export async function setup(app: App) {
         summary: '给条目的吐槽点赞',
         operationId: 'likeSubjectComment',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -1048,7 +1068,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('liking a subject comment')],
+      preHandler: [requireLogin('liking a subject comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID }, body: { value } }) => {
       const [comment] = await db
@@ -1077,7 +1097,10 @@ export async function setup(app: App) {
         summary: '取消条目的吐槽点赞',
         operationId: 'unlikeSubjectComment',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -1085,7 +1108,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('liking a subject comment')],
+      preHandler: [requireLogin('liking a subject comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID } }) => {
       await Reaction.delete({
@@ -1328,7 +1351,10 @@ export async function setup(app: App) {
         summary: '给条目收藏点赞',
         operationId: 'likeSubjectCollect',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           collectID: t.Integer(),
         }),
@@ -1340,7 +1366,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('liking a subject collect')],
+      preHandler: [requireLogin('liking a subject collect'), requireScope('write:collection')],
     },
     async ({ auth, params: { collectID }, body: { value } }) => {
       const [interest] = await db
@@ -1369,7 +1395,10 @@ export async function setup(app: App) {
         summary: '取消条目收藏点赞',
         operationId: 'unlikeSubjectCollect',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           collectID: t.Integer(),
         }),
@@ -1377,7 +1406,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('liking a subject collect')],
+      preHandler: [requireLogin('liking a subject collect'), requireScope('write:collection')],
     },
     async ({ auth, params: { collectID } }) => {
       await Reaction.delete({
@@ -1525,7 +1554,10 @@ export async function setup(app: App) {
       schema: {
         summary: '创建条目讨论',
         tags: [Tag.Subject],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         operationId: 'createSubjectTopic',
         params: t.Object({
           subjectID: t.Integer({ minimum: 1 }),
@@ -1538,7 +1570,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a topic'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a topic'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { title, content }, params: { subjectID } }) => {
       if (auth.permission.ban_post) {
@@ -1647,7 +1683,10 @@ export async function setup(app: App) {
         summary: '编辑自己创建的条目讨论',
         operationId: 'updateSubjectTopic',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           topicID: t.Integer({ minimum: 1 }),
         }),
@@ -1656,7 +1695,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('updating a topic')],
+      preHandler: [requireLogin('updating a topic'), requireScope('write:topic')],
     },
     async ({ auth, body: { title, content }, params: { topicID } }) => {
       if (auth.permission.ban_post) {
@@ -1769,7 +1808,10 @@ export async function setup(app: App) {
         summary: '给条目讨论回复点赞',
         operationId: 'likeSubjectPost',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -1781,7 +1823,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('liking a subject post')],
+      preHandler: [requireLogin('liking a subject post'), requireScope('write:topic')],
     },
     async ({ auth, params: { postID }, body: { value } }) => {
       await subjectPostService.like(auth, postID, value);
@@ -1796,7 +1838,10 @@ export async function setup(app: App) {
         summary: '取消条目讨论回复点赞',
         operationId: 'unlikeSubjectPost',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -1804,7 +1849,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('liking a subject post')],
+      preHandler: [requireLogin('liking a subject post'), requireScope('write:topic')],
     },
     async ({ auth, params: { postID } }) => {
       await subjectPostService.unlike(auth, postID);
@@ -1819,7 +1864,10 @@ export async function setup(app: App) {
         operationId: 'editSubjectPost',
         summary: '编辑条目讨论回复',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -1828,7 +1876,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('editing a post')],
+      preHandler: [requireLogin('editing a post'), requireScope('write:topic')],
     },
     async ({ auth, body: { content }, params: { postID } }) => {
       await subjectPostService.update(auth, postID, content);
@@ -1843,7 +1891,10 @@ export async function setup(app: App) {
         summary: '删除条目讨论回复',
         operationId: 'deleteSubjectPost',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           postID: t.Integer(),
         }),
@@ -1851,7 +1902,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('deleting a post')],
+      preHandler: [requireLogin('deleting a post'), requireScope('write:topic')],
     },
     async ({ auth, params: { postID } }) => {
       await subjectPostService.delete(auth, postID);
@@ -1866,7 +1917,10 @@ export async function setup(app: App) {
         operationId: 'createSubjectReply',
         summary: '创建条目讨论回复',
         tags: [Tag.Topic],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           topicID: t.Integer(),
         }),
@@ -1876,7 +1930,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a reply'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, params: { topicID }, body: { content, replyTo = 0 } }) => {
       const [topic] = await db
