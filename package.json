@@ -43,7 +43,7 @@
     "@fastify/swagger": "9.9.2",
     "@fastify/type-provider-typebox": "6.3.0",
     "@fastify/view": "12.0.1",
-    "@node-rs/bcrypt": "1.10.9",
+    "@node-rs/bcrypt": "2.0.0",
     "@prometheus-io/client": "0.16.1",
     "@sentry/node": "10.76.2",
     "@simplewebauthn/server": "13.3.3",
