@@ -147,7 +147,7 @@ export function emptyAuth(): IAuth {
   };
 }
 
-async function userToAuth(user: res.ISlimUser, appID?: string): Promise<IAuth> {
+async function userToAuth(user: res.ISlimUser, appID = ''): Promise<IAuth> {
   const perms = await fetchPermission(user.group);
   const privacy = await fetchPrivacyByUserID(user.id);
   const showNsfwSubject = isNsfwSubjectPreferenceEnabled(privacy);
@@ -163,7 +163,7 @@ async function userToAuth(user: res.ISlimUser, appID?: string): Promise<IAuth> {
     }),
     regTime: user.joinedAt,
     groupID: user.group,
-    source: getTimelineSourceFromAppID(appID ?? '') ?? defaultSource,
+    source: getTimelineSourceFromAppID(appID) ?? defaultSource,
   };
 }
 
