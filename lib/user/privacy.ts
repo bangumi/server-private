@@ -330,14 +330,12 @@ function toInteger(value: unknown): number | undefined {
     return value;
   }
 
-  if (typeof value === 'string') {
-    if (!/^-?\d+$/.test(value)) {
-      return;
-    }
-    const n = Number(value);
-    if (Number.isSafeInteger(n)) {
-      return n;
-    }
+  if (typeof value !== 'string' || !/^-?\d+$/.test(value)) {
+    return;
+  }
+  const n = Number(value);
+  if (Number.isSafeInteger(n)) {
+    return n;
   }
 }
 
