@@ -5,7 +5,9 @@ import { Dam } from './dam.ts';
 test('should check printable characters', () => {
   expect(Dam.allCharacterPrintable('\u202C')).toBe(false);
   expect(Dam.allCharacterPrintable('\u202D')).toBe(false);
-  expect(Dam.allCharacterPrintable("See what's hidden in your string…\tor be​hind﻿")).toBe(false);
+  expect(
+    Dam.allCharacterPrintable("See\u{A0}what's hidden in your string…\tor be\u{200B}hind\u{FEFF}"),
+  ).toBe(false);
 
   // bidirectional isolate controls (Unicode Bidi_Control, used in Trojan-Source attacks)
   expect(Dam.allCharacterPrintable('\u2066')).toBe(false);
