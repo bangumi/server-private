@@ -1,4 +1,3 @@
-import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import t from 'typebox';
 
@@ -69,8 +68,8 @@ export async function setup(app: App) {
       return {
         id: ep.id,
         subjectID: ep.subjectID,
-        name: lo.unescape(ep.name),
-        nameCN: lo.unescape(ep.nameCN),
+        name: ep.name,
+        nameCN: ep.nameCN,
         ep: ep.sort,
         disc: ep.disc,
         date: ep.airdate,
@@ -184,11 +183,11 @@ export async function setup(app: App) {
       }
 
       if (body.name !== undefined) {
-        updates.name = lo.escape(body.name);
+        updates.name = body.name;
       }
 
       if (body.nameCN !== undefined) {
-        updates.nameCN = lo.escape(body.nameCN);
+        updates.nameCN = body.nameCN;
       }
 
       if (body.summary !== undefined) {
