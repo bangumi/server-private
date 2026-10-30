@@ -372,7 +372,7 @@ export async function fetchSubjectIDsByFilter(
       }
       tagsForSubject.set(row.tagID, 1);
       if (tagCounts && row.tagID === tagIDs[0]) {
-        tagCounts.set(row.subjectID, Number(row.count ?? 0));
+        tagCounts.set(row.subjectID, row.count ?? 0);
       }
     }
     let subjectIDs: number[] = [];
