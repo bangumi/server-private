@@ -1,12 +1,10 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import * as lo from 'lodash-es';
 import { DateTime } from 'luxon';
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest';
 
 import { db } from '@app/drizzle';
-import type { IAuth } from '@app/lib/auth/index.ts';
 import { UserGroup } from '@app/lib/auth/index.ts';
 import { projectRoot } from '@app/lib/config.ts';
 import * as image from '@app/lib/image/index.ts';
@@ -59,29 +57,36 @@ afterAll(async () => {
   await fs.rm('./tmp', { recursive: true, force: true });
 });
 
-async function testApp({ auth }: { auth?: Partial<IAuth> } = {}) {
-  const app = createTestServer({
-    auth: lo.assign(
-      {
-        login: true,
-        allowNsfw: true,
-        regTime: DateTime.now().toUnixInteger(),
-        userID: 1,
-        groupID: UserGroup.Admin,
-        permission: { subject_edit: true, mono_edit: true },
-      },
-      auth ?? {},
-    ),
-  });
+const app = createTestServer();
+await app.register(setup);
 
-  await app.register(setup);
+const adminApp = createTestServer({
+  auth: {
+    login: true,
+    allowNsfw: true,
+    regTime: DateTime.now().toUnixInteger(),
+    userID: 1,
+    groupID: UserGroup.Admin,
+    permission: { subject_edit: true, mono_edit: true },
+  },
+});
+await adminApp.register(setup);
 
-  return app;
-}
+const noPermissionApp = createTestServer({
+  auth: {
+    groupID: UserGroup.Normal,
+    login: true,
+    permission: {},
+    allowNsfw: true,
+    regTime: 0,
+    userID: 100,
+  },
+});
+await noPermissionApp.register(setup);
 
 describe('create person', () => {
   test('should create person and history', async () => {
-    const app = await testApp();
+    const app = adminApp;
 
     const uploadImageMock = vi.fn();
     vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
@@ -132,16 +137,7 @@ describe('create person', () => {
   });
 
   test('should need authorization', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: {},
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = noPermissionApp;
 
     const raw = await fs.readFile(path.join(projectRoot, 'lib/image/fixtures/subject.jpg'));
 
@@ -174,7 +170,7 @@ describe('create person', () => {
   });
 
   test('should validate type', async () => {
-    const app = await testApp();
+    const app = adminApp;
 
     const res = await app.inject({
       url: '/persons',
@@ -195,7 +191,7 @@ describe('create person', () => {
 
 describe('edit person ', () => {
   test('should get current wiki info', async () => {
-    const app = await testApp({});
+    const app = adminApp;
 
     const res = await app.inject('/persons/8');
 
@@ -235,7 +231,7 @@ describe('edit person ', () => {
   });
 
   test('should return locked person info', async () => {
-    const app = await testApp({});
+    const app = adminApp;
     const limit = vi.fn().mockResolvedValue([
       {
         id: 65425,
@@ -283,16 +279,7 @@ describe('edit person ', () => {
   });
 
   test('should need authorization', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: {},
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = noPermissionApp;
 
     const res = await app.inject({
       url: '/persons/1',
@@ -319,7 +306,7 @@ describe('edit person ', () => {
   });
 
   test('should update person and history', async () => {
-    const app = await testApp();
+    const app = adminApp;
 
     const res = await app.inject({
       url: '/persons/7',
@@ -389,7 +376,7 @@ describe('edit person ', () => {
   });
 
   test('should upload person image and create revision', async () => {
-    const app = await testApp();
+    const app = adminApp;
 
     const uploadImageMock = vi.fn();
     vi.spyOn(image, 'uploadMonoImage').mockImplementationOnce(uploadImageMock);
@@ -425,7 +412,7 @@ describe('edit person ', () => {
   });
 
   test('should expected current person', async () => {
-    const app = await testApp();
+    const app = adminApp;
 
     const res = await app.inject({
       url: '/persons/1',
@@ -465,7 +452,7 @@ describe('edit person ', () => {
 
 describe('person relations', () => {
   test('should get person character relation revision wiki info', async () => {
-    const app = await testApp({});
+    const app = adminApp;
 
     const res = await app.inject('/persons/-/casts/revisions/5909');
 
@@ -473,16 +460,13 @@ describe('person relations', () => {
   });
 
   test('should get person character relation history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
-
     const res = await app.inject('/persons/1/casts/history-summary');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get person subject revision wiki info', async () => {
-    const app = await testApp({});
+    const app = adminApp;
 
     const res = await app.inject('/persons/-/subjects/revisions/70822');
 
@@ -490,9 +474,6 @@ describe('person relations', () => {
   });
 
   test('should get person subject relation history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
-
     const res = await app.inject('/persons/1/subjects/history-summary');
 
     expect(res.json()).toMatchSnapshot();
@@ -501,7 +482,7 @@ describe('person relations', () => {
 
 describe('legacy revision data', () => {
   test('should handle revision with legacy array extra', async () => {
-    const app = await testApp({});
+    const app = adminApp;
 
     const res = await app.inject('/persons/-/revisions/12');
 
@@ -510,7 +491,7 @@ describe('legacy revision data', () => {
   });
 
   test('should return 404 for revision with empty record', async () => {
-    const app = await testApp({});
+    const app = adminApp;
 
     const res = await app.inject('/persons/-/revisions/1142797');
 
