@@ -1,8 +1,14 @@
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
-import { CollectionPrivacy, CollectionType } from '@app/lib/subject/type.ts';
+import { producer } from '@app/lib/kafka.ts';
+import { getEpStatus } from '@app/lib/subject/ep.ts';
+import {
+  CollectionPrivacy,
+  CollectionType,
+  EpisodeCollectionStatus,
+} from '@app/lib/subject/type.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './collection.ts';
@@ -148,6 +154,48 @@ describe('subject collection', () => {
       .from(schema.chiiSubjects)
       .where(op.eq(schema.chiiSubjects.id, 12));
     expect(subject?.collect).toBe(4535);
+  });
+
+  test('should revoke episode progress', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 382951,
+      },
+    });
+    await app.register(setup);
+    const send = vi.spyOn(producer, 'send');
+
+    let res = await app.inject({
+      method: 'put',
+      url: '/collections/subjects/12',
+      body: {
+        type: CollectionType.Doing,
+      },
+    });
+    expect(res.statusCode).toBe(200);
+
+    res = await app.inject({
+      method: 'patch',
+      url: '/collections/episodes/1027',
+      body: { type: EpisodeCollectionStatus.Done },
+    });
+    expect(res.statusCode).toBe(200);
+    let status = await getEpStatus(382951, 12);
+    expect(status.get(1027)?.type).toBe(EpisodeCollectionStatus.Done);
+
+    send.mockClear();
+    res = await app.inject({
+      method: 'patch',
+      url: '/collections/episodes/1027',
+      body: { type: EpisodeCollectionStatus.None },
+    });
+    expect(res.statusCode).toBe(200);
+    status = await getEpStatus(382951, 12);
+    expect(status.get(1027)).toBeUndefined();
+    // 撤销不产生时间线，下游 TimelineWriter 不接受 None 状态
+    expect(send).not.toHaveBeenCalled();
   });
 });
 

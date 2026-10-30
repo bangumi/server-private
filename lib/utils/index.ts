@@ -114,8 +114,8 @@ export function validateDuration(duration: string | undefined) {
   }
 }
 
-function pad(s: number, n = 2): string {
-  return s.toString().padStart(n, '0');
+function pad(s: number): string {
+  return s.toString().padStart(2, '0');
 }
 
 export function formatDuration(durationSeconds: number): string {

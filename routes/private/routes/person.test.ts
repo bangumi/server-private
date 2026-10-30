@@ -8,10 +8,29 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './person.ts';
 
+const app = createTestServer();
+await app.register(setup);
+
+const collectorApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: 14459,
+  },
+});
+await collectorApp.register(setup);
+
+const userApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: 287622,
+  },
+});
+await userApp.register(setup);
+
 describe('person', () => {
   test('should get person', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/persons/1',
@@ -20,14 +39,7 @@ describe('person', () => {
   });
 
   test('should get person with collectedAt', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 14459,
-      },
-    });
-    await app.register(setup);
+    const app = collectorApp;
     const res = await app.inject({
       method: 'get',
       url: '/persons/1',
@@ -38,8 +50,6 @@ describe('person', () => {
   });
 
   test('should get person works', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/persons/1/works',
@@ -49,8 +59,6 @@ describe('person', () => {
   });
 
   test('should get person casts', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/persons/1/casts',
@@ -60,8 +68,6 @@ describe('person', () => {
   });
 
   test('should get person collects', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/persons/1/collects',
@@ -71,8 +77,6 @@ describe('person', () => {
   });
 
   test('should get person indexes', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/persons/1/indexes',
@@ -183,8 +187,6 @@ describe('person comments', () => {
   });
 
   test('should get person comments', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/persons/1/comments',
@@ -193,14 +195,7 @@ describe('person comments', () => {
   });
 
   test('should create person comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'post',
       url: '/persons/1/comments',
@@ -216,8 +211,6 @@ describe('person comments', () => {
   });
 
   test('should not allow create person comment', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'post',
       url: '/persons/1/comments',
@@ -310,8 +303,6 @@ describe('person photos', () => {
   });
 
   test('should get person photo preview with spoiler state', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/persons/1/photos/preview',
@@ -335,8 +326,6 @@ describe('person photos', () => {
   });
 
   test('should get person photo list and detail', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const list = await app.inject({
       method: 'get',
       url: '/persons/1/photos',
@@ -358,14 +347,7 @@ describe('person photos', () => {
   });
 
   test('should get and create person photo comments', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const list = await app.inject({
       method: 'get',
       url: `/persons/1/photos/${photoID}/comments`,

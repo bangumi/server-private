@@ -5,7 +5,8 @@ import * as session from '@app/lib/auth/session.ts';
 import redis from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
 
-describe('login', () => {
+// 每条用例都要跑一次完整 createServer，CI 上单条已接近全局 10s 超时
+describe('login', { timeout: 30_000 }, () => {
   beforeEach(async () => {
     await redis.flushdb('SYNC');
     await db.delete(schema.chiiOsWebSessions);

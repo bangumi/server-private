@@ -6,6 +6,7 @@ import { CronJob } from 'cron';
 import { logger } from '@app/lib/logger';
 import { heartbeat } from '@app/tasks/heartbeat';
 import { cleanupExpiredAccessTokens, cleanupExpiredRefreshTokens } from '@app/tasks/oauth';
+import { refreshSubjectDates } from '@app/tasks/subject-date';
 import {
   truncateGlobalCache as truncateTimelineGlobalCache,
   truncateInboxCache as truncateTimelineInboxCache,
@@ -43,6 +44,8 @@ const jobsConfig: { name: string; cronTime: string; func: () => Promise<void> }[
     cronTime: '0 0 7 * * *',
     func: cleanupExpiredRefreshTokens,
   },
+  // 每月全量重算条目日期，兜底 CDC 漏消息
+  { name: 'refreshSubjectDates', cronTime: '0 30 3 1 * *', func: refreshSubjectDates },
 ];
 
 function newCronJob(

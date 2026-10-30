@@ -665,7 +665,7 @@ export async function setup(app: App) {
             createdAt: now,
             source: auth.source,
           });
-        } else {
+        } else if (type !== EpisodeCollectionStatus.None) {
           await AsyncTimelineWriter.progressEpisode({
             uid: auth.userID,
             subject: {

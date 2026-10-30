@@ -12,6 +12,24 @@ import { setup } from './index.ts';
 const TEST_INDEX_ID = 15045;
 const TEST_USER_ID = 14127;
 
+const app = createTestServer();
+await app.register(setup);
+
+const userApp = createTestServer({
+  auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
+});
+await userApp.register(setup);
+
+const otherUserApp = createTestServer({
+  auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID + 1 },
+});
+await otherUserApp.register(setup);
+
+const strangerApp = createTestServer({
+  auth: { ...emptyAuth(), login: true, userID: 99999 },
+});
+await strangerApp.register(setup);
+
 const createTestIndexRelated = async (app: any, payload: any) => {
   const res = await app.inject({
     method: 'put',
@@ -70,24 +88,23 @@ describe('index APIs', () => {
       .delete(schema.chiiIndexComments)
       .where(op.eq(schema.chiiIndexComments.mid, TEST_INDEX_ID));
 
-    if (createdIndexId) {
-      await db.delete(schema.chiiIndexes).where(op.eq(schema.chiiIndexes.id, createdIndexId));
-      await db
-        .delete(schema.chiiIndexRelated)
-        .where(op.eq(schema.chiiIndexRelated.rid, createdIndexId));
-      await db
-        .delete(schema.chiiIndexComments)
-        .where(op.eq(schema.chiiIndexComments.mid, createdIndexId));
-      createdIndexId = null;
+    if (!createdIndexId) {
+      return;
     }
+
+    await db.delete(schema.chiiIndexes).where(op.eq(schema.chiiIndexes.id, createdIndexId));
+    await db
+      .delete(schema.chiiIndexRelated)
+      .where(op.eq(schema.chiiIndexRelated.rid, createdIndexId));
+    await db
+      .delete(schema.chiiIndexComments)
+      .where(op.eq(schema.chiiIndexComments.mid, createdIndexId));
+    createdIndexId = null;
   });
 
   describe('POST /indexes', () => {
     test('should create index successfully', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'post',
         url: '/indexes',
@@ -104,10 +121,7 @@ describe('index APIs', () => {
     });
 
     test('should create index with minimal data', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'post',
         url: '/indexes',
@@ -123,8 +137,6 @@ describe('index APIs', () => {
     });
 
     test('should return 401 for unauthenticated request', async () => {
-      const app = createTestServer({});
-      await app.register(setup);
       const res = await app.inject({
         method: 'post',
         url: '/indexes',
@@ -140,10 +152,7 @@ describe('index APIs', () => {
 
   describe('GET /indexes', () => {
     test('should return paginated list containing newly created index', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await app.inject({
         method: 'post',
@@ -170,10 +179,7 @@ describe('index APIs', () => {
     });
 
     test('should filter out private indexes', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await app.inject({
         method: 'post',
@@ -198,9 +204,6 @@ describe('index APIs', () => {
     });
 
     test('should sort by collects when order=hot', async () => {
-      const app = createTestServer({});
-      await app.register(setup);
-
       const res = await app.inject({
         method: 'get',
         url: '/indexes?order=hot&limit=100',
@@ -214,10 +217,7 @@ describe('index APIs', () => {
     });
 
     test('should filter by type', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await app.inject({
         method: 'post',
@@ -249,10 +249,7 @@ describe('index APIs', () => {
 
   describe('PATCH /indexes/:indexID', () => {
     test('should update index successfully', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await app.inject({
         method: 'post',
@@ -278,10 +275,7 @@ describe('index APIs', () => {
     });
 
     test('should update index with partial data', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await app.inject({
         method: 'post',
@@ -306,10 +300,7 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent index', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'patch',
         url: '/indexes/999999',
@@ -321,9 +312,6 @@ describe('index APIs', () => {
     });
 
     test('should return 401 for unauthenticated request', async () => {
-      const app = createTestServer();
-      await app.register(setup);
-
       const createRes = await app.inject({
         method: 'post',
         url: '/indexes',
@@ -348,10 +336,7 @@ describe('index APIs', () => {
 
   describe('DELETE /indexes/:indexID', () => {
     test('should delete index successfully', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await app.inject({
         method: 'post',
@@ -379,10 +364,7 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent index', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'delete',
         url: '/indexes/999999',
@@ -391,8 +373,6 @@ describe('index APIs', () => {
     });
 
     test('should return 401 for unauthenticated request', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'delete',
         url: `/indexes/${TEST_INDEX_ID}`,
@@ -402,10 +382,7 @@ describe('index APIs', () => {
     });
 
     test('should return 403 for non-owner user', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: 99999 },
-      });
-      await app.register(setup);
+      const app = strangerApp;
       const res = await app.inject({
         method: 'delete',
         url: `/indexes/${TEST_INDEX_ID}`,
@@ -416,8 +393,6 @@ describe('index APIs', () => {
 
   describe('GET /indexes/:indexID', () => {
     test('should get index successfully', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'get',
         url: `/indexes/${TEST_INDEX_ID}`,
@@ -427,8 +402,6 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent index', async () => {
-      const app = createTestServer({});
-      await app.register(setup);
       const res = await app.inject({
         method: 'get',
         url: '/indexes/999999',
@@ -439,8 +412,6 @@ describe('index APIs', () => {
 
   describe('GET /indexes/:indexID/related', () => {
     test('should get index related successfully', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'get',
         url: `/indexes/${TEST_INDEX_ID}/related`,
@@ -453,8 +424,6 @@ describe('index APIs', () => {
     });
 
     test('should get index related with filters', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'get',
         url: `/indexes/${TEST_INDEX_ID}/related?cat=0&type=2&limit=5&offset=10`,
@@ -464,8 +433,6 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent index', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'get',
         url: '/indexes/999999/related',
@@ -476,10 +443,7 @@ describe('index APIs', () => {
 
   describe('PUT /indexes/:indexID/related', () => {
     test('should create new index related item', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'put',
         url: `/indexes/${TEST_INDEX_ID}/related`,
@@ -498,10 +462,7 @@ describe('index APIs', () => {
     });
 
     test('should create index related item with minimal data', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'put',
         url: `/indexes/${TEST_INDEX_ID}/related`,
@@ -516,10 +477,7 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent index', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'put',
         url: '/indexes/999999/related',
@@ -532,10 +490,7 @@ describe('index APIs', () => {
     });
 
     test('should handle conflict when item already exists', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await createTestIndexRelated(app, {
         cat: IndexRelatedCategory.Subject,
@@ -551,8 +506,6 @@ describe('index APIs', () => {
     });
 
     test('should return 401 for unauthenticated request', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'put',
         url: `/indexes/${TEST_INDEX_ID}/related`,
@@ -565,10 +518,7 @@ describe('index APIs', () => {
     });
 
     test('should return 403 for non-owner user', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: 99999 },
-      });
-      await app.register(setup);
+      const app = strangerApp;
       const res = await app.inject({
         method: 'put',
         url: `/indexes/${TEST_INDEX_ID}/related`,
@@ -583,10 +533,7 @@ describe('index APIs', () => {
 
   describe('PATCH /indexes/:indexID/related/:id', () => {
     test('should update index related item', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await createTestIndexRelated(app, {
         cat: IndexRelatedCategory.Subject,
@@ -609,10 +556,7 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent index', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'patch',
         url: '/indexes/999999/related/1',
@@ -625,10 +569,7 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent related item', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'patch',
         url: `/indexes/${TEST_INDEX_ID}/related/999999`,
@@ -641,8 +582,6 @@ describe('index APIs', () => {
     });
 
     test('should return 401 for unauthenticated request', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'patch',
         url: `/indexes/${TEST_INDEX_ID}/related/1`,
@@ -655,10 +594,7 @@ describe('index APIs', () => {
     });
 
     test('should return 403 for non-owner user', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: 99999 },
-      });
-      await app.register(setup);
+      const app = strangerApp;
       const res = await app.inject({
         method: 'patch',
         url: `/indexes/${TEST_INDEX_ID}/related/1`,
@@ -673,10 +609,7 @@ describe('index APIs', () => {
 
   describe('DELETE /indexes/:indexID/related/:id', () => {
     test('should delete index related item', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
 
       const createRes = await createTestIndexRelated(app, {
         cat: IndexRelatedCategory.Subject,
@@ -692,10 +625,7 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent index', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'delete',
         url: '/indexes/999999/related/1',
@@ -704,10 +634,7 @@ describe('index APIs', () => {
     });
 
     test('should return 404 for non-existent related item', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: TEST_USER_ID },
-      });
-      await app.register(setup);
+      const app = userApp;
       const res = await app.inject({
         method: 'delete',
         url: `/indexes/${TEST_INDEX_ID}/related/999999`,
@@ -716,8 +643,6 @@ describe('index APIs', () => {
     });
 
     test('should return 401 for unauthenticated request', async () => {
-      const app = createTestServer();
-      await app.register(setup);
       const res = await app.inject({
         method: 'delete',
         url: `/indexes/${TEST_INDEX_ID}/related/1`,
@@ -726,10 +651,7 @@ describe('index APIs', () => {
     });
 
     test('should return 403 for non-owner user', async () => {
-      const app = createTestServer({
-        auth: { login: true, userID: 99999 },
-      });
-      await app.register(setup);
+      const app = strangerApp;
       const res = await app.inject({
         method: 'delete',
         url: `/indexes/${TEST_INDEX_ID}/related/1`,
@@ -779,8 +701,6 @@ describe('index comments', () => {
   });
 
   test('should get index comments', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: `/indexes/${TEST_INDEX_ID}/comments`,
@@ -790,14 +710,7 @@ describe('index comments', () => {
   });
 
   test('should create index comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'post',
       url: `/indexes/${TEST_INDEX_ID}/comments`,
@@ -813,8 +726,6 @@ describe('index comments', () => {
   });
 
   test('should not allow create index comment', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'post',
       url: `/indexes/${TEST_INDEX_ID}/comments`,
@@ -825,14 +736,7 @@ describe('index comments', () => {
   });
 
   test('should edit index comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'put',
       url: `/indexes/-/comments/12345682`,
@@ -847,14 +751,7 @@ describe('index comments', () => {
   });
 
   test('should not edit index comment with reply', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'put',
       url: `/indexes/-/comments/12345680`,
@@ -865,14 +762,7 @@ describe('index comments', () => {
   });
 
   test('should not edit index comment not owned', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID + 1, // different user
-      },
-    });
-    await app.register(setup);
+    const app = otherUserApp;
     const res = await app.inject({
       method: 'put',
       url: `/indexes/-/comments/12345680`,
@@ -883,14 +773,7 @@ describe('index comments', () => {
   });
 
   test('should delete index comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'delete',
       url: `/indexes/-/comments/12345680`,
@@ -904,14 +787,7 @@ describe('index comments', () => {
   });
 
   test('should not delete index comment not owned', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID + 1, // different user
-      },
-    });
-    await app.register(setup);
+    const app = otherUserApp;
     const res = await app.inject({
       method: 'delete',
       url: `/indexes/-/comments/12345680`,
@@ -921,8 +797,6 @@ describe('index comments', () => {
   });
 
   test('should return 404 for non-existent index when getting comments', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/indexes/999999/comments',
@@ -932,14 +806,7 @@ describe('index comments', () => {
   });
 
   test('should return 404 for non-existent index when creating comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'post',
       url: '/indexes/999999/comments',
@@ -950,14 +817,7 @@ describe('index comments', () => {
   });
 
   test('should return 404 for non-existent comment when editing', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'put',
       url: '/indexes/-/comments/999999',
@@ -968,14 +828,7 @@ describe('index comments', () => {
   });
 
   test('should return 404 for non-existent comment when deleting', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: TEST_USER_ID,
-      },
-    });
-    await app.register(setup);
+    const app = userApp;
     const res = await app.inject({
       method: 'delete',
       url: '/indexes/-/comments/999999',

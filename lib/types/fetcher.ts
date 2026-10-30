@@ -372,7 +372,7 @@ export async function fetchSubjectIDsByFilter(
       }
       tagsForSubject.set(row.tagID, 1);
       if (tagCounts && row.tagID === tagIDs[0]) {
-        tagCounts.set(row.subjectID, Number(row.count ?? 0));
+        tagCounts.set(row.subjectID, row.count ?? 0);
       }
     }
     let subjectIDs: number[] = [];
@@ -598,6 +598,30 @@ export async function fetchSubjectInterest(
     return;
   }
   return convert.toSubjectInterest(data);
+}
+
+export async function fetchSlimSubjectInterests(
+  userID: number,
+  subjectIDs: number[],
+): Promise<Record<number, res.ISlimSubjectInterest>> {
+  if (subjectIDs.length === 0) {
+    return {};
+  }
+  const data = await db
+    .select()
+    .from(schema.chiiSubjectInterests)
+    .where(
+      op.and(
+        op.ne(schema.chiiSubjectInterests.type, 0),
+        op.eq(schema.chiiSubjectInterests.uid, userID),
+        op.inArray(schema.chiiSubjectInterests.subjectID, lo.uniq(subjectIDs)),
+      ),
+    );
+  const result: Record<number, res.ISlimSubjectInterest> = {};
+  for (const interest of data) {
+    result[interest.subjectID] = convert.toSlimSubjectInterest(interest);
+  }
+  return result;
 }
 
 /** Cached */

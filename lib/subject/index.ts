@@ -72,7 +72,7 @@ export async function create({
   metaTags,
   date,
   series,
-  nsfw,
+  nsfw = false,
   userID,
   now = DateTime.now(),
 }: Create): Promise<number> {
@@ -142,7 +142,7 @@ export async function create({
       seriesEntry: 0,
       idxCN: '',
       airtime: 0,
-      nsfw: nsfw ?? false,
+      nsfw,
     } satisfies typeof schema.chiiSubjects.$inferInsert);
 
     logger.info('user %d create subject %d', userID, subjectID);

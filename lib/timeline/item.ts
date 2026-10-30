@@ -40,7 +40,7 @@ export async function parseTimelineMemo(
             }
           } else {
             const info = decode(data) as memo.User;
-            const user = await fetcher.fetchSlimUserByID(Number(info.uid));
+            const user = await fetcher.fetchSlimUserByID(info.uid);
             if (user) {
               users.push(user);
             }
@@ -70,7 +70,7 @@ export async function parseTimelineMemo(
             const info = decode(data) as { grp_id?: number; grp_name: string };
 
             const group = info.grp_id
-              ? await fetcher.fetchSlimGroupByID(Number(info.grp_id))
+              ? await fetcher.fetchSlimGroupByID(info.grp_id)
               : await fetcher.fetchSlimGroupByName(info.grp_name);
 
             if (group) {
@@ -90,7 +90,7 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Wiki: {
       const info = decode(data) as memo.NewSubject;
-      const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
+      const subject = await fetcher.fetchSlimSubjectByID(info.subject_id, auth.allowNsfw);
       return {
         wiki: {
           subject,
@@ -123,7 +123,7 @@ export async function parseTimelineMemo(
         }
       } else {
         const info = decode(data) as memo.Subject;
-        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
+        const subject = await fetcher.fetchSlimSubjectByID(info.subject_id, auth.allowNsfw);
         if (subject) {
           subjects.push({
             subject,
@@ -170,8 +170,8 @@ export async function parseTimelineMemo(
         };
       } else {
         const info = decode(data) as memo.ProgressSingle;
-        const subject = await fetcher.fetchSlimSubjectByID(Number(info.subject_id), auth.allowNsfw);
-        const episode = await fetcher.fetchEpisodeByID(Number(info.ep_id));
+        const subject = await fetcher.fetchSlimSubjectByID(info.subject_id, auth.allowNsfw);
+        const episode = await fetcher.fetchEpisodeByID(info.ep_id);
         if (!subject || !episode) {
           return {
             progress: {},
@@ -221,14 +221,14 @@ export async function parseTimelineMemo(
     }
     case TimelineCat.Blog: {
       const info = decode(data) as memo.Blog;
-      const blog = await fetcher.fetchSlimBlogEntryByID(Number(info.entry_id), auth.userID);
+      const blog = await fetcher.fetchSlimBlogEntryByID(info.entry_id, auth.userID);
       return {
         blog,
       };
     }
     case TimelineCat.Index: {
       const info = decode(data) as memo.Index;
-      const index = await fetcher.fetchSlimIndexByID(Number(info.idx_id));
+      const index = await fetcher.fetchSlimIndexByID(info.idx_id);
       return {
         index,
       };
@@ -270,14 +270,14 @@ export async function parseTimelineMemo(
         const info = decode(data) as memo.MonoSingle;
         switch (info.cat) {
           case TimelineMonoCat.Character: {
-            const character = await fetcher.fetchSlimCharacterByID(Number(info.id), auth.allowNsfw);
+            const character = await fetcher.fetchSlimCharacterByID(info.id, auth.allowNsfw);
             if (character) {
               characters.push(character);
             }
             break;
           }
           case TimelineMonoCat.Person: {
-            const person = await fetcher.fetchSlimPersonByID(Number(info.id), auth.allowNsfw);
+            const person = await fetcher.fetchSlimPersonByID(info.id, auth.allowNsfw);
             if (person) {
               persons.push(person);
             }
