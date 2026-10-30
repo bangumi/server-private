@@ -81,15 +81,12 @@ async function onBinlogMessage(msg: KafkaMessage) {
     return;
   }
   if (Array.isArray(handler)) {
-    const ts = [];
-    for (const h of handler) {
-      // catch on each handler to it doesn't get swallowed by Promise.all.
-      ts.push(
-        h(msg).catch((error) => {
-          logger.error('failed to handle event from %s: %o', payload.source.table, error as object);
-        }),
-      );
-    }
+    // catch on each handler to it doesn't get swallowed by Promise.all.
+    const ts = Array.from(handler, (h) =>
+      h(msg).catch((error) => {
+        logger.error('failed to handle event from %s: %o', payload.source.table, error as object);
+      }),
+    );
     await Promise.all(ts);
   } else {
     await handler(msg).catch((error) => {
