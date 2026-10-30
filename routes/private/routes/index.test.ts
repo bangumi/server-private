@@ -70,16 +70,18 @@ describe('index APIs', () => {
       .delete(schema.chiiIndexComments)
       .where(op.eq(schema.chiiIndexComments.mid, TEST_INDEX_ID));
 
-    if (createdIndexId) {
-      await db.delete(schema.chiiIndexes).where(op.eq(schema.chiiIndexes.id, createdIndexId));
-      await db
-        .delete(schema.chiiIndexRelated)
-        .where(op.eq(schema.chiiIndexRelated.rid, createdIndexId));
-      await db
-        .delete(schema.chiiIndexComments)
-        .where(op.eq(schema.chiiIndexComments.mid, createdIndexId));
-      createdIndexId = null;
+    if (!createdIndexId) {
+      return;
     }
+
+    await db.delete(schema.chiiIndexes).where(op.eq(schema.chiiIndexes.id, createdIndexId));
+    await db
+      .delete(schema.chiiIndexRelated)
+      .where(op.eq(schema.chiiIndexRelated.rid, createdIndexId));
+    await db
+      .delete(schema.chiiIndexComments)
+      .where(op.eq(schema.chiiIndexComments.mid, createdIndexId));
+    createdIndexId = null;
   });
 
   describe('POST /indexes', () => {

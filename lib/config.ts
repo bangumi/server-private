@@ -194,11 +194,13 @@ function readConfig(): Static<typeof schema> {
     }
 
     const envKey = (o as Record<string, string | undefined>).env;
-    if (envKey) {
-      const v = process.env[envKey];
-      if (v !== undefined) {
-        lo.set(config, keyPath, v);
-      }
+    if (!envKey) {
+      return;
+    }
+
+    const v = process.env[envKey];
+    if (v !== undefined) {
+      lo.set(config, keyPath, v);
     }
   }
 
@@ -221,22 +223,22 @@ export function validateConfig(config: unknown) {
 
   const valid = ajv.validate(schema, config);
 
-  if (!valid) {
-    const errorMessage =
-      ajv.errors
-        ?.map((x) => {
-          if (x.keyword === 'additionalProperties') {
-            return `$${x.instancePath}: ${x.message}: ${JSON.stringify(
-              x.params.additionalProperty,
-            )}`;
-          }
-
-          return '  ' + (x.instancePath + ': ' + (x.message ?? `wrong data type ${x.schemaPath}`));
-        })
-        .join('\n') ?? '';
-
-    throw new TypeError('failed to validate config file:\n' + errorMessage);
+  if (valid) {
+    return;
   }
+
+  const errorMessage =
+    ajv.errors
+      ?.map((x) => {
+        if (x.keyword === 'additionalProperties') {
+          return `$${x.instancePath}: ${x.message}: ${JSON.stringify(x.params.additionalProperty)}`;
+        }
+
+        return '  ' + (x.instancePath + ': ' + (x.message ?? `wrong data type ${x.schemaPath}`));
+      })
+      .join('\n') ?? '';
+
+  throw new TypeError('failed to validate config file:\n' + errorMessage);
 }
 
 // read config file
