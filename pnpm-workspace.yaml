@@ -5,3 +5,4 @@ allowBuilds:
 
 shellEmulator: true
 engineStrict: true
+minimumReleaseAge: 0
