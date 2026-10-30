@@ -8,14 +8,56 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './blog.ts';
 
+// 各用例共享 server 实例，避免每条用例重新 createTestServer 而重复编译 response schema serializer
+const testUID = 287622;
+const otherUserID = testUID + 1;
+const friendUID = 427613;
+
+const app = createTestServer();
+await app.register(setup);
+
+const ownerApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: testUID, // same user
+  },
+});
+await ownerApp.register(setup);
+
+const otherUserApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: otherUserID, // different user
+  },
+});
+await otherUserApp.register(setup);
+
+const friendApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: friendUID, // friend
+  },
+});
+await friendApp.register(setup);
+
+const bannedApp = createTestServer({
+  auth: {
+    ...emptyAuth(),
+    login: true,
+    userID: testUID,
+    permission: { ban_post: true },
+  },
+});
+await bannedApp.register(setup);
+
 describe('blog', () => {
-  const testUID = 287622;
   const publicEntryID = 319484;
   const privateEntryID = 319486;
 
   test('should get blog entry', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: `/blogs/${publicEntryID}`,
@@ -25,14 +67,7 @@ describe('blog', () => {
   });
 
   test('should not get private blog entry from other user', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUID + 1, // different user
-      },
-    });
-    await app.register(setup);
+    const app = otherUserApp;
     const res = await app.inject({
       method: 'get',
       url: `/blogs/${privateEntryID}`,
@@ -41,14 +76,7 @@ describe('blog', () => {
   });
 
   test('should get private blog entry from friend', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 427613, // friend
-      },
-    });
-    await app.register(setup);
+    const app = friendApp;
     const res = await app.inject({
       method: 'get',
       url: `/blogs/${privateEntryID}`,
@@ -58,14 +86,7 @@ describe('blog', () => {
   });
 
   test('should get private blog entry from self', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUID, // same user
-      },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'get',
       url: `/blogs/${privateEntryID}`,
@@ -75,8 +96,6 @@ describe('blog', () => {
   });
 
   test('should get blog related subjects', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: `/blogs/${publicEntryID}/subjects`,
@@ -86,14 +105,7 @@ describe('blog', () => {
   });
 
   test('should get blog photos', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUID, // same user
-      },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'get',
       url: `/blogs/${publicEntryID}/photos`,
@@ -104,14 +116,7 @@ describe('blog', () => {
   });
 
   test('should not get blog photos from other user', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUID + 1, // other user
-      },
-    });
-    await app.register(setup);
+    const app = otherUserApp;
     const res = await app.inject({
       method: 'get',
       url: `/blogs/${privateEntryID}/photos`,
@@ -156,8 +161,6 @@ describe('blog comments', () => {
   });
 
   test('should get blog comments', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: `/blogs/345911/comments`,
@@ -167,14 +170,7 @@ describe('blog comments', () => {
   });
 
   test('should create blog comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'post',
       url: `/blogs/345911/comments`,
@@ -190,8 +186,6 @@ describe('blog comments', () => {
   });
 
   test('should not allow create blog comment', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'post',
       url: `/blogs/345911/comments`,
@@ -202,14 +196,7 @@ describe('blog comments', () => {
   });
 
   test('should edit blog comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'put',
       url: `/blogs/-/comments/12345672`,
@@ -224,14 +211,7 @@ describe('blog comments', () => {
   });
 
   test('should not edit blog comment with reply', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'put',
       url: `/blogs/-/comments/12345670`,
@@ -242,14 +222,7 @@ describe('blog comments', () => {
   });
 
   test('should not edit blog comment not owned', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622 + 1, // different user
-      },
-    });
-    await app.register(setup);
+    const app = otherUserApp;
     const res = await app.inject({
       method: 'put',
       url: `/blogs/-/comments/12345670`,
@@ -260,14 +233,7 @@ describe('blog comments', () => {
   });
 
   test('should delete blog comment', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622,
-      },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'delete',
       url: `/blogs/-/comments/12345670`,
@@ -281,14 +247,7 @@ describe('blog comments', () => {
   });
 
   test('should not delete blog comment not owned', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: 287622 + 1, // different user
-      },
-    });
-    await app.register(setup);
+    const app = otherUserApp;
     const res = await app.inject({
       method: 'delete',
       url: `/blogs/-/comments/12345670`,
@@ -303,7 +262,6 @@ describe('blog entry write APIs', () => {
   const createUID = 287622; // 已有 blog entry 319484/319486 的测试用户
   const updateUID = 287631;
   const emptyPatchUID = 287632;
-  const otherUID = createUID + 1;
   let createdEntryID: number | null = null;
 
   async function cleanup() {
@@ -357,10 +315,7 @@ describe('blog entry write APIs', () => {
   });
 
   test('should create blog entry', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: createUID },
-    });
-    await app.register(setup);
+    const app = ownerApp;
 
     const res = await app.inject({
       method: 'post',
@@ -410,8 +365,6 @@ describe('blog entry write APIs', () => {
   });
 
   test('should require login to create blog entry', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'post',
       url: '/blogs',
@@ -421,15 +374,7 @@ describe('blog entry write APIs', () => {
   });
 
   test('should reject blog entry when user is banned', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: createUID,
-        permission: { ban_post: true },
-      },
-    });
-    await app.register(setup);
+    const app = bannedApp;
     const res = await app.inject({
       method: 'post',
       url: '/blogs',
@@ -439,10 +384,7 @@ describe('blog entry write APIs', () => {
   });
 
   test('should reject invisible characters in blog entry', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: createUID },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'post',
       url: '/blogs',
@@ -452,10 +394,7 @@ describe('blog entry write APIs', () => {
   });
 
   test('should reject more than 5 subjectIDs', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: createUID },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'post',
       url: '/blogs',
@@ -499,10 +438,7 @@ describe('blog entry write APIs', () => {
   });
 
   test('should not update blog entry of others', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: otherUID },
-    });
-    await app.register(setup);
+    const app = otherUserApp;
     const res = await app.inject({
       method: 'patch',
       url: '/blogs/319484',
@@ -512,10 +448,7 @@ describe('blog entry write APIs', () => {
   });
 
   test('should return 404 for non-existent blog entry on update', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: createUID },
-    });
-    await app.register(setup);
+    const app = ownerApp;
     const res = await app.inject({
       method: 'patch',
       url: '/blogs/999999',
