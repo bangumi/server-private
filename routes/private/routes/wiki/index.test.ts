@@ -3,10 +3,11 @@ import { expect, test } from 'vitest';
 import { setup } from '@app/routes/private/routes/wiki/index.ts';
 import { createTestServer } from '@app/tests/utils.ts';
 
-test('test recent change list', async () => {
-  const app = createTestServer();
-  await app.register(setup);
+// 各用例共享 server 实例，避免每条用例重新 createTestServer 而重复编译 response schema serializer
+const app = createTestServer();
+await app.register(setup);
 
+test('test recent change list', async () => {
   const res = await app.inject('/recent/subjects');
 
   expect(res.statusCode).toBe(200);
@@ -18,9 +19,6 @@ test.each([
   ['/recent/characters', []],
   ['/recent/episodes', []],
 ])('filters recent change list by since query for %s', async (url, expected) => {
-  const app = createTestServer();
-  await app.register(setup);
-
   const res = await app.inject({
     url,
     query: { since: String(Math.ceil(Date.now() / 1000) + 3600) },
