@@ -25,7 +25,6 @@ export default createRule({
       import: "do not use relative parent import, use '{{ should }}' instead",
     },
   },
-  defaultOptions: [],
 
   create: (context) => {
     const filename = context.filename;
