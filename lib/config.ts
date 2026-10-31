@@ -152,8 +152,6 @@ export const schema = Obj({
     siteKey: t.String({ default: '1x00000000000000000000AA', env: 'TURNSTILE_SITE_KEY' }),
   }),
 
-  sentryDSN: t.Optional(t.String({ env: 'SENTRY_DSN' })),
-
   passkey: Obj({
     rpName: t.String({ default: 'Bangumi', env: 'PASSKEY_RP_NAME' }),
     rpIds: t.String({ default: 'bgm.tv,bangumi.tv,chii.in', env: 'PASSKEY_RP_IDS' }),

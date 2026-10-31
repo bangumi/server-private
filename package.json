@@ -45,7 +45,6 @@
     "@fastify/view": "12.0.1",
     "@node-rs/bcrypt": "2.0.0",
     "@prometheus-io/client": "0.16.1",
-    "@sentry/node": "10.77.1",
     "@simplewebauthn/server": "13.3.3",
     "@trim21/php-serialize": "0.2.2",
     "ajv": "8.20.0",
