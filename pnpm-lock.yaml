@@ -242,8 +242,8 @@ importers:
         specifier: 5.12.7
         version: 5.12.7
       fastify-metrics:
-        specifier: 14.2.0
-        version: 14.2.0(fastify@5.12.7)
+        specifier: 15.0.0
+        version: 15.0.0(fastify@5.12.7)
       fastify-plugin:
         specifier: 6.0.1
         version: 6.0.1
@@ -3181,8 +3181,8 @@ packages:
   fast-wrap-ansi@0.2.2:
     resolution: {integrity: sha512-7F2Fl+TjRSenLqlU3UjSH0iyqopqoZIu7eZVpEirP2g1GtWa2G/ecEmBdgz31+Mxr+ELclgg6sokpSFIQiZ02Q==}
 
-  fastify-metrics@14.2.0:
-    resolution: {integrity: sha512-1yQEMNl4U6//7A8Muy0w6qBQtQGUV1rWBi08UY4+vKXEeJnRVIPFSBh6+liAwGqLF2kBlsde4oZj2Vyf1PLXaQ==}
+  fastify-metrics@15.0.0:
+    resolution: {integrity: sha512-YQSKMFM8Z71VLuTDQOqxpHStcu3ncPRE1MG+4ZF0p8JH2ueTYdrZTv86oBPs9pcx5zi3Zefz/OsKZYaOJ6vJMQ==}
     engines: {node: '>=22.19.0', pnpm: '>=12'}
     peerDependencies:
       '@platformatic/prom-client': ^1.0.0
@@ -7624,7 +7624,7 @@ snapshots:
     dependencies:
       fast-string-width: 3.0.2
 
-  fastify-metrics@14.2.0(fastify@5.12.7):
+  fastify-metrics@15.0.0(fastify@5.12.7):
     dependencies:
       '@prometheus-io/client': 0.16.1
       fastify: 5.12.7
