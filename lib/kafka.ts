@@ -58,7 +58,7 @@ interface LibrdKafkaLogEvent {
   name?: string;
 }
 
-export async function newConsumer(topics: string[]): Promise<RdKafka.KafkaConsumer> {
+export async function newConsumer(): Promise<RdKafka.KafkaConsumer> {
   if (!config.kafkaBrokers) {
     throw new Error('KAFKA_BROKERS is not set');
   }
@@ -93,7 +93,61 @@ export async function newConsumer(topics: string[]): Promise<RdKafka.KafkaConsum
     });
   });
 
-  consumer.subscribe(topics);
-
   return consumer;
+}
+
+function fetchMetadata(consumer: RdKafka.KafkaConsumer): Promise<RdKafka.Metadata> {
+  return new Promise((resolve, reject) => {
+    // 不加 allTopics 只会返回这个 client 已经知道的 topic
+    consumer.getMetadata({ allTopics: true }, (error, data) => {
+      if (error) {
+        reject(new Error(`failed to fetch kafka metadata: ${error.message}`, { cause: error }));
+      } else {
+        resolve(data);
+      }
+    });
+  });
+}
+
+/**
+ * 只订阅 broker 上存在的 topic。订阅了不存在的 topic 时 consume() 会一直整批返回 ERR_UNKNOWN_TOPIC_OR_PART，把其它 topic
+ * 的消费一起饿死；topic 之后被创建出来时， 下一次调用会把它订阅上。返回当前还不存在的 topic。
+ */
+export async function syncSubscription(
+  consumer: RdKafka.KafkaConsumer,
+  topics: string[],
+): Promise<string[]> {
+  let known: Set<string>;
+  try {
+    const metadata = await fetchMetadata(consumer);
+    known = new Set(metadata.topics.map((topic) => topic.name));
+  } catch (error) {
+    logger.warn(error, 'failed to fetch kafka metadata');
+    if (consumer.subscription().length === 0) {
+      consumer.subscribe(topics);
+    }
+    return [];
+  }
+
+  const available = topics.filter((topic) => known.has(topic));
+  const missing = topics.filter((topic) => !known.has(topic));
+  // 一个都不存在时仍然全量订阅，等 topic 被创建出来
+  const target = available.length > 0 ? available : topics;
+
+  const current = consumer.subscription();
+  if (target.length === current.length && target.every((topic) => current.includes(topic))) {
+    return missing;
+  }
+
+  consumer.subscribe(target);
+
+  if (missing.length === 0) {
+    logger.info(`subscribed to ${target.length} kafka topics`);
+  } else if (available.length === 0) {
+    logger.error(`none of the kafka topics exist on broker yet: ${missing.join(', ')}`);
+  } else {
+    logger.warn(`kafka topics not found on broker, skipped: ${missing.join(', ')}`);
+  }
+
+  return missing;
 }
