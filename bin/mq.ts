@@ -1,3 +1,7 @@
+import { setTimeout as sleep } from 'node:timers/promises';
+
+import type { KafkaConsumer, Message } from '@confluentinc/kafka-javascript';
+
 import { handle as handleBlogEvent } from '@app/event/blog';
 import { handle as handleCharacterEvent } from '@app/event/character';
 import {
@@ -110,6 +114,71 @@ async function onServiceMessage(msg: KafkaMessage) {
   });
 }
 
+/** 每批处理的数量，取小一点让 poll 更频繁，避免处理慢时超过 max.poll.interval.ms 被踢出消费组 */
+const POLL_SIZE = 10;
+
+/** 单条消息处理超过这个时间就视为卡死，退出进程交给外部重启；取值要大于粉丝数上千的用户扇出的正常耗时 */
+const MESSAGE_TIMEOUT_MS = 5 * 60_000;
+
+const HEARTBEAT_INTERVAL_MS = 5 * 60_000;
+
+async function handleMessage(msg: Message) {
+  if (!msg.value) {
+    return;
+  }
+  try {
+    if (msg.topic.startsWith('debezium.')) {
+      if (!msg.key) {
+        return;
+      }
+      await onBinlogMessage({
+        topic: msg.topic,
+        key: msg.key.toString(),
+        value: msg.value,
+      });
+    } else {
+      const key = msg.key?.toString() ?? '';
+      logger.info(`processing message ${msg.topic} ${msg.offset} ${key}`);
+
+      await onServiceMessage({
+        topic: msg.topic,
+        key,
+        value: msg.value,
+      });
+    }
+  } catch (error) {
+    logger.error(
+      error,
+      `error processing message ${msg.topic} ${msg.offset} ${msg.key?.toString() ?? ''}`,
+    );
+  }
+}
+
+function poll(consumer: KafkaConsumer): Promise<Message[]> {
+  return new Promise((resolve, reject) => {
+    consumer.consume(POLL_SIZE, (error, messages) => {
+      if (error) {
+        reject(new Error(`kafka consume failed: ${error.message}`, { cause: error }));
+      } else {
+        resolve(messages);
+      }
+    });
+  });
+}
+
+async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: NodeJS.Timeout | undefined;
+  const timeout = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      reject(new Error(`processing took longer than ${ms}ms`));
+    }, ms);
+  });
+
+  return Promise.race([promise, timeout]).finally(() => {
+    clearTimeout(timer);
+  });
+}
+
 async function main() {
   if (process.argv.includes('--help')) {
     //eslint-disable-next-line no-console
@@ -118,39 +187,49 @@ async function main() {
   }
 
   const consumer = await newConsumer(TOPICS);
-  await consumer.run({
-    eachMessage: async ({ topic, message }) => {
-      if (!message.value) {
-        return;
-      }
-      try {
-        if (topic.startsWith('debezium.')) {
-          if (!message.key) {
-            return;
-          }
-          await onBinlogMessage({
-            topic: topic,
-            key: message.key.toString(),
-            value: message.value,
-          });
-        } else {
-          const key = message.key?.toString() ?? '';
-          logger.info(`processing message ${topic} ${message.offset} ${key}`);
 
-          await onServiceMessage({
-            topic: topic,
-            key,
-            value: message.value,
-          });
-        }
+  let processed = 0;
+  let lastHeartbeatAt = Date.now();
+
+  for (;;) {
+    let messages: Message[];
+    try {
+      messages = await poll(consumer);
+    } catch (error) {
+      logger.error(error, 'failed to poll messages, retrying');
+      await sleep(1000);
+      continue;
+    }
+
+    for (const msg of messages) {
+      try {
+        await withTimeout(handleMessage(msg), MESSAGE_TIMEOUT_MS);
       } catch (error) {
+        // offset 还没有 store，退出后重启会重新消费这条消息
         logger.error(
           error,
-          `error processing message ${topic} ${message.offset} ${message.key?.toString() ?? ''}`,
+          `failed to process message ${msg.topic} ${msg.partition} ${msg.offset}`,
         );
+        throw error;
       }
-    },
-  });
+
+      consumer.offsetsStore([
+        { topic: msg.topic, partition: msg.partition, offset: msg.offset + 1 },
+      ]);
+      processed += 1;
+    }
+
+    const now = Date.now();
+    if (now - lastHeartbeatAt < HEARTBEAT_INTERVAL_MS) {
+      continue;
+    }
+
+    logger.info(
+      `mq heartbeat: processed ${processed} messages in the last ${Math.round((now - lastHeartbeatAt) / 1000)}s`,
+    );
+    processed = 0;
+    lastHeartbeatAt = now;
+  }
 }
 
 await main();
