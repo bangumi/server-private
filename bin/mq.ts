@@ -27,7 +27,7 @@ import {
   handleFields as handleUserFieldsEvent,
   handleFriend as handleFriendEvent,
 } from '@app/event/user';
-import { newConsumer } from '@app/lib/kafka.ts';
+import { newConsumer, syncSubscription } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
 import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
@@ -122,6 +122,9 @@ const MESSAGE_TIMEOUT_MS = 5 * 60_000;
 
 const HEARTBEAT_INTERVAL_MS = 5 * 60_000;
 
+/** Consume() 的错误会一直重复，同一条错误最多每分钟打一次 */
+const POLL_ERROR_LOG_INTERVAL_MS = 60_000;
+
 async function handleMessage(msg: Message) {
   if (!msg.value) {
     return;
@@ -186,20 +189,29 @@ async function main() {
     return;
   }
 
-  const consumer = await newConsumer(TOPICS);
+  const consumer = await newConsumer();
+  let missingTopics = await syncSubscription(consumer, TOPICS);
 
   let processed = 0;
   let lastHeartbeatAt = Date.now();
+  let pollFailures = 0;
+  let pollErrorLoggedAt = 0;
 
   for (;;) {
     let messages: Message[];
     try {
       messages = await poll(consumer);
     } catch (error) {
-      logger.error(error, 'failed to poll messages, retrying');
-      await sleep(1000);
+      pollFailures += 1;
+      const now = Date.now();
+      if (now - pollErrorLoggedAt >= POLL_ERROR_LOG_INTERVAL_MS) {
+        logger.error(error, `failed to poll messages (${pollFailures} failures in a row)`);
+        pollErrorLoggedAt = now;
+      }
+      await sleep(Math.min(pollFailures * 1000, 10_000));
       continue;
     }
+    pollFailures = 0;
 
     for (const msg of messages) {
       try {
@@ -229,6 +241,11 @@ async function main() {
     );
     processed = 0;
     lastHeartbeatAt = now;
+
+    // 之前不存在的 topic 可能已经被创建出来了
+    if (missingTopics.length > 0) {
+      missingTopics = await syncSubscription(consumer, TOPICS);
+    }
   }
 }
 
