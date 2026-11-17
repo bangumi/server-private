@@ -1,7 +1,3 @@
-import { setTimeout as sleep } from 'node:timers/promises';
-
-import type { KafkaConsumer, Message } from '@confluentinc/kafka-javascript';
-
 import { handle as handleBlogEvent } from '@app/event/blog';
 import { handle as handleCharacterEvent } from '@app/event/character';
 import {
@@ -27,7 +23,7 @@ import {
   handleFields as handleUserFieldsEvent,
   handleFriend as handleFriendEvent,
 } from '@app/event/user';
-import { newConsumer, syncSubscription } from '@app/lib/kafka.ts';
+import { type EachMessagePayload, newConsumer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
 import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
@@ -114,72 +110,30 @@ async function onServiceMessage(msg: KafkaMessage) {
   });
 }
 
-/** 每批处理的数量，取小一点让 poll 更频繁，避免处理慢时超过 max.poll.interval.ms 被踢出消费组 */
-const POLL_SIZE = 10;
-
-/** 单条消息处理超过这个时间就视为卡死，退出进程交给外部重启；取值要大于粉丝数上千的用户扇出的正常耗时 */
-const MESSAGE_TIMEOUT_MS = 5 * 60_000;
-
-const HEARTBEAT_INTERVAL_MS = 5 * 60_000;
-
-/** Consume() 的错误会一直重复，同一条错误最多每分钟打一次 */
-const POLL_ERROR_LOG_INTERVAL_MS = 60_000;
-
-async function handleMessage(msg: Message) {
-  if (!msg.value) {
+async function handleMessage({ topic, message }: EachMessagePayload) {
+  if (!message.value) {
     return;
   }
-  try {
-    if (msg.topic.startsWith('debezium.')) {
-      if (!msg.key) {
-        return;
-      }
-      await onBinlogMessage({
-        topic: msg.topic,
-        key: msg.key.toString(),
-        value: msg.value,
-      });
-    } else {
-      const key = msg.key?.toString() ?? '';
-      logger.info(`processing message ${msg.topic} ${msg.offset} ${key}`);
 
-      await onServiceMessage({
-        topic: msg.topic,
-        key,
-        value: msg.value,
-      });
+  if (topic.startsWith('debezium.')) {
+    if (!message.key) {
+      return;
     }
-  } catch (error) {
-    logger.error(
-      error,
-      `error processing message ${msg.topic} ${msg.offset} ${msg.key?.toString() ?? ''}`,
-    );
-  }
-}
-
-function poll(consumer: KafkaConsumer): Promise<Message[]> {
-  return new Promise((resolve, reject) => {
-    consumer.consume(POLL_SIZE, (error, messages) => {
-      if (error) {
-        reject(new Error(`kafka consume failed: ${error.message}`, { cause: error }));
-      } else {
-        resolve(messages);
-      }
+    await onBinlogMessage({
+      topic,
+      key: message.key.toString(),
+      value: message.value,
     });
-  });
-}
+  } else {
+    const key = message.key?.toString() ?? '';
+    logger.info(`processing message ${topic} ${message.offset} ${key}`);
 
-async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
-  let timer: NodeJS.Timeout | undefined;
-  const timeout = new Promise<never>((_resolve, reject) => {
-    timer = setTimeout(() => {
-      reject(new Error(`processing took longer than ${ms}ms`));
-    }, ms);
-  });
-
-  return Promise.race([promise, timeout]).finally(() => {
-    clearTimeout(timer);
-  });
+    await onServiceMessage({
+      topic,
+      key,
+      value: message.value,
+    });
+  }
 }
 
 async function main() {
@@ -189,64 +143,11 @@ async function main() {
     return;
   }
 
-  const consumer = await newConsumer();
-  let missingTopics = await syncSubscription(consumer, TOPICS);
+  const consumer = newConsumer();
 
-  let processed = 0;
-  let lastHeartbeatAt = Date.now();
-  let pollFailures = 0;
-  let pollErrorLoggedAt = 0;
-
-  for (;;) {
-    let messages: Message[];
-    try {
-      messages = await poll(consumer);
-    } catch (error) {
-      pollFailures += 1;
-      const now = Date.now();
-      if (now - pollErrorLoggedAt >= POLL_ERROR_LOG_INTERVAL_MS) {
-        logger.error(error, `failed to poll messages (${pollFailures} failures in a row)`);
-        pollErrorLoggedAt = now;
-      }
-      await sleep(Math.min(pollFailures * 1000, 10_000));
-      continue;
-    }
-    pollFailures = 0;
-
-    for (const msg of messages) {
-      try {
-        await withTimeout(handleMessage(msg), MESSAGE_TIMEOUT_MS);
-      } catch (error) {
-        // offset 还没有 store，退出后重启会重新消费这条消息
-        logger.error(
-          error,
-          `failed to process message ${msg.topic} ${msg.partition} ${msg.offset}`,
-        );
-        throw error;
-      }
-
-      consumer.offsetsStore([
-        { topic: msg.topic, partition: msg.partition, offset: msg.offset + 1 },
-      ]);
-      processed += 1;
-    }
-
-    const now = Date.now();
-    if (now - lastHeartbeatAt < HEARTBEAT_INTERVAL_MS) {
-      continue;
-    }
-
-    logger.info(
-      `mq heartbeat: processed ${processed} messages in the last ${Math.round((now - lastHeartbeatAt) / 1000)}s`,
-    );
-    processed = 0;
-    lastHeartbeatAt = now;
-
-    // 之前不存在的 topic 可能已经被创建出来了
-    if (missingTopics.length > 0) {
-      missingTopics = await syncSubscription(consumer, TOPICS);
-    }
-  }
+  await consumer.connect();
+  await consumer.subscribe({ topics: TOPICS });
+  await consumer.run({ eachMessage: handleMessage });
 }
 
 await main();
