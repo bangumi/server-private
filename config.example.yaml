@@ -35,8 +35,6 @@ passkey:
   #   origins: 'https://bgm.tv,https://bangumi.tv,https://chii.in,https://next.bgm.tv'
   origins: 'https://bgm.tv,https://bangumi.tv,https://chii.in' # PASSKEY_ORIGINS
 
-sentryDSN: 'https://examplePublicKey@o0.ingest.sentry.io/0' # SENTRY_DSN
-
 image:
   provider: 'fs' # CHII_IMAGE_PROVIDER
 

@@ -1,7 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 
 import {
-  type AuthenticatorTransportFuture,
   generateAuthenticationOptions,
   verifyAuthenticationResponse,
 } from '@simplewebauthn/server';
@@ -52,14 +51,14 @@ const validTransports = new Set<string>([
   'usb',
 ]);
 
-function castTransports(transports?: string[]): AuthenticatorTransportFuture[] | undefined {
+function castTransports(transports?: string[]): string[] | undefined {
   if (!transports) return undefined;
   for (const t of transports) {
     if (!validTransports.has(t)) {
       throw new Error(`invalid transport: ${t}`);
     }
   }
-  return transports as AuthenticatorTransportFuture[];
+  return transports;
 }
 
 export async function generatePasskeyAuthenticationOptions(params: {
