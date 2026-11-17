@@ -1,6 +1,7 @@
-import { KafkaJS } from '@confluentinc/kafka-javascript';
+import { KafkaJS, RdKafka } from '@confluentinc/kafka-javascript';
 
 import config, { production, stage } from '@app/lib/config.ts';
+import { logger } from '@app/lib/logger';
 
 class Producer {
   private producer: KafkaJS.Producer | null = null;
@@ -50,20 +51,49 @@ class MockProducer {
 
 export const producer = production || stage ? new Producer() : new MockProducer();
 
-export async function newConsumer(topics: string[]) {
-  const { Kafka, logLevel } = KafkaJS;
+interface LibrdKafkaLogEvent {
+  severity: number;
+  fac: string;
+  message: string;
+  name?: string;
+}
 
+export async function newConsumer(topics: string[]): Promise<RdKafka.KafkaConsumer> {
   if (!config.kafkaBrokers) {
     throw new Error('KAFKA_BROKERS is not set');
   }
-  const kafka = new Kafka({
-    log_level: logLevel.WARN,
-  });
-  const consumer = kafka.consumer({
+
+  const consumer = new RdKafka.KafkaConsumer({
     'bootstrap.servers': config.kafkaBrokers,
     'group.id': config.kafkaJsMqGroupId,
+    'enable.auto.commit': true,
+    // 处理完成后再 offsetsStore()，避免提交还没处理的消息
+    'enable.auto.offset.store': false,
   });
-  await consumer.connect();
-  await consumer.subscribe({ topics });
+
+  // 原生 API 默认丢弃 librdkafka 的日志事件，转给 pino 才能看到断连、出组这类问题
+  consumer.on('event.log', (event: LibrdKafkaLogEvent) => {
+    const context = { fac: event.fac, name: event.name };
+    if (event.severity <= 3) {
+      logger.error(context, event.message);
+    } else if (event.severity === 4) {
+      logger.warn(context, event.message);
+    } else {
+      logger.debug(context, event.message);
+    }
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    consumer.connect(undefined, (error) => {
+      if (error) {
+        reject(new Error(`failed to connect to kafka: ${error.message}`, { cause: error }));
+      } else {
+        resolve();
+      }
+    });
+  });
+
+  consumer.subscribe(topics);
+
   return consumer;
 }
