@@ -127,7 +127,7 @@ export async function handleSubjectDate({ topic, key, value }: KafkaMessage) {
   switch (payload.op) {
     case EventOp.Update:
     case EventOp.Create: {
-      logger.info(`subject date: ${subjectID} op=${payload.op} ts=${payload.source.ts_ms}`);
+      logger.trace(`subject date: ${subjectID} op=${payload.op} ts=${payload.source.ts_ms}`);
       await updateSubjectDate(subjectID, payload.source.ts_ms);
     }
   }
@@ -144,13 +144,13 @@ async function updateSubjectDate(subjectID: number, ts: number) {
     .where(op.eq(schema.chiiSubjects.id, subjectID))
     .limit(1);
   if (!subject) {
-    logger.warn(`subject date: ${subjectID} subject not found`);
+    logger.trace(`subject date: ${subjectID} subject not found`);
     return;
   }
 
   const date = resolveSubjectDate(subject.infobox, subject.typeID, subject.platform);
   if (!date) {
-    logger.info(
+    logger.trace(
       `subject date: ${subjectID} no date resolved, type=${subject.typeID} platform=${subject.platform}`,
     );
     return;
@@ -165,5 +165,5 @@ async function updateSubjectDate(subjectID: number, ts: number) {
     })
     .where(op.eq(schema.chiiSubjectFields.id, subjectID));
 
-  logger.info(`subject date: ${subjectID} set to ${date.toString()}`);
+  logger.trace(`subject date: ${subjectID} set to ${date.toString()}`);
 }
