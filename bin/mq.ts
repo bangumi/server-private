@@ -78,7 +78,7 @@ async function onBinlogMessage(msg: KafkaMessage) {
   const payload = JSON.parse(msg.value.toString()) as Payload;
   const handler = binlogHandlers[payload.source.table];
   if (!handler) {
-    logger.warn(`no handler for binlog table "${payload.source.table}" from ${msg.topic}`);
+    logger.trace(`no handler for binlog table "${payload.source.table}" from ${msg.topic}`);
     return;
   }
   if (Array.isArray(handler)) {
