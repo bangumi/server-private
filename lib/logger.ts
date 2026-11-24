@@ -3,7 +3,9 @@ import * as process from 'node:process';
 import { requestContext } from '@fastify/request-context';
 import { pino } from 'pino';
 
-import { production, stage, testing, VERSION } from './config.ts';
+import config, { production, stage, testing, VERSION } from './config.ts';
+
+const level = config.logLevel ?? (testing ? 'error' : production || stage ? 'info' : 'trace');
 
 function requestMixin() {
   const ctx: Record<string, unknown> = {};
@@ -22,12 +24,12 @@ function requestMixin() {
 
 function createLogger() {
   if (testing) {
-    return pino({ level: 'error' });
+    return pino({ level });
   }
 
   if (production || stage) {
     return pino({
-      level: 'info',
+      level,
       base: production || stage ? { pid: process.pid, version: VERSION } : undefined,
       timestamp() {
         return `,"time":"${new Date().toISOString()}"`;
@@ -42,7 +44,7 @@ function createLogger() {
   }
 
   return pino({
-    level: 'trace',
+    level,
     transport: {
       target: 'pino-pretty',
       options: { colorize: true },

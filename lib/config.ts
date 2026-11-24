@@ -88,6 +88,11 @@ export const schema = Obj({
 
   siteUrl: t.String({ default: 'https://next.bgm.tv ', transform: ['trim'] }),
 
+  /** 日志等级，默认由 NODE_ENV 推导（production/stage 为 info，test 为 error，其余为 trace） */
+  logLevel: t.Optional(
+    t.Enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'], { env: 'LOG_LEVEL' }),
+  ),
+
   cookie_secret_token: t.String({
     env: 'COOKIE_SECRET_TOKEN',
     description: 'hex encoded secret token for cookies',
