@@ -11,12 +11,20 @@ test.each([
   ['2020年1月3日', DATE.parse('2020-01-03')],
   ['2017-12-22(2018年1月5日・12日合併号)', DATE.parse('2017-12-22')],
   ['2025年', new DATE(2025)],
+  ['1983-05', new DATE(1983, 5)],
 ])('extractFromString(%s) -> %s', (input, expected) => {
   expect(extractFromString(input)).toEqual(expected);
 });
 
 test.each([
   [parse(`{{Infobox}}`), SubjectType.Book, new DATE(0)],
+  [
+    parse(`{{Infobox Album
+|发售日期= 1983-05
+}}`),
+    SubjectType.Music,
+    new DATE(1983, 5),
+  ],
   [
     parse(`{{Infobox
 |上映年度=1887-07-01
