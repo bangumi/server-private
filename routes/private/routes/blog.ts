@@ -15,7 +15,7 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { isFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
+import { requireLogin, requireScope, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -31,7 +31,10 @@ export async function setup(app: App) {
         description: '发布日志（type 固定为 1 日志），可携带标签、关联条目与已上传图片',
         operationId: 'createBlogEntry',
         tags: [Tag.Blog],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         body: t.Intersect([req.Ref(req.CreateBlog), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({
@@ -41,7 +44,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('create blog entry'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('create blog entry'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body }) => {
       const { subjectIDs } = body;
@@ -278,7 +285,10 @@ export async function setup(app: App) {
         summary: '创建日志的吐槽',
         operationId: 'createBlogComment',
         tags: [Tag.Blog],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           entryID: t.Integer(),
         }),
@@ -290,7 +300,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a comment'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { entryID } }) => {
       const entry = await fetcher.fetchSlimBlogEntryByID(entryID, auth.userID);
@@ -308,7 +322,10 @@ export async function setup(app: App) {
         summary: '编辑日志的吐槽',
         operationId: 'updateBlogComment',
         tags: [Tag.Blog],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -317,7 +334,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('edit a comment')],
+      preHandler: [requireLogin('edit a comment'), requireScope('write:topic')],
     },
     async ({ auth, body: { content }, params: { commentID } }) => {
       return await comment.update(auth, commentID, content);
@@ -331,7 +348,10 @@ export async function setup(app: App) {
         summary: '删除日志的吐槽',
         operationId: 'deleteBlogComment',
         tags: [Tag.Blog],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -339,7 +359,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete a comment')],
+      preHandler: [requireLogin('delete a comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID } }) => {
       return await comment.delete(auth, commentID);
@@ -354,7 +374,10 @@ export async function setup(app: App) {
         description: '编辑自己的日志，字段全可选；全部不传返回 400',
         operationId: 'updateBlogEntry',
         tags: [Tag.Blog],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           entryID: t.Integer(),
         }),
@@ -365,7 +388,7 @@ export async function setup(app: App) {
           404: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('update blog entry')],
+      preHandler: [requireLogin('update blog entry'), requireScope('write:topic')],
     },
     async ({ auth, params: { entryID }, body }) => {
       const [current] = await db

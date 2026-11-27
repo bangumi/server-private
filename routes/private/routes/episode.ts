@@ -9,7 +9,11 @@ import { getEpStatus } from '@app/lib/subject/ep';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
-import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler.ts';
+import {
+  requireLogin,
+  requireScope,
+  requireTurnstileToken,
+} from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
 
 // eslint-disable-next-line @typescript-eslint/require-await
@@ -88,7 +92,10 @@ export async function setup(app: App) {
         operationId: 'createEpisodeComment',
         summary: '创建条目的章节吐槽',
         tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           episodeID: t.Integer({ minimum: 1 }),
         }),
@@ -100,7 +107,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a comment'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { episodeID } }) => {
       const ep = await fetcher.fetchEpisodeByID(episodeID);
@@ -118,7 +129,10 @@ export async function setup(app: App) {
         summary: '给条目的章节吐槽点赞',
         operationId: 'likeEpisodeComment',
         tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -130,7 +144,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('liking a episode comment')],
+      preHandler: [requireLogin('liking a episode comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID }, body: { value } }) => {
       const [comment] = await db
@@ -159,7 +173,10 @@ export async function setup(app: App) {
         summary: '取消条目的章节吐槽点赞',
         operationId: 'unlikeEpisodeComment',
         tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -167,7 +184,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('liking a episode comment')],
+      preHandler: [requireLogin('liking a episode comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID } }) => {
       await Reaction.delete({
@@ -186,7 +203,10 @@ export async function setup(app: App) {
         operationId: 'updateEpisodeComment',
         summary: '编辑条目的章节吐槽',
         tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer({ minimum: 1 }),
         }),
@@ -195,7 +215,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('edit a comment')],
+      preHandler: [requireLogin('edit a comment'), requireScope('write:topic')],
     },
 
     async ({ auth, body: { content }, params: { commentID } }) => {
@@ -210,7 +230,10 @@ export async function setup(app: App) {
         operationId: 'deleteEpisodeComment',
         summary: '删除条目的章节吐槽',
         tags: [Tag.Episode],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer({ minimum: 1 }),
         }),
@@ -218,7 +241,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete a comment')],
+      preHandler: [requireLogin('delete a comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID } }) => {
       return await comment.delete(auth, commentID);

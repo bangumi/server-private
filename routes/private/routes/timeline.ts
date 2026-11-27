@@ -20,7 +20,7 @@ import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
 import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
+import { requireLogin, requireScope, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -90,14 +90,21 @@ export async function setup(app: App) {
         summary: '发送时间线吐槽',
         operationId: 'createTimelineSay',
         tags: [Tag.Timeline],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         body: t.Intersect([req.Ref(req.CreateContent), req.Ref(req.TurnstileToken)]),
         response: {
           200: t.Object({ id: t.Integer() }),
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('posting a say'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('posting a say'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { content } }) => {
       if (!Dam.allCharacterPrintable(content)) {
@@ -129,7 +136,10 @@ export async function setup(app: App) {
         summary: '删除时间线',
         operationId: 'deleteTimeline',
         tags: [Tag.Timeline],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           timelineID: t.Integer(),
         }),
@@ -137,7 +147,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('deleting a timeline')],
+      preHandler: [requireLogin('deleting a timeline'), requireScope('write:topic')],
     },
     async ({ auth, params: { timelineID } }) => {
       const timeline = await fetchTimelineByID(auth, timelineID);
@@ -196,7 +206,10 @@ export async function setup(app: App) {
         summary: '创建时间线回复',
         operationId: 'createTimelineReply',
         tags: [Tag.Timeline],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           timelineID: t.Integer(),
         }),
@@ -206,7 +219,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a reply'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a reply'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { timelineID } }) => {
       return await comment.create(auth, timelineID, content, replyTo);
@@ -220,7 +237,10 @@ export async function setup(app: App) {
         summary: '给时间线吐槽点赞',
         operationId: 'likeTimeline',
         tags: [Tag.Timeline],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           timelineID: t.Integer(),
         }),
@@ -232,7 +252,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('liking a timeline')],
+      preHandler: [requireLogin('liking a timeline'), requireScope('write:topic')],
     },
     async ({ auth, params: { timelineID }, body: { value } }) => {
       const timeline = await fetchTimelineByID(auth, timelineID);
@@ -260,7 +280,10 @@ export async function setup(app: App) {
         summary: '取消时间线吐槽点赞',
         operationId: 'unlikeTimeline',
         tags: [Tag.Timeline],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           timelineID: t.Integer(),
         }),
@@ -268,7 +291,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('liking a timeline')],
+      preHandler: [requireLogin('liking a timeline'), requireScope('write:topic')],
     },
     async ({ auth, params: { timelineID } }) => {
       const timeline = await fetchTimelineByID(auth, timelineID);
