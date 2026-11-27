@@ -187,6 +187,7 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
       const token = await session.create({
         id: user.id,
         regTime: user.regdate,
+        password: user.passwordCrypt,
       });
 
       await limiter.reset(limitKey);

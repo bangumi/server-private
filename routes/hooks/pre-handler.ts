@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/require-await */
 import type { FastifyReply, FastifyRequest } from 'fastify';
 
-import { db, op, schema } from '@app/drizzle';
 import * as authCode from '@app/lib/auth/authcode.ts';
 import type { IAuth } from '@app/lib/auth/index.ts';
 import * as auth from '@app/lib/auth/index.ts';
 import { emptyAuth, NeedLoginError, NotAllowedError } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey, LegacyCookieKey } from '@app/lib/auth/session.ts';
-import { TypedCache } from '@app/lib/cache.ts';
 import config from '@app/lib/config.ts';
 import { CaptchaError } from '@app/lib/error';
 import { turnstile } from '@app/lib/services/turnstile';
@@ -38,10 +36,6 @@ export function requireTurnstileToken() {
   return turnstileTokenMiddleware;
 }
 
-const legacySessionCache = TypedCache<number, { password: string }>(
-  (id) => `auth:legacy-session:${id}`,
-);
-
 async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
   const ua = req.headers['user-agent'];
   if (!ua) {
@@ -65,24 +59,12 @@ async function legacySessionAuth(req: FastifyRequest): Promise<boolean> {
     return false;
   }
 
-  const user = await legacySessionCache.cached(userID, async () => {
-    const [u] = await db
-      .select()
-      .from(schema.chiiUsers)
-      .where(op.eq(schema.chiiUsers.id, userID))
-      .limit(1);
-    if (u) {
-      return { password: u.passwordCrypt };
-    }
-
-    return null;
-  });
-
-  if (!user) {
+  const password = await auth.fetchPasswordCrypt(userID);
+  if (!password) {
     return false;
   }
 
-  if (user.password === passwordCrypt) {
+  if (password === passwordCrypt) {
     req.auth = await auth.byUserID(userID);
     req.requestContext.set('user', req.auth.userID);
     return true;
