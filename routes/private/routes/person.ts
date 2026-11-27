@@ -14,7 +14,7 @@ import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { formatErrors } from '@app/lib/types/res.ts';
-import { requireLogin, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
+import { requireLogin, requireScope, requireTurnstileToken } from '@app/routes/hooks/pre-handler';
 import type { App } from '@app/routes/type.ts';
 
 function toPersonSubjectRelation(relation: orm.IPersonSubject): res.ISubjectStaffPosition {
@@ -629,7 +629,10 @@ export async function setup(app: App) {
         summary: '创建人物的吐槽',
         operationId: 'createPersonComment',
         tags: [Tag.Person],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           personID: t.Integer(),
         }),
@@ -641,7 +644,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a comment'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { personID } }) => {
       return await comment.create(auth, personID, content, replyTo);
@@ -655,7 +662,10 @@ export async function setup(app: App) {
         summary: '创建人物相册图片的评论',
         operationId: 'createPersonPhotoComment',
         tags: [Tag.Person],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           personID: t.Integer(),
           photoID: t.Integer(),
@@ -669,7 +679,11 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('creating a comment'), requireTurnstileToken()],
+      preHandler: [
+        requireLogin('creating a comment'),
+        requireScope('write:topic'),
+        requireTurnstileToken(),
+      ],
     },
     async ({ auth, body: { content, replyTo = 0 }, params: { personID, photoID } }) => {
       await requirePerson(personID, auth.allowNsfw);
@@ -685,7 +699,10 @@ export async function setup(app: App) {
         summary: '编辑人物的吐槽',
         operationId: 'updatePersonComment',
         tags: [Tag.Person],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -694,7 +711,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('edit a comment')],
+      preHandler: [requireLogin('edit a comment'), requireScope('write:topic')],
     },
     async ({ auth, body: { content }, params: { commentID } }) => {
       return await comment.update(auth, commentID, content);
@@ -708,7 +725,10 @@ export async function setup(app: App) {
         summary: '删除人物的吐槽',
         operationId: 'deletePersonComment',
         tags: [Tag.Person],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:topic'] },
+        ],
         params: t.Object({
           commentID: t.Integer(),
         }),
@@ -716,7 +736,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('delete a comment')],
+      preHandler: [requireLogin('delete a comment'), requireScope('write:topic')],
     },
     async ({ auth, params: { commentID } }) => {
       return await comment.delete(auth, commentID);

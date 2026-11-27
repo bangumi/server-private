@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
-import { handleFields, handleFriend } from '@app/event/user.ts';
+import { handle, handleFields, handleFriend } from '@app/event/user.ts';
 import redis from '@app/lib/redis.ts';
 import {
   getFollowersCacheKey,
@@ -19,11 +19,13 @@ const invalidatedFriendshipCacheKeys = [
   getFollowersCacheKey(testFriendID),
   getStatsCacheKey(testUserID, 'friend'),
 ];
+const authCacheKey = `auth:v2:user:${testUserID}`;
 
 beforeEach(async () => {
   await redis.del(
     getPrivacyCacheKey(testUserID),
     friendsCacheKey,
+    authCacheKey,
     ...invalidatedFriendshipCacheKeys,
   );
   await db.delete(schema.chiiUserFields).where(op.eq(schema.chiiUserFields.uid, testUserID));
@@ -64,6 +66,18 @@ test('should invalidate user privacy cache from memberfields event', async () =>
   });
 
   await expect(fetchPrivacyByUserID(testUserID)).resolves.toBe('{"show_nsfw_subject":1}');
+});
+
+test('should invalidate user auth cache from members event', async () => {
+  await redis.set(authCacheKey, 'cached');
+
+  await handle({
+    topic: 'debezium.chii.bangumi.chii_members',
+    key: JSON.stringify({ uid: testUserID }),
+    value: Buffer.from(JSON.stringify({ op: 'u' })),
+  });
+
+  await expect(redis.exists(authCacheKey)).resolves.toBe(0);
 });
 
 test('should invalidate friendship caches from friend event', async () => {
