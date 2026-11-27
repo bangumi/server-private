@@ -372,9 +372,12 @@ export async function setup(app: App) {
         if (comment.length > 380) {
           throw new BadRequestError('comment too long');
         }
-        if (dam.needReview(comment) || auth.permission.ban_post) {
-          privacy = CollectionPrivacy.Ban;
-        }
+      }
+      if (
+        auth.permission.ban_subject_interest ||
+        (comment && (dam.needReview(comment) || auth.permission.ban_post))
+      ) {
+        privacy = CollectionPrivacy.Ban;
       }
 
       await rateLimit(LimitAction.Subject, auth.userID);

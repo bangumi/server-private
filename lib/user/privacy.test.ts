@@ -131,6 +131,18 @@ describe('nsfw preference gate', () => {
     ).toBe(false);
   });
 
+  test('allows eligible users with account moderation permission to view NSFW subjects', () => {
+    expect(
+      canViewNsfwSubject({
+        showNsfwSubject: true,
+        userID: 100,
+        regTime: 1_000,
+        permission: { user_ban: true },
+        now: 1_000 + 60 * 60 * 24 * 60,
+      }),
+    ).toBe(true);
+  });
+
   test('should treat restricted user id as not eligible', () => {
     const eligibleAt = 1_000 + 60 * 60 * 24 * 60;
 

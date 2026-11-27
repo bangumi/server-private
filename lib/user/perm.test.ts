@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { fetchPermission } from './perm.ts';
+import { fetchPermission, mergeUserPermission } from './perm.ts';
 
 test('should fetch permission', async () => {
   await expect(fetchPermission(0)).resolves.toMatchInlineSnapshot(`
@@ -30,4 +30,11 @@ test('should not fallback to empty permission', async () => {
       "user_list": true,
     }
   `);
+});
+
+test('personal permissions override group values, including explicit denials', () => {
+  const group = { ban_post: true, user_ban: true };
+  const permission = mergeUserPermission(group, '{"ban_post":"0","ban_subject_interest":"1"}');
+  expect(permission).toEqual({ ban_post: false, ban_subject_interest: true, user_ban: true });
+  expect(group.ban_post).toBe(true);
 });

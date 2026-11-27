@@ -5,14 +5,12 @@ import { compare } from '@node-rs/bcrypt';
 
 import { db, op, schema } from '@app/drizzle';
 import { TypedCache } from '@app/lib/cache.ts';
-import type * as res from '@app/lib/types/res.ts';
-import { fetchPermission, type Permission } from '@app/lib/user/perm';
+import { fetchUserPermission, type Permission } from '@app/lib/user/perm';
 import {
   canViewNsfwSubject,
   fetchPrivacyByUserID,
   isNsfwSubjectPreferenceEnabled,
 } from '@app/lib/user/privacy.ts';
-import { fetchUserX } from '@app/lib/user/utils.ts';
 import { intval } from '@app/lib/utils/index.ts';
 import { getTimelineSourceFromAppID } from '@app/vendor';
 
@@ -88,9 +86,19 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
-const tokenAuthCache = TypedCache<string, { user: res.ISlimUser; appID: string }>(
+interface AuthUser {
+  id: number;
+  joinedAt: number;
+  group: number;
+  acl: string;
+}
+
+type CachedAuthUser = Omit<AuthUser, 'acl'> & { acl?: string };
+
+const tokenAuthCache = TypedCache<string, { user: CachedAuthUser; appID: string }>(
   (token) => `auth:v3:token:${token}`,
 );
+const userCache = TypedCache<number, CachedAuthUser>((userID) => `auth:v2:user:${userID}`);
 
 export async function invalidateTokenCache(accessToken: string): Promise<void> {
   await tokenAuthCache.del(accessToken);
@@ -98,11 +106,12 @@ export async function invalidateTokenCache(accessToken: string): Promise<void> {
 
 export async function byToken(accessToken: string): Promise<IAuth | null> {
   const cached = await tokenAuthCache.get(accessToken);
-  if (cached) {
-    return await userToAuth(cached.user, cached.appID);
+  if (cached && cached.user.acl !== undefined) {
+    return await userToAuth({ ...cached.user, acl: cached.user.acl }, cached.appID);
   }
 
   const token = await db.query.chiiAccessToken.findFirst({
+    columns: { userID: true, clientID: true },
     where: op.and(
       op.sql`access_token = ${accessToken} collate utf8mb4_bin`,
       op.gt(schema.chiiAccessToken.expiredAt, new Date()),
@@ -117,11 +126,9 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
     throw new Error('access token without user id');
   }
 
-  const u = await fetchUserX(intval(token.userID));
-
-  await tokenAuthCache.set(accessToken, { user: u, appID: token.clientID }, 60 * 60 * 24);
-
-  return await userToAuth(u, token.clientID);
+  const user = await fetchAuthUser(intval(token.userID));
+  await tokenAuthCache.set(accessToken, { user, appID: token.clientID }, 60 * 60 * 24);
+  return await userToAuth(user, token.clientID);
 }
 
 const passwordCache = TypedCache<number, string>((userID) => `auth:password:${userID}`);
@@ -142,19 +149,47 @@ export async function invalidatePasswordCache(userID: number): Promise<void> {
   await passwordCache.del(userID);
 }
 
-const userCache = TypedCache<number, res.ISlimUser>((userID) => `auth:v2:user:${userID}`);
-
 export async function byUserID(userID: number): Promise<IAuth> {
   const cached = await userCache.get(userID);
-  if (cached) {
-    return await userToAuth(cached);
+  if (cached && cached.acl !== undefined) {
+    return await userToAuth({ ...cached, acl: cached.acl });
   }
 
-  const u = await fetchUserX(userID);
+  const user = await fetchAuthUser(userID);
+  await userCache.set(userID, user, 60 * 60);
+  return await userToAuth(user);
+}
 
-  await userCache.set(userID, u, 60 * 60);
+async function fetchAuthUser(userID: number): Promise<AuthUser> {
+  const user = await db.query.chiiUsers.findFirst({
+    columns: { id: true, regdate: true, groupid: true, acl: true },
+    where: op.eq(schema.chiiUsers.id, userID),
+  });
+  if (!user) {
+    throw new TokenNotValidError();
+  }
+  return { id: user.id, group: user.groupid, joinedAt: user.regdate, acl: user.acl };
+}
 
-  return await userToAuth(u);
+async function userToAuth(user: AuthUser, appID = ''): Promise<IAuth> {
+  const userID = user.id;
+  const permission = await fetchUserPermission({ groupid: user.group, acl: user.acl });
+
+  const privacy = await fetchPrivacyByUserID(userID);
+  return {
+    userID,
+    login: true,
+    permission,
+    allowNsfw: canViewNsfwSubject({
+      showNsfwSubject: isNsfwSubjectPreferenceEnabled(privacy),
+      userID,
+      regTime: user.joinedAt,
+      permission,
+    }),
+    regTime: user.joinedAt,
+    groupID: user.group,
+    source: getTimelineSourceFromAppID(appID) ?? defaultSource,
+  };
 }
 
 export function emptyAuth(): IAuth {
@@ -166,26 +201,6 @@ export function emptyAuth(): IAuth {
     regTime: 0,
     groupID: 0,
     source: defaultSource,
-  };
-}
-
-async function userToAuth(user: res.ISlimUser, appID = ''): Promise<IAuth> {
-  const perms = await fetchPermission(user.group);
-  const privacy = await fetchPrivacyByUserID(user.id);
-  const showNsfwSubject = isNsfwSubjectPreferenceEnabled(privacy);
-  return {
-    userID: user.id,
-    login: true,
-    permission: perms,
-    allowNsfw: canViewNsfwSubject({
-      showNsfwSubject,
-      userID: user.id,
-      regTime: user.joinedAt,
-      permission: perms,
-    }),
-    regTime: user.joinedAt,
-    groupID: user.group,
-    source: getTimelineSourceFromAppID(appID) ?? defaultSource,
   };
 }
 

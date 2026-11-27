@@ -3,7 +3,7 @@ import httpCodes from 'http-status-codes';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
-import { comparePassword, NeedLoginError } from '@app/lib/auth/index.ts';
+import { comparePassword, NeedLoginError, UserGroup } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import config, { redisPrefix } from '@app/lib/config.ts';
@@ -12,7 +12,7 @@ import { avatar } from '@app/lib/images';
 import { Tag } from '@app/lib/openapi/index.ts';
 import { turnstile } from '@app/lib/services/turnstile.ts';
 import * as res from '@app/lib/types/res.ts';
-import { fetchPermission } from '@app/lib/user/perm.ts';
+import { fetchUserPermission } from '@app/lib/user/perm.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
 import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
 import type { App } from '@app/routes/type.ts';
@@ -179,8 +179,8 @@ dev.bgm38.tv 域名使用测试用的 site-key \`1x00000000000000000000AA\``,
         throw new EmailOrPasswordError();
       }
 
-      const perms = await fetchPermission(user.groupid);
-      if (perms.user_ban) {
+      const perms = await fetchUserPermission(user);
+      if (user.groupid === UserGroup.Banned || perms.ban_visit) {
         throw new UserBannedError();
       }
 
