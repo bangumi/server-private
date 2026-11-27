@@ -19,7 +19,7 @@ const invalidatedFriendshipCacheKeys = [
   getFollowersCacheKey(testFriendID),
   getStatsCacheKey(testUserID, 'friend'),
 ];
-const authCacheKey = `auth:v2:user:${testUserID}`;
+const authCacheKey = `auth:v3:user:${testUserID}`;
 
 beforeEach(async () => {
   await redis.del(
