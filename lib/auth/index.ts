@@ -88,9 +88,10 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
-const tokenAuthCache = TypedCache<string, { user: res.ISlimUser; appID: string }>(
-  (token) => `auth:v3:token:${token}`,
-);
+const tokenAuthCache = TypedCache<
+  string,
+  { user: res.ISlimUser; appID: string; expiredAt: number }
+>((token) => `auth:v4:token:${token}`);
 
 export async function invalidateTokenCache(accessToken: string): Promise<void> {
   await tokenAuthCache.del(accessToken);
@@ -98,7 +99,7 @@ export async function invalidateTokenCache(accessToken: string): Promise<void> {
 
 export async function byToken(accessToken: string): Promise<IAuth | null> {
   const cached = await tokenAuthCache.get(accessToken);
-  if (cached) {
+  if (cached && cached.expiredAt > Date.now()) {
     return await userToAuth(cached.user, cached.appID);
   }
 
@@ -119,7 +120,11 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
 
   const u = await fetchUserX(intval(token.userID));
 
-  await tokenAuthCache.set(accessToken, { user: u, appID: token.clientID }, 60 * 60 * 24);
+  await tokenAuthCache.set(
+    accessToken,
+    { user: u, appID: token.clientID, expiredAt: token.expiredAt.getTime() },
+    60 * 60 * 24,
+  );
 
   return await userToAuth(u, token.clientID);
 }
