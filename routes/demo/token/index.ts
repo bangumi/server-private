@@ -2,7 +2,7 @@ import { DateTime, Duration } from 'luxon';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
-import { NotAllowedError } from '@app/lib/auth/index.ts';
+import { invalidateTokenCache, NotAllowedError } from '@app/lib/auth/index.ts';
 import { randomBase62String } from '@app/lib/utils/index.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
 import { redirectIfNotLogin, requireLogin } from '@app/routes/hooks/pre-handler.ts';
@@ -43,6 +43,8 @@ export function setup(app: App) {
         .update(schema.chiiAccessToken)
         .set({ expiredAt: new Date() })
         .where(op.eq(schema.chiiAccessToken.id, body.id));
+
+      await invalidateTokenCache(token.accessToken);
     },
   );
 

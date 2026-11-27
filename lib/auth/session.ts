@@ -1,5 +1,7 @@
 import type { CookieSerializeOptions } from '@fastify/cookie';
 import { DateTime } from 'luxon';
+import t from 'typebox';
+import { Value } from 'typebox/value';
 
 import { db, op, schema } from '@app/drizzle';
 import { TypedCache } from '@app/lib/cache.ts';
@@ -17,7 +19,15 @@ export const cookiesPluginOption: Readonly<CookieSerializeOptions> = {
   httpOnly: true,
 };
 
-export async function create(user: { id: number; regTime: number }): Promise<string> {
+const SessionValueSchema = t.Object({
+  password: t.String({ minLength: 1 }),
+});
+
+export async function create(user: {
+  id: number;
+  regTime: number;
+  password: string;
+}): Promise<string> {
   const now = DateTime.now().toUnixInteger();
   const bytes = await randomBytes(30);
   const token = bytes.toString('base64url');
@@ -27,6 +37,7 @@ export async function create(user: { id: number; regTime: number }): Promise<str
     user_id: user.id,
     created_at: now,
     expired_at: now + 60 * 60 * 24 * 7,
+    password: user.password,
   };
 
   await db.insert(schema.chiiOsWebSessions).values({
@@ -42,6 +53,8 @@ export async function create(user: { id: number; regTime: number }): Promise<str
 
 interface ICachedSession {
   userID: number;
+  /** Password_crypt at the time this session was loaded */
+  password: string;
 }
 
 const sessionCache = TypedCache<string, ICachedSession>((sessionID) => `auth:session:${sessionID}`);
@@ -50,7 +63,7 @@ const sessionCache = TypedCache<string, ICachedSession>((sessionID) => `auth:ses
 export async function get(sessionID: string): Promise<IAuth | null> {
   const cached = await sessionCache.get(sessionID);
   if (cached) {
-    return await auth.byUserID(cached.userID);
+    return await authByPassword(cached.userID, cached.password);
   }
 
   const session = await db.query.chiiOsWebSessions.findFirst({
@@ -63,9 +76,31 @@ export async function get(sessionID: string): Promise<IAuth | null> {
     return null;
   }
 
-  await sessionCache.set(sessionID, { userID: session.userID });
+  const password = sessionPassword(session.value);
+  if (!password) {
+    return null;
+  }
 
-  return await auth.byUserID(session.userID);
+  await sessionCache.set(sessionID, { userID: session.userID, password });
+
+  return await authByPassword(session.userID, password);
+}
+
+function sessionPassword(value: Buffer): string | null {
+  try {
+    return Value.Parse(SessionValueSchema, JSON.parse(value.toString())).password;
+  } catch {
+    // sessions created before password binding can't be verified, treat them as logged out
+    return null;
+  }
+}
+
+async function authByPassword(userID: number, password: string): Promise<IAuth | null> {
+  if ((await auth.fetchPasswordCrypt(userID)) !== password) {
+    return null;
+  }
+
+  return await auth.byUserID(userID);
 }
 
 export async function revoke(sessionID: string) {
