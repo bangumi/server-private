@@ -14,14 +14,7 @@ import { cookiesPluginOption } from '@app/lib/auth/session.ts';
 import config, { redisOauthPrefix } from '@app/lib/config.ts';
 import { BadRequestError } from '@app/lib/error.ts';
 import redis from '@app/lib/redis.ts';
-import {
-  decodeStoredScope,
-  encodeStoredScope,
-  EpochDefaultScope,
-  type IScope,
-  Scope,
-  scopeMessage,
-} from '@app/lib/scope.ts';
+import { EpochDefaultScope, type IScope, Scope, scopeMessage } from '@app/lib/scope.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import { fetchUserX } from '@app/lib/user/utils.ts';
 import { randomBase64url } from '@app/lib/utils/index.ts';
@@ -417,7 +410,7 @@ async function tokenFromCode(req: {
     created_at: now.toISOString(),
   } satisfies TokenInfo);
 
-  const rawScope = encodeStoredScope(scope);
+  const rawScope = JSON.stringify(scope);
 
   const token: typeof schema.chiiAccessToken.$inferInsert = {
     type: TokenType.AccessToken,
@@ -495,15 +488,13 @@ async function tokenFromRefresh(req: {
       throw new InvalidClientSecretError();
     }
 
-    const previousScope = decodeStoredScope(refresh.scope);
-    const rawScope = previousScope === null ? refresh.scope : encodeStoredScope(previousScope);
     const token: typeof schema.chiiAccessToken.$inferInsert = {
       type: TokenType.AccessToken,
       userID: refresh.userID,
       clientID: client.clientID,
       accessToken: await randomBase64url(30),
       expiredAt: now.plus(Duration.fromObject({ seconds: ACCESS_TOKEN_TTL_SECONDS })).toJSDate(),
-      scope: rawScope,
+      scope: refresh.scope,
       info: JSON.stringify({
         name: app.name,
         created_at: now.toISO(),
@@ -515,7 +506,7 @@ async function tokenFromRefresh(req: {
       clientID: client.clientID,
       refreshToken: await randomBase64url(30),
       expiredAt: now.plus(Duration.fromObject({ seconds: REFRESH_TOKEN_TTL_SECONDS })).toJSDate(),
-      scope: rawScope,
+      scope: refresh.scope,
     };
 
     await t.insert(schema.chiiAccessToken).values(token);
