@@ -275,6 +275,7 @@ export async function setup(app: App) {
       const token = await session.create({
         id: user.id,
         regTime: user.regdate,
+        password: user.passwordCrypt,
       });
 
       void reply.cookie(CookieKey, token, { maxAge: 24 * 60 * 60 * 30 });

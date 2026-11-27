@@ -17,6 +17,7 @@ import {
   handleTopic as handleSubjectTopicEvent,
 } from '@app/event/subject';
 import { handle as handleTimelineEvent } from '@app/event/timeline';
+import { handle as handleTokenEvent } from '@app/event/token';
 import type { KafkaMessage, Payload } from '@app/event/type';
 import {
   handle as handleUserEvent,
@@ -43,6 +44,7 @@ const TOPICS = [
   'debezium.chii.bangumi.chii_likes',
   'debezium.chii.bangumi.chii_memberfields',
   'debezium.chii.bangumi.chii_members',
+  'debezium.chii.bangumi.chii_oauth_access_tokens',
   'debezium.chii.bangumi.chii_friends',
   'debezium.chii.bangumi.chii_persons',
   'debezium.chii.bangumi.chii_subject_fields',
@@ -72,6 +74,7 @@ const binlogHandlers: Record<string, Handler | Handler[]> = {
   chii_subjects: [handleSubjectEvent, handleSubjectDate],
   chii_timeline: handleTimelineEvent,
   chii_subject_revisions: handleSubjectDate,
+  chii_oauth_access_tokens: handleTokenEvent,
 };
 
 async function onBinlogMessage(msg: KafkaMessage) {

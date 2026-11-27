@@ -92,6 +92,10 @@ const tokenAuthCache = TypedCache<string, { user: res.ISlimUser; appID: string }
   (token) => `auth:v3:token:${token}`,
 );
 
+export async function invalidateTokenCache(accessToken: string): Promise<void> {
+  await tokenAuthCache.del(accessToken);
+}
+
 export async function byToken(accessToken: string): Promise<IAuth | null> {
   const cached = await tokenAuthCache.get(accessToken);
   if (cached) {
@@ -118,6 +122,24 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
   await tokenAuthCache.set(accessToken, { user: u, appID: token.clientID }, 60 * 60 * 24);
 
   return await userToAuth(u, token.clientID);
+}
+
+const passwordCache = TypedCache<number, string>((userID) => `auth:password:${userID}`);
+
+export async function fetchPasswordCrypt(userID: number): Promise<string | null> {
+  return await passwordCache.cached(userID, async () => {
+    const [u] = await db
+      .select({ password: schema.chiiUsers.passwordCrypt })
+      .from(schema.chiiUsers)
+      .where(op.eq(schema.chiiUsers.id, userID))
+      .limit(1);
+
+    return u?.password ?? null;
+  });
+}
+
+export async function invalidatePasswordCache(userID: number): Promise<void> {
+  await passwordCache.del(userID);
 }
 
 const userCache = TypedCache<number, res.ISlimUser>((userID) => `auth:v2:user:${userID}`);
