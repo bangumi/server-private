@@ -91,10 +91,14 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
   return await byToken(token);
 }
 
-const tokenAuthCache = TypedCache<
-  string,
-  { user: res.ISlimUser; appID: string; scope: TokenScope; expiredAt: number }
->((token) => `auth:v4:token:${token}`);
+interface CachedTokenAuth {
+  userID: number;
+  appID: string;
+  scope: TokenScope;
+  expiredAt: number;
+}
+
+const tokenAuthCache = TypedCache<string, CachedTokenAuth>((token) => `auth:v5:token:${token}`);
 
 export async function invalidateTokenCache(accessToken: string): Promise<void> {
   await tokenAuthCache.del(accessToken);
@@ -103,7 +107,7 @@ export async function invalidateTokenCache(accessToken: string): Promise<void> {
 export async function byToken(accessToken: string): Promise<IAuth | null> {
   const cached = await tokenAuthCache.get(accessToken);
   if (cached && cached.expiredAt > Date.now()) {
-    return await userToAuth(cached.user, cached.appID, cached.scope);
+    return await userToAuth(await getAuthUser(cached.userID), cached.appID, cached.scope);
   }
 
   const token = await db.query.chiiAccessToken.findFirst({
@@ -126,7 +130,12 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
 
   await tokenAuthCache.set(
     accessToken,
-    { user: u, appID: token.clientID, scope, expiredAt: token.expiredAt.getTime() },
+    {
+      userID: u.id,
+      appID: token.clientID,
+      scope,
+      expiredAt: token.expiredAt.getTime(),
+    },
     60 * 60 * 24,
   );
 
@@ -153,17 +162,25 @@ export async function invalidatePasswordCache(userID: number): Promise<void> {
 
 const userCache = TypedCache<number, res.ISlimUser>((userID) => `auth:v2:user:${userID}`);
 
-export async function byUserID(userID: number): Promise<IAuth> {
+async function getAuthUser(userID: number): Promise<res.ISlimUser> {
   const cached = await userCache.get(userID);
   if (cached) {
-    return await userToAuth(cached);
+    return cached;
   }
 
-  const u = await fetchUserX(userID);
+  const user = await fetchUserX(userID);
 
-  await userCache.set(userID, u, 60 * 60);
+  await userCache.set(userID, user, 60 * 60);
 
-  return await userToAuth(u);
+  return user;
+}
+
+export async function invalidateUserCache(userID: number): Promise<void> {
+  await userCache.del(userID);
+}
+
+export async function byUserID(userID: number): Promise<IAuth> {
+  return await userToAuth(await getAuthUser(userID));
 }
 
 export function emptyAuth(): IAuth {

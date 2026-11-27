@@ -1,4 +1,4 @@
-import { invalidatePasswordCache } from '@app/lib/auth/index.ts';
+import { invalidatePasswordCache, invalidateUserCache } from '@app/lib/auth/index.ts';
 import redis from '@app/lib/redis.ts';
 import { getPrivacyCacheKey, getSlimCacheKey } from '@app/lib/user/cache';
 import { invalidateFriendshipCaches } from '@app/lib/user/utils.ts';
@@ -28,6 +28,7 @@ export async function handle({ key, value }: KafkaMessage) {
     }
     case EventOp.Update: {
       await redis.del(getSlimCacheKey(idx.uid));
+      await invalidateUserCache(idx.uid);
 
       if (payload.before?.password_crypt !== payload.after?.password_crypt) {
         await invalidatePasswordCache(idx.uid);
@@ -36,6 +37,7 @@ export async function handle({ key, value }: KafkaMessage) {
     }
     case EventOp.Delete: {
       await redis.del(getSlimCacheKey(idx.uid));
+      await invalidateUserCache(idx.uid);
       await invalidatePasswordCache(idx.uid);
       break;
     }
