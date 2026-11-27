@@ -95,9 +95,10 @@ interface AuthUser {
 
 type CachedAuthUser = Omit<AuthUser, 'acl'> & { acl?: string };
 
-const tokenAuthCache = TypedCache<string, { user: CachedAuthUser; appID: string }>(
-  (token) => `auth:v3:token:${token}`,
-);
+const tokenAuthCache = TypedCache<
+  string,
+  { user: CachedAuthUser; appID: string; expiredAt: number }
+>((token) => `auth:v4:token:${token}`);
 const userCache = TypedCache<number, CachedAuthUser>((userID) => `auth:v2:user:${userID}`);
 
 export async function invalidateTokenCache(accessToken: string): Promise<void> {
@@ -106,12 +107,12 @@ export async function invalidateTokenCache(accessToken: string): Promise<void> {
 
 export async function byToken(accessToken: string): Promise<IAuth | null> {
   const cached = await tokenAuthCache.get(accessToken);
-  if (cached && cached.user.acl !== undefined) {
+  if (cached && cached.expiredAt > Date.now() && cached.user.acl !== undefined) {
     return await userToAuth({ ...cached.user, acl: cached.user.acl }, cached.appID);
   }
 
   const token = await db.query.chiiAccessToken.findFirst({
-    columns: { userID: true, clientID: true },
+    columns: { userID: true, clientID: true, expiredAt: true },
     where: op.and(
       op.sql`access_token = ${accessToken} collate utf8mb4_bin`,
       op.gt(schema.chiiAccessToken.expiredAt, new Date()),
@@ -127,7 +128,11 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
   }
 
   const user = await fetchAuthUser(intval(token.userID));
-  await tokenAuthCache.set(accessToken, { user, appID: token.clientID }, 60 * 60 * 24);
+  await tokenAuthCache.set(
+    accessToken,
+    { user, appID: token.clientID, expiredAt: token.expiredAt.getTime() },
+    60 * 60 * 24,
+  );
   return await userToAuth(user, token.clientID);
 }
 
