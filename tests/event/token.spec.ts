@@ -73,7 +73,7 @@ test('should drop cached access token on update event', async () => {
 
   await db
     .update(schema.chiiAccessToken)
-    .set({ expiredAt: new Date() })
+    .set({ expiredAt: new Date(Date.now() - 1000) })
     .where(op.eq(schema.chiiAccessToken.accessToken, token));
 
   await expect(byToken(token)).resolves.toMatchObject({ userID: testUserID });

@@ -2,11 +2,13 @@ import { afterEach, beforeEach, expect, test } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { handle, handleFields, handleFriend } from '@app/event/user.ts';
+import { byUserID, invalidateUserCache, UserGroup } from '@app/lib/auth/index.ts';
 import redis from '@app/lib/redis.ts';
 import {
   getFollowersCacheKey,
   getFriendsCacheKey,
   getPrivacyCacheKey,
+  getSlimCacheKey,
   getStatsCacheKey,
 } from '@app/lib/user/cache.ts';
 import { fetchPrivacyByUserID } from '@app/lib/user/privacy.ts';
@@ -19,15 +21,19 @@ const invalidatedFriendshipCacheKeys = [
   getFollowersCacheKey(testFriendID),
   getStatsCacheKey(testUserID, 'friend'),
 ];
-const authCacheKey = `auth:v3:user:${testUserID}`;
 
-beforeEach(async () => {
+async function clearUserCaches() {
   await redis.del(
     getPrivacyCacheKey(testUserID),
     friendsCacheKey,
-    authCacheKey,
+    getSlimCacheKey(testUserID),
     ...invalidatedFriendshipCacheKeys,
   );
+  await invalidateUserCache(testUserID);
+}
+
+beforeEach(async () => {
+  await clearUserCaches();
   await db.delete(schema.chiiUserFields).where(op.eq(schema.chiiUserFields.uid, testUserID));
   await db.insert(schema.chiiUserFields).values({
     uid: testUserID,
@@ -38,15 +44,23 @@ beforeEach(async () => {
     privacy: '',
     blocklist: '',
   });
+  await db.delete(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, testUserID));
+  await db.insert(schema.chiiUsers).values({
+    id: testUserID,
+    nickname: '',
+    avatar: '',
+    groupid: UserGroup.Normal,
+    newNotify: 0,
+    sign: '',
+    passwordCrypt: '',
+    acl: '',
+  });
 });
 
 afterEach(async () => {
-  await redis.del(
-    getPrivacyCacheKey(testUserID),
-    friendsCacheKey,
-    ...invalidatedFriendshipCacheKeys,
-  );
+  await clearUserCaches();
   await db.delete(schema.chiiUserFields).where(op.eq(schema.chiiUserFields.uid, testUserID));
+  await db.delete(schema.chiiUsers).where(op.eq(schema.chiiUsers.id, testUserID));
 });
 
 test('should invalidate user privacy cache from memberfields event', async () => {
@@ -69,7 +83,14 @@ test('should invalidate user privacy cache from memberfields event', async () =>
 });
 
 test('should invalidate user auth cache from members event', async () => {
-  await redis.set(authCacheKey, 'cached');
+  await expect(byUserID(testUserID)).resolves.toMatchObject({ groupID: UserGroup.Normal });
+
+  await db
+    .update(schema.chiiUsers)
+    .set({ groupid: UserGroup.WikiEditor })
+    .where(op.eq(schema.chiiUsers.id, testUserID));
+
+  await expect(byUserID(testUserID)).resolves.toMatchObject({ groupID: UserGroup.Normal });
 
   await handle({
     topic: 'debezium.chii.bangumi.chii_members',
@@ -77,7 +98,7 @@ test('should invalidate user auth cache from members event', async () => {
     value: Buffer.from(JSON.stringify({ op: 'u' })),
   });
 
-  await expect(redis.exists(authCacheKey)).resolves.toBe(0);
+  await expect(byUserID(testUserID)).resolves.toMatchObject({ groupID: UserGroup.WikiEditor });
 });
 
 test('should invalidate friendship caches from friend event', async () => {
