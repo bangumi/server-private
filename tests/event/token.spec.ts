@@ -84,8 +84,8 @@ test('should drop cached access token on update event', async () => {
 });
 
 test('should not serve cached access token after it expires', async () => {
-  // MySQL `expires` has second precision, so the stored expiry may be up to 1s earlier
-  const token = await createToken(2000);
+  // `expires` has second precision, so the stored expiry can round up by almost a second
+  const token = await createToken(1000);
 
   await sleep(2200);
 
