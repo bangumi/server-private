@@ -36,6 +36,35 @@ export const EpochDefaultScope: () => IScope = () => ({
   'write:indices': true,
 });
 
+export function decodeStoredScope(raw: string | null): string[] | null {
+  if (!raw || raw === 'null') {
+    return null;
+  }
+
+  raw = raw.trim();
+  let values: unknown;
+  if (raw.startsWith('[') || raw.startsWith('{')) {
+    try {
+      values = JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  } else {
+    values = raw.split(/\s+/);
+  }
+
+  const names = Array.isArray(values)
+    ? values.filter((value): value is string => typeof value === 'string')
+    : Object.entries(values as Record<string, unknown>)
+        .filter(([, value]) => value === true)
+        .map(([name]) => name);
+  return names.filter((name) => name.length > 0);
+}
+
+export function encodeStoredScope(scopes: readonly string[]): string {
+  return JSON.stringify(Object.fromEntries(scopes.map((name) => [name, true])));
+}
+
 export function scopeMessage(s: string[]) {
   const messages = [];
 
