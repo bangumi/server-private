@@ -278,8 +278,7 @@ export function canViewNsfwSubject({
     showNsfwSubject &&
     canSetNsfwSubjectPreference({ userID, regTime, now }) &&
     !nsfwRestrictedUserIDs.has(userID) &&
-    !permission.ban_visit &&
-    !permission.user_ban
+    !permission.ban_visit
   );
 }
 

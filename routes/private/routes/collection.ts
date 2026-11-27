@@ -30,7 +30,7 @@ import * as req from '@app/lib/types/req.ts';
 import * as res from '@app/lib/types/res.ts';
 import { fetchFriends } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -56,7 +56,10 @@ export async function setup(app: App) {
         summary: '获取好友最近的条目收藏',
         operationId: 'getFriendsSubjectCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           subjectType: req.Ref(req.SubjectType),
           limit: t.Optional(
@@ -68,7 +71,10 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(FriendSubjectCollectionActivity)),
         },
       },
-      preHandler: [requireLogin('get friends subject collections')],
+      preHandler: [
+        requireLogin('get friends subject collections'),
+        requireScope('read:collection'),
+      ],
     },
     async ({ auth, query: { subjectType, limit = 10, offset = 0 } }) => {
       const friendIDs = await fetchFriends(auth.userID);
@@ -138,7 +144,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的条目收藏',
         operationId: 'getMySubjectCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           subjectType: t.Optional(req.Ref(req.SubjectType)),
           type: t.Optional(req.Ref(req.CollectionType)),
@@ -152,7 +161,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Subject)),
         },
       },
-      preHandler: [requireLogin('get my subject collections')],
+      preHandler: [requireLogin('get my subject collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { subjectType, type, since, limit = 20, offset = 0 } }) => {
       const conditions = op.and(
@@ -219,7 +228,10 @@ export async function setup(app: App) {
         summary: '更新条目进度',
         operationId: 'updateSubjectProgress',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           subjectID: t.Integer(),
         }),
@@ -229,7 +241,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('update subject progress')],
+      preHandler: [requireLogin('update subject progress'), requireScope('write:collection')],
     },
     async ({ ip, auth, params: { subjectID }, body: { epStatus, volStatus } }) => {
       const subject = await fetcher.fetchSubjectByID(subjectID, auth.allowNsfw);
@@ -338,7 +350,10 @@ export async function setup(app: App) {
         summary: '新增或修改条目收藏',
         operationId: 'updateSubjectCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           subjectID: t.Integer(),
         }),
@@ -348,7 +363,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('update subject collection')],
+      preHandler: [requireLogin('update subject collection'), requireScope('write:collection')],
     },
     async ({
       ip,
@@ -372,9 +387,12 @@ export async function setup(app: App) {
         if (comment.length > 380) {
           throw new BadRequestError('comment too long');
         }
-        if (dam.needReview(comment) || auth.permission.ban_post) {
-          privacy = CollectionPrivacy.Ban;
-        }
+      }
+      if (
+        auth.permission.ban_subject_interest ||
+        (comment && (dam.needReview(comment) || auth.permission.ban_post))
+      ) {
+        privacy = CollectionPrivacy.Ban;
       }
 
       await rateLimit(LimitAction.Subject, auth.userID);
@@ -545,7 +563,10 @@ export async function setup(app: App) {
         summary: '更新章节进度',
         operationId: 'updateEpisodeProgress',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           episodeID: t.Integer(),
         }),
@@ -555,7 +576,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('update episode progress')],
+      preHandler: [requireLogin('update episode progress'), requireScope('write:collection')],
     },
     async ({ auth, params: { episodeID }, body: { type, batch } }) => {
       const episode = await fetcher.fetchEpisodeByID(episodeID);
@@ -692,7 +713,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的角色收藏',
         operationId: 'getMyCharacterCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -703,7 +727,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Character)),
         },
       },
-      preHandler: [requireLogin('get my character collections')],
+      preHandler: [requireLogin('get my character collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
@@ -756,7 +780,10 @@ export async function setup(app: App) {
         summary: '新增角色收藏',
         operationId: 'addCharacterCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           characterID: t.Integer(),
         }),
@@ -765,7 +792,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add character collection')],
+      preHandler: [requireLogin('add character collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { characterID } }) => {
       const character = await fetcher.fetchSlimCharacterByID(characterID);
@@ -826,7 +853,10 @@ export async function setup(app: App) {
         summary: '删除角色收藏',
         operationId: 'deleteCharacterCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           characterID: t.Integer(),
         }),
@@ -835,7 +865,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('remove character collection')],
+      preHandler: [requireLogin('remove character collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { characterID } }) => {
       const character = await fetcher.fetchSlimCharacterByID(characterID);
@@ -883,7 +913,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的人物收藏',
         operationId: 'getMyPersonCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -894,7 +927,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Person)),
         },
       },
-      preHandler: [requireLogin('get my person collections')],
+      preHandler: [requireLogin('get my person collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
@@ -941,7 +974,10 @@ export async function setup(app: App) {
         summary: '新增人物收藏',
         operationId: 'addPersonCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           personID: t.Integer(),
         }),
@@ -950,7 +986,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add person collection')],
+      preHandler: [requireLogin('add person collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { personID } }) => {
       const person = await fetcher.fetchSlimPersonByID(personID);
@@ -1011,7 +1047,10 @@ export async function setup(app: App) {
         summary: '删除人物收藏',
         operationId: 'deletePersonCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           personID: t.Integer(),
         }),
@@ -1020,7 +1059,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('delete person collection')],
+      preHandler: [requireLogin('delete person collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { personID } }) => {
       const person = await fetcher.fetchSlimPersonByID(personID);
@@ -1068,7 +1107,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的目录收藏',
         operationId: 'getMyIndexCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -1079,7 +1121,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Index)),
         },
       },
-      preHandler: [requireLogin('get my index collections')],
+      preHandler: [requireLogin('get my index collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
@@ -1123,7 +1165,10 @@ export async function setup(app: App) {
         summary: '新增目录收藏',
         operationId: 'addIndexCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -1132,7 +1177,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add index collection')],
+      preHandler: [requireLogin('add index collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { indexID } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);
@@ -1180,7 +1225,10 @@ export async function setup(app: App) {
         summary: '删除目录收藏',
         operationId: 'deleteIndexCollection',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:collection'] },
+        ],
         params: t.Object({
           indexID: t.Integer(),
         }),
@@ -1189,7 +1237,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('delete index collection')],
+      preHandler: [requireLogin('delete index collection'), requireScope('write:collection')],
     },
     async ({ auth, params: { indexID } }) => {
       const index = await fetcher.fetchSlimIndexByID(indexID);

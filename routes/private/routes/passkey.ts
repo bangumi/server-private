@@ -3,13 +3,14 @@ import httpCodes from 'http-status-codes';
 import t from 'typebox';
 
 import { db, op, schema } from '@app/drizzle';
+import { UserGroup } from '@app/lib/auth/index.ts';
 import * as session from '@app/lib/auth/session.ts';
 import { CookieKey } from '@app/lib/auth/session.ts';
 import config from '@app/lib/config.ts';
 import { avatar } from '@app/lib/images.ts';
 import { Tag } from '@app/lib/openapi/index.ts';
 import * as passkey from '@app/lib/passkey/index.ts';
-import { fetchPermission } from '@app/lib/user/perm.ts';
+import { fetchUserPermission } from '@app/lib/user/perm.ts';
 import { createLimiter } from '@app/lib/utils/rate-limit/index.ts';
 import type { App } from '@app/routes/type.ts';
 
@@ -260,8 +261,8 @@ export async function setup(app: App) {
       }
 
       // Check account status
-      const perms = await fetchPermission(user.groupid);
-      if (perms.user_ban || perms.ban_visit) {
+      const perms = await fetchUserPermission(user);
+      if (user.groupid === UserGroup.Banned || perms.ban_visit) {
         throw new PasskeyLoginFailedError();
       }
 

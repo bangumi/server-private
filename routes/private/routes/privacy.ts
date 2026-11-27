@@ -14,7 +14,7 @@ import {
   serializePrivacyRaw,
 } from '@app/lib/user/privacy.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -75,13 +75,16 @@ export async function setup(app: App) {
         summary: 'Get current user privacy settings',
         operationId: 'getPrivacy',
         tags: [Tag.User],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:user'] },
+        ],
         response: {
           200: PrivacyResponse,
           401: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('get privacy')],
+      preHandler: [requireLogin('get privacy'), requireScope('read:user')],
     },
     async ({ auth }) => {
       const privacy = await requirePrivacyField(auth.userID);
@@ -100,7 +103,10 @@ export async function setup(app: App) {
         summary: 'Update current user privacy settings',
         operationId: 'patchPrivacy',
         tags: [Tag.User],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:user'] },
+        ],
         body: PrivacyPatchBody,
         response: {
           200: PrivacyResponse,
@@ -109,7 +115,7 @@ export async function setup(app: App) {
           403: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('patch privacy')],
+      preHandler: [requireLogin('patch privacy'), requireScope('write:user')],
     },
     async ({ auth, body }) => {
       const privacy = await requirePrivacyField(auth.userID);

@@ -62,6 +62,51 @@ describe('privacy route', () => {
     });
   });
 
+  test('should reject reading privacy settings without read:user scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID,
+        regTime: oldRegTime,
+        scope: ['write:user'],
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'get',
+      url: '/privacy',
+    });
+
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should reject patching privacy settings without write:user scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: testUserID,
+        regTime: oldRegTime,
+        scope: ['read:user'],
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'patch',
+      url: '/privacy',
+      payload: {
+        settings: {
+          follow: 'none',
+        },
+      },
+    });
+
+    expect(res.statusCode).toBe(403);
+  });
+
   test('should patch privacy settings and preserve unknown keys', async () => {
     const app = createTestServer({
       auth: {

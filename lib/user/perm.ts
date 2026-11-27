@@ -7,6 +7,7 @@ import { decode } from '@app/lib/utils';
 export interface Permission {
   app_erase?: boolean;
   ban_post?: boolean;
+  ban_subject_interest?: boolean;
   ban_visit?: boolean;
   doujin_subject_erase?: boolean;
   doujin_subject_lock?: boolean;
@@ -68,14 +69,38 @@ export async function fetchPermission(userGroup: number): Promise<Readonly<Permi
     return Object.freeze({ ...defaultPermission });
   }
 
-  const permission = Object.freeze(
-    Object.fromEntries(
-      Object.entries(decode(data.perm) as Record<keyof Permission, string>).map(([key, value]) => [
-        key,
-        value === '1',
-      ]),
-    ),
-  );
+  const permission = Object.freeze(decodePermission(data.perm));
   await permissionCache.set<Permission>(userGroup.toString(), permission);
   return permission;
+}
+
+function decodePermission(raw: string): Permission {
+  const fields = decode(raw) as Record<string, unknown> | null;
+  return Object.fromEntries(
+    Object.entries(fields ?? {}).flatMap(([key, value]) => {
+      if (
+        value === null ||
+        typeof value === 'boolean' ||
+        typeof value === 'number' ||
+        typeof value === 'string'
+      ) {
+        return [[key, Boolean(value) && value !== '0']];
+      }
+      return [];
+    }),
+  );
+}
+
+export function mergeUserPermission(
+  group: Readonly<Permission>,
+  acl: string,
+): Readonly<Permission> {
+  return { ...group, ...decodePermission(acl) };
+}
+
+export async function fetchUserPermission(user: {
+  groupid: number;
+  acl: string;
+}): Promise<Readonly<Permission>> {
+  return mergeUserPermission(await fetchPermission(user.groupid), user.acl);
 }
