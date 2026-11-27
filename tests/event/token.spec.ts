@@ -73,7 +73,7 @@ test('should drop cached access token on update event', async () => {
 
   await db
     .update(schema.chiiAccessToken)
-    .set({ expiredAt: new Date() })
+    .set({ expiredAt: new Date(Date.now() - 60_000) })
     .where(op.eq(schema.chiiAccessToken.accessToken, token));
 
   await expect(byToken(token)).resolves.toMatchObject({ userID: testUserID });
@@ -84,10 +84,11 @@ test('should drop cached access token on update event', async () => {
 });
 
 test('should not serve cached access token after it expires', async () => {
-  // MySQL `expires` has second precision, so the stored expiry may be up to 1s earlier
-  const token = await createToken(2000);
+  // MySQL timestamp has second precision and rounds, so the stored expiry may be
+  // up to 1s later than requested
+  const token = await createToken(1000);
 
-  await sleep(2200);
+  await sleep(2500);
 
   await expect(byToken(token)).rejects.toThrow(/can't find access token/);
 });
