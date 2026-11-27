@@ -17,7 +17,10 @@ export const Scope = t.Object({
   'read:wiki': t.Optional(t.Boolean({ default: false })),
   'write:wiki': t.Optional(t.Boolean({ default: false })),
 
+  'read:relationship': t.Optional(t.Boolean({ default: false })),
   'write:relationship': t.Optional(t.Boolean({ default: false })),
+
+  'read:notify': t.Optional(t.Boolean({ default: false })),
   'write:notify': t.Optional(t.Boolean({ default: false })),
 });
 
@@ -30,7 +33,9 @@ export const ScopeDescription: Record<keyof IScope, string> = {
   'write:topic': '发帖/回帖',
   'read:wiki': '获取维基数据',
   'write:wiki': '进行维基编辑',
+  'read:relationship': '获取黑名单',
   'write:relationship': '关注/取关、拉黑/移出黑名单',
+  'read:notify': '获取通知',
   'write:notify': '标记通知为已读',
 };
 
@@ -39,7 +44,9 @@ export const EpochDefaultScope: () => IScope = () => ({
   'write:collection': true,
   'read:indices': true,
   'write:indices': true,
+  'read:relationship': true,
   'write:relationship': true,
+  'read:notify': true,
   'write:notify': true,
 });
 

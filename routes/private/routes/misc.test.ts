@@ -47,6 +47,22 @@ describe('notify', () => {
     expect(Object.keys(res.json())).toContain('data');
   });
 
+  test('should reject listing notify without read:notify scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+        scope: ['write:notify'],
+      },
+    });
+
+    await app.register(setup);
+    const res = await app.inject({ url: '/notify' });
+
+    expect(res.statusCode).toBe(403);
+  });
+
   test('should clear notify', async () => {
     await db.transaction(async (t) => {
       await Notify.create(t, {

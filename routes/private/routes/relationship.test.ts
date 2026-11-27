@@ -238,6 +238,46 @@ describe('blocklist', () => {
       .where(op.eq(schema.chiiUserFields.uid, 287622));
   });
 
+  test('should reject getting blocklist without read:relationship scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+        scope: ['write:relationship'],
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/blocklist',
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
+  test('should get blocklist with read:relationship scope', async () => {
+    await db
+      .update(schema.chiiUserFields)
+      .set({ blocklist: '1' })
+      .where(op.eq(schema.chiiUserFields.uid, 287622));
+
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+        scope: ['read:relationship'],
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/blocklist',
+    });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({ blocklist: [1] });
+  });
+
   test('should add user to blocklist', async () => {
     const app = createTestServer({
       auth: {

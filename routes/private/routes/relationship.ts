@@ -322,14 +322,17 @@ export async function setup(app: App) {
         summary: '获取当前用户的绝交用户列表',
         operationId: 'getBlocklist',
         tags: [Tag.Relationship],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:relationship'] },
+        ],
         response: {
           200: t.Object({
             blocklist: t.Array(t.Integer()),
           }),
         },
       },
-      preHandler: [requireLogin('get blocklist')],
+      preHandler: [requireLogin('get blocklist'), requireScope('read:relationship')],
     },
     async ({ auth }) => {
       const [field] = await db

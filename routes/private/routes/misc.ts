@@ -76,7 +76,10 @@ export async function setup(app: App) {
         summary: '获取未读通知',
         operationId: 'listNotice',
         tags: [Tag.Misc],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:notify'] },
+        ],
         querystring: t.Object({
           limit: t.Optional(t.Integer({ default: 20, maximum: 40, description: 'max 40' })),
           unread: t.Optional(t.Boolean()),
@@ -85,7 +88,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Notice)),
         },
       },
-      preHandler: [requireLogin('list notice')],
+      preHandler: [requireLogin('list notice'), requireScope('read:notify')],
     },
     async ({ auth, query: { limit = 20, unread } }) => {
       const data = await Notify.list(auth.userID, { limit, unread });
