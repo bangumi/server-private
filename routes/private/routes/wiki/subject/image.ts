@@ -47,6 +47,10 @@ export function setup(app: App) {
       schema: {
         operationId: 'listSubjectCovers',
         tags: [Tag.Wiki],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:wiki'] },
+        ],
         params: t.Object({
           subjectID: t.Integer({ examples: [184017] }),
         }),
@@ -71,7 +75,7 @@ export function setup(app: App) {
           }),
         },
       },
-      preHandler: [requireLogin('list subject covers')],
+      preHandler: [requireLogin('list subject covers'), requireScope('read:wiki')],
     },
     async ({ params: { subjectID }, auth }) => {
       const s = await getSubjectInfo(subjectID);

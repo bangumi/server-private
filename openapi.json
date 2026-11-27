@@ -35,7 +35,9 @@
               "read:relationship": "获取黑名单",
               "write:relationship": "关注/取关、拉黑/移出黑名单",
               "read:notify": "获取通知",
-              "write:notify": "标记通知为已读"
+              "write:notify": "标记通知为已读",
+              "read:user": "获取账号设置",
+              "write:user": "修改账号设置"
             }
           }
         }
@@ -7176,6 +7178,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["read:collection"]
           }
         ],
         "responses": {
@@ -7275,6 +7280,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["read:collection"]
           }
         ],
         "responses": {
@@ -7553,6 +7561,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["read:collection"]
           }
         ],
         "responses": {
@@ -7742,6 +7753,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["read:collection"]
           }
         ],
         "responses": {
@@ -7931,6 +7945,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["read:collection"]
           }
         ],
         "responses": {
@@ -12261,6 +12278,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["read:user"]
           }
         ],
         "responses": {
@@ -12420,6 +12440,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["write:user"]
           }
         ],
         "responses": {
@@ -16711,6 +16734,15 @@
             "in": "path",
             "name": "subjectID",
             "required": true
+          }
+        ],
+        "security": [
+          {
+            "CookiesSession": [],
+            "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["read:wiki"]
           }
         ],
         "responses": {

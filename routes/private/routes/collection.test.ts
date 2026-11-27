@@ -117,6 +117,23 @@ describe('subject collection', () => {
     expect(subjectFields?.rate10).toBe(169);
   });
 
+  test('should reject reading collections without read:collection scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 382951,
+        scope: ['write:collection'],
+      },
+    });
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'get',
+      url: '/collections/subjects',
+    });
+    expect(res.statusCode).toBe(403);
+  });
+
   test('should reject request from token without write:collection scope', async () => {
     const app = createTestServer({
       auth: {

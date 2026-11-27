@@ -22,6 +22,9 @@ export const Scope = t.Object({
 
   'read:notify': t.Optional(t.Boolean({ default: false })),
   'write:notify': t.Optional(t.Boolean({ default: false })),
+
+  'read:user': t.Optional(t.Boolean({ default: false })),
+  'write:user': t.Optional(t.Boolean({ default: false })),
 });
 
 export const ScopeDescription: Record<keyof IScope, string> = {
@@ -37,6 +40,8 @@ export const ScopeDescription: Record<keyof IScope, string> = {
   'write:relationship': '关注/取关、拉黑/移出黑名单',
   'read:notify': '获取通知',
   'write:notify': '标记通知为已读',
+  'read:user': '获取账号设置',
+  'write:user': '修改账号设置',
 };
 
 export const EpochDefaultScope: () => IScope = () => ({
@@ -48,6 +53,9 @@ export const EpochDefaultScope: () => IScope = () => ({
   'write:relationship': true,
   'read:notify': true,
   'write:notify': true,
+  'read:wiki': true,
+  'read:user': true,
+  'write:user': true,
 });
 
 /** `null` 表示该凭据不受 scope 限制，与旧站签发的 token 和站点自身登录保持一致 */

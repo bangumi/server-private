@@ -56,7 +56,10 @@ export async function setup(app: App) {
         summary: '获取好友最近的条目收藏',
         operationId: 'getFriendsSubjectCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           subjectType: req.Ref(req.SubjectType),
           limit: t.Optional(
@@ -68,7 +71,10 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(FriendSubjectCollectionActivity)),
         },
       },
-      preHandler: [requireLogin('get friends subject collections')],
+      preHandler: [
+        requireLogin('get friends subject collections'),
+        requireScope('read:collection'),
+      ],
     },
     async ({ auth, query: { subjectType, limit = 10, offset = 0 } }) => {
       const friendIDs = await fetchFriends(auth.userID);
@@ -138,7 +144,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的条目收藏',
         operationId: 'getMySubjectCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           subjectType: t.Optional(req.Ref(req.SubjectType)),
           type: t.Optional(req.Ref(req.CollectionType)),
@@ -152,7 +161,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Subject)),
         },
       },
-      preHandler: [requireLogin('get my subject collections')],
+      preHandler: [requireLogin('get my subject collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { subjectType, type, since, limit = 20, offset = 0 } }) => {
       const conditions = op.and(
@@ -701,7 +710,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的角色收藏',
         operationId: 'getMyCharacterCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -712,7 +724,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Character)),
         },
       },
-      preHandler: [requireLogin('get my character collections')],
+      preHandler: [requireLogin('get my character collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
@@ -898,7 +910,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的人物收藏',
         operationId: 'getMyPersonCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -909,7 +924,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Person)),
         },
       },
-      preHandler: [requireLogin('get my person collections')],
+      preHandler: [requireLogin('get my person collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
@@ -1089,7 +1104,10 @@ export async function setup(app: App) {
         summary: '获取当前用户的目录收藏',
         operationId: 'getMyIndexCollections',
         tags: [Tag.Collection],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['read:collection'] },
+        ],
         querystring: t.Object({
           limit: t.Optional(
             t.Integer({ default: 20, minimum: 1, maximum: 100, description: 'max 100' }),
@@ -1100,7 +1118,7 @@ export async function setup(app: App) {
           200: res.Paged(res.Ref(res.Index)),
         },
       },
-      preHandler: [requireLogin('get my index collections')],
+      preHandler: [requireLogin('get my index collections'), requireScope('read:collection')],
     },
     async ({ auth, query: { limit = 20, offset = 0 } }) => {
       const conditions = op.and(
