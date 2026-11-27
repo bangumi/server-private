@@ -2771,6 +2771,7 @@
           "name",
           "nameCN",
           "type",
+          "series",
           "info",
           "metaTags",
           "rating",
@@ -2789,6 +2790,12 @@
           },
           "type": {
             "$ref": "#/components/schemas/SubjectType"
+          },
+          "platform": {
+            "$ref": "#/components/schemas/SubjectPlatform"
+          },
+          "series": {
+            "type": "boolean"
           },
           "images": {
             "$ref": "#/components/schemas/SubjectImages"
@@ -4199,23 +4206,17 @@
             "type": "boolean"
           },
           "lastUnwatchedEp": {
-            "anyOf": [
-              {
-                "type": "null"
+            "type": "object",
+            "required": ["id", "sort"],
+            "properties": {
+              "id": {
+                "type": "integer"
               },
-              {
-                "type": "object",
-                "required": ["id", "sort"],
-                "properties": {
-                  "id": {
-                    "type": "integer"
-                  },
-                  "sort": {
-                    "type": "number"
-                  }
-                }
+              "sort": {
+                "type": "number"
               }
-            ]
+            },
+            "nullable": true
           },
           "eps": {
             "type": "array",
@@ -17288,60 +17289,30 @@
                     "type": "object",
                     "properties": {
                       "name": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "string",
-                            "minLength": 1
-                          }
-                        ]
+                        "type": "string",
+                        "minLength": 1,
+                        "nullable": true
                       },
                       "infobox": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "string",
-                            "minLength": 1
-                          }
-                        ]
+                        "type": "string",
+                        "minLength": 1,
+                        "nullable": true
                       },
                       "platform": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "integer"
-                          }
-                        ]
+                        "type": "integer",
+                        "nullable": true
                       },
                       "summary": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "string",
-                            "minLength": 1
-                          }
-                        ]
+                        "type": "string",
+                        "minLength": 1,
+                        "nullable": true
                       },
                       "metaTags": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          }
-                        ]
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "nullable": true
                       }
                     }
                   },
@@ -17428,60 +17399,30 @@
                     "type": "object",
                     "properties": {
                       "name": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "string",
-                            "minLength": 1
-                          }
-                        ]
+                        "type": "string",
+                        "minLength": 1,
+                        "nullable": true
                       },
                       "infobox": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "string",
-                            "minLength": 1
-                          }
-                        ]
+                        "type": "string",
+                        "minLength": 1,
+                        "nullable": true
                       },
                       "platform": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "integer"
-                          }
-                        ]
+                        "type": "integer",
+                        "nullable": true
                       },
                       "summary": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "string",
-                            "minLength": 1
-                          }
-                        ]
+                        "type": "string",
+                        "minLength": 1,
+                        "nullable": true
                       },
                       "metaTags": {
-                        "anyOf": [
-                          {
-                            "type": "null"
-                          },
-                          {
-                            "type": "array",
-                            "items": {
-                              "type": "string"
-                            }
-                          }
-                        ]
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "nullable": true
                       }
                     }
                   },

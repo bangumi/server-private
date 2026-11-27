@@ -155,7 +155,7 @@ export function emptyAuth(): IAuth {
 
 async function userToAuth(
   user: res.ISlimUser,
-  appID?: string,
+  appID = '',
   scope: TokenScope = null,
 ): Promise<IAuth> {
   const perms = await fetchPermission(user.group);
@@ -173,7 +173,7 @@ async function userToAuth(
     }),
     regTime: user.joinedAt,
     groupID: user.group,
-    source: getTimelineSourceFromAppID(appID ?? '') ?? defaultSource,
+    source: getTimelineSourceFromAppID(appID) ?? defaultSource,
     scope,
   };
 }

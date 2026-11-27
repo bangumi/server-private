@@ -11,10 +11,28 @@ import { createTestServer } from '@app/tests/utils.ts';
 
 import { setup } from './subject.ts';
 
+const testUserID = 382951;
+
+const app = createTestServer();
+await app.register(setup);
+
+const loginApp = createTestServer({
+  auth: { ...emptyAuth(), login: true, userID: testUserID },
+});
+await loginApp.register(setup);
+
+const otherLoginApp = createTestServer({
+  auth: { ...emptyAuth(), login: true, userID: testUserID + 1 },
+});
+await otherLoginApp.register(setup);
+
+const viewerApp = createTestServer({
+  auth: { ...emptyAuth(), login: true, userID: 900_108 },
+});
+await viewerApp.register(setup);
+
 describe('subject', () => {
   test('should get subject', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12',
@@ -23,8 +41,6 @@ describe('subject', () => {
   });
 
   test('should get subject episodes', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/episodes',
@@ -34,8 +50,6 @@ describe('subject', () => {
   });
 
   test('should get subject relations', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/relations',
@@ -45,8 +59,6 @@ describe('subject', () => {
   });
 
   test('should get subject characters', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/characters',
@@ -56,8 +68,6 @@ describe('subject', () => {
   });
 
   test('should get subject staffs persons', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/staffs/persons',
@@ -67,8 +77,6 @@ describe('subject', () => {
   });
 
   test('should get subject staffs positions', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/staffs/positions',
@@ -78,8 +86,6 @@ describe('subject', () => {
   });
 
   test('should get subject recs', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/recs',
@@ -89,8 +95,6 @@ describe('subject', () => {
   });
 
   test('should get subject comments', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/comments',
@@ -100,8 +104,6 @@ describe('subject', () => {
   });
 
   test('should get subject reviews', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/184017/reviews',
@@ -111,8 +113,6 @@ describe('subject', () => {
   });
 
   test('should get subject indexes', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/indexes',
@@ -122,8 +122,6 @@ describe('subject', () => {
   });
 
   test('should get subject collects', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: '/subjects/12/collects',
@@ -163,7 +161,6 @@ describe('subject topics', () => {
   const testSubjectID = 12;
   const testTopicID = 100;
   const testTopicPostID = 100;
-  const testUserID = 382951;
   const testPostID = 101;
 
   beforeEach(async () => {
@@ -203,8 +200,6 @@ describe('subject topics', () => {
   });
 
   test('should get subject topics', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: `/subjects/${testSubjectID}/topics`,
@@ -214,8 +209,6 @@ describe('subject topics', () => {
   });
 
   test('should get recent subject topics', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'get',
       url: `/subjects/-/topics`,
@@ -225,14 +218,7 @@ describe('subject topics', () => {
   });
 
   test('should create new topic', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     const res = await app.inject({
       url: `/subjects/${testSubjectID}/topics`,
@@ -262,14 +248,7 @@ describe('subject topics', () => {
   });
 
   test('should edit own topic', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     const res = await app.inject({
       url: `/subjects/-/topics/${testTopicID}`,
@@ -290,14 +269,7 @@ describe('subject topics', () => {
   });
 
   test('should not edit topic by non-owner', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID + 1,
-      },
-    });
-    await app.register(setup);
+    const app = otherLoginApp;
 
     const res = await app.inject({
       url: `/subjects/-/topics/${testTopicID}`,
@@ -313,8 +285,6 @@ describe('subject topics', () => {
   });
 
   test('should get subject post', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject(`/subjects/-/posts/${testPostID}`);
     expect(res.statusCode).toBe(200);
     expect(res.json()).toMatchSnapshot();
@@ -329,9 +299,6 @@ describe('subject topics', () => {
       state: 0,
       createdAt: 1462335911,
     });
-
-    const app = createTestServer();
-    await app.register(setup);
 
     const res = await app.inject(`/subjects/-/topics/${testTopicID}`);
     expect(res.statusCode).toBe(200);
@@ -357,14 +324,7 @@ describe('subject topics', () => {
   });
 
   test('should like and unlike subject post', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     const likeRes = await app.inject({
       url: `/subjects/-/posts/${testPostID}/like`,
@@ -418,14 +378,7 @@ describe('subject topics', () => {
     const cacheKey = getFriendsCacheKey(viewerID);
     await redis.sadd(cacheKey, 0, testUserID);
 
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: viewerID,
-      },
-    });
-    await app.register(setup);
+    const app = viewerApp;
 
     try {
       const res = await app.inject(`/subjects/-/posts/${testPostID}`);
@@ -441,14 +394,7 @@ describe('subject topics', () => {
   });
 
   test('should create/edit/delete new post', async () => {
-    const app = createTestServer({
-      auth: {
-        ...emptyAuth(),
-        login: true,
-        userID: testUserID,
-      },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     // create post
     const createRes = await app.inject({
@@ -498,7 +444,6 @@ describe('subject topics', () => {
 });
 
 describe('subject comment write APIs', () => {
-  const TEST_USER_ID = 382951;
   const TEST_COMMENT_ID = 1; // uid=382951, subjectID=8, hasComment=1
   const OTHER_COMMENT_ID = 3; // uid=2703, subjectID=4, hasComment=0
 
@@ -542,7 +487,7 @@ describe('subject comment write APIs', () => {
       .delete(schema.chiiSubjectInterests)
       .where(
         op.and(
-          op.eq(schema.chiiSubjectInterests.uid, TEST_USER_ID),
+          op.eq(schema.chiiSubjectInterests.uid, testUserID),
           op.eq(schema.chiiSubjectInterests.subjectID, 12),
         ),
       );
@@ -574,10 +519,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should create subject comment on existing collection', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     const res = await app.inject({
       method: 'post',
@@ -596,10 +538,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should trim comment', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     const res = await app.inject({
       method: 'post',
@@ -615,10 +554,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should force rate to 0 for wish collection', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     const res = await app.inject({
       method: 'post',
@@ -641,10 +577,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should create subject comment with new collection', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
 
     const res = await app.inject({
       method: 'post',
@@ -663,7 +596,7 @@ describe('subject comment write APIs', () => {
       .from(schema.chiiSubjectInterests)
       .where(
         op.and(
-          op.eq(schema.chiiSubjectInterests.uid, TEST_USER_ID),
+          op.eq(schema.chiiSubjectInterests.uid, testUserID),
           op.eq(schema.chiiSubjectInterests.subjectID, 12),
         ),
       );
@@ -678,10 +611,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should require type on new subject comment', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'post',
       url: '/subjects/12/comments',
@@ -691,8 +621,6 @@ describe('subject comment write APIs', () => {
   });
 
   test('should not create subject comment without login', async () => {
-    const app = createTestServer();
-    await app.register(setup);
     const res = await app.inject({
       method: 'post',
       url: '/subjects/8/comments',
@@ -702,10 +630,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should update own subject comment', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'put',
       url: `/subjects/-/comments/${TEST_COMMENT_ID}`,
@@ -725,10 +650,7 @@ describe('subject comment write APIs', () => {
       .update(schema.chiiSubjectInterests)
       .set({ comment: 'other comment', hasComment: 1 })
       .where(op.eq(schema.chiiSubjectInterests.id, OTHER_COMMENT_ID));
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'put',
       url: `/subjects/-/comments/${OTHER_COMMENT_ID}`,
@@ -738,10 +660,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should delete own subject comment', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'delete',
       url: `/subjects/-/comments/${TEST_COMMENT_ID}`,
@@ -760,10 +679,7 @@ describe('subject comment write APIs', () => {
       .update(schema.chiiSubjectInterests)
       .set({ comment: 'other comment', hasComment: 1 })
       .where(op.eq(schema.chiiSubjectInterests.id, OTHER_COMMENT_ID));
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'delete',
       url: `/subjects/-/comments/${OTHER_COMMENT_ID}`,
@@ -772,10 +688,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should reject empty comment after trim', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'post',
       url: '/subjects/8/comments',
@@ -785,10 +698,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should reject comment with invisible characters', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'post',
       url: '/subjects/8/comments',
@@ -798,10 +708,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should reject comment longer than 380 characters', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'post',
       url: '/subjects/8/comments',
@@ -815,7 +722,7 @@ describe('subject comment write APIs', () => {
       auth: {
         ...emptyAuth(),
         login: true,
-        userID: TEST_USER_ID,
+        userID: testUserID,
         permission: { ban_post: true },
       },
     });
@@ -833,10 +740,7 @@ describe('subject comment write APIs', () => {
       .update(schema.chiiSubjectInterests)
       .set({ privacy: 2 })
       .where(op.eq(schema.chiiSubjectInterests.id, TEST_COMMENT_ID));
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'put',
       url: `/subjects/-/comments/${TEST_COMMENT_ID}`,
@@ -851,10 +755,7 @@ describe('subject comment write APIs', () => {
   });
 
   test('should like subject comment', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const res = await app.inject({
       method: 'put',
       url: `/subjects/-/comments/${TEST_COMMENT_ID}/like`,
@@ -868,17 +769,14 @@ describe('subject comment write APIs', () => {
         op.and(
           op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
           op.eq(schema.chiiLikes.relatedID, TEST_COMMENT_ID),
-          op.eq(schema.chiiLikes.uid, TEST_USER_ID),
+          op.eq(schema.chiiLikes.uid, testUserID),
         ),
       );
     expect(like?.deleted).toBe(false);
   });
 
   test('should unlike subject comment', async () => {
-    const app = createTestServer({
-      auth: { ...emptyAuth(), login: true, userID: TEST_USER_ID },
-    });
-    await app.register(setup);
+    const app = loginApp;
     const likeRes = await app.inject({
       method: 'put',
       url: `/subjects/-/comments/${TEST_COMMENT_ID}/like`,
@@ -897,7 +795,7 @@ describe('subject comment write APIs', () => {
         op.and(
           op.eq(schema.chiiLikes.type, LikeType.SubjectCollect),
           op.eq(schema.chiiLikes.relatedID, TEST_COMMENT_ID),
-          op.eq(schema.chiiLikes.uid, TEST_USER_ID),
+          op.eq(schema.chiiLikes.uid, testUserID),
         ),
       );
     expect(like?.deleted).toBe(true);

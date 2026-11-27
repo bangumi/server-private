@@ -390,7 +390,7 @@ export const chiiPersons = mysqlTable('chii_persons', {
   writer: tinyint('prsn_writer').default(0).notNull(),
   illustrator: tinyint('prsn_illustrator').default(0).notNull(),
   actor: tinyint('prsn_actor').notNull(),
-  summary: htmlEscapedString('mediumtext')('prsn_summary').notNull(),
+  summary: mediumtext('prsn_summary').notNull(),
   img: varchar('prsn_img', { length: 255 }).notNull(),
   comment: mediumint('prsn_comment').notNull(),
   collects: mediumint('prsn_collects').notNull(),

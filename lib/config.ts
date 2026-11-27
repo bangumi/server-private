@@ -88,6 +88,11 @@ export const schema = Obj({
 
   siteUrl: t.String({ default: 'https://next.bgm.tv ', transform: ['trim'] }),
 
+  /** 日志等级，默认由 NODE_ENV 推导（production/stage 为 info，test 为 error，其余为 trace） */
+  logLevel: t.Optional(
+    t.Enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'], { env: 'LOG_LEVEL' }),
+  ),
+
   cookie_secret_token: t.String({
     env: 'COOKIE_SECRET_TOKEN',
     description: 'hex encoded secret token for cookies',
@@ -152,8 +157,6 @@ export const schema = Obj({
     siteKey: t.String({ default: '1x00000000000000000000AA', env: 'TURNSTILE_SITE_KEY' }),
   }),
 
-  sentryDSN: t.Optional(t.String({ env: 'SENTRY_DSN' })),
-
   passkey: Obj({
     rpName: t.String({ default: 'Bangumi', env: 'PASSKEY_RP_NAME' }),
     rpIds: t.String({ default: 'bgm.tv,bangumi.tv,chii.in', env: 'PASSKEY_RP_IDS' }),
@@ -194,11 +197,13 @@ function readConfig(): Static<typeof schema> {
     }
 
     const envKey = (o as Record<string, string | undefined>).env;
-    if (envKey) {
-      const v = process.env[envKey];
-      if (v !== undefined) {
-        lo.set(config, keyPath, v);
-      }
+    if (!envKey) {
+      return;
+    }
+
+    const v = process.env[envKey];
+    if (v !== undefined) {
+      lo.set(config, keyPath, v);
     }
   }
 
@@ -221,22 +226,22 @@ export function validateConfig(config: unknown) {
 
   const valid = ajv.validate(schema, config);
 
-  if (!valid) {
-    const errorMessage =
-      ajv.errors
-        ?.map((x) => {
-          if (x.keyword === 'additionalProperties') {
-            return `$${x.instancePath}: ${x.message}: ${JSON.stringify(
-              x.params.additionalProperty,
-            )}`;
-          }
-
-          return '  ' + (x.instancePath + ': ' + (x.message ?? `wrong data type ${x.schemaPath}`));
-        })
-        .join('\n') ?? '';
-
-    throw new TypeError('failed to validate config file:\n' + errorMessage);
+  if (valid) {
+    return;
   }
+
+  const errorMessage =
+    ajv.errors
+      ?.map((x) => {
+        if (x.keyword === 'additionalProperties') {
+          return `$${x.instancePath}: ${x.message}: ${JSON.stringify(x.params.additionalProperty)}`;
+        }
+
+        return '  ' + (x.instancePath + ': ' + (x.message ?? `wrong data type ${x.schemaPath}`));
+      })
+      .join('\n') ?? '';
+
+  throw new TypeError('failed to validate config file:\n' + errorMessage);
 }
 
 // read config file

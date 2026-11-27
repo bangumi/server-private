@@ -262,7 +262,7 @@ export async function setup(app: App) {
             continue;
           }
           seen.add(tag.name);
-          tags.push({ name: tag.name, count: Number(tag.count) });
+          tags.push({ name: tag.name, count: tag.count });
         }
 
         return {

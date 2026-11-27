@@ -541,6 +541,15 @@ Object {
         "name": "ちょびっツの「ツ」の字 - Chobits Fan Book",
         "nameCN": "",
         "nsfw": false,
+        "platform": Object {
+          "alias": "illustration",
+          "enableHeader": true,
+          "id": 1003,
+          "order": 2,
+          "type": "Illustration",
+          "typeCN": "画集",
+          "wikiTpl": "Book",
+        },
         "rating": Object {
           "count": Array [
             0,
@@ -558,6 +567,7 @@ Object {
           "score": 8,
           "total": 13,
         },
+        "series": false,
         "type": 1,
       },
     },
@@ -814,6 +824,15 @@ Object {
         "name": "第一次的親密接觸",
         "nameCN": "第一次的亲密接触",
         "nsfw": false,
+        "platform": Object {
+          "alias": "novel",
+          "enableHeader": true,
+          "id": 1002,
+          "order": 1,
+          "type": "Novel",
+          "typeCN": "小说",
+          "wikiTpl": "Novel",
+        },
         "rating": Object {
           "count": Array [
             0,
@@ -831,6 +850,7 @@ Object {
           "score": 7.67,
           "total": 69,
         },
+        "series": false,
         "type": 1,
       },
       "title": "拿这个来测试",
@@ -874,6 +894,15 @@ Object {
         "name": "コードギアス 反逆のルルーシュR2",
         "nameCN": "Code Geass 反叛的鲁路修R2",
         "nsfw": false,
+        "platform": Object {
+          "alias": "tv",
+          "enableHeader": true,
+          "id": 1,
+          "order": 0,
+          "type": "TV",
+          "typeCN": "TV",
+          "wikiTpl": "TVAnime",
+        },
         "rating": Object {
           "count": Array [
             44,
@@ -891,6 +920,7 @@ Object {
           "score": 8.19,
           "total": 9438,
         },
+        "series": false,
         "type": 2,
       },
       "title": "请教大神R2为什么节奏没有R1好",

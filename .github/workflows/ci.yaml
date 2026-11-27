@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   lint:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -33,7 +33,7 @@ jobs:
       - run: git diff --exit-code
 
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -59,7 +59,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7.0.1
       - run: docker build -t tmp -f Dockerfile .

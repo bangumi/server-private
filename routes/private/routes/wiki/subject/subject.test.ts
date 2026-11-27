@@ -51,27 +51,60 @@ vi.mock('@app/lib/services/imaginary', async () => {
   };
 });
 
-async function testApp(...args: Parameters<typeof createTestServer>) {
-  const app = createTestServer(...args);
-  await app.register(setup);
-  return app;
-}
+const app = createTestServer();
+await app.register(setup);
 
-const newSubjectApp = () =>
-  testApp({
-    auth: {
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: { subject_edit: true },
-      allowNsfw: true,
-      regTime: 0,
-      userID: 100,
-    },
-  });
+const editorApp = createTestServer({
+  auth: {
+    groupID: UserGroup.Normal,
+    login: true,
+    permission: { subject_edit: true },
+    allowNsfw: true,
+    regTime: 0,
+    userID: 100,
+  },
+});
+await editorApp.register(setup);
+
+const noPermissionApp = createTestServer({
+  auth: {
+    groupID: UserGroup.Normal,
+    login: true,
+    permission: {},
+    allowNsfw: true,
+    regTime: 0,
+    userID: 100,
+  },
+});
+await noPermissionApp.register(setup);
+
+const lockSubjectApp = createTestServer({
+  auth: {
+    groupID: UserGroup.Normal,
+    login: true,
+    permission: { subject_edit: true, subject_lock: true },
+    allowNsfw: true,
+    regTime: 0,
+    userID: 100,
+  },
+});
+await lockSubjectApp.register(setup);
+
+const epEditorApp = createTestServer({
+  auth: {
+    groupID: UserGroup.Normal,
+    login: true,
+    permission: { ep_edit: true },
+    allowNsfw: true,
+    regTime: 0,
+    userID: 100,
+  },
+});
+await epEditorApp.register(setup);
 
 describe('create subject', () => {
   test('create new subject', async () => {
-    const app = await newSubjectApp();
+    const app = editorApp;
     const res = await app.inject({
       url: '/subjects',
       method: 'post',
@@ -96,7 +129,7 @@ describe('create subject', () => {
   });
 
   test('create type', async () => {
-    const app = await newSubjectApp();
+    const app = editorApp;
     const res = await app.inject({
       url: '/subjects',
       method: 'post',
@@ -126,7 +159,7 @@ describe('create subject', () => {
   });
 
   test('invalid platform', async () => {
-    const app = await newSubjectApp();
+    const app = editorApp;
     const res = await app.inject({
       url: '/subjects',
       method: 'post',
@@ -168,15 +201,12 @@ describe('edit subject ', () => {
   });
 
   test('should get current wiki info', async () => {
-    const app = await testApp({});
-
     const res = await app.inject('/subjects/8');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should return locked subject info', async () => {
-    const app = await testApp({});
     const selectSpy = vi
       .spyOn(db, 'select')
       .mockReturnValueOnce({
@@ -233,26 +263,18 @@ describe('edit subject ', () => {
   });
 
   test('should get subject revision wiki info', async () => {
-    const app = await testApp({});
-
     const res = await app.inject('/subjects/-/revisions/551942');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get edit history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
-
     const res = await app.inject('/subjects/8/history-summary');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get user edit history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
-
     const res = await app.inject('/users/1/contributions/subjects');
 
     expect(res.json()).toMatchSnapshot();
@@ -271,16 +293,7 @@ describe('edit subject ', () => {
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: {},
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = noPermissionApp;
 
     const res = await app.inject({
       url: '/subjects/1',
@@ -312,16 +325,7 @@ describe('edit subject ', () => {
       } satisfies ISubjectEdit,
       commitMessage: 'c',
     };
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = editorApp;
 
     const res = await app.inject({
       url: '/subjects/1',
@@ -346,16 +350,7 @@ describe('edit subject ', () => {
   });
 
   test('should patch subject', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = editorApp;
 
     const res = await app.inject({
       url: '/subjects/1',
@@ -392,16 +387,7 @@ describe('should upload image', () => {
   });
 
   test('upload subject cover', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = editorApp;
 
     const res = await app.inject({
       url: '/subjects/184017/covers',
@@ -423,16 +409,7 @@ describe('should upload image', () => {
   });
 
   test.each(['jpg', 'webp'])('upload subject covers in %s format', async (format) => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: { subject_edit: true },
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = editorApp;
 
     const raw = await fs.readFile(path.join(projectRoot, `lib/image/fixtures/subject.${format}`));
 
@@ -452,22 +429,10 @@ describe('should upload image', () => {
   });
 });
 
-const lockSubjectApp = () =>
-  testApp({
-    auth: {
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: { subject_edit: true, subject_lock: true },
-      allowNsfw: true,
-      regTime: 0,
-      userID: 100,
-    },
-  });
-
 describe('lock subject', () => {
   const subjectID = 12;
   test('lock subject', async () => {
-    const app = await lockSubjectApp();
+    const app = lockSubjectApp;
     const res = await app.inject({
       url: '/lock/subjects',
       method: 'post',
@@ -488,7 +453,7 @@ describe('lock subject', () => {
   });
 
   test('unlock subject', async () => {
-    const app = await lockSubjectApp();
+    const app = lockSubjectApp;
     const res = await app.inject({
       url: '/unlock/subjects',
       method: 'post',
@@ -509,24 +474,12 @@ describe('lock subject', () => {
   });
 });
 
-const newEpisodeApp = () =>
-  testApp({
-    auth: {
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: { ep_edit: true },
-      allowNsfw: true,
-      regTime: 0,
-      userID: 100,
-    },
-  });
-
 describe('create episodes', () => {
   const subjectID = 13;
 
   test('create new episodes', async () => {
     await db.delete(schema.chiiEpisodes).where(op.eq(schema.chiiEpisodes.subjectID, subjectID));
-    const app = await newEpisodeApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'post',
@@ -555,7 +508,6 @@ describe('create episodes', () => {
   });
 
   test('should require login', async () => {
-    const app = await testApp({});
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'post',
@@ -568,16 +520,7 @@ describe('create episodes', () => {
   });
 
   test('should require ep_edit permission', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: {},
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = noPermissionApp;
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'post',
@@ -594,7 +537,7 @@ describe('create episodes', () => {
   });
 
   test('should handle non-existent subject', async () => {
-    const app = await newEpisodeApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: '/subjects/999999/ep',
       method: 'post',
@@ -610,18 +553,6 @@ describe('create episodes', () => {
     });
   });
 });
-
-const patchEpisodesApp = () =>
-  testApp({
-    auth: {
-      groupID: UserGroup.Normal,
-      login: true,
-      permission: { ep_edit: true },
-      allowNsfw: true,
-      regTime: 0,
-      userID: 100,
-    },
-  });
 
 describe('patch episodes', () => {
   const subjectID = 13;
@@ -646,7 +577,7 @@ describe('patch episodes', () => {
   });
 
   test('successfully patch episodes', async () => {
-    const app = await patchEpisodesApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'patch',
@@ -674,7 +605,6 @@ describe('patch episodes', () => {
   });
 
   test('should require login', async () => {
-    const app = await testApp({});
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'patch',
@@ -688,16 +618,7 @@ describe('patch episodes', () => {
   });
 
   test('should require ep_edit permission', async () => {
-    const app = await testApp({
-      auth: {
-        groupID: UserGroup.Normal,
-        login: true,
-        permission: {},
-        allowNsfw: true,
-        regTime: 0,
-        userID: 100,
-      },
-    });
+    const app = noPermissionApp;
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'patch',
@@ -715,7 +636,7 @@ describe('patch episodes', () => {
   });
 
   test('should handle non-existent subject', async () => {
-    const app = await patchEpisodesApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: '/subjects/999999/ep',
       method: 'patch',
@@ -733,7 +654,7 @@ describe('patch episodes', () => {
   });
 
   test('should reject empty episodes array', async () => {
-    const app = await patchEpisodesApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'patch',
@@ -751,7 +672,7 @@ describe('patch episodes', () => {
   });
 
   test('should reject mismatched expected revision length', async () => {
-    const app = await patchEpisodesApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'patch',
@@ -770,7 +691,7 @@ describe('patch episodes', () => {
   });
 
   test('should reject duplicate episode IDs', async () => {
-    const app = await patchEpisodesApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: `/subjects/${subjectID}/ep`,
       method: 'patch',
@@ -791,7 +712,7 @@ describe('patch episodes', () => {
   });
 
   test('should reject episodes from different subject', async () => {
-    const app = await patchEpisodesApp();
+    const app = epEditorApp;
     const res = await app.inject({
       url: `/subjects/${subjectID + 1}/ep`,
       method: 'patch',
@@ -811,51 +732,36 @@ describe('patch episodes', () => {
 
 describe('subject relations', () => {
   test('should get subject relation revision wiki info', async () => {
-    const app = await testApp({});
-
     const res = await app.inject('/subjects/-/relations/revisions/920431');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get subject relation history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
-
     const res = await app.inject('/subjects/8/relations/history-summary');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get subject character relation revision wiki info', async () => {
-    const app = await testApp({});
-
     const res = await app.inject('/subjects/-/characters/revisions/1041128');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get subject character relation history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
-
     const res = await app.inject('/subjects/8/characters/history-summary');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get subject person revision wiki info', async () => {
-    const app = await testApp({});
-
     const res = await app.inject('/subjects/-/persons/revisions/62793');
 
     expect(res.json()).toMatchSnapshot();
   });
 
   test('should get subject person relation history', async () => {
-    const app = createTestServer({});
-    await app.register(setup);
-
     const res = await app.inject('/subjects/8/persons/history-summary');
 
     expect(res.json()).toMatchSnapshot();

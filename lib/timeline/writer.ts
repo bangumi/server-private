@@ -205,7 +205,7 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         const previousID = detailHandler.getID(info);
         details[previousID] = info;
       }
-      details[Number(payload.mid)] = detail;
+      details[payload.mid] = detail;
       await db
         .update(schema.chiiTimeline)
         .set({
@@ -274,9 +274,9 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         }
       } else {
         const info = decode(previous.memo) as memo.Subject;
-        details[Number(info.subject_id)] = info;
+        details[info.subject_id] = info;
       }
-      details[Number(detail.subject_id)] = detail;
+      details[detail.subject_id] = detail;
       await db
         .update(schema.chiiTimeline)
         .set({
@@ -494,9 +494,9 @@ export const TimelineWriter: TimelineDatabaseWriter = {
         }
       } else {
         const info = decode(previous.memo) as memo.MonoSingle;
-        details[Number(info.id)] = info;
+        details[info.id] = info;
       }
-      details[Number(detail.id)] = detail;
+      details[detail.id] = detail;
       await db
         .update(schema.chiiTimeline)
         .set({

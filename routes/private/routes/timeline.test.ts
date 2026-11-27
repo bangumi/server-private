@@ -189,12 +189,14 @@ describe('should get timeline events', () => {
 
   afterEach(async () => {
     await redis.flushdb();
-    if (createdTimelineIDs.length > 0) {
-      await db
-        .delete(schema.chiiTimeline)
-        .where(op.inArray(schema.chiiTimeline.id, createdTimelineIDs));
-      createdTimelineIDs.length = 0;
+    if (createdTimelineIDs.length === 0) {
+      return;
     }
+
+    await db
+      .delete(schema.chiiTimeline)
+      .where(op.inArray(schema.chiiTimeline.id, createdTimelineIDs));
+    createdTimelineIDs.length = 0;
   });
 
   test('should receive all timeline events without filter', async () => {

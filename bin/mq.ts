@@ -23,7 +23,7 @@ import {
   handleFields as handleUserFieldsEvent,
   handleFriend as handleFriendEvent,
 } from '@app/event/user';
-import { newConsumer } from '@app/lib/kafka.ts';
+import { type EachMessagePayload, newConsumer } from '@app/lib/kafka.ts';
 import { logger } from '@app/lib/logger';
 import { handleTimelineMessage } from '@app/lib/timeline/kafka.ts';
 
@@ -78,18 +78,16 @@ async function onBinlogMessage(msg: KafkaMessage) {
   const payload = JSON.parse(msg.value.toString()) as Payload;
   const handler = binlogHandlers[payload.source.table];
   if (!handler) {
+    logger.trace(`no handler for binlog table "${payload.source.table}" from ${msg.topic}`);
     return;
   }
   if (Array.isArray(handler)) {
-    const ts = [];
-    for (const h of handler) {
-      // catch on each handler to it doesn't get swallowed by Promise.all.
-      ts.push(
-        h(msg).catch((error) => {
-          logger.error('failed to handle event from %s: %o', payload.source.table, error as object);
-        }),
-      );
-    }
+    // catch on each handler to it doesn't get swallowed by Promise.all.
+    const ts = Array.from(handler, (h) =>
+      h(msg).catch((error) => {
+        logger.error('failed to handle event from %s: %o', payload.source.table, error as object);
+      }),
+    );
     await Promise.all(ts);
   } else {
     await handler(msg).catch((error) => {
@@ -113,6 +111,32 @@ async function onServiceMessage(msg: KafkaMessage) {
   });
 }
 
+async function handleMessage({ topic, message }: EachMessagePayload) {
+  if (!message.value) {
+    return;
+  }
+
+  if (topic.startsWith('debezium.')) {
+    if (!message.key) {
+      return;
+    }
+    await onBinlogMessage({
+      topic,
+      key: message.key.toString(),
+      value: message.value,
+    });
+  } else {
+    const key = message.key?.toString() ?? '';
+    logger.info(`processing message ${topic} ${message.offset} ${key}`);
+
+    await onServiceMessage({
+      topic,
+      key,
+      value: message.value,
+    });
+  }
+}
+
 async function main() {
   if (process.argv.includes('--help')) {
     //eslint-disable-next-line no-console
@@ -120,40 +144,11 @@ async function main() {
     return;
   }
 
-  const consumer = await newConsumer(TOPICS);
-  await consumer.run({
-    eachMessage: async ({ topic, message }) => {
-      if (!message.value) {
-        return;
-      }
-      try {
-        if (topic.startsWith('debezium.')) {
-          if (!message.key) {
-            return;
-          }
-          await onBinlogMessage({
-            topic: topic,
-            key: message.key.toString(),
-            value: message.value,
-          });
-        } else {
-          const key = message.key?.toString() ?? '';
-          logger.info(`processing message ${topic} ${message.offset} ${key}`);
+  const consumer = newConsumer();
 
-          await onServiceMessage({
-            topic: topic,
-            key,
-            value: message.value,
-          });
-        }
-      } catch (error) {
-        logger.error(
-          error,
-          `error processing message ${topic} ${message.offset} ${message.key?.toString() ?? ''}`,
-        );
-      }
-    },
-  });
+  await consumer.connect();
+  await consumer.subscribe({ topics: TOPICS });
+  await consumer.run({ eachMessage: handleMessage });
 }
 
 await main();

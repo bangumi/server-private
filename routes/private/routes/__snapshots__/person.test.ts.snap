@@ -333,6 +333,15 @@ Object {
         "name": "WHITE ALBUM",
         "nameCN": "白色相簿",
         "nsfw": false,
+        "platform": Object {
+          "alias": "tv",
+          "enableHeader": true,
+          "id": 1,
+          "order": 0,
+          "type": "TV",
+          "typeCN": "TV",
+          "wikiTpl": "TVAnime",
+        },
         "rating": Object {
           "count": Array [
             19,
@@ -350,6 +359,7 @@ Object {
           "score": 7.36,
           "total": 4241,
         },
+        "series": false,
         "type": 2,
       },
     },
@@ -381,6 +391,12 @@ Object {
         "name": "メタルスラッグ7",
         "nameCN": "合金弹头7",
         "nsfw": false,
+        "platform": Object {
+          "alias": "",
+          "id": 5,
+          "type": "",
+          "typeCN": "",
+        },
         "rating": Object {
           "count": Array [
             0,
@@ -398,6 +414,7 @@ Object {
           "score": 6.9,
           "total": 143,
         },
+        "series": false,
         "type": 4,
       },
     },

@@ -5,7 +5,8 @@ import * as session from '@app/lib/auth/session.ts';
 import redis from '@app/lib/redis.ts';
 import { createServer } from '@app/lib/server.ts';
 
-// 每条用例都要跑一次完整 createServer，CI 上单条已接近全局 10s 超时
+const app = await createServer();
+
 describe('login', { timeout: 30_000 }, () => {
   beforeEach(async () => {
     await redis.flushdb('SYNC');
@@ -18,8 +19,6 @@ describe('login', { timeout: 30_000 }, () => {
   });
 
   test('should failed on too many requests', async () => {
-    const app = await createServer();
-
     const opt = {
       method: 'post',
       url: '/p1/login',
@@ -39,8 +38,6 @@ describe('login', { timeout: 30_000 }, () => {
   });
 
   test('should login', async () => {
-    const app = await createServer();
-
     const res = await app.inject({
       method: 'post',
       url: '/p1/login',

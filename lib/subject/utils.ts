@@ -89,20 +89,22 @@ export async function completeSubjectProgress(
   if (subject.volumes > 0) {
     interest.volStatus = subject.volumes;
   }
-  if (subject.typeID === SubjectType.Anime || subject.typeID === SubjectType.Real) {
-    const episodes = await t
-      .select({ id: schema.chiiEpisodes.id })
-      .from(schema.chiiEpisodes)
-      .where(
-        op.and(
-          op.eq(schema.chiiEpisodes.subjectID, subject.id),
-          op.eq(schema.chiiEpisodes.type, 0),
-          op.eq(schema.chiiEpisodes.ban, 0),
-        ),
-      );
-    const episodeIDs = episodes.map((e) => e.id);
-    if (episodeIDs.length > 0) {
-      await markEpisodesAsWatched(t, userID, subject.id, episodeIDs);
-    }
+  if (subject.typeID !== SubjectType.Anime && subject.typeID !== SubjectType.Real) {
+    return;
+  }
+
+  const episodes = await t
+    .select({ id: schema.chiiEpisodes.id })
+    .from(schema.chiiEpisodes)
+    .where(
+      op.and(
+        op.eq(schema.chiiEpisodes.subjectID, subject.id),
+        op.eq(schema.chiiEpisodes.type, 0),
+        op.eq(schema.chiiEpisodes.ban, 0),
+      ),
+    );
+  const episodeIDs = episodes.map((e) => e.id);
+  if (episodeIDs.length > 0) {
+    await markEpisodesAsWatched(t, userID, subject.id, episodeIDs);
   }
 }

@@ -97,7 +97,7 @@ export async function updateTagResult(t: Txn, tagIDs: number[]) {
     .from(schema.chiiTagList)
     .where(op.inArray(schema.chiiTagList.tagID, tagIDs))
     .groupBy(schema.chiiTagList.tagID);
-  const countMap = new Map(counts.map((c) => [c.tagID, Number(c.count)]));
+  const countMap = new Map(counts.map((c) => [c.tagID, c.count]));
   for (const tagID of tagIDs) {
     await t
       .update(schema.chiiTagIndex)

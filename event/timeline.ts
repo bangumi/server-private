@@ -60,11 +60,13 @@ export async function handle({ key, value }: KafkaMessage) {
         const ttlInbox = await redis.mget(followerIDs.map((fid) => getInboxVisitCacheKey(fid)));
         for (const [idx, fid] of followerIDs.entries()) {
           const ttl = Number(ttlInbox[idx]);
-          if (ttl > 0) {
-            const inboxCacheKey = getInboxCacheKey(fid);
-            await redis.zadd(inboxCacheKey, tml.tml_id, tml.tml_id);
-            await redis.expire(inboxCacheKey, ttl - now);
+          if (ttl <= 0) {
+            continue;
           }
+
+          const inboxCacheKey = getInboxCacheKey(fid);
+          await redis.zadd(inboxCacheKey, tml.tml_id, tml.tml_id);
+          await redis.expire(inboxCacheKey, ttl - now);
         }
       }
       await redis.publish(

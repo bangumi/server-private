@@ -6,6 +6,9 @@ nsfw_word: '里番|无码|18x|エロ'
 disable_words: '办假存单|办理假证|0月租手机'
 banned_domain: 'lista.cc|snapmail.cc|ashotmail.com|zoutlook.com'
 
+# 日志等级，默认由 NODE_ENV 推导（production/stage 为 info，test 为 error，其余为 trace）
+# logLevel: 'debug' # LOG_LEVEL
+
 mysql:
   host: '127.0.0.1' # MYSQL_HOST
   port: '3306' # MYSQL_PORT
@@ -34,8 +37,6 @@ passkey:
   # 新部署域名需要追加对应 origin，例如 next 环境：
   #   origins: 'https://bgm.tv,https://bangumi.tv,https://chii.in,https://next.bgm.tv'
   origins: 'https://bgm.tv,https://bangumi.tv,https://chii.in' # PASSKEY_ORIGINS
-
-sentryDSN: 'https://examplePublicKey@o0.ingest.sentry.io/0' # SENTRY_DSN
 
 image:
   provider: 'fs' # CHII_IMAGE_PROVIDER

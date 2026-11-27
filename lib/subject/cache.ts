@@ -5,7 +5,7 @@ export function getCalendarCacheKey(): string {
 }
 
 export function getSlimCacheKey(id: number): string {
-  return `sbj:v3:slim:${id}`;
+  return `sbj:v4:slim:${id}`;
 }
 
 export function getItemCacheKey(id: number): string {
