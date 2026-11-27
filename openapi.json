@@ -31,7 +31,9 @@
               "read:topic": "获取讨论",
               "write:topic": "发帖/回帖",
               "read:wiki": "获取维基数据",
-              "write:wiki": "进行维基编辑"
+              "write:wiki": "进行维基编辑",
+              "write:relationship": "关注/取关、拉黑/移出黑名单",
+              "write:notify": "标记通知为已读"
             }
           }
         }
@@ -8580,6 +8582,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["write:relationship"]
           }
         ],
         "responses": {
@@ -8634,6 +8639,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["write:relationship"]
           }
         ],
         "responses": {
@@ -8851,6 +8859,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["write:relationship"]
           }
         ],
         "responses": {
@@ -8913,6 +8924,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["write:relationship"]
           }
         ],
         "responses": {
@@ -10870,6 +10884,9 @@
           {
             "CookiesSession": [],
             "HTTPBearer": []
+          },
+          {
+            "OAuth2": ["write:notify"]
           }
         ],
         "responses": {

@@ -25,7 +25,7 @@ import {
   parseBlocklist,
 } from '@app/lib/user/utils.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit/index.ts';
-import { requireLogin } from '@app/routes/hooks/pre-handler.ts';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler.ts';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 
@@ -88,7 +88,10 @@ export async function setup(app: App) {
         summary: '添加好友',
         operationId: 'addFriend',
         tags: [Tag.Relationship],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:relationship'] },
+        ],
         params: t.Object({
           username: t.String(),
         }),
@@ -97,7 +100,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add friend')],
+      preHandler: [requireLogin('add friend'), requireScope('write:relationship')],
     },
     async ({ auth, params: { username } }) => {
       const authUser = await fetcher.fetchSlimUserByID(auth.userID);
@@ -204,7 +207,10 @@ export async function setup(app: App) {
         summary: '取消好友',
         operationId: 'removeFriend',
         tags: [Tag.Relationship],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:relationship'] },
+        ],
         params: t.Object({
           username: t.String(),
         }),
@@ -213,7 +219,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('remove friend')],
+      preHandler: [requireLogin('remove friend'), requireScope('write:relationship')],
     },
     async ({ auth, params: { username } }) => {
       const user = await fetcher.fetchSlimUserByUsername(username);
@@ -347,7 +353,10 @@ export async function setup(app: App) {
         summary: '与用户绝交',
         operationId: 'addUserToBlocklist',
         tags: [Tag.Relationship],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:relationship'] },
+        ],
         params: t.Object({
           username: t.String(),
         }),
@@ -358,7 +367,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('add user to blocklist')],
+      preHandler: [requireLogin('add user to blocklist'), requireScope('write:relationship')],
     },
     async ({ auth, params: { username } }) => {
       const user = await fetcher.fetchSlimUserByUsername(username);
@@ -393,7 +402,10 @@ export async function setup(app: App) {
         summary: '取消与用户绝交',
         operationId: 'removeUserFromBlocklist',
         tags: [Tag.Relationship],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:relationship'] },
+        ],
         params: t.Object({
           username: t.String(),
         }),
@@ -404,7 +416,7 @@ export async function setup(app: App) {
           429: res.Ref(res.Error),
         },
       },
-      preHandler: [requireLogin('remove user from blocklist')],
+      preHandler: [requireLogin('remove user from blocklist'), requireScope('write:relationship')],
     },
     async ({ auth, params: { username } }) => {
       const user = await fetcher.fetchSlimUserByUsername(username);

@@ -16,6 +16,9 @@ export const Scope = t.Object({
 
   'read:wiki': t.Optional(t.Boolean({ default: false })),
   'write:wiki': t.Optional(t.Boolean({ default: false })),
+
+  'write:relationship': t.Optional(t.Boolean({ default: false })),
+  'write:notify': t.Optional(t.Boolean({ default: false })),
 });
 
 export const ScopeDescription: Record<keyof IScope, string> = {
@@ -27,6 +30,8 @@ export const ScopeDescription: Record<keyof IScope, string> = {
   'write:topic': '发帖/回帖',
   'read:wiki': '获取维基数据',
   'write:wiki': '进行维基编辑',
+  'write:relationship': '关注/取关、拉黑/移出黑名单',
+  'write:notify': '标记通知为已读',
 };
 
 export const EpochDefaultScope: () => IScope = () => ({
@@ -34,14 +39,16 @@ export const EpochDefaultScope: () => IScope = () => ({
   'write:collection': true,
   'read:indices': true,
   'write:indices': true,
+  'write:relationship': true,
+  'write:notify': true,
 });
 
 /** `null` 表示该凭据不受 scope 限制，与旧站签发的 token 和站点自身登录保持一致 */
 export type TokenScope = readonly string[] | null;
 
 /**
- * 解析 `chii_oauth_access_tokens.scope` / `chii_oauth_refresh_tokens.scope`。 列内容为空表示 legacy token，不受
- * scope 限制；无法解析的内容不授予任何 scope。
+ * 解析 `chii_oauth_access_tokens.scope` / `chii_oauth_refresh_tokens.scope`。 列内容为空、旧站写入的空格分隔列表和
+ * 本站旧版本写入的 JSON 数组都表示 legacy token，不受 scope 限制；无法解析的内容不授予任何 scope。
  */
 export function parseScopeColumn(raw: string | null | undefined): TokenScope {
   if (!raw) {
@@ -52,7 +59,8 @@ export function parseScopeColumn(raw: string | null | undefined): TokenScope {
   try {
     parsed = JSON.parse(raw);
   } catch {
-    return [];
+    // 旧站（PHP）用空格分隔的 scope 列表，同样按不受限制处理，避免已签发的 token 被拒绝
+    return /^[a-z]+:[a-z]+(?: [a-z]+:[a-z]+)*$/i.test(raw) ? null : [];
   }
 
   if (Array.isArray(parsed)) {

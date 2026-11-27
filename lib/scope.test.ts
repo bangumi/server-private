@@ -14,6 +14,11 @@ describe('parse scope column', () => {
     expect(parseScopeColumn('["read:collection","write:wiki"]')).toBeNull();
   });
 
+  test('space separated column written by legacy site is not restricted', () => {
+    expect(parseScopeColumn('read:collection write:collection')).toBeNull();
+    expect(parseScopeColumn('write:wiki')).toBeNull();
+  });
+
   test('object column only grants enabled scopes', () => {
     expect(parseScopeColumn('{"write:collection":true,"write:wiki":false}')).toEqual([
       'write:collection',
@@ -22,9 +27,10 @@ describe('parse scope column', () => {
   });
 
   test('unparsable column grants nothing', () => {
-    expect(parseScopeColumn('write:collection')).toEqual([]);
+    expect(parseScopeColumn('write:collection,write:wiki')).toEqual([]);
     expect(parseScopeColumn('{"write:collection":true')).toEqual([]);
     expect(parseScopeColumn('"write:collection"')).toEqual([]);
+    expect(parseScopeColumn('not a scope')).toEqual([]);
   });
 });
 

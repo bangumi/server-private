@@ -120,6 +120,44 @@ describe('friends', () => {
     await expect(countUserFriend(1)).resolves.toBe(0);
   });
 
+  test('should reject adding friend without write:relationship scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 1,
+        scope: ['write:topic'],
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'put',
+      url: '/friends/287622',
+    });
+    expect(res.statusCode).toBe(403);
+    await expect(isFriends(1, 287622)).resolves.toBe(false);
+  });
+
+  test('should allow adding friend with write:relationship scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 1,
+        scope: ['write:relationship'],
+      },
+    });
+    await app.register(setup);
+
+    const res = await app.inject({
+      method: 'put',
+      url: '/friends/287622',
+    });
+    expect(res.statusCode).toBe(200);
+    await expect(isFriends(1, 287622)).resolves.toBe(true);
+  });
+
   test('should reject adding friend when follow privacy disallows it', async () => {
     await db
       .update(schema.chiiUserFields)

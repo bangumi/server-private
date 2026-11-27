@@ -13,7 +13,7 @@ import { Subscriber } from '@app/lib/redis.ts';
 import * as fetcher from '@app/lib/types/fetcher.ts';
 import * as res from '@app/lib/types/res.ts';
 import { LimitAction } from '@app/lib/utils/rate-limit';
-import { requireLogin } from '@app/routes/hooks/pre-handler';
+import { requireLogin, requireScope } from '@app/routes/hooks/pre-handler';
 import { rateLimit } from '@app/routes/hooks/rate-limit';
 import type { App } from '@app/routes/type.ts';
 import fastifySocketIO from '@app/vendor/fastify-socket.io/index.ts';
@@ -119,7 +119,10 @@ export async function setup(app: App) {
         description: ['标记通知为已读', '不传id时会清空所有未读通知'].join('\n\n'),
         operationId: 'clearNotice',
         tags: [Tag.Misc],
-        security: [{ [Security.CookiesSession]: [], [Security.HTTPBearer]: [] }],
+        security: [
+          { [Security.CookiesSession]: [], [Security.HTTPBearer]: [] },
+          { [Security.OAuth2]: ['write:notify'] },
+        ],
         body: t.Object(
           {
             id: t.Optional(t.Array(t.Integer())),
@@ -135,7 +138,7 @@ export async function setup(app: App) {
           200: t.Object({}),
         },
       },
-      preHandler: [requireLogin('clear notice')],
+      preHandler: [requireLogin('clear notice'), requireScope('write:notify')],
     },
     async ({ auth: { userID }, body: { id } }) => {
       if (id?.length === 0) {

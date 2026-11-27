@@ -92,4 +92,24 @@ describe('notify', () => {
       .limit(1);
     expect(cleared?.unread).toBe(false);
   });
+
+  test('should reject clearing notify without write:notify scope', async () => {
+    const app = createTestServer({
+      auth: {
+        ...emptyAuth(),
+        login: true,
+        userID: 287622,
+        scope: ['write:topic'],
+      },
+    });
+
+    await app.register(setup);
+    const res = await app.inject({
+      method: 'post',
+      url: '/clear-notify',
+      body: {},
+    });
+
+    expect(res.statusCode).toBe(403);
+  });
 });
