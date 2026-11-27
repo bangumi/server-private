@@ -93,12 +93,16 @@ export async function byHeader(key: string | string[] | undefined): Promise<IAut
 
 const tokenAuthCache = TypedCache<
   string,
-  { user: res.ISlimUser; appID: string; scope: TokenScope }
+  { user: res.ISlimUser; appID: string; scope: TokenScope; expiredAt: number }
 >((token) => `auth:v4:token:${token}`);
+
+export async function invalidateTokenCache(accessToken: string): Promise<void> {
+  await tokenAuthCache.del(accessToken);
+}
 
 export async function byToken(accessToken: string): Promise<IAuth | null> {
   const cached = await tokenAuthCache.get(accessToken);
-  if (cached) {
+  if (cached && cached.expiredAt > Date.now()) {
     return await userToAuth(cached.user, cached.appID, cached.scope);
   }
 
@@ -120,9 +124,36 @@ export async function byToken(accessToken: string): Promise<IAuth | null> {
   const u = await fetchUserX(intval(token.userID));
   const scope = parseScopeColumn(token.scope);
 
-  await tokenAuthCache.set(accessToken, { user: u, appID: token.clientID, scope }, 60 * 60 * 24);
+  await tokenAuthCache.set(
+    accessToken,
+    {
+      user: u,
+      appID: token.clientID,
+      scope,
+      expiredAt: token.expiredAt.getTime(),
+    },
+    60 * 60 * 24,
+  );
 
   return await userToAuth(u, token.clientID, scope);
+}
+
+const passwordCache = TypedCache<number, string>((userID) => `auth:password:${userID}`);
+
+export async function fetchPasswordCrypt(userID: number): Promise<string | null> {
+  return await passwordCache.cached(userID, async () => {
+    const [u] = await db
+      .select({ password: schema.chiiUsers.passwordCrypt })
+      .from(schema.chiiUsers)
+      .where(op.eq(schema.chiiUsers.id, userID))
+      .limit(1);
+
+    return u?.password ?? null;
+  });
+}
+
+export async function invalidatePasswordCache(userID: number): Promise<void> {
+  await passwordCache.del(userID);
 }
 
 const userCache = TypedCache<number, res.ISlimUser>((userID) => `auth:v2:user:${userID}`);
