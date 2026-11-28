@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { db, op, schema } from '@app/drizzle';
 import { emptyAuth } from '@app/lib/auth/index.ts';
@@ -115,6 +115,98 @@ describe('subject collection', () => {
       .from(schema.chiiSubjectFields)
       .where(op.eq(schema.chiiSubjectFields.id, 12));
     expect(subjectFields?.rate10).toBe(169);
+  });
+
+  describe('subject collection updates', () => {
+    const app = createTestServer({ auth: { login: true, userID: 382951 } });
+    const url = '/collections/subjects/12';
+    const subjectInterestFilter = op.and(
+      op.eq(schema.chiiSubjectInterests.uid, 382951),
+      op.eq(schema.chiiSubjectInterests.subjectID, 12),
+    );
+
+    beforeAll(async () => {
+      await app.register(setup);
+    });
+    afterAll(async () => {
+      await app.close();
+    });
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    async function getSubjectInterest() {
+      const [collection] = await db
+        .select()
+        .from(schema.chiiSubjectInterests)
+        .where(subjectInterestFilter);
+      return collection;
+    }
+
+    test('should preserve omitted ratings and comments when changing collection status', async () => {
+      const comment = 'original comment';
+      const created = await app.inject({
+        method: 'put',
+        url,
+        body: { type: CollectionType.Doing, rate: 10, comment },
+      });
+      expect(created.statusCode).toBe(200);
+      const send = vi.spyOn(producer, 'send');
+
+      for (const { body, collect, rate10 } of [
+        {
+          body: { type: CollectionType.Collect },
+          collect: { type: CollectionType.Collect, rate: 10, comment },
+          rate10: 169,
+        },
+        {
+          body: { type: CollectionType.Doing, rate: 0, comment: '' },
+          collect: { type: CollectionType.Doing, rate: 0, comment: '' },
+          rate10: 168,
+        },
+      ]) {
+        send.mockClear();
+        const res = await app.inject({ method: 'put', url, body });
+        expect(res.statusCode).toBe(200);
+        expect(await getSubjectInterest()).toMatchObject(collect);
+        const [subjectFields] = await db
+          .select({ rate10: schema.chiiSubjectFields.rate10 })
+          .from(schema.chiiSubjectFields)
+          .where(op.eq(schema.chiiSubjectFields.id, 12));
+        expect(subjectFields?.rate10).toBe(rate10);
+        expect(send).toHaveBeenCalledExactlyOnceWith('timeline', '382951', expect.any(String));
+        expect(JSON.parse(send.mock.lastCall?.[2] ?? 'null')).toMatchObject({
+          op: 'subject',
+          message: { collect },
+        });
+      }
+    });
+
+    test('should keep a blocked collection from becoming public without changing its comment', async () => {
+      const created = await app.inject({
+        method: 'put',
+        url,
+        body: { type: CollectionType.Doing, comment: 'original comment' },
+      });
+      expect(created.statusCode).toBe(200);
+      await db
+        .update(schema.chiiSubjectInterests)
+        .set({ privacy: CollectionPrivacy.Ban })
+        .where(subjectInterestFilter);
+      const send = vi.spyOn(producer, 'send');
+
+      const res = await app.inject({
+        method: 'put',
+        url,
+        body: { type: CollectionType.Collect, private: false },
+      });
+      expect(res.statusCode).toBe(200);
+      expect(await getSubjectInterest()).toMatchObject({
+        type: CollectionType.Collect,
+        privacy: CollectionPrivacy.Ban,
+      });
+      expect(send).not.toHaveBeenCalled();
+    });
   });
 
   test('should reject reading collections without read:collection scope', async () => {
