@@ -396,7 +396,7 @@ export async function setup(app: App) {
 
       let needTimeline = false;
       let interestID = 0;
-      await db.transaction(async (t) => {
+      const timelineValues = await db.transaction(async (t) => {
         if (tags !== undefined) {
           tags = await insertUserTags(
             t,
@@ -416,7 +416,6 @@ export async function setup(app: App) {
         if (!subject) {
           throw new UnexpectedNotFoundError(`subject ${subjectID}`);
         }
-        let needUpdateRate = false;
         const [interest] = await t
           .select()
           .from(schema.chiiSubjectInterests)
@@ -427,16 +426,17 @@ export async function setup(app: App) {
             ),
           )
           .limit(1);
-        let oldRate = 0;
-        if (rate === undefined) {
-          rate = 0;
-        }
+        const oldRate = interest?.rate ?? 0;
+        const nextRate = rate ?? oldRate;
         if (interest) {
           interestID = interest.id;
-          oldRate = interest.rate;
           const oldType = interest.type;
           const oldPrivacy = interest.privacy;
-          if (privacy === undefined) {
+          // 未更新吐槽时，可见性设置不能解除已有的屏蔽。
+          if (
+            privacy === undefined ||
+            (comment === undefined && oldPrivacy === CollectionPrivacy.Ban)
+          ) {
             privacy = oldPrivacy;
           }
           const toUpdate: Partial<orm.ISubjectInterest> = {};
@@ -453,15 +453,13 @@ export async function setup(app: App) {
               await completeSubjectProgress(t, auth.userID, subject, toUpdate);
             }
           }
-          if (oldRate !== rate) {
-            needUpdateRate = true;
-            toUpdate.rate = rate;
+          if (oldRate !== nextRate) {
+            toUpdate.rate = nextRate;
           }
           if (comment !== undefined) {
             toUpdate.comment = comment;
           }
           if (oldPrivacy !== privacy) {
-            needUpdateRate = true;
             toUpdate.privacy = privacy;
           }
           if (tags !== undefined) {
@@ -491,7 +489,7 @@ export async function setup(app: App) {
             uid: auth.userID,
             subjectID,
             subjectType: slimSubject.type,
-            rate,
+            rate: nextRate,
             type,
             hasComment: comment ? 1 : 0,
             comment: comment ?? '',
@@ -516,19 +514,15 @@ export async function setup(app: App) {
           const [result] = await t.insert(schema.chiiSubjectInterests).values(toInsert);
           interestID = result.insertId;
           needTimeline = true;
-          if (rate) {
-            needUpdateRate = true;
-          }
           if (type) {
             // 收藏计数＋1
             await updateSubjectCollectionCounts(t, subjectID, type);
           }
         }
 
-        // 更新评分
-        if (needUpdateRate) {
-          await updateSubjectRating(t, subjectID, oldRate, rate);
-        }
+        await updateSubjectRating(t, subjectID, oldRate, nextRate);
+
+        return { rate: nextRate, comment: comment ?? interest?.comment ?? '' };
       });
 
       // 插入时间线
@@ -542,8 +536,7 @@ export async function setup(app: App) {
           collect: {
             id: interestID,
             type,
-            rate: rate ?? 0,
-            comment: comment ?? '',
+            ...timelineValues,
           },
           createdAt: DateTime.now().toUnixInteger(),
           source: auth.source,
